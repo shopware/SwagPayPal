@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="SwagPayPal\PayPal\Resource\PaymentResource"
+                 class="SwagPayPal\PayPal\Resource\PaymentResource">
+            <argument type="service" id="SwagPayPal\PayPal\Resource\TokenResource"/>
+            <argument type="service" id="swag_paypal_setting_general.repository"/>
+        </service>
+
+        <service id="SwagPayPal\PayPal\Resource\TokenResource"
+                 class="SwagPayPal\PayPal\Resource\TokenResource">
+            <argument type="service" id="shopware.cache"/>
+        </service>
+
+        <service id="SwagPayPal\PayPal\Resource\WebhookResource"
+                 class="SwagPayPal\PayPal\Resource\WebhookResource">
+            <argument type="service" id="SwagPayPal\PayPal\Resource\TokenResource"/>
+            <argument type="service" id="swag_paypal_setting_general.repository"/>
+        </service>
+    </services>
+</container>

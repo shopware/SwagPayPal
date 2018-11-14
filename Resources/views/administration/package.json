@@ -1,0 +1,9 @@
+{
+    "name": "swagPayPal",
+    "version": "1.0.0",
+    "description": "Administration for PayPal",
+    "main": "index.js",
+    "author": "Telgi",
+    "license": "MIT",
+    "private": true
+}

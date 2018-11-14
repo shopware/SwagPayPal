@@ -1,0 +1,9 @@
+{
+    "name": "shopwareLabs/swag-paypal",
+    "type": "shopware-plugin",
+    "description": "All PayPal payment methods in one plugin",
+    "license": "MIT",
+    "extra": {
+        "installer-name": "SwagPayPal"
+    }
+}

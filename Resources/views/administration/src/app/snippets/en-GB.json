@@ -1,0 +1,29 @@
+{
+    "swag-payment-paypal-next": {
+        "header": "PayPal",
+        "general": {
+            "mainMenuItemGeneral": "PayPal",
+            "descriptionTextModule": "Settings for PayPal"
+        },
+        "settingForm": {
+            "save": "Save",
+            "cardTitle": "API credentials",
+            "clientId": {
+                "label": "Client ID"
+            },
+            "clientSecret": {
+                "label": "Client Secret"
+            },
+            "sandbox": {
+                "label": "Sandbox mode?",
+                "helpText": "During the testing period of Shopware Playground, only the sandbox mode is supported."
+            },
+            "titleSaveSuccess": "PayPal settings",
+            "titleSaveError": "PayPal Einstellungen Error",
+            "messageSaveSuccess": "The PayPal settings have been saved successfully.",
+            "messageWebhookCreated": "The webhook has been successfully registered.",
+            "messageWebhookUpdated": "The webhook has been successfully updated.",
+            "messageWebhookError": "The webhook could not be saved. Following errors occurred:"
+        }
+    }
+}
