@@ -48,8 +48,8 @@ Component.register('swag-paypal', {
             this.isLoading = true;
             this.setting.save().then(() => {
                 this.createNotificationSuccess({
-                    title: this.$tc('swag-payment-paypal-next.settingForm.titleSaveSuccess'),
-                    message: this.$tc('swag-payment-paypal-next.settingForm.messageSaveSuccess')
+                    title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
+                    message: this.$tc('swag-paypal.settingForm.messageSaveSuccess')
                 });
                 this.isLoading = false;
             }).then(() => {
@@ -62,8 +62,8 @@ Component.register('swag-paypal', {
 
                     if (result === 'created') {
                         this.createNotificationSuccess({
-                            title: this.$tc('swag-payment-paypal-next.settingForm.titleSaveSuccess'),
-                            message: this.$tc('swag-payment-paypal-next.settingForm.messageWebhookCreated')
+                            title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
+                            message: this.$tc('swag-paypal.settingForm.messageWebhookCreated')
                         });
 
                         return;
@@ -71,19 +71,19 @@ Component.register('swag-paypal', {
 
                     if (result === 'updated') {
                         this.createNotificationSuccess({
-                            title: this.$tc('swag-payment-paypal-next.settingForm.titleSaveSuccess'),
-                            message: this.$tc('swag-payment-paypal-next.settingForm.messageWebhookUpdated')
+                            title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
+                            message: this.$tc('swag-paypal.settingForm.messageWebhookUpdated')
                         });
                     }
                 }).catch((errorResponse) => {
                     if (errorResponse.response.data && errorResponse.response.data.errors) {
-                        let message = `${this.$tc('swag-payment-paypal-next.settingForm.messageWebhookError')}<br><br><ul>`;
+                        let message = `${this.$tc('swag-paypal.settingForm.messageWebhookError')}<br><br><ul>`;
                         errorResponse.response.data.errors.forEach((error) => {
                             message = `${message}<li>${error.detail}</li>`;
                         });
                         message += '</li>';
                         this.createNotificationError({
-                            title: this.$tc('swag-payment-paypal-next.settingForm.titleSaveError'),
+                            title: this.$tc('swag-paypal.settingForm.titleSaveError'),
                             message: message
                         });
                     }

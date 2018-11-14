@@ -9,7 +9,6 @@
 namespace SwagPayPal\PayPal\Client;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\BaseURL;
 use SwagPayPal\PayPal\Client\Exception\PayPalSettingsInvalidException;
@@ -28,7 +27,7 @@ class PayPalClient
     private $tokenResource;
 
     /**
-     * @var ClientInterface
+     * @var Client
      */
     private $client;
 

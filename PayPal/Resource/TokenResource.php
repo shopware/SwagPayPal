@@ -18,7 +18,7 @@ use SwagPayPal\PayPal\Struct\Token;
 
 class TokenResource
 {
-    public const CACHE_ID = 'paypal_next_auth_';
+    public const CACHE_ID = 'paypal_auth_';
 
     /**
      * @var CacheItemPoolInterface

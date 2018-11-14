@@ -9,7 +9,6 @@
 namespace SwagPayPal\PayPal\Client;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use SwagPayPal\PayPal\PartnerAttributionId;
 use SwagPayPal\PayPal\RequestUri;
 use SwagPayPal\PayPal\Struct\OAuthCredentials;
@@ -17,7 +16,7 @@ use SwagPayPal\PayPal\Struct\OAuthCredentials;
 class TokenClient
 {
     /**
-     * @var ClientInterface
+     * @var Client
      */
     private $client;
 

@@ -6,7 +6,7 @@
                 <h2>
                     {{ $tc('sw-settings.index.title') }}
                     <sw-icon name="small-arrow-medium-right" small></sw-icon>
-                    {{ $tc('swag-payment-paypal-next.header') }}
+                    {{ $tc('swag-paypal.header') }}
                 </h2>
             </template>
         {% endblock %}
@@ -15,7 +15,7 @@
             <template slot="smart-bar-actions">
                 {% block swag_paypal_actions_save %}
                     <sw-button variant="primary" @click.prevent="onSave">
-                        {{ $tc('swag-payment-paypal-next.settingForm.save') }}
+                        {{ $tc('swag-paypal.settingForm.save') }}
                     </sw-button>
                 {% endblock %}
             </template>
@@ -24,20 +24,20 @@
         {% block swag_paypal_content %}
             <sw-card-view slot="content">
                 {% block swag_paypal_content_credentials %}
-                    <sw-card :title="$tc('swag-payment-paypal-next.settingForm.cardTitle')">
+                    <sw-card :title="$tc('swag-paypal.settingForm.cardTitle')">
                         {% block swag_paypal_content_credentials_form %}
                             <div class="swag-paypal-form">
                                 <sw-container grid="100%">
                                     {% block swag_paypal_content_credentials_form_client %}
                                         <sw-field type="text"
-                                                  :label="$tc('swag-payment-paypal-next.settingForm.clientId.label')"
+                                                  :label="$tc('swag-paypal.settingForm.clientId.label')"
                                                   v-model="setting.clientId">
                                         </sw-field>
                                     {% endblock %}
 
                                     {% block swag_paypal_content_credentials_form_secret %}
                                         <sw-field type="text"
-                                                  :label="$tc('swag-payment-paypal-next.settingForm.clientSecret.label')"
+                                                  :label="$tc('swag-paypal.settingForm.clientSecret.label')"
                                                   v-model="setting.clientSecret">
                                         </sw-field>
                                     {% endblock %}
@@ -45,9 +45,9 @@
                                     {% block swag_paypal_content_credentials_form_sandbox %}
                                         <sw-field type="boolean"
                                                   :disabled="true"
-                                                  :label="$tc('swag-payment-paypal-next.settingForm.sandbox.label')"
+                                                  :label="$tc('swag-paypal.settingForm.sandbox.label')"
                                                   v-model="setting.sandbox"
-                                                  :helpText="$tc('swag-payment-paypal-next.settingForm.sandbox.helpText')">
+                                                  :helpText="$tc('swag-paypal.settingForm.sandbox.helpText')">
                                         </sw-field>
                                     {% endblock %}
                                 </sw-container>
