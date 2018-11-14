@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/labs/src/Framework/Plugin/Schema/plugin.xsd">
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/Framework/Plugin/Schema/plugin.xsd">
 
-    <label lang="de">PayPal Produkte für Shopware Next</label>
-    <label lang="en">PayPal Products for Shopware Next</label>
+    <label lang="de">PayPal Produkte für Shopware 6</label>
+    <label lang="en">PayPal Products for Shopware 6</label>
 
     <version>1.0.0</version>
     <copyright>(c) by shopware AG</copyright>

@@ -13,5 +13,5 @@ final class PartnerAttributionId
     /**
      * Shopware Partner Id for PayPal Classic or Express-Checkout
      */
-    public const PAYPAL_CLASSIC = 'Shopware_Cart_Next';
+    public const PAYPAL_CLASSIC = 'Shopware_Cart_6';
 }

@@ -1,5 +1,5 @@
 {
-    "swag-payment-paypal-next": {
+    "swag-paypal": {
         "header": "PayPal",
         "general": {
             "mainMenuItemGeneral": "PayPal",

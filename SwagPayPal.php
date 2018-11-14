@@ -28,7 +28,7 @@ class SwagPayPal extends Plugin
     /**
      * The technical name of the unified payment method.
      */
-    public const PAYPAL_NEXT_PAYMENT_METHOD_NAME = 'SwagPayPal';
+    public const PAYPAL_PAYMENT_METHOD_NAME = 'SwagPayPal';
 
     public function __construct($active = true)
     {
@@ -90,7 +90,7 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
 
         $paypal = [
             'id' => self::PAYMENT_METHOD_PAYPAL_ID,
-            'technicalName' => self::PAYPAL_NEXT_PAYMENT_METHOD_NAME,
+            'technicalName' => self::PAYPAL_PAYMENT_METHOD_NAME,
             'name' => 'PayPal',
             'additionalDescription' => 'Bezahlung per PayPal - einfach, schnell und sicher.',
             'class' => PayPalPayment::class,

@@ -5,7 +5,7 @@ import './extension/sw-settings-index';
 Module.register('swag-paypal', {
     type: 'plugin',
     name: 'SwagPayPal',
-    description: 'swag-payment-paypal-next.general.descriptionTextModule',
+    description: 'swag-paypal.general.descriptionTextModule',
     version: '1.0.0',
     targetVersion: '1.0.0',
     color: '#9AA8B5',
@@ -26,7 +26,7 @@ Module.register('swag-paypal', {
     navigation: [{
         id: 'swag-paypal',
         parent: 'sw-settings',
-        label: 'swag-payment-paypal-next.general.mainMenuItemGeneral',
+        label: 'swag-paypal.general.mainMenuItemGeneral',
         color: '#0070ba',
         path: 'swag.paypal.index',
         icon: 'default-money-cash',
