@@ -63,21 +63,48 @@ class WebhookController extends Controller
 
     /**
      * @Route("/paypal/webhook/execute", name="paypal.webhook.execute", methods={"POST"})
+     *
+     * @throws BadRequestHttpException
      */
     public function executeWebhook(Request $request, Context $context): Response
     {
-        $token = $request->query->get('sw-token');
-        if ($token === null) {
+        $token = $this->getShopwareToken($request);
+        $this->validateShopwareToken($token, $context);
+
+        $webhook = $this->createWebhookFromPostData($request);
+        $this->tryToExecuteWebhook($context, $webhook);
+
+        return new Response();
+    }
+
+    private function getShopwareToken(Request $request): string
+    {
+        $token = $request->query->getAlnum('sw-token');
+        if ($token === '') {
             throw new BadRequestHttpException('Shopware token is invalid');
         }
 
+        return $token;
+    }
+
+    /**
+     * @throws BadRequestHttpException
+     */
+    private function validateShopwareToken(string $token, Context $context): void
+    {
         /** @var SwagPayPalSettingGeneralCollection $settingsCollection */
         $settingsCollection = $this->settingGeneralRepo->search(new Criteria(), $context)->getEntities();
         $settings = $settingsCollection->first();
         if ($token !== $settings->getWebhookExecuteToken()) {
             throw new BadRequestHttpException('Shopware token is invalid');
         }
+    }
 
+    /**
+     * @throws BadRequestHttpException
+     */
+    private function createWebhookFromPostData(Request $request): Webhook
+    {
         $postData = $request->request->all();
         $this->logger->debug('[PayPal Webhook] Received webhook', ['payload' => $postData]);
 
@@ -85,23 +112,27 @@ class WebhookController extends Controller
             throw new BadRequestHttpException('No webhook data sent');
         }
 
-        $webhook = Webhook::fromArray($postData);
+        return Webhook::fromArray($postData);
+    }
 
+    private function tryToExecuteWebhook(Context $context, Webhook $webhook): void
+    {
         try {
             $this->webhookService->executeWebhook($webhook, $context);
         } catch (WebhookException $webhookException) {
             $this->logger->error(
                 '[PayPal Webhook] ' . $webhookException->getMessage(),
-                ['type' => $webhookException->getEventType()]
+                [
+                    'type' => $webhookException->getEventType(),
+                    'webhook' => $webhook->toArray(),
+                ]
             );
 
-            throw new BadRequestHttpException('An error occurred on executing the webhook');
+            throw new BadRequestHttpException('An error occurred during execution of webhook');
         } catch (Exception $e) {
             $this->logger->error('[PayPal Webhook] ' . $e->getMessage());
 
-            throw new BadRequestHttpException('An error occurred on executing the webhook');
+            throw new BadRequestHttpException('An error occurred during execution of webhook');
         }
-
-        return new Response();
     }
 }

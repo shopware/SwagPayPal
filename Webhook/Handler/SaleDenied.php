@@ -11,6 +11,7 @@ namespace SwagPayPal\Webhook\Handler;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Struct\Webhook;
+use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use SwagPayPal\Webhook\WebhookEventTypes;
 
 class SaleDenied extends AbstractWebhookHandler
@@ -25,13 +26,12 @@ class SaleDenied extends AbstractWebhookHandler
 
     /**
      * {@inheritdoc}
+     *
+     * @throws WebhookOrderTransactionNotFoundException
      */
     public function invoke(Webhook $webhook, Context $context): void
     {
         $orderTransaction = $this->getOrderTransaction($webhook, $context);
-        if ($orderTransaction === null) {
-            return;
-        }
 
         $data = [
             'id' => $orderTransaction->getId(),

@@ -44,10 +44,11 @@ class WebhookRegistry
      */
     private function registerWebhook(WebhookHandler $webhook): void
     {
-        if (isset($this->registeredWebhooks[$webhook->getEventType()])) {
-            throw new WebhookException($webhook->getEventType(), 'The specified event is already registered.');
+        $webhookEventType = $webhook->getEventType();
+        if (isset($this->registeredWebhooks[$webhookEventType])) {
+            throw new WebhookException($webhookEventType, 'The specified event is already registered.');
         }
 
-        $this->registeredWebhooks[$webhook->getEventType()] = $webhook;
+        $this->registeredWebhooks[$webhookEventType] = $webhook;
     }
 }

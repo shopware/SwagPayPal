@@ -1,3 +1,4 @@
 .idea
 /vendor/
 /Resources/public/
+/coverage/
