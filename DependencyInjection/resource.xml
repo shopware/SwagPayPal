@@ -7,8 +7,7 @@
     <services>
         <service id="SwagPayPal\PayPal\Resource\PaymentResource"
                  class="SwagPayPal\PayPal\Resource\PaymentResource">
-            <argument type="service" id="SwagPayPal\PayPal\Resource\TokenResource"/>
-            <argument type="service" id="swag_paypal_setting_general.repository"/>
+            <argument type="service" id="SwagPayPal\PayPal\Client\PayPalClientFactory"/>
         </service>
 
         <service id="SwagPayPal\PayPal\Resource\TokenResource"
@@ -18,8 +17,7 @@
 
         <service id="SwagPayPal\PayPal\Resource\WebhookResource"
                  class="SwagPayPal\PayPal\Resource\WebhookResource">
-            <argument type="service" id="SwagPayPal\PayPal\Resource\TokenResource"/>
-            <argument type="service" id="swag_paypal_setting_general.repository"/>
+            <argument type="service" id="SwagPayPal\PayPal\Client\PayPalClientFactory"/>
         </service>
     </services>
 </container>

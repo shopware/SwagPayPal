@@ -9,48 +9,39 @@
 namespace SwagPayPal\PayPal\Resource;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use SwagPayPal\PayPal\Client\Exception\PayPalSettingsInvalidException;
-use SwagPayPal\PayPal\Client\PayPalClient;
+use SwagPayPal\PayPal\Client\PayPalClientFactory;
 use SwagPayPal\PayPal\Component\Patch\PatchInterface;
 use SwagPayPal\PayPal\RequestUri;
 use SwagPayPal\PayPal\Struct\Payment;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
 use Symfony\Component\HttpFoundation\Request;
 
 class PaymentResource
 {
     /**
-     * @var TokenResource
+     * @var PayPalClientFactory
      */
-    private $tokenResource;
+    private $payPalClientFactory;
 
-    /**
-     * @var RepositoryInterface
-     */
-    private $settingGeneralRepo;
-
-    public function __construct(TokenResource $tokenResource, RepositoryInterface $settingGeneralRepo)
+    public function __construct(PayPalClientFactory $payPalClientFactory)
     {
-        $this->tokenResource = $tokenResource;
-        $this->settingGeneralRepo = $settingGeneralRepo;
+        $this->payPalClientFactory = $payPalClientFactory;
     }
 
     public function create(Payment $payment, Context $context): Payment
     {
-        $paypalClient = $this->createPaymentClient($context);
-        $response = $paypalClient->sendRequest(Request::METHOD_POST, RequestUri::PAYMENT_RESOURCE, $payment->toArray());
+        $response = $this->payPalClientFactory->createPaymentClient($context)->sendRequest(
+            Request::METHOD_POST,
+            RequestUri::PAYMENT_RESOURCE,
+            $payment->toArray()
+        );
 
         return Payment::fromArray($response);
     }
 
     public function execute(string $payerId, string $paymentId, Context $context): Payment
     {
-        $paypalClient = $this->createPaymentClient($context);
         $requestData = ['payer_id' => $payerId];
-
-        $response = $paypalClient->sendRequest(
+        $response = $this->payPalClientFactory->createPaymentClient($context)->sendRequest(
             Request::METHOD_POST,
             RequestUri::PAYMENT_RESOURCE . '/' . $paymentId . '/execute',
             $requestData
@@ -61,8 +52,7 @@ class PaymentResource
 
     public function get(string $paymentId, Context $context): Payment
     {
-        $paypalClient = $this->createPaymentClient($context);
-        $response = $paypalClient->sendRequest(
+        $response = $this->payPalClientFactory->createPaymentClient($context)->sendRequest(
             Request::METHOD_GET,
             RequestUri::PAYMENT_RESOURCE . '/' . $paymentId
         );
@@ -75,7 +65,6 @@ class PaymentResource
      */
     public function patch(string $paymentId, array $patches, Context $context): void
     {
-        $paypalClient = $this->createPaymentClient($context);
         $requestData = [];
         foreach ($patches as $patch) {
             $requestData[] = [
@@ -85,22 +74,10 @@ class PaymentResource
             ];
         }
 
-        $paypalClient->sendRequest(
+        $this->payPalClientFactory->createPaymentClient($context)->sendRequest(
             Request::METHOD_PATCH,
             RequestUri::PAYMENT_RESOURCE . '/' . $paymentId,
             $requestData
         );
-    }
-
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
-    private function createPaymentClient(Context $context): PayPalClient
-    {
-        /** @var SwagPayPalSettingGeneralCollection $settingsCollection */
-        $settingsCollection = $this->settingGeneralRepo->search(new Criteria(), $context)->getEntities();
-        $settings = $settingsCollection->first();
-
-        return new PayPalClient($this->tokenResource, $context, $settings);
     }
 }

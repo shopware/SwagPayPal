@@ -10,13 +10,9 @@ namespace SwagPayPal\PayPal\Resource;
 
 use GuzzleHttp\Exception\ClientException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use SwagPayPal\PayPal\Client\Exception\PayPalSettingsInvalidException;
-use SwagPayPal\PayPal\Client\PayPalClient;
+use SwagPayPal\PayPal\Client\PayPalClientFactory;
 use SwagPayPal\PayPal\Component\Patch\PatchInterface;
 use SwagPayPal\PayPal\RequestUri;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
 use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use SwagPayPal\Webhook\Exception\WebhookIdInvalidException;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,19 +20,13 @@ use Symfony\Component\HttpFoundation\Request;
 class WebhookResource
 {
     /**
-     * @var TokenResource
+     * @var PayPalClientFactory
      */
-    private $tokenResource;
+    private $payPalClientFactory;
 
-    /**
-     * @var RepositoryInterface
-     */
-    private $settingGeneralRepo;
-
-    public function __construct(TokenResource $tokenResource, RepositoryInterface $settingGeneralRepo)
+    public function __construct(PayPalClientFactory $payPalClientFactory)
     {
-        $this->tokenResource = $tokenResource;
-        $this->settingGeneralRepo = $settingGeneralRepo;
+        $this->payPalClientFactory = $payPalClientFactory;
     }
 
     public function createWebhook(string $webhookUrl, array $webhookEvents, Context $context): string
@@ -52,13 +42,21 @@ class WebhookResource
             ];
         }
 
-        $paypalClient = $this->createPaymentClient($context);
         try {
-            $response = $paypalClient->sendRequest(Request::METHOD_POST, RequestUri::WEBHOOK_RESOURCE, $requestData);
+            $response = $this->payPalClientFactory->createPaymentClient($context)->sendRequest(
+                Request::METHOD_POST,
+                RequestUri::WEBHOOK_RESOURCE,
+                $requestData
+            );
 
             return $response['id'];
         } catch (ClientException $e) {
-            $error = json_decode($e->getResponse()->getBody()->getContents(), true);
+            $response = $e->getResponse();
+            if ($response === null) {
+                throw $e;
+            }
+
+            $error = json_decode($response->getBody()->getContents(), true);
 
             if ($error['name'] === 'WEBHOOK_URL_ALREADY_EXISTS') {
                 throw new WebhookAlreadyExistsException($webhookUrl);
@@ -70,16 +68,20 @@ class WebhookResource
 
     public function getWebhookUrl(string $webhookId, Context $context): string
     {
-        $paypalClient = $this->createPaymentClient($context);
         try {
-            $response = $paypalClient->sendRequest(
+            $response = $this->payPalClientFactory->createPaymentClient($context)->sendRequest(
                 Request::METHOD_GET,
                 RequestUri::WEBHOOK_RESOURCE . '/' . $webhookId
             );
 
             return $response['url'];
         } catch (ClientException $e) {
-            $error = json_decode($e->getResponse()->getBody()->getContents(), true);
+            $response = $e->getResponse();
+            if ($response === null) {
+                throw $e;
+            }
+
+            $error = json_decode($response->getBody()->getContents(), true);
 
             if ($error['name'] === 'INVALID_RESOURCE_ID') {
                 throw new WebhookIdInvalidException($webhookId);
@@ -98,15 +100,19 @@ class WebhookResource
             'value' => $webhookUrl,
         ];
 
-        $paypalClient = $this->createPaymentClient($context);
         try {
-            $paypalClient->sendRequest(
+            $this->payPalClientFactory->createPaymentClient($context)->sendRequest(
                 Request::METHOD_PATCH,
                 RequestUri::WEBHOOK_RESOURCE . '/' . $webhookId,
                 $requestData
             );
         } catch (ClientException $e) {
-            $error = json_decode($e->getResponse()->getBody()->getContents(), true);
+            $response = $e->getResponse();
+            if ($response === null) {
+                throw $e;
+            }
+
+            $error = json_decode($response->getBody()->getContents(), true);
 
             if ($error['name'] === 'INVALID_RESOURCE_ID') {
                 throw new WebhookIdInvalidException($webhookId);
@@ -114,17 +120,5 @@ class WebhookResource
 
             throw  $e;
         }
-    }
-
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
-    private function createPaymentClient(Context $context): PayPalClient
-    {
-        /** @var SwagPayPalSettingGeneralCollection $settingsCollection */
-        $settingsCollection = $this->settingGeneralRepo->search(new Criteria(), $context)->getEntities();
-        $settings = $settingsCollection->first();
-
-        return new PayPalClient($this->tokenResource, $context, $settings);
     }
 }

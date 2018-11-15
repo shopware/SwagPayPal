@@ -43,8 +43,9 @@ class SwagPayPal extends Plugin
         parent::build($container);
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
-        $loader->load('paypal_resource.xml');
-        $loader->load('services.xml');
+        $loader->load('client.xml');
+        $loader->load('resource.xml');
+        $loader->load('service.xml');
         $loader->load('setting.xml');
         $loader->load('webhook.xml');
     }

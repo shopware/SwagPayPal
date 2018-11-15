@@ -74,8 +74,6 @@ class WebhookService
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
-//        $webhookUrl = str_replace('http://shopware.local', 'https://shopware.ngrok.io', $webhookUrl); // Only for testing!
-
         $webhookId = $settings->getWebhookId();
         $settingsUuid = $settings->getId();
 
