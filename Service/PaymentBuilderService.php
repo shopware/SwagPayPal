@@ -100,15 +100,23 @@ class PaymentBuilderService implements PaymentBuilderInterface
         /** @var LanguageStruct $language */
         $language = $languageCollection->get($languageId);
 
-        $salesChannelId = $context->getSourceContext()->getSalesChannelId();
-        /** @var SalesChannelCollection $salesChannelCollection */
-        $salesChannelCollection = $this->salesChannelRepo->read(new ReadCriteria([$salesChannelId]), $context);
-        /** @var SalesChannelStruct $salesChannel */
-        $salesChannel = $salesChannelCollection->get($salesChannelId);
-
         $applicationContext = new ApplicationContext();
-        $applicationContext->setBrandName($salesChannel->getName());
         $applicationContext->setLocale($language->getLocale()->getCode());
+
+        $brandName = '';
+
+        $salesChannelId = $context->getSourceContext()->getSalesChannelId();
+        if ($salesChannelId !== null) {
+            /** @var SalesChannelCollection $salesChannelCollection */
+            $salesChannelCollection = $this->salesChannelRepo->read(new ReadCriteria([$salesChannelId]), $context);
+            /** @var SalesChannelStruct $salesChannel */
+            $salesChannel = $salesChannelCollection->get($salesChannelId);
+            if ($salesChannel !== null) {
+                $brandName = $salesChannel->getName();
+            }
+        }
+
+        $applicationContext->setBrandName($brandName);
 
         return $applicationContext;
     }

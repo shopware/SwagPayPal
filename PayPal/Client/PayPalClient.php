@@ -57,8 +57,8 @@ class PayPalClient
 
         //Create authentication
         $credentials = new OAuthCredentials();
-        $credentials->setRestId($settings->getClientId());
-        $credentials->setRestSecret($settings->getClientSecret());
+        $credentials->setRestId($clientId);
+        $credentials->setRestSecret($clientSecret);
 
         $authHeader = $this->createAuthentication($credentials, $context, $url);
 
