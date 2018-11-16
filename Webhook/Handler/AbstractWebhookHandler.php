@@ -8,13 +8,13 @@
 
 namespace SwagPayPal\Webhook\Handler;
 
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use SwagPayPal\PayPal\Struct\Webhook;
+use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use SwagPayPal\Webhook\WebhookHandler;
 
 abstract class AbstractWebhookHandler implements WebhookHandler
@@ -24,14 +24,8 @@ abstract class AbstractWebhookHandler implements WebhookHandler
      */
     protected $orderTransactionRepo;
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    public function __construct(LoggerInterface $logger, RepositoryInterface $orderTransactionRepo)
+    public function __construct(RepositoryInterface $orderTransactionRepo)
     {
-        $this->logger = $logger;
         $this->orderTransactionRepo = $orderTransactionRepo;
     }
 
@@ -39,24 +33,18 @@ abstract class AbstractWebhookHandler implements WebhookHandler
 
     abstract public function invoke(Webhook $webhook, Context $context): void;
 
-    protected function getOrderTransaction(Webhook $webhook, Context $context): ?OrderTransactionStruct
+    /**
+     * @throws WebhookOrderTransactionNotFoundException
+     */
+    protected function getOrderTransaction(Webhook $webhook, Context $context): OrderTransactionStruct
     {
-        $paypalTransactionId = $webhook->getResource()['parent_payment'];
+        $payPalTransactionId = $webhook->getResource()['parent_payment'];
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('details.swag_paypal.transactionId', $paypalTransactionId));
+        $criteria->addFilter(new EqualsFilter('details.swag_paypal.transactionId', $payPalTransactionId));
         $result = $this->orderTransactionRepo->search($criteria, $context);
 
         if ($result->getTotal() === 0) {
-            $this->logger->error(
-                sprintf(
-                    '[PayPal %s Webhook] Could not find associated order with the PayPal ID "%s"',
-                    $this->getEventType(),
-                    $paypalTransactionId
-                ),
-                ['webhook' => $webhook->toArray()]
-            );
-
-            return null;
+            throw new WebhookOrderTransactionNotFoundException($payPalTransactionId, $this->getEventType());
         }
 
         return $result->getEntities()->first();

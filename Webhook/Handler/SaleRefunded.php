@@ -8,13 +8,15 @@
 
 namespace SwagPayPal\Webhook\Handler;
 
-use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionState\OrderTransactionStateDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionState\OrderTransactionStateStruct;
+use Shopware\Core\Framework\Api\Exception\ResourceNotFoundException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use SwagPayPal\PayPal\Struct\Webhook;
+use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use SwagPayPal\Webhook\WebhookEventTypes;
 
 class SaleRefunded extends AbstractWebhookHandler
@@ -25,12 +27,11 @@ class SaleRefunded extends AbstractWebhookHandler
     private $orderTransactionStateRepo;
 
     public function __construct(
-        LoggerInterface $logger,
         RepositoryInterface $orderTransactionRepo,
         RepositoryInterface $orderTransactionStateRepo
     ) {
         $this->orderTransactionStateRepo = $orderTransactionStateRepo;
-        parent::__construct($logger, $orderTransactionRepo);
+        parent::__construct($orderTransactionRepo);
     }
 
     /**
@@ -43,21 +44,19 @@ class SaleRefunded extends AbstractWebhookHandler
 
     /**
      * {@inheritdoc}
+     *
+     * @throws WebhookOrderTransactionNotFoundException
+     * @throws ResourceNotFoundException
      */
     public function invoke(Webhook $webhook, Context $context): void
     {
         $orderTransaction = $this->getOrderTransaction($webhook, $context);
-        if ($orderTransaction === null) {
-            return;
-        }
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('position', 14));
         $result = $this->orderTransactionStateRepo->search($criteria, $context);
         if ($result->getTotal() === 0) {
-            $this->logger->error('[PayPal SaleDenied-Webhook] Could not find order transaction state');
-
-            return;
+            throw new ResourceNotFoundException(OrderTransactionStateDefinition::getEntityName(), ['position' => 14]);
         }
 
         /** @var OrderTransactionStateStruct $orderTransactionState */

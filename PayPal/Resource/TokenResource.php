@@ -45,17 +45,20 @@ class TokenResource
 
     private function getTokenFromCache(Context $context)
     {
-        $token = $this->cache->getItem(self::CACHE_ID . $context->getTenantId())->get();
+        $token = $this->cache->getItem(self::CACHE_ID . $context->getSourceContext()->getSalesChannelId())->get();
         if ($token === null) {
             return $token;
         }
 
-        return unserialize($this->cache->getItem(self::CACHE_ID . $context->getTenantId())->get(), [Token::class]);
+        return unserialize(
+            $this->cache->getItem(self::CACHE_ID . $context->getSourceContext()->getSalesChannelId())->get(),
+            [Token::class]
+        );
     }
 
     private function setToken(Token $token, Context $context): void
     {
-        $item = $this->cache->getItem(self::CACHE_ID . $context->getTenantId());
+        $item = $this->cache->getItem(self::CACHE_ID . $context->getSourceContext()->getSalesChannelId());
         $item->set(serialize($token));
         $this->cache->save($item);
     }
