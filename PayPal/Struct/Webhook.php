@@ -96,6 +96,11 @@ class Webhook
         return get_object_vars($this);
     }
 
+    public function setEventType(string $eventType): void
+    {
+        $this->eventType = $eventType;
+    }
+
     private function setId(string $id): void
     {
         $this->id = $id;
@@ -109,11 +114,6 @@ class Webhook
     private function setResourceType(string $resourceType): void
     {
         $this->resourceType = $resourceType;
-    }
-
-    private function setEventType(string $eventType): void
-    {
-        $this->eventType = $eventType;
     }
 
     private function setSummary(string $summary): void

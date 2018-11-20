@@ -20,7 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelStruct;
 
-class SalesChannelRepositoryMock implements RepositoryInterface
+class SalesChannelRepoMock implements RepositoryInterface
 {
     public const SALES_CHANNEL_NAME = 'SwagPayPal Test SalesChannel';
 

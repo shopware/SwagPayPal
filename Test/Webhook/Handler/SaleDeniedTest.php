@@ -13,14 +13,13 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Struct\Webhook;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
-use SwagPayPal\Webhook\Handler\AuthorizationVoided;
+use SwagPayPal\Webhook\Handler\SaleDenied;
 use SwagPayPal\Webhook\WebhookEventTypes;
 
-class AuthorizationVoidedTest extends TestCase
+class SaleDeniedTest extends TestCase
 {
     /**
-     * @var AuthorizationVoided
+     * @var SaleDenied
      */
     private $webhookHandler;
 
@@ -37,7 +36,7 @@ class AuthorizationVoidedTest extends TestCase
 
     public function testGetEventType(): void
     {
-        self::assertSame(WebhookEventTypes::PAYMENT_AUTHORIZATION_VOIDED, $this->webhookHandler->getEventType());
+        self::assertSame(WebhookEventTypes::PAYMENT_SALE_DENIED, $this->webhookHandler->getEventType());
     }
 
     public function testInvoke(): void
@@ -50,27 +49,11 @@ class AuthorizationVoidedTest extends TestCase
         $result = $this->orderTransactionRepo->getData();
 
         self::assertSame(OrderTransactionRepoMock::ORDER_TRANSACTION_ID, $result['id']);
-        self::assertSame(Defaults::ORDER_TRANSACTION_FAILED, $result['orderTransactionStateId']);
+        self::assertSame(Defaults::ORDER_TRANSACTION_OPEN, $result['orderTransactionStateId']);
     }
 
-    public function testInvokeWithoutTransaction(): void
+    private function createWebhookHandler(): SaleDenied
     {
-        $webhook = new Webhook();
-        $webhook->setResource(['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION]);
-        $context = Context::createDefaultContext();
-
-        $this->expectException(WebhookOrderTransactionNotFoundException::class);
-        $this->expectExceptionMessage(
-            sprintf(
-                '[PayPal PAYMENT.AUTHORIZATION.VOIDED Webhook] Could not find associated order with the PayPal ID "%s"',
-                OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION
-            )
-        );
-        $this->webhookHandler->invoke($webhook, $context);
-    }
-
-    private function createWebhookHandler(): AuthorizationVoided
-    {
-        return new AuthorizationVoided($this->orderTransactionRepo);
+        return new SaleDenied($this->orderTransactionRepo);
     }
 }

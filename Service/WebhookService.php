@@ -25,6 +25,18 @@ use Symfony\Component\Routing\RouterInterface;
 
 class WebhookService
 {
+    public const WEBHOOK_CREATED = 'created';
+
+    public const WEBHOOK_UPDATED = 'updated';
+
+    public const NO_WEBHOOK_ACTION_REQUIRED = 'nothing';
+
+    public const PAYPAL_WEBHOOK_ROUTE = 'paypal.webhook.execute';
+
+    public const PAYPAL_WEBHOOK_TOKEN_NAME = 'sw-token';
+
+    public const PAYPAL_WEBHOOK_TOKEN_LENGTH = 32;
+
     /**
      * @var WebhookResource
      */
@@ -65,12 +77,12 @@ class WebhookService
 
         $webhookExecuteToken = $settings->getWebhookExecuteToken();
         if ($webhookExecuteToken === null) {
-            $webhookExecuteToken = Random::getAlphanumericString(32);
+            $webhookExecuteToken = Random::getAlphanumericString(self::PAYPAL_WEBHOOK_TOKEN_LENGTH);
         }
 
         $webhookUrl = $this->router->generate(
-            'paypal.webhook.execute',
-            ['sw-token' => $webhookExecuteToken],
+            self::PAYPAL_WEBHOOK_ROUTE,
+            [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
@@ -84,15 +96,16 @@ class WebhookService
         try {
             $registeredWebhookUrl = $this->webhookResource->getWebhookUrl($webhookId, $context);
             if ($registeredWebhookUrl === $webhookUrl) {
-                return 'nothing';
+                return self::NO_WEBHOOK_ACTION_REQUIRED;
             }
         } catch (WebhookIdInvalidException $e) {
+            // do nothing, so the following code will be executed
         }
 
         try {
             $this->webhookResource->updateWebhook($webhookUrl, $webhookId, $context);
 
-            return 'updated';
+            return self::WEBHOOK_UPDATED;
         } catch (WebhookIdInvalidException $e) {
             return $this->createWebhook($context, $webhookUrl, $settingsUuid, $webhookExecuteToken);
         }
@@ -121,9 +134,9 @@ class WebhookService
             );
             $this->updateSettings($settingsUuid, $webhookId, $webhookExecuteToken, $context);
 
-            return 'created';
+            return self::WEBHOOK_CREATED;
         } catch (WebhookAlreadyExistsException $e) {
-            return 'nothing';
+            return self::NO_WEBHOOK_ACTION_REQUIRED;
         }
     }
 

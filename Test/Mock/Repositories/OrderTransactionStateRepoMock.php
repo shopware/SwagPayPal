@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Test\Mock\Repositories;
 
-use Shopware\Core\Defaults;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionState\OrderTransactionStateStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
@@ -18,12 +18,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\System\Language\LanguageStruct;
-use Shopware\Core\System\Locale\LocaleStruct;
+use SwagPayPal\Test\Helper\ConstantsForTesting;
 
-class LanguageRepositoryMock implements RepositoryInterface
+class OrderTransactionStateRepoMock implements RepositoryInterface
 {
-    public const LOCALE_CODE = 'en_GB';
+    public const ORDER_TRANSACTION_STATE_ID = 'orderTransactionStateTestId';
+
+    public const NO_TRANSACTION_STATE_RESULT = 'noTransactionStateResult';
 
     public function aggregate(Criteria $criteria, Context $context): AggregatorResult
     {
@@ -35,11 +36,15 @@ class LanguageRepositoryMock implements RepositoryInterface
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
+        if ($context->hasExtension(self::NO_TRANSACTION_STATE_RESULT)) {
+            return $this->createEntitySearchResultWithoutTransactionState($criteria, $context);
+        }
+
+        return $this->createEntitySearchResult($criteria, $context);
     }
 
     public function read(ReadCriteria $criteria, Context $context): EntityCollection
     {
-        return new EntityCollection([$this->createLanguageStruct()]);
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
@@ -66,21 +71,40 @@ class LanguageRepositoryMock implements RepositoryInterface
     {
     }
 
-    private function createLanguageStruct(): LanguageStruct
-    {
-        $languageStruct = new LanguageStruct();
-        $languageStruct->setId(Defaults::LANGUAGE_EN);
-        $locale = $this->createLocaleStruct();
-        $languageStruct->setLocale($locale);
-
-        return $languageStruct;
+    private function createEntitySearchResultWithoutTransactionState(
+        Criteria $criteria,
+        Context $context
+    ): EntitySearchResult {
+        return new EntitySearchResult(
+            ConstantsForTesting::REPO_SEARCH_RESULT_TOTAL_WITHOUT_RESULTS,
+            new EntityCollection([]),
+            null,
+            $criteria,
+            $context
+        );
     }
 
-    private function createLocaleStruct(): LocaleStruct
+    private function createEntitySearchResult(Criteria $criteria, Context $context): EntitySearchResult
     {
-        $locale = new LocaleStruct();
-        $locale->setCode(self::LOCALE_CODE);
+        return new EntitySearchResult(
+            ConstantsForTesting::REPO_SEARCH_RESULT_TOTAL_WITH_RESULTS,
+            $this->createEntityCollection(),
+            null,
+            $criteria,
+            $context
+        );
+    }
 
-        return $locale;
+    private function createEntityCollection(): EntityCollection
+    {
+        return new EntityCollection([$this->createOrderTransactionState()]);
+    }
+
+    private function createOrderTransactionState(): OrderTransactionStateStruct
+    {
+        $orderTransaction = new OrderTransactionStateStruct();
+        $orderTransaction->setId(self::ORDER_TRANSACTION_STATE_ID);
+
+        return $orderTransaction;
     }
 }
