@@ -19,14 +19,16 @@ use Shopware\Core\Framework\Struct\Uuid;
 use Shopware\Core\System\Currency\CurrencyStruct;
 use SwagPayPal\Service\PaymentBuilderService;
 use SwagPayPal\SwagPayPal;
-use SwagPayPal\Test\Mock\Repositories\LanguageRepositoryMock;
-use SwagPayPal\Test\Mock\Repositories\SalesChannelRepositoryMock;
+use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
+use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 
 class PaymentBuilderServiceTest extends TestCase
 {
     private const CURRENCY_CODE = 'EUR';
 
     private const SHOP_URL = 'http://www.test.de/';
+
+    private const SHOP_URL_CANCEL = self::SHOP_URL . '&cancel=1';
 
     private const SHIPPING_COSTS = 2.5;
 
@@ -46,13 +48,13 @@ class PaymentBuilderServiceTest extends TestCase
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
 
         self::assertSame(
-            SalesChannelRepositoryMock::SALES_CHANNEL_NAME,
+            SalesChannelRepoMock::SALES_CHANNEL_NAME,
             $payment->getApplicationContext()->getBrandName()
         );
-        self::assertSame(LanguageRepositoryMock::LOCALE_CODE, $payment->getApplicationContext()->getLocale());
+        self::assertSame(LanguageRepoMock::LOCALE_CODE, $payment->getApplicationContext()->getLocale());
         self::assertSame(self::CURRENCY_CODE, $payment->getTransactions()->getAmount()->getCurrency());
         self::assertSame(self::SHOP_URL, $payment->getRedirectUrls()->getReturnUrl());
-        self::assertSame(self::SHOP_URL . '&cancel=1', $payment->getRedirectUrls()->getCancelUrl());
+        self::assertSame(self::SHOP_URL_CANCEL, $payment->getRedirectUrls()->getCancelUrl());
         self::assertSame(self::SHIPPING_COSTS, $payment->getTransactions()->getAmount()->getDetails()->getShipping());
         self::assertSame(
             self::PRODUCT_TOTAL_PRICE,
@@ -63,8 +65,8 @@ class PaymentBuilderServiceTest extends TestCase
     private function createPaymentBuilder(): PaymentBuilderService
     {
         return new PaymentBuilderService(
-            new LanguageRepositoryMock(),
-            new SalesChannelRepositoryMock()
+            new LanguageRepoMock(),
+            new SalesChannelRepoMock()
         );
     }
 

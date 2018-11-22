@@ -9,18 +9,19 @@
 namespace SwagPayPal\Test\Webhook\Handler;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Api\Exception\ResourceNotFoundException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use SwagPayPal\PayPal\Struct\Webhook;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
-use SwagPayPal\Webhook\Handler\AuthorizationVoided;
+use SwagPayPal\Test\Mock\Repositories\OrderTransactionStateRepoMock;
+use SwagPayPal\Webhook\Handler\SaleRefunded;
 use SwagPayPal\Webhook\WebhookEventTypes;
 
-class AuthorizationVoidedTest extends TestCase
+class SaleRefundedTest extends TestCase
 {
     /**
-     * @var AuthorizationVoided
+     * @var SaleRefunded
      */
     private $webhookHandler;
 
@@ -37,7 +38,7 @@ class AuthorizationVoidedTest extends TestCase
 
     public function testGetEventType(): void
     {
-        self::assertSame(WebhookEventTypes::PAYMENT_AUTHORIZATION_VOIDED, $this->webhookHandler->getEventType());
+        self::assertSame(WebhookEventTypes::PAYMENT_SALE_REFUNDED, $this->webhookHandler->getEventType());
     }
 
     public function testInvoke(): void
@@ -50,27 +51,26 @@ class AuthorizationVoidedTest extends TestCase
         $result = $this->orderTransactionRepo->getData();
 
         self::assertSame(OrderTransactionRepoMock::ORDER_TRANSACTION_ID, $result['id']);
-        self::assertSame(Defaults::ORDER_TRANSACTION_FAILED, $result['orderTransactionStateId']);
+        self::assertSame(OrderTransactionStateRepoMock::ORDER_TRANSACTION_STATE_ID, $result['orderTransactionStateId']);
     }
 
-    public function testInvokeWithoutTransaction(): void
+    public function testInvokeTransactionStateNotFound(): void
     {
         $webhook = new Webhook();
-        $webhook->setResource(['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION]);
+        $webhook->setResource(['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]);
         $context = Context::createDefaultContext();
+        $context->addExtension(OrderTransactionStateRepoMock::NO_TRANSACTION_STATE_RESULT, new Entity());
 
-        $this->expectException(WebhookOrderTransactionNotFoundException::class);
-        $this->expectExceptionMessage(
-            sprintf(
-                '[PayPal PAYMENT.AUTHORIZATION.VOIDED Webhook] Could not find associated order with the PayPal ID "%s"',
-                OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION
-            )
-        );
+        $this->expectException(ResourceNotFoundException::class);
+        $this->expectExceptionMessage('The order_transaction_state resource with the following primary key was not found: position(14)');
         $this->webhookHandler->invoke($webhook, $context);
     }
 
-    private function createWebhookHandler(): AuthorizationVoided
+    private function createWebhookHandler(): SaleRefunded
     {
-        return new AuthorizationVoided($this->orderTransactionRepo);
+        return new SaleRefunded(
+            $this->orderTransactionRepo,
+            new OrderTransactionStateRepoMock()
+        );
     }
 }

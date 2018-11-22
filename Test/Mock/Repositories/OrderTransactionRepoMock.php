@@ -20,15 +20,15 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Event\NestedEventCollection;
-use SwagPayPal\Test\Webhook\Handler\AuthorizationVoidedTest;
+use SwagPayPal\Test\Helper\ConstantsForTesting;
 
-class OrderTransactionRepositoryMock implements RepositoryInterface
+class OrderTransactionRepoMock implements RepositoryInterface
 {
     public const ORDER_TRANSACTION_ID = 'orderTransactionTestId';
 
-    private const SEARCH_RESULT_TOTAL_WITH_RESULTS = 1;
+    public const WEBHOOK_PAYMENT_ID = 'webhookIdWithTransaction';
 
-    private const SEARCH_RESULT_TOTAL_WITHOUT_RESULTS = 0;
+    public const WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION = 'webhookIdWithoutTransaction';
 
     private $data = [];
 
@@ -44,11 +44,11 @@ class OrderTransactionRepositoryMock implements RepositoryInterface
     {
         /** @var EqualsFilter $filter */
         $filter = $criteria->getFilters()[0];
-        if ($filter->getValue() === AuthorizationVoidedTest::WEBHOOK_PAYMENT_ID) {
-            return $this->createEntitySearchResult($criteria, $context);
+        if ($filter->getValue() === self::WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION) {
+            return $this->createEntitySearchResultWithoutTransaction($criteria, $context);
         }
 
-        return $this->createEntitySearchResultWithoutTransaction($criteria, $context);
+        return $this->createEntitySearchResult($criteria, $context);
     }
 
     public function read(ReadCriteria $criteria, Context $context): EntityCollection
@@ -90,7 +90,7 @@ class OrderTransactionRepositoryMock implements RepositoryInterface
     private function createEntitySearchResult(Criteria $criteria, Context $context): EntitySearchResult
     {
         return new EntitySearchResult(
-            self::SEARCH_RESULT_TOTAL_WITH_RESULTS,
+            ConstantsForTesting::REPO_SEARCH_RESULT_TOTAL_WITH_RESULTS,
             $this->createEntityCollection(),
             null,
             $criteria,
@@ -111,10 +111,12 @@ class OrderTransactionRepositoryMock implements RepositoryInterface
         return $orderTransaction;
     }
 
-    private function createEntitySearchResultWithoutTransaction(Criteria $criteria, Context $context): EntitySearchResult
-    {
+    private function createEntitySearchResultWithoutTransaction(
+        Criteria $criteria,
+        Context $context
+    ): EntitySearchResult {
         return new EntitySearchResult(
-            self::SEARCH_RESULT_TOTAL_WITHOUT_RESULTS,
+            ConstantsForTesting::REPO_SEARCH_RESULT_TOTAL_WITHOUT_RESULTS,
             new EntityCollection([]),
             null,
             $criteria,
