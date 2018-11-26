@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\OAuthCredentials;
 use SwagPayPal\PayPal\Api\Token;
 use SwagPayPal\PayPal\Resource\TokenResource;
+use SwagPayPal\Test\Helper\ConstantsForTesting;
 
 class TokenResourceMock extends TokenResource
 {
@@ -25,5 +26,14 @@ class TokenResourceMock extends TokenResource
         ]);
 
         return $token;
+    }
+
+    public function testApiCredentials(OAuthCredentials $credentials, string $url): bool
+    {
+        if ('Basic ' . base64_encode(ConstantsForTesting::VALID_CLIENT_ID . ':' . ConstantsForTesting::VALID_CLIENT_SECRET) === (string) $credentials) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -50,6 +50,16 @@ class TokenResource
         return $token;
     }
 
+    public function testApiCredentials(OAuthCredentials $credentials, string $url): bool
+    {
+        $tokenClient = $this->tokenClientFactory->createTokenClient($credentials, $url);
+
+        $token = new Token();
+        $token->assign($tokenClient->get());
+
+        return $this->isTokenValid($token);
+    }
+
     private function getTokenFromCache(Context $context): ?Token
     {
         $token = $this->cache->getItem(self::CACHE_ID . $context->getSourceContext()->getSalesChannelId())->get();
@@ -74,10 +84,6 @@ class TokenResource
         //Decrease expire date by one hour just to make sure, we don't run into an unauthorized exception.
         $dateTimeExpire = $dateTimeExpire->sub(new DateInterval('PT1H'));
 
-        if ($dateTimeExpire < $dateTimeNow) {
-            return false;
-        }
-
-        return true;
+        return $dateTimeExpire > $dateTimeNow;
     }
 }

@@ -20,5 +20,11 @@
             <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Search\EntityAggregatorInterface"/>
             <argument type="service" id="event_dispatcher"/>
         </service>
+
+        <service id="SwagPayPal\Controller\SettingsController"
+                 class="SwagPayPal\Controller\SettingsController"
+                 public="true">
+            <argument id="SwagPayPal\Service\ApiCredentialTestService" type="service"/>
+        </service>
     </services>
 </container>

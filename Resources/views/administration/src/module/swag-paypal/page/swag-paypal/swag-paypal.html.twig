@@ -13,8 +13,14 @@
 
         {% block swag_paypal_actions %}
             <template slot="smart-bar-actions">
+                {% block swag_paypal_actions_test %}
+                    <sw-button @click="onTest" :disabled="clientCredentialsFilled || isLoading">
+                        {{ $tc('swag-paypal.settingForm.test') }}
+                    </sw-button>
+                {% endblock %}
+
                 {% block swag_paypal_actions_save %}
-                    <sw-button variant="primary" @click.prevent="onSave">
+                    <sw-button variant="primary" @click="onSave" :disabled="clientCredentialsFilled || isLoading">
                         {{ $tc('swag-paypal.settingForm.save') }}
                     </sw-button>
                 {% endblock %}
@@ -24,7 +30,7 @@
         {% block swag_paypal_content %}
             <sw-card-view slot="content">
                 {% block swag_paypal_content_credentials %}
-                    <sw-card :title="$tc('swag-paypal.settingForm.cardTitle')">
+                    <sw-card :title="$tc('swag-paypal.settingForm.cardTitle')" :isLoading="isLoading">
                         {% block swag_paypal_content_credentials_form %}
                             <div class="swag-paypal-form">
                                 <sw-container grid="100%">
@@ -44,7 +50,6 @@
 
                                     {% block swag_paypal_content_credentials_form_sandbox %}
                                         <sw-field type="boolean"
-                                                  :disabled="true"
                                                   :label="$tc('swag-paypal.settingForm.sandbox.label')"
                                                   v-model="setting.sandbox"
                                                   :helpText="$tc('swag-paypal.settingForm.sandbox.helpText')">
