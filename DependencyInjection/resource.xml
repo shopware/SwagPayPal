@@ -13,6 +13,7 @@
         <service id="SwagPayPal\PayPal\Resource\TokenResource"
                  class="SwagPayPal\PayPal\Resource\TokenResource">
             <argument type="service" id="shopware.cache"/>
+            <argument type="service" id="SwagPayPal\PayPal\Client\TokenClientFactory"/>
         </service>
 
         <service id="SwagPayPal\PayPal\Resource\WebhookResource"

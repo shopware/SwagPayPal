@@ -13,9 +13,9 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
+use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
 use SwagPayPal\PayPal\PaymentStatus;
 use SwagPayPal\PayPal\Resource\PaymentResource;
-use SwagPayPal\PayPal\Struct\Payment\RelatedResources\RelatedResource;
 use SwagPayPal\Service\PaymentBuilderInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -82,11 +82,11 @@ class PayPalPayment implements PaymentHandlerInterface
         $paymentId = $request->query->get('paymentId');
         $response = $this->paymentResource->execute($payerId, $paymentId, $context);
 
-        /** @var RelatedResource $responseSale */
-        $responseSale = $response->getTransactions()->getRelatedResources()->getResources()[0];
+        /** @var RelatedResource $relatedResource */
+        $relatedResource = $response->getTransactions()[0]->getRelatedResources()[0];
 
         // apply the payment status if its completed by PayPal
-        $paymentState = $responseSale->getState();
+        $paymentState = $relatedResource->getSale()->getState();
 
         if ($paymentState === PaymentStatus::PAYMENT_COMPLETED) {
             $transaction = [

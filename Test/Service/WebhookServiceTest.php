@@ -11,12 +11,13 @@ namespace SwagPayPal\Test\Service;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\PayPal\Client\PayPalClientFactory;
 use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\PayPal\Struct\Webhook;
 use SwagPayPal\Service\WebhookService;
 use SwagPayPal\Test\Mock\CacheMock;
 use SwagPayPal\Test\Mock\DummyCollection;
+use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
@@ -90,7 +91,7 @@ class WebhookServiceTest extends TestCase
         $context = Context::createDefaultContext();
 
         $webhook = new Webhook();
-        $webhook->setEventType(DummyWebhook::EVENT_TYPE);
+        $webhook->assign(['event_type' => DummyWebhook::EVENT_TYPE]);
 
         $webhookService->executeWebhook($webhook, $context);
 
@@ -140,7 +141,7 @@ class WebhookServiceTest extends TestCase
     {
         return new WebhookResourceMock(
             new PayPalClientFactory(
-                new TokenResource(new CacheMock()),
+                new TokenResource(new CacheMock(), new TokenClientFactoryMock()),
                 $this->swagPayPalSettingGeneralRepo
             )
         );

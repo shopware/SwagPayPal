@@ -16,13 +16,13 @@ use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\Language\LanguageStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelStruct;
-use SwagPayPal\PayPal\Struct\Payment;
-use SwagPayPal\PayPal\Struct\Payment\ApplicationContext;
-use SwagPayPal\PayPal\Struct\Payment\Payer;
-use SwagPayPal\PayPal\Struct\Payment\RedirectUrls;
-use SwagPayPal\PayPal\Struct\Payment\Transactions;
-use SwagPayPal\PayPal\Struct\Payment\Transactions\Amount;
-use SwagPayPal\PayPal\Struct\Payment\Transactions\Amount\Details;
+use SwagPayPal\PayPal\Api\Payment;
+use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
+use SwagPayPal\PayPal\Api\Payment\Payer;
+use SwagPayPal\PayPal\Api\Payment\RedirectUrls;
+use SwagPayPal\PayPal\Api\Payment\Transaction;
+use SwagPayPal\PayPal\Api\Payment\Transaction\Amount;
+use SwagPayPal\PayPal\Api\Payment\Transaction\Amount\Details;
 
 class PaymentBuilderService implements PaymentBuilderInterface
 {
@@ -47,8 +47,8 @@ class PaymentBuilderService implements PaymentBuilderInterface
      */
     public function getPayment(PaymentTransactionStruct $paymentTransaction, Context $context): Payment
     {
-        $requestParameters = new Payment();
-        $requestParameters->setIntent('sale');
+        $requestPayment = new Payment();
+        $requestPayment->setIntent('sale');
 
         $payer = new Payer();
         $payer->setPaymentMethod('paypal');
@@ -58,33 +58,33 @@ class PaymentBuilderService implements PaymentBuilderInterface
         $redirectUrls->setReturnUrl($paymentTransaction->getReturnUrl());
 
         $amount = new Amount();
-        $amount->setDetails($this->getAmountDetails($paymentTransaction));
+        $amount->setTotal($this->formatPrice($paymentTransaction->getAmount()->getTotalPrice()));
         $amount->setCurrency($paymentTransaction->getOrder()->getCurrency()->getShortName());
-        $amount->setTotal($paymentTransaction->getAmount()->getTotalPrice());
+        $amount->setDetails($this->getAmountDetails($paymentTransaction));
 
-        $transactions = new Transactions();
-        $transactions->setAmount($amount);
+        $transaction = new Transaction();
+        $transaction->setAmount($amount);
 
-        $requestParameters->setPayer($payer);
-        $requestParameters->setRedirectUrls($redirectUrls);
-        $requestParameters->setTransactions($transactions);
+        $requestPayment->setPayer($payer);
+        $requestPayment->setRedirectUrls($redirectUrls);
+        $requestPayment->setTransactions([$transaction]);
 
         $applicationContext = $this->getApplicationContext($context);
 
-        $requestParameters->setApplicationContext($applicationContext);
+        $requestPayment->setApplicationContext($applicationContext);
 
-        return $requestParameters;
+        return $requestPayment;
     }
 
     private function getAmountDetails(PaymentTransactionStruct $paymentTransaction): Details
     {
         $amountDetails = new Details();
 
-        $amountDetails->setShipping($paymentTransaction->getOrder()->getShippingTotal());
+        $amountDetails->setShipping($this->formatPrice($paymentTransaction->getOrder()->getShippingTotal()));
         $totalAmount = $paymentTransaction->getAmount()->getTotalPrice();
         $taxAmount = $paymentTransaction->getAmount()->getCalculatedTaxes()->getAmount();
-        $amountDetails->setSubTotal($totalAmount - $taxAmount);
-        $amountDetails->setTax($taxAmount);
+        $amountDetails->setSubtotal($this->formatPrice($totalAmount - $taxAmount));
+        $amountDetails->setTax($this->formatPrice($taxAmount));
 
         return $amountDetails;
     }
@@ -119,5 +119,10 @@ class PaymentBuilderService implements PaymentBuilderInterface
         $applicationContext->setBrandName($brandName);
 
         return $applicationContext;
+    }
+
+    private function formatPrice(float $price): string
+    {
+        return (string) round($price, 2);
     }
 }

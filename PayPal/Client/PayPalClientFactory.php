@@ -40,6 +40,9 @@ class PayPalClientFactory
     {
         /** @var SwagPayPalSettingGeneralCollection $settingsCollection */
         $settingsCollection = $this->settingGeneralRepo->search(new Criteria(), $context)->getEntities();
+        if ($settingsCollection->count() === 0) {
+            throw new PayPalSettingsInvalidException('');
+        }
         $settings = $settingsCollection->first();
 
         return new PayPalClient($this->tokenResource, $context, $settings);

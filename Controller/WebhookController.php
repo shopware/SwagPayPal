@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use SwagPayPal\PayPal\Struct\Webhook;
+use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Service\WebhookService;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
 use SwagPayPal\Webhook\Exception\WebhookException;
@@ -77,6 +77,9 @@ class WebhookController extends Controller
         return new Response();
     }
 
+    /**
+     * @throws BadRequestHttpException
+     */
     private function getShopwareToken(Request $request): string
     {
         $token = $request->query->getAlnum('sw-token');
@@ -112,9 +115,15 @@ class WebhookController extends Controller
             throw new BadRequestHttpException('No webhook data sent');
         }
 
-        return Webhook::fromArray($postData);
+        $webhook = new Webhook();
+        $webhook->assign($postData);
+
+        return $webhook;
     }
 
+    /**
+     * @throws BadRequestHttpException
+     */
     private function tryToExecuteWebhook(Context $context, Webhook $webhook): void
     {
         try {
@@ -124,7 +133,7 @@ class WebhookController extends Controller
                 '[PayPal Webhook] ' . $webhookException->getMessage(),
                 [
                     'type' => $webhookException->getEventType(),
-                    'webhook' => $webhook->toArray(),
+                    'webhook' => json_encode($webhook),
                 ]
             );
 

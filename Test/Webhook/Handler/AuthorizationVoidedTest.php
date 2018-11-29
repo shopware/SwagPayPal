@@ -11,7 +11,7 @@ namespace SwagPayPal\Test\Webhook\Handler;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Struct\Webhook;
+use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use SwagPayPal\Webhook\Handler\AuthorizationVoided;
@@ -43,7 +43,7 @@ class AuthorizationVoidedTest extends TestCase
     public function testInvoke(): void
     {
         $webhook = new Webhook();
-        $webhook->setResource(['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]);
+        $webhook->assign(['resource' => ['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]]);
         $context = Context::createDefaultContext();
         $this->webhookHandler->invoke($webhook, $context);
 
@@ -56,7 +56,7 @@ class AuthorizationVoidedTest extends TestCase
     public function testInvokeWithoutTransaction(): void
     {
         $webhook = new Webhook();
-        $webhook->setResource(['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION]);
+        $webhook->assign(['resource' => ['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION]]);
         $context = Context::createDefaultContext();
 
         $this->expectException(WebhookOrderTransactionNotFoundException::class);

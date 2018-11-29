@@ -9,9 +9,9 @@
 namespace SwagPayPal\PayPal\Client;
 
 use GuzzleHttp\Client;
+use SwagPayPal\PayPal\Api\OAuthCredentials;
 use SwagPayPal\PayPal\PartnerAttributionId;
 use SwagPayPal\PayPal\RequestUri;
-use SwagPayPal\PayPal\Struct\OAuthCredentials;
 
 class TokenClient
 {
@@ -26,7 +26,7 @@ class TokenClient
             'base_uri' => $url,
             'headers' => [
                 'PayPal-Partner-Attribution-Id' => PartnerAttributionId::PAYPAL_CLASSIC,
-                'Authorization' => $credentials->toString(),
+                'Authorization' => (string) $credentials,
             ],
         ]);
     }

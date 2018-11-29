@@ -12,8 +12,9 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Util\Random;
+use SwagPayPal\PayPal\Api\CreateWebhooks;
+use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\PayPal\Resource\WebhookResource;
-use SwagPayPal\PayPal\Struct\Webhook;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
 use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use SwagPayPal\Webhook\Exception\WebhookException;
@@ -126,10 +127,17 @@ class WebhookService
         string $settingsUuid,
         string $webhookExecuteToken
     ): string {
+        $requestData = [
+            'url' => $webhookUrl,
+            'event_types' => [['name' => WebhookEventTypes::ALL_EVENTS]],
+        ];
+
+        $createWebhooks = new CreateWebhooks();
+        $createWebhooks->assign($requestData);
         try {
             $webhookId = $this->webhookResource->createWebhook(
                 $webhookUrl,
-                [WebhookEventTypes::ALL_EVENTS],
+                $createWebhooks,
                 $context
             );
             $this->updateSettings($settingsUuid, $webhookId, $webhookExecuteToken, $context);
