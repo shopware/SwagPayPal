@@ -15,6 +15,7 @@ class CacheMock implements CacheItemPoolInterface
 {
     public function getItem($key): CacheItemInterface
     {
+        return new CacheItemMock();
     }
 
     public function getItems(array $keys = []): array
@@ -39,6 +40,7 @@ class CacheMock implements CacheItemPoolInterface
 
     public function save(CacheItemInterface $item): bool
     {
+        return true;
     }
 
     public function saveDeferred(CacheItemInterface $item): bool

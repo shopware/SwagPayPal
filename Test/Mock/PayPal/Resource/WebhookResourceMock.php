@@ -9,6 +9,7 @@
 namespace SwagPayPal\Test\Mock\PayPal\Resource;
 
 use Shopware\Core\Framework\Context;
+use SwagPayPal\PayPal\Api\CreateWebhooks;
 use SwagPayPal\PayPal\Resource\WebhookResource;
 use SwagPayPal\Service\WebhookService;
 use SwagPayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
@@ -23,7 +24,7 @@ class WebhookResourceMock extends WebhookResource
 
     public const THROW_WEBHOOK_ALREADY_EXISTS = 'webhookAlreadyExists';
 
-    public function createWebhook(string $webhookUrl, array $webhookEvents, Context $context): string
+    public function createWebhook(string $webhookUrl, CreateWebhooks $createWebhooks, Context $context): string
     {
         if ($context->hasExtension(self::THROW_WEBHOOK_ALREADY_EXISTS)) {
             throw new WebhookAlreadyExistsException('');

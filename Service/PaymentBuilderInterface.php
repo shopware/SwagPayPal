@@ -10,7 +10,7 @@ namespace SwagPayPal\Service;
 
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Struct\Payment;
+use SwagPayPal\PayPal\Api\Payment;
 
 interface PaymentBuilderInterface
 {

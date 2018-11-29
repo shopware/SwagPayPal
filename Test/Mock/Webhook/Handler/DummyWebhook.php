@@ -9,7 +9,7 @@
 namespace SwagPayPal\Test\Mock\Webhook\Handler;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Struct\Webhook;
+use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Webhook\WebhookHandler;
 

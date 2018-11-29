@@ -10,6 +10,7 @@ namespace SwagPayPal\Test\Helper;
 
 final class ConstantsForTesting
 {
+    // Constants for the repo mocks
     public const REPO_SEARCH_RESULT_TOTAL_WITH_RESULTS = 1;
 
     public const REPO_SEARCH_RESULT_TOTAL_WITHOUT_RESULTS = 0;

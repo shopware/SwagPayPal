@@ -12,9 +12,9 @@ use DateInterval;
 use DateTime;
 use Psr\Cache\CacheItemPoolInterface;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Client\TokenClient;
-use SwagPayPal\PayPal\Struct\OAuthCredentials;
-use SwagPayPal\PayPal\Struct\Token;
+use SwagPayPal\PayPal\Api\OAuthCredentials;
+use SwagPayPal\PayPal\Api\Token;
+use SwagPayPal\PayPal\Client\TokenClientFactory;
 
 class TokenResource
 {
@@ -25,35 +25,39 @@ class TokenResource
      */
     private $cache;
 
-    public function __construct(CacheItemPoolInterface $cache)
+    /**
+     * @var TokenClientFactory
+     */
+    private $tokenClientFactory;
+
+    public function __construct(CacheItemPoolInterface $cache, TokenClientFactory $tokenClientFactory)
     {
         $this->cache = $cache;
+        $this->tokenClientFactory = $tokenClientFactory;
     }
 
     public function getToken(OAuthCredentials $credentials, Context $context, string $url): Token
     {
         $token = $this->getTokenFromCache($context);
         if ($token === null || !$this->isTokenValid($token)) {
-            $tokenClient = new TokenClient($credentials, $url);
+            $tokenClient = $this->tokenClientFactory->createTokenClient($credentials, $url);
 
-            $token = Token::fromArray($tokenClient->get());
+            $token = new Token();
+            $token->assign($tokenClient->get());
             $this->setToken($token, $context);
         }
 
         return $token;
     }
 
-    private function getTokenFromCache(Context $context)
+    private function getTokenFromCache(Context $context): ?Token
     {
         $token = $this->cache->getItem(self::CACHE_ID . $context->getSourceContext()->getSalesChannelId())->get();
         if ($token === null) {
-            return $token;
+            return null;
         }
 
-        return unserialize(
-            $this->cache->getItem(self::CACHE_ID . $context->getSourceContext()->getSalesChannelId())->get(),
-            [Token::class]
-        );
+        return unserialize($token, [Token::class, \DateTime::class]);
     }
 
     private function setToken(Token $token, Context $context): void

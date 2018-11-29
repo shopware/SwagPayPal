@@ -10,7 +10,7 @@ namespace SwagPayPal\Webhook\Handler;
 
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Struct\Webhook;
+use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use SwagPayPal\Webhook\WebhookEventTypes;
 

@@ -1,0 +1,34 @@
+<?php declare(strict_types=1);
+/**
+ * (c) shopware AG <info@shopware.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace SwagPayPal\PayPal\Api\Webhook\Resource;
+
+use SwagPayPal\PayPal\Api\PayPalStruct;
+
+class Amount extends PayPalStruct
+{
+    /**
+     * @var string
+     */
+    private $total;
+
+    /**
+     * @var string
+     */
+    private $currency;
+
+    protected function setTotal(string $total): void
+    {
+        $this->total = $total;
+    }
+
+    protected function setCurrency(string $currency): void
+    {
+        $this->currency = $currency;
+    }
+}

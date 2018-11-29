@@ -9,11 +9,10 @@
 namespace SwagPayPal\PayPal\Resource;
 
 use Shopware\Core\Framework\Context;
+use SwagPayPal\PayPal\Api\Payment;
+use SwagPayPal\PayPal\Api\Payment\Payer\PayerInfo;
 use SwagPayPal\PayPal\Client\PayPalClientFactory;
-use SwagPayPal\PayPal\Component\Patch\PatchInterface;
 use SwagPayPal\PayPal\RequestUri;
-use SwagPayPal\PayPal\Struct\Payment;
-use Symfony\Component\HttpFoundation\Request;
 
 class PaymentResource
 {
@@ -29,55 +28,41 @@ class PaymentResource
 
     public function create(Payment $payment, Context $context): Payment
     {
-        $response = $this->payPalClientFactory->createPaymentClient($context)->sendRequest(
-            Request::METHOD_POST,
+        $response = $this->payPalClientFactory->createPaymentClient($context)->sendPostRequest(
             RequestUri::PAYMENT_RESOURCE,
-            $payment->toArray()
+            $payment
         );
 
-        return Payment::fromArray($response);
+        $paymentStruct = new Payment();
+        $paymentStruct->assign($response);
+
+        return $paymentStruct;
     }
 
     public function execute(string $payerId, string $paymentId, Context $context): Payment
     {
-        $requestData = ['payer_id' => $payerId];
-        $response = $this->payPalClientFactory->createPaymentClient($context)->sendRequest(
-            Request::METHOD_POST,
+        $payerInfo = new PayerInfo();
+        $payerInfo->setPayerId($payerId);
+        $response = $this->payPalClientFactory->createPaymentClient($context)->sendPostRequest(
             RequestUri::PAYMENT_RESOURCE . '/' . $paymentId . '/execute',
-            $requestData
+            $payerInfo
         );
 
-        return Payment::fromArray($response);
+        $paymentStruct = new Payment();
+        $paymentStruct->assign($response);
+
+        return $paymentStruct;
     }
 
     public function get(string $paymentId, Context $context): Payment
     {
-        $response = $this->payPalClientFactory->createPaymentClient($context)->sendRequest(
-            Request::METHOD_GET,
+        $response = $this->payPalClientFactory->createPaymentClient($context)->sendGetRequest(
             RequestUri::PAYMENT_RESOURCE . '/' . $paymentId
         );
 
-        return Payment::fromArray($response);
-    }
+        $paymentStruct = new Payment();
+        $paymentStruct->assign($response);
 
-    /**
-     * @param PatchInterface[] $patches
-     */
-    public function patch(string $paymentId, array $patches, Context $context): void
-    {
-        $requestData = [];
-        foreach ($patches as $patch) {
-            $requestData[] = [
-                'op' => $patch->getOperation(),
-                'path' => $patch->getPath(),
-                'value' => $patch->getValue(),
-            ];
-        }
-
-        $this->payPalClientFactory->createPaymentClient($context)->sendRequest(
-            Request::METHOD_PATCH,
-            RequestUri::PAYMENT_RESOURCE . '/' . $paymentId,
-            $requestData
-        );
+        return $paymentStruct;
     }
 }

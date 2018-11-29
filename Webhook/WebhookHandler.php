@@ -9,7 +9,7 @@
 namespace SwagPayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Struct\Webhook;
+use SwagPayPal\PayPal\Api\Webhook;
 
 interface WebhookHandler
 {

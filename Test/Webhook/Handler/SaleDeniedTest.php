@@ -11,7 +11,7 @@ namespace SwagPayPal\Test\Webhook\Handler;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Struct\Webhook;
+use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Webhook\Handler\SaleDenied;
 use SwagPayPal\Webhook\WebhookEventTypes;
@@ -42,7 +42,7 @@ class SaleDeniedTest extends TestCase
     public function testInvoke(): void
     {
         $webhook = new Webhook();
-        $webhook->setResource(['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]);
+        $webhook->assign(['resource' => ['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]]);
         $context = Context::createDefaultContext();
         $this->webhookHandler->invoke($webhook, $context);
 

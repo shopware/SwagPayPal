@@ -10,14 +10,13 @@ namespace SwagPayPal\PayPal\Client;
 
 use GuzzleHttp\Client;
 use Shopware\Core\Framework\Context;
+use SwagPayPal\PayPal\Api\OAuthCredentials;
+use SwagPayPal\PayPal\Api\PayPalStruct;
 use SwagPayPal\PayPal\BaseURL;
 use SwagPayPal\PayPal\Client\Exception\PayPalSettingsInvalidException;
-use SwagPayPal\PayPal\Client\Exception\UnsupportedHttpMethodException;
 use SwagPayPal\PayPal\PartnerAttributionId;
 use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\PayPal\Struct\OAuthCredentials;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
-use Symfony\Component\HttpFoundation\Request;
 
 class PayPalClient
 {
@@ -71,50 +70,37 @@ class PayPalClient
         ]);
     }
 
-    /**
-     * Sends a request and returns the response.
-     * The type can be obtained from RequestType.php
-     *
-     * @throws UnsupportedHttpMethodException
-     */
-    public function sendRequest(string $method, string $resourceUri, array $data = []): array
+    public function sendPostRequest(string $resourceUri, PayPalStruct $data): array
     {
-        $options = [];
-        if (!empty($data)) {
-            $options['headers'] = ['content-type' => 'application/json'];
-            $options['json'] = $data;
-        }
+        $options = [
+            'headers' => ['content-type' => 'application/json'],
+            'json' => $data,
+        ];
 
-        switch ($method) {
-            case Request::METHOD_POST:
-                $response = $this->client->post($resourceUri, $options)->getBody()->getContents();
-                break;
+        $response = $this->client->post($resourceUri, $options)->getBody()->getContents();
 
-            case Request::METHOD_GET:
-                $response = $this->client->get($resourceUri, $options)->getBody()->getContents();
-                break;
+        return $this->decodeJsonResponse($response);
+    }
 
-            case Request::METHOD_PATCH:
-                $response = $this->client->patch($resourceUri, $options)->getBody()->getContents();
-                break;
+    public function sendGetRequest(string $resourceUri): array
+    {
+        $response = $this->client->get($resourceUri)->getBody()->getContents();
 
-            case Request::METHOD_PUT:
-                $response = $this->client->put($resourceUri, $options)->getBody()->getContents();
-                break;
+        return $this->decodeJsonResponse($response);
+    }
 
-            case Request::METHOD_HEAD:
-                $response = $this->client->head($resourceUri, $options)->getBody()->getContents();
-                break;
+    /**
+     * @param PayPalStruct[] $data
+     */
+    public function sendPatchRequest(string $resourceUri, array $data): array
+    {
+        $options = [
+            'headers' => ['content-type' => 'application/json'],
+            'json' => $data,
+        ];
+        $response = $this->client->patch($resourceUri, $options)->getBody()->getContents();
 
-            case Request::METHOD_DELETE:
-                $response = $this->client->delete($resourceUri, $options)->getBody()->getContents();
-                break;
-
-            default:
-                throw new UnsupportedHttpMethodException($method);
-        }
-
-        return json_decode($response, true);
+        return $this->decodeJsonResponse($response);
     }
 
     /**
@@ -126,5 +112,10 @@ class PayPalClient
         $token = $this->tokenResource->getToken($credentials, $context, $url);
 
         return $token->getTokenType() . ' ' . $token->getAccessToken();
+    }
+
+    private function decodeJsonResponse(string $response): array
+    {
+        return json_decode($response, true);
     }
 }

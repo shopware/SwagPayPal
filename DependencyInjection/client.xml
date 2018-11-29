@@ -9,5 +9,7 @@
             <argument id="SwagPayPal\PayPal\Resource\TokenResource" type="service"/>
             <argument id="swag_paypal_setting_general.repository" type="service"/>
         </service>
+
+        <service id="SwagPayPal\PayPal\Client\TokenClientFactory" class="SwagPayPal\PayPal\Client\TokenClientFactory"/>
     </services>
 </container>

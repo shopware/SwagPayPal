@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Exception\ResourceNotFoundException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use SwagPayPal\PayPal\Struct\Webhook;
+use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionStateRepoMock;
 use SwagPayPal\Webhook\Handler\SaleRefunded;
@@ -44,7 +44,7 @@ class SaleRefundedTest extends TestCase
     public function testInvoke(): void
     {
         $webhook = new Webhook();
-        $webhook->setResource(['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]);
+        $webhook->assign(['resource' => ['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]]);
         $context = Context::createDefaultContext();
         $this->webhookHandler->invoke($webhook, $context);
 
@@ -57,7 +57,7 @@ class SaleRefundedTest extends TestCase
     public function testInvokeTransactionStateNotFound(): void
     {
         $webhook = new Webhook();
-        $webhook->setResource(['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]);
+        $webhook->assign(['resource' => ['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]]);
         $context = Context::createDefaultContext();
         $context->addExtension(OrderTransactionStateRepoMock::NO_TRANSACTION_STATE_RESULT, new Entity());
 

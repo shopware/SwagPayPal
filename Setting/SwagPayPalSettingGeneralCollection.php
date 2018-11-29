@@ -21,4 +21,9 @@ class SwagPayPalSettingGeneralCollection extends EntityCollection
     {
         return parent::first();
     }
+
+    protected function getExpectedClass(): string
+    {
+        return SwagPayPalSettingGeneralStruct::class;
+    }
 }
