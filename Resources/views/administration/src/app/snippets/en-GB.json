@@ -7,6 +7,7 @@
         },
         "settingForm": {
             "save": "Save",
+            "test": "Test API credentials",
             "cardTitle": "API credentials",
             "clientId": {
                 "label": "Client ID"
@@ -16,11 +17,15 @@
             },
             "sandbox": {
                 "label": "Sandbox mode?",
-                "helpText": "During the testing period of Shopware Playground, only the sandbox mode is supported."
+                "helpText": "Activate this option to use the PayPal sandbox."
             },
             "titleSaveSuccess": "PayPal settings",
+            "titleTestSuccess": "API credentials",
+            "titleTestError": "API credentials error",
             "titleSaveError": "PayPal Einstellungen Error",
             "messageSaveSuccess": "The PayPal settings have been saved successfully.",
+            "messageTestSuccess": "The API credentials have been successfully validated.",
+            "messageTestError": "The API credentials could not been validated.",
             "messageWebhookCreated": "The webhook has been successfully registered.",
             "messageWebhookUpdated": "The webhook has been successfully updated.",
             "messageWebhookError": "The webhook could not be saved. Following errors occurred:"

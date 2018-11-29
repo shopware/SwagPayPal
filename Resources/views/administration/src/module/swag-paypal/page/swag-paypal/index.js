@@ -8,11 +8,12 @@ Component.register('swag-paypal', {
         Mixin.getByName('notification')
     ],
 
-    inject: ['swagPayPalApiService'],
+    inject: ['swagPayPalApiService', 'swagPayPalValidateApiService'],
 
     data() {
         return {
-            setting: {}
+            setting: {},
+            isLoading: true
         };
     },
 
@@ -23,24 +24,24 @@ Component.register('swag-paypal', {
     computed: {
         settingStore() {
             return State.getStore('swag_paypal_setting_general');
+        },
+        clientCredentialsFilled() {
+            return !this.setting.clientId || !this.setting.clientSecret;
         }
     },
 
     methods: {
         createdComponent() {
-            this.isLoading = true;
             this.settingStore.getList({
                 offset: 0,
                 limit: 1
             }).then((response) => {
                 if (response.items.length > 0) {
                     this.setting = response.items[0];
-                    this.isLoading = false;
                 } else {
                     this.setting = this.settingStore.create();
-                    this.setting.sandbox = true;
-                    this.isLoading = false;
                 }
+                this.isLoading = false;
             });
         },
 
@@ -51,8 +52,6 @@ Component.register('swag-paypal', {
                     title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
                     message: this.$tc('swag-paypal.settingForm.messageSaveSuccess')
                 });
-                this.isLoading = false;
-            }).then(() => {
                 this.swagPayPalApiService.registerWebhook().then((response) => {
                     const result = response.result;
 
@@ -75,6 +74,7 @@ Component.register('swag-paypal', {
                             message: this.$tc('swag-paypal.settingForm.messageWebhookUpdated')
                         });
                     }
+                    this.isLoading = false;
                 }).catch((errorResponse) => {
                     if (errorResponse.response.data && errorResponse.response.data.errors) {
                         let message = `${this.$tc('swag-paypal.settingForm.messageWebhookError')}<br><br><ul>`;
@@ -87,7 +87,40 @@ Component.register('swag-paypal', {
                             message: message
                         });
                     }
+                    this.isLoading = false;
                 });
+            });
+        },
+
+        onTest() {
+            this.isLoading = true;
+            this.swagPayPalValidateApiService.validateApiCredentials(
+                this.setting.clientId,
+                this.setting.clientSecret,
+                this.setting.sandbox
+            ).then((response) => {
+                const credentialsValid = response.credentialsValid;
+
+                if (credentialsValid) {
+                    this.createNotificationSuccess({
+                        title: this.$tc('swag-paypal.settingForm.titleTestSuccess'),
+                        message: this.$tc('swag-paypal.settingForm.messageTestSuccess')
+                    });
+                    this.isLoading = false;
+                }
+            }).catch((errorResponse) => {
+                if (errorResponse.response.data && errorResponse.response.data.errors) {
+                    let message = `${this.$tc('swag-paypal.settingForm.messageTestError')}<br><br><ul>`;
+                    errorResponse.response.data.errors.forEach((error) => {
+                        message = `${message}<li>${error.detail}</li>`;
+                    });
+                    message += '</li>';
+                    this.createNotificationError({
+                        title: this.$tc('swag-paypal.settingForm.titleTestError'),
+                        message: message
+                    });
+                    this.isLoading = false;
+                }
             });
         }
     }

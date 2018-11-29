@@ -26,5 +26,10 @@
             <argument type="service" id="router.default"/>
             <argument type="service" id="SwagPayPal\Webhook\WebhookRegistry"/>
         </service>
+
+        <service id="SwagPayPal\Service\ApiCredentialTestService"
+                class="SwagPayPal\Service\ApiCredentialTestService">
+            <argument id="SwagPayPal\PayPal\Resource\TokenResource" type="service"/>
+        </service>
     </services>
 </container>

@@ -14,4 +14,8 @@ final class ConstantsForTesting
     public const REPO_SEARCH_RESULT_TOTAL_WITH_RESULTS = 1;
 
     public const REPO_SEARCH_RESULT_TOTAL_WITHOUT_RESULTS = 0;
+
+    public const VALID_CLIENT_ID = 'valid-id';
+
+    public const VALID_CLIENT_SECRET = 'valid-secret';
 }

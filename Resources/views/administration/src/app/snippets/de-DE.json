@@ -7,6 +7,7 @@
         },
         "settingForm": {
             "save": "Speichern",
+            "test": "API Zugangsdaten testen",
             "cardTitle": "API Zugangsdaten",
             "clientId": {
                 "label": "Client ID"
@@ -16,11 +17,15 @@
             },
             "sandbox": {
                 "label": "Sandbox Modus?",
-                "helpText": "Während der Testphase von Shopware Playground wird nur der Sandbox Modus unterstützt."
+                "helpText": "Aktivieren Sie diese Option um den Sanbox Modus zu verwenden."
             },
             "titleSaveSuccess": "PayPal Einstellungen",
+            "titleTestSuccess": "API Zugangsdaten",
+            "titleTestError": "API Zugangsdaten Fehler",
             "titleSaveError": "PayPal Einstellungen Fehler",
             "messageSaveSuccess": "Die PayPal Einstellungen wurden erfolgreich gespeichert.",
+            "messageTestSuccess": "Die API Zugangsdaten wurden erfolgreich validiert.",
+            "messageTestError": "Die API Zugangsdaten konnten nicht validiert werden.",
             "messageWebhookCreated": "Der Webhook wurde erfolgreich registriert.",
             "messageWebhookUpdated": "Der Webhook wurde erfolgreich aktualisiert.",
             "messageWebhookError": "Der Webhook konnte nicht gespeichert werden. Folgende Fehler sind aufgetreten:"
