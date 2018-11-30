@@ -6,10 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\Setting;
+namespace SwagPayPal\Test\Mock\Setting\Service;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\Setting\SettingsProviderInterface;
+use SwagPayPal\Setting\Service\SettingsProviderInterface;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
 
 class SettingsProviderMock implements SettingsProviderInterface

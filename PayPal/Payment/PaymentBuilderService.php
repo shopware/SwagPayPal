@@ -23,7 +23,7 @@ use SwagPayPal\PayPal\Api\Payment\RedirectUrls;
 use SwagPayPal\PayPal\Api\Payment\Transaction;
 use SwagPayPal\PayPal\Api\Payment\Transaction\Amount;
 use SwagPayPal\PayPal\Api\Payment\Transaction\Amount\Details;
-use SwagPayPal\Setting\SettingsProviderInterface;
+use SwagPayPal\Setting\Service\SettingsProviderInterface;
 
 class PaymentBuilderService implements PaymentBuilderInterface
 {

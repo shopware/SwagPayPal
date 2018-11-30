@@ -12,7 +12,7 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Webhook;
-use SwagPayPal\Setting\SettingsProviderInterface;
+use SwagPayPal\Setting\Service\SettingsProviderInterface;
 use SwagPayPal\Webhook\Exception\WebhookException;
 use SwagPayPal\Webhook\WebhookServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

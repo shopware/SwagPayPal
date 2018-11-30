@@ -10,7 +10,7 @@ namespace SwagPayPal\PayPal\Client;
 
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Setting\SettingsProviderInterface;
+use SwagPayPal\Setting\Service\SettingsProviderInterface;
 
 class PayPalClientFactory
 {

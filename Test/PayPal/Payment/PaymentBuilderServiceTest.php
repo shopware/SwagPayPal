@@ -15,7 +15,7 @@ use SwagPayPal\PayPal\Payment\PaymentBuilderService;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
 use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
-use SwagPayPal\Test\Mock\Setting\SettingsProviderMock;
+use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 
 class PaymentBuilderServiceTest extends TestCase
 {
