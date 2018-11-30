@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SettingsControllerTest extends TestCase
 {
-    public function testValidateApi_withValidData(): void
+    public function testValidateApiWithValidData(): void
     {
         $controller = $this->createApiValidationController();
 
@@ -35,7 +35,7 @@ class SettingsControllerTest extends TestCase
         self::assertSame(['credentialsValid' => true], $result);
     }
 
-    public function testValidateApi_withInvalidData(): void
+    public function testValidateApiWithInvalidData(): void
     {
         $controller = $this->createApiValidationController();
 

@@ -14,6 +14,7 @@ use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Setting\Service\SettingsProviderInterface;
 use SwagPayPal\Webhook\Exception\WebhookException;
+use SwagPayPal\Webhook\WebhookService;
 use SwagPayPal\Webhook\WebhookServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -80,7 +81,7 @@ class WebhookController extends Controller
      */
     private function getShopwareToken(Request $request): string
     {
-        $token = $request->query->getAlnum('sw-token');
+        $token = $request->query->getAlnum(WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME);
         if ($token === '') {
             throw new BadRequestHttpException('Shopware token is invalid');
         }
