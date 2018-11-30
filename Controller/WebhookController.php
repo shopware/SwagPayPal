@@ -11,12 +11,10 @@ namespace SwagPayPal\Controller;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use SwagPayPal\PayPal\Api\Webhook;
-use SwagPayPal\Service\WebhookService;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
+use SwagPayPal\Setting\SettingsProviderInterface;
 use SwagPayPal\Webhook\Exception\WebhookException;
+use SwagPayPal\Webhook\WebhookServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,27 +30,27 @@ class WebhookController extends Controller
     private $logger;
 
     /**
-     * @var WebhookService
+     * @var WebhookServiceInterface
      */
     private $webhookService;
 
     /**
-     * @var RepositoryInterface
+     * @var SettingsProviderInterface
      */
-    private $settingGeneralRepo;
+    private $settingsProvider;
 
     public function __construct(
         LoggerInterface $logger,
-        WebhookService $webhookService,
-        RepositoryInterface $settingGeneralRepo
+        WebhookServiceInterface $webhookService,
+        SettingsProviderInterface $settingsProvider
     ) {
         $this->logger = $logger;
         $this->webhookService = $webhookService;
-        $this->settingGeneralRepo = $settingGeneralRepo;
+        $this->settingsProvider = $settingsProvider;
     }
 
     /**
-     * @Route("/api/v{version}/paypal/webhook/register", name="paypal.webhook.register", methods={"POST"})
+     * @Route("/api/v{version}/_action/paypal/webhook/register", name="api.action.paypal.webhook.register", methods={"POST"})
      */
     public function registerWebhook(Context $context): JsonResponse
     {
@@ -95,9 +93,7 @@ class WebhookController extends Controller
      */
     private function validateShopwareToken(string $token, Context $context): void
     {
-        /** @var SwagPayPalSettingGeneralCollection $settingsCollection */
-        $settingsCollection = $this->settingGeneralRepo->search(new Criteria(), $context)->getEntities();
-        $settings = $settingsCollection->first();
+        $settings = $this->settingsProvider->getSettings($context);
         if ($token !== $settings->getWebhookExecuteToken()) {
             throw new BadRequestHttpException('Shopware token is invalid');
         }

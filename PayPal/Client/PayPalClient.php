@@ -54,18 +54,14 @@ class PayPalClient
             throw new PayPalSettingsInvalidException('clientSecret');
         }
 
-        //Create authentication
-        $credentials = new OAuthCredentials();
-        $credentials->setRestId($clientId);
-        $credentials->setRestSecret($clientSecret);
-
-        $authHeader = $this->createAuthentication($credentials, $context, $url);
+        $credentials = $this->createCredentialsObject($clientId, $clientSecret);
+        $authorizationHeader = $this->createAuthorizationHeaderValue($credentials, $context, $url);
 
         $this->client = new Client([
             'base_uri' => $url,
             'headers' => [
                 'PayPal-Partner-Attribution-Id' => $partnerAttributionId,
-                'Authorization' => $authHeader,
+                'Authorization' => $authorizationHeader,
             ],
         ]);
     }
@@ -76,7 +72,6 @@ class PayPalClient
             'headers' => ['content-type' => 'application/json'],
             'json' => $data,
         ];
-
         $response = $this->client->post($resourceUri, $options)->getBody()->getContents();
 
         return $this->decodeJsonResponse($response);
@@ -103,11 +98,16 @@ class PayPalClient
         return $this->decodeJsonResponse($response);
     }
 
-    /**
-     * Creates the authentication header for the PayPal API.
-     * If there is no cached token yet, it will be generated on the fly.
-     */
-    private function createAuthentication(OAuthCredentials $credentials, Context $context, string $url): string
+    private function createCredentialsObject(string $clientId, string $clientSecret): OAuthCredentials
+    {
+        $credentials = new OAuthCredentials();
+        $credentials->setRestId($clientId);
+        $credentials->setRestSecret($clientSecret);
+
+        return $credentials;
+    }
+
+    private function createAuthorizationHeaderValue(OAuthCredentials $credentials, Context $context, string $url): string
     {
         $token = $this->tokenResource->getToken($credentials, $context, $url);
 

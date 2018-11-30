@@ -6,20 +6,20 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Service;
+namespace SwagPayPal\Test\Setting;
 
 use PHPUnit\Framework\TestCase;
-use SwagPayPal\Service\ApiCredentialTestService;
+use SwagPayPal\Setting\ApiCredentialTestService;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Mock\CacheMock;
 use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 
-class ApiServiceTest extends TestCase
+class ApiCredentialTestServiceTest extends TestCase
 {
     public function testValidApiCredentials(): void
     {
-        $apiService = $this->createApiService();
+        $apiService = $this->createApiCredentialTestService();
         $clientId = ConstantsForTesting::VALID_CLIENT_ID;
         $clientSecret = ConstantsForTesting::VALID_CLIENT_SECRET;
         $sandboxActive = true;
@@ -31,7 +31,7 @@ class ApiServiceTest extends TestCase
 
     public function testInvalidApiCredentials(): void
     {
-        $apiService = $this->createApiService();
+        $apiService = $this->createApiCredentialTestService();
         $clientId = 'invalid-id';
         $clientSecret = 'invalid-secret';
         $sandboxActive = false;
@@ -41,7 +41,7 @@ class ApiServiceTest extends TestCase
         self::assertFalse($apiCredentialsValid);
     }
 
-    private function createApiService(): ApiCredentialTestService
+    private function createApiCredentialTestService(): ApiCredentialTestService
     {
         return new ApiCredentialTestService(new TokenResourceMock(new CacheMock(), new TokenClientFactoryMock()));
     }

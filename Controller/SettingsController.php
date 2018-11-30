@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Controller;
 
-use SwagPayPal\Service\ApiCredentialTestService;
+use SwagPayPal\Setting\ApiCredentialTestServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,15 +16,18 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SettingsController extends Controller
 {
+    /**
+     * @var ApiCredentialTestServiceInterface
+     */
     private $apiCredentialTestService;
 
-    public function __construct(ApiCredentialTestService $apiService)
+    public function __construct(ApiCredentialTestServiceInterface $apiService)
     {
         $this->apiCredentialTestService = $apiService;
     }
 
     /**
-     * @Route("/api/v{version}/paypal/validateApiCredentials", name="validate.paypal.api.credentials", methods={"POST"})
+     * @Route("/api/v{version}/_action/paypal/validate-api-credentials", name="api.action.paypal.validate.api.credentials", methods={"POST"})
      */
     public function validateApiCredentials(Request $request): JsonResponse
     {

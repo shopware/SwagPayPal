@@ -10,23 +10,23 @@ namespace SwagPayPal\Test\PayPal\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use SwagPayPal\PayPal\Api\Payment;
+use SwagPayPal\PayPal\Payment\PaymentBuilderService;
 use SwagPayPal\PayPal\PaymentStatus;
 use SwagPayPal\PayPal\Resource\PaymentResource;
-use SwagPayPal\Service\PaymentBuilderService;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
 use SwagPayPal\Test\Mock\CacheMock;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreatePaymentResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
-use SwagPayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
+use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
+use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
+use SwagPayPal\Test\Mock\Setting\SettingsProviderMock;
 
 class PaymentResourceTest extends TestCase
 {
-    use IntegrationTestBehaviour,
-        PaymentTransactionTrait;
+    use PaymentTransactionTrait;
 
     public function testCreate(): void
     {
@@ -34,9 +34,8 @@ class PaymentResourceTest extends TestCase
 
         $context = Context::createDefaultContext();
         $paymentTransaction = $this->createPaymentTransactionStruct();
-        /** @var PaymentBuilderService $paymentBuilderService */
-        $paymentBuilderService = $this->getContainer()->get(PaymentBuilderService::class);
-        $payment = $paymentBuilderService->getPayment($paymentTransaction, $context);
+
+        $payment = $this->createPaymentBuilderService()->getPayment($paymentTransaction, $context);
 
         $createdPayment = $paymentResource->create($payment, $context);
 
@@ -72,8 +71,19 @@ class PaymentResourceTest extends TestCase
                     new CacheMock(),
                     new TokenClientFactoryMock()
                 ),
-                new SwagPayPalSettingGeneralRepoMock()
+                new SettingsProviderMock()
             )
         );
+    }
+
+    private function createPaymentBuilderService(): PaymentBuilderService
+    {
+        $paymentBuilderService = new PaymentBuilderService(
+            new LanguageRepoMock(),
+            new SalesChannelRepoMock(),
+            new SettingsProviderMock()
+        );
+
+        return $paymentBuilderService;
     }
 }

@@ -14,9 +14,9 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
+use SwagPayPal\PayPal\Payment\PaymentBuilderInterface;
 use SwagPayPal\PayPal\PaymentStatus;
 use SwagPayPal\PayPal\Resource\PaymentResource;
-use SwagPayPal\Service\PaymentBuilderInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 

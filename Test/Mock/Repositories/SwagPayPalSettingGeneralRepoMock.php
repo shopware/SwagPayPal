@@ -18,21 +18,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Event\NestedEventCollection;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
-use SwagPayPal\Test\Helper\ConstantsForTesting;
 
 class SwagPayPalSettingGeneralRepoMock implements RepositoryInterface
 {
-    public const PAYPAL_SETTING_ID = 'testSettingsId';
-
-    public const PAYPAL_SETTING_WITHOUT_TOKEN = 'settingsWithoutToken';
-
-    public const PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID = 'settingsWithoutTokenAndId';
-
-    public const ALREADY_EXISTING_WEBHOOK_ID = 'alreadyExistingTestWebhookId';
-
-    public const ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN = 'testWebhookExecuteToken';
-
     private $data = [];
 
     public function aggregate(Criteria $criteria, Context $context): AggregatorResult
@@ -45,15 +33,6 @@ class SwagPayPalSettingGeneralRepoMock implements RepositoryInterface
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-        if ($context->hasExtension(self::PAYPAL_SETTING_WITHOUT_TOKEN)) {
-            return $this->createEntitySearchResultWithoutToken($criteria, $context);
-        }
-
-        if ($context->hasExtension(self::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID)) {
-            return $this->createEntitySearchResultWithoutTokenAndId($criteria, $context);
-        }
-
-        return $this->createEntitySearchResult($criteria, $context);
     }
 
     public function read(ReadCriteria $criteria, Context $context): EntityCollection
@@ -90,68 +69,5 @@ class SwagPayPalSettingGeneralRepoMock implements RepositoryInterface
     public function getData(): array
     {
         return $this->data[0];
-    }
-
-    private function createEntitySearchResult(Criteria $criteria, Context $context): EntitySearchResult
-    {
-        return new EntitySearchResult(
-            ConstantsForTesting::REPO_SEARCH_RESULT_TOTAL_WITH_RESULTS,
-            $this->createEntityCollectionWithTokenAndId(),
-            null,
-            $criteria,
-            $context
-        );
-    }
-
-    private function createEntityCollectionWithTokenAndId(): EntityCollection
-    {
-        $settingGeneral = $this->createSettingGeneral();
-        $settingGeneral->setWebhookExecuteToken(self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
-        $settingGeneral->setWebhookId(self::ALREADY_EXISTING_WEBHOOK_ID);
-
-        return new EntityCollection([$settingGeneral]);
-    }
-
-    private function createSettingGeneral(): SwagPayPalSettingGeneralStruct
-    {
-        $settingGeneral = new SwagPayPalSettingGeneralStruct();
-        $settingGeneral->setId(self::PAYPAL_SETTING_ID);
-
-        return $settingGeneral;
-    }
-
-    private function createEntitySearchResultWithoutToken(Criteria $criteria, Context $context): EntitySearchResult
-    {
-        return new EntitySearchResult(
-            ConstantsForTesting::REPO_SEARCH_RESULT_TOTAL_WITH_RESULTS,
-            $this->createEntityCollectionWithoutToken(),
-            null,
-            $criteria,
-            $context
-        );
-    }
-
-    private function createEntityCollectionWithoutToken(): EntityCollection
-    {
-        $settingGeneral = $this->createSettingGeneral();
-        $settingGeneral->setWebhookId(self::ALREADY_EXISTING_WEBHOOK_ID);
-
-        return new EntityCollection([$settingGeneral]);
-    }
-
-    private function createEntitySearchResultWithoutTokenAndId(Criteria $criteria, Context $context): EntitySearchResult
-    {
-        return new EntitySearchResult(
-            ConstantsForTesting::REPO_SEARCH_RESULT_TOTAL_WITH_RESULTS,
-            $this->createEntityCollectionWithoutTokenAndId(),
-            null,
-            $criteria,
-            $context
-        );
-    }
-
-    private function createEntityCollectionWithoutTokenAndId(): EntityCollection
-    {
-        return new EntityCollection([$this->createSettingGeneral()]);
     }
 }

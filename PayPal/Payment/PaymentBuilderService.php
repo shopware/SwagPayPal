@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Service;
+namespace SwagPayPal\PayPal\Payment;
 
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
@@ -23,6 +23,7 @@ use SwagPayPal\PayPal\Api\Payment\RedirectUrls;
 use SwagPayPal\PayPal\Api\Payment\Transaction;
 use SwagPayPal\PayPal\Api\Payment\Transaction\Amount;
 use SwagPayPal\PayPal\Api\Payment\Transaction\Amount\Details;
+use SwagPayPal\Setting\SettingsProviderInterface;
 
 class PaymentBuilderService implements PaymentBuilderInterface
 {
@@ -36,10 +37,19 @@ class PaymentBuilderService implements PaymentBuilderInterface
      */
     private $salesChannelRepo;
 
-    public function __construct(RepositoryInterface $languageRepo, RepositoryInterface $salesChannelRepo)
-    {
+    /**
+     * @var SettingsProviderInterface
+     */
+    private $settingsProvider;
+
+    public function __construct(
+        RepositoryInterface $languageRepo,
+        RepositoryInterface $salesChannelRepo,
+        SettingsProviderInterface $settingsProvider
+    ) {
         $this->languageRepo = $languageRepo;
         $this->salesChannelRepo = $salesChannelRepo;
+        $this->settingsProvider = $settingsProvider;
     }
 
     /**
@@ -89,10 +99,16 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $amountDetails;
     }
 
-    /**
-     * @return ApplicationContext
-     */
     private function getApplicationContext(Context $context): ApplicationContext
+    {
+        $applicationContext = new ApplicationContext();
+        $applicationContext->setLocale($this->getLocaleCode($context));
+        $applicationContext->setBrandName($this->getBrandName($context));
+
+        return $applicationContext;
+    }
+
+    private function getLocaleCode(Context $context): string
     {
         $languageId = $context->getLanguageId();
         /** @var LanguageCollection $languageCollection */
@@ -100,25 +116,33 @@ class PaymentBuilderService implements PaymentBuilderInterface
         /** @var LanguageStruct $language */
         $language = $languageCollection->get($languageId);
 
-        $applicationContext = new ApplicationContext();
-        $applicationContext->setLocale($language->getLocale()->getCode());
+        return $language->getLocale()->getCode();
+    }
 
-        $brandName = '';
+    private function getBrandName(Context $context): string
+    {
+        $brandName = $this->settingsProvider->getSettings($context)->getBrandName();
 
-        $salesChannelId = $context->getSourceContext()->getSalesChannelId();
-        if ($salesChannelId !== null) {
-            /** @var SalesChannelCollection $salesChannelCollection */
-            $salesChannelCollection = $this->salesChannelRepo->read(new ReadCriteria([$salesChannelId]), $context);
-            /** @var SalesChannelStruct $salesChannel */
-            $salesChannel = $salesChannelCollection->get($salesChannelId);
-            if ($salesChannel !== null) {
-                $brandName = $salesChannel->getName();
-            }
+        if (empty($brandName)) {
+            $brandName = $this->useSalesChannelNameAsBrandName($context);
         }
 
-        $applicationContext->setBrandName($brandName);
+        return $brandName;
+    }
 
-        return $applicationContext;
+    private function useSalesChannelNameAsBrandName(Context $context): string
+    {
+        $brandName = '';
+        $salesChannelId = $context->getSourceContext()->getSalesChannelId();
+        /** @var SalesChannelCollection $salesChannelCollection */
+        $salesChannelCollection = $this->salesChannelRepo->read(new ReadCriteria([$salesChannelId]), $context);
+        /** @var SalesChannelStruct $salesChannel */
+        $salesChannel = $salesChannelCollection->get($salesChannelId);
+        if ($salesChannel !== null) {
+            $brandName = $salesChannel->getName();
+        }
+
+        return $brandName;
     }
 
     private function formatPrice(float $price): string

@@ -8,7 +8,7 @@ Component.register('swag-paypal', {
         Mixin.getByName('notification')
     ],
 
-    inject: ['swagPayPalApiService', 'swagPayPalValidateApiService'],
+    inject: ['SwagPayPalWebhookRegisterService', 'SwagPayPalValidateApiCredentialsService'],
 
     data() {
         return {
@@ -52,7 +52,7 @@ Component.register('swag-paypal', {
                     title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
                     message: this.$tc('swag-paypal.settingForm.messageSaveSuccess')
                 });
-                this.swagPayPalApiService.registerWebhook().then((response) => {
+                this.SwagPayPalWebhookRegisterService.registerWebhook().then((response) => {
                     const result = response.result;
 
                     if (result === 'nothing') {
@@ -94,7 +94,7 @@ Component.register('swag-paypal', {
 
         onTest() {
             this.isLoading = true;
-            this.swagPayPalValidateApiService.validateApiCredentials(
+            this.SwagPayPalValidateApiCredentialsService.validateApiCredentials(
                 this.setting.clientId,
                 this.setting.clientSecret,
                 this.setting.sandbox

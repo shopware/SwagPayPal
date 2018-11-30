@@ -6,20 +6,19 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Client\Exception;
+namespace SwagPayPal\Setting\Exception;
 
 use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
-class PayPalInvalidApiCredentialsException extends ShopwareHttpException
+class PayPalSettingsNotFoundException extends ShopwareHttpException
 {
-    protected $code = 'SWAG-PAYPAL-INVALID-API-CREDENTIALS';
+    protected $code = 'SWAG-PAYPAL-SETTINGS-NOT-FOUND';
 
     public function __construct($code = 0, Throwable $previous = null)
     {
-        $message = 'Provided API credentials are invalid';
-        parent::__construct($message, $code, $previous);
+        parent::__construct('PayPal settings not found', $code, $previous);
     }
 
     public function getStatusCode(): int

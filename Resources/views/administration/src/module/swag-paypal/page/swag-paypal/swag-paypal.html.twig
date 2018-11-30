@@ -34,17 +34,19 @@
                         {% block swag_paypal_content_credentials_form %}
                             <div class="swag-paypal-form">
                                 <sw-container grid="100%">
-                                    {% block swag_paypal_content_credentials_form_client %}
+                                    {% block swag_paypal_content_credentials_form_clientId %}
                                         <sw-field type="text"
                                                   :label="$tc('swag-paypal.settingForm.clientId.label')"
-                                                  v-model="setting.clientId">
+                                                  v-model="setting.clientId"
+                                                  :helpText="$tc('swag-paypal.settingForm.clientId.helpText')">
                                         </sw-field>
                                     {% endblock %}
 
-                                    {% block swag_paypal_content_credentials_form_secret %}
+                                    {% block swag_paypal_content_credentials_form_clientSecret %}
                                         <sw-field type="text"
                                                   :label="$tc('swag-paypal.settingForm.clientSecret.label')"
-                                                  v-model="setting.clientSecret">
+                                                  v-model="setting.clientSecret"
+                                                  :helpText="$tc('swag-paypal.settingForm.clientSecret.helpText')">
                                         </sw-field>
                                     {% endblock %}
 
@@ -53,6 +55,15 @@
                                                   :label="$tc('swag-paypal.settingForm.sandbox.label')"
                                                   v-model="setting.sandbox"
                                                   :helpText="$tc('swag-paypal.settingForm.sandbox.helpText')">
+                                        </sw-field>
+                                    {% endblock %}
+
+                                    {% block swag_paypal_content_credentials_form_brandName %}
+                                        <sw-field type="text"
+                                                  :label="$tc('swag-paypal.settingForm.brandName.label')"
+                                                  v-model="setting.brandName"
+                                                  :helpText="$tc('swag-paypal.settingForm.brandName.helpText')"
+                                                  maxlength="127">
                                         </sw-field>
                                     {% endblock %}
                                 </sw-container>

@@ -24,7 +24,17 @@
         <service id="SwagPayPal\Controller\SettingsController"
                  class="SwagPayPal\Controller\SettingsController"
                  public="true">
-            <argument id="SwagPayPal\Service\ApiCredentialTestService" type="service"/>
+            <argument type="service" id="SwagPayPal\Setting\ApiCredentialTestService"/>
+        </service>
+
+        <service id="SwagPayPal\Setting\ApiCredentialTestService"
+                 class="SwagPayPal\Setting\ApiCredentialTestService">
+            <argument type="service" id="SwagPayPal\PayPal\Resource\TokenResource"/>
+        </service>
+
+        <service id="SwagPayPal\Setting\SettingsProvider"
+                 class="SwagPayPal\Setting\SettingsProvider">
+            <argument type="service" id="swag_paypal_setting_general.repository"/>
         </service>
     </services>
 </container>

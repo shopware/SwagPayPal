@@ -30,10 +30,6 @@ class TokenResourceMock extends TokenResource
 
     public function testApiCredentials(OAuthCredentials $credentials, string $url): bool
     {
-        if ('Basic ' . base64_encode(ConstantsForTesting::VALID_CLIENT_ID . ':' . ConstantsForTesting::VALID_CLIENT_SECRET) === (string) $credentials) {
-            return true;
-        }
-
-        return false;
+        return 'Basic ' . base64_encode(ConstantsForTesting::VALID_CLIENT_ID . ':' . ConstantsForTesting::VALID_CLIENT_SECRET) === (string) $credentials;
     }
 }

@@ -14,12 +14,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 class SwagPayPalSettingGeneralStruct extends Entity
 {
     /**
-     * @var string
+     * @var string|null
      */
     protected $clientId;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $clientSecret;
 
@@ -29,14 +29,19 @@ class SwagPayPalSettingGeneralStruct extends Entity
     protected $sandbox;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $webhookId;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $webhookExecuteToken;
+
+    /**
+     * @var string|null
+     */
+    protected $brandName;
 
     /**
      * @var DateTime
@@ -96,6 +101,16 @@ class SwagPayPalSettingGeneralStruct extends Entity
     public function setWebhookExecuteToken(string $webhookExecuteToken): void
     {
         $this->webhookExecuteToken = $webhookExecuteToken;
+    }
+
+    public function getBrandName(): ?string
+    {
+        return $this->brandName;
+    }
+
+    public function setBrandName(string $brandName): void
+    {
+        $this->brandName = $brandName;
     }
 
     public function getCreatedAt(): DateTime

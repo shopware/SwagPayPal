@@ -10,7 +10,7 @@ namespace SwagPayPal\Test\Controller;
 
 use PHPUnit\Framework\TestCase;
 use SwagPayPal\Controller\SettingsController;
-use SwagPayPal\Service\ApiCredentialTestService;
+use SwagPayPal\Setting\ApiCredentialTestService;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Mock\CacheMock;
 use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;

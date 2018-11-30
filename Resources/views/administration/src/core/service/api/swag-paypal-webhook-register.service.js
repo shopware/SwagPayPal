@@ -1,6 +1,6 @@
 import ApiService from 'src/core/service/api/api.service';
 
-class SwagPayPalApiService extends ApiService {
+class SwagPayPalWebhookRegisterService extends ApiService {
     constructor(httpClient, loginService, apiEndpoint = 'paypal') {
         super(httpClient, loginService, apiEndpoint);
     }
@@ -9,7 +9,7 @@ class SwagPayPalApiService extends ApiService {
         const headers = this.getBasicHeaders();
 
         return this.httpClient
-            .post(`${this.getApiBasePath()}/webhook/register`, {}, {
+            .post(`_action/${this.getApiBasePath()}/webhook/register`, {}, {
                 headers
             })
             .then((response) => {
@@ -18,4 +18,4 @@ class SwagPayPalApiService extends ApiService {
     }
 }
 
-export default SwagPayPalApiService;
+export default SwagPayPalWebhookRegisterService;

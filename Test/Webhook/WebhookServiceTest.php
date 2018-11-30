@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Service;
+namespace SwagPayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
@@ -14,7 +14,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\PayPal\Client\PayPalClientFactory;
 use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Service\WebhookService;
 use SwagPayPal\Test\Mock\CacheMock;
 use SwagPayPal\Test\Mock\DummyCollection;
 use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
@@ -22,8 +21,11 @@ use SwagPayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
 use SwagPayPal\Test\Mock\RouterMock;
+use SwagPayPal\Test\Mock\Setting\SettingsProviderMock;
 use SwagPayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use SwagPayPal\Webhook\WebhookRegistry;
+use SwagPayPal\Webhook\WebhookService;
+use SwagPayPal\Webhook\WebhookServiceInterface;
 
 class WebhookServiceTest extends TestCase
 {
@@ -59,7 +61,7 @@ class WebhookServiceTest extends TestCase
         $webhookService = $this->createWebhookService();
 
         $context = Context::createDefaultContext();
-        $context->addExtension(SwagPayPalSettingGeneralRepoMock::PAYPAL_SETTING_WITHOUT_TOKEN, new Entity());
+        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_TOKEN, new Entity());
 
         $result = $webhookService->registerWebhook($context);
 
@@ -71,7 +73,7 @@ class WebhookServiceTest extends TestCase
         $webhookService = $this->createWebhookService();
 
         $context = Context::createDefaultContext();
-        $context->addExtension(SwagPayPalSettingGeneralRepoMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID, new Entity());
+        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID, new Entity());
 
         $result = $webhookService->registerWebhook($context);
 
@@ -79,7 +81,7 @@ class WebhookServiceTest extends TestCase
 
         $updatedSettings = $this->swagPayPalSettingGeneralRepo->getData();
 
-        self::assertSame(SwagPayPalSettingGeneralRepoMock::PAYPAL_SETTING_ID, $updatedSettings['id']);
+        self::assertSame(SettingsProviderMock::PAYPAL_SETTING_ID, $updatedSettings['id']);
         self::assertSame(WebhookResourceMock::CREATED_WEBHOOK_ID, $updatedSettings['webhookId']);
         self::assertSame(WebhookService::PAYPAL_WEBHOOK_TOKEN_LENGTH, \mb_strlen($updatedSettings['webhookExecuteToken']));
     }
@@ -105,7 +107,7 @@ class WebhookServiceTest extends TestCase
         $webhookService = $this->createWebhookService();
 
         $context = Context::createDefaultContext();
-        $context->addExtension(SwagPayPalSettingGeneralRepoMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID, new Entity());
+        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID, new Entity());
         $context->addExtension(WebhookResourceMock::THROW_WEBHOOK_ALREADY_EXISTS, new Entity());
 
         $result = $webhookService->registerWebhook($context);
@@ -125,15 +127,16 @@ class WebhookServiceTest extends TestCase
         self::assertSame(WebhookService::WEBHOOK_CREATED, $result);
     }
 
-    private function createWebhookService(): WebhookService
+    private function createWebhookService(): WebhookServiceInterface
     {
         $webhookResourceMock = $this->createWebhookResourceMock();
 
         return new WebhookService(
             $webhookResourceMock,
+            $this->createWebhookRegistry(),
+            new SettingsProviderMock(),
             $this->swagPayPalSettingGeneralRepo,
-            new RouterMock(),
-            $this->createWebhookRegistry()
+            new RouterMock()
         );
     }
 
@@ -142,7 +145,7 @@ class WebhookServiceTest extends TestCase
         return new WebhookResourceMock(
             new PayPalClientFactory(
                 new TokenResource(new CacheMock(), new TokenClientFactoryMock()),
-                $this->swagPayPalSettingGeneralRepo
+                new SettingsProviderMock()
             )
         );
     }

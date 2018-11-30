@@ -63,14 +63,14 @@ class PayPalClientMock extends PayPalClient
 
     private function createClientExceptionWithResponse(): ClientException
     {
-        $jsonString = json_encode(['foo' => 'bar']);
+        $jsonString = (string) json_encode(['foo' => 'bar']);
 
         return $this->createClientExceptionFromResponseString($jsonString);
     }
 
     private function createClientExceptionWithInvalidId(): ClientException
     {
-        $jsonString = json_encode(['name' => 'INVALID_RESOURCE_ID']);
+        $jsonString = (string) json_encode(['name' => 'INVALID_RESOURCE_ID']);
 
         return $this->createClientExceptionFromResponseString($jsonString);
     }
