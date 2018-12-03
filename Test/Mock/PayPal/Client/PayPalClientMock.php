@@ -11,8 +11,10 @@ namespace SwagPayPal\Test\Mock\PayPal\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use SwagPayPal\PayPal\Api\Payment\Payer\PayerInfo;
 use SwagPayPal\PayPal\Api\PayPalStruct;
 use SwagPayPal\PayPal\Client\PayPalClient;
+use SwagPayPal\Test\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPaymentTest;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreatePaymentResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentResponseFixture;
 use SwagPayPal\Test\PayPal\Resource\WebhookResourceTest;
@@ -45,7 +47,16 @@ class PayPalClientMock extends PayPalClient
     public function sendPostRequest(string $resourceUri, PayPalStruct $data): array
     {
         if (mb_substr($resourceUri, -8) === '/execute') {
-            return ExecutePaymentResponseFixture::get();
+            $response = ExecutePaymentResponseFixture::get();
+            /** @var PayerInfo $payerInfo */
+            $payerInfo = $data;
+            if ($payerInfo->getPayerId() !== PayPalPaymentTest::PAYER_ID_PAYMENT_INCOMPLETE) {
+                return $response;
+            }
+
+            $response['transactions'][0]['related_resources'][0]['sale']['state'] = 'denied';
+
+            return $response;
         }
 
         return CreatePaymentResponseFixture::get();
