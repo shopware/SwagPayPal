@@ -14,11 +14,6 @@ use SwagPayPal\PayPal\Api\PayPalStruct;
 class RelatedResource extends PayPalStruct
 {
     /**
-     * @var string
-     */
-    private $type;
-
-    /**
      * @var Sale
      */
     private $sale;
@@ -26,11 +21,6 @@ class RelatedResource extends PayPalStruct
     public function getSale(): Sale
     {
         return $this->sale;
-    }
-
-    protected function setType(string $type): void
-    {
-        $this->type = $type;
     }
 
     protected function setSale(Sale $sale): void

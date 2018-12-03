@@ -9,11 +9,8 @@
 namespace SwagPayPal\PayPal\Client;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use SwagPayPal\PayPal\Client\Exception\PayPalSettingsInvalidException;
 use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
+use SwagPayPal\Setting\SettingsProviderInterface;
 
 class PayPalClientFactory
 {
@@ -23,27 +20,19 @@ class PayPalClientFactory
     private $tokenResource;
 
     /**
-     * @var RepositoryInterface
+     * @var SettingsProviderInterface
      */
-    private $settingGeneralRepo;
+    private $settingsProvider;
 
-    public function __construct(TokenResource $tokenResource, RepositoryInterface $settingGeneralRepo)
+    public function __construct(TokenResource $tokenResource, SettingsProviderInterface $settingsProvider)
     {
         $this->tokenResource = $tokenResource;
-        $this->settingGeneralRepo = $settingGeneralRepo;
+        $this->settingsProvider = $settingsProvider;
     }
 
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
     public function createPaymentClient(Context $context): PayPalClient
     {
-        /** @var SwagPayPalSettingGeneralCollection $settingsCollection */
-        $settingsCollection = $this->settingGeneralRepo->search(new Criteria(), $context)->getEntities();
-        if ($settingsCollection->count() === 0) {
-            throw new PayPalSettingsInvalidException('');
-        }
-        $settings = $settingsCollection->first();
+        $settings = $this->settingsProvider->getSettings($context);
 
         return new PayPalClient($this->tokenResource, $context, $settings);
     }

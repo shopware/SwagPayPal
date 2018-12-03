@@ -10,14 +10,20 @@
             "test": "Test API credentials",
             "cardTitle": "API credentials",
             "clientId": {
-                "label": "Client ID"
+                "label": "Client-ID",
+                "helpText": "The REST-API Client-ID that is being used to authenticate this plugin to the PayPal API."
             },
             "clientSecret": {
-                "label": "Client Secret"
+                "label": "Client-Secret",
+                "helpText": "The REST-API Client-Secret that is being used to authenticate this plugin to the PayPal API."
             },
             "sandbox": {
-                "label": "Sandbox mode?",
-                "helpText": "Activate this option to use the PayPal sandbox."
+                "label": "Enable sandbox",
+                "helpText": "Enable to test the integration."
+            },
+            "brandName": {
+                "label": "Brand name on the PayPal page",
+                "helpText": "This text will be displayed as the brand name on the PayPal payment page."
             },
             "titleSaveSuccess": "PayPal settings",
             "titleTestSuccess": "API credentials",

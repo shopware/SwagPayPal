@@ -6,25 +6,22 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Service;
+namespace SwagPayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Util\Random;
 use SwagPayPal\PayPal\Api\CreateWebhooks;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\PayPal\Resource\WebhookResource;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
+use SwagPayPal\Setting\SettingsProviderInterface;
 use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use SwagPayPal\Webhook\Exception\WebhookException;
 use SwagPayPal\Webhook\Exception\WebhookIdInvalidException;
-use SwagPayPal\Webhook\WebhookEventTypes;
-use SwagPayPal\Webhook\WebhookRegistry;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class WebhookService
+class WebhookService implements WebhookServiceInterface
 {
     public const WEBHOOK_CREATED = 'created';
 
@@ -58,23 +55,28 @@ class WebhookService
      */
     private $webhookRegistry;
 
+    /**
+     * @var SettingsProviderInterface
+     */
+    private $settingsProvider;
+
     public function __construct(
         WebhookResource $webhookResource,
+        WebhookRegistry $webhookRegistry,
+        SettingsProviderInterface $settingsProvider,
         RepositoryInterface $settingGeneralRepo,
-        RouterInterface $router,
-        WebhookRegistry $webhookRegistry
+        RouterInterface $router
     ) {
         $this->webhookResource = $webhookResource;
+        $this->webhookRegistry = $webhookRegistry;
+        $this->settingsProvider = $settingsProvider;
         $this->settingGeneralRepo = $settingGeneralRepo;
         $this->router = $router;
-        $this->webhookRegistry = $webhookRegistry;
     }
 
     public function registerWebhook(Context $context): string
     {
-        /** @var SwagPayPalSettingGeneralCollection $settingsCollection */
-        $settingsCollection = $this->settingGeneralRepo->search(new Criteria(), $context)->getEntities();
-        $settings = $settingsCollection->first();
+        $settings = $this->settingsProvider->getSettings($context);
 
         $webhookExecuteToken = $settings->getWebhookExecuteToken();
         if ($webhookExecuteToken === null) {

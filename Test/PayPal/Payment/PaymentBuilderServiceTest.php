@@ -6,15 +6,16 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Service;
+namespace SwagPayPal\Test\PayPal\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Payment;
-use SwagPayPal\Service\PaymentBuilderService;
+use SwagPayPal\PayPal\Payment\PaymentBuilderService;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
 use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
+use SwagPayPal\Test\Mock\Setting\SettingsProviderMock;
 
 class PaymentBuilderServiceTest extends TestCase
 {
@@ -39,7 +40,8 @@ class PaymentBuilderServiceTest extends TestCase
     {
         return new PaymentBuilderService(
             new LanguageRepoMock(),
-            new SalesChannelRepoMock()
+            new SalesChannelRepoMock(),
+            new SettingsProviderMock()
         );
     }
 }

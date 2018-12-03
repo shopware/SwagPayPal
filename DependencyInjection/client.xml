@@ -6,8 +6,8 @@
 
     <services>
         <service id="SwagPayPal\PayPal\Client\PayPalClientFactory" class="SwagPayPal\PayPal\Client\PayPalClientFactory">
-            <argument id="SwagPayPal\PayPal\Resource\TokenResource" type="service"/>
-            <argument id="swag_paypal_setting_general.repository" type="service"/>
+            <argument type="service" id="SwagPayPal\PayPal\Resource\TokenResource"/>
+            <argument type="service" id="SwagPayPal\Setting\SettingsProvider"/>
         </service>
 
         <service id="SwagPayPal\PayPal\Client\TokenClientFactory" class="SwagPayPal\PayPal\Client\TokenClientFactory"/>
