@@ -19,10 +19,10 @@ use SwagPayPal\SwagPayPal;
 
 trait PaymentTransactionTrait
 {
-    protected function createPaymentTransactionStruct(): PaymentTransactionStruct
+    protected function createPaymentTransactionStruct(string $orderId = 'some-order-id'): PaymentTransactionStruct
     {
         $transactionId = Uuid::uuid4()->getHex();
-        $order = $this->createOrderStruct();
+        $order = $this->createOrderStruct($orderId);
         $amount = $this->createPriceStruct();
 
         return new PaymentTransactionStruct(
@@ -34,10 +34,11 @@ trait PaymentTransactionTrait
         );
     }
 
-    private function createOrderStruct(): OrderStruct
+    private function createOrderStruct(string $id): OrderStruct
     {
         $order = new OrderStruct();
         $order->setShippingTotal(2.5);
+        $order->setId($id);
         $currency = $this->createCurrencyStruct();
         $order->setCurrency($currency);
 

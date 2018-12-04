@@ -29,6 +29,11 @@ class SwagPayPalSettingGeneralStruct extends Entity
     protected $sandbox;
 
     /**
+     * @var bool
+     */
+    protected $submitCart;
+
+    /**
      * @var string|null
      */
     protected $webhookId;
@@ -81,6 +86,16 @@ class SwagPayPalSettingGeneralStruct extends Entity
     public function setSandbox(bool $sandbox): void
     {
         $this->sandbox = $sandbox;
+    }
+
+    public function setSubmitCart(bool $submitCart): void
+    {
+        $this->submitCart = $submitCart;
+    }
+
+    public function getSubmitCart(): bool
+    {
+        return $this->submitCart;
     }
 
     public function getWebhookId(): ?string

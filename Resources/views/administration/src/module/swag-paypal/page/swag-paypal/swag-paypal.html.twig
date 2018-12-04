@@ -58,6 +58,14 @@
                                         </sw-field>
                                     {% endblock %}
 
+                                    {% block swag_paypal_content_credentials_form_submitCart %}
+                                    <sw-field type="boolean"
+                                              :label="$tc('swag-paypal.settingForm.submitCart.label')"
+                                              v-model="setting.submitCart"
+                                              :helpText="$tc('swag-paypal.settingForm.submitCart.helpText')">
+                                    </sw-field>
+                                    {% endblock %}
+
                                     {% block swag_paypal_content_credentials_form_brandName %}
                                         <sw-field type="text"
                                                   :label="$tc('swag-paypal.settingForm.brandName.label')"

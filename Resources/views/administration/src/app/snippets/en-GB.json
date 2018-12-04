@@ -21,6 +21,10 @@
                 "label": "Enable sandbox",
                 "helpText": "Enable to test the integration."
             },
+            "submitCart": {
+                "label": "Submit cart",
+                "helpText": "If this option is active, the cart will be submitted to PayPal."
+            },
             "brandName": {
                 "label": "Brand name on the PayPal page",
                 "helpText": "This text will be displayed as the brand name on the PayPal payment page."

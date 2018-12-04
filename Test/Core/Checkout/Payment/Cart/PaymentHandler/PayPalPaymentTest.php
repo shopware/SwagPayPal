@@ -21,6 +21,7 @@ use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
+use SwagPayPal\Test\Mock\Repositories\OrderRepoMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
@@ -49,6 +50,11 @@ class PayPalPaymentTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = Context::createDefaultContext();
         $response = $handler->pay($paymentTransaction, $context);
+
+        self::assertNotNull($response);
+        if ($response === null) {
+            return;
+        }
 
         self::assertSame(CreatePaymentResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $response->getTargetUrl());
 
@@ -119,6 +125,7 @@ class PayPalPaymentTest extends TestCase
             new PaymentBuilderService(
                 new LanguageRepoMock(),
                 new SalesChannelRepoMock(),
+                new OrderRepoMock(),
                 $settingsProvider
             )
         );

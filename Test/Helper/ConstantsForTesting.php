@@ -18,4 +18,10 @@ final class ConstantsForTesting
     public const VALID_CLIENT_ID = 'valid-id';
 
     public const VALID_CLIENT_SECRET = 'valid-secret';
+
+    public const VALID_ORDER_ID = 'valid-order-id';
+
+    public const ORDER_ID_MISSING_PRICE = 'order-id-missing-price';
+
+    public const ORDER_ID_MISSING_LINE_ITEMS = 'order-id-missing-line-items';
 }
