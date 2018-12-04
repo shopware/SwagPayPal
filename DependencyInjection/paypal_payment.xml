@@ -17,6 +17,7 @@
                  class="SwagPayPal\PayPal\Payment\PaymentBuilderService">
             <argument type="service" id="language.repository"/>
             <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="order.repository"/>
             <argument type="service" id="SwagPayPal\Setting\Service\SettingsProvider"/>
         </service>
     </services>

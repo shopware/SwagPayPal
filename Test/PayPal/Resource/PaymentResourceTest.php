@@ -21,6 +21,7 @@ use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
+use SwagPayPal\Test\Mock\Repositories\OrderRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 
@@ -81,6 +82,7 @@ class PaymentResourceTest extends TestCase
         $paymentBuilderService = new PaymentBuilderService(
             new LanguageRepoMock(),
             new SalesChannelRepoMock(),
+            new OrderRepoMock(),
             new SettingsProviderMock()
         );
 

@@ -8,6 +8,9 @@
 
 namespace SwagPayPal\PayPal\Payment;
 
+use Shopware\Core\Checkout\Cart\Price\Struct\Price;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemStruct;
+use Shopware\Core\Checkout\Order\OrderStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Read\ReadCriteria;
@@ -23,7 +26,10 @@ use SwagPayPal\PayPal\Api\Payment\RedirectUrls;
 use SwagPayPal\PayPal\Api\Payment\Transaction;
 use SwagPayPal\PayPal\Api\Payment\Transaction\Amount;
 use SwagPayPal\PayPal\Api\Payment\Transaction\Amount\Details;
+use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList;
+use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
 use SwagPayPal\Setting\Service\SettingsProviderInterface;
+use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
 
 class PaymentBuilderService implements PaymentBuilderInterface
 {
@@ -38,18 +44,30 @@ class PaymentBuilderService implements PaymentBuilderInterface
     private $salesChannelRepo;
 
     /**
+     * @var RepositoryInterface
+     */
+    private $orderRepo;
+
+    /**
      * @var SettingsProviderInterface
      */
     private $settingsProvider;
 
+    /**
+     * @var SwagPayPalSettingGeneralStruct
+     */
+    private $settings;
+
     public function __construct(
         RepositoryInterface $languageRepo,
         RepositoryInterface $salesChannelRepo,
+        RepositoryInterface $orderRepo,
         SettingsProviderInterface $settingsProvider
     ) {
         $this->languageRepo = $languageRepo;
         $this->salesChannelRepo = $salesChannelRepo;
         $this->settingsProvider = $settingsProvider;
+        $this->orderRepo = $orderRepo;
     }
 
     /**
@@ -57,6 +75,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
      */
     public function getPayment(PaymentTransactionStruct $paymentTransaction, Context $context): Payment
     {
+        $this->settings = $this->settingsProvider->getSettings($context);
         $requestPayment = new Payment();
         $requestPayment->setIntent('sale');
 
@@ -67,13 +86,25 @@ class PaymentBuilderService implements PaymentBuilderInterface
         $redirectUrls->setCancelUrl($paymentTransaction->getReturnUrl() . '&cancel=1');
         $redirectUrls->setReturnUrl($paymentTransaction->getReturnUrl());
 
+        $currency = $paymentTransaction->getOrder()->getCurrency()->getShortName();
+
         $amount = new Amount();
         $amount->setTotal($this->formatPrice($paymentTransaction->getAmount()->getTotalPrice()));
-        $amount->setCurrency($paymentTransaction->getOrder()->getCurrency()->getShortName());
+        $amount->setCurrency($currency);
         $amount->setDetails($this->getAmountDetails($paymentTransaction));
 
         $transaction = new Transaction();
         $transaction->setAmount($amount);
+
+        if ($this->settings->getSubmitCart()) {
+            $items = $this->getItemList($paymentTransaction, $context, $currency);
+
+            if (!empty($items)) {
+                $itemList = new ItemList();
+                $itemList->setItems($items);
+                $transaction->setItemList($itemList);
+            }
+        }
 
         $requestPayment->setPayer($payer);
         $requestPayment->setRedirectUrls($redirectUrls);
@@ -121,7 +152,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
 
     private function getBrandName(Context $context): string
     {
-        $brandName = $this->settingsProvider->getSettings($context)->getBrandName();
+        $brandName = $this->settings->getBrandName();
 
         if (empty($brandName)) {
             $brandName = $this->useSalesChannelNameAsBrandName($context);
@@ -152,5 +183,57 @@ class PaymentBuilderService implements PaymentBuilderInterface
     private function formatPrice(float $price): string
     {
         return (string) round($price, 2);
+    }
+
+    private function getItemList(PaymentTransactionStruct $transactionStruct, Context $context, string $currency): array
+    {
+        $items = [];
+        $order = $this->getOrder($transactionStruct, $context);
+
+        if ($order === null || $order->getLineItems() === null) {
+            return [];
+        }
+
+        /** @var OrderLineItemStruct[] $lineItems */
+        $lineItems = $order->getLineItems()->getElements();
+
+        foreach ($lineItems as $id => $lineItem) {
+            $price = $lineItem->getPrice();
+
+            if ($price === null) {
+                return [];
+            }
+
+            $items[] = $this->createItemFromLineItem($lineItem, $currency, $price);
+        }
+
+        return $items;
+    }
+
+    private function getOrder(PaymentTransactionStruct $transactionStruct, Context $context): ?OrderStruct
+    {
+        $orderId = $transactionStruct->getOrder()->get('id');
+        $criteria = new ReadCriteria([$orderId]);
+        $criteria->addAssociation('order.lineItems');
+
+        /** @var OrderStruct $order */
+        $order = $this->orderRepo->read($criteria, $context)->get($orderId);
+
+        return $order;
+    }
+
+    private function createItemFromLineItem(OrderLineItemStruct $lineItem, string $currency, Price $price): Item
+    {
+        $taxAmount = $price->getCalculatedTaxes()->getAmount();
+
+        $item = new Item();
+        $item->setName($lineItem->getLabel());
+        $item->setSku($lineItem->getPayload()['id']);
+        $item->setPrice($this->formatPrice($price->getTotalPrice() - $taxAmount));
+        $item->setCurrency($currency);
+        $item->setQuantity($lineItem->getQuantity());
+        $item->setTax($this->formatPrice($taxAmount));
+
+        return $item;
     }
 }

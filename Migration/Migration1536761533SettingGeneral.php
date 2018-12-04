@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `swag_paypal_setting_general` (
     `client_id`             VARCHAR(255) COLLATE utf8mb4_unicode_ci,
     `client_secret`         VARCHAR(255) COLLATE utf8mb4_unicode_ci,
     `sandbox`               TINYINT(1)  NOT NULL,
+    `submit_cart`           TINYINT(1)  NOT NULL,
     `webhook_id`            VARCHAR(255) COLLATE utf8mb4_unicode_ci,
     `webhook_execute_token` VARCHAR(32) COLLATE utf8mb4_unicode_ci,
     `brand_name`            VARCHAR(127) COLLATE utf8mb4_unicode_ci,

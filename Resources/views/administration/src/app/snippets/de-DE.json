@@ -21,6 +21,10 @@
                 "label": "Sandbox aktivieren",
                 "helpText": "Aktiviere diese Option, wenn Du die Integration testen möchtest."
             },
+            "submitCart": {
+                "label": "Warenkorb übertragen",
+                "helpText": "Wenn diese Option aktiv ist, wird der Warenkorb an PayPal übertragen."
+            },
             "brandName": {
                 "label": "Markenname auf der PayPal Seite",
                 "helpText": "Dieser Text wird als Markenname auf der PayPal Zahlungsseite angezeigt."

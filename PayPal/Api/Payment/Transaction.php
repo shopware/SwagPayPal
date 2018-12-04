@@ -49,14 +49,14 @@ class Transaction extends PayPalStruct
         $this->amount = $amount;
     }
 
+    public function setItemList(ItemList $itemList): void
+    {
+        $this->itemList = $itemList;
+    }
+
     protected function setPayee(Payee $payee): void
     {
         $this->payee = $payee;
-    }
-
-    protected function setItemList(ItemList $itemList): void
-    {
-        $this->itemList = $itemList;
     }
 
     /**

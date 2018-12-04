@@ -20,6 +20,8 @@ class SettingsProviderMock implements SettingsProviderInterface
 
     public const PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID = 'settingsWithoutTokenAndId';
 
+    public const PAYPAL_SETTING_WITH_SUBMIT_CART = 'settingWithSubmitCart';
+
     public const ALREADY_EXISTING_WEBHOOK_ID = 'alreadyExistingTestWebhookId';
 
     public const ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN = 'testWebhookExecuteToken';
@@ -43,6 +45,11 @@ class SettingsProviderMock implements SettingsProviderInterface
         $settingsStruct->setBrandName('Test Brand');
         $settingsStruct->setWebhookExecuteToken(self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
         $settingsStruct->setWebhookId(self::ALREADY_EXISTING_WEBHOOK_ID);
+        $settingsStruct->setSubmitCart(false);
+
+        if ($context->hasExtension(self::PAYPAL_SETTING_WITH_SUBMIT_CART)) {
+            $settingsStruct->setSubmitCart(true);
+        }
 
         return $settingsStruct;
     }
