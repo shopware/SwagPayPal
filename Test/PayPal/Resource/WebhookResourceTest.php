@@ -17,7 +17,7 @@ use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientMock;
 use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
-use SwagPayPal\Test\Mock\Setting\SettingsProviderMock;
+use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 use SwagPayPal\Webhook\Exception\WebhookIdInvalidException;
 
 class WebhookResourceTest extends TestCase

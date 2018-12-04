@@ -22,10 +22,12 @@ use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPayment implements PaymentHandlerInterface
 {
+    public const TRANSACTION_DETAILS_JSON_KEY = 'swag_paypal';
+
     /**
      * @var RepositoryInterface
      */
-    private $transactionRepository;
+    private $orderTransactionRepo;
 
     /**
      * @var PaymentResource
@@ -38,11 +40,11 @@ class PayPalPayment implements PaymentHandlerInterface
     private $paymentBuilder;
 
     public function __construct(
-        RepositoryInterface $transactionRepository,
+        RepositoryInterface $orderTransactionRepo,
         PaymentResource $paymentResource,
         PaymentBuilderInterface $paymentBuilder
     ) {
-        $this->transactionRepository = $transactionRepository;
+        $this->orderTransactionRepo = $orderTransactionRepo;
         $this->paymentResource = $paymentResource;
         $this->paymentBuilder = $paymentBuilder;
     }
@@ -56,12 +58,12 @@ class PayPalPayment implements PaymentHandlerInterface
         $data = [
             'id' => $transaction->getTransactionId(),
             'details' => [
-                'swag_paypal' => [
+                self::TRANSACTION_DETAILS_JSON_KEY => [
                     'transactionId' => $response->getId(),
                 ],
             ],
         ];
-        $this->transactionRepository->update([$data], $context);
+        $this->orderTransactionRepo->update([$data], $context);
 
         return new RedirectResponse($response->getLinks()[1]->getHref());
     }
@@ -73,7 +75,7 @@ class PayPalPayment implements PaymentHandlerInterface
                 'id' => $transactionId,
                 'orderTransactionStateId' => Defaults::ORDER_TRANSACTION_FAILED,
             ];
-            $this->transactionRepository->update([$transaction], $context);
+            $this->orderTransactionRepo->update([$transaction], $context);
 
             return;
         }
@@ -100,6 +102,6 @@ class PayPalPayment implements PaymentHandlerInterface
             ];
         }
 
-        $this->transactionRepository->update([$transaction], $context);
+        $this->orderTransactionRepo->update([$transaction], $context);
     }
 }

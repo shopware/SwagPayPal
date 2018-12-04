@@ -22,7 +22,7 @@ use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
-use SwagPayPal\Test\Mock\Setting\SettingsProviderMock;
+use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 
 class PaymentResourceTest extends TestCase
 {

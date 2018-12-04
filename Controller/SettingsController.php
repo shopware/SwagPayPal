@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Controller;
 
-use SwagPayPal\Setting\ApiCredentialTestServiceInterface;
+use SwagPayPal\Setting\Service\ApiCredentialTestServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

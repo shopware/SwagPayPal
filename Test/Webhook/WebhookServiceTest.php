@@ -21,7 +21,7 @@ use SwagPayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
 use SwagPayPal\Test\Mock\RouterMock;
-use SwagPayPal\Test\Mock\Setting\SettingsProviderMock;
+use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 use SwagPayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use SwagPayPal\Webhook\WebhookRegistry;
 use SwagPayPal\Webhook\WebhookService;

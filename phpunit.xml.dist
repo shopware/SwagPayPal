@@ -25,6 +25,7 @@
             <exclude>
                 <directory suffix=".php">./Test</directory>
                 <directory suffix=".php">./Migration</directory>
+                <directory suffix="Definition.php">./</directory>
 
                 <file>SwagPayPal.php</file>
             </exclude>

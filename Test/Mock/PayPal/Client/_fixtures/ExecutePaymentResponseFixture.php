@@ -58,8 +58,10 @@ class ExecutePaymentResponseFixture
                         'shipping_address' => [
                             'recipient_name' => 'Test Test',
                             'line1' => 'Ebbinghoff 10',
+                            'line2' => 'Addresszusatz',
                             'city' => 'Schöppingen',
                             'state' => '',
+                            'phone' => '4084217591',
                             'postal_code' => '4862',
                             'country_code' => 'AT',
                         ],

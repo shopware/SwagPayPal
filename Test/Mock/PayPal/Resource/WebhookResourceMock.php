@@ -11,7 +11,7 @@ namespace SwagPayPal\Test\Mock\PayPal\Resource;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\CreateWebhooks;
 use SwagPayPal\PayPal\Resource\WebhookResource;
-use SwagPayPal\Test\Mock\Setting\SettingsProviderMock;
+use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use SwagPayPal\Webhook\Exception\WebhookIdInvalidException;
 use SwagPayPal\Webhook\WebhookService;

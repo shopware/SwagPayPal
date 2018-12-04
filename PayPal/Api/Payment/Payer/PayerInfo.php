@@ -17,6 +17,7 @@ class PayerInfo extends PayPalStruct
      * @var string
      */
     protected $payerId;
+
     /**
      * @var string
      */
@@ -50,6 +51,11 @@ class PayerInfo extends PayPalStruct
     public function setPayerId(string $payerId): void
     {
         $this->payerId = $payerId;
+    }
+
+    public function getPayerId(): string
+    {
+        return $this->payerId;
     }
 
     protected function setEmail(string $email): void

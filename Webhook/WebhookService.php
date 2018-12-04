@@ -14,7 +14,7 @@ use Shopware\Core\Framework\Util\Random;
 use SwagPayPal\PayPal\Api\CreateWebhooks;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\PayPal\Resource\WebhookResource;
-use SwagPayPal\Setting\SettingsProviderInterface;
+use SwagPayPal\Setting\Service\SettingsProviderInterface;
 use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use SwagPayPal\Webhook\Exception\WebhookException;
 use SwagPayPal\Webhook\Exception\WebhookIdInvalidException;

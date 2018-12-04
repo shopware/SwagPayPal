@@ -6,12 +6,14 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Setting;
+namespace SwagPayPal\Setting\Service;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
+use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
 
 class SettingsProvider implements SettingsProviderInterface
 {

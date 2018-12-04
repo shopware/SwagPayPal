@@ -10,14 +10,14 @@
                  public="true">
             <argument type="service" id="logger"/>
             <argument type="service" id="SwagPayPal\Webhook\WebhookService"/>
-            <argument type="service" id="SwagPayPal\Setting\SettingsProvider"/>
+            <argument type="service" id="SwagPayPal\Setting\Service\SettingsProvider"/>
         </service>
 
         <service id="SwagPayPal\Webhook\WebhookService"
                  class="SwagPayPal\Webhook\WebhookService">
             <argument type="service" id="SwagPayPal\PayPal\Resource\WebhookResource"/>
             <argument type="service" id="SwagPayPal\Webhook\WebhookRegistry"/>
-            <argument type="service" id="SwagPayPal\Setting\SettingsProvider"/>
+            <argument type="service" id="SwagPayPal\Setting\Service\SettingsProvider"/>
             <argument type="service" id="swag_paypal_setting_general.repository"/>
             <argument type="service" id="router.default"/>
         </service>

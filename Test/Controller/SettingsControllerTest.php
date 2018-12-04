@@ -8,9 +8,10 @@
 
 namespace SwagPayPal\Test\Controller;
 
+use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use SwagPayPal\Controller\SettingsController;
-use SwagPayPal\Setting\ApiCredentialTestService;
+use SwagPayPal\Setting\Service\ApiCredentialTestService;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Mock\CacheMock;
 use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
@@ -19,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SettingsControllerTest extends TestCase
 {
-    public function testValidateApi_withValidData(): void
+    public function testValidateApiWithValidData(): void
     {
         $controller = $this->createApiValidationController();
 
@@ -34,7 +35,7 @@ class SettingsControllerTest extends TestCase
         self::assertSame(['credentialsValid' => true], $result);
     }
 
-    public function testValidateApi_withInvalidData(): void
+    public function testValidateApiWithInvalidData(): void
     {
         $controller = $this->createApiValidationController();
 
@@ -44,13 +45,20 @@ class SettingsControllerTest extends TestCase
             'sandboxActive' => false,
         ]);
 
-        $result = json_decode($controller->validateApiCredentials($request)->getContent(), true);
-
-        self::assertSame(['credentialsValid' => false], $result);
+        $this->expectException(ClientException::class);
+        $this->expectExceptionMessage(TokenResourceMock::GENERAL_CLIENT_EXCEPTION_MESSAGE);
+        $controller->validateApiCredentials($request);
     }
 
     private function createApiValidationController(): SettingsController
     {
-        return new SettingsController(new ApiCredentialTestService(new TokenResourceMock(new CacheMock(), new TokenClientFactoryMock())));
+        return new SettingsController(
+            new ApiCredentialTestService(
+                new TokenResourceMock(
+                    new CacheMock(),
+                    new TokenClientFactoryMock()
+                )
+            )
+        );
     }
 }
