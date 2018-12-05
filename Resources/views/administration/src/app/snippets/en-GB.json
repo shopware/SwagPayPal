@@ -40,6 +40,12 @@
                     "Billing": "Registration"
                 }
             },
+            "intent": {
+                "label": "Payment acquisition",
+                "sale": "Complete payment immediately (Sale)",
+                "authorize": "Delayed payment collection (Auth-Capture)",
+                "order": "Delayed payment collection (Order-Auth-Capture)"
+            },
             "titleSaveSuccess": "PayPal settings",
             "titleTestSuccess": "API credentials",
             "titleTestError": "API credentials error",

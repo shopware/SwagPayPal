@@ -10,6 +10,7 @@ namespace SwagPayPal\Test\Mock\Setting\Service;
 
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
+use SwagPayPal\PayPal\PaymentIntent;
 use SwagPayPal\Setting\Service\SettingsProviderInterface;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
 
@@ -22,6 +23,10 @@ class SettingsProviderMock implements SettingsProviderInterface
     public const PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID = 'settingsWithoutTokenAndId';
 
     public const PAYPAL_SETTING_WITH_SUBMIT_CART = 'settingWithSubmitCart';
+
+    public const PAYPAL_SETTING_WITH_INVALID_INTENT = 'settingWithInvalidIntent';
+
+    public const PAYPAL_SETTING_WITHOUT_BRAND_NAME = 'settingWithoutBrandName';
 
     public const ALREADY_EXISTING_WEBHOOK_ID = 'alreadyExistingTestWebhookId';
 
@@ -44,15 +49,19 @@ class SettingsProviderMock implements SettingsProviderInterface
             return $settingsStruct;
         }
 
-        $settingsStruct = $this->createBasicSettingStruct();
-        $settingsStruct->setBrandName('Test Brand');
-        $settingsStruct->setWebhookExecuteToken(self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
-        $settingsStruct->setWebhookId(self::ALREADY_EXISTING_WEBHOOK_ID);
-        $settingsStruct->setLandingPage('Login');
+        $settingsStruct = $this->createDefaultSettingStruct();
+
+        if ($context->hasExtension(self::PAYPAL_SETTING_WITH_INVALID_INTENT)) {
+            $settingsStruct->setIntent('invalid');
+        }
+
+        if ($context->hasExtension(self::PAYPAL_SETTING_WITHOUT_BRAND_NAME)) {
+            $settingsStruct->setBrandName('');
+        }
 
         if ($context->hasExtension(self::PAYPAL_SETTING_WITH_SUBMIT_CART)) {
             $settingsStruct->setSubmitCart(true);
-            $settingsStruct->setLandingPage('Quatsch');
+            $settingsStruct->setLandingPage('Foo');
         }
 
         return $settingsStruct;
@@ -62,7 +71,19 @@ class SettingsProviderMock implements SettingsProviderInterface
     {
         $settingsStruct = new SwagPayPalSettingGeneralStruct();
         $settingsStruct->setId(self::PAYPAL_SETTING_ID);
+        $settingsStruct->setIntent(PaymentIntent::SALE);
         $settingsStruct->setSubmitCart(false);
+
+        return $settingsStruct;
+    }
+
+    private function createDefaultSettingStruct(): SwagPayPalSettingGeneralStruct
+    {
+        $settingsStruct = $this->createBasicSettingStruct();
+        $settingsStruct->setBrandName('Test Brand');
+        $settingsStruct->setWebhookExecuteToken(self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
+        $settingsStruct->setWebhookId(self::ALREADY_EXISTING_WEBHOOK_ID);
+        $settingsStruct->setLandingPage('Login');
 
         return $settingsStruct;
     }

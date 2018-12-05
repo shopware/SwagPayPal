@@ -15,8 +15,11 @@ use SwagPayPal\PayPal\Api\Payment\Payer\PayerInfo;
 use SwagPayPal\PayPal\Api\PayPalStruct;
 use SwagPayPal\PayPal\Client\PayPalClient;
 use SwagPayPal\Test\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPaymentTest;
+use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreatePaymentResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentAuthorizeResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentOrderResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentSaleResponseFixture;
 use SwagPayPal\Test\PayPal\Resource\WebhookResourceTest;
 
 class PayPalClientMock extends PayPalClient
@@ -47,9 +50,17 @@ class PayPalClientMock extends PayPalClient
     public function sendPostRequest(string $resourceUri, PayPalStruct $data): array
     {
         if (mb_substr($resourceUri, -8) === '/execute') {
-            $response = ExecutePaymentResponseFixture::get();
             /** @var PayerInfo $payerInfo */
             $payerInfo = $data;
+            if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE) {
+                return ExecutePaymentAuthorizeResponseFixture::get();
+            }
+
+            if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_ORDER) {
+                return ExecutePaymentOrderResponseFixture::get();
+            }
+
+            $response = ExecutePaymentSaleResponseFixture::get();
             if ($payerInfo->getPayerId() !== PayPalPaymentTest::PAYER_ID_PAYMENT_INCOMPLETE) {
                 return $response;
             }

@@ -14,6 +14,7 @@ use Shopware\Core\Framework\Context;
 use SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPayment;
 use SwagPayPal\PayPal\Payment\PaymentBuilderService;
 use SwagPayPal\PayPal\Resource\PaymentResource;
+use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
 use SwagPayPal\Test\Mock\CacheMock;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreatePaymentResponseFixture;
@@ -65,7 +66,7 @@ class PayPalPaymentTest extends TestCase
         );
     }
 
-    public function testFinalize(): void
+    public function testFinalizeSale(): void
     {
         $handler = $this->createPayPalPaymentHandler();
 
@@ -77,6 +78,42 @@ class PayPalPaymentTest extends TestCase
 
         self::assertSame($transactionId, $updatedData['id']);
         self::assertSame(Defaults::ORDER_TRANSACTION_COMPLETED, $updatedData['orderTransactionStateId']);
+    }
+
+    public function testFinalizeAuthorization(): void
+    {
+        $handler = $this->createPayPalPaymentHandler();
+
+        $transactionId = 'testTransactionId';
+        $request = $this->createRequest();
+        $request->query->set(
+            PayPalPayment::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
+            ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE
+        );
+        $context = Context::createDefaultContext();
+        $handler->finalize($transactionId, $request, $context);
+        $updatedData = $this->orderTransactionRepo->getData();
+
+        self::assertSame($transactionId, $updatedData['id']);
+        self::assertSame(Defaults::ORDER_TRANSACTION_OPEN, $updatedData['orderTransactionStateId']);
+    }
+
+    public function testFinalizeOrder(): void
+    {
+        $handler = $this->createPayPalPaymentHandler();
+
+        $transactionId = 'testTransactionId';
+        $request = $this->createRequest();
+        $request->query->set(
+            PayPalPayment::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
+            ConstantsForTesting::PAYER_ID_PAYMENT_ORDER
+        );
+        $context = Context::createDefaultContext();
+        $handler->finalize($transactionId, $request, $context);
+        $updatedData = $this->orderTransactionRepo->getData();
+
+        self::assertSame($transactionId, $updatedData['id']);
+        self::assertSame(Defaults::ORDER_TRANSACTION_OPEN, $updatedData['orderTransactionStateId']);
     }
 
     public function testFinalizeWithCancel(): void
@@ -98,7 +135,8 @@ class PayPalPaymentTest extends TestCase
         $handler = $this->createPayPalPaymentHandler();
 
         $transactionId = 'testTransactionId';
-        $request = $this->createRequest(true);
+        $request = $this->createRequest();
+        $request->query->set(PayPalPayment::PAYPAL_REQUEST_PARAMETER_PAYER_ID, self::PAYER_ID_PAYMENT_INCOMPLETE);
         $context = Context::createDefaultContext();
         $handler->finalize($transactionId, $request, $context);
         $updatedData = $this->orderTransactionRepo->getData();
@@ -131,13 +169,12 @@ class PayPalPaymentTest extends TestCase
         );
     }
 
-    private function createRequest(bool $payerIdIncompletePayment = false): Request
+    private function createRequest(): Request
     {
-        $payerId = $payerIdIncompletePayment ? self::PAYER_ID_PAYMENT_INCOMPLETE : 'testPayerId';
         $paymentId = 'testPaymentId';
         $request = new Request([
-            'PayerID' => $payerId,
-            'paymentId' => $paymentId,
+            PayPalPayment::PAYPAL_REQUEST_PARAMETER_PAYER_ID => 'testPayerId',
+            PayPalPayment::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID => $paymentId,
         ]);
 
         return $request;

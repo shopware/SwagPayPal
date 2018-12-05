@@ -6,13 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal;
+namespace SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Authorization;
 
-final class PaymentStatus
+use SwagPayPal\PayPal\Api\Common\Link as CommonLink;
+
+class Link extends CommonLink
 {
-    public const PAYMENT_COMPLETED = 'completed';
-
-    public const PAYMENT_AUTHORIZED = 'authorized';
-
-    public const PAYMENT_PENDING = 'pending';
 }

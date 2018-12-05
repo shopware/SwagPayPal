@@ -60,12 +60,25 @@
                                         </sw-field>
                                     {% endblock %}
 
+                                    {% block swag_paypal_content_credentials_form_intent %}
+                                        <sw-field type="select"
+                                                  :label="$tc('swag-paypal.settingForm.intent.label')"
+                                                  validation="required"
+                                                  v-model="setting.intent">
+                                            {% block swag_paypal_content_credentials_form_intent_options %}
+                                                <option slot="options" v-for="intent in intents" :value="intent">
+                                                    {{ $tc('swag-paypal.settingForm.intent.' + intent) }}
+                                                </option>
+                                            {% endblock %}
+                                        </sw-field>
+                                    {% endblock %}
+
                                     {% block swag_paypal_content_credentials_form_submitCart %}
-                                    <sw-field type="boolean"
-                                              :label="$tc('swag-paypal.settingForm.submitCart.label')"
-                                              v-model="setting.submitCart"
-                                              :helpText="$tc('swag-paypal.settingForm.submitCart.helpText')">
-                                    </sw-field>
+                                        <sw-field type="boolean"
+                                                  :label="$tc('swag-paypal.settingForm.submitCart.label')"
+                                                  v-model="setting.submitCart"
+                                                  :helpText="$tc('swag-paypal.settingForm.submitCart.helpText')">
+                                        </sw-field>
                                     {% endblock %}
 
                                     {% block swag_paypal_content_credentials_form_brandName %}

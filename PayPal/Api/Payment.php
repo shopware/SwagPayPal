@@ -87,6 +87,11 @@ class Payment extends PayPalStruct
         return $this->links;
     }
 
+    public function getIntent(): string
+    {
+        return $this->intent;
+    }
+
     public function setIntent(string $intent): void
     {
         $this->intent = $intent;

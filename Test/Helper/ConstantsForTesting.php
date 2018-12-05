@@ -24,4 +24,8 @@ final class ConstantsForTesting
     public const ORDER_ID_MISSING_PRICE = 'order-id-missing-price';
 
     public const ORDER_ID_MISSING_LINE_ITEMS = 'order-id-missing-line-items';
+
+    public const PAYER_ID_PAYMENT_AUTHORIZE = 'testPayerIdAuthorize';
+
+    public const PAYER_ID_PAYMENT_ORDER = 'testPayerIdOrder';
 }

@@ -11,8 +11,10 @@ namespace SwagPayPal\Test\PayPal\Payment;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\SourceContext;
 use SwagPayPal\PayPal\Api\Payment;
 use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
+use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use SwagPayPal\PayPal\Payment\PaymentBuilderService;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
@@ -40,6 +42,57 @@ class PaymentBuilderServiceTest extends TestCase
         self::assertInstanceOf(Payment\Transaction::class, $transaction);
     }
 
+    public function testGetPaymentInvalidIntentThrowsException(): void
+    {
+        $paymentBuilder = $this->createPaymentBuilder();
+
+        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $context = Context::createDefaultContext();
+        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITH_INVALID_INTENT, new Entity());
+
+        $this->expectException(PayPalSettingsInvalidException::class);
+        $this->expectExceptionMessage('Required setting "intent" is missing or invalid');
+        $paymentBuilder->getPayment($paymentTransaction, $context);
+    }
+
+    public function testGetPaymentWithoutBrandName(): void
+    {
+        $paymentBuilder = $this->createPaymentBuilder();
+
+        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $context = Context::createDefaultContext();
+        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
+
+        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
+        self::assertNotFalse($payment);
+        if ($payment === false) {
+            return;
+        }
+
+        $payment = json_decode($payment, true);
+
+        self::assertSame(SalesChannelRepoMock::SALES_CHANNEL_NAME, $payment['application_context']['brand_name']);
+    }
+
+    public function testGetPaymentWithoutBrandNameAndSalesChannel(): void
+    {
+        $paymentBuilder = $this->createPaymentBuilder();
+
+        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $context = $this->createContextWithoutSalesChannel();
+        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
+
+        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
+        self::assertNotFalse($payment);
+        if ($payment === false) {
+            return;
+        }
+
+        $payment = json_decode($payment, true);
+
+        self::assertSame('', $payment['application_context']['brand_name']);
+    }
+
     public function testGetPaymentWithItemList(): void
     {
         $paymentBuilder = $this->createPaymentBuilder();
@@ -50,15 +103,15 @@ class PaymentBuilderServiceTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
 
-        $itemList = json_encode($payment->getTransactions()[0]);
+        $transaction = json_encode($payment->getTransactions()[0]);
 
-        self::assertNotFalse($itemList);
-        if (!$itemList) {
+        self::assertNotFalse($transaction);
+        if ($transaction === false) {
             return;
         }
 
-        $itemList = json_decode($itemList, true);
-        $item = $itemList['item_list']['items'][0];
+        $transaction = json_decode($transaction, true);
+        $item = $transaction['item_list']['items'][0];
 
         self::assertSame(OrderRepoMock::EXPECTED_ITEM_NAME, $item['name']);
         self::assertSame(OrderRepoMock::EXPECTED_ITEM_CURRENCY, $item['currency']);
@@ -77,16 +130,16 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_PRICE);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
-        $itemList = json_encode($payment->getTransactions()[0]);
+        $transaction = json_encode($payment->getTransactions()[0]);
 
-        self::assertNotFalse($itemList);
-        if (!$itemList) {
+        self::assertNotFalse($transaction);
+        if ($transaction === false) {
             return;
         }
 
-        $itemList = json_decode($itemList, true)['item_list'];
+        $transaction = json_decode($transaction, true)['item_list'];
 
-        self::assertNull($itemList);
+        self::assertNull($transaction);
     }
 
     public function testGetPaymentWithoutLineItems(): void
@@ -97,20 +150,20 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
-        $itemList = json_encode($payment->getTransactions()[0]);
+        $transaction = json_encode($payment->getTransactions()[0]);
 
-        self::assertNotFalse($itemList);
-        if (!$itemList) {
+        self::assertNotFalse($transaction);
+        if ($transaction === false) {
             return;
         }
 
-        $itemList = json_decode($itemList, true)['item_list'];
+        $transaction = json_decode($transaction, true)['item_list'];
 
-        self::assertNull($itemList);
+        self::assertNull($transaction);
     }
 
     /**
-     * @dataProvider dataProvider_testApplicationContext
+     * @dataProvider dataProviderTestApplicationContext
      */
     public function testApplicationContext(string $extensionName, string $expectedResult): void
     {
@@ -119,13 +172,13 @@ class PaymentBuilderServiceTest extends TestCase
         $context->addExtension($extensionName, new Entity());
         $paymentTransaction = $this->createPaymentTransactionStruct();
 
-        $paymet = $paymentBuilder->getPayment($paymentTransaction, $context);
-        $applicationContext = json_decode(json_encode($paymet), true)['application_context'];
+        $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
+        $applicationContext = json_decode(json_encode($payment), true)['application_context'];
 
         self::assertSame($expectedResult, $applicationContext['landing_page']);
     }
 
-    public function dataProvider_testApplicationContext(): array
+    public function dataProviderTestApplicationContext(): array
     {
         return [
             [
@@ -150,6 +203,23 @@ class PaymentBuilderServiceTest extends TestCase
             new SalesChannelRepoMock(),
             new OrderRepoMock(),
             new SettingsProviderMock()
+        );
+    }
+
+    private function createContextWithoutSalesChannel(): Context
+    {
+        $defaultContext = Context::createDefaultContext();
+        $sourceContext = new SourceContext();
+
+        return new Context(
+            $sourceContext,
+            $defaultContext->getCatalogIds(),
+            $defaultContext->getRules(),
+            $defaultContext->getCurrencyId(),
+            $defaultContext->getLanguageId(),
+            $defaultContext->getFallbackLanguageId(),
+            $defaultContext->getVersionId(),
+            $defaultContext->getCurrencyFactor()
         );
     }
 }

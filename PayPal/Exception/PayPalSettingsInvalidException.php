@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Client\Exception;
+namespace SwagPayPal\PayPal\Exception;
 
 use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +18,7 @@ class PayPalSettingsInvalidException extends ShopwareHttpException
 
     public function __construct(string $missingSetting, $code = 0, Throwable $previous = null)
     {
-        $message = sprintf('Required setting "%s" is missing', $missingSetting);
+        $message = sprintf('Required setting "%s" is missing or invalid', $missingSetting);
         parent::__construct($message, $code, $previous);
     }
 
