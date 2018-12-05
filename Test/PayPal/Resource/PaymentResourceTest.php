@@ -14,6 +14,7 @@ use SwagPayPal\PayPal\Api\Payment;
 use SwagPayPal\PayPal\Payment\PaymentBuilderService;
 use SwagPayPal\PayPal\PaymentStatus;
 use SwagPayPal\PayPal\Resource\PaymentResource;
+use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
 use SwagPayPal\Test\Mock\CacheMock;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreatePaymentResponseFixture;
@@ -49,7 +50,7 @@ class PaymentResourceTest extends TestCase
         self::assertSame(CreatePaymentResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $link->getHref());
     }
 
-    public function testExecute(): void
+    public function testExecuteSale(): void
     {
         $paymentResource = $this->createPaymentResource();
 
@@ -61,7 +62,54 @@ class PaymentResourceTest extends TestCase
         $transaction = $executedPayment->getTransactions()[0];
         self::assertInstanceOf(Payment\Transaction::class, $transaction);
         self::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
-        self::assertSame(PaymentStatus::PAYMENT_COMPLETED, $transaction->getRelatedResources()[0]->getSale()->getState());
+        $sale = $transaction->getRelatedResources()[0]->getSale();
+        if ($sale !== null) {
+            self::assertSame(PaymentStatus::PAYMENT_COMPLETED, $sale->getState());
+        }
+    }
+
+    public function testExecuteAuthorize(): void
+    {
+        $paymentResource = $this->createPaymentResource();
+
+        $context = Context::createDefaultContext();
+
+        $executedPayment = $paymentResource->execute(
+            ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE,
+            'testPaymentId',
+            $context
+        );
+
+        self::assertInstanceOf(Payment::class, $executedPayment);
+        $transaction = $executedPayment->getTransactions()[0];
+        self::assertInstanceOf(Payment\Transaction::class, $transaction);
+        self::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
+        $authorization = $transaction->getRelatedResources()[0]->getAuthorization();
+        if ($authorization !== null) {
+            self::assertSame(PaymentStatus::PAYMENT_AUTHORIZED, $authorization->getState());
+        }
+    }
+
+    public function testExecuteOrder(): void
+    {
+        $paymentResource = $this->createPaymentResource();
+
+        $context = Context::createDefaultContext();
+
+        $executedPayment = $paymentResource->execute(
+            ConstantsForTesting::PAYER_ID_PAYMENT_ORDER,
+            'testPaymentId',
+            $context
+        );
+
+        self::assertInstanceOf(Payment::class, $executedPayment);
+        $transaction = $executedPayment->getTransactions()[0];
+        self::assertInstanceOf(Payment\Transaction::class, $transaction);
+        self::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
+        $order = $transaction->getRelatedResources()[0]->getOrder();
+        if ($order !== null) {
+            self::assertSame(PaymentStatus::PAYMENT_PENDING, $order->getState());
+        }
     }
 
     private function createPaymentResource(): PaymentResource

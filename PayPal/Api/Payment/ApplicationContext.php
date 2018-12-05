@@ -50,9 +50,4 @@ class ApplicationContext extends PayPalStruct
     {
         $this->landingPage = $landingPageType;
     }
-
-    protected function setUserAction(string $userAction): void
-    {
-        $this->userAction = $userAction;
-    }
 }

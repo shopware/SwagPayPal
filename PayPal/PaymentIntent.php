@@ -8,11 +8,17 @@
 
 namespace SwagPayPal\PayPal;
 
-final class PaymentStatus
+final class PaymentIntent
 {
-    public const PAYMENT_COMPLETED = 'completed';
+    public const SALE = 'sale';
 
-    public const PAYMENT_AUTHORIZED = 'authorized';
+    public const AUTHORIZE = 'authorize';
 
-    public const PAYMENT_PENDING = 'pending';
+    public const ORDER = 'order';
+
+    public const INTENTS = [
+        self::SALE,
+        self::AUTHORIZE,
+        self::ORDER,
+    ];
 }

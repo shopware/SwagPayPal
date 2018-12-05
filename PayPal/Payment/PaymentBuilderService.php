@@ -28,6 +28,8 @@ use SwagPayPal\PayPal\Api\Payment\Transaction\Amount;
 use SwagPayPal\PayPal\Api\Payment\Transaction\Amount\Details;
 use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList;
 use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
+use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
+use SwagPayPal\PayPal\PaymentIntent;
 use SwagPayPal\Setting\Service\SettingsProviderInterface;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
 
@@ -72,12 +74,17 @@ class PaymentBuilderService implements PaymentBuilderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws PayPalSettingsInvalidException
      */
     public function getPayment(PaymentTransactionStruct $paymentTransaction, Context $context): Payment
     {
         $this->settings = $this->settingsProvider->getSettings($context);
+
         $requestPayment = new Payment();
-        $requestPayment->setIntent('sale');
+        $intent = $this->settings->getIntent();
+        $this->validateIntent($intent);
+        $requestPayment->setIntent($intent);
 
         $payer = new Payer();
         $payer->setPaymentMethod('paypal');
@@ -155,7 +162,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
     {
         $brandName = $this->settings->getBrandName();
 
-        if (empty($brandName)) {
+        if ($brandName === null || $brandName === '') {
             $brandName = $this->useSalesChannelNameAsBrandName($context);
         }
 
@@ -179,11 +186,6 @@ class PaymentBuilderService implements PaymentBuilderInterface
         }
 
         return $brandName;
-    }
-
-    private function formatPrice(float $price): string
-    {
-        return (string) round($price, 2);
     }
 
     private function getItemList(PaymentTransactionStruct $transactionStruct, Context $context, string $currency): array
@@ -246,5 +248,20 @@ class PaymentBuilderService implements PaymentBuilderInterface
         }
 
         return $landingPageType;
+    }
+
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
+    private function validateIntent(string $intent): void
+    {
+        if (!\in_array($intent, PaymentIntent::INTENTS, true)) {
+            throw new PayPalSettingsInvalidException('intent');
+        }
+    }
+
+    private function formatPrice(float $price): string
+    {
+        return (string) round($price, 2);
     }
 }

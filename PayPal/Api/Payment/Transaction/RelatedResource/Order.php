@@ -8,17 +8,15 @@
 
 namespace SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
 
-use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Sale\TransactionFee;
-
-class Sale extends RelatedResource
+class Order extends RelatedResource
 {
     /**
-     * @var TransactionFee
+     * @var string
      */
-    private $transactionFee;
+    private $reasonCode;
 
-    protected function setTransactionFee(TransactionFee $transactionFee): void
+    protected function setReasonCode(string $reasonCode): void
     {
-        $this->transactionFee = $transactionFee;
+        $this->reasonCode = $reasonCode;
     }
 }

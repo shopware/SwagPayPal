@@ -10,7 +10,7 @@ namespace SwagPayPal\PayPal\Api\Common;
 
 use SwagPayPal\PayPal\Api\PayPalStruct;
 
-class Amount extends PayPalStruct
+abstract class Amount extends PayPalStruct
 {
     /**
      * @var string

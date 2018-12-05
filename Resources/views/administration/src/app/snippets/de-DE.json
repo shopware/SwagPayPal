@@ -40,6 +40,12 @@
                     "Billing": "Registrierung"
                 }
             },
+            "intent": {
+                "label": "Zahlungsabschluss",
+                "sale": "Zahlung sofort abschließen (Sale)",
+                "authorize": "Zeitverzögerter Zahlungseinzug (Auth-Capture)",
+                "order": "Zeitverzögerter Zahlungseinzug (Order-Auth-Capture)"
+            },
             "titleSaveSuccess": "PayPal Einstellungen",
             "titleTestSuccess": "API Zugangsdaten",
             "titleTestError": "API Zugangsdaten Fehler",

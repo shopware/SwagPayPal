@@ -13,8 +13,9 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
-use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
+use SwagPayPal\PayPal\Api\Payment;
 use SwagPayPal\PayPal\Payment\PaymentBuilderInterface;
+use SwagPayPal\PayPal\PaymentIntent;
 use SwagPayPal\PayPal\PaymentStatus;
 use SwagPayPal\PayPal\Resource\PaymentResource;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -23,6 +24,10 @@ use Symfony\Component\HttpFoundation\Request;
 class PayPalPayment implements PaymentHandlerInterface
 {
     public const TRANSACTION_DETAILS_JSON_KEY = 'swag_paypal';
+
+    public const PAYPAL_REQUEST_PARAMETER_PAYER_ID = 'PayerID';
+
+    public const PAYPAL_REQUEST_PARAMETER_PAYMENT_ID = 'paymentId';
 
     /**
      * @var RepositoryInterface
@@ -80,16 +85,13 @@ class PayPalPayment implements PaymentHandlerInterface
             return;
         }
 
-        $payerId = $request->query->get('PayerID');
-        $paymentId = $request->query->get('paymentId');
+        $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
+        $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
         $response = $this->paymentResource->execute($payerId, $paymentId, $context);
 
-        /** @var RelatedResource $relatedResource */
-        $relatedResource = $response->getTransactions()[0]->getRelatedResources()[0];
+        $paymentState = $this->getPaymentState($response);
 
         // apply the payment status if its completed by PayPal
-        $paymentState = $relatedResource->getSale()->getState();
-
         if ($paymentState === PaymentStatus::PAYMENT_COMPLETED) {
             $transaction = [
                 'id' => $transactionId,
@@ -103,5 +105,35 @@ class PayPalPayment implements PaymentHandlerInterface
         }
 
         $this->orderTransactionRepo->update([$transaction], $context);
+    }
+
+    private function getPaymentState(Payment $response): string
+    {
+        $intent = $response->getIntent();
+        $relatedResource = $response->getTransactions()[0]->getRelatedResources()[0];
+        $paymentState = '';
+
+        switch ($intent) {
+            case PaymentIntent::SALE:
+                $sale = $relatedResource->getSale();
+                if ($sale !== null) {
+                    $paymentState = $sale->getState();
+                }
+                break;
+            case PaymentIntent::AUTHORIZE:
+                $authorization = $relatedResource->getAuthorization();
+                if ($authorization !== null) {
+                    $paymentState = $authorization->getState();
+                }
+                break;
+            case PaymentIntent::ORDER:
+                $order = $relatedResource->getOrder();
+                if ($order !== null) {
+                    $paymentState = $order->getState();
+                }
+                break;
+        }
+
+        return $paymentState;
     }
 }

@@ -32,6 +32,7 @@ class SwagPayPalSettingGeneralDefinition extends EntityDefinition
             new StringField('client_id', 'clientId'),
             new StringField('client_secret', 'clientSecret'),
             (new BoolField('sandbox', 'sandbox'))->setFlags(new Required()),
+            (new StringField('intent', 'intent'))->setFlags(new Required()),
             new BoolField('submit_cart', 'submitCart'),
             new StringField('webhook_id', 'webhookId'),
             new StringField('webhook_execute_token', 'webhookExecuteToken'),

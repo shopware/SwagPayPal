@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Test\Mock\PayPal\Client\_fixtures;
 
-class ExecutePaymentResponseFixture
+class ExecutePaymentSaleResponseFixture
 {
     public static function get(): array
     {

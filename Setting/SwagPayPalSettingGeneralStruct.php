@@ -29,6 +29,11 @@ class SwagPayPalSettingGeneralStruct extends Entity
     protected $sandbox;
 
     /**
+     * @var string
+     */
+    protected $intent;
+
+    /**
      * @var bool
      */
     protected $submitCart;
@@ -91,6 +96,16 @@ class SwagPayPalSettingGeneralStruct extends Entity
     public function setSandbox(bool $sandbox): void
     {
         $this->sandbox = $sandbox;
+    }
+
+    public function getIntent(): string
+    {
+        return $this->intent;
+    }
+
+    public function setIntent(string $intent): void
+    {
+        $this->intent = $intent;
     }
 
     public function setSubmitCart(bool $submitCart): void

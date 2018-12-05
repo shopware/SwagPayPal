@@ -13,7 +13,7 @@ use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\OAuthCredentials;
 use SwagPayPal\PayPal\Api\PayPalStruct;
 use SwagPayPal\PayPal\BaseURL;
-use SwagPayPal\PayPal\Client\Exception\PayPalSettingsInvalidException;
+use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use SwagPayPal\PayPal\PartnerAttributionId;
 use SwagPayPal\PayPal\Resource\TokenResource;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
