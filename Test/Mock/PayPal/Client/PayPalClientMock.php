@@ -26,9 +26,16 @@ class PayPalClientMock extends PayPalClient
 {
     public const GET_WEBHOOK_URL = 'testWebhookUrl';
 
+    public const TEST_WEBHOOK_ID = 'testWebhookId';
+
     public const CLIENT_EXCEPTION_MESSAGE_WITHOUT_RESPONSE = 'clientExceptionWithoutResponse';
 
     public const CLIENT_EXCEPTION_MESSAGE_WITH_RESPONSE = 'clientExceptionWithoutResponse';
+
+    /**
+     * @var array
+     */
+    private $data = [];
 
     public function sendGetRequest(string $resourceUri): array
     {
@@ -70,12 +77,40 @@ class PayPalClientMock extends PayPalClient
             return $response;
         }
 
+        if (mb_substr($resourceUri, -22) === 'notifications/webhooks') {
+            $createWebhookJson = json_encode($data);
+            if ($createWebhookJson && strpos($createWebhookJson, WebhookResourceTest::TEST_URL) !== false) {
+                throw $this->createClientExceptionWithResponse();
+            }
+
+            if ($createWebhookJson && strpos($createWebhookJson, WebhookResourceTest::TEST_URL_ALREADY_EXISTS) !== false) {
+                throw $this->createClientExceptionWebhookAlreadyExists();
+            }
+
+            return ['id' => self::TEST_WEBHOOK_ID];
+        }
+
         return CreatePaymentResponseFixture::get();
     }
 
     public function sendPatchRequest(string $resourceUri, array $data): array
     {
-        throw $this->createClientExceptionWithInvalidId();
+        if (strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID) !== false) {
+            throw $this->createClientExceptionWithInvalidId();
+        }
+
+        if (strpos($resourceUri, WebhookResourceTest::WEBHOOK_ID) !== false) {
+            throw $this->createClientExceptionWithResponse();
+        }
+
+        $this->data = $data;
+
+        return [];
+    }
+
+    public function getData(): array
+    {
+        return $this->data;
     }
 
     private function createClientException(): ClientException
@@ -93,6 +128,13 @@ class PayPalClientMock extends PayPalClient
     private function createClientExceptionWithInvalidId(): ClientException
     {
         $jsonString = (string) json_encode(['name' => 'INVALID_RESOURCE_ID']);
+
+        return $this->createClientExceptionFromResponseString($jsonString);
+    }
+
+    private function createClientExceptionWebhookAlreadyExists(): ClientException
+    {
+        $jsonString = (string) json_encode(['name' => 'WEBHOOK_URL_ALREADY_EXISTS']);
 
         return $this->createClientExceptionFromResponseString($jsonString);
     }

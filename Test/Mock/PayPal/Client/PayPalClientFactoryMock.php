@@ -17,6 +17,11 @@ use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 
 class PayPalClientFactoryMock extends PayPalClientFactory
 {
+    /**
+     * @var PayPalClientMock
+     */
+    private $client;
+
     public function createPaymentClient(Context $context): PayPalClient
     {
         $settings = new SwagPayPalSettingGeneralStruct();
@@ -24,7 +29,7 @@ class PayPalClientFactoryMock extends PayPalClientFactory
         $settings->setClientSecret('testClientSecret');
         $settings->setSandbox(true);
 
-        return new PayPalClientMock(
+        $this->client = new PayPalClientMock(
             new TokenResourceMock(
                 new CacheMock(),
                 new TokenClientFactoryMock()
@@ -32,5 +37,12 @@ class PayPalClientFactoryMock extends PayPalClientFactory
             $context,
             $settings
         );
+
+        return $this->client;
+    }
+
+    public function getClient(): PayPalClientMock
+    {
+        return $this->client;
     }
 }

@@ -17,17 +17,17 @@ class Patch extends PayPalStruct
     /**
      * @var string
      */
-    private $op;
+    protected $op;
 
     /**
      * @var string
      */
-    private $path;
+    protected $path;
 
     /**
      * @var mixed
      */
-    private $value;
+    protected $value;
 
     protected function setOp(string $op): void
     {
