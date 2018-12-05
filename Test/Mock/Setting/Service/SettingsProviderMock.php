@@ -9,6 +9,7 @@
 namespace SwagPayPal\Test\Mock\Setting\Service;
 
 use Shopware\Core\Framework\Context;
+use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
 use SwagPayPal\Setting\Service\SettingsProviderInterface;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
 
@@ -31,12 +32,14 @@ class SettingsProviderMock implements SettingsProviderInterface
         if ($context->hasExtension(self::PAYPAL_SETTING_WITHOUT_TOKEN)) {
             $settingsStruct = $this->createBasicSettingStruct();
             $settingsStruct->setWebhookId(self::ALREADY_EXISTING_WEBHOOK_ID);
+            $settingsStruct->setLandingPage(ApplicationContext::LANDINGPAGE_TYPE_BILLING);
 
             return $settingsStruct;
         }
 
         if ($context->hasExtension(self::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID)) {
             $settingsStruct = $this->createBasicSettingStruct();
+            $settingsStruct->setLandingPage(ApplicationContext::LANDINGPAGE_TYPE_LOGIN);
 
             return $settingsStruct;
         }
@@ -45,10 +48,11 @@ class SettingsProviderMock implements SettingsProviderInterface
         $settingsStruct->setBrandName('Test Brand');
         $settingsStruct->setWebhookExecuteToken(self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
         $settingsStruct->setWebhookId(self::ALREADY_EXISTING_WEBHOOK_ID);
-        $settingsStruct->setSubmitCart(false);
+        $settingsStruct->setLandingPage('Login');
 
         if ($context->hasExtension(self::PAYPAL_SETTING_WITH_SUBMIT_CART)) {
             $settingsStruct->setSubmitCart(true);
+            $settingsStruct->setLandingPage('Quatsch');
         }
 
         return $settingsStruct;
@@ -58,6 +62,7 @@ class SettingsProviderMock implements SettingsProviderInterface
     {
         $settingsStruct = new SwagPayPalSettingGeneralStruct();
         $settingsStruct->setId(self::PAYPAL_SETTING_ID);
+        $settingsStruct->setSubmitCart(false);
 
         return $settingsStruct;
     }

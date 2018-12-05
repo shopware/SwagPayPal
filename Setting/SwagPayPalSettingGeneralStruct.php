@@ -49,6 +49,11 @@ class SwagPayPalSettingGeneralStruct extends Entity
     protected $brandName;
 
     /**
+     * @var string
+     */
+    protected $landingPage;
+
+    /**
      * @var DateTime
      */
     protected $createdAt;
@@ -126,6 +131,16 @@ class SwagPayPalSettingGeneralStruct extends Entity
     public function setBrandName(string $brandName): void
     {
         $this->brandName = $brandName;
+    }
+
+    public function getLandingPage(): string
+    {
+        return $this->landingPage;
+    }
+
+    public function setLandingPage(string $landingPage): void
+    {
+        $this->landingPage = $landingPage;
     }
 
     public function getCreatedAt(): DateTime

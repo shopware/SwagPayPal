@@ -135,6 +135,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
         $applicationContext = new ApplicationContext();
         $applicationContext->setLocale($this->getLocaleCode($context));
         $applicationContext->setBrandName($this->getBrandName($context));
+        $applicationContext->setLandingPage($this->getLandingPageType());
 
         return $applicationContext;
     }
@@ -235,5 +236,15 @@ class PaymentBuilderService implements PaymentBuilderInterface
         $item->setTax($this->formatPrice($taxAmount));
 
         return $item;
+    }
+
+    private function getLandingPageType(): string
+    {
+        $landingPageType = $this->settings->getLandingPage();
+        if ($landingPageType !== ApplicationContext::LANDINGPAGE_TYPE_BILLING) {
+            $landingPageType = ApplicationContext::LANDINGPAGE_TYPE_LOGIN;
+        }
+
+        return $landingPageType;
     }
 }

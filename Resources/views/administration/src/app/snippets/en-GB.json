@@ -29,6 +29,17 @@
                 "label": "Brand name on the PayPal page",
                 "helpText": "This text will be displayed as the brand name on the PayPal payment page."
             },
+            "landingPage": {
+                "label": "PayPal landingpage",
+                "helpText": {
+                    "Login": "Login: The PayPal site displays a login screen as landingpage.",
+                    "Billing": "Registration: The PayPal site displays a registration form as landingpage."
+                },
+                "options": {
+                    "Login": "Login",
+                    "Billing": "Registration"
+                }
+            },
             "titleSaveSuccess": "PayPal settings",
             "titleTestSuccess": "API credentials",
             "titleTestError": "API credentials error",

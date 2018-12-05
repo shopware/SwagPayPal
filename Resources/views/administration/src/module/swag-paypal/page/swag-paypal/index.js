@@ -13,7 +13,8 @@ Component.register('swag-paypal', {
     data() {
         return {
             setting: {},
-            isLoading: true
+            isLoading: true,
+            landingPageTypes: ['Login', 'Billing']
         };
     },
 
@@ -40,6 +41,7 @@ Component.register('swag-paypal', {
                     this.setting = response.items[0];
                 } else {
                     this.setting = this.settingStore.create();
+                    this.setting.landingPage = this.landingPageTypes[0];
                 }
                 this.isLoading = false;
             });

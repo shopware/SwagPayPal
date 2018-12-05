@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use SwagPayPal\PayPal\Api\Payment;
+use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
 use SwagPayPal\PayPal\Payment\PaymentBuilderService;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
@@ -106,6 +107,40 @@ class PaymentBuilderServiceTest extends TestCase
         $itemList = json_decode($itemList, true)['item_list'];
 
         self::assertNull($itemList);
+    }
+
+    /**
+     * @dataProvider dataProvider_testApplicationContext
+     */
+    public function testApplicationContext(string $extensionName, string $expectedResult): void
+    {
+        $paymentBuilder = $this->createPaymentBuilder();
+        $context = Context::createDefaultContext();
+        $context->addExtension($extensionName, new Entity());
+        $paymentTransaction = $this->createPaymentTransactionStruct();
+
+        $paymet = $paymentBuilder->getPayment($paymentTransaction, $context);
+        $applicationContext = json_decode(json_encode($paymet), true)['application_context'];
+
+        self::assertSame($expectedResult, $applicationContext['landing_page']);
+    }
+
+    public function dataProvider_testApplicationContext(): array
+    {
+        return [
+            [
+                SettingsProviderMock::PAYPAL_SETTING_WITHOUT_TOKEN,
+                ApplicationContext::LANDINGPAGE_TYPE_BILLING,
+            ],
+            [
+                SettingsProviderMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID,
+                ApplicationContext::LANDINGPAGE_TYPE_LOGIN,
+            ],
+            [
+                SettingsProviderMock::PAYPAL_SETTING_WITH_SUBMIT_CART,
+                ApplicationContext::LANDINGPAGE_TYPE_LOGIN,
+            ],
+        ];
     }
 
     private function createPaymentBuilder(): PaymentBuilderService
