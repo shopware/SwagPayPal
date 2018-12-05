@@ -38,7 +38,8 @@
                                         <sw-field type="text"
                                                   :label="$tc('swag-paypal.settingForm.clientId.label')"
                                                   v-model="setting.clientId"
-                                                  :helpText="$tc('swag-paypal.settingForm.clientId.helpText')">
+                                                  :helpText="$tc('swag-paypal.settingForm.clientId.helpText')"
+                                                  validation="required">
                                         </sw-field>
                                     {% endblock %}
 
@@ -46,7 +47,8 @@
                                         <sw-field type="text"
                                                   :label="$tc('swag-paypal.settingForm.clientSecret.label')"
                                                   v-model="setting.clientSecret"
-                                                  :helpText="$tc('swag-paypal.settingForm.clientSecret.helpText')">
+                                                  :helpText="$tc('swag-paypal.settingForm.clientSecret.helpText')"
+                                                  validation="required">
                                         </sw-field>
                                     {% endblock %}
 
@@ -72,6 +74,20 @@
                                                   v-model="setting.brandName"
                                                   :helpText="$tc('swag-paypal.settingForm.brandName.helpText')"
                                                   maxlength="127">
+                                        </sw-field>
+                                    {% endblock %}
+
+                                    {% block  swag_paypal_content_credentials_form_landingPage %}
+                                        <sw-field type="select"
+                                                  :label="$tc('swag-paypal.settingForm.landingPage.label')"
+                                                  v-model="setting.landingPage"
+                                                  validation="required"
+                                                  :helpText="$tc('swag-paypal.settingForm.landingPage.helpText.' + setting.landingPage)">
+                                            {% block swag_paypal_content_credentials_form_landingPage_options %}
+                                                <option slot="options" v-for="landingPageType in landingPageTypes" :value="landingPageType">
+                                                    {{ $tc('swag-paypal.settingForm.landingPage.options.' + landingPageType) }}
+                                                </option>
+                                            {% endblock %}
                                         </sw-field>
                                     {% endblock %}
                                 </sw-container>

@@ -29,6 +29,17 @@
                 "label": "Markenname auf der PayPal Seite",
                 "helpText": "Dieser Text wird als Markenname auf der PayPal Zahlungsseite angezeigt."
             },
+            "landingPage": {
+                "label": "PayPal Landingpage",
+                "helpText": {
+                    "Login": "Anmeldung: Auf der PayPal Seite wird ein Login als Landingpage angezeigt.",
+                    "Billing": "Registrierung: Auf der PayPal Seite wird eine Registrierung als Landingpage angezeigt."
+                },
+                "options": {
+                    "Login": "Anmeldung",
+                    "Billing": "Registrierung"
+                }
+            },
             "titleSaveSuccess": "PayPal Einstellungen",
             "titleTestSuccess": "API Zugangsdaten",
             "titleTestError": "API Zugangsdaten Fehler",
