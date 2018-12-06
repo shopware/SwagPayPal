@@ -14,8 +14,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\PayPal\Client\PayPalClientFactory;
 use SwagPayPal\PayPal\Resource\TokenResource;
+use SwagPayPal\Test\Helper\ServicesTrait;
 use SwagPayPal\Test\Mock\CacheMock;
-use SwagPayPal\Test\Mock\DummyCollection;
 use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
@@ -23,12 +23,13 @@ use SwagPayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
 use SwagPayPal\Test\Mock\RouterMock;
 use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 use SwagPayPal\Test\Mock\Webhook\Handler\DummyWebhook;
-use SwagPayPal\Webhook\WebhookRegistry;
 use SwagPayPal\Webhook\WebhookService;
 use SwagPayPal\Webhook\WebhookServiceInterface;
 
 class WebhookServiceTest extends TestCase
 {
+    use ServicesTrait;
+
     /**
      * @var SwagPayPalSettingGeneralRepoMock
      */
@@ -133,7 +134,7 @@ class WebhookServiceTest extends TestCase
 
         return new WebhookService(
             $webhookResourceMock,
-            $this->createWebhookRegistry(),
+            $this->createWebhookRegistry($this->orderTransactionRepo),
             new SettingsProviderMock(),
             $this->swagPayPalSettingGeneralRepo,
             new RouterMock()
@@ -148,15 +149,5 @@ class WebhookServiceTest extends TestCase
                 new SettingsProviderMock()
             )
         );
-    }
-
-    private function createWebhookRegistry(): WebhookRegistry
-    {
-        return new WebhookRegistry(new DummyCollection([$this->createDummyWebhook()]));
-    }
-
-    private function createDummyWebhook(): DummyWebhook
-    {
-        return new DummyWebhook($this->orderTransactionRepo);
     }
 }

@@ -12,25 +12,18 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPayment;
-use SwagPayPal\PayPal\Payment\PaymentBuilderService;
-use SwagPayPal\PayPal\Resource\PaymentResource;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
-use SwagPayPal\Test\Mock\CacheMock;
+use SwagPayPal\Test\Helper\ServicesTrait;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreatePaymentResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
-use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
-use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
-use SwagPayPal\Test\Mock\Repositories\OrderRepoMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPaymentTest extends TestCase
 {
-    use PaymentTransactionTrait;
+    use PaymentTransactionTrait,
+        ServicesTrait;
 
     public const PAYER_ID_PAYMENT_INCOMPLETE = 'testPayerIdIncomplete';
 
@@ -151,30 +144,16 @@ class PayPalPaymentTest extends TestCase
 
         return new PayPalPayment(
             $this->orderTransactionRepo,
-            new PaymentResource(
-                new PayPalClientFactoryMock(
-                    new TokenResourceMock(
-                        new CacheMock(),
-                        new TokenClientFactoryMock()
-                    ),
-                    $settingsProvider
-                )
-            ),
-            new PaymentBuilderService(
-                new LanguageRepoMock(),
-                new SalesChannelRepoMock(),
-                new OrderRepoMock(),
-                $settingsProvider
-            )
+            $this->createPaymentResource($settingsProvider),
+            $this->createPaymentBuilder($settingsProvider)
         );
     }
 
     private function createRequest(): Request
     {
-        $paymentId = 'testPaymentId';
         $request = new Request([
             PayPalPayment::PAYPAL_REQUEST_PARAMETER_PAYER_ID => 'testPayerId',
-            PayPalPayment::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID => $paymentId,
+            PayPalPayment::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID => 'testPaymentId',
         ]);
 
         return $request;

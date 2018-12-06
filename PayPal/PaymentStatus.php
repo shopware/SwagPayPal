@@ -14,5 +14,5 @@ final class PaymentStatus
 
     public const PAYMENT_AUTHORIZED = 'authorized';
 
-    public const PAYMENT_PENDING = 'pending';
+    public const PAYMENT_PENDING = 'PENDING';
 }

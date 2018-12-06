@@ -16,14 +16,14 @@ use SwagPayPal\Setting\Service\SettingsProviderInterface;
 use SwagPayPal\Webhook\Exception\WebhookException;
 use SwagPayPal\Webhook\WebhookService;
 use SwagPayPal\Webhook\WebhookServiceInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
-class WebhookController extends Controller
+class WebhookController extends AbstractController
 {
     /**
      * @var LoggerInterface

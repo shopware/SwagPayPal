@@ -52,6 +52,11 @@ class Payment extends PayPalStruct
     protected $createTime;
 
     /**
+     * @var string
+     */
+    protected $updateTime;
+
+    /**
      * @var Link[]
      */
     protected $links;
@@ -138,6 +143,11 @@ class Payment extends PayPalStruct
     protected function setCreateTime(string $createTime): void
     {
         $this->createTime = $createTime;
+    }
+
+    protected function setUpdateTime(string $updateTime): void
+    {
+        $this->updateTime = $updateTime;
     }
 
     /**
