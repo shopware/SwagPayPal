@@ -112,7 +112,13 @@ class WebhookResourceTest extends TestCase
         $this->createWebHookResource()->updateWebhook(self::TEST_URL, '', $context);
 
         $data = $this->clientFactory->getClient()->getData();
-        $patch = json_decode(json_encode($data[0]), true);
+        $patchJsonString = json_encode($data[0]);
+        self::assertNotFalse($patchJsonString);
+        if ($patchJsonString === false) {
+            return;
+        }
+
+        $patch = json_decode($patchJsonString, true);
         self::assertSame($patch['value'], self::TEST_URL);
     }
 

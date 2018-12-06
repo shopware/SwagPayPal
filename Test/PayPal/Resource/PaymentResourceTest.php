@@ -11,35 +11,27 @@ namespace SwagPayPal\Test\PayPal\Resource;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Payment;
-use SwagPayPal\PayPal\Payment\PaymentBuilderService;
 use SwagPayPal\PayPal\PaymentStatus;
-use SwagPayPal\PayPal\Resource\PaymentResource;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
-use SwagPayPal\Test\Mock\CacheMock;
+use SwagPayPal\Test\Helper\ServicesTrait;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreatePaymentResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
-use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
-use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
-use SwagPayPal\Test\Mock\Repositories\OrderRepoMock;
-use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 
 class PaymentResourceTest extends TestCase
 {
-    use PaymentTransactionTrait;
+    use PaymentTransactionTrait,
+        ServicesTrait;
+
+    public const ORDER_PAYMENT_ID = 'testOrderPaymentId';
+
+    private const TEST_PAYMENT_ID = 'testPaymentId';
 
     public function testCreate(): void
     {
-        $paymentResource = $this->createPaymentResource();
-
         $context = Context::createDefaultContext();
         $paymentTransaction = $this->createPaymentTransactionStruct();
-
-        $payment = $this->createPaymentBuilderService()->getPayment($paymentTransaction, $context);
-
-        $createdPayment = $paymentResource->create($payment, $context);
+        $payment = $this->createPaymentBuilder()->getPayment($paymentTransaction, $context);
+        $createdPayment = $this->createPaymentResource()->create($payment, $context);
 
         self::assertInstanceOf(Payment::class, $createdPayment);
         self::assertSame(CreatePaymentResponseFixture::CREATE_PAYMENT_ID, $createdPayment->getId());
@@ -52,11 +44,8 @@ class PaymentResourceTest extends TestCase
 
     public function testExecuteSale(): void
     {
-        $paymentResource = $this->createPaymentResource();
-
         $context = Context::createDefaultContext();
-
-        $executedPayment = $paymentResource->execute('testPayerId', 'testPaymentId', $context);
+        $executedPayment = $this->createPaymentResource()->execute('testPayerId', self::TEST_PAYMENT_ID, $context);
 
         self::assertInstanceOf(Payment::class, $executedPayment);
         $transaction = $executedPayment->getTransactions()[0];
@@ -70,13 +59,10 @@ class PaymentResourceTest extends TestCase
 
     public function testExecuteAuthorize(): void
     {
-        $paymentResource = $this->createPaymentResource();
-
         $context = Context::createDefaultContext();
-
-        $executedPayment = $paymentResource->execute(
+        $executedPayment = $this->createPaymentResource()->execute(
             ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE,
-            'testPaymentId',
+            self::TEST_PAYMENT_ID,
             $context
         );
 
@@ -92,13 +78,10 @@ class PaymentResourceTest extends TestCase
 
     public function testExecuteOrder(): void
     {
-        $paymentResource = $this->createPaymentResource();
-
         $context = Context::createDefaultContext();
-
-        $executedPayment = $paymentResource->execute(
+        $executedPayment = $this->createPaymentResource()->execute(
             ConstantsForTesting::PAYER_ID_PAYMENT_ORDER,
-            'testPaymentId',
+            self::TEST_PAYMENT_ID,
             $context
         );
 
@@ -112,28 +95,33 @@ class PaymentResourceTest extends TestCase
         }
     }
 
-    private function createPaymentResource(): PaymentResource
+    public function testGetSale(): void
     {
-        return new PaymentResource(
-            new PayPalClientFactoryMock(
-                new TokenResourceMock(
-                    new CacheMock(),
-                    new TokenClientFactoryMock()
-                ),
-                new SettingsProviderMock()
-            )
-        );
+        $context = Context::createDefaultContext();
+        $payment = $this->createPaymentResource()->get(self::TEST_PAYMENT_ID, $context);
+
+        self::assertInstanceOf(Payment::class, $payment);
+        $transaction = $payment->getTransactions()[0];
+        self::assertInstanceOf(Payment\Transaction::class, $transaction);
+        self::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        $sale = $transaction->getRelatedResources()[0]->getSale();
+        if ($sale !== null) {
+            self::assertSame(PaymentStatus::PAYMENT_COMPLETED, $sale->getState());
+        }
     }
 
-    private function createPaymentBuilderService(): PaymentBuilderService
+    public function testGetOrder(): void
     {
-        $paymentBuilderService = new PaymentBuilderService(
-            new LanguageRepoMock(),
-            new SalesChannelRepoMock(),
-            new OrderRepoMock(),
-            new SettingsProviderMock()
-        );
+        $context = Context::createDefaultContext();
+        $payment = $this->createPaymentResource()->get(self::ORDER_PAYMENT_ID, $context);
 
-        return $paymentBuilderService;
+        self::assertInstanceOf(Payment::class, $payment);
+        $transaction = $payment->getTransactions()[0];
+        self::assertInstanceOf(Payment\Transaction::class, $transaction);
+        self::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        $order = $transaction->getRelatedResources()[0]->getOrder();
+        if ($order !== null) {
+            self::assertSame(PaymentStatus::PAYMENT_PENDING, $order->getState());
+        }
     }
 }

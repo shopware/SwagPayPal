@@ -30,11 +30,6 @@ class SwagPayPal extends Plugin
      */
     public const PAYPAL_PAYMENT_METHOD_NAME = 'SwagPayPal';
 
-    public function __construct($active = true)
-    {
-        parent::__construct($active);
-    }
-
     /**
      * {@inheritdoc}
      */

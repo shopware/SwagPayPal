@@ -15,17 +15,17 @@ use Shopware\Core\Framework\SourceContext;
 use SwagPayPal\PayPal\Api\Payment;
 use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
 use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
-use SwagPayPal\PayPal\Payment\PaymentBuilderService;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
-use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
+use SwagPayPal\Test\Helper\ServicesTrait;
 use SwagPayPal\Test\Mock\Repositories\OrderRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 
 class PaymentBuilderServiceTest extends TestCase
 {
-    use PaymentTransactionTrait;
+    use PaymentTransactionTrait,
+        ServicesTrait;
 
     public function testGetPayment(): void
     {
@@ -173,8 +173,13 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct();
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
-        $applicationContext = json_decode(json_encode($payment), true)['application_context'];
+        $paymentJsonString = json_encode($payment);
+        self::assertNotFalse($paymentJsonString);
+        if ($paymentJsonString === false) {
+            return;
+        }
 
+        $applicationContext = json_decode($paymentJsonString, true)['application_context'];
         self::assertSame($expectedResult, $applicationContext['landing_page']);
     }
 
@@ -194,16 +199,6 @@ class PaymentBuilderServiceTest extends TestCase
                 ApplicationContext::LANDINGPAGE_TYPE_LOGIN,
             ],
         ];
-    }
-
-    private function createPaymentBuilder(): PaymentBuilderService
-    {
-        return new PaymentBuilderService(
-            new LanguageRepoMock(),
-            new SalesChannelRepoMock(),
-            new OrderRepoMock(),
-            new SettingsProviderMock()
-        );
     }
 
     private function createContextWithoutSalesChannel(): Context

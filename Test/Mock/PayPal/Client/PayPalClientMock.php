@@ -20,6 +20,9 @@ use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreatePaymentResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentAuthorizeResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentOrderResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentSaleResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentOrderResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentSaleResponseFixture;
+use SwagPayPal\Test\PayPal\Resource\PaymentResourceTest;
 use SwagPayPal\Test\PayPal\Resource\WebhookResourceTest;
 
 class PayPalClientMock extends PayPalClient
@@ -39,19 +42,15 @@ class PayPalClientMock extends PayPalClient
 
     public function sendGetRequest(string $resourceUri): array
     {
-        if (strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_WITHOUT_RESPONSE) !== false) {
-            throw $this->createClientException();
+        if (strncmp($resourceUri, 'notifications/webhooks/', 23) === 0) {
+            return $this->handleWebhookGetRequests($resourceUri);
         }
 
-        if (strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_WITH_RESPONSE) !== false) {
-            throw $this->createClientExceptionWithResponse();
+        if (strncmp($resourceUri, 'payments/payment/', 17) === 0) {
+            return $this->handlePaymentGetRequests($resourceUri);
         }
 
-        if (strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID) !== false) {
-            throw $this->createClientExceptionWithInvalidId();
-        }
-
-        return ['url' => self::GET_WEBHOOK_URL];
+        return [];
     }
 
     public function sendPostRequest(string $resourceUri, PayPalStruct $data): array
@@ -111,6 +110,32 @@ class PayPalClientMock extends PayPalClient
     public function getData(): array
     {
         return $this->data;
+    }
+
+    private function handleWebhookGetRequests(string $resourceUri): array
+    {
+        if (strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_WITHOUT_RESPONSE) !== false) {
+            throw $this->createClientException();
+        }
+
+        if (strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_WITH_RESPONSE) !== false) {
+            throw $this->createClientExceptionWithResponse();
+        }
+
+        if (strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID) !== false) {
+            throw $this->createClientExceptionWithInvalidId();
+        }
+
+        return ['url' => self::GET_WEBHOOK_URL];
+    }
+
+    private function handlePaymentGetRequests(string $resourceUri): array
+    {
+        if (strpos($resourceUri, PaymentResourceTest::ORDER_PAYMENT_ID) !== false) {
+            return GetPaymentOrderResponseFixture::get();
+        }
+
+        return GetPaymentSaleResponseFixture::get();
     }
 
     private function createClientException(): ClientException

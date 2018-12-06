@@ -9,14 +9,16 @@
 namespace SwagPayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
+use SwagPayPal\Test\Helper\ServicesTrait;
 use SwagPayPal\Test\Mock\DummyCollection;
-use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use SwagPayPal\Webhook\Exception\WebhookException;
 use SwagPayPal\Webhook\WebhookRegistry;
 
 class WebhookRegistryTest extends TestCase
 {
+    use ServicesTrait;
+
     public function testGetWebhookHandler(): void
     {
         $webhook = $this->createWebhookRegistry()->getWebhookHandler(DummyWebhook::EVENT_TYPE);
@@ -36,15 +38,5 @@ class WebhookRegistryTest extends TestCase
         $this->expectException(WebhookException::class);
         $this->expectExceptionMessage('The specified event is already registered.');
         new WebhookRegistry(new DummyCollection([$this->createDummyWebhook(), $this->createDummyWebhook()]));
-    }
-
-    private function createWebhookRegistry(): WebhookRegistry
-    {
-        return new WebhookRegistry(new DummyCollection([$this->createDummyWebhook()]));
-    }
-
-    private function createDummyWebhook(): DummyWebhook
-    {
-        return new DummyWebhook(new OrderTransactionRepoMock());
     }
 }
