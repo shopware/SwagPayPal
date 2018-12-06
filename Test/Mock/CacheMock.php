@@ -10,11 +10,17 @@ namespace SwagPayPal\Test\Mock;
 
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
+use SwagPayPal\PayPal\Resource\TokenResource;
+use SwagPayPal\Test\PayPal\Resource\TokenResourceTest;
 
 class CacheMock implements CacheItemPoolInterface
 {
     public function getItem($key): CacheItemInterface
     {
+        if ($key === TokenResource::CACHE_ID . TokenResourceTest::SALES_CHANNEL_ID_WITH_TOKEN) {
+            return new CacheItemWithTokenMock();
+        }
+
         return new CacheItemMock();
     }
 
