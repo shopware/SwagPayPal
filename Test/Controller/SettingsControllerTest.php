@@ -24,11 +24,13 @@ class SettingsControllerTest extends TestCase
     {
         $controller = $this->createApiValidationController();
 
-        $request = new Request([], [
-            'clientId' => ConstantsForTesting::VALID_CLIENT_ID,
-            'clientSecret' => ConstantsForTesting::VALID_CLIENT_SECRET,
-            'sandboxActive' => true,
-        ]);
+        $request = new Request(
+            [
+                'clientId' => ConstantsForTesting::VALID_CLIENT_ID,
+                'clientSecret' => ConstantsForTesting::VALID_CLIENT_SECRET,
+                'sandboxActive' => true,
+            ]
+        );
 
         $result = json_decode($controller->validateApiCredentials($request)->getContent(), true);
 
@@ -39,11 +41,13 @@ class SettingsControllerTest extends TestCase
     {
         $controller = $this->createApiValidationController();
 
-        $request = new Request([], [
-            'clientId' => 'invalid-id',
-            'clientSecret' => 'invalid-secret',
-            'sandboxActive' => false,
-        ]);
+        $request = new Request(
+            [
+                'clientId' => 'invalid-id',
+                'clientSecret' => 'invalid-secret',
+                'sandboxActive' => false,
+            ]
+        );
 
         $this->expectException(ClientException::class);
         $this->expectExceptionMessage(TokenResourceMock::GENERAL_CLIENT_EXCEPTION_MESSAGE);
