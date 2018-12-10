@@ -10,9 +10,12 @@ namespace SwagPayPal\Setting;
 
 use DateTime;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
 class SwagPayPalSettingGeneralStruct extends Entity
 {
+    use EntityIdTrait;
+
     /**
      * @var string|null
      */

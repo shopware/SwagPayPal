@@ -14,7 +14,7 @@ use Throwable;
 
 class PayPalSettingsInvalidException extends ShopwareHttpException
 {
-    protected $code = 'SWAG-PAYPAL-REQUIRED-SETTING-MISSING';
+    protected $code = 'SWAG-PAYPAL-REQUIRED-SETTING-INVALID';
 
     public function __construct(string $missingSetting, $code = 0, Throwable $previous = null)
     {

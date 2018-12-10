@@ -8,27 +8,8 @@
 
 namespace SwagPayPal\PayPal\Api\Webhook\Resource;
 
-use SwagPayPal\PayPal\Api\PayPalStruct;
+use SwagPayPal\PayPal\Api\Common\Amount as CommonAmount;
 
-class Amount extends PayPalStruct
+class Amount extends CommonAmount
 {
-    /**
-     * @var string
-     */
-    private $total;
-
-    /**
-     * @var string
-     */
-    private $currency;
-
-    protected function setTotal(string $total): void
-    {
-        $this->total = $total;
-    }
-
-    protected function setCurrency(string $currency): void
-    {
-        $this->currency = $currency;
-    }
 }

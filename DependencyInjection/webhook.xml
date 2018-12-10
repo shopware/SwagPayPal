@@ -5,16 +5,13 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="SwagPayPal\Controller\WebhookController"
-                 class="SwagPayPal\Controller\WebhookController"
-                 public="true">
+        <service id="SwagPayPal\Controller\WebhookController" public="true">
             <argument type="service" id="logger"/>
             <argument type="service" id="SwagPayPal\Webhook\WebhookService"/>
             <argument type="service" id="SwagPayPal\Setting\Service\SettingsProvider"/>
         </service>
 
-        <service id="SwagPayPal\Webhook\WebhookService"
-                 class="SwagPayPal\Webhook\WebhookService">
+        <service id="SwagPayPal\Webhook\WebhookService">
             <argument type="service" id="SwagPayPal\PayPal\Resource\WebhookResource"/>
             <argument type="service" id="SwagPayPal\Webhook\WebhookRegistry"/>
             <argument type="service" id="SwagPayPal\Setting\Service\SettingsProvider"/>
@@ -23,32 +20,27 @@
         </service>
 
         <!-- handler registry -->
-        <service id="SwagPayPal\Webhook\WebhookRegistry"
-                 class="SwagPayPal\Webhook\WebhookRegistry">
+        <service id="SwagPayPal\Webhook\WebhookRegistry">
             <argument type="tagged" tag="swag.paypal.webhook.handler"/>
         </service>
 
         <!-- handler -->
-        <service id="SwagPayPal\Webhook\Handler\AuthorizationVoided"
-                 class="SwagPayPal\Webhook\Handler\AuthorizationVoided">
+        <service id="SwagPayPal\Webhook\Handler\AuthorizationVoided">
             <argument type="service" id="order_transaction.repository"/>
             <tag name="swag.paypal.webhook.handler"/>
         </service>
 
-        <service id="SwagPayPal\Webhook\Handler\SaleComplete"
-                 class="SwagPayPal\Webhook\Handler\SaleComplete">
+        <service id="SwagPayPal\Webhook\Handler\SaleComplete">
             <argument type="service" id="order_transaction.repository"/>
             <tag name="swag.paypal.webhook.handler"/>
         </service>
 
-        <service id="SwagPayPal\Webhook\Handler\SaleDenied"
-                 class="SwagPayPal\Webhook\Handler\SaleDenied">
+        <service id="SwagPayPal\Webhook\Handler\SaleDenied">
             <argument type="service" id="order_transaction.repository"/>
             <tag name="swag.paypal.webhook.handler"/>
         </service>
 
-        <service id="SwagPayPal\Webhook\Handler\SaleRefunded"
-                 class="SwagPayPal\Webhook\Handler\SaleRefunded">
+        <service id="SwagPayPal\Webhook\Handler\SaleRefunded">
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="order_transaction_state.repository"/>
             <tag name="swag.paypal.webhook.handler"/>

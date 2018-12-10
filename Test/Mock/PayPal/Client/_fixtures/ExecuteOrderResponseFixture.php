@@ -8,15 +8,15 @@
 
 namespace SwagPayPal\Test\Mock\PayPal\Client\_fixtures;
 
-class ExecutePaymentAuthorizeResponseFixture
+class ExecuteOrderResponseFixture
 {
     public static function get(): array
     {
         return [
-            'id' => 'PAY-2G272278LH1357142LQDIU4Q',
-            'intent' => 'authorize',
+            'id' => 'PAY-35B10430TC590490WLQDJXTI',
+            'intent' => 'order',
             'state' => 'approved',
-            'cart' => '1SU34407K73133347',
+            'cart' => '1KU5881047858235H',
             'payer' => [
                 'payment_method' => 'paypal',
                 'status' => 'VERIFIED',
@@ -51,7 +51,6 @@ class ExecutePaymentAuthorizeResponseFixture
                     ],
                     'payee' => [
                         'merchant_id' => 'HCKBUJL8YWQZS',
-                        'email' => 'test@shopware.de',
                     ],
                     'item_list' => [
                         'shipping_address' => [
@@ -67,9 +66,10 @@ class ExecutePaymentAuthorizeResponseFixture
                     ],
                     'related_resources' => [
                         0 => [
-                            'authorization' => [
-                                'id' => '3TG33581TT5577908',
-                                'state' => 'authorized',
+                            'order' => [
+                                'id' => 'O-7PS41727C2382141U',
+                                'create_time' => '2018-12-04T15:23:24Z',
+                                'update_time' => '2018-12-04T15:23:24Z',
                                 'amount' => [
                                     'total' => '375.00',
                                     'currency' => 'EUR',
@@ -79,50 +79,45 @@ class ExecutePaymentAuthorizeResponseFixture
                                             'shipping' => '0.00',
                                         ],
                                 ],
-                                'payment_mode' => 'INSTANT_TRANSFER',
-                                'reason_code' => 'AUTHORIZATION',
-                                'protection_eligibility' => 'ELIGIBLE',
-                                'protection_eligibility_type' => 'ITEM_NOT_RECEIVED_ELIGIBLE,UNAUTHORIZED_PAYMENT_ELIGIBLE',
-                                'parent_payment' => 'PAY-2G272278LH1357142LQDIU4Q',
-                                'valid_until' => '2019-01-02T14:09:02Z',
-                                'create_time' => '2018-12-04T14:09:02Z',
-                                'update_time' => '2018-12-04T14:09:02Z',
+                                'state' => 'PENDING',
+                                'reason_code' => 'ORDER',
                                 'links' => [
                                     0 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/authorization/3TG33581TT5577908',
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U',
                                         'rel' => 'self',
                                         'method' => 'GET',
                                     ],
                                     1 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/authorization/3TG33581TT5577908/capture',
-                                        'rel' => 'capture',
-                                        'method' => 'POST',
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-35B10430TC590490WLQDJXTI',
+                                        'rel' => 'parent_payment',
+                                        'method' => 'GET',
                                     ],
                                     2 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/authorization/3TG33581TT5577908/void',
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U/do-void',
                                         'rel' => 'void',
                                         'method' => 'POST',
                                     ],
                                     3 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/authorization/3TG33581TT5577908/reauthorize',
-                                        'rel' => 'reauthorize',
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U/authorize',
+                                        'rel' => 'authorization',
                                         'method' => 'POST',
                                     ],
                                     4 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-2G272278LH1357142LQDIU4Q',
-                                        'rel' => 'parent_payment',
-                                        'method' => 'GET',
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U/capture',
+                                        'rel' => 'capture',
+                                        'method' => 'POST',
                                     ],
                                 ],
+                                'parent_payment' => 'PAY-35B10430TC590490WLQDJXTI',
                             ],
                         ],
                     ],
                 ],
             ],
-            'create_time' => '2018-12-04T14:09:03Z',
+            'create_time' => '2018-12-04T15:23:25Z',
             'links' => [
                 0 => [
-                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-2G272278LH1357142LQDIU4Q',
+                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-35B10430TC590490WLQDJXTI',
                     'rel' => 'self',
                     'method' => 'GET',
                 ],

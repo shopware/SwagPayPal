@@ -10,12 +10,12 @@ namespace SwagPayPal\Test\Helper;
 
 use SwagPayPal\PayPal\Payment\PaymentBuilderService;
 use SwagPayPal\PayPal\Resource\PaymentResource;
+use SwagPayPal\PayPal\Resource\TokenResource;
 use SwagPayPal\Setting\Service\SettingsProviderInterface;
 use SwagPayPal\Test\Mock\CacheMock;
 use SwagPayPal\Test\Mock\DummyCollection;
 use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
 use SwagPayPal\Test\Mock\Repositories\OrderRepoMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
@@ -26,20 +26,26 @@ use SwagPayPal\Webhook\WebhookRegistry;
 
 trait ServicesTrait
 {
-    protected function createPaymentResource(SettingsProviderInterface $settingsProvider = null): PaymentResource
-    {
+    protected function createPayPalClientFactory(
+        SettingsProviderInterface $settingsProvider = null
+    ): PayPalClientFactoryMock {
         if ($settingsProvider === null) {
             $settingsProvider = new SettingsProviderMock();
         }
 
+        return new PayPalClientFactoryMock(
+            new TokenResource(
+                new CacheMock(),
+                new TokenClientFactoryMock()
+            ),
+            $settingsProvider
+        );
+    }
+
+    protected function createPaymentResource(SettingsProviderInterface $settingsProvider = null): PaymentResource
+    {
         return new PaymentResource(
-            new PayPalClientFactoryMock(
-                new TokenResourceMock(
-                    new CacheMock(),
-                    new TokenClientFactoryMock()
-                ),
-                $settingsProvider
-            )
+            $this->createPayPalClientFactory($settingsProvider)
         );
     }
 

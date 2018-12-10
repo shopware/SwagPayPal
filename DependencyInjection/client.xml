@@ -5,7 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="SwagPayPal\PayPal\Client\PayPalClientFactory" class="SwagPayPal\PayPal\Client\PayPalClientFactory">
+        <service id="SwagPayPal\PayPal\Client\PayPalClientFactory">
             <argument type="service" id="SwagPayPal\PayPal\Resource\TokenResource"/>
             <argument type="service" id="SwagPayPal\Setting\Service\SettingsProvider"/>
         </service>

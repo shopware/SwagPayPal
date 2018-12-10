@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Test\Mock\PayPal\Client\_fixtures;
 
-class CreatePaymentResponseFixture
+class CreateResponseFixture
 {
     public const CREATE_PAYMENT_ID = 'PAY-9FS21791UL732760GLP2ASLY';
 

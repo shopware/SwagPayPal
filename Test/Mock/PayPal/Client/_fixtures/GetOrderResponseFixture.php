@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Test\Mock\PayPal\Client\_fixtures;
 
-class ExecutePaymentOrderResponseFixture
+class GetOrderResponseFixture
 {
     public static function get(): array
     {
@@ -16,7 +16,6 @@ class ExecutePaymentOrderResponseFixture
             'id' => 'PAY-35B10430TC590490WLQDJXTI',
             'intent' => 'order',
             'state' => 'approved',
-            'cart' => '1KU5881047858235H',
             'payer' => [
                 'payment_method' => 'paypal',
                 'status' => 'VERIFIED',
@@ -27,14 +26,14 @@ class ExecutePaymentOrderResponseFixture
                     'payer_id' => 'BNJDKJVFBCXPJ',
                     'shipping_address' => [
                         'recipient_name' => 'Test Test',
-                        'line1' => 'Ebbinghoff 10',
-                        'line2' => 'Addresszusatz',
-                        'city' => 'Schöppingen',
+                        'line1' => 'Wienerstraß1',
+                        'line2' => 'Adresszusatz',
+                        'city' => 'Wien',
                         'state' => '',
-                        'phone' => '4084217591',
-                        'postal_code' => '4862',
+                        'postal_code' => '1234',
                         'country_code' => 'AT',
                     ],
+                    'phone' => '7884987824',
                     'country_code' => 'DE',
                 ],
             ],
@@ -46,21 +45,20 @@ class ExecutePaymentOrderResponseFixture
                         'details' => [
                             'subtotal' => '315.13',
                             'tax' => '59.87',
-                            'shipping' => '0.00',
                         ],
                     ],
                     'payee' => [
                         'merchant_id' => 'HCKBUJL8YWQZS',
                     ],
                     'item_list' => [
+                        'items' => [],
                         'shipping_address' => [
                             'recipient_name' => 'Test Test',
-                            'line1' => 'Ebbinghoff 10',
-                            'line2' => 'Addresszusatz',
-                            'city' => 'Schöppingen',
+                            'line1' => 'Wienerstraß1',
+                            'line2' => 'Adresszusatz',
+                            'city' => 'Wien',
                             'state' => '',
-                            'phone' => '4084217591',
-                            'postal_code' => '4862',
+                            'postal_code' => '1234',
                             'country_code' => 'AT',
                         ],
                     ],
@@ -68,16 +66,15 @@ class ExecutePaymentOrderResponseFixture
                         0 => [
                             'order' => [
                                 'id' => 'O-7PS41727C2382141U',
-                                'create_time' => '2018-12-04T15:23:24Z',
-                                'update_time' => '2018-12-04T15:23:24Z',
+                                'create_time' => '2018-12-06T09:50:14Z',
+                                'update_time' => '2018-12-06T09:50:14Z',
                                 'amount' => [
                                     'total' => '375.00',
                                     'currency' => 'EUR',
                                     'details' => [
-                                            'subtotal' => '315.13',
-                                            'tax' => '59.87',
-                                            'shipping' => '0.00',
-                                        ],
+                                        'subtotal' => '315.13',
+                                        'tax' => '59.87',
+                                    ],
                                 ],
                                 'state' => 'PENDING',
                                 'reason_code' => 'ORDER',
@@ -114,7 +111,8 @@ class ExecutePaymentOrderResponseFixture
                     ],
                 ],
             ],
-            'create_time' => '2018-12-04T15:23:25Z',
+            'create_time' => '2018-12-04T15:22:53Z',
+            'update_time' => '2018-12-04T15:23:24Z',
             'links' => [
                 0 => [
                     'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-35B10430TC590490WLQDJXTI',

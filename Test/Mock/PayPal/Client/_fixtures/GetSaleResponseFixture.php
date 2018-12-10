@@ -8,14 +8,17 @@
 
 namespace SwagPayPal\Test\Mock\PayPal\Client\_fixtures;
 
-class GetPaymentOrderResponseFixture
+class GetSaleResponseFixture
 {
+    public const TRANSACTION_AMOUNT_DETAILS_SUBTOTAL = '193.28';
+
     public static function get(): array
     {
         return [
-            'id' => 'PAY-35B10430TC590490WLQDJXTI',
-            'intent' => 'order',
+            'id' => 'PAY-3NJ117295B240983LLQDISII',
+            'intent' => 'sale',
             'state' => 'approved',
+            'cart' => '27499824YX3936050',
             'payer' => [
                 'payment_method' => 'paypal',
                 'status' => 'VERIFIED',
@@ -40,11 +43,11 @@ class GetPaymentOrderResponseFixture
             'transactions' => [
                 0 => [
                     'amount' => [
-                        'total' => '375.00',
+                        'total' => '230.00',
                         'currency' => 'EUR',
                         'details' => [
-                            'subtotal' => '315.13',
-                            'tax' => '59.87',
+                            'subtotal' => self::TRANSACTION_AMOUNT_DETAILS_SUBTOTAL,
+                            'tax' => '36.72',
                         ],
                     ],
                     'payee' => [
@@ -64,58 +67,53 @@ class GetPaymentOrderResponseFixture
                     ],
                     'related_resources' => [
                         0 => [
-                            'order' => [
-                                'id' => 'O-7PS41727C2382141U',
-                                'create_time' => '2018-12-06T09:50:14Z',
-                                'update_time' => '2018-12-06T09:50:14Z',
+                            'sale' => [
+                                'id' => '7G096060K6661313W',
+                                'state' => 'completed',
                                 'amount' => [
-                                    'total' => '375.00',
+                                    'total' => '230.00',
                                     'currency' => 'EUR',
                                     'details' => [
-                                        'subtotal' => '315.13',
-                                        'tax' => '59.87',
+                                        'subtotal' => '193.28',
+                                        'tax' => '36.72',
                                     ],
                                 ],
-                                'state' => 'PENDING',
-                                'reason_code' => 'ORDER',
+                                'payment_mode' => 'INSTANT_TRANSFER',
+                                'protection_eligibility' => 'ELIGIBLE',
+                                'protection_eligibility_type' => 'ITEM_NOT_RECEIVED_ELIGIBLE,UNAUTHORIZED_PAYMENT_ELIGIBLE',
+                                'transaction_fee' => [
+                                    'value' => '4.72',
+                                    'currency' => 'EUR',
+                                ],
+                                'parent_payment' => 'PAY-3NJ117295B240983LLQDISII',
+                                'create_time' => '2018-12-04T14:06:19Z',
+                                'update_time' => '2018-12-04T14:06:19Z',
                                 'links' => [
                                     0 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U',
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/sale/7G096060K6661313W',
                                         'rel' => 'self',
                                         'method' => 'GET',
                                     ],
                                     1 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-35B10430TC590490WLQDJXTI',
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/sale/7G096060K6661313W/refund',
+                                        'rel' => 'refund',
+                                        'method' => 'POST',
+                                    ],
+                                    2 => [
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-3NJ117295B240983LLQDISII',
                                         'rel' => 'parent_payment',
                                         'method' => 'GET',
                                     ],
-                                    2 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U/do-void',
-                                        'rel' => 'void',
-                                        'method' => 'POST',
-                                    ],
-                                    3 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U/authorize',
-                                        'rel' => 'authorization',
-                                        'method' => 'POST',
-                                    ],
-                                    4 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U/capture',
-                                        'rel' => 'capture',
-                                        'method' => 'POST',
-                                    ],
                                 ],
-                                'parent_payment' => 'PAY-35B10430TC590490WLQDJXTI',
                             ],
                         ],
                     ],
                 ],
             ],
-            'create_time' => '2018-12-04T15:22:53Z',
-            'update_time' => '2018-12-04T15:23:24Z',
+            'create_time' => '2018-12-04T14:03:13Z',
             'links' => [
                 0 => [
-                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-35B10430TC590490WLQDJXTI',
+                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-3NJ117295B240983LLQDISII',
                     'rel' => 'self',
                     'method' => 'GET',
                 ],
