@@ -9,10 +9,12 @@ class SwagPayPalValidateApiCredentialsService extends ApiService {
         const headers = this.getBasicHeaders();
 
         return this.httpClient
-            .post(
+            .get(
                 `_action/${this.getApiBasePath()}/validate-api-credentials`,
-                { clientId, clientSecret, sandboxActive },
-                { headers }
+                {
+                    params: { clientId, clientSecret, sandboxActive },
+                    headers: headers
+                }
             )
             .then((response) => {
                 return ApiService.handleResponse(response);

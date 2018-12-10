@@ -27,13 +27,13 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/validate-api-credentials", name="api.action.paypal.validate.api.credentials", methods={"POST"})
+     * @Route("/api/v{version}/_action/paypal/validate-api-credentials", name="api.action.paypal.validate.api.credentials", methods={"GET"})
      */
     public function validateApiCredentials(Request $request): JsonResponse
     {
-        $clientId = $request->request->get('clientId');
-        $clientSecret = $request->request->get('clientSecret');
-        $sandboxActive = $request->request->getBoolean('sandboxActive');
+        $clientId = $request->query->get('clientId');
+        $clientSecret = $request->query->get('clientSecret');
+        $sandboxActive = $request->query->getBoolean('sandboxActive');
 
         $credentialsValid = $this->apiCredentialTestService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
 
