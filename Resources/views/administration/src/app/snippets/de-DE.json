@@ -8,43 +8,48 @@
         "settingForm": {
             "save": "Speichern",
             "test": "API Zugangsdaten testen",
-            "cardTitle": "API Zugangsdaten",
-            "clientId": {
-                "label": "Client-ID",
-                "helpText": "Die REST-API Client-ID, die das Plugin dazu verwendet sich mit der PayPal API zu authentifizieren."
-            },
-            "clientSecret": {
-                "label": "Client-Secret",
-                "helpText": "Das REST-API Client-Secret, welches das Plugin dazu verwendet sich mit der PayPal API zu authentifizieren."
-            },
-            "sandbox": {
-                "label": "Sandbox aktivieren",
-                "helpText": "Aktiviere diese Option, wenn Du die Integration testen möchtest."
-            },
-            "submitCart": {
-                "label": "Warenkorb übertragen",
-                "helpText": "Wenn diese Option aktiv ist, wird der Warenkorb an PayPal übertragen."
-            },
-            "brandName": {
-                "label": "Markenname auf der PayPal Seite",
-                "helpText": "Dieser Text wird als Markenname auf der PayPal Zahlungsseite angezeigt."
-            },
-            "landingPage": {
-                "label": "PayPal Landingpage",
-                "helpText": {
-                    "Login": "Anmeldung: Auf der PayPal Seite wird ein Login als Landingpage angezeigt.",
-                    "Billing": "Registrierung: Auf der PayPal Seite wird eine Registrierung als Landingpage angezeigt."
+            "credentials": {
+                "cardTitle": "API Zugangsdaten",
+                "clientId": {
+                    "label": "Client-ID",
+                    "helpText": "Die REST-API Client-ID, die das Plugin dazu verwendet sich mit der PayPal API zu authentifizieren."
                 },
-                "options": {
-                    "Login": "Anmeldung",
-                    "Billing": "Registrierung"
+                "clientSecret": {
+                    "label": "Client-Secret",
+                    "helpText": "Das REST-API Client-Secret, welches das Plugin dazu verwendet sich mit der PayPal API zu authentifizieren."
+                },
+                "sandbox": {
+                    "label": "Sandbox aktivieren",
+                    "helpText": "Aktiviere diese Option, wenn Du die Integration testen möchtest."
                 }
             },
-            "intent": {
-                "label": "Zahlungsabschluss",
-                "sale": "Zahlung sofort abschließen (Sale)",
-                "authorize": "Zeitverzögerter Zahlungseinzug (Auth-Capture)",
-                "order": "Zeitverzögerter Zahlungseinzug (Order-Auth-Capture)"
+            "behaviour": {
+                "cardTitle": "Verhalten",
+                "intent": {
+                    "label": "Zahlungsabschluss",
+                    "sale": "Zahlung sofort abschließen (Sale)",
+                    "authorize": "Zeitverzögerter Zahlungseinzug (Auth-Capture)",
+                    "order": "Zeitverzögerter Zahlungseinzug (Order-Auth-Capture)"
+                },
+                "submitCart": {
+                    "label": "Warenkorb übertragen",
+                    "helpText": "Wenn diese Option aktiv ist, wird der Warenkorb an PayPal übertragen."
+                },
+                "brandName": {
+                    "label": "Markenname auf der PayPal Seite",
+                    "helpText": "Dieser Text wird als Markenname auf der PayPal Zahlungsseite angezeigt."
+                },
+                "landingPage": {
+                    "label": "PayPal Landingpage",
+                    "helpText": {
+                        "Login": "Anmeldung: Auf der PayPal Seite wird ein Login als Landingpage angezeigt.",
+                        "Billing": "Registrierung: Auf der PayPal Seite wird eine Registrierung als Landingpage angezeigt."
+                    },
+                    "options": {
+                        "Login": "Anmeldung",
+                        "Billing": "Registrierung"
+                    }
+                }
             },
             "titleSaveSuccess": "PayPal Einstellungen",
             "titleTestSuccess": "API Zugangsdaten",

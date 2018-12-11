@@ -8,43 +8,48 @@
         "settingForm": {
             "save": "Save",
             "test": "Test API credentials",
-            "cardTitle": "API credentials",
-            "clientId": {
-                "label": "Client-ID",
-                "helpText": "The REST-API Client-ID that is being used to authenticate this plugin to the PayPal API."
-            },
-            "clientSecret": {
-                "label": "Client-Secret",
-                "helpText": "The REST-API Client-Secret that is being used to authenticate this plugin to the PayPal API."
-            },
-            "sandbox": {
-                "label": "Enable sandbox",
-                "helpText": "Enable to test the integration."
-            },
-            "submitCart": {
-                "label": "Submit cart",
-                "helpText": "If this option is active, the cart will be submitted to PayPal."
-            },
-            "brandName": {
-                "label": "Brand name on the PayPal page",
-                "helpText": "This text will be displayed as the brand name on the PayPal payment page."
-            },
-            "landingPage": {
-                "label": "PayPal landingpage",
-                "helpText": {
-                    "Login": "Login: The PayPal site displays a login screen as landingpage.",
-                    "Billing": "Registration: The PayPal site displays a registration form as landingpage."
+            "credentials": {
+                "cardTitle": "API credentials",
+                "clientId": {
+                    "label": "Client-ID",
+                    "helpText": "The REST-API Client-ID that is being used to authenticate this plugin to the PayPal API."
                 },
-                "options": {
-                    "Login": "Login",
-                    "Billing": "Registration"
+                "clientSecret": {
+                    "label": "Client-Secret",
+                    "helpText": "The REST-API Client-Secret that is being used to authenticate this plugin to the PayPal API."
+                },
+                "sandbox": {
+                    "label": "Enable sandbox",
+                    "helpText": "Enable to test the integration."
                 }
             },
-            "intent": {
-                "label": "Payment acquisition",
-                "sale": "Complete payment immediately (Sale)",
-                "authorize": "Delayed payment collection (Auth-Capture)",
-                "order": "Delayed payment collection (Order-Auth-Capture)"
+            "behaviour": {
+                "cardTitle": "Behaviour",
+                "intent": {
+                    "label": "Payment acquisition",
+                    "sale": "Complete payment immediately (Sale)",
+                    "authorize": "Delayed payment collection (Auth-Capture)",
+                    "order": "Delayed payment collection (Order-Auth-Capture)"
+                },
+                "submitCart": {
+                    "label": "Submit cart",
+                    "helpText": "If this option is active, the cart will be submitted to PayPal."
+                },
+                "brandName": {
+                    "label": "Brand name on the PayPal page",
+                    "helpText": "This text will be displayed as the brand name on the PayPal payment page."
+                },
+                "landingPage": {
+                    "label": "PayPal landingpage",
+                    "helpText": {
+                        "Login": "Login: The PayPal site displays a login screen as landingpage.",
+                        "Billing": "Registration: The PayPal site displays a registration form as landingpage."
+                    },
+                    "options": {
+                        "Login": "Login",
+                        "Billing": "Registration"
+                    }
+                }
             },
             "titleSaveSuccess": "PayPal settings",
             "titleTestSuccess": "API credentials",
