@@ -13,17 +13,16 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\CreateWebhooks;
 use SwagPayPal\PayPal\Resource\WebhookResource;
-use SwagPayPal\Test\Mock\CacheMock;
+use SwagPayPal\Test\Helper\ServicesTrait;
 use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientMock;
-use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use SwagPayPal\Webhook\Exception\WebhookIdInvalidException;
 
 class WebhookResourceTest extends TestCase
 {
+    use ServicesTrait;
+
     public const THROW_EXCEPTION_WITHOUT_RESPONSE = 'getWebhookUrlShouldThrowExceptionWithoutResponse';
 
     public const THROW_EXCEPTION_WITH_RESPONSE = 'getWebhookUrlShouldThrowExceptionWithResponse';
@@ -145,13 +144,7 @@ class WebhookResourceTest extends TestCase
 
     private function createWebHookResource(): WebhookResource
     {
-        $this->clientFactory = new PayPalClientFactoryMock(
-            new TokenResourceMock(
-                new CacheMock(),
-                new TokenClientFactoryMock()
-            ),
-            new SettingsProviderMock()
-        );
+        $this->clientFactory = $this->createPayPalClientFactory();
 
         return new WebhookResource(
             $this->clientFactory

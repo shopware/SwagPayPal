@@ -15,7 +15,7 @@ use SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPayment;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
 use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreatePaymentResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,11 +50,11 @@ class PayPalPaymentTest extends TestCase
             return;
         }
 
-        self::assertSame(CreatePaymentResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $response->getTargetUrl());
+        self::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $response->getTargetUrl());
 
         $updatedData = $this->orderTransactionRepo->getData();
         self::assertSame(
-            CreatePaymentResponseFixture::CREATE_PAYMENT_ID,
+            CreateResponseFixture::CREATE_PAYMENT_ID,
             $updatedData['details'][PayPalPayment::TRANSACTION_DETAILS_JSON_KEY]['transactionId']
         );
     }

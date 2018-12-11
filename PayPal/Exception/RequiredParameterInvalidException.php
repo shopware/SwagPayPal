@@ -12,9 +12,9 @@ use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
-class RequiredParameterMissingException extends ShopwareHttpException
+class RequiredParameterInvalidException extends ShopwareHttpException
 {
-    protected $code = 'SWAG-PAYPAL-REQUIRED-PARAMETER-MISSING';
+    protected $code = 'SWAG-PAYPAL-REQUIRED-PARAMETER-INVALID';
 
     public function __construct(string $missingParameter, $code = 0, Throwable $previous = null)
     {

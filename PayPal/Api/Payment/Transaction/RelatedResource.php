@@ -10,6 +10,7 @@ namespace SwagPayPal\PayPal\Api\Payment\Transaction;
 
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Authorization;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Order;
+use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Refund;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Sale;
 use SwagPayPal\PayPal\Api\PayPalStruct;
 
@@ -18,17 +19,22 @@ class RelatedResource extends PayPalStruct
     /**
      * @var Sale|null
      */
-    private $sale;
+    protected $sale;
 
     /**
      * @var Authorization|null
      */
-    private $authorization;
+    protected $authorization;
 
     /**
      * @var Order|null
      */
-    private $order;
+    protected $order;
+
+    /**
+     * @var Refund|null
+     */
+    protected $refund;
 
     public function getSale(): ?Sale
     {
@@ -43,6 +49,16 @@ class RelatedResource extends PayPalStruct
     public function getOrder(): ?Order
     {
         return $this->order;
+    }
+
+    public function getRefund(): ?Refund
+    {
+        return $this->refund;
+    }
+
+    public function setRefund(Refund $refund): void
+    {
+        $this->refund = $refund;
     }
 
     protected function setSale(Sale $sale): void

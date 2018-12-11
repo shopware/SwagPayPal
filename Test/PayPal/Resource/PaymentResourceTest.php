@@ -15,7 +15,7 @@ use SwagPayPal\PayPal\PaymentStatus;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
 use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreatePaymentResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 
 class PaymentResourceTest extends TestCase
 {
@@ -23,6 +23,8 @@ class PaymentResourceTest extends TestCase
         ServicesTrait;
 
     public const ORDER_PAYMENT_ID = 'testOrderPaymentId';
+
+    public const SALE_WITH_REFUND_PAYMENT_ID = 'testSaleWithRefundPaymentId';
 
     private const TEST_PAYMENT_ID = 'testPaymentId';
 
@@ -34,12 +36,12 @@ class PaymentResourceTest extends TestCase
         $createdPayment = $this->createPaymentResource()->create($payment, $context);
 
         self::assertInstanceOf(Payment::class, $createdPayment);
-        self::assertSame(CreatePaymentResponseFixture::CREATE_PAYMENT_ID, $createdPayment->getId());
+        self::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $createdPayment->getId());
         $transaction = $createdPayment->getTransactions()[0];
         self::assertInstanceOf(Payment\Transaction::class, $transaction);
         $link = $createdPayment->getLinks()[1];
         self::assertInstanceOf(Payment\Link::class, $link);
-        self::assertSame(CreatePaymentResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $link->getHref());
+        self::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $link->getHref());
     }
 
     public function testExecuteSale(): void
@@ -107,6 +109,25 @@ class PaymentResourceTest extends TestCase
         $sale = $transaction->getRelatedResources()[0]->getSale();
         if ($sale !== null) {
             self::assertSame(PaymentStatus::PAYMENT_COMPLETED, $sale->getState());
+        }
+    }
+
+    public function testGetSaleWithRefund(): void
+    {
+        $context = Context::createDefaultContext();
+        $payment = $this->createPaymentResource()->get(self::SALE_WITH_REFUND_PAYMENT_ID, $context);
+
+        self::assertInstanceOf(Payment::class, $payment);
+        $transaction = $payment->getTransactions()[0];
+        self::assertInstanceOf(Payment\Transaction::class, $transaction);
+        self::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        $sale = $transaction->getRelatedResources()[0]->getSale();
+        if ($sale !== null) {
+            self::assertSame(PaymentStatus::PAYMENT_PARTIALLY_REFUNDED, $sale->getState());
+        }
+        $refund = $transaction->getRelatedResources()[1]->getRefund();
+        if ($refund !== null) {
+            self::assertSame(PaymentStatus::PAYMENT_COMPLETED, $refund->getState());
         }
     }
 

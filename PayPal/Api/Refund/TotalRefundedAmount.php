@@ -6,10 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Sale;
+namespace SwagPayPal\PayPal\Api\Refund;
 
 use SwagPayPal\PayPal\Api\Common\Value;
 
-class TransactionFee extends Value
+class TotalRefundedAmount extends Value
 {
 }

@@ -17,7 +17,7 @@ abstract class RelatedResource extends PayPalStruct
     /**
      * @var string
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string

@@ -16,12 +16,14 @@ use SwagPayPal\PayPal\Api\PayPalStruct;
 use SwagPayPal\PayPal\Client\PayPalClient;
 use SwagPayPal\Test\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPaymentTest;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreatePaymentResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentAuthorizeResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentOrderResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentSaleResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentOrderResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentSaleResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteAuthorizeResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteOrderResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteSaleResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetOrderResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleWithRefundResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
 use SwagPayPal\Test\PayPal\Resource\PaymentResourceTest;
 use SwagPayPal\Test\PayPal\Resource\WebhookResourceTest;
 
@@ -56,40 +58,18 @@ class PayPalClientMock extends PayPalClient
     public function sendPostRequest(string $resourceUri, PayPalStruct $data): array
     {
         if (mb_substr($resourceUri, -8) === '/execute') {
-            /** @var PayerInfo $payerInfo */
-            $payerInfo = $data;
-            if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE) {
-                return ExecutePaymentAuthorizeResponseFixture::get();
-            }
-
-            if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_ORDER) {
-                return ExecutePaymentOrderResponseFixture::get();
-            }
-
-            $response = ExecutePaymentSaleResponseFixture::get();
-            if ($payerInfo->getPayerId() !== PayPalPaymentTest::PAYER_ID_PAYMENT_INCOMPLETE) {
-                return $response;
-            }
-
-            $response['transactions'][0]['related_resources'][0]['sale']['state'] = 'denied';
-
-            return $response;
+            return $this->handlePaymentExecuteRequests($data);
         }
 
         if (mb_substr($resourceUri, -22) === 'notifications/webhooks') {
-            $createWebhookJson = json_encode($data);
-            if ($createWebhookJson && strpos($createWebhookJson, WebhookResourceTest::TEST_URL) !== false) {
-                throw $this->createClientExceptionWithResponse();
-            }
-
-            if ($createWebhookJson && strpos($createWebhookJson, WebhookResourceTest::TEST_URL_ALREADY_EXISTS) !== false) {
-                throw $this->createClientExceptionWebhookAlreadyExists();
-            }
-
-            return ['id' => self::TEST_WEBHOOK_ID];
+            return $this->handleWebhookCreateRequests($data);
         }
 
-        return CreatePaymentResponseFixture::get();
+        if (strncmp($resourceUri, 'payments/sale/', 14) === 0 && mb_substr($resourceUri, -7) === '/refund') {
+            return RefundSaleResponseFixture::get();
+        }
+
+        return CreateResponseFixture::get();
     }
 
     public function sendPatchRequest(string $resourceUri, array $data): array
@@ -132,10 +112,50 @@ class PayPalClientMock extends PayPalClient
     private function handlePaymentGetRequests(string $resourceUri): array
     {
         if (strpos($resourceUri, PaymentResourceTest::ORDER_PAYMENT_ID) !== false) {
-            return GetPaymentOrderResponseFixture::get();
+            return GetOrderResponseFixture::get();
         }
 
-        return GetPaymentSaleResponseFixture::get();
+        if (strpos($resourceUri, PaymentResourceTest::SALE_WITH_REFUND_PAYMENT_ID) !== false) {
+            return GetSaleWithRefundResponseFixture::get();
+        }
+
+        return GetSaleResponseFixture::get();
+    }
+
+    private function handlePaymentExecuteRequests(PayPalStruct $data): array
+    {
+        /** @var PayerInfo $payerInfo */
+        $payerInfo = $data;
+        if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE) {
+            return ExecuteAuthorizeResponseFixture::get();
+        }
+
+        if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_ORDER) {
+            return ExecuteOrderResponseFixture::get();
+        }
+
+        $response = ExecuteSaleResponseFixture::get();
+        if ($payerInfo->getPayerId() !== PayPalPaymentTest::PAYER_ID_PAYMENT_INCOMPLETE) {
+            return $response;
+        }
+
+        $response['transactions'][0]['related_resources'][0]['sale']['state'] = 'denied';
+
+        return $response;
+    }
+
+    private function handleWebhookCreateRequests(PayPalStruct $data): array
+    {
+        $createWebhookJson = json_encode($data);
+        if ($createWebhookJson && strpos($createWebhookJson, WebhookResourceTest::TEST_URL) !== false) {
+            throw $this->createClientExceptionWithResponse();
+        }
+
+        if ($createWebhookJson && strpos($createWebhookJson, WebhookResourceTest::TEST_URL_ALREADY_EXISTS) !== false) {
+            throw $this->createClientExceptionWebhookAlreadyExists();
+        }
+
+        return ['id' => self::TEST_WEBHOOK_ID];
     }
 
     private function createClientException(): ClientException

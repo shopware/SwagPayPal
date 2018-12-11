@@ -11,6 +11,9 @@ namespace SwagPayPal\PayPal;
 final class RequestUri
 {
     public const PAYMENT_RESOURCE = 'payments/payment';
+    public const SALE_RESOURCE = 'payments/sale';
+
     public const TOKEN_RESOURCE = 'oauth2/token';
+
     public const WEBHOOK_RESOURCE = 'notifications/webhooks';
 }

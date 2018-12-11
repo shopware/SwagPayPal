@@ -12,11 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use SwagPayPal\PayPal\Api\Webhook;
-use SwagPayPal\PayPal\Client\PayPalClientFactory;
-use SwagPayPal\PayPal\Resource\TokenResource;
 use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\CacheMock;
-use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
@@ -144,10 +140,7 @@ class WebhookServiceTest extends TestCase
     private function createWebhookResourceMock(): WebhookResourceMock
     {
         return new WebhookResourceMock(
-            new PayPalClientFactory(
-                new TokenResource(new CacheMock(), new TokenClientFactoryMock()),
-                new SettingsProviderMock()
-            )
+            $this->createPayPalClientFactory()
         );
     }
 }
