@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\PayPal\Payment;
 
-use Shopware\Core\Checkout\Cart\Price\Struct\Price;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemStruct;
 use Shopware\Core\Checkout\Order\OrderStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
@@ -225,7 +225,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $order;
     }
 
-    private function createItemFromLineItem(OrderLineItemStruct $lineItem, string $currency, Price $price): Item
+    private function createItemFromLineItem(OrderLineItemStruct $lineItem, string $currency, CalculatedPrice $price): Item
     {
         $taxAmount = $price->getCalculatedTaxes()->getAmount();
 

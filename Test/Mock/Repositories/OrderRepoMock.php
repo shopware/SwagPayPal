@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Test\Mock\Repositories;
 
-use Shopware\Core\Checkout\Cart\Price\Struct\Price;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
@@ -110,7 +110,7 @@ class OrderRepoMock implements RepositoryInterface
 
         if ($setPrice) {
             $orderLineItem->setPrice(
-                new Price(
+                new CalculatedPrice(
                     578.0,
                     578.0,
                     new CalculatedTaxCollection([
