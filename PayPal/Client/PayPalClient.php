@@ -16,7 +16,7 @@ use SwagPayPal\PayPal\BaseURL;
 use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use SwagPayPal\PayPal\PartnerAttributionId;
 use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
+use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 
 class PayPalClient
 {
@@ -36,7 +36,7 @@ class PayPalClient
     public function __construct(
         TokenResource $tokenResource,
         Context $context,
-        SwagPayPalSettingGeneralStruct $settings,
+        SwagPayPalSettingGeneralEntity $settings,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ) {
         $this->tokenResource = $tokenResource;

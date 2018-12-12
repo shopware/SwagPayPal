@@ -9,16 +9,16 @@
 namespace SwagPayPal\PayPal\Payment;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemStruct;
-use Shopware\Core\Checkout\Order\OrderStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Read\ReadCriteria;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
 use Shopware\Core\System\Language\LanguageCollection;
-use Shopware\Core\System\Language\LanguageStruct;
+use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
-use Shopware\Core\System\SalesChannel\SalesChannelStruct;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use SwagPayPal\PayPal\Api\Payment;
 use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
 use SwagPayPal\PayPal\Api\Payment\Payer;
@@ -31,7 +31,7 @@ use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
 use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use SwagPayPal\PayPal\PaymentIntent;
 use SwagPayPal\Setting\Service\SettingsProviderInterface;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
+use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 
 class PaymentBuilderService implements PaymentBuilderInterface
 {
@@ -56,7 +56,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
     private $settingsProvider;
 
     /**
-     * @var SwagPayPalSettingGeneralStruct
+     * @var SwagPayPalSettingGeneralEntity
      */
     private $settings;
 
@@ -152,7 +152,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
         $languageId = $context->getLanguageId();
         /** @var LanguageCollection $languageCollection */
         $languageCollection = $this->languageRepo->read(new ReadCriteria([$languageId]), $context);
-        /** @var LanguageStruct $language */
+        /** @var LanguageEntity $language */
         $language = $languageCollection->get($languageId);
 
         return $language->getLocale()->getCode();
@@ -179,7 +179,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
 
         /** @var SalesChannelCollection $salesChannelCollection */
         $salesChannelCollection = $this->salesChannelRepo->read(new ReadCriteria([$salesChannelId]), $context);
-        /** @var SalesChannelStruct $salesChannel */
+        /** @var SalesChannelEntity $salesChannel */
         $salesChannel = $salesChannelCollection->get($salesChannelId);
         if ($salesChannel !== null) {
             $brandName = $salesChannel->getName();
@@ -197,7 +197,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
             return [];
         }
 
-        /** @var OrderLineItemStruct[] $lineItems */
+        /** @var OrderLineItemEntity[] $lineItems */
         $lineItems = $order->getLineItems()->getElements();
 
         foreach ($lineItems as $id => $lineItem) {
@@ -213,19 +213,19 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $items;
     }
 
-    private function getOrder(PaymentTransactionStruct $transactionStruct, Context $context): ?OrderStruct
+    private function getOrder(PaymentTransactionStruct $transactionStruct, Context $context): ?OrderEntity
     {
         $orderId = $transactionStruct->getOrder()->get('id');
         $criteria = new ReadCriteria([$orderId]);
         $criteria->addAssociation('order.lineItems');
 
-        /** @var OrderStruct $order */
+        /** @var OrderEntity $order */
         $order = $this->orderRepo->read($criteria, $context)->get($orderId);
 
         return $order;
     }
 
-    private function createItemFromLineItem(OrderLineItemStruct $lineItem, string $currency, CalculatedPrice $price): Item
+    private function createItemFromLineItem(OrderLineItemEntity $lineItem, string $currency, CalculatedPrice $price): Item
     {
         $taxAmount = $price->getCalculatedTaxes()->getAmount();
 

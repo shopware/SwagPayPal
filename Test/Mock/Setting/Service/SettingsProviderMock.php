@@ -12,7 +12,7 @@ use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
 use SwagPayPal\PayPal\PaymentIntent;
 use SwagPayPal\Setting\Service\SettingsProviderInterface;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
+use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 
 class SettingsProviderMock implements SettingsProviderInterface
 {
@@ -32,7 +32,7 @@ class SettingsProviderMock implements SettingsProviderInterface
 
     public const ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN = 'testWebhookExecuteToken';
 
-    public function getSettings(Context $context): SwagPayPalSettingGeneralStruct
+    public function getSettings(Context $context): SwagPayPalSettingGeneralEntity
     {
         if ($context->hasExtension(self::PAYPAL_SETTING_WITHOUT_TOKEN)) {
             $settingsStruct = $this->createBasicSettingStruct();
@@ -67,9 +67,9 @@ class SettingsProviderMock implements SettingsProviderInterface
         return $settingsStruct;
     }
 
-    private function createBasicSettingStruct(): SwagPayPalSettingGeneralStruct
+    private function createBasicSettingStruct(): SwagPayPalSettingGeneralEntity
     {
-        $settingsStruct = new SwagPayPalSettingGeneralStruct();
+        $settingsStruct = new SwagPayPalSettingGeneralEntity();
         $settingsStruct->setId(self::PAYPAL_SETTING_ID);
         $settingsStruct->setIntent(PaymentIntent::SALE);
         $settingsStruct->setSubmitCart(false);
@@ -77,7 +77,7 @@ class SettingsProviderMock implements SettingsProviderInterface
         return $settingsStruct;
     }
 
-    private function createDefaultSettingStruct(): SwagPayPalSettingGeneralStruct
+    private function createDefaultSettingStruct(): SwagPayPalSettingGeneralEntity
     {
         $settingsStruct = $this->createBasicSettingStruct();
         $settingsStruct->setBrandName('Test Brand');

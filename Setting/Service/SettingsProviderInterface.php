@@ -10,12 +10,12 @@ namespace SwagPayPal\Setting\Service;
 
 use Shopware\Core\Framework\Context;
 use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
+use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 
 interface SettingsProviderInterface
 {
     /**
      * @throws PayPalSettingsNotFoundException
      */
-    public function getSettings(Context $context): SwagPayPalSettingGeneralStruct;
+    public function getSettings(Context $context): SwagPayPalSettingGeneralEntity;
 }

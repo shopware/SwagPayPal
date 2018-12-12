@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Webhook\Handler;
 
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -36,7 +36,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
     /**
      * @throws WebhookOrderTransactionNotFoundException
      */
-    protected function getOrderTransaction(Webhook $webhook, Context $context): OrderTransactionStruct
+    protected function getOrderTransaction(Webhook $webhook, Context $context): OrderTransactionEntity
     {
         $payPalTransactionId = $webhook->getResource()->getParentPayment();
         $criteria = new Criteria();

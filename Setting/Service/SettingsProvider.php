@@ -13,7 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
+use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 
 class SettingsProvider implements SettingsProviderInterface
 {
@@ -30,7 +30,7 @@ class SettingsProvider implements SettingsProviderInterface
     /**
      * @throws PayPalSettingsNotFoundException
      */
-    public function getSettings(Context $context): SwagPayPalSettingGeneralStruct
+    public function getSettings(Context $context): SwagPayPalSettingGeneralEntity
     {
         /** @var SwagPayPalSettingGeneralCollection $settingsCollection */
         $settingsCollection = $this->settingGeneralRepo->search(new Criteria(), $context)->getEntities();

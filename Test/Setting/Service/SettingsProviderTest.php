@@ -14,7 +14,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
 use SwagPayPal\Setting\Service\SettingsProvider;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralStruct;
+use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 use SwagPayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
 
 class SettingsProviderTest extends TestCase
@@ -28,7 +28,7 @@ class SettingsProviderTest extends TestCase
         $context = Context::createDefaultContext();
         $settings = $settingsProvider->getSettings($context);
 
-        self::assertInstanceOf(SwagPayPalSettingGeneralStruct::class, $settings);
+        self::assertInstanceOf(SwagPayPalSettingGeneralEntity::class, $settings);
         self::assertInstanceOf(DateTime::class, $settings->getCreatedAt());
         self::assertInstanceOf(DateTime::class, $settings->getUpdatedAt());
     }

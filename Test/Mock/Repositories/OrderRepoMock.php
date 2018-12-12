@@ -14,9 +14,9 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderCollection;
-use Shopware\Core\Checkout\Order\OrderStruct;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
@@ -57,7 +57,7 @@ class OrderRepoMock implements RepositoryInterface
     public function read(ReadCriteria $criteria, Context $context): EntityCollection
     {
         $collection = new OrderCollection();
-        $order = new OrderStruct();
+        $order = new OrderEntity();
 
         switch ($criteria->getIds()[0]) {
             case ConstantsForTesting::VALID_ORDER_ID:
@@ -103,7 +103,7 @@ class OrderRepoMock implements RepositoryInterface
 
     private function getLineItems(bool $setPrice = false): OrderLineItemCollection
     {
-        $orderLineItem = new OrderLineItemStruct();
+        $orderLineItem = new OrderLineItemEntity();
 
         $orderLineItem->setId('6198ff79c4144931919977829dbca3d6');
         $orderLineItem->setQuantity(1);
