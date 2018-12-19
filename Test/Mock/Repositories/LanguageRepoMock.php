@@ -69,7 +69,7 @@ class LanguageRepoMock implements RepositoryInterface
     private function createLanguageEntity(): LanguageEntity
     {
         $languageEntity = new LanguageEntity();
-        $languageEntity->setId(Defaults::LANGUAGE_EN);
+        $languageEntity->setId(Defaults::LANGUAGE_SYSTEM);
         $locale = $this->createLocaleEntity();
         $languageEntity->setLocale($locale);
 
