@@ -11,10 +11,10 @@ namespace SwagPayPal\Test\Helper;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
-use Shopware\Core\Checkout\Order\OrderStruct;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Struct\Uuid;
-use Shopware\Core\System\Currency\CurrencyStruct;
+use Shopware\Core\System\Currency\CurrencyEntity;
 use SwagPayPal\SwagPayPal;
 
 trait PaymentTransactionTrait
@@ -22,7 +22,7 @@ trait PaymentTransactionTrait
     protected function createPaymentTransactionStruct(string $orderId = 'some-order-id'): PaymentTransactionStruct
     {
         $transactionId = Uuid::uuid4()->getHex();
-        $order = $this->createOrderStruct($orderId);
+        $order = $this->createOrderEntity($orderId);
         $amount = $this->createPriceStruct();
 
         return new PaymentTransactionStruct(
@@ -34,12 +34,12 @@ trait PaymentTransactionTrait
         );
     }
 
-    private function createOrderStruct(string $id): OrderStruct
+    private function createOrderEntity(string $id): OrderEntity
     {
-        $order = new OrderStruct();
+        $order = new OrderEntity();
         $order->setShippingTotal(2.5);
         $order->setId($id);
-        $currency = $this->createCurrencyStruct();
+        $currency = $this->createCurrencyEntity();
         $order->setCurrency($currency);
 
         return $order;
@@ -56,9 +56,9 @@ trait PaymentTransactionTrait
         );
     }
 
-    private function createCurrencyStruct(): CurrencyStruct
+    private function createCurrencyEntity(): CurrencyEntity
     {
-        $currency = new CurrencyStruct();
+        $currency = new CurrencyEntity();
         $currency->setShortName('EUR');
 
         return $currency;

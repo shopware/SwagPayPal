@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Test\Mock\Repositories;
 
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionState\OrderTransactionStateStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionState\OrderTransactionStateEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
@@ -100,9 +100,9 @@ class OrderTransactionStateRepoMock implements RepositoryInterface
         return new EntityCollection([$this->createOrderTransactionState()]);
     }
 
-    private function createOrderTransactionState(): OrderTransactionStateStruct
+    private function createOrderTransactionState(): OrderTransactionStateEntity
     {
-        $orderTransaction = new OrderTransactionStateStruct();
+        $orderTransaction = new OrderTransactionStateEntity();
         $orderTransaction->setId(self::ORDER_TRANSACTION_STATE_ID);
 
         return $orderTransaction;

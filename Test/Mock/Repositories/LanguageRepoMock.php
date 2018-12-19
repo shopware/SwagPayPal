@@ -18,8 +18,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\System\Language\LanguageStruct;
-use Shopware\Core\System\Locale\LocaleStruct;
+use Shopware\Core\System\Language\LanguageEntity;
+use Shopware\Core\System\Locale\LocaleEntity;
 
 class LanguageRepoMock implements RepositoryInterface
 {
@@ -39,7 +39,7 @@ class LanguageRepoMock implements RepositoryInterface
 
     public function read(ReadCriteria $criteria, Context $context): EntityCollection
     {
-        return new EntityCollection([$this->createLanguageStruct()]);
+        return new EntityCollection([$this->createLanguageEntity()]);
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
@@ -66,19 +66,19 @@ class LanguageRepoMock implements RepositoryInterface
     {
     }
 
-    private function createLanguageStruct(): LanguageStruct
+    private function createLanguageEntity(): LanguageEntity
     {
-        $languageStruct = new LanguageStruct();
-        $languageStruct->setId(Defaults::LANGUAGE_EN);
-        $locale = $this->createLocaleStruct();
-        $languageStruct->setLocale($locale);
+        $languageEntity = new LanguageEntity();
+        $languageEntity->setId(Defaults::LANGUAGE_EN);
+        $locale = $this->createLocaleEntity();
+        $languageEntity->setLocale($locale);
 
-        return $languageStruct;
+        return $languageEntity;
     }
 
-    private function createLocaleStruct(): LocaleStruct
+    private function createLocaleEntity(): LocaleEntity
     {
-        $locale = new LocaleStruct();
+        $locale = new LocaleEntity();
         $locale->setCode(self::LOCALE_CODE);
 
         return $locale;

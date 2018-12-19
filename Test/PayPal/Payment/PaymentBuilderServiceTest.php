@@ -205,16 +205,17 @@ class PaymentBuilderServiceTest extends TestCase
     {
         $defaultContext = Context::createDefaultContext();
         $sourceContext = new SourceContext();
+        $sourceContext->setSalesChannelId('foo');
 
         return new Context(
             $sourceContext,
             $defaultContext->getCatalogIds(),
             $defaultContext->getRules(),
             $defaultContext->getCurrencyId(),
-            $defaultContext->getLanguageId(),
-            $defaultContext->getFallbackLanguageId(),
+            $defaultContext->getLanguageIdChain(),
             $defaultContext->getVersionId(),
-            $defaultContext->getCurrencyFactor()
+            $defaultContext->getCurrencyFactor(),
+            $defaultContext->getSnippetSetId()
         );
     }
 }

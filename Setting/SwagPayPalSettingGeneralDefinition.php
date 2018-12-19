@@ -48,8 +48,8 @@ class SwagPayPalSettingGeneralDefinition extends EntityDefinition
         return SwagPayPalSettingGeneralCollection::class;
     }
 
-    public static function getStructClass(): string
+    public static function getEntityClass(): string
     {
-        return SwagPayPalSettingGeneralStruct::class;
+        return SwagPayPalSettingGeneralEntity::class;
     }
 }

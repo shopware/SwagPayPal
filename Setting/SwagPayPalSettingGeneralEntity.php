@@ -12,7 +12,7 @@ use DateTime;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
-class SwagPayPalSettingGeneralStruct extends Entity
+class SwagPayPalSettingGeneralEntity extends Entity
 {
     use EntityIdTrait;
 

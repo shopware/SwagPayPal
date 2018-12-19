@@ -18,7 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\System\SalesChannel\SalesChannelStruct;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class SalesChannelRepoMock implements RepositoryInterface
 {
@@ -38,7 +38,7 @@ class SalesChannelRepoMock implements RepositoryInterface
 
     public function read(ReadCriteria $criteria, Context $context): EntityCollection
     {
-        return new EntityCollection([$this->createSalesChannelStruct()]);
+        return new EntityCollection([$this->createSalesChannelEntity()]);
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
@@ -65,12 +65,12 @@ class SalesChannelRepoMock implements RepositoryInterface
     {
     }
 
-    private function createSalesChannelStruct(): SalesChannelStruct
+    private function createSalesChannelEntity(): SalesChannelEntity
     {
-        $salesChannelStruct = new SalesChannelStruct();
-        $salesChannelStruct->setId(Defaults::SALES_CHANNEL);
-        $salesChannelStruct->setName(self::SALES_CHANNEL_NAME);
+        $salesChannelEntity = new SalesChannelEntity();
+        $salesChannelEntity->setId(Defaults::SALES_CHANNEL);
+        $salesChannelEntity->setName(self::SALES_CHANNEL_NAME);
 
-        return $salesChannelStruct;
+        return $salesChannelEntity;
     }
 }

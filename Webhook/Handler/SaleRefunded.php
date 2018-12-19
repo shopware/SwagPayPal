@@ -9,7 +9,7 @@
 namespace SwagPayPal\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionState\OrderTransactionStateDefinition;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionState\OrderTransactionStateStruct;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionState\OrderTransactionStateEntity;
 use Shopware\Core\Framework\Api\Exception\ResourceNotFoundException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
@@ -59,7 +59,7 @@ class SaleRefunded extends AbstractWebhookHandler
             throw new ResourceNotFoundException(OrderTransactionStateDefinition::getEntityName(), ['position' => 14]);
         }
 
-        /** @var OrderTransactionStateStruct $orderTransactionState */
+        /** @var OrderTransactionStateEntity $orderTransactionState */
         $orderTransactionState = $result->getEntities()->first();
 
         $data = [
