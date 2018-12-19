@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Test\Helper;
 
-use Shopware\Core\Checkout\Cart\Price\Struct\Price;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\OrderStruct;
@@ -45,9 +45,9 @@ trait PaymentTransactionTrait
         return $order;
     }
 
-    private function createPriceStruct(): Price
+    private function createPriceStruct(): CalculatedPrice
     {
-        return new Price(
+        return new CalculatedPrice(
             1.5,
             3.0,
             new CalculatedTaxCollection(),
