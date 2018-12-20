@@ -12,11 +12,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
 class SwagPayPalSettingGeneralCollection extends EntityCollection
 {
-    /**
-     * @var SwagPayPalSettingGeneralEntity[]
-     */
-    protected $elements = [];
-
     public function first(): SwagPayPalSettingGeneralEntity
     {
         return parent::first();
