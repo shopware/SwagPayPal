@@ -123,4 +123,8 @@ class OrderTransactionRepoMock implements RepositoryInterface
             $context
         );
     }
+
+    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
+    {
+    }
 }

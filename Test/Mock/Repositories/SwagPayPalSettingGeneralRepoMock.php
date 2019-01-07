@@ -112,4 +112,8 @@ class SwagPayPalSettingGeneralRepoMock implements RepositoryInterface
 
         return $settingGeneral;
     }
+
+    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
+    {
+    }
 }
