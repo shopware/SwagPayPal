@@ -83,4 +83,8 @@ class LanguageRepoMock implements RepositoryInterface
 
         return $locale;
     }
+
+    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
+    {
+    }
 }
