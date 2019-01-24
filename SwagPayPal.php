@@ -10,7 +10,7 @@ namespace SwagPayPal;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
@@ -81,7 +81,7 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
 
     private function addPaymentMethod(Context $context): void
     {
-        /** @var RepositoryInterface $paymentRepository */
+        /** @var EntityRepositoryInterface $paymentRepository */
         $paymentRepository = $this->container->get('payment_method.repository');
 
         $paypal = [
@@ -98,7 +98,7 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
 
     private function setPaymentMethodIsActive(bool $active, Context $context): void
     {
-        /** @var RepositoryInterface $paymentRepository */
+        /** @var EntityRepositoryInterface $paymentRepository */
         $paymentRepository = $this->container->get('payment_method.repository');
 
         $paymentMethod = [

@@ -28,11 +28,11 @@ class SwagPayPalSettingGeneralDefinition extends EntityDefinition
     public static function defineFields(): FieldCollection
     {
         return new FieldCollection([
-            (new IdField('id', 'id'))->setFlags(new PrimaryKey(), new Required()),
+            (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
             new StringField('client_id', 'clientId'),
             new StringField('client_secret', 'clientSecret'),
-            (new BoolField('sandbox', 'sandbox'))->setFlags(new Required()),
-            (new StringField('intent', 'intent'))->setFlags(new Required()),
+            (new BoolField('sandbox', 'sandbox'))->addFlags(new Required()),
+            (new StringField('intent', 'intent'))->addFlags(new Required()),
             new BoolField('submit_cart', 'submitCart'),
             new StringField('webhook_id', 'webhookId'),
             new StringField('webhook_execute_token', 'webhookExecuteToken'),

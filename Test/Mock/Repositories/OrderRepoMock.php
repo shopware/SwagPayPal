@@ -18,17 +18,15 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\Read\ReadCriteria;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 
-class OrderRepoMock implements RepositoryInterface
+class OrderRepoMock implements EntityRepositoryInterface
 {
     public const EXPECTED_ITEM_NAME = 'Aerodynamic Paper Ginger Vitro';
 
@@ -52,10 +50,6 @@ class OrderRepoMock implements RepositoryInterface
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-    }
-
-    public function read(ReadCriteria $criteria, Context $context): EntityCollection
-    {
         $collection = new OrderCollection();
         $order = new OrderEntity();
 
@@ -74,7 +68,7 @@ class OrderRepoMock implements RepositoryInterface
 
         $collection->add($order);
 
-        return $collection;
+        return new EntitySearchResult(1, $collection, null, $criteria, $context);
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent

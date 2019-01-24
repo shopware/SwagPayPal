@@ -12,8 +12,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\Read\ReadCriteria;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -21,7 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\Locale\LocaleEntity;
 
-class LanguageRepoMock implements RepositoryInterface
+class LanguageRepoMock implements EntityRepositoryInterface
 {
     public const LOCALE_CODE = 'en_GB';
 
@@ -35,11 +34,13 @@ class LanguageRepoMock implements RepositoryInterface
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-    }
-
-    public function read(ReadCriteria $criteria, Context $context): EntityCollection
-    {
-        return new EntityCollection([$this->createLanguageEntity()]);
+        return new EntitySearchResult(
+            1,
+            new EntityCollection([$this->createLanguageEntity()]),
+            null,
+            $criteria,
+            $context
+        );
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent

@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use SwagPayPal\PayPal\Api\Payment;
 use SwagPayPal\PayPal\Payment\PaymentBuilderInterface;
 use SwagPayPal\PayPal\PaymentIntent;
@@ -30,7 +30,7 @@ class PayPalPayment implements PaymentHandlerInterface
     public const PAYPAL_REQUEST_PARAMETER_PAYMENT_ID = 'paymentId';
 
     /**
-     * @var RepositoryInterface
+     * @var EntityRepositoryInterface
      */
     private $orderTransactionRepo;
 
@@ -45,7 +45,7 @@ class PayPalPayment implements PaymentHandlerInterface
     private $paymentBuilder;
 
     public function __construct(
-        RepositoryInterface $orderTransactionRepo,
+        EntityRepositoryInterface $orderTransactionRepo,
         PaymentResource $paymentResource,
         PaymentBuilderInterface $paymentBuilder
     ) {

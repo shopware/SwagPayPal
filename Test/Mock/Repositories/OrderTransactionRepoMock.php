@@ -12,8 +12,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\Read\ReadCriteria;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -22,7 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Event\NestedEventCollection;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 
-class OrderTransactionRepoMock implements RepositoryInterface
+class OrderTransactionRepoMock implements EntityRepositoryInterface
 {
     public const ORDER_TRANSACTION_ID = 'orderTransactionTestId';
 
@@ -49,10 +48,6 @@ class OrderTransactionRepoMock implements RepositoryInterface
         }
 
         return $this->createEntitySearchResult($criteria, $context);
-    }
-
-    public function read(ReadCriteria $criteria, Context $context): EntityCollection
-    {
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent

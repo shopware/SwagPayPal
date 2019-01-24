@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionState\OrderTransactio
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionState\OrderTransactionStateEntity;
 use Shopware\Core\Framework\Api\Exception\ResourceNotFoundException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use SwagPayPal\PayPal\Api\Webhook;
@@ -22,13 +22,13 @@ use SwagPayPal\Webhook\WebhookEventTypes;
 class SaleRefunded extends AbstractWebhookHandler
 {
     /**
-     * @var RepositoryInterface
+     * @var EntityRepositoryInterface
      */
     private $orderTransactionStateRepo;
 
     public function __construct(
-        RepositoryInterface $orderTransactionRepo,
-        RepositoryInterface $orderTransactionStateRepo
+        EntityRepositoryInterface $orderTransactionRepo,
+        EntityRepositoryInterface $orderTransactionStateRepo
     ) {
         $this->orderTransactionStateRepo = $orderTransactionStateRepo;
         parent::__construct($orderTransactionRepo);

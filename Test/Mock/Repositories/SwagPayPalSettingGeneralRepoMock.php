@@ -12,8 +12,7 @@ use DateTime;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\Read\ReadCriteria;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -25,7 +24,7 @@ use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
 use SwagPayPal\Test\Setting\Service\SettingsProviderTest;
 
-class SwagPayPalSettingGeneralRepoMock implements RepositoryInterface
+class SwagPayPalSettingGeneralRepoMock implements EntityRepositoryInterface
 {
     private $data = [];
 
@@ -47,10 +46,6 @@ class SwagPayPalSettingGeneralRepoMock implements RepositoryInterface
         }
 
         return $this->createEntitySearchResult($criteria, $context);
-    }
-
-    public function read(ReadCriteria $criteria, Context $context): EntityCollection
-    {
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent

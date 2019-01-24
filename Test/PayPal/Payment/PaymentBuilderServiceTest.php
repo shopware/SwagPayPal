@@ -214,8 +214,7 @@ class PaymentBuilderServiceTest extends TestCase
             $defaultContext->getCurrencyId(),
             $defaultContext->getLanguageIdChain(),
             $defaultContext->getVersionId(),
-            $defaultContext->getCurrencyFactor(),
-            $defaultContext->getSnippetSetId()
+            $defaultContext->getCurrencyFactor()
         );
     }
 }

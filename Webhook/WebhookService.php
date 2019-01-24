@@ -9,7 +9,7 @@
 namespace SwagPayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Util\Random;
 use SwagPayPal\PayPal\Api\CreateWebhooks;
 use SwagPayPal\PayPal\Api\Webhook;
@@ -41,7 +41,7 @@ class WebhookService implements WebhookServiceInterface
     private $webhookResource;
 
     /**
-     * @var RepositoryInterface
+     * @var EntityRepositoryInterface
      */
     private $settingGeneralRepo;
 
@@ -64,7 +64,7 @@ class WebhookService implements WebhookServiceInterface
         WebhookResource $webhookResource,
         WebhookRegistry $webhookRegistry,
         SettingsProviderInterface $settingsProvider,
-        RepositoryInterface $settingGeneralRepo,
+        EntityRepositoryInterface $settingGeneralRepo,
         RouterInterface $router
     ) {
         $this->webhookResource = $webhookResource;

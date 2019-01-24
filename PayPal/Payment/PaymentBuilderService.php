@@ -13,8 +13,8 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Read\ReadCriteria;
-use Shopware\Core\Framework\DataAbstractionLayer\RepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageCollection;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
@@ -36,17 +36,17 @@ use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 class PaymentBuilderService implements PaymentBuilderInterface
 {
     /**
-     * @var RepositoryInterface
+     * @var EntityRepositoryInterface
      */
     private $languageRepo;
 
     /**
-     * @var RepositoryInterface
+     * @var EntityRepositoryInterface
      */
     private $salesChannelRepo;
 
     /**
-     * @var RepositoryInterface
+     * @var EntityRepositoryInterface
      */
     private $orderRepo;
 
@@ -61,9 +61,9 @@ class PaymentBuilderService implements PaymentBuilderInterface
     private $settings;
 
     public function __construct(
-        RepositoryInterface $languageRepo,
-        RepositoryInterface $salesChannelRepo,
-        RepositoryInterface $orderRepo,
+        EntityRepositoryInterface $languageRepo,
+        EntityRepositoryInterface $salesChannelRepo,
+        EntityRepositoryInterface $orderRepo,
         SettingsProviderInterface $settingsProvider
     ) {
         $this->languageRepo = $languageRepo;
@@ -151,7 +151,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
     {
         $languageId = $context->getLanguageId();
         /** @var LanguageCollection $languageCollection */
-        $languageCollection = $this->languageRepo->read(new ReadCriteria([$languageId]), $context);
+        $languageCollection = $this->languageRepo->search(new Criteria([$languageId]), $context);
         /** @var LanguageEntity $language */
         $language = $languageCollection->get($languageId);
 
@@ -178,7 +178,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
         }
 
         /** @var SalesChannelCollection $salesChannelCollection */
-        $salesChannelCollection = $this->salesChannelRepo->read(new ReadCriteria([$salesChannelId]), $context);
+        $salesChannelCollection = $this->salesChannelRepo->search(new Criteria([$salesChannelId]), $context);
         /** @var SalesChannelEntity $salesChannel */
         $salesChannel = $salesChannelCollection->get($salesChannelId);
         if ($salesChannel !== null) {
@@ -216,11 +216,11 @@ class PaymentBuilderService implements PaymentBuilderInterface
     private function getOrder(PaymentTransactionStruct $transactionStruct, Context $context): ?OrderEntity
     {
         $orderId = $transactionStruct->getOrder()->get('id');
-        $criteria = new ReadCriteria([$orderId]);
+        $criteria = new Criteria([$orderId]);
         $criteria->addAssociation('order.lineItems');
 
         /** @var OrderEntity $order */
-        $order = $this->orderRepo->read($criteria, $context)->get($orderId);
+        $order = $this->orderRepo->search($criteria, $context)->get($orderId);
 
         return $order;
     }
