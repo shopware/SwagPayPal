@@ -1,9 +1,23 @@
 {
-    "name": "shopware-labs/swag-paypal",
-    "type": "shopware-plugin",
+    "name": "swag/paypal",
     "description": "All PayPal payment methods in one plugin",
+    "version": "1.0.0",
+    "type": "shopware-plugin",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "shopware AG"
+        }
+    ],
+    "require": {
+        "shopware/platform": "dev-master"
+    },
     "extra": {
-        "installer-name": "SwagPayPal"
+        "installer-name": "SwagPayPal",
+        "copyright": "(c) by shopware AG",
+        "label": {
+            "de_DE": "PayPal Produkte für Shopware",
+            "en_GB": "PayPal Products for Shopware"
+        }
     }
 }
