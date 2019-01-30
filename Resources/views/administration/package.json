@@ -1,9 +1,8 @@
 {
-    "name": "swagPayPal",
+    "name": "swagpaypal",
     "version": "1.0.0",
     "description": "Administration for PayPal",
     "main": "index.js",
-    "author": "Telgi",
-    "license": "MIT",
-    "private": true
+    "author": "Shopware Services",
+    "license": "MIT"
 }
