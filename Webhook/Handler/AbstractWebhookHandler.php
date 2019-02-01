@@ -9,10 +9,12 @@
 namespace SwagPayPal\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\StateMachine\StateMachineRegistry;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use SwagPayPal\Webhook\WebhookHandler;
@@ -24,9 +26,17 @@ abstract class AbstractWebhookHandler implements WebhookHandler
      */
     protected $orderTransactionRepo;
 
-    public function __construct(EntityRepositoryInterface $orderTransactionRepo)
-    {
+    /**
+     * @var StateMachineRegistry
+     */
+    private $stateMachineRegistry;
+
+    public function __construct(
+        EntityRepositoryInterface $orderTransactionRepo,
+        StateMachineRegistry $stateMachineRegistry
+    ) {
         $this->orderTransactionRepo = $orderTransactionRepo;
+        $this->stateMachineRegistry = $stateMachineRegistry;
     }
 
     abstract public function getEventType(): string;
@@ -48,5 +58,14 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         }
 
         return $result->getEntities()->first();
+    }
+
+    protected function getStateMachineState(string $technicalStateName, Context $context): string
+    {
+        return $this->stateMachineRegistry->getStateByTechnicalName(
+            Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+            $technicalStateName,
+            $context
+        )->getId();
     }
 }

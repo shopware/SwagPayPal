@@ -11,6 +11,8 @@ namespace SwagPayPal\Test\Core\Checkout\Payment\Cart\PaymentHandler;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\StateMachine\StateMachineRegistry;
+use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPayment;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
@@ -23,7 +25,8 @@ use Symfony\Component\HttpFoundation\Request;
 class PayPalPaymentTest extends TestCase
 {
     use PaymentTransactionTrait,
-        ServicesTrait;
+        ServicesTrait,
+        KernelTestBehaviour;
 
     public const PAYER_ID_PAYMENT_INCOMPLETE = 'testPayerIdIncomplete';
 
@@ -32,9 +35,15 @@ class PayPalPaymentTest extends TestCase
      */
     private $orderTransactionRepo;
 
-    public function setUp(): void
+    /**
+     * @var StateMachineRegistry
+     */
+    private $stateMachineRegistry;
+
+    protected function setUp(): void
     {
         $this->orderTransactionRepo = new OrderTransactionRepoMock();
+        $this->stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
     }
 
     public function testPay(): void
@@ -69,8 +78,14 @@ class PayPalPaymentTest extends TestCase
         $handler->finalize($transactionId, $request, $context);
         $updatedData = $this->orderTransactionRepo->getData();
 
+        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
+            Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+            Defaults::ORDER_TRANSACTION_STATES_PAID,
+            $context
+        )->getId();
+
         self::assertSame($transactionId, $updatedData['id']);
-        self::assertSame(Defaults::ORDER_TRANSACTION_COMPLETED, $updatedData['orderTransactionStateId']);
+        self::assertSame($expectedStateId, $updatedData['stateId']);
     }
 
     public function testFinalizeAuthorization(): void
@@ -87,8 +102,14 @@ class PayPalPaymentTest extends TestCase
         $handler->finalize($transactionId, $request, $context);
         $updatedData = $this->orderTransactionRepo->getData();
 
+        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
+            Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+            Defaults::ORDER_TRANSACTION_STATES_OPEN,
+            $context
+        )->getId();
+
         self::assertSame($transactionId, $updatedData['id']);
-        self::assertSame(Defaults::ORDER_TRANSACTION_OPEN, $updatedData['orderTransactionStateId']);
+        self::assertSame($expectedStateId, $updatedData['stateId']);
     }
 
     public function testFinalizeOrder(): void
@@ -105,8 +126,14 @@ class PayPalPaymentTest extends TestCase
         $handler->finalize($transactionId, $request, $context);
         $updatedData = $this->orderTransactionRepo->getData();
 
+        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
+            Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+            Defaults::ORDER_TRANSACTION_STATES_OPEN,
+            $context
+        )->getId();
+
         self::assertSame($transactionId, $updatedData['id']);
-        self::assertSame(Defaults::ORDER_TRANSACTION_OPEN, $updatedData['orderTransactionStateId']);
+        self::assertSame($expectedStateId, $updatedData['stateId']);
     }
 
     public function testFinalizeWithCancel(): void
@@ -119,8 +146,14 @@ class PayPalPaymentTest extends TestCase
         $handler->finalize($transactionId, $request, $context);
         $updatedData = $this->orderTransactionRepo->getData();
 
+        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
+            Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+            Defaults::ORDER_TRANSACTION_STATES_CANCELLED,
+            $context
+        )->getId();
+
         self::assertSame($transactionId, $updatedData['id']);
-        self::assertSame(Defaults::ORDER_TRANSACTION_FAILED, $updatedData['orderTransactionStateId']);
+        self::assertSame($expectedStateId, $updatedData['stateId']);
     }
 
     public function testFinalizePaymentNotCompleted(): void
@@ -134,8 +167,14 @@ class PayPalPaymentTest extends TestCase
         $handler->finalize($transactionId, $request, $context);
         $updatedData = $this->orderTransactionRepo->getData();
 
+        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
+            Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+            Defaults::ORDER_TRANSACTION_STATES_OPEN,
+            $context
+        )->getId();
+
         self::assertSame($transactionId, $updatedData['id']);
-        self::assertSame(Defaults::ORDER_TRANSACTION_OPEN, $updatedData['orderTransactionStateId']);
+        self::assertSame($expectedStateId, $updatedData['stateId']);
     }
 
     private function createPayPalPaymentHandler(): PayPalPayment
@@ -145,7 +184,8 @@ class PayPalPaymentTest extends TestCase
         return new PayPalPayment(
             $this->orderTransactionRepo,
             $this->createPaymentResource($settingsProvider),
-            $this->createPaymentBuilder($settingsProvider)
+            $this->createPaymentBuilder($settingsProvider),
+            $this->stateMachineRegistry
         );
     }
 

@@ -35,7 +35,7 @@ class SaleDenied extends AbstractWebhookHandler
 
         $data = [
             'id' => $orderTransaction->getId(),
-            'orderTransactionStateId' => Defaults::ORDER_TRANSACTION_OPEN,
+            'stateId' => $this->getStateMachineState(Defaults::ORDER_TRANSACTION_STATES_OPEN, $context),
         ];
         $this->orderTransactionRepo->update([$data], $context);
     }

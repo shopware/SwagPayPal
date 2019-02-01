@@ -16,6 +16,7 @@ use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
+use Shopware\Core\Framework\Plugin\Helper\PluginIdProvider;
 use SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPayment;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -23,10 +24,10 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class SwagPayPal extends Plugin
 {
-    public const PAYMENT_METHOD_PAYPAL_ID = 'b8759d49b8a244ab8283f4a53f3e81fd';
+    public const PAYPAL_PAYMENT_METHOD_ID = 'b8759d49b8a244ab8283f4a53f3e81fd';
 
     /**
-     * The technical name of the unified payment method.
+     * The technical name of the PayPal payment method.
      */
     public const PAYPAL_PAYMENT_METHOD_NAME = 'SwagPayPal';
 
@@ -81,18 +82,21 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
 
     private function addPaymentMethod(Context $context): void
     {
-        /** @var EntityRepositoryInterface $paymentRepository */
-        $paymentRepository = $this->container->get('payment_method.repository');
+        /** @var PluginIdProvider $pluginIdProvider */
+        $pluginIdProvider = $this->container->get(PluginIdProvider::class);
+        $pluginId = $pluginIdProvider->getPluginIdByTechnicalName($this->getName(), $context);
 
         $paypal = [
-            'id' => self::PAYMENT_METHOD_PAYPAL_ID,
+            'id' => self::PAYPAL_PAYMENT_METHOD_ID,
             'technicalName' => self::PAYPAL_PAYMENT_METHOD_NAME,
             'name' => 'PayPal',
             'additionalDescription' => 'Bezahlung per PayPal - einfach, schnell und sicher.',
             'class' => PayPalPayment::class,
-            'active' => true,
+            'pluginId' => $pluginId,
         ];
 
+        /** @var EntityRepositoryInterface $paymentRepository */
+        $paymentRepository = $this->container->get('payment_method.repository');
         $paymentRepository->upsert([$paypal], $context);
     }
 
@@ -102,7 +106,7 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
         $paymentRepository = $this->container->get('payment_method.repository');
 
         $paymentMethod = [
-            'id' => self::PAYMENT_METHOD_PAYPAL_ID,
+            'id' => self::PAYPAL_PAYMENT_METHOD_ID,
             'active' => $active,
         ];
 

@@ -35,7 +35,7 @@ class AuthorizationVoided extends AbstractWebhookHandler
 
         $data = [
             'id' => $orderTransaction->getId(),
-            'orderTransactionStateId' => Defaults::ORDER_TRANSACTION_FAILED,
+            'stateId' => $this->getStateMachineState(Defaults::ORDER_TRANSACTION_STATES_CANCELLED, $context),
         ];
         $this->orderTransactionRepo->update([$data], $context);
     }

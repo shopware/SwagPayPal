@@ -27,22 +27,25 @@
         <!-- handler -->
         <service id="SwagPayPal\Webhook\Handler\AuthorizationVoided">
             <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\StateMachine\StateMachineRegistry"/>
             <tag name="swag.paypal.webhook.handler"/>
         </service>
 
         <service id="SwagPayPal\Webhook\Handler\SaleComplete">
             <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\StateMachine\StateMachineRegistry"/>
             <tag name="swag.paypal.webhook.handler"/>
         </service>
 
         <service id="SwagPayPal\Webhook\Handler\SaleDenied">
             <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\StateMachine\StateMachineRegistry"/>
             <tag name="swag.paypal.webhook.handler"/>
         </service>
 
         <service id="SwagPayPal\Webhook\Handler\SaleRefunded">
             <argument type="service" id="order_transaction.repository"/>
-            <argument type="service" id="order_transaction_state.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\StateMachine\StateMachineRegistry"/>
             <tag name="swag.paypal.webhook.handler"/>
         </service>
     </services>

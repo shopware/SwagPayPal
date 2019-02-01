@@ -9,17 +9,19 @@
 namespace SwagPayPal\Test\Webhook\Handler;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Framework\Api\Exception\ResourceNotFoundException;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\StateMachine\StateMachineRegistry;
+use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use SwagPayPal\Test\Mock\Repositories\OrderTransactionStateRepoMock;
 use SwagPayPal\Webhook\Handler\SaleRefunded;
 use SwagPayPal\Webhook\WebhookEventTypes;
 
 class SaleRefundedTest extends TestCase
 {
+    use KernelTestBehaviour;
+
     /**
      * @var SaleRefunded
      */
@@ -30,9 +32,15 @@ class SaleRefundedTest extends TestCase
      */
     private $orderTransactionRepo;
 
-    protected function setUp()
+    /**
+     * @var StateMachineRegistry
+     */
+    private $stateMachineRegistry;
+
+    protected function setUp(): void
     {
         $this->orderTransactionRepo = new OrderTransactionRepoMock();
+        $this->stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
         $this->webhookHandler = $this->createWebhookHandler();
     }
 
@@ -50,27 +58,21 @@ class SaleRefundedTest extends TestCase
 
         $result = $this->orderTransactionRepo->getData();
 
+        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
+            Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+            Defaults::ORDER_TRANSACTION_STATES_REFUNDED,
+            $context
+        )->getId();
+
         self::assertSame(OrderTransactionRepoMock::ORDER_TRANSACTION_ID, $result['id']);
-        self::assertSame(OrderTransactionStateRepoMock::ORDER_TRANSACTION_STATE_ID, $result['orderTransactionStateId']);
-    }
-
-    public function testInvokeTransactionStateNotFound(): void
-    {
-        $webhook = new Webhook();
-        $webhook->assign(['resource' => ['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]]);
-        $context = Context::createDefaultContext();
-        $context->addExtension(OrderTransactionStateRepoMock::NO_TRANSACTION_STATE_RESULT, new Entity());
-
-        $this->expectException(ResourceNotFoundException::class);
-        $this->expectExceptionMessage('The order_transaction_state resource with the following primary key was not found: position(14)');
-        $this->webhookHandler->invoke($webhook, $context);
+        self::assertSame($expectedStateId, $result['stateId']);
     }
 
     private function createWebhookHandler(): SaleRefunded
     {
         return new SaleRefunded(
             $this->orderTransactionRepo,
-            new OrderTransactionStateRepoMock()
+            $this->stateMachineRegistry
         );
     }
 }
