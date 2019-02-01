@@ -35,7 +35,7 @@ class SaleComplete extends AbstractWebhookHandler
 
         $data = [
             'id' => $orderTransaction->getId(),
-            'orderTransactionStateId' => Defaults::ORDER_TRANSACTION_COMPLETED,
+            'stateId' => $this->getStateMachineState(Defaults::ORDER_TRANSACTION_STATES_PAID, $context),
         ];
         $this->orderTransactionRepo->update([$data], $context);
     }

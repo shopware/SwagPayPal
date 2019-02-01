@@ -27,7 +27,7 @@ trait PaymentTransactionTrait
 
         return new PaymentTransactionStruct(
             $transactionId,
-            SwagPayPal::PAYMENT_METHOD_PAYPAL_ID,
+            SwagPayPal::PAYPAL_PAYMENT_METHOD_ID,
             $order,
             $amount,
             'http://www.test.de/'
@@ -37,7 +37,7 @@ trait PaymentTransactionTrait
     private function createOrderEntity(string $id): OrderEntity
     {
         $order = new OrderEntity();
-        $order->setShippingTotal(2.5);
+        $order->setShippingCosts(new CalculatedPrice(2.5, 2.5, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $order->setId($id);
         $currency = $this->createCurrencyEntity();
         $order->setCurrency($currency);

@@ -2,7 +2,7 @@
 
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/7.1/phpunit.xsd"
-         bootstrap="../../../src/TestBootstrap.php">
+         bootstrap="../../../tests/TestBootstrap.php">
 
     <php>
         <ini name="error_reporting" value="-1"/>
@@ -33,7 +33,14 @@
     </filter>
 
     <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener">
+            <arguments>
+                <array>
+                    <!-- set this option to 0 to disable the DebugClassLoader integration -->
+                    <element key="debug-class-loader"><integer>0</integer></element>
+                </array>
+            </arguments>
+        </listener>
         <listener class="JohnKary\PHPUnit\Listener\SpeedTrapListener"/>
         <!--Enable to see the db sideeffects of the tests. -->
         <!--<listener class="Shopware\Core\Framework\Test\TestCaseBase\DatabaseCleanTestListener"/>-->

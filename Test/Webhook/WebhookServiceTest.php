@@ -36,7 +36,7 @@ class WebhookServiceTest extends TestCase
      */
     private $orderTransactionRepo;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->swagPayPalSettingGeneralRepo = new SwagPayPalSettingGeneralRepoMock();
         $this->orderTransactionRepo = new OrderTransactionRepoMock();

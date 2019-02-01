@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\StateMachine\StateMachineRegistry;
 use SwagPayPal\PayPal\Api\Payment;
 use SwagPayPal\PayPal\Payment\PaymentBuilderInterface;
 use SwagPayPal\PayPal\PaymentIntent;
@@ -44,14 +45,21 @@ class PayPalPayment implements PaymentHandlerInterface
      */
     private $paymentBuilder;
 
+    /**
+     * @var StateMachineRegistry
+     */
+    private $stateMachineRegistry;
+
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepo,
         PaymentResource $paymentResource,
-        PaymentBuilderInterface $paymentBuilder
+        PaymentBuilderInterface $paymentBuilder,
+        StateMachineRegistry $stateMachineRegistry
     ) {
         $this->orderTransactionRepo = $orderTransactionRepo;
         $this->paymentResource = $paymentResource;
         $this->paymentBuilder = $paymentBuilder;
+        $this->stateMachineRegistry = $stateMachineRegistry;
     }
 
     public function pay(PaymentTransactionStruct $transaction, Context $context): ?RedirectResponse
@@ -76,9 +84,15 @@ class PayPalPayment implements PaymentHandlerInterface
     public function finalize(string $transactionId, Request $request, Context $context): void
     {
         if ($request->query->getBoolean('cancel')) {
+            $stateId = $this->stateMachineRegistry->getStateByTechnicalName(
+                Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+                Defaults::ORDER_TRANSACTION_STATES_CANCELLED,
+                $context
+            )->getId();
+
             $transaction = [
                 'id' => $transactionId,
-                'orderTransactionStateId' => Defaults::ORDER_TRANSACTION_FAILED,
+                'stateId' => $stateId,
             ];
             $this->orderTransactionRepo->update([$transaction], $context);
 
@@ -93,16 +107,23 @@ class PayPalPayment implements PaymentHandlerInterface
 
         // apply the payment status if its completed by PayPal
         if ($paymentState === PaymentStatus::PAYMENT_COMPLETED) {
-            $transaction = [
-                'id' => $transactionId,
-                'orderTransactionStateId' => Defaults::ORDER_TRANSACTION_COMPLETED,
-            ];
+            $stateId = $this->stateMachineRegistry->getStateByTechnicalName(
+                Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+                Defaults::ORDER_TRANSACTION_STATES_PAID,
+                $context
+            )->getId();
         } else {
-            $transaction = [
-                'id' => $transactionId,
-                'orderTransactionStateId' => Defaults::ORDER_TRANSACTION_OPEN,
-            ];
+            $stateId = $this->stateMachineRegistry->getStateByTechnicalName(
+                Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+                Defaults::ORDER_TRANSACTION_STATES_OPEN,
+                $context
+            )->getId();
         }
+
+        $transaction = [
+            'id' => $transactionId,
+            'stateId' => $stateId,
+        ];
 
         $this->orderTransactionRepo->update([$transaction], $context);
     }

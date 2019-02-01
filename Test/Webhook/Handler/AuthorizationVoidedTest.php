@@ -11,6 +11,8 @@ namespace SwagPayPal\Test\Webhook\Handler;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\StateMachine\StateMachineRegistry;
+use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
@@ -19,6 +21,8 @@ use SwagPayPal\Webhook\WebhookEventTypes;
 
 class AuthorizationVoidedTest extends TestCase
 {
+    use KernelTestBehaviour;
+
     /**
      * @var AuthorizationVoided
      */
@@ -29,9 +33,15 @@ class AuthorizationVoidedTest extends TestCase
      */
     private $orderTransactionRepo;
 
-    protected function setUp()
+    /**
+     * @var StateMachineRegistry
+     */
+    private $stateMachineRegistry;
+
+    protected function setUp(): void
     {
         $this->orderTransactionRepo = new OrderTransactionRepoMock();
+        $this->stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
         $this->webhookHandler = $this->createWebhookHandler();
     }
 
@@ -49,8 +59,14 @@ class AuthorizationVoidedTest extends TestCase
 
         $result = $this->orderTransactionRepo->getData();
 
+        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
+            Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+            Defaults::ORDER_TRANSACTION_STATES_CANCELLED,
+            $context
+        )->getId();
+
         self::assertSame(OrderTransactionRepoMock::ORDER_TRANSACTION_ID, $result['id']);
-        self::assertSame(Defaults::ORDER_TRANSACTION_FAILED, $result['orderTransactionStateId']);
+        self::assertSame($expectedStateId, $result['stateId']);
     }
 
     public function testInvokeWithoutTransaction(): void
@@ -71,6 +87,6 @@ class AuthorizationVoidedTest extends TestCase
 
     private function createWebhookHandler(): AuthorizationVoided
     {
-        return new AuthorizationVoided($this->orderTransactionRepo);
+        return new AuthorizationVoided($this->orderTransactionRepo, $this->stateMachineRegistry);
     }
 }

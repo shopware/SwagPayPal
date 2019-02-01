@@ -128,7 +128,9 @@ class PaymentBuilderService implements PaymentBuilderInterface
     {
         $amountDetails = new Details();
 
-        $amountDetails->setShipping($this->formatPrice($paymentTransaction->getOrder()->getShippingTotal()));
+        $amountDetails->setShipping(
+            $this->formatPrice($paymentTransaction->getOrder()->getShippingCosts()->getTotalPrice())
+        );
         $totalAmount = $paymentTransaction->getAmount()->getTotalPrice();
         $taxAmount = $paymentTransaction->getAmount()->getCalculatedTaxes()->getAmount();
         $amountDetails->setSubtotal($this->formatPrice($totalAmount - $taxAmount));
