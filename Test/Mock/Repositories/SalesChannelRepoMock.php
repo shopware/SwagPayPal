@@ -11,8 +11,8 @@ namespace SwagPayPal\Test\Mock\Repositories;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -66,6 +66,10 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
     {
     }
 
+    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
+    {
+    }
+
     private function createSalesChannelEntity(): SalesChannelEntity
     {
         $salesChannelEntity = new SalesChannelEntity();
@@ -73,9 +77,5 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
         $salesChannelEntity->setName(self::SALES_CHANNEL_NAME);
 
         return $salesChannelEntity;
-    }
-
-    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
-    {
     }
 }

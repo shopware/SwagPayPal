@@ -43,7 +43,9 @@ class PayPalPaymentTest extends TestCase
     protected function setUp(): void
     {
         $this->orderTransactionRepo = new OrderTransactionRepoMock();
-        $this->stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
+        /** @var StateMachineRegistry $stateMachineRegistry */
+        $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
+        $this->stateMachineRegistry = $stateMachineRegistry;
     }
 
     public function testPay(): void

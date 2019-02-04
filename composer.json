@@ -1,6 +1,6 @@
 {
     "name": "swag/paypal",
-    "description": "All PayPal payment methods in one plugin",
+    "description": "PayPal integration for shopware/platform",
     "version": "1.0.0",
     "type": "shopware-plugin",
     "license": "MIT",

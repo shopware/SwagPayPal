@@ -40,7 +40,9 @@ class SaleCompleteTest extends TestCase
     protected function setUp(): void
     {
         $this->orderTransactionRepo = new OrderTransactionRepoMock();
-        $this->stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
+        /** @var StateMachineRegistry $stateMachineRegistry */
+        $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
+        $this->stateMachineRegistry = $stateMachineRegistry;
         $this->webhookHandler = $this->createWebhookHandler();
     }
 

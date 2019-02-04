@@ -184,7 +184,10 @@ class PaymentBuilderService implements PaymentBuilderInterface
         /** @var SalesChannelEntity $salesChannel */
         $salesChannel = $salesChannelCollection->get($salesChannelId);
         if ($salesChannel !== null) {
-            $brandName = $salesChannel->getName();
+            $salesChannelName = $salesChannel->getName();
+            if ($salesChannelName !== null) {
+                $brandName = $salesChannelName;
+            }
         }
 
         return $brandName;

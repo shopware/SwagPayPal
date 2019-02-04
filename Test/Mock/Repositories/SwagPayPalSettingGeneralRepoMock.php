@@ -11,8 +11,8 @@ namespace SwagPayPal\Test\Mock\Repositories;
 use DateTime;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -80,6 +80,10 @@ class SwagPayPalSettingGeneralRepoMock implements EntityRepositoryInterface
         return $this->data[0];
     }
 
+    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
+    {
+    }
+
     private function createEntitySearchResult(Criteria $criteria, Context $context): EntitySearchResult
     {
         return new EntitySearchResult(
@@ -106,9 +110,5 @@ class SwagPayPalSettingGeneralRepoMock implements EntityRepositoryInterface
         $settingGeneral->setUpdatedAt(new DateTime());
 
         return $settingGeneral;
-    }
-
-    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
-    {
     }
 }

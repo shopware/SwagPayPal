@@ -18,8 +18,8 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -95,6 +95,10 @@ class OrderRepoMock implements EntityRepositoryInterface
     {
     }
 
+    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
+    {
+    }
+
     private function getLineItems(bool $setPrice = false): OrderLineItemCollection
     {
         $orderLineItem = new OrderLineItemEntity();
@@ -125,9 +129,5 @@ class OrderRepoMock implements EntityRepositoryInterface
         return new OrderLineItemCollection([
             $orderLineItem,
         ]);
-    }
-
-    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
-    {
     }
 }
