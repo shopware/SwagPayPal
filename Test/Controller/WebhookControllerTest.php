@@ -11,6 +11,7 @@ namespace SwagPayPal\Test\Controller;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
 use SwagPayPal\Controller\WebhookController;
 use SwagPayPal\Test\Controller\_fixtures\WebhookDataFixture;
 use SwagPayPal\Test\Mock\LoggerMock;
@@ -23,6 +24,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class WebhookControllerTest extends TestCase
 {
+    use AssertArraySubsetBehaviour;
+
     public const THROW_WEBHOOK_EXCEPTION = 'executeWebhookThrowsWebhookException';
 
     public const THROW_GENERAL_EXCEPTION = 'executeWebhookThrowsGeneralException';
@@ -35,7 +38,7 @@ class WebhookControllerTest extends TestCase
         $jsonResponse = $webhookController->registerWebhook($context);
         $result = json_decode($jsonResponse->getContent(), true);
 
-        self::assertArraySubset(['result' => WebhookService::WEBHOOK_CREATED], $result);
+        $this->silentAssertArraySubset(['result' => WebhookService::WEBHOOK_CREATED], $result);
     }
 
     public function testExecuteWebhook(): void

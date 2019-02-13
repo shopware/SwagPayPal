@@ -209,7 +209,6 @@ class PaymentBuilderServiceTest extends TestCase
 
         return new Context(
             $sourceContext,
-            $defaultContext->getCatalogIds(),
             $defaultContext->getRules(),
             $defaultContext->getCurrencyId(),
             $defaultContext->getLanguageIdChain(),
