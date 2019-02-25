@@ -18,7 +18,7 @@ class PayPalInvalidApiCredentialsExceptionTest extends TestCase
     {
         $exception = new PayPalInvalidApiCredentialsException();
 
-        self::assertSame('Provided API credentials are invalid', $exception->getMessage());
-        self::assertSame(Response::HTTP_NOT_FOUND, $exception->getStatusCode());
+        static::assertSame('Provided API credentials are invalid', $exception->getMessage());
+        static::assertSame(Response::HTTP_NOT_FOUND, $exception->getStatusCode());
     }
 }

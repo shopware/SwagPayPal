@@ -20,8 +20,8 @@ class WebhookExceptionTest extends TestCase
         $message = 'testMessage';
         $exception = new WebhookException($webhookType, $message);
 
-        self::assertSame($message, $exception->getMessage());
-        self::assertSame(Response::HTTP_BAD_REQUEST, $exception->getStatusCode());
+        static::assertSame($message, $exception->getMessage());
+        static::assertSame(Response::HTTP_BAD_REQUEST, $exception->getStatusCode());
     }
 
     public function testGetEventType(): void
@@ -30,7 +30,7 @@ class WebhookExceptionTest extends TestCase
         $message = 'testMessage';
         $exception = new WebhookException($webhookType, $message);
 
-        self::assertSame($message, $exception->getMessage());
-        self::assertSame($webhookType, $exception->getEventType());
+        static::assertSame($message, $exception->getMessage());
+        static::assertSame($webhookType, $exception->getEventType());
     }
 }

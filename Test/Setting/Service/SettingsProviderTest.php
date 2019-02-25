@@ -28,9 +28,9 @@ class SettingsProviderTest extends TestCase
         $context = Context::createDefaultContext();
         $settings = $settingsProvider->getSettings($context);
 
-        self::assertInstanceOf(SwagPayPalSettingGeneralEntity::class, $settings);
-        self::assertInstanceOf(DateTime::class, $settings->getCreatedAt());
-        self::assertInstanceOf(DateTime::class, $settings->getUpdatedAt());
+        static::assertInstanceOf(SwagPayPalSettingGeneralEntity::class, $settings);
+        static::assertInstanceOf(DateTime::class, $settings->getCreatedAt());
+        static::assertInstanceOf(DateTime::class, $settings->getUpdatedAt());
     }
 
     public function testGetSettingsThrowsException(): void

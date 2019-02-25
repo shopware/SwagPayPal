@@ -27,7 +27,7 @@ class SaleResourceTest extends TestCase
         $context = Context::createDefaultContext();
         $refundResponse = $resource->refund('paymentId', $refund, $context);
 
-        self::assertSame(PaymentStatus::PAYMENT_COMPLETED, $refundResponse->getState());
+        static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $refundResponse->getState());
     }
 
     private function createSaleResource(): SaleResource

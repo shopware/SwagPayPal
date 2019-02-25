@@ -32,18 +32,18 @@ class TokenResourceTest extends TestCase
 
         $dateNow = new DateTime('now');
 
-        self::assertInstanceOf(Token::class, $token);
-        self::assertSame(TokenClientMock::ACCESS_TOKEN, $token->getAccessToken());
-        self::assertSame(TokenClientMock::TOKEN_TYPE, $token->getTokenType());
-        self::assertInstanceOf(DateTime::class, $token->getExpireDateTime());
-        self::assertTrue($dateNow < $token->getExpireDateTime());
+        static::assertInstanceOf(Token::class, $token);
+        static::assertSame(TokenClientMock::ACCESS_TOKEN, $token->getAccessToken());
+        static::assertSame(TokenClientMock::TOKEN_TYPE, $token->getTokenType());
+        static::assertInstanceOf(DateTime::class, $token->getExpireDateTime());
+        static::assertTrue($dateNow < $token->getExpireDateTime());
     }
 
     public function testTestApiCredentials(): void
     {
         $result = $this->getTokenResource()->testApiCredentials(new OAuthCredentials(), 'url');
 
-        self::assertTrue($result);
+        static::assertTrue($result);
     }
 
     public function testGetTokenFromCache(): void
@@ -54,10 +54,10 @@ class TokenResourceTest extends TestCase
         $context->getSourceContext()->setSalesChannelId(self::SALES_CHANNEL_ID_WITH_TOKEN);
         $token = $tokenResource->getToken(new OAuthCredentials(), $context, 'url');
 
-        self::assertInstanceOf(Token::class, $token);
-        self::assertSame(CacheItemWithTokenMock::ACCESS_TOKEN, $token->getAccessToken());
-        self::assertSame(TokenClientMock::TOKEN_TYPE, $token->getTokenType());
-        self::assertInstanceOf(DateTime::class, $token->getExpireDateTime());
+        static::assertInstanceOf(Token::class, $token);
+        static::assertSame(CacheItemWithTokenMock::ACCESS_TOKEN, $token->getAccessToken());
+        static::assertSame(TokenClientMock::TOKEN_TYPE, $token->getTokenType());
+        static::assertInstanceOf(DateTime::class, $token->getExpireDateTime());
     }
 
     private function getTokenResource(): TokenResource

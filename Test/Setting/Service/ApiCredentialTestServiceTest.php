@@ -30,7 +30,7 @@ class ApiCredentialTestServiceTest extends TestCase
 
         $apiCredentialsValid = $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
 
-        self::assertTrue($apiCredentialsValid);
+        static::assertTrue($apiCredentialsValid);
     }
 
     public function testApiCredentialsThrowsException(): void

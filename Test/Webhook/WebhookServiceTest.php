@@ -50,7 +50,7 @@ class WebhookServiceTest extends TestCase
 
         $result = $webhookService->registerWebhook($context);
 
-        self::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
+        static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
     }
 
     public function testRegisterWebhookWithoutTokenButWithId(): void
@@ -62,7 +62,7 @@ class WebhookServiceTest extends TestCase
 
         $result = $webhookService->registerWebhook($context);
 
-        self::assertSame(WebhookService::WEBHOOK_UPDATED, $result);
+        static::assertSame(WebhookService::WEBHOOK_UPDATED, $result);
     }
 
     public function testRegisterWebhookWithoutTokenAndId(): void
@@ -74,13 +74,13 @@ class WebhookServiceTest extends TestCase
 
         $result = $webhookService->registerWebhook($context);
 
-        self::assertSame(WebhookService::WEBHOOK_CREATED, $result);
+        static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
 
         $updatedSettings = $this->swagPayPalSettingGeneralRepo->getData();
 
-        self::assertSame(SettingsProviderMock::PAYPAL_SETTING_ID, $updatedSettings['id']);
-        self::assertSame(WebhookResourceMock::CREATED_WEBHOOK_ID, $updatedSettings['webhookId']);
-        self::assertSame(WebhookService::PAYPAL_WEBHOOK_TOKEN_LENGTH, \mb_strlen($updatedSettings['webhookExecuteToken']));
+        static::assertSame(SettingsProviderMock::PAYPAL_SETTING_ID, $updatedSettings['id']);
+        static::assertSame(WebhookResourceMock::CREATED_WEBHOOK_ID, $updatedSettings['webhookId']);
+        static::assertSame(WebhookService::PAYPAL_WEBHOOK_TOKEN_LENGTH, \mb_strlen($updatedSettings['webhookExecuteToken']));
     }
 
     public function testExecuteWebhook(): void
@@ -96,7 +96,7 @@ class WebhookServiceTest extends TestCase
 
         $updatedTransaction = $this->orderTransactionRepo->getData();
 
-        self::assertTrue($updatedTransaction[DummyWebhook::ORDER_TRANSACTION_UPDATE_DATA_KEY]);
+        static::assertTrue($updatedTransaction[DummyWebhook::ORDER_TRANSACTION_UPDATE_DATA_KEY]);
     }
 
     public function testRegisterWebhookWithoutTokenAndIdThrowsException(): void
@@ -109,7 +109,7 @@ class WebhookServiceTest extends TestCase
 
         $result = $webhookService->registerWebhook($context);
 
-        self::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
+        static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
     }
 
     public function testRegisterWebhookWithAlreadyExistingTokenAndIdThrowsException(): void
@@ -121,7 +121,7 @@ class WebhookServiceTest extends TestCase
 
         $result = $webhookService->registerWebhook($context);
 
-        self::assertSame(WebhookService::WEBHOOK_CREATED, $result);
+        static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
     }
 
     private function createWebhookService(): WebhookServiceInterface

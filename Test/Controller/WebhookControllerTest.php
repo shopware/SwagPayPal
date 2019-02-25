@@ -49,7 +49,7 @@ class WebhookControllerTest extends TestCase
         $request = $this->createRequestWithWebhookData();
         $response = $webhookController->executeWebhook($request, $context);
 
-        self::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
     }
 
     public function testExecuteWebhookThrowsWebhookException(): void

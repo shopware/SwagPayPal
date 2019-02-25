@@ -19,7 +19,7 @@ class WebhookIdInvalidExceptionTest extends TestCase
         $webhookId = 'testWebhookId';
         $exception = new WebhookIdInvalidException($webhookId);
 
-        self::assertSame(sprintf('Webhook with ID "%s" is invalid', $webhookId), $exception->getMessage());
-        self::assertSame(Response::HTTP_BAD_REQUEST, $exception->getStatusCode());
+        static::assertSame(sprintf('Webhook with ID "%s" is invalid', $webhookId), $exception->getMessage());
+        static::assertSame(Response::HTTP_BAD_REQUEST, $exception->getStatusCode());
     }
 }

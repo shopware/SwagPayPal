@@ -74,9 +74,9 @@ class GetSaleWithRefundResponseFixture
                                     'total' => '240.00',
                                     'currency' => 'EUR',
                                     'details' => [
-                                            'subtotal' => '12.35',
-                                            'tax' => '15.70',
-                                        ],
+                                        'subtotal' => '12.35',
+                                        'tax' => '15.70',
+                                    ],
                                 ],
                                 'payment_mode' => 'INSTANT_TRANSFER',
                                 'protection_eligibility' => 'ELIGIBLE',

@@ -19,5 +19,10 @@
             "de_DE": "PayPal Produkte für Shopware",
             "en_GB": "PayPal Products for Shopware"
         }
+    },
+    "autoload": {
+        "psr-4": {
+            "SwagPayPal\\": ""
+        }
     }
 }

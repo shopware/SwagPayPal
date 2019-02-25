@@ -35,13 +35,13 @@ class PaymentResourceTest extends TestCase
         $payment = $this->createPaymentBuilder()->getPayment($paymentTransaction, $context);
         $createdPayment = $this->createPaymentResource()->create($payment, $context);
 
-        self::assertInstanceOf(Payment::class, $createdPayment);
-        self::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $createdPayment->getId());
+        static::assertInstanceOf(Payment::class, $createdPayment);
+        static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $createdPayment->getId());
         $transaction = $createdPayment->getTransactions()[0];
-        self::assertInstanceOf(Payment\Transaction::class, $transaction);
+        static::assertInstanceOf(Payment\Transaction::class, $transaction);
         $link = $createdPayment->getLinks()[1];
-        self::assertInstanceOf(Payment\Link::class, $link);
-        self::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $link->getHref());
+        static::assertInstanceOf(Payment\Link::class, $link);
+        static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $link->getHref());
     }
 
     public function testExecuteSale(): void
@@ -49,13 +49,13 @@ class PaymentResourceTest extends TestCase
         $context = Context::createDefaultContext();
         $executedPayment = $this->createPaymentResource()->execute('testPayerId', self::TEST_PAYMENT_ID, $context);
 
-        self::assertInstanceOf(Payment::class, $executedPayment);
+        static::assertInstanceOf(Payment::class, $executedPayment);
         $transaction = $executedPayment->getTransactions()[0];
-        self::assertInstanceOf(Payment\Transaction::class, $transaction);
-        self::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
+        static::assertInstanceOf(Payment\Transaction::class, $transaction);
+        static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
         $sale = $transaction->getRelatedResources()[0]->getSale();
         if ($sale !== null) {
-            self::assertSame(PaymentStatus::PAYMENT_COMPLETED, $sale->getState());
+            static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $sale->getState());
         }
     }
 
@@ -68,13 +68,13 @@ class PaymentResourceTest extends TestCase
             $context
         );
 
-        self::assertInstanceOf(Payment::class, $executedPayment);
+        static::assertInstanceOf(Payment::class, $executedPayment);
         $transaction = $executedPayment->getTransactions()[0];
-        self::assertInstanceOf(Payment\Transaction::class, $transaction);
-        self::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
+        static::assertInstanceOf(Payment\Transaction::class, $transaction);
+        static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
         $authorization = $transaction->getRelatedResources()[0]->getAuthorization();
         if ($authorization !== null) {
-            self::assertSame(PaymentStatus::PAYMENT_AUTHORIZED, $authorization->getState());
+            static::assertSame(PaymentStatus::PAYMENT_AUTHORIZED, $authorization->getState());
         }
     }
 
@@ -87,13 +87,13 @@ class PaymentResourceTest extends TestCase
             $context
         );
 
-        self::assertInstanceOf(Payment::class, $executedPayment);
+        static::assertInstanceOf(Payment::class, $executedPayment);
         $transaction = $executedPayment->getTransactions()[0];
-        self::assertInstanceOf(Payment\Transaction::class, $transaction);
-        self::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
+        static::assertInstanceOf(Payment\Transaction::class, $transaction);
+        static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
         $order = $transaction->getRelatedResources()[0]->getOrder();
         if ($order !== null) {
-            self::assertSame(PaymentStatus::PAYMENT_PENDING, $order->getState());
+            static::assertSame(PaymentStatus::PAYMENT_PENDING, $order->getState());
         }
     }
 
@@ -102,13 +102,13 @@ class PaymentResourceTest extends TestCase
         $context = Context::createDefaultContext();
         $payment = $this->createPaymentResource()->get(self::TEST_PAYMENT_ID, $context);
 
-        self::assertInstanceOf(Payment::class, $payment);
+        static::assertInstanceOf(Payment::class, $payment);
         $transaction = $payment->getTransactions()[0];
-        self::assertInstanceOf(Payment\Transaction::class, $transaction);
-        self::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        static::assertInstanceOf(Payment\Transaction::class, $transaction);
+        static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
         $sale = $transaction->getRelatedResources()[0]->getSale();
         if ($sale !== null) {
-            self::assertSame(PaymentStatus::PAYMENT_COMPLETED, $sale->getState());
+            static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $sale->getState());
         }
     }
 
@@ -117,17 +117,17 @@ class PaymentResourceTest extends TestCase
         $context = Context::createDefaultContext();
         $payment = $this->createPaymentResource()->get(self::SALE_WITH_REFUND_PAYMENT_ID, $context);
 
-        self::assertInstanceOf(Payment::class, $payment);
+        static::assertInstanceOf(Payment::class, $payment);
         $transaction = $payment->getTransactions()[0];
-        self::assertInstanceOf(Payment\Transaction::class, $transaction);
-        self::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        static::assertInstanceOf(Payment\Transaction::class, $transaction);
+        static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
         $sale = $transaction->getRelatedResources()[0]->getSale();
         if ($sale !== null) {
-            self::assertSame(PaymentStatus::PAYMENT_PARTIALLY_REFUNDED, $sale->getState());
+            static::assertSame(PaymentStatus::PAYMENT_PARTIALLY_REFUNDED, $sale->getState());
         }
         $refund = $transaction->getRelatedResources()[1]->getRefund();
         if ($refund !== null) {
-            self::assertSame(PaymentStatus::PAYMENT_COMPLETED, $refund->getState());
+            static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $refund->getState());
         }
     }
 
@@ -136,13 +136,13 @@ class PaymentResourceTest extends TestCase
         $context = Context::createDefaultContext();
         $payment = $this->createPaymentResource()->get(self::ORDER_PAYMENT_ID, $context);
 
-        self::assertInstanceOf(Payment::class, $payment);
+        static::assertInstanceOf(Payment::class, $payment);
         $transaction = $payment->getTransactions()[0];
-        self::assertInstanceOf(Payment\Transaction::class, $transaction);
-        self::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        static::assertInstanceOf(Payment\Transaction::class, $transaction);
+        static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
         $order = $transaction->getRelatedResources()[0]->getOrder();
         if ($order !== null) {
-            self::assertSame(PaymentStatus::PAYMENT_PENDING, $order->getState());
+            static::assertSame(PaymentStatus::PAYMENT_PENDING, $order->getState());
         }
     }
 }

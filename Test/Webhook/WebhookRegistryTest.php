@@ -23,7 +23,7 @@ class WebhookRegistryTest extends TestCase
     {
         $webhook = $this->createWebhookRegistry()->getWebhookHandler(DummyWebhook::EVENT_TYPE);
 
-        self::assertInstanceOf(DummyWebhook::class, $webhook);
+        static::assertInstanceOf(DummyWebhook::class, $webhook);
     }
 
     public function testGetUnknownWebhookHandler(): void

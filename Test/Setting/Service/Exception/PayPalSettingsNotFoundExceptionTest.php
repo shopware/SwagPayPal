@@ -18,7 +18,7 @@ class PayPalSettingsNotFoundExceptionTest extends TestCase
     {
         $exception = new PayPalSettingsNotFoundException();
 
-        self::assertSame('PayPal settings not found', $exception->getMessage());
-        self::assertSame(Response::HTTP_NOT_FOUND, $exception->getStatusCode());
+        static::assertSame('PayPal settings not found', $exception->getMessage());
+        static::assertSame(Response::HTTP_NOT_FOUND, $exception->getStatusCode());
     }
 }

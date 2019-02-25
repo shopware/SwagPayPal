@@ -39,7 +39,7 @@ class PayPalPaymentControllerTest extends TestCase
 
         $paymentDetails = json_decode($response->getContent(), true);
 
-        self::assertSame(
+        static::assertSame(
             GetSaleResponseFixture::TRANSACTION_AMOUNT_DETAILS_SUBTOTAL,
             $paymentDetails['transactions'][0]['amount']['details']['subtotal']
         );
@@ -55,7 +55,7 @@ class PayPalPaymentControllerTest extends TestCase
 
         $refund = json_decode($response->getContent(), true);
 
-        self::assertSame(RefundSaleResponseFixture::REFUND_AMOUNT, $refund['amount']['total']);
+        static::assertSame(RefundSaleResponseFixture::REFUND_AMOUNT, $refund['amount']['total']);
     }
 
     public function testRefundPaymentWithInvoiceAndAmount(): void
@@ -72,9 +72,9 @@ class PayPalPaymentControllerTest extends TestCase
 
         $refund = json_decode($response->getContent(), true);
 
-        self::assertSame((string) self::TEST_REFUND_AMOUNT, $refund['amount']['total']);
-        self::assertSame(self::TEST_REFUND_CURRENCY, $refund['amount']['currency']);
-        self::assertSame(self::TEST_REFUND_INVOICE_NUMBER, $refund['invoice_number']);
+        static::assertSame((string) self::TEST_REFUND_AMOUNT, $refund['amount']['total']);
+        static::assertSame(self::TEST_REFUND_CURRENCY, $refund['amount']['currency']);
+        static::assertSame(self::TEST_REFUND_INVOICE_NUMBER, $refund['invoice_number']);
     }
 
     public function testRefundPaymentWithInvalidIntent(): void

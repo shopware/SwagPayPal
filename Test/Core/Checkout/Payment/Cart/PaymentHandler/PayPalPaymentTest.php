@@ -56,15 +56,15 @@ class PayPalPaymentTest extends TestCase
         $context = Context::createDefaultContext();
         $response = $handler->pay($paymentTransaction, $context);
 
-        self::assertNotNull($response);
+        static::assertNotNull($response);
         if ($response === null) {
             return;
         }
 
-        self::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $response->getTargetUrl());
+        static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $response->getTargetUrl());
 
         $updatedData = $this->orderTransactionRepo->getData();
-        self::assertSame(
+        static::assertSame(
             CreateResponseFixture::CREATE_PAYMENT_ID,
             $updatedData['details'][PayPalPayment::TRANSACTION_DETAILS_JSON_KEY]['transactionId']
         );
@@ -86,8 +86,8 @@ class PayPalPaymentTest extends TestCase
             $context
         )->getId();
 
-        self::assertSame($transactionId, $updatedData['id']);
-        self::assertSame($expectedStateId, $updatedData['stateId']);
+        static::assertSame($transactionId, $updatedData['id']);
+        static::assertSame($expectedStateId, $updatedData['stateId']);
     }
 
     public function testFinalizeAuthorization(): void
@@ -110,8 +110,8 @@ class PayPalPaymentTest extends TestCase
             $context
         )->getId();
 
-        self::assertSame($transactionId, $updatedData['id']);
-        self::assertSame($expectedStateId, $updatedData['stateId']);
+        static::assertSame($transactionId, $updatedData['id']);
+        static::assertSame($expectedStateId, $updatedData['stateId']);
     }
 
     public function testFinalizeOrder(): void
@@ -134,8 +134,8 @@ class PayPalPaymentTest extends TestCase
             $context
         )->getId();
 
-        self::assertSame($transactionId, $updatedData['id']);
-        self::assertSame($expectedStateId, $updatedData['stateId']);
+        static::assertSame($transactionId, $updatedData['id']);
+        static::assertSame($expectedStateId, $updatedData['stateId']);
     }
 
     public function testFinalizeWithCancel(): void
@@ -154,8 +154,8 @@ class PayPalPaymentTest extends TestCase
             $context
         )->getId();
 
-        self::assertSame($transactionId, $updatedData['id']);
-        self::assertSame($expectedStateId, $updatedData['stateId']);
+        static::assertSame($transactionId, $updatedData['id']);
+        static::assertSame($expectedStateId, $updatedData['stateId']);
     }
 
     public function testFinalizePaymentNotCompleted(): void
@@ -175,8 +175,8 @@ class PayPalPaymentTest extends TestCase
             $context
         )->getId();
 
-        self::assertSame($transactionId, $updatedData['id']);
-        self::assertSame($expectedStateId, $updatedData['stateId']);
+        static::assertSame($transactionId, $updatedData['id']);
+        static::assertSame($expectedStateId, $updatedData['stateId']);
     }
 
     private function createPayPalPaymentHandler(): PayPalPayment

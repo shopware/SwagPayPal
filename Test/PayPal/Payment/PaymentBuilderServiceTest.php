@@ -36,10 +36,10 @@ class PaymentBuilderServiceTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
 
-        self::assertInstanceOf(Payment::class, $payment);
+        static::assertInstanceOf(Payment::class, $payment);
 
         $transaction = $payment->getTransactions()[0];
-        self::assertInstanceOf(Payment\Transaction::class, $transaction);
+        static::assertInstanceOf(Payment\Transaction::class, $transaction);
     }
 
     public function testGetPaymentInvalidIntentThrowsException(): void
@@ -64,14 +64,14 @@ class PaymentBuilderServiceTest extends TestCase
         $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
-        self::assertNotFalse($payment);
+        static::assertNotFalse($payment);
         if ($payment === false) {
             return;
         }
 
         $payment = json_decode($payment, true);
 
-        self::assertSame(SalesChannelRepoMock::SALES_CHANNEL_NAME, $payment['application_context']['brand_name']);
+        static::assertSame(SalesChannelRepoMock::SALES_CHANNEL_NAME, $payment['application_context']['brand_name']);
     }
 
     public function testGetPaymentWithoutBrandNameAndSalesChannel(): void
@@ -83,14 +83,14 @@ class PaymentBuilderServiceTest extends TestCase
         $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
-        self::assertNotFalse($payment);
+        static::assertNotFalse($payment);
         if ($payment === false) {
             return;
         }
 
         $payment = json_decode($payment, true);
 
-        self::assertSame('', $payment['application_context']['brand_name']);
+        static::assertSame('', $payment['application_context']['brand_name']);
     }
 
     public function testGetPaymentWithItemList(): void
@@ -105,7 +105,7 @@ class PaymentBuilderServiceTest extends TestCase
 
         $transaction = json_encode($payment->getTransactions()[0]);
 
-        self::assertNotFalse($transaction);
+        static::assertNotFalse($transaction);
         if ($transaction === false) {
             return;
         }
@@ -113,12 +113,12 @@ class PaymentBuilderServiceTest extends TestCase
         $transaction = json_decode($transaction, true);
         $item = $transaction['item_list']['items'][0];
 
-        self::assertSame(OrderRepoMock::EXPECTED_ITEM_NAME, $item['name']);
-        self::assertSame(OrderRepoMock::EXPECTED_ITEM_CURRENCY, $item['currency']);
-        self::assertSame(OrderRepoMock::EXPECTED_ITEM_PRICE, $item['price']);
-        self::assertSame(OrderRepoMock::EXPECTED_ITEM_QUANTITY, $item['quantity']);
-        self::assertSame(OrderRepoMock::EXPECTED_ITEM_SKU, $item['sku']);
-        self::assertSame(OrderRepoMock::EXPECTED_ITEM_TAX, $item['tax']);
+        static::assertSame(OrderRepoMock::EXPECTED_ITEM_NAME, $item['name']);
+        static::assertSame(OrderRepoMock::EXPECTED_ITEM_CURRENCY, $item['currency']);
+        static::assertSame(OrderRepoMock::EXPECTED_ITEM_PRICE, $item['price']);
+        static::assertSame(OrderRepoMock::EXPECTED_ITEM_QUANTITY, $item['quantity']);
+        static::assertSame(OrderRepoMock::EXPECTED_ITEM_SKU, $item['sku']);
+        static::assertSame(OrderRepoMock::EXPECTED_ITEM_TAX, $item['tax']);
     }
 
     public function testGetPaymentWithoutPrice(): void
@@ -132,14 +132,14 @@ class PaymentBuilderServiceTest extends TestCase
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
         $transaction = json_encode($payment->getTransactions()[0]);
 
-        self::assertNotFalse($transaction);
+        static::assertNotFalse($transaction);
         if ($transaction === false) {
             return;
         }
 
         $transaction = json_decode($transaction, true)['item_list'];
 
-        self::assertNull($transaction);
+        static::assertNull($transaction);
     }
 
     public function testGetPaymentWithoutLineItems(): void
@@ -152,14 +152,14 @@ class PaymentBuilderServiceTest extends TestCase
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
         $transaction = json_encode($payment->getTransactions()[0]);
 
-        self::assertNotFalse($transaction);
+        static::assertNotFalse($transaction);
         if ($transaction === false) {
             return;
         }
 
         $transaction = json_decode($transaction, true)['item_list'];
 
-        self::assertNull($transaction);
+        static::assertNull($transaction);
     }
 
     /**
@@ -174,13 +174,13 @@ class PaymentBuilderServiceTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
         $paymentJsonString = json_encode($payment);
-        self::assertNotFalse($paymentJsonString);
+        static::assertNotFalse($paymentJsonString);
         if ($paymentJsonString === false) {
             return;
         }
 
         $applicationContext = json_decode($paymentJsonString, true)['application_context'];
-        self::assertSame($expectedResult, $applicationContext['landing_page']);
+        static::assertSame($expectedResult, $applicationContext['landing_page']);
     }
 
     public function dataProviderTestApplicationContext(): array

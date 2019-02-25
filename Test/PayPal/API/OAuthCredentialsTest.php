@@ -21,6 +21,6 @@ class OAuthCredentialsTest extends TestCase
         $credentials->setRestId($restId);
         $credentials->setRestSecret($restSecret);
 
-        self::assertSame('Basic dGVzdFJlc3RJZDp0ZXN0UmVzdFNlY3JldA==', (string) $credentials);
+        static::assertSame('Basic dGVzdFJlc3RJZDp0ZXN0UmVzdFNlY3JldA==', (string) $credentials);
     }
 }

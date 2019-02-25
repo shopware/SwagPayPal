@@ -49,7 +49,7 @@ class AuthorizationVoidedTest extends TestCase
 
     public function testGetEventType(): void
     {
-        self::assertSame(WebhookEventTypes::PAYMENT_AUTHORIZATION_VOIDED, $this->webhookHandler->getEventType());
+        static::assertSame(WebhookEventTypes::PAYMENT_AUTHORIZATION_VOIDED, $this->webhookHandler->getEventType());
     }
 
     public function testInvoke(): void
@@ -67,8 +67,8 @@ class AuthorizationVoidedTest extends TestCase
             $context
         )->getId();
 
-        self::assertSame(OrderTransactionRepoMock::ORDER_TRANSACTION_ID, $result['id']);
-        self::assertSame($expectedStateId, $result['stateId']);
+        static::assertSame(OrderTransactionRepoMock::ORDER_TRANSACTION_ID, $result['id']);
+        static::assertSame($expectedStateId, $result['stateId']);
     }
 
     public function testInvokeWithoutTransaction(): void

@@ -45,7 +45,7 @@ class WebhookResourceTest extends TestCase
         $context = Context::createDefaultContext();
         $webhookId = $this->createWebHookResource()->createWebhook('url', new CreateWebhooks(), $context);
 
-        self::assertSame(PayPalClientMock::TEST_WEBHOOK_ID, $webhookId);
+        static::assertSame(PayPalClientMock::TEST_WEBHOOK_ID, $webhookId);
     }
 
     public function testCreateWebhookThrowsExceptionWithResponse(): void
@@ -75,12 +75,12 @@ class WebhookResourceTest extends TestCase
         $context = Context::createDefaultContext();
         $webhookUrl = $this->createWebHookResource()->getWebhookUrl(self::WEBHOOK_ID, $context);
 
-        self::assertSame(PayPalClientMock::GET_WEBHOOK_URL, $webhookUrl);
+        static::assertSame(PayPalClientMock::GET_WEBHOOK_URL, $webhookUrl);
     }
 
     public function testGetWebhookUrlThrowsExceptionWithoutResponse(): void
     {
-        self::markTestSkipped('Currently skipped, because Guzzle throws a deprecation message, which causes a failed build on bamboo');
+        static::markTestSkipped('Currently skipped, because Guzzle throws a deprecation message, which causes a failed build on bamboo');
         $context = Context::createDefaultContext();
         $this->expectException(ClientException::class);
         $this->expectExceptionMessage(PayPalClientMock::CLIENT_EXCEPTION_MESSAGE_WITHOUT_RESPONSE);
@@ -112,13 +112,13 @@ class WebhookResourceTest extends TestCase
 
         $data = $this->clientFactory->getClient()->getData();
         $patchJsonString = json_encode($data[0]);
-        self::assertNotFalse($patchJsonString);
+        static::assertNotFalse($patchJsonString);
         if ($patchJsonString === false) {
             return;
         }
 
         $patch = json_decode($patchJsonString, true);
-        self::assertSame($patch['value'], self::TEST_URL);
+        static::assertSame($patch['value'], self::TEST_URL);
     }
 
     public function testUpdateWebhookWithInvalidResourceId(): void

@@ -19,7 +19,7 @@ class WebhookAlreadyExistsExceptionTest extends TestCase
         $webhookUrl = 'www.test.de';
         $exception = new WebhookAlreadyExistsException($webhookUrl);
 
-        self::assertSame(sprintf('WebhookUrl "%s" already exists', $webhookUrl), $exception->getMessage());
-        self::assertSame(Response::HTTP_BAD_REQUEST, $exception->getStatusCode());
+        static::assertSame(sprintf('WebhookUrl "%s" already exists', $webhookUrl), $exception->getMessage());
+        static::assertSame(Response::HTTP_BAD_REQUEST, $exception->getStatusCode());
     }
 }
