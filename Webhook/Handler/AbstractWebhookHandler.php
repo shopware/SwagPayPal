@@ -14,7 +14,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\StateMachine\StateMachineRegistry;
+use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use SwagPayPal\Webhook\WebhookHandler;

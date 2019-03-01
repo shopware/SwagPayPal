@@ -11,7 +11,7 @@ namespace SwagPayPal\Test\Webhook\Handler;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\StateMachine\StateMachineRegistry;
+use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
