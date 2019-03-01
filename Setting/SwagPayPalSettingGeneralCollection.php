@@ -10,13 +10,17 @@ namespace SwagPayPal\Setting;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 
+/**
+ * @method void                                add(SwagPayPalSettingGeneralEntity $entity)
+ * @method void                                set(string $key, SwagPayPalSettingGeneralEntity $entity)
+ * @method SwagPayPalSettingGeneralEntity[]    getIterator()
+ * @method SwagPayPalSettingGeneralEntity[]    getElements()
+ * @method SwagPayPalSettingGeneralEntity|null get(string $key)
+ * @method SwagPayPalSettingGeneralEntity|null first()
+ * @method SwagPayPalSettingGeneralEntity|null last()
+ */
 class SwagPayPalSettingGeneralCollection extends EntityCollection
 {
-    public function first(): SwagPayPalSettingGeneralEntity
-    {
-        return parent::first();
-    }
-
     protected function getExpectedClass(): string
     {
         return SwagPayPalSettingGeneralEntity::class;

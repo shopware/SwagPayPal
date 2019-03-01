@@ -10,13 +10,12 @@ namespace SwagPayPal\PayPal\Exception;
 
 use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
-use Throwable;
 
 class RequiredParameterInvalidException extends ShopwareHttpException
 {
     protected $code = 'SWAG-PAYPAL-REQUIRED-PARAMETER-INVALID';
 
-    public function __construct(string $missingParameter, $code = 0, Throwable $previous = null)
+    public function __construct(string $missingParameter, $code = 0, ?\Throwable $previous = null)
     {
         $message = sprintf('Required parameter "%s" is missing or invalid', $missingParameter);
         parent::__construct($message, $code, $previous);

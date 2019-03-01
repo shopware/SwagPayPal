@@ -1,45 +1,60 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-PROJECT=`php -r "echo dirname(dirname(realpath('$0')));"`
-STAGED_FILES_CMD=`git diff --cached --name-only --diff-filter=ACMR HEAD | grep \\\\.php`
+PLATFORM_ROOT="$(git rev-parse --show-toplevel)"
+PROJECT_ROOT="${PROJECT_ROOT:-"$(cd "$PLATFORM_ROOT"/.. && git rev-parse --show-toplevel)"}"
+AUTOLOAD_FILE="$PROJECT_ROOT/vendor/autoload.php"
 
-# Determine if a file list is passed
-if [ "$#" -eq 1 ]
+function onExit {
+    if [[ $? != 0 ]]
+    then
+        echo "Fix the error before commit."
+    fi
+}
+trap onExit EXIT
+
+PHP_FILES="$(git diff --cached --name-only --diff-filter=ACMR HEAD | grep -E '\.(php)$')"
+JS_FILES="$(git diff --cached --name-only --diff-filter=ACMR HEAD | grep -E '\.(js)$')"
+
+# exit on non-zero return code
+set -e
+
+if [[ -z "$PHP_FILES" && -z "$JS_FILES" ]]
 then
-	oIFS=$IFS
-	IFS='
-	'
-	SFILES="$1"
-	IFS=$oIFS
-fi
-SFILES=${SFILES:-$STAGED_FILES_CMD}
-
-for FILE in $SFILES
-do
-	php -l -d display_errors=0 $PROJECT/$FILE 1> /dev/null
-	if [ $? != 0 ]
-	then
-		echo "Fix the error before commit."
-		exit 1
-	fi
-	FILES="$FILES $PROJECT/$FILE"
-done
-
-if [ "$FILES" != "" ]
-then
-	../../../vendor/shopware/platform/bin/phpstan.phar analyze --level 5 --no-progress --configuration phpstan.neon --autoload-file=../../../vendor/autoload.php $FILES
-	if [ $? != 0 ]
-	then
-		echo "Fix the error before commit."
-		exit 1
-	fi
+    exit 0
 fi
 
-if [ "$FILES" != "" ]
+if [[ -n "$PHP_FILES" ]]
+then
+    for FILE in ${PHP_FILES}
+    do
+        php -l -d display_errors=0 "$FILE" 1> /dev/null
+    done
+
+    ../../../vendor/shopware/platform/bin/phpstan.phar analyze --level 7 --no-progress --configuration phpstan.neon --autoload-file="$AUTOLOAD_FILE" ${PHP_FILES}
+fi
+
+UNSTAGED_FILES="$(git diff --name-only -- ${PHP_FILES} ${JS_FILES})"
+
+if [[ -n "$UNSTAGED_FILES" ]]
+then
+    echo "Error: There are staged files with unstaged changes. We cannot automatically fix and add those.
+
+Please add or revert the following files:
+
+$UNSTAGED_FILES
+"
+    exit 1
+fi
+
+if [[ -n "$PHP_FILES" ]]
 then
     # fix code style and update the commit
-	../../../vendor/shopware/platform/bin/php-cs-fixer.phar fix --config=.php_cs.dist --quiet --allow-risky=yes -vv $FILES
-    git add $FILES
+    ../../../vendor/shopware/platform/bin/php-cs-fixer.phar fix --config=../../../vendor/shopware/platform/.php_cs.dist --quiet -vv ${PHP_FILES}
 fi
 
-exit $?
+if [[ -n "$JS_FILES" && -x ../../../vendor/shopware/platform/src/Administration/Resources/administration/node_modules/.bin/eslint ]]
+then
+    ../../../vendor/shopware/platform/src/Administration/Resources/administration/node_modules/.bin/eslint --config ../../../vendor/shopware/platform/src/Administration/Resources/administration/.eslintrc.js --ext .js,.vue --fix ${JS_FILES}
+fi
+
+git add ${JS_FILES} ${PHP_FILES}

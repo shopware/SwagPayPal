@@ -9,13 +9,12 @@
 namespace SwagPayPal\Webhook\Exception;
 
 use Symfony\Component\HttpFoundation\Response;
-use Throwable;
 
 class WebhookOrderTransactionNotFoundException extends WebhookException
 {
     protected $code = 'SWAG-PAYPAL-WEBHOOK-ORDER-TRANSACTION-NOT-FOUND-EXCEPTION';
 
-    public function __construct(string $payPalTransactionId, string $eventType, $code = 0, Throwable $previous = null)
+    public function __construct(string $payPalTransactionId, string $eventType, $code = 0, ?\Throwable $previous = null)
     {
         $message = sprintf(
             '[PayPal %s Webhook] Could not find associated order with the PayPal ID "%s"',

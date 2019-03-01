@@ -8,8 +8,6 @@
 
 namespace SwagPayPal\PayPal\Resource;
 
-use DateInterval;
-use DateTime;
 use Psr\Cache\CacheItemPoolInterface;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\OAuthCredentials;
@@ -79,10 +77,10 @@ class TokenResource
 
     private function isTokenValid(Token $token): bool
     {
-        $dateTimeNow = new DateTime();
+        $dateTimeNow = new \DateTime();
         $dateTimeExpire = $token->getExpireDateTime();
         //Decrease expire date by one hour just to make sure, we don't run into an unauthorized exception.
-        $dateTimeExpire = $dateTimeExpire->sub(new DateInterval('PT1H'));
+        $dateTimeExpire = $dateTimeExpire->sub(new \DateInterval('PT1H'));
 
         return $dateTimeExpire > $dateTimeNow;
     }

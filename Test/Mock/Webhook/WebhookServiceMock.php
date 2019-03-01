@@ -8,7 +8,6 @@
 
 namespace SwagPayPal\Test\Mock\Webhook;
 
-use RuntimeException;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Test\Controller\WebhookControllerTest;
@@ -31,7 +30,7 @@ class WebhookServiceMock implements WebhookServiceInterface
         }
 
         if ($context->hasExtension(WebhookControllerTest::THROW_GENERAL_EXCEPTION)) {
-            throw new RuntimeException('testGeneralExceptionMessage');
+            throw new \RuntimeException('testGeneralExceptionMessage');
         }
     }
 }

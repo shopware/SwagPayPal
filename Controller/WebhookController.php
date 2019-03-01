@@ -8,7 +8,6 @@
 
 namespace SwagPayPal\Controller;
 
-use Exception;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Webhook;
@@ -135,7 +134,7 @@ class WebhookController extends AbstractController
             );
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->error('[PayPal Webhook] ' . $e->getMessage());
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');

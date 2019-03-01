@@ -8,7 +8,6 @@
 
 namespace SwagPayPal\Test\Mock\Repositories;
 
-use DateTime;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -80,7 +79,7 @@ class SwagPayPalSettingGeneralRepoMock implements EntityRepositoryInterface
         return $this->data[0];
     }
 
-    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
     {
     }
 
@@ -106,8 +105,8 @@ class SwagPayPalSettingGeneralRepoMock implements EntityRepositoryInterface
     {
         $settingGeneral = new SwagPayPalSettingGeneralEntity();
         $settingGeneral->setId(SettingsProviderMock::PAYPAL_SETTING_ID);
-        $settingGeneral->setCreatedAt(new DateTime());
-        $settingGeneral->setUpdatedAt(new DateTime());
+        $settingGeneral->setCreatedAt(new \DateTime());
+        $settingGeneral->setUpdatedAt(new \DateTime());
 
         return $settingGeneral;
     }

@@ -8,10 +8,7 @@
 
 namespace SwagPayPal\Test\Mock;
 
-use ArrayIterator;
-use IteratorAggregate;
-
-class DummyCollection implements IteratorAggregate
+class DummyCollection implements \IteratorAggregate
 {
     /**
      * @var array
@@ -23,8 +20,8 @@ class DummyCollection implements IteratorAggregate
         $this->data = $data;
     }
 
-    public function getIterator(): ArrayIterator
+    public function getIterator(): \ArrayIterator
     {
-        return new ArrayIterator($this->data);
+        return new \ArrayIterator($this->data);
     }
 }

@@ -8,7 +8,6 @@
 
 namespace SwagPayPal\Test\Setting\Service;
 
-use DateTime;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -29,8 +28,8 @@ class SettingsProviderTest extends TestCase
         $settings = $settingsProvider->getSettings($context);
 
         static::assertInstanceOf(SwagPayPalSettingGeneralEntity::class, $settings);
-        static::assertInstanceOf(DateTime::class, $settings->getCreatedAt());
-        static::assertInstanceOf(DateTime::class, $settings->getUpdatedAt());
+        static::assertInstanceOf(\DateTime::class, $settings->getCreatedAt());
+        static::assertInstanceOf(\DateTime::class, $settings->getUpdatedAt());
     }
 
     public function testGetSettingsThrowsException(): void

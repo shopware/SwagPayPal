@@ -10,13 +10,12 @@ namespace SwagPayPal\Setting\Exception;
 
 use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
-use Throwable;
 
 class PayPalSettingsNotFoundException extends ShopwareHttpException
 {
     protected $code = 'SWAG-PAYPAL-SETTINGS-NOT-FOUND';
 
-    public function __construct($code = 0, Throwable $previous = null)
+    public function __construct($code = 0, ?\Throwable $previous = null)
     {
         parent::__construct('PayPal settings not found', $code, $previous);
     }

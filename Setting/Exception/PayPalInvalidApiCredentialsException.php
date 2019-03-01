@@ -10,13 +10,12 @@ namespace SwagPayPal\Setting\Exception;
 
 use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
-use Throwable;
 
 class PayPalInvalidApiCredentialsException extends ShopwareHttpException
 {
     protected $code = 'SWAG-PAYPAL-INVALID-API-CREDENTIALS';
 
-    public function __construct($code = 0, Throwable $previous = null)
+    public function __construct($code = 0, ?\Throwable $previous = null)
     {
         parent::__construct('Provided API credentials are invalid', $code, $previous);
     }

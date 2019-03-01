@@ -8,7 +8,6 @@
 
 namespace SwagPayPal\Setting;
 
-use DateTime;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
 
@@ -62,12 +61,12 @@ class SwagPayPalSettingGeneralEntity extends Entity
     protected $landingPage;
 
     /**
-     * @var DateTime
+     * @var \DateTime
      */
     protected $createdAt;
 
     /**
-     * @var DateTime|null
+     * @var \DateTime|null
      */
     protected $updatedAt;
 
@@ -161,22 +160,22 @@ class SwagPayPalSettingGeneralEntity extends Entity
         $this->landingPage = $landingPage;
     }
 
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt(): \DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTime $createdAt): void
+    public function setCreatedAt(\DateTime $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
 
-    public function getUpdatedAt(): ?DateTime
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTime $updatedAt): void
+    public function setUpdatedAt(\DateTime $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }

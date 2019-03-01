@@ -43,11 +43,9 @@ class WebhookResourceMock extends WebhookResource
             throw new WebhookIdInvalidException('');
         }
 
-        return WebhookService::PAYPAL_WEBHOOK_ROUTE .
-            '?' .
-            WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME .
-            '=' .
-            SettingsProviderMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN;
+        return WebhookService::PAYPAL_WEBHOOK_ROUTE . '?'
+            . WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME . '='
+            . SettingsProviderMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN;
     }
 
     public function updateWebhook(string $webhookUrl, string $webhookId, Context $context): void

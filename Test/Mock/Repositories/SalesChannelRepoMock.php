@@ -66,7 +66,7 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
     {
     }
 

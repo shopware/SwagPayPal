@@ -8,7 +8,6 @@
 
 namespace SwagPayPal\Test\PayPal\Resource;
 
-use DateTime;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\OAuthCredentials;
@@ -30,12 +29,12 @@ class TokenResourceTest extends TestCase
         $context = Context::createDefaultContext();
         $token = $tokenResource->getToken(new OAuthCredentials(), $context, 'url');
 
-        $dateNow = new DateTime('now');
+        $dateNow = new \DateTime('now');
 
         static::assertInstanceOf(Token::class, $token);
         static::assertSame(TokenClientMock::ACCESS_TOKEN, $token->getAccessToken());
         static::assertSame(TokenClientMock::TOKEN_TYPE, $token->getTokenType());
-        static::assertInstanceOf(DateTime::class, $token->getExpireDateTime());
+        static::assertInstanceOf(\DateTime::class, $token->getExpireDateTime());
         static::assertTrue($dateNow < $token->getExpireDateTime());
     }
 
@@ -57,7 +56,7 @@ class TokenResourceTest extends TestCase
         static::assertInstanceOf(Token::class, $token);
         static::assertSame(CacheItemWithTokenMock::ACCESS_TOKEN, $token->getAccessToken());
         static::assertSame(TokenClientMock::TOKEN_TYPE, $token->getTokenType());
-        static::assertInstanceOf(DateTime::class, $token->getExpireDateTime());
+        static::assertInstanceOf(\DateTime::class, $token->getExpireDateTime());
     }
 
     private function getTokenResource(): TokenResource

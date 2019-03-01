@@ -8,7 +8,6 @@
 
 namespace SwagPayPal\Webhook;
 
-use IteratorAggregate;
 use SwagPayPal\Webhook\Exception\WebhookException;
 
 class WebhookRegistry
@@ -18,7 +17,7 @@ class WebhookRegistry
      */
     private $registeredWebhooks;
 
-    public function __construct(IteratorAggregate $webhooks)
+    public function __construct(\IteratorAggregate $webhooks)
     {
         foreach ($webhooks as $webhook) {
             $this->registerWebhook($webhook);

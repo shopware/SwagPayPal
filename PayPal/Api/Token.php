@@ -8,9 +8,6 @@
 
 namespace SwagPayPal\PayPal\Api;
 
-use DateInterval;
-use DateTime;
-
 class Token extends PayPalStruct
 {
     /**
@@ -57,7 +54,7 @@ class Token extends PayPalStruct
     /**
      * Calculated expiration date
      *
-     * @var DateTime
+     * @var \DateTime
      */
     private $expireDateTime;
 
@@ -67,8 +64,8 @@ class Token extends PayPalStruct
         $newToken = parent::assign($arrayDataWithSnakeCaseKeys);
 
         //Calculate the expiration date manually
-        $expirationDateTime = new DateTime();
-        $interval = DateInterval::createFromDateString($newToken->getExpiresIn() . ' seconds');
+        $expirationDateTime = new \DateTime();
+        $interval = \DateInterval::createFromDateString($newToken->getExpiresIn() . ' seconds');
         $expirationDateTime = $expirationDateTime->add($interval);
 
         $newToken->setExpireDateTime($expirationDateTime);
@@ -86,7 +83,7 @@ class Token extends PayPalStruct
         return $this->tokenType;
     }
 
-    public function getExpireDateTime(): DateTime
+    public function getExpireDateTime(): \DateTime
     {
         return $this->expireDateTime;
     }
@@ -126,7 +123,7 @@ class Token extends PayPalStruct
         return $this->expiresIn;
     }
 
-    private function setExpireDateTime(DateTime $expireDateTime): void
+    private function setExpireDateTime(\DateTime $expireDateTime): void
     {
         $this->expireDateTime = $expireDateTime;
     }

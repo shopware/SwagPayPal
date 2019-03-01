@@ -34,10 +34,11 @@ class SettingsProvider implements SettingsProviderInterface
     {
         /** @var SwagPayPalSettingGeneralCollection $settingsCollection */
         $settingsCollection = $this->settingGeneralRepo->search(new Criteria(), $context)->getEntities();
-        if ($settingsCollection->count() === 0) {
+        $settingsEntity = $settingsCollection->first();
+        if ($settingsEntity === null) {
             throw new PayPalSettingsNotFoundException();
         }
 
-        return $settingsCollection->first();
+        return $settingsEntity;
     }
 }

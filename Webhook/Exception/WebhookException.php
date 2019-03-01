@@ -10,7 +10,6 @@ namespace SwagPayPal\Webhook\Exception;
 
 use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
-use Throwable;
 
 class WebhookException extends ShopwareHttpException
 {
@@ -23,7 +22,7 @@ class WebhookException extends ShopwareHttpException
      */
     private $eventType;
 
-    public function __construct(string $eventType, string $message, $code = 0, Throwable $previous = null)
+    public function __construct(string $eventType, string $message, $code = 0, ?\Throwable $previous = null)
     {
         $this->eventType = $eventType;
         parent::__construct($message, $code, $previous);

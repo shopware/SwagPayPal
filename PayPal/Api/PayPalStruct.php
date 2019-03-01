@@ -8,10 +8,9 @@
 
 namespace SwagPayPal\PayPal\Api;
 
-use JsonSerializable;
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
-abstract class PayPalStruct implements JsonSerializable
+abstract class PayPalStruct implements \JsonSerializable
 {
     public function assign(array $arrayDataWithSnakeCaseKeys): self
     {

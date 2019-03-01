@@ -27,7 +27,7 @@ use SwagPayPal\Webhook\WebhookRegistry;
 trait ServicesTrait
 {
     protected function createPayPalClientFactory(
-        SettingsProviderInterface $settingsProvider = null
+        ?SettingsProviderInterface $settingsProvider = null
     ): PayPalClientFactoryMock {
         if ($settingsProvider === null) {
             $settingsProvider = new SettingsProviderMock();
@@ -42,14 +42,14 @@ trait ServicesTrait
         );
     }
 
-    protected function createPaymentResource(SettingsProviderInterface $settingsProvider = null): PaymentResource
+    protected function createPaymentResource(?SettingsProviderInterface $settingsProvider = null): PaymentResource
     {
         return new PaymentResource(
             $this->createPayPalClientFactory($settingsProvider)
         );
     }
 
-    protected function createPaymentBuilder(SettingsProviderInterface $settingsProvider = null): PaymentBuilderService
+    protected function createPaymentBuilder(?SettingsProviderInterface $settingsProvider = null): PaymentBuilderService
     {
         if ($settingsProvider === null) {
             $settingsProvider = new SettingsProviderMock();
@@ -63,12 +63,12 @@ trait ServicesTrait
         );
     }
 
-    protected function createWebhookRegistry(OrderTransactionRepoMock $orderTransactionRepo = null): WebhookRegistry
+    protected function createWebhookRegistry(?OrderTransactionRepoMock $orderTransactionRepo = null): WebhookRegistry
     {
         return new WebhookRegistry(new DummyCollection([$this->createDummyWebhook($orderTransactionRepo)]));
     }
 
-    private function createDummyWebhook(OrderTransactionRepoMock $orderTransactionRepo = null): DummyWebhook
+    private function createDummyWebhook(?OrderTransactionRepoMock $orderTransactionRepo = null): DummyWebhook
     {
         if ($orderTransactionRepo === null) {
             $orderTransactionRepo = new OrderTransactionRepoMock();

@@ -82,7 +82,7 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
         return $this->data[0];
     }
 
-    public function clone(string $id, Context $context, string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
     {
     }
 

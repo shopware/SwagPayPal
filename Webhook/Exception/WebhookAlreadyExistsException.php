@@ -10,13 +10,12 @@ namespace SwagPayPal\Webhook\Exception;
 
 use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
-use Throwable;
 
 class WebhookAlreadyExistsException extends ShopwareHttpException
 {
     protected $code = 'SWAG-PAYPAL-WEBHOOK-ALREADY-EXISTS-EXCEPTION';
 
-    public function __construct(string $webhookUrl, $code = 0, Throwable $previous = null)
+    public function __construct(string $webhookUrl, $code = 0, ?\Throwable $previous = null)
     {
         $message = sprintf('WebhookUrl "%s" already exists', $webhookUrl);
         parent::__construct($message, $code, $previous);
