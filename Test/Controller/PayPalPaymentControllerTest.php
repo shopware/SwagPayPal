@@ -13,6 +13,8 @@ use Shopware\Core\Framework\Context;
 use SwagPayPal\Controller\PayPalPaymentController;
 use SwagPayPal\PayPal\Exception\RequiredParameterInvalidException;
 use SwagPayPal\PayPal\PaymentIntent;
+use SwagPayPal\PayPal\Resource\AuthorizationResource;
+use SwagPayPal\PayPal\Resource\OrdersResource;
 use SwagPayPal\PayPal\Resource\SaleResource;
 use SwagPayPal\Test\Helper\ServicesTrait;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
@@ -23,11 +25,8 @@ use Symfony\Component\HttpFoundation\Request;
 class PayPalPaymentControllerTest extends TestCase
 {
     use ServicesTrait;
-
     private const TEST_REFUND_INVOICE_NUMBER = 'testRefundInvoiceNumber';
-
     private const TEST_REFUND_AMOUNT = 5.5;
-
     private const TEST_REFUND_CURRENCY = 'EUR';
 
     public function testGetPaymentDetails(): void
@@ -65,7 +64,7 @@ class PayPalPaymentControllerTest extends TestCase
         $request = new Request([], [
             PayPalPaymentController::REQUEST_PARAMETER_REFUND_INVOICE_NUMBER => self::TEST_REFUND_INVOICE_NUMBER,
             PayPalPaymentController::REQUEST_PARAMETER_REFUND_AMOUNT => self::TEST_REFUND_AMOUNT,
-            PayPalPaymentController::REQUEST_PARAMETER_REFUND_CURRENCY => self::TEST_REFUND_CURRENCY,
+            PayPalPaymentController::REQUEST_PARAMETER_CURRENCY => self::TEST_REFUND_CURRENCY,
         ]);
         $context = Context::createDefaultContext();
         $response = $controller->refundPayment($request, $context, PaymentIntent::SALE, 'testPaymentId');
@@ -89,11 +88,53 @@ class PayPalPaymentControllerTest extends TestCase
         $controller->refundPayment($request, $context, 'foo', 'testPaymentId');
     }
 
+    public function testCapturePaymentAuthorization(): void
+    {
+        $controller = $this->createPaymentController();
+
+        $request = new Request();
+        $context = Context::createDefaultContext();
+
+        $response = $controller->capturePayment($request, $context, PaymentIntent::AUTHORIZE, 'testPaymentId');
+
+        $capture = json_decode($response->getContent(), true);
+
+        static::assertTrue($capture['is_final_capture']);
+    }
+
+    public function testCapturePaymentOrders(): void
+    {
+        $controller = $this->createPaymentController();
+
+        $request = new Request();
+        $context = Context::createDefaultContext();
+
+        $response = $controller->capturePayment($request, $context, PaymentIntent::ORDER, 'testPaymentId');
+
+        $capture = json_decode($response->getContent(), true);
+
+        static::assertTrue($capture['is_final_capture']);
+    }
+
+    public function testCapturePaymentWithInvalidIntent(): void
+    {
+        $controller = $this->createPaymentController();
+
+        $request = new Request();
+        $context = Context::createDefaultContext();
+
+        $this->expectException(RequiredParameterInvalidException::class);
+        $this->expectExceptionMessage('Required parameter "intent" is missing or invalid');
+        $controller->capturePayment($request, $context, PaymentIntent::SALE, 'testPaymentId');
+    }
+
     private function createPaymentController(): PayPalPaymentController
     {
         return new PayPalPaymentController(
             $this->createPaymentResource(),
-            new SaleResource($this->createPayPalClientFactory())
+            new SaleResource($this->createPayPalClientFactory()),
+            new AuthorizationResource($this->createPayPalClientFactory()),
+            new OrdersResource($this->createPayPalClientFactory())
         );
     }
 
@@ -101,7 +142,9 @@ class PayPalPaymentControllerTest extends TestCase
     {
         return new PayPalPaymentController(
             $this->createPaymentResource(),
-            new SaleResourceMock($this->createPayPalClientFactory())
+            new SaleResourceMock($this->createPayPalClientFactory()),
+            new AuthorizationResource($this->createPayPalClientFactory()),
+            new OrdersResource($this->createPayPalClientFactory())
         );
     }
 }

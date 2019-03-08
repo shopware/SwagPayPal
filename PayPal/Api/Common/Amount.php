@@ -8,8 +8,6 @@
 
 namespace SwagPayPal\PayPal\Api\Common;
 
-use SwagPayPal\PayPal\Api\PayPalStruct;
-
 abstract class Amount extends PayPalStruct
 {
     /**

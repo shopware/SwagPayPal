@@ -10,7 +10,7 @@ namespace SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
 
 use SwagPayPal\PayPal\Api\Common\Amount;
 use SwagPayPal\PayPal\Api\Common\Link;
-use SwagPayPal\PayPal\Api\PayPalStruct;
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 
 abstract class RelatedResource extends PayPalStruct
 {

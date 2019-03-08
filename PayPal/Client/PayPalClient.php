@@ -10,8 +10,8 @@ namespace SwagPayPal\PayPal\Client;
 
 use GuzzleHttp\Client;
 use Shopware\Core\Framework\Context;
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 use SwagPayPal\PayPal\Api\OAuthCredentials;
-use SwagPayPal\PayPal\Api\PayPalStruct;
 use SwagPayPal\PayPal\BaseURL;
 use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use SwagPayPal\PayPal\PartnerAttributionId;

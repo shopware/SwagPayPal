@@ -44,7 +44,7 @@ class SettingsProviderTest extends TestCase
         $settingsProvider->getSettings($context);
     }
 
-    private function createSettingsProvider()
+    private function createSettingsProvider(): SettingsProvider
     {
         return new SettingsProvider(new SwagPayPalSettingGeneralRepoMock());
     }

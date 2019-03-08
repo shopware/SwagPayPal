@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api;
+namespace SwagPayPal\PayPal\Api\Common;
 
 use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
@@ -19,6 +19,14 @@ abstract class PayPalStruct implements \JsonSerializable
         foreach ($arrayDataWithSnakeCaseKeys as $snakeCaseKey => $value) {
             $camelCaseKey = ucfirst($nameConverter->denormalize($snakeCaseKey));
             $setterMethod = 'set' . $camelCaseKey;
+            if (!method_exists($this, $setterMethod)) {
+                // There is no setter/property for a given data key from PayPal.
+                // Continue here to not break the plugin, if we are not up-to-date with the PayPal API
+                // TODO: Remove the Exception before releasing the plugin for production
+                throw new \RuntimeException(sprintf('setter method for "%s" not found', $camelCaseKey));
+                continue;
+            }
+
             if ($this->isScalar($value)) {
                 $this->$setterMethod($value);
                 continue;
@@ -33,6 +41,7 @@ abstract class PayPalStruct implements \JsonSerializable
             }
 
             $arrayWithToManyAssociations = [];
+            /** @var array $value */
             foreach ($value as $toManyAssociation) {
                 $className = $this->getClassNameOfOneToManyAssociation($camelCaseKey);
                 $instance = $this->createNewAssociation($namespace . $className, $toManyAssociation);

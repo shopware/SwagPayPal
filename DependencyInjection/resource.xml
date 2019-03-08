@@ -5,6 +5,14 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="SwagPayPal\PayPal\Resource\AuthorizationResource">
+            <argument type="service" id="SwagPayPal\PayPal\Client\PayPalClientFactory"/>
+        </service>
+
+        <service id="SwagPayPal\PayPal\Resource\OrdersResource">
+            <argument id="SwagPayPal\PayPal\Client\PayPalClientFactory" type="service"/>
+        </service>
+
         <service id="SwagPayPal\PayPal\Resource\PaymentResource">
             <argument type="service" id="SwagPayPal\PayPal\Client\PayPalClientFactory"/>
         </service>

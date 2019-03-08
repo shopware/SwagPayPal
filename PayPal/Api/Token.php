@@ -8,6 +8,8 @@
 
 namespace SwagPayPal\PayPal\Api;
 
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
+
 class Token extends PayPalStruct
 {
     /**

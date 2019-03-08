@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\PayPal\Api\Payment;
 
-use SwagPayPal\PayPal\Api\PayPalStruct;
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 
 class RedirectUrls extends PayPalStruct
 {
