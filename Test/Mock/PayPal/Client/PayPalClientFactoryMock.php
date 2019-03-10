@@ -34,8 +34,8 @@ class PayPalClientFactoryMock extends PayPalClientFactory
                 new CacheMock(),
                 new TokenClientFactoryMock()
             ),
-            $context,
-            $settings
+            $settings,
+            'test'
         );
 
         return $this->client;

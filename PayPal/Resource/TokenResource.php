@@ -9,7 +9,6 @@
 namespace SwagPayPal\PayPal\Resource;
 
 use Psr\Cache\CacheItemPoolInterface;
-use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\OAuthCredentials;
 use SwagPayPal\PayPal\Api\Token;
 use SwagPayPal\PayPal\Client\TokenClientFactory;
@@ -34,15 +33,15 @@ class TokenResource
         $this->tokenClientFactory = $tokenClientFactory;
     }
 
-    public function getToken(OAuthCredentials $credentials, Context $context, string $url): Token
+    public function getToken(OAuthCredentials $credentials, string $url, string $cacheId): Token
     {
-        $token = $this->getTokenFromCache($context);
+        $token = $this->getTokenFromCache($cacheId);
         if ($token === null || !$this->isTokenValid($token)) {
             $tokenClient = $this->tokenClientFactory->createTokenClient($credentials, $url);
 
             $token = new Token();
             $token->assign($tokenClient->get());
-            $this->setToken($token, $context);
+            $this->setToken($token, $cacheId);
         }
 
         return $token;
@@ -58,9 +57,9 @@ class TokenResource
         return $this->isTokenValid($token);
     }
 
-    private function getTokenFromCache(Context $context): ?Token
+    private function getTokenFromCache(string $cacheId): ?Token
     {
-        $token = $this->cache->getItem(self::CACHE_ID . $context->getSourceContext()->getSalesChannelId())->get();
+        $token = $this->cache->getItem(self::CACHE_ID . $cacheId)->get();
         if ($token === null) {
             return null;
         }
@@ -68,9 +67,9 @@ class TokenResource
         return unserialize($token, [Token::class, \DateTime::class]);
     }
 
-    private function setToken(Token $token, Context $context): void
+    private function setToken(Token $token, string $cacheId): void
     {
-        $item = $this->cache->getItem(self::CACHE_ID . $context->getSourceContext()->getSalesChannelId());
+        $item = $this->cache->getItem(self::CACHE_ID . $cacheId);
         $item->set(serialize($token));
         $this->cache->save($item);
     }

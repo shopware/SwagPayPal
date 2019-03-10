@@ -11,7 +11,6 @@ namespace SwagPayPal\Test\Mock\PayPal\Resource;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\OAuthCredentials;
 use SwagPayPal\PayPal\Api\Token;
 use SwagPayPal\PayPal\Resource\TokenResource;
@@ -23,7 +22,7 @@ class TokenResourceMock extends TokenResource
 {
     public const GENERAL_CLIENT_EXCEPTION_MESSAGE = 'generalClientExceptionMessage';
 
-    public function getToken(OAuthCredentials $credentials, Context $context, string $url): Token
+    public function getToken(OAuthCredentials $credentials, string $url, string $cacheId): Token
     {
         $token = new Token();
         $token->assign([
