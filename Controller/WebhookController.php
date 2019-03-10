@@ -11,7 +11,7 @@ namespace SwagPayPal\Controller;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Webhook;
-use SwagPayPal\Setting\Service\SettingsProviderInterface;
+use SwagPayPal\Setting\Service\SettingsServiceInterface;
 use SwagPayPal\Webhook\Exception\WebhookException;
 use SwagPayPal\Webhook\WebhookService;
 use SwagPayPal\Webhook\WebhookServiceInterface;
@@ -35,14 +35,14 @@ class WebhookController extends AbstractController
     private $webhookService;
 
     /**
-     * @var SettingsProviderInterface
+     * @var SettingsServiceInterface
      */
     private $settingsProvider;
 
     public function __construct(
         LoggerInterface $logger,
         WebhookServiceInterface $webhookService,
-        SettingsProviderInterface $settingsProvider
+        SettingsServiceInterface $settingsProvider
     ) {
         $this->logger = $logger;
         $this->webhookService = $webhookService;

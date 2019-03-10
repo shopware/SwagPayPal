@@ -12,11 +12,12 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
-use SwagPayPal\Setting\Service\SettingsProvider;
+use SwagPayPal\Setting\Service\SettingsService;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
-use SwagPayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
+use SwagPayPal\Test\Mock\DIContainerMock;
+use SwagPayPal\Test\Mock\Repositories\DefinitionRegistryMock;
 
-class SettingsProviderTest extends TestCase
+class SettingsServiceTest extends TestCase
 {
     public const THROW_EXCEPTION = 'throwsExceptionBecauseOfNoSettings';
 
@@ -44,8 +45,8 @@ class SettingsProviderTest extends TestCase
         $settingsProvider->getSettings($context);
     }
 
-    private function createSettingsProvider(): SettingsProvider
+    private function createSettingsProvider(): SettingsService
     {
-        return new SettingsProvider(new SwagPayPalSettingGeneralRepoMock());
+        return new SettingsService(new DefinitionRegistryMock([], new DIContainerMock()));
     }
 }

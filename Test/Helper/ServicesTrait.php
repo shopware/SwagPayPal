@@ -8,29 +8,28 @@
 
 namespace SwagPayPal\Test\Helper;
 
-use SwagPayPal\PayPal\Payment\PaymentBuilderService;
+use SwagPayPal\Payment\PaymentBuilderService;
 use SwagPayPal\PayPal\Resource\PaymentResource;
 use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Setting\Service\SettingsProviderInterface;
+use SwagPayPal\Setting\Service\SettingsServiceInterface;
 use SwagPayPal\Test\Mock\CacheMock;
+use SwagPayPal\Test\Mock\DIContainerMock;
 use SwagPayPal\Test\Mock\DummyCollection;
 use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use SwagPayPal\Test\Mock\Repositories\LanguageRepoMock;
-use SwagPayPal\Test\Mock\Repositories\OrderRepoMock;
+use SwagPayPal\Test\Mock\Repositories\DefinitionRegistryMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
+use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use SwagPayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use SwagPayPal\Webhook\WebhookRegistry;
 
 trait ServicesTrait
 {
     protected function createPayPalClientFactory(
-        ?SettingsProviderInterface $settingsProvider = null
+        ?SettingsServiceInterface $settingsProvider = null
     ): PayPalClientFactoryMock {
         if ($settingsProvider === null) {
-            $settingsProvider = new SettingsProviderMock();
+            $settingsProvider = new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()));
         }
 
         return new PayPalClientFactoryMock(
@@ -42,23 +41,21 @@ trait ServicesTrait
         );
     }
 
-    protected function createPaymentResource(?SettingsProviderInterface $settingsProvider = null): PaymentResource
+    protected function createPaymentResource(?SettingsServiceInterface $settingsProvider = null): PaymentResource
     {
         return new PaymentResource(
             $this->createPayPalClientFactory($settingsProvider)
         );
     }
 
-    protected function createPaymentBuilder(?SettingsProviderInterface $settingsProvider = null): PaymentBuilderService
+    protected function createPaymentBuilder(?SettingsServiceInterface $settingsProvider = null): PaymentBuilderService
     {
         if ($settingsProvider === null) {
-            $settingsProvider = new SettingsProviderMock();
+            $settingsProvider = new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()));
         }
 
         return new PaymentBuilderService(
-            new LanguageRepoMock(),
-            new SalesChannelRepoMock(),
-            new OrderRepoMock(),
+            new DefinitionRegistryMock([], new DIContainerMock()),
             $settingsProvider
         );
     }

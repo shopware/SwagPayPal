@@ -6,18 +6,22 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Payment;
+namespace SwagPayPal\Payment;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
+use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageCollection;
+use Shopware\Core\System\Language\LanguageDefinition;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
+use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use SwagPayPal\PayPal\Api\Payment;
 use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
@@ -30,7 +34,7 @@ use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList;
 use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
 use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use SwagPayPal\PayPal\PaymentIntent;
-use SwagPayPal\Setting\Service\SettingsProviderInterface;
+use SwagPayPal\Setting\Service\SettingsServiceInterface;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 
 class PaymentBuilderService implements PaymentBuilderInterface
@@ -51,7 +55,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
     private $orderRepo;
 
     /**
-     * @var SettingsProviderInterface
+     * @var SettingsServiceInterface
      */
     private $settingsProvider;
 
@@ -61,15 +65,13 @@ class PaymentBuilderService implements PaymentBuilderInterface
     private $settings;
 
     public function __construct(
-        EntityRepositoryInterface $languageRepo,
-        EntityRepositoryInterface $salesChannelRepo,
-        EntityRepositoryInterface $orderRepo,
-        SettingsProviderInterface $settingsProvider
+        DefinitionRegistry $definitionRegistry,
+        SettingsServiceInterface $settingsProvider
     ) {
-        $this->languageRepo = $languageRepo;
-        $this->salesChannelRepo = $salesChannelRepo;
+        $this->languageRepo = $definitionRegistry->getRepository(LanguageDefinition::getEntityName());
+        $this->salesChannelRepo = $definitionRegistry->getRepository(SalesChannelDefinition::getEntityName());
+        $this->orderRepo = $definitionRegistry->getRepository(OrderDefinition::getEntityName());
         $this->settingsProvider = $settingsProvider;
-        $this->orderRepo = $orderRepo;
     }
 
     /**
@@ -93,7 +95,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
         $redirectUrls->setCancelUrl($paymentTransaction->getReturnUrl() . '&cancel=1');
         $redirectUrls->setReturnUrl($paymentTransaction->getReturnUrl());
 
-        $currency = $paymentTransaction->getOrder()->getCurrency()->getShortName();
+        $currency = (string) $paymentTransaction->getOrder()->getCurrency()->getShortName();
 
         $amount = new Amount();
         $amount->setTotal($this->formatPrice($paymentTransaction->getAmount()->getTotalPrice()));

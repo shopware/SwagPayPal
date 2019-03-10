@@ -12,10 +12,12 @@ use Shopware\Core\Framework\Context;
 use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 
-interface SettingsProviderInterface
+interface SettingsServiceInterface
 {
     /**
      * @throws PayPalSettingsNotFoundException
      */
     public function getSettings(Context $context): SwagPayPalSettingGeneralEntity;
+
+    public function updateSettings(array $updateData, Context $context): void;
 }

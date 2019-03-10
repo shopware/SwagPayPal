@@ -10,7 +10,7 @@ namespace SwagPayPal\PayPal\Client;
 
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Setting\Service\SettingsProviderInterface;
+use SwagPayPal\Setting\Service\SettingsServiceInterface;
 
 class PayPalClientFactory
 {
@@ -20,11 +20,11 @@ class PayPalClientFactory
     private $tokenResource;
 
     /**
-     * @var SettingsProviderInterface
+     * @var SettingsServiceInterface
      */
     private $settingsProvider;
 
-    public function __construct(TokenResource $tokenResource, SettingsProviderInterface $settingsProvider)
+    public function __construct(TokenResource $tokenResource, SettingsServiceInterface $settingsProvider)
     {
         $this->tokenResource = $tokenResource;
         $this->settingsProvider = $settingsProvider;

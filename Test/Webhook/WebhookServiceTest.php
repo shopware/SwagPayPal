@@ -9,15 +9,20 @@
 namespace SwagPayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use SwagPayPal\PayPal\Api\Webhook;
+use SwagPayPal\Setting\SwagPayPalSettingGeneralDefinition;
 use SwagPayPal\Test\Helper\ServicesTrait;
+use SwagPayPal\Test\Mock\DIContainerMock;
 use SwagPayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
+use SwagPayPal\Test\Mock\Repositories\DefinitionRegistryMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
 use SwagPayPal\Test\Mock\RouterMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
+use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use SwagPayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use SwagPayPal\Webhook\WebhookService;
 use SwagPayPal\Webhook\WebhookServiceInterface;
@@ -27,19 +32,25 @@ class WebhookServiceTest extends TestCase
     use ServicesTrait;
 
     /**
-     * @var SwagPayPalSettingGeneralRepoMock
+     * @var EntityRepositoryInterface
      */
     private $swagPayPalSettingGeneralRepo;
 
     /**
-     * @var OrderTransactionRepoMock
+     * @var EntityRepositoryInterface
      */
     private $orderTransactionRepo;
 
+    /**
+     * @var DefinitionRegistryMock
+     */
+    private $definitionRegistry;
+
     protected function setUp(): void
     {
-        $this->swagPayPalSettingGeneralRepo = new SwagPayPalSettingGeneralRepoMock();
-        $this->orderTransactionRepo = new OrderTransactionRepoMock();
+        $this->definitionRegistry = new DefinitionRegistryMock([], new DIContainerMock());
+        $this->swagPayPalSettingGeneralRepo = $this->definitionRegistry->getRepository(SwagPayPalSettingGeneralDefinition::getEntityName());
+        $this->orderTransactionRepo = $this->definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
     }
 
     public function testRegisterWebhookWithAlreadyExistingTokenAndId(): void
@@ -58,7 +69,7 @@ class WebhookServiceTest extends TestCase
         $webhookService = $this->createWebhookService();
 
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_TOKEN, new Entity());
+        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITHOUT_TOKEN, new Entity());
 
         $result = $webhookService->registerWebhook($context);
 
@@ -70,15 +81,17 @@ class WebhookServiceTest extends TestCase
         $webhookService = $this->createWebhookService();
 
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID, new Entity());
+        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID, new Entity());
 
         $result = $webhookService->registerWebhook($context);
 
         static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
 
-        $updatedSettings = $this->swagPayPalSettingGeneralRepo->getData();
+        /** @var SwagPayPalSettingGeneralRepoMock $swagPayPalSettingGeneralRepo */
+        $swagPayPalSettingGeneralRepo = $this->swagPayPalSettingGeneralRepo;
+        $updatedSettings = $swagPayPalSettingGeneralRepo->getData();
 
-        static::assertSame(SettingsProviderMock::PAYPAL_SETTING_ID, $updatedSettings['id']);
+        static::assertSame(SettingsServiceMock::PAYPAL_SETTING_ID, $updatedSettings['id']);
         static::assertSame(WebhookResourceMock::CREATED_WEBHOOK_ID, $updatedSettings['webhookId']);
         static::assertSame(WebhookService::PAYPAL_WEBHOOK_TOKEN_LENGTH, \mb_strlen($updatedSettings['webhookExecuteToken']));
     }
@@ -94,7 +107,9 @@ class WebhookServiceTest extends TestCase
 
         $webhookService->executeWebhook($webhook, $context);
 
-        $updatedTransaction = $this->orderTransactionRepo->getData();
+        /** @var OrderTransactionRepoMock $orderTransactionRepo */
+        $orderTransactionRepo = $this->orderTransactionRepo;
+        $updatedTransaction = $orderTransactionRepo->getData();
 
         static::assertTrue($updatedTransaction[DummyWebhook::ORDER_TRANSACTION_UPDATE_DATA_KEY]);
     }
@@ -104,7 +119,7 @@ class WebhookServiceTest extends TestCase
         $webhookService = $this->createWebhookService();
 
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID, new Entity());
+        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID, new Entity());
         $context->addExtension(WebhookResourceMock::THROW_WEBHOOK_ALREADY_EXISTS, new Entity());
 
         $result = $webhookService->registerWebhook($context);
@@ -127,12 +142,13 @@ class WebhookServiceTest extends TestCase
     private function createWebhookService(): WebhookServiceInterface
     {
         $webhookResourceMock = $this->createWebhookResourceMock();
+        /** @var OrderTransactionRepoMock $orderTransactionRepo */
+        $orderTransactionRepo = $this->orderTransactionRepo;
 
         return new WebhookService(
             $webhookResourceMock,
-            $this->createWebhookRegistry($this->orderTransactionRepo),
-            new SettingsProviderMock(),
-            $this->swagPayPalSettingGeneralRepo,
+            $this->createWebhookRegistry($orderTransactionRepo),
+            new SettingsServiceMock($this->definitionRegistry),
             new RouterMock()
         );
     }

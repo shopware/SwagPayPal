@@ -20,8 +20,8 @@ use Shopware\Core\Framework\Event\NestedEventCollection;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
-use SwagPayPal\Test\Setting\Service\SettingsProviderTest;
+use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use SwagPayPal\Test\Setting\Service\SettingsServiceTest;
 
 class SwagPayPalSettingGeneralRepoMock implements EntityRepositoryInterface
 {
@@ -37,7 +37,7 @@ class SwagPayPalSettingGeneralRepoMock implements EntityRepositoryInterface
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-        if ($context->hasExtension(SettingsProviderTest::THROW_EXCEPTION)) {
+        if ($context->hasExtension(SettingsServiceTest::THROW_EXCEPTION)) {
             $entitySearchResult = $this->createEntitySearchResult($criteria, $context);
             $entitySearchResult->getEntities()->clear();
 
@@ -104,7 +104,7 @@ class SwagPayPalSettingGeneralRepoMock implements EntityRepositoryInterface
     private function createSettingGeneral(): SwagPayPalSettingGeneralEntity
     {
         $settingGeneral = new SwagPayPalSettingGeneralEntity();
-        $settingGeneral->setId(SettingsProviderMock::PAYPAL_SETTING_ID);
+        $settingGeneral->setId(SettingsServiceMock::PAYPAL_SETTING_ID);
         $settingGeneral->setCreatedAt(new \DateTime());
         $settingGeneral->setUpdatedAt(new \DateTime());
 

@@ -9,11 +9,15 @@
 namespace SwagPayPal\Test\Webhook\Handler;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use SwagPayPal\PayPal\Api\Webhook;
+use SwagPayPal\Test\Mock\DIContainerMock;
+use SwagPayPal\Test\Mock\Repositories\DefinitionRegistryMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use SwagPayPal\Webhook\Handler\SaleRefunded;
 use SwagPayPal\Webhook\WebhookEventTypes;
@@ -28,7 +32,7 @@ class SaleRefundedTest extends TestCase
     private $webhookHandler;
 
     /**
-     * @var OrderTransactionRepoMock
+     * @var EntityRepositoryInterface
      */
     private $orderTransactionRepo;
 
@@ -37,9 +41,15 @@ class SaleRefundedTest extends TestCase
      */
     private $stateMachineRegistry;
 
+    /**
+     * @var DefinitionRegistryMock
+     */
+    private $definitionRegistry;
+
     protected function setUp(): void
     {
-        $this->orderTransactionRepo = new OrderTransactionRepoMock();
+        $this->definitionRegistry = new DefinitionRegistryMock([], new DIContainerMock());
+        $this->orderTransactionRepo = $this->definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
         /** @var StateMachineRegistry $stateMachineRegistry */
         $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
         $this->stateMachineRegistry = $stateMachineRegistry;
@@ -58,7 +68,9 @@ class SaleRefundedTest extends TestCase
         $context = Context::createDefaultContext();
         $this->webhookHandler->invoke($webhook, $context);
 
-        $result = $this->orderTransactionRepo->getData();
+        /** @var OrderTransactionRepoMock $orderTransactionRepo */
+        $orderTransactionRepo = $this->orderTransactionRepo;
+        $result = $orderTransactionRepo->getData();
 
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
             Defaults::ORDER_TRANSACTION_STATE_MACHINE,
@@ -72,9 +84,6 @@ class SaleRefundedTest extends TestCase
 
     private function createWebhookHandler(): SaleRefunded
     {
-        return new SaleRefunded(
-            $this->orderTransactionRepo,
-            $this->stateMachineRegistry
-        );
+        return new SaleRefunded($this->definitionRegistry, $this->stateMachineRegistry);
     }
 }

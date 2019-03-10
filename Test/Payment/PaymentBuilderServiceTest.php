@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\PayPal\Payment;
+namespace SwagPayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
@@ -20,7 +20,7 @@ use SwagPayPal\Test\Helper\PaymentTransactionTrait;
 use SwagPayPal\Test\Helper\ServicesTrait;
 use SwagPayPal\Test\Mock\Repositories\OrderRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
+use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 
 class PaymentBuilderServiceTest extends TestCase
 {
@@ -48,7 +48,7 @@ class PaymentBuilderServiceTest extends TestCase
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITH_INVALID_INTENT, new Entity());
+        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_INVALID_INTENT, new Entity());
 
         $this->expectException(PayPalSettingsInvalidException::class);
         $this->expectExceptionMessage('Required setting "intent" is missing or invalid');
@@ -61,7 +61,7 @@ class PaymentBuilderServiceTest extends TestCase
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
+        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
         static::assertNotFalse($payment);
@@ -80,7 +80,7 @@ class PaymentBuilderServiceTest extends TestCase
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = $this->createContextWithoutSalesChannel();
-        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
+        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
         static::assertNotFalse($payment);
@@ -98,7 +98,7 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentBuilder = $this->createPaymentBuilder();
 
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
+        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
@@ -126,7 +126,7 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentBuilder = $this->createPaymentBuilder();
 
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
+        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_PRICE);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
@@ -146,7 +146,7 @@ class PaymentBuilderServiceTest extends TestCase
     {
         $paymentBuilder = $this->createPaymentBuilder();
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsProviderMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
+        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
@@ -187,15 +187,15 @@ class PaymentBuilderServiceTest extends TestCase
     {
         return [
             [
-                SettingsProviderMock::PAYPAL_SETTING_WITHOUT_TOKEN,
+                SettingsServiceMock::PAYPAL_SETTING_WITHOUT_TOKEN,
                 ApplicationContext::LANDINGPAGE_TYPE_BILLING,
             ],
             [
-                SettingsProviderMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID,
+                SettingsServiceMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID,
                 ApplicationContext::LANDINGPAGE_TYPE_LOGIN,
             ],
             [
-                SettingsProviderMock::PAYPAL_SETTING_WITH_SUBMIT_CART,
+                SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART,
                 ApplicationContext::LANDINGPAGE_TYPE_LOGIN,
             ],
         ];
