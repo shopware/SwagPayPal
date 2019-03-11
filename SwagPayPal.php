@@ -11,6 +11,8 @@ namespace SwagPayPal;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
@@ -24,8 +26,6 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class SwagPayPal extends Plugin
 {
-    public const PAYPAL_PAYMENT_METHOD_ID = 'b8759d49b8a244ab8283f4a53f3e81fd';
-
     /**
      * The technical name of the PayPal payment method.
      */
@@ -85,9 +85,13 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         $pluginId = $pluginIdProvider->getPluginIdByTechnicalName($this->getName(), $context);
+        $paymentMethodId = $this->getPaymentMethodId($context);
+
+        if ($paymentMethodId !== null) {
+            return;
+        }
 
         $paypal = [
-            'id' => self::PAYPAL_PAYMENT_METHOD_ID,
             'technicalName' => self::PAYPAL_PAYMENT_METHOD_NAME,
             'name' => 'PayPal',
             'additionalDescription' => 'Bezahlung per PayPal - einfach, schnell und sicher.',
@@ -97,19 +101,42 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
 
         /** @var EntityRepositoryInterface $paymentRepository */
         $paymentRepository = $this->container->get('payment_method.repository');
-        $paymentRepository->upsert([$paypal], $context);
+        $paymentRepository->create([$paypal], $context);
     }
 
     private function setPaymentMethodIsActive(bool $active, Context $context): void
     {
         /** @var EntityRepositoryInterface $paymentRepository */
         $paymentRepository = $this->container->get('payment_method.repository');
+        $paymentMethodId = $this->getPaymentMethodId($context);
+
+        if ($paymentMethodId === null) {
+            return;
+        }
 
         $paymentMethod = [
-            'id' => self::PAYPAL_PAYMENT_METHOD_ID,
+            'id' => $paymentMethodId,
             'active' => $active,
         ];
 
         $paymentRepository->update([$paymentMethod], $context);
+    }
+
+    private function getPaymentMethodId(Context $context): ?string
+    {
+        /** @var EntityRepositoryInterface $paymentRepository */
+        $paymentRepository = $this->container->get('payment_method.repository');
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('technicalName', self::PAYPAL_PAYMENT_METHOD_NAME));
+
+        $result = $paymentRepository->searchIds($criteria, $context);
+        if ($result->getTotal() === 0) {
+            return null;
+        }
+
+        $paymentMethodIds = $result->getIds();
+
+        return array_shift($paymentMethodIds);
     }
 }

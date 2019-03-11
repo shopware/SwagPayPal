@@ -27,7 +27,7 @@ trait PaymentTransactionTrait
 
         return new PaymentTransactionStruct(
             $transactionId,
-            SwagPayPal::PAYPAL_PAYMENT_METHOD_ID,
+            'paypal-payment-method-id',
             $order,
             $amount,
             'http://www.test.de/'
