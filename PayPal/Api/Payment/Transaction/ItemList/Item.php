@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\PayPal\Api\Payment\Transaction\ItemList;
 
-use SwagPayPal\PayPal\Api\PayPalStruct;
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 
 class Item extends PayPalStruct
 {

@@ -6,22 +6,23 @@
 
     <services>
         <service id="SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPayment">
-            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
             <argument type="service" id="SwagPayPal\PayPal\Resource\PaymentResource"/>
-            <argument type="service" id="SwagPayPal\PayPal\Payment\PaymentBuilderService"/>
+            <argument type="service" id="SwagPayPal\Payment\PaymentBuilderService"/>
+            <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
             <tag name="payment.method"/>
         </service>
 
         <service id="SwagPayPal\Controller\PayPalPaymentController" public="true">
             <argument type="service" id="SwagPayPal\PayPal\Resource\PaymentResource"/>
             <argument type="service" id="SwagPayPal\PayPal\Resource\SaleResource"/>
+            <argument type="service" id="SwagPayPal\PayPal\Resource\AuthorizationResource"/>
+            <argument type="service" id="SwagPayPal\PayPal\Resource\OrdersResource"/>
         </service>
 
-        <service id="SwagPayPal\PayPal\Payment\PaymentBuilderService">
-            <argument type="service" id="language.repository"/>
-            <argument type="service" id="sales_channel.repository"/>
-            <argument type="service" id="order.repository"/>
-            <argument type="service" id="SwagPayPal\Setting\Service\SettingsProvider"/>
+        <service id="SwagPayPal\Payment\PaymentBuilderService">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
+            <argument type="service" id="SwagPayPal\Setting\Service\SettingsService"/>
         </service>
     </services>
 </container>

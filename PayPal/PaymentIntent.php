@@ -11,9 +11,7 @@ namespace SwagPayPal\PayPal;
 final class PaymentIntent
 {
     public const SALE = 'sale';
-
     public const AUTHORIZE = 'authorize';
-
     public const ORDER = 'order';
 
     public const INTENTS = [
@@ -21,4 +19,8 @@ final class PaymentIntent
         self::AUTHORIZE,
         self::ORDER,
     ];
+
+    private function __construct()
+    {
+    }
 }

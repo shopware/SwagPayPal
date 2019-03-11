@@ -14,7 +14,7 @@ use Shopware\Core\Framework\Util\Random;
 use SwagPayPal\PayPal\Api\CreateWebhooks;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\PayPal\Resource\WebhookResource;
-use SwagPayPal\Setting\Service\SettingsProviderInterface;
+use SwagPayPal\Setting\Service\SettingsServiceInterface;
 use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use SwagPayPal\Webhook\Exception\WebhookException;
 use SwagPayPal\Webhook\Exception\WebhookIdInvalidException;
@@ -24,15 +24,11 @@ use Symfony\Component\Routing\RouterInterface;
 class WebhookService implements WebhookServiceInterface
 {
     public const WEBHOOK_CREATED = 'created';
-
     public const WEBHOOK_UPDATED = 'updated';
-
     public const NO_WEBHOOK_ACTION_REQUIRED = 'nothing';
 
     public const PAYPAL_WEBHOOK_ROUTE = 'paypal.webhook.execute';
-
     public const PAYPAL_WEBHOOK_TOKEN_NAME = 'sw-token';
-
     public const PAYPAL_WEBHOOK_TOKEN_LENGTH = 32;
 
     /**
@@ -56,27 +52,25 @@ class WebhookService implements WebhookServiceInterface
     private $webhookRegistry;
 
     /**
-     * @var SettingsProviderInterface
+     * @var SettingsServiceInterface
      */
-    private $settingsProvider;
+    private $settingsService;
 
     public function __construct(
         WebhookResource $webhookResource,
         WebhookRegistry $webhookRegistry,
-        SettingsProviderInterface $settingsProvider,
-        EntityRepositoryInterface $settingGeneralRepo,
+        SettingsServiceInterface $settingsService,
         RouterInterface $router
     ) {
         $this->webhookResource = $webhookResource;
         $this->webhookRegistry = $webhookRegistry;
-        $this->settingsProvider = $settingsProvider;
-        $this->settingGeneralRepo = $settingGeneralRepo;
+        $this->settingsService = $settingsService;
         $this->router = $router;
     }
 
     public function registerWebhook(Context $context): string
     {
-        $settings = $this->settingsProvider->getSettings($context);
+        $settings = $this->settingsService->getSettings($context);
 
         $webhookExecuteToken = $settings->getWebhookExecuteToken();
         if ($webhookExecuteToken === null) {
@@ -136,31 +130,23 @@ class WebhookService implements WebhookServiceInterface
 
         $createWebhooks = new CreateWebhooks();
         $createWebhooks->assign($requestData);
+
         try {
             $webhookId = $this->webhookResource->createWebhook(
                 $webhookUrl,
                 $createWebhooks,
                 $context
             );
-            $this->updateSettings($settingsUuid, $webhookId, $webhookExecuteToken, $context);
+
+            $this->settingsService->updateSettings([
+                'id' => $settingsUuid,
+                'webhookId' => $webhookId,
+                'webhookExecuteToken' => $webhookExecuteToken,
+            ], $context);
 
             return self::WEBHOOK_CREATED;
         } catch (WebhookAlreadyExistsException $e) {
             return self::NO_WEBHOOK_ACTION_REQUIRED;
         }
-    }
-
-    private function updateSettings(
-        string $settingsUuid,
-        string $webhookId,
-        string $webhookExecuteToken,
-        Context $context
-    ): void {
-        $data = [
-            'id' => $settingsUuid,
-            'webhookId' => $webhookId,
-            'webhookExecuteToken' => $webhookExecuteToken,
-        ];
-        $this->settingGeneralRepo->update([$data], $context);
     }
 }

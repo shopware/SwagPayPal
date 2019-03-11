@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\PayPal\Api\Payment\Payer\PayerInfo;
 
-use SwagPayPal\PayPal\Api\PayPalStruct;
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 
 class ShippingAddress extends PayPalStruct
 {

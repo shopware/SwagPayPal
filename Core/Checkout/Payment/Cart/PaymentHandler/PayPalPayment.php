@@ -8,14 +8,16 @@
 
 namespace SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use SwagPayPal\Payment\PaymentBuilderInterface;
 use SwagPayPal\PayPal\Api\Payment;
-use SwagPayPal\PayPal\Payment\PaymentBuilderInterface;
 use SwagPayPal\PayPal\PaymentIntent;
 use SwagPayPal\PayPal\PaymentStatus;
 use SwagPayPal\PayPal\Resource\PaymentResource;
@@ -25,9 +27,7 @@ use Symfony\Component\HttpFoundation\Request;
 class PayPalPayment implements PaymentHandlerInterface
 {
     public const TRANSACTION_DETAILS_JSON_KEY = 'swag_paypal';
-
     public const PAYPAL_REQUEST_PARAMETER_PAYER_ID = 'PayerID';
-
     public const PAYPAL_REQUEST_PARAMETER_PAYMENT_ID = 'paymentId';
 
     /**
@@ -51,12 +51,12 @@ class PayPalPayment implements PaymentHandlerInterface
     private $stateMachineRegistry;
 
     public function __construct(
-        EntityRepositoryInterface $orderTransactionRepo,
+        DefinitionRegistry $definitionRegistry,
         PaymentResource $paymentResource,
         PaymentBuilderInterface $paymentBuilder,
         StateMachineRegistry $stateMachineRegistry
     ) {
-        $this->orderTransactionRepo = $orderTransactionRepo;
+        $this->orderTransactionRepo = $definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
         $this->paymentResource = $paymentResource;
         $this->paymentBuilder = $paymentBuilder;
         $this->stateMachineRegistry = $stateMachineRegistry;

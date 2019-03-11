@@ -9,17 +9,21 @@
 namespace SwagPayPal\Test\Core\Checkout\Payment\Cart\PaymentHandler;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPayment;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
 use SwagPayPal\Test\Helper\ServicesTrait;
+use SwagPayPal\Test\Mock\DIContainerMock;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
+use SwagPayPal\Test\Mock\Repositories\DefinitionRegistryMock;
 use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
+use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPaymentTest extends TestCase
@@ -31,7 +35,7 @@ class PayPalPaymentTest extends TestCase
     public const PAYER_ID_PAYMENT_INCOMPLETE = 'testPayerIdIncomplete';
 
     /**
-     * @var OrderTransactionRepoMock
+     * @var EntityRepositoryInterface
      */
     private $orderTransactionRepo;
 
@@ -40,9 +44,15 @@ class PayPalPaymentTest extends TestCase
      */
     private $stateMachineRegistry;
 
+    /**
+     * @var DefinitionRegistryMock
+     */
+    private $definitionRegistry;
+
     protected function setUp(): void
     {
-        $this->orderTransactionRepo = new OrderTransactionRepoMock();
+        $this->definitionRegistry = new DefinitionRegistryMock([], new DIContainerMock());
+        $this->orderTransactionRepo = $this->definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
         /** @var StateMachineRegistry $stateMachineRegistry */
         $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
         $this->stateMachineRegistry = $stateMachineRegistry;
@@ -63,7 +73,9 @@ class PayPalPaymentTest extends TestCase
 
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $response->getTargetUrl());
 
-        $updatedData = $this->orderTransactionRepo->getData();
+        /** @var OrderTransactionRepoMock $orderTransactionRepo */
+        $orderTransactionRepo = $this->orderTransactionRepo;
+        $updatedData = $orderTransactionRepo->getData();
         static::assertSame(
             CreateResponseFixture::CREATE_PAYMENT_ID,
             $updatedData['details'][PayPalPayment::TRANSACTION_DETAILS_JSON_KEY]['transactionId']
@@ -78,7 +90,9 @@ class PayPalPaymentTest extends TestCase
         $request = $this->createRequest();
         $context = Context::createDefaultContext();
         $handler->finalize($transactionId, $request, $context);
-        $updatedData = $this->orderTransactionRepo->getData();
+        /** @var OrderTransactionRepoMock $orderTransactionRepo */
+        $orderTransactionRepo = $this->orderTransactionRepo;
+        $updatedData = $orderTransactionRepo->getData();
 
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
             Defaults::ORDER_TRANSACTION_STATE_MACHINE,
@@ -102,7 +116,9 @@ class PayPalPaymentTest extends TestCase
         );
         $context = Context::createDefaultContext();
         $handler->finalize($transactionId, $request, $context);
-        $updatedData = $this->orderTransactionRepo->getData();
+        /** @var OrderTransactionRepoMock $orderTransactionRepo */
+        $orderTransactionRepo = $this->orderTransactionRepo;
+        $updatedData = $orderTransactionRepo->getData();
 
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
             Defaults::ORDER_TRANSACTION_STATE_MACHINE,
@@ -126,7 +142,9 @@ class PayPalPaymentTest extends TestCase
         );
         $context = Context::createDefaultContext();
         $handler->finalize($transactionId, $request, $context);
-        $updatedData = $this->orderTransactionRepo->getData();
+        /** @var OrderTransactionRepoMock $orderTransactionRepo */
+        $orderTransactionRepo = $this->orderTransactionRepo;
+        $updatedData = $orderTransactionRepo->getData();
 
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
             Defaults::ORDER_TRANSACTION_STATE_MACHINE,
@@ -146,7 +164,9 @@ class PayPalPaymentTest extends TestCase
         $request = new Request(['cancel' => true]);
         $context = Context::createDefaultContext();
         $handler->finalize($transactionId, $request, $context);
-        $updatedData = $this->orderTransactionRepo->getData();
+        /** @var OrderTransactionRepoMock $orderTransactionRepo */
+        $orderTransactionRepo = $this->orderTransactionRepo;
+        $updatedData = $orderTransactionRepo->getData();
 
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
             Defaults::ORDER_TRANSACTION_STATE_MACHINE,
@@ -167,7 +187,9 @@ class PayPalPaymentTest extends TestCase
         $request->query->set(PayPalPayment::PAYPAL_REQUEST_PARAMETER_PAYER_ID, self::PAYER_ID_PAYMENT_INCOMPLETE);
         $context = Context::createDefaultContext();
         $handler->finalize($transactionId, $request, $context);
-        $updatedData = $this->orderTransactionRepo->getData();
+        /** @var OrderTransactionRepoMock $orderTransactionRepo */
+        $orderTransactionRepo = $this->orderTransactionRepo;
+        $updatedData = $orderTransactionRepo->getData();
 
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
             Defaults::ORDER_TRANSACTION_STATE_MACHINE,
@@ -181,10 +203,10 @@ class PayPalPaymentTest extends TestCase
 
     private function createPayPalPaymentHandler(): PayPalPayment
     {
-        $settingsProvider = new SettingsProviderMock();
+        $settingsProvider = new SettingsServiceMock($this->definitionRegistry);
 
         return new PayPalPayment(
-            $this->orderTransactionRepo,
+            $this->definitionRegistry,
             $this->createPaymentResource($settingsProvider),
             $this->createPaymentBuilder($settingsProvider),
             $this->stateMachineRegistry

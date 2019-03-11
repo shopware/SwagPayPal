@@ -8,11 +8,11 @@
 
 namespace SwagPayPal\PayPal\Api\Payment;
 
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 use SwagPayPal\PayPal\Api\Payment\Transaction\Amount;
 use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList;
 use SwagPayPal\PayPal\Api\Payment\Transaction\Payee;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
-use SwagPayPal\PayPal\Api\PayPalStruct;
 
 class Transaction extends PayPalStruct
 {
@@ -25,6 +25,11 @@ class Transaction extends PayPalStruct
      * @var Payee
      */
     protected $payee;
+
+    /**
+     * @var string
+     */
+    protected $description;
 
     /**
      * @var ItemList
@@ -57,6 +62,11 @@ class Transaction extends PayPalStruct
     protected function setPayee(Payee $payee): void
     {
         $this->payee = $payee;
+    }
+
+    protected function setDescription(string $description): void
+    {
+        $this->description = $description;
     }
 
     /**

@@ -17,7 +17,7 @@ class CacheMock implements CacheItemPoolInterface
 {
     public function getItem($key): CacheItemInterface
     {
-        if ($key === TokenResource::CACHE_ID . TokenResourceTest::SALES_CHANNEL_ID_WITH_TOKEN) {
+        if ($key === TokenResource::CACHE_ID . TokenResourceTest::CACHE_ID_WITH_TOKEN) {
             return new CacheItemWithTokenMock();
         }
 

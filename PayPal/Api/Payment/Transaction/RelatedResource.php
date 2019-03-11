@@ -8,11 +8,11 @@
 
 namespace SwagPayPal\PayPal\Api\Payment\Transaction;
 
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Authorization;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Order;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Refund;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Sale;
-use SwagPayPal\PayPal\Api\PayPalStruct;
 
 class RelatedResource extends PayPalStruct
 {

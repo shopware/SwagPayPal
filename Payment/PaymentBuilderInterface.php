@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Payment;
+namespace SwagPayPal\Payment;
 
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Context;

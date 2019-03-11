@@ -9,9 +9,8 @@
 namespace SwagPayPal\PayPal\Client;
 
 use GuzzleHttp\Client;
-use Shopware\Core\Framework\Context;
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 use SwagPayPal\PayPal\Api\OAuthCredentials;
-use SwagPayPal\PayPal\Api\PayPalStruct;
 use SwagPayPal\PayPal\BaseURL;
 use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use SwagPayPal\PayPal\PartnerAttributionId;
@@ -35,8 +34,8 @@ class PayPalClient
      */
     public function __construct(
         TokenResource $tokenResource,
-        Context $context,
         SwagPayPalSettingGeneralEntity $settings,
+        string $cacheId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ) {
         $this->tokenResource = $tokenResource;
@@ -55,7 +54,7 @@ class PayPalClient
         }
 
         $credentials = $this->createCredentialsObject($clientId, $clientSecret);
-        $authorizationHeader = $this->createAuthorizationHeaderValue($credentials, $context, $url);
+        $authorizationHeader = $this->createAuthorizationHeaderValue($credentials, $url, $cacheId);
 
         $this->client = new Client([
             'base_uri' => $url,
@@ -107,9 +106,9 @@ class PayPalClient
         return $credentials;
     }
 
-    private function createAuthorizationHeaderValue(OAuthCredentials $credentials, Context $context, string $url): string
+    private function createAuthorizationHeaderValue(OAuthCredentials $credentials, string $url, string $cacheId): string
     {
-        $token = $this->tokenResource->getToken($credentials, $context, $url);
+        $token = $this->tokenResource->getToken($credentials, $url, $cacheId);
 
         return $token->getTokenType() . ' ' . $token->getAccessToken();
     }

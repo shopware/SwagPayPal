@@ -8,8 +8,8 @@
 
 namespace SwagPayPal\PayPal\Api\Payment;
 
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 use SwagPayPal\PayPal\Api\Payment\Payer\PayerInfo;
-use SwagPayPal\PayPal\Api\PayPalStruct;
 
 class Payer extends PayPalStruct
 {

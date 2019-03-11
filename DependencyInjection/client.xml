@@ -7,7 +7,7 @@
     <services>
         <service id="SwagPayPal\PayPal\Client\PayPalClientFactory">
             <argument type="service" id="SwagPayPal\PayPal\Resource\TokenResource"/>
-            <argument type="service" id="SwagPayPal\Setting\Service\SettingsProvider"/>
+            <argument type="service" id="SwagPayPal\Setting\Service\SettingsService"/>
         </service>
 
         <service id="SwagPayPal\PayPal\Client\TokenClientFactory" class="SwagPayPal\PayPal\Client\TokenClientFactory"/>

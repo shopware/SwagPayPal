@@ -8,9 +8,11 @@
 
 namespace SwagPayPal\Webhook\Handler;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -32,10 +34,10 @@ abstract class AbstractWebhookHandler implements WebhookHandler
     private $stateMachineRegistry;
 
     public function __construct(
-        EntityRepositoryInterface $orderTransactionRepo,
+        DefinitionRegistry $definitionRegistry,
         StateMachineRegistry $stateMachineRegistry
     ) {
-        $this->orderTransactionRepo = $orderTransactionRepo;
+        $this->orderTransactionRepo = $definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
         $this->stateMachineRegistry = $stateMachineRegistry;
     }
 

@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\PayPal\Api\CreateWebhooks;
 
-use SwagPayPal\PayPal\Api\PayPalStruct;
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 
 class EventType extends PayPalStruct
 {

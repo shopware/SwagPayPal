@@ -11,11 +11,13 @@ namespace SwagPayPal\Test\Mock\PayPal\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 use SwagPayPal\PayPal\Api\Payment\Payer\PayerInfo;
-use SwagPayPal\PayPal\Api\PayPalStruct;
 use SwagPayPal\PayPal\Client\PayPalClient;
 use SwagPayPal\Test\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPaymentTest;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CaptureAuthorizationResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CaptureOrdersResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteAuthorizeResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteOrderResponseFixture;
@@ -67,6 +69,14 @@ class PayPalClientMock extends PayPalClient
 
         if (strncmp($resourceUri, 'payments/sale/', 14) === 0 && mb_substr($resourceUri, -7) === '/refund') {
             return RefundSaleResponseFixture::get();
+        }
+
+        if (strncmp($resourceUri, 'payments/authorization/', 23) === 0 && mb_substr($resourceUri, -8) === '/capture') {
+            return CaptureAuthorizationResponseFixture::get();
+        }
+
+        if (strncmp($resourceUri, 'payments/orders/', 16) === 0 && mb_substr($resourceUri, -8) === '/capture') {
+            return CaptureOrdersResponseFixture::get();
         }
 
         return CreateResponseFixture::get();

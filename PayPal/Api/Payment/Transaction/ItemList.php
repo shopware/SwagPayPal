@@ -8,9 +8,9 @@
 
 namespace SwagPayPal\PayPal\Api\Payment\Transaction;
 
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
 use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList\ShippingAddress;
-use SwagPayPal\PayPal\Api\PayPalStruct;
 
 class ItemList extends PayPalStruct
 {

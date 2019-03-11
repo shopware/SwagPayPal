@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\PayPal\Api\Payment\Transaction;
 
-use SwagPayPal\PayPal\Api\PayPalStruct;
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 
 class Payee extends PayPalStruct
 {

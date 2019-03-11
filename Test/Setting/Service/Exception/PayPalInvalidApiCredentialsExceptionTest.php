@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PayPalInvalidApiCredentialsExceptionTest extends TestCase
 {
-    public function testGetStatusCode()
+    public function testGetStatusCode(): void
     {
         $exception = new PayPalInvalidApiCredentialsException();
 

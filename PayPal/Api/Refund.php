@@ -8,6 +8,7 @@
 
 namespace SwagPayPal\PayPal\Api;
 
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 use SwagPayPal\PayPal\Api\Refund\Amount;
 use SwagPayPal\PayPal\Api\Refund\Link;
 use SwagPayPal\PayPal\Api\Refund\RefundFromReceivedAmount;

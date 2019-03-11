@@ -8,12 +8,11 @@
 
 namespace SwagPayPal\PayPal\Api\Payment;
 
-use SwagPayPal\PayPal\Api\PayPalStruct;
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 
 class ApplicationContext extends PayPalStruct
 {
     public const LANDINGPAGE_TYPE_LOGIN = 'Login';
-
     public const LANDINGPAGE_TYPE_BILLING = 'Billing';
 
     /**

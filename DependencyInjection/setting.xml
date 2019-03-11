@@ -9,17 +9,6 @@
             <tag name="shopware.entity.definition" entity="swag_paypal_setting_general"/>
         </service>
 
-        <service id="swag_paypal_setting_general.repository"
-                 class="Shopware\Core\Framework\DataAbstractionLayer\EntityRepository"
-                 public="true">
-            <argument>SwagPayPal\Setting\SwagPayPalSettingGeneralDefinition</argument>
-            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Read\EntityReaderInterface"/>
-            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\VersionManager"/>
-            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearcherInterface"/>
-            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Search\EntityAggregatorInterface"/>
-            <argument type="service" id="event_dispatcher"/>
-        </service>
-
         <service id="SwagPayPal\Controller\SettingsController" public="true">
             <argument type="service" id="SwagPayPal\Setting\Service\ApiCredentialTestService"/>
         </service>
@@ -28,8 +17,8 @@
             <argument type="service" id="SwagPayPal\PayPal\Resource\TokenResource"/>
         </service>
 
-        <service id="SwagPayPal\Setting\Service\SettingsProvider">
-            <argument type="service" id="swag_paypal_setting_general.repository"/>
+        <service id="SwagPayPal\Setting\Service\SettingsService">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
         </service>
     </services>
 </container>

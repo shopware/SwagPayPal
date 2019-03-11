@@ -9,7 +9,6 @@
 namespace SwagPayPal\Test\PayPal\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\OAuthCredentials;
 use SwagPayPal\PayPal\Api\Token;
 use SwagPayPal\PayPal\Resource\TokenResource;
@@ -20,14 +19,11 @@ use SwagPayPal\Test\Mock\PayPal\Client\TokenClientMock;
 
 class TokenResourceTest extends TestCase
 {
-    public const SALES_CHANNEL_ID_WITH_TOKEN = 'salesChannelIdWithToken';
+    public const CACHE_ID_WITH_TOKEN = 'salesChannelIdWithToken';
 
     public function testGetToken(): void
     {
-        $tokenResource = $this->getTokenResource();
-
-        $context = Context::createDefaultContext();
-        $token = $tokenResource->getToken(new OAuthCredentials(), $context, 'url');
+        $token = $this->getTokenResource()->getToken(new OAuthCredentials(), 'url', 'cacheId');
 
         $dateNow = new \DateTime('now');
 
@@ -47,11 +43,7 @@ class TokenResourceTest extends TestCase
 
     public function testGetTokenFromCache(): void
     {
-        $tokenResource = $this->getTokenResource();
-
-        $context = Context::createDefaultContext();
-        $context->getSourceContext()->setSalesChannelId(self::SALES_CHANNEL_ID_WITH_TOKEN);
-        $token = $tokenResource->getToken(new OAuthCredentials(), $context, 'url');
+        $token = $this->getTokenResource()->getToken(new OAuthCredentials(), 'url', self::CACHE_ID_WITH_TOKEN);
 
         static::assertInstanceOf(Token::class, $token);
         static::assertSame(CacheItemWithTokenMock::ACCESS_TOKEN, $token->getAccessToken());

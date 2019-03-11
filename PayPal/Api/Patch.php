@@ -8,10 +8,11 @@
 
 namespace SwagPayPal\PayPal\Api;
 
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
+
 class Patch extends PayPalStruct
 {
     public const OPERATION_ADD = 'add';
-
     public const OPERATION_REPLACE = 'replace';
 
     /**

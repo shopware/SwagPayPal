@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\PayPal\Api\Webhook;
 
-use SwagPayPal\PayPal\Api\PayPalStruct;
+use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 use SwagPayPal\PayPal\Api\Webhook\Resource\Amount;
 use SwagPayPal\PayPal\Api\Webhook\Resource\Link;
 

@@ -14,8 +14,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
 use SwagPayPal\Controller\WebhookController;
 use SwagPayPal\Test\Controller\_fixtures\WebhookDataFixture;
+use SwagPayPal\Test\Mock\DIContainerMock;
 use SwagPayPal\Test\Mock\LoggerMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsProviderMock;
+use SwagPayPal\Test\Mock\Repositories\DefinitionRegistryMock;
+use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use SwagPayPal\Test\Mock\Webhook\WebhookServiceMock;
 use SwagPayPal\Webhook\WebhookService;
 use Symfony\Component\HttpFoundation\Request;
@@ -110,7 +112,7 @@ class WebhookControllerTest extends TestCase
 
         $context = Context::createDefaultContext();
         $request = new Request(
-            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => SettingsProviderMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN]
+            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => SettingsServiceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN]
         );
 
         $this->expectException(BadRequestHttpException::class);
@@ -120,13 +122,17 @@ class WebhookControllerTest extends TestCase
 
     private function createWebhookController(): WebhookController
     {
-        return new WebhookController(new LoggerMock(), new WebhookServiceMock(), new SettingsProviderMock());
+        return new WebhookController(
+            new LoggerMock(),
+            new WebhookServiceMock(),
+            new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()))
+        );
     }
 
     private function createRequestWithWebhookData(): Request
     {
         return new Request(
-            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => SettingsProviderMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN],
+            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => SettingsServiceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN],
             WebhookDataFixture::get()
         );
     }
