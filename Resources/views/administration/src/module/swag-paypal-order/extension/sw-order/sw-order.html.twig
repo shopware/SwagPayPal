@@ -1,0 +1,19 @@
+{% block sw_order_detail_base %}
+<div>
+    <div v-if="currentOrder.paymentMethod.technicalName === 'SwagPayPal'">
+        <sw-tabs>
+            <sw-tabs-item :route="{ name: 'sw.order.detail', params: { id: $route.params.id } }"
+                          :title="$tc('swag-paypal.orderDetailTab.overview')">
+                {{ $tc('swag-paypal.orderDetailTab.overview') }}
+            </sw-tabs-item>
+
+            <sw-tabs-item :route="{ name: 'swag.paypal.order.detail', params: { id: $route.params.id } }"
+                          :title="$tc('swag-paypal.header')">
+                {{ $tc('swag-paypal.header') }}
+            </sw-tabs-item>
+        </sw-tabs>
+    </div>
+
+    {% parent %}
+</div>
+{% endblock %}

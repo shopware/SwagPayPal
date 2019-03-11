@@ -61,6 +61,32 @@
             "messageWebhookCreated": "Der Webhook wurde erfolgreich registriert.",
             "messageWebhookUpdated": "Der Webhook wurde erfolgreich aktualisiert.",
             "messageWebhookError": "Der Webhook konnte nicht gespeichert werden. Folgende Fehler sind aufgetreten:"
+        },
+        "orderDetailTab": {
+            "overview": "Übersicht",
+            "cardTitle": "Bestellung",
+            "invoice": {
+                "header": "Rechnungsbetrag",
+                "totalAmount": "Gesamtbetrag:",
+                "subTotal": "Zwischensumme:",
+                "shipping": "Versandkosten:"
+            },
+            "payment": {
+                "header": "Zahlungsdetails",
+                "intent": "Zahlungsabschluss:",
+                "paymentId": "Zahlungs-ID:",
+                "cartId": "Warenkorb-ID:",
+                "state": "Status:",
+                "createTime": "Erstellt:",
+                "updateTime": "Zul. aktualisiert:"
+            },
+            "customer": {
+                "header": "Kunde",
+                "payerId": "Kunden-ID:"
+            },
+            "error": {
+                "title": "Fehler beim Abrufen der Zahlungsdaten von PayPal"
+            }
         }
     }
 }

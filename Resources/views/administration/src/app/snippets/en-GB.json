@@ -61,6 +61,32 @@
             "messageWebhookCreated": "The webhook has been successfully registered.",
             "messageWebhookUpdated": "The webhook has been successfully updated.",
             "messageWebhookError": "The webhook could not be saved. Following errors occurred:"
+        },
+        "orderDetailTab": {
+            "overview": "Overview",
+            "cardTitle": "Order",
+            "invoice": {
+                "header": "Invoice amount",
+                "totalAmount": "Total amount:",
+                "subTotal": "Subtotal:",
+                "shipping": "Shipping:"
+            },
+            "payment": {
+                "header": "Payment details",
+                "intent": "Intent:",
+                "paymentId": "Payment ID:",
+                "cartId": "Cart ID:",
+                "state": "State:",
+                "createTime": "Create time:",
+                "updateTime": "Update time:"
+            },
+            "customer": {
+                "header": "Customer",
+                "payerId": "Payer ID:"
+            },
+            "error": {
+                "title": "Error fetching payment details from PayPal"
+            }
         }
     }
 }
