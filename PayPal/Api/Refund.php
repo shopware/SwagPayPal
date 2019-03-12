@@ -26,6 +26,7 @@ class Refund extends PayPalStruct
      * @var string
      */
     protected $invoiceNumber;
+
     /**
      * @var string
      */
@@ -65,6 +66,11 @@ class Refund extends PayPalStruct
      * @var string
      */
     private $saleId;
+
+    /**
+     * @var string
+     */
+    private $captureId;
 
     /**
      * @var string
@@ -129,6 +135,11 @@ class Refund extends PayPalStruct
     protected function setSaleId(string $saleId): void
     {
         $this->saleId = $saleId;
+    }
+
+    protected function setCaptureId(string $captureId): void
+    {
+        $this->captureId = $captureId;
     }
 
     protected function setParentPayment(string $parentPayment): void

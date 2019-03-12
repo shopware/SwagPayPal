@@ -11,11 +11,12 @@ namespace SwagPayPal\Controller;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Capture;
 use SwagPayPal\PayPal\Api\Capture\Amount as CaptureAmount;
+use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
 use SwagPayPal\PayPal\Api\Refund;
 use SwagPayPal\PayPal\Api\Refund\Amount as RefundAmount;
 use SwagPayPal\PayPal\Exception\RequiredParameterInvalidException;
-use SwagPayPal\PayPal\PaymentIntent;
 use SwagPayPal\PayPal\Resource\AuthorizationResource;
+use SwagPayPal\PayPal\Resource\CaptureResource;
 use SwagPayPal\PayPal\Resource\OrdersResource;
 use SwagPayPal\PayPal\Resource\PaymentResource;
 use SwagPayPal\PayPal\Resource\SaleResource;
@@ -54,16 +55,23 @@ class PayPalPaymentController extends AbstractController
      */
     private $ordersResource;
 
+    /**
+     * @var CaptureResource
+     */
+    private $captureResource;
+
     public function __construct(
         PaymentResource $paymentResource,
         SaleResource $saleResource,
         AuthorizationResource $authorizationResource,
-        OrdersResource $ordersResource
+        OrdersResource $ordersResource,
+        CaptureResource $captureResource
     ) {
         $this->paymentResource = $paymentResource;
         $this->saleResource = $saleResource;
         $this->authorizationResource = $authorizationResource;
         $this->ordersResource = $ordersResource;
+        $this->captureResource = $captureResource;
     }
 
     /**
@@ -77,45 +85,44 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/refund-payment/{intent}/{paymentId}", name="api.action.paypal.refund_payment", methods={"POST"})
+     * @Route("/api/v{version}/_action/paypal/refund-payment/{resourceType}/{paymentId}", name="api.action.paypal.refund_payment", methods={"POST"})
      *
      * @throws RequiredParameterInvalidException
      */
-    public function refundPayment(Request $request, Context $context, string $intent, string $paymentId): JsonResponse
+    public function refundPayment(Request $request, Context $context, string $resourceType, string $paymentId): JsonResponse
     {
         $refund = $this->createRefund($request);
 
-        switch ($intent) {
-            case PaymentIntent::SALE:
+        switch ($resourceType) {
+            case RelatedResource::SALE:
                 $refundResponse = $this->saleResource->refund($paymentId, $refund, $context);
                 break;
-            case PaymentIntent::AUTHORIZE:
-            case PaymentIntent::ORDER:
-                $refundResponse = new Refund(); // TODO PT-10003 capture refund
+            case RelatedResource::CAPTURE:
+                $refundResponse = $this->captureResource->refund($paymentId, $refund, $context);
                 break;
             default:
-                throw new RequiredParameterInvalidException('intent');
+                throw new RequiredParameterInvalidException('resourceType');
         }
 
         return new JsonResponse($refundResponse);
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/capture-payment/{intent}/{captureId}", name="api.action.paypal.catpure_payment", methods={"POST"})
+     * @Route("/api/v{version}/_action/paypal/capture-payment/{resourceType}/{captureId}", name="api.action.paypal.catpure_payment", methods={"POST"})
      */
-    public function capturePayment(Request $request, Context $context, string $intent, string $captureId): JsonResponse
+    public function capturePayment(Request $request, Context $context, string $resourceType, string $captureId): JsonResponse
     {
         $capture = $this->createCapture($request);
 
-        switch ($intent) {
-            case PaymentIntent::AUTHORIZE:
+        switch ($resourceType) {
+            case RelatedResource::AUTHORIZE:
                 $captureResponse = $this->authorizationResource->capture($captureId, $capture, $context);
                 break;
-            case PaymentIntent::ORDER:
+            case RelatedResource::ORDER:
                 $captureResponse = $this->ordersResource->capture($captureId, $capture, $context);
                 break;
             default:
-                throw new RequiredParameterInvalidException('intent');
+                throw new RequiredParameterInvalidException('resourceType');
         }
 
         return new JsonResponse($captureResponse);

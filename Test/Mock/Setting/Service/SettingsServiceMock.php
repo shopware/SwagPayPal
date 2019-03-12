@@ -9,15 +9,12 @@
 namespace SwagPayPal\Test\Mock\Setting\Service;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
 use SwagPayPal\PayPal\PaymentIntent;
-use SwagPayPal\Setting\Service\SettingsServiceInterface;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralDefinition;
+use SwagPayPal\Setting\Service\SettingsService;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 
-class SettingsServiceMock implements SettingsServiceInterface
+class SettingsServiceMock extends SettingsService
 {
     public const PAYPAL_SETTING_ID = 'testSettingsId';
 
@@ -34,16 +31,6 @@ class SettingsServiceMock implements SettingsServiceInterface
     public const ALREADY_EXISTING_WEBHOOK_ID = 'alreadyExistingTestWebhookId';
 
     public const ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN = 'testWebhookExecuteToken';
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $settingGeneralRepo;
-
-    public function __construct(DefinitionRegistry $definitionRegistry)
-    {
-        $this->settingGeneralRepo = $definitionRegistry->getRepository(SwagPayPalSettingGeneralDefinition::getEntityName());
-    }
 
     public function getSettings(Context $context): SwagPayPalSettingGeneralEntity
     {
@@ -78,11 +65,6 @@ class SettingsServiceMock implements SettingsServiceInterface
         }
 
         return $settingsStruct;
-    }
-
-    public function updateSettings(array $updateData, Context $context): void
-    {
-        $this->settingGeneralRepo->update([$updateData], $context);
     }
 
     private function createBasicSettingStruct(): SwagPayPalSettingGeneralEntity

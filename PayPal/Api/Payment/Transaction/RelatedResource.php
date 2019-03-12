@@ -10,12 +10,20 @@ namespace SwagPayPal\PayPal\Api\Payment\Transaction;
 
 use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Authorization;
+use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Capture;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Order;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Refund;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Sale;
+use SwagPayPal\PayPal\PaymentIntent;
 
 class RelatedResource extends PayPalStruct
 {
+    public const SALE = PaymentIntent::SALE;
+    public const AUTHORIZE = PaymentIntent::AUTHORIZE;
+    public const ORDER = PaymentIntent::ORDER;
+    public const REFUND = 'refund';
+    public const CAPTURE = 'capture';
+
     /**
      * @var Sale|null
      */
@@ -35,6 +43,11 @@ class RelatedResource extends PayPalStruct
      * @var Refund|null
      */
     protected $refund;
+
+    /**
+     * @var Capture|null
+     */
+    protected $capture;
 
     public function getSale(): ?Sale
     {
@@ -59,6 +72,11 @@ class RelatedResource extends PayPalStruct
     public function setRefund(Refund $refund): void
     {
         $this->refund = $refund;
+    }
+
+    public function setCapture(Capture $capture): void
+    {
+        $this->capture = $capture;
     }
 
     protected function setSale(Sale $sale): void
