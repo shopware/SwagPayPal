@@ -21,12 +21,12 @@ use SwagPayPal\PayPal\Api\Payment;
 use SwagPayPal\PayPal\PaymentIntent;
 use SwagPayPal\PayPal\PaymentStatus;
 use SwagPayPal\PayPal\Resource\PaymentResource;
+use SwagPayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPayment implements PaymentHandlerInterface
 {
-    public const TRANSACTION_DETAILS_JSON_KEY = 'swag_paypal';
     public const PAYPAL_REQUEST_PARAMETER_PAYER_ID = 'PayerID';
     public const PAYPAL_REQUEST_PARAMETER_PAYMENT_ID = 'paymentId';
 
@@ -70,10 +70,8 @@ class PayPalPayment implements PaymentHandlerInterface
 
         $data = [
             'id' => $transaction->getTransactionId(),
-            'details' => [
-                self::TRANSACTION_DETAILS_JSON_KEY => [
-                    'transactionId' => $response->getId(),
-                ],
+            'attributes' => [
+                SwagPayPal::PAYPAL_TRANSACTION_ATTRIBUTE_NAME => $response->getId(),
             ],
         ];
         $this->orderTransactionRepo->update([$data], $context);
