@@ -18,6 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use SwagPayPal\PayPal\Api\Webhook;
+use SwagPayPal\SwagPayPal;
 use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use SwagPayPal\Webhook\WebhookHandler;
 
@@ -52,7 +53,12 @@ abstract class AbstractWebhookHandler implements WebhookHandler
     {
         $payPalTransactionId = $webhook->getResource()->getParentPayment();
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('details.swag_paypal.transactionId', $payPalTransactionId));
+        $criteria->addFilter(
+            new EqualsFilter(
+                sprintf('attributes.%s', SwagPayPal::PAYPAL_TRANSACTION_ATTRIBUTE_NAME),
+                $payPalTransactionId
+            )
+        );
         $result = $this->orderTransactionRepo->search($criteria, $context);
 
         if ($result->getTotal() === 0) {

@@ -16,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPayment;
+use SwagPayPal\SwagPayPal;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
 use SwagPayPal\Test\Helper\ServicesTrait;
@@ -78,7 +79,7 @@ class PayPalPaymentTest extends TestCase
         $updatedData = $orderTransactionRepo->getData();
         static::assertSame(
             CreateResponseFixture::CREATE_PAYMENT_ID,
-            $updatedData['details'][PayPalPayment::TRANSACTION_DETAILS_JSON_KEY]['transactionId']
+            $updatedData['attributes'][SwagPayPal::PAYPAL_TRANSACTION_ATTRIBUTE_NAME]
         );
     }
 

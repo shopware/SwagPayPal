@@ -9,10 +9,12 @@
 namespace SwagPayPal;
 
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Framework\Attribute\AttributeTypes;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
@@ -30,6 +32,7 @@ class SwagPayPal extends Plugin
      * The technical name of the PayPal payment method.
      */
     public const PAYPAL_PAYMENT_METHOD_NAME = 'SwagPayPal';
+    public const PAYPAL_TRANSACTION_ATTRIBUTE_NAME = 'swag_paypal_transaction_id';
 
     /**
      * {@inheritdoc}
@@ -70,13 +73,19 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
 
     public function activate(ActivateContext $context): void
     {
-        $this->setPaymentMethodIsActive(true, $context->getContext());
+        $shopwareContext = $context->getContext();
+        $this->setPaymentMethodIsActive(true, $shopwareContext);
+        $this->activateOrderTransactionAttribute($shopwareContext);
+
         parent::activate($context);
     }
 
     public function deactivate(DeactivateContext $context): void
     {
-        $this->setPaymentMethodIsActive(false, $context->getContext());
+        $shopwareContext = $context->getContext();
+        $this->setPaymentMethodIsActive(false, $shopwareContext);
+        $this->deactivateOrderTransactionAttribute($shopwareContext);
+
         parent::deactivate($context);
     }
 
@@ -138,5 +147,51 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
         $paymentMethodIds = $result->getIds();
 
         return array_shift($paymentMethodIds);
+    }
+
+    private function activateOrderTransactionAttribute(Context $context): void
+    {
+        /** @var EntityRepositoryInterface $attributeRepository */
+        $attributeRepository = $this->container->get('attribute.repository');
+        $attributeIds = $this->getAttributeIds($attributeRepository, $context);
+
+        if ($attributeIds->getTotal() !== 0) {
+            return;
+        }
+
+        $attributeRepository->upsert(
+            [
+                [
+                    'name' => self::PAYPAL_TRANSACTION_ATTRIBUTE_NAME,
+                    'type' => AttributeTypes::TEXT,
+                ],
+            ],
+            $context
+        );
+    }
+
+    private function deactivateOrderTransactionAttribute(Context $context): void
+    {
+        /** @var EntityRepositoryInterface $attributeRepository */
+        $attributeRepository = $this->container->get('attribute.repository');
+        $attributeIds = $this->getAttributeIds($attributeRepository, $context);
+
+        if ($attributeIds->getTotal() === 0) {
+            return;
+        }
+
+        $ids = [];
+        foreach ($attributeIds->getIds() as $attributeId) {
+            $ids[] = ['id' => $attributeId];
+        }
+        $attributeRepository->delete($ids, $context);
+    }
+
+    private function getAttributeIds(EntityRepositoryInterface $attributeRepository, Context $context): IdSearchResult
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('name', self::PAYPAL_TRANSACTION_ATTRIBUTE_NAME));
+
+        return $attributeRepository->searchIds($criteria, $context);
     }
 }
