@@ -1,8 +1,10 @@
-import { Component, Filter, Mixin, State } from 'src/core/shopware';
+import { Filter, Mixin, State } from 'src/core/shopware';
 import template from './swag-paypal-order-detail.html.twig';
 import './swag-paypal-order-detail.scss';
 
-Component.register('swag-paypal-order-detail', {
+export default {
+    name: 'swag-paypal-order-detail',
+
     template,
 
     inject: ['SwagPayPalPaymentService'],
@@ -156,4 +158,4 @@ Component.register('swag-paypal-order-detail', {
             });
         }
     }
-});
+};

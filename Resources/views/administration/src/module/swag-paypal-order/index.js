@@ -1,6 +1,6 @@
 import { Module } from 'src/core/shopware';
 import './extension/sw-order';
-import './page/swag-paypal-order-detail';
+import orderDetail from './page/swag-paypal-order-detail';
 
 Module.register('swag-paypal-order', {
     type: 'plugin',
@@ -11,9 +11,7 @@ Module.register('swag-paypal-order', {
 
     routes: {
         detail: {
-            components: {
-                default: 'swag-paypal-order-detail'
-            },
+            component: orderDetail,
             path: 'detail/:id',
             meta: {
                 parentPath: 'sw.order.detail.base'

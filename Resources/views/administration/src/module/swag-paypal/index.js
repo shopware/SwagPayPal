@@ -1,5 +1,5 @@
 import { Module } from 'src/core/shopware';
-import './page/swag-paypal';
+import paypalSettings from './page/swag-paypal';
 import './extension/sw-settings-index';
 
 Module.register('swag-paypal', {
@@ -13,9 +13,7 @@ Module.register('swag-paypal', {
 
     routes: {
         index: {
-            components: {
-                default: 'swag-paypal'
-            },
+            component: paypalSettings,
             path: 'index',
             meta: {
                 parentPath: 'sw.settings.index'
