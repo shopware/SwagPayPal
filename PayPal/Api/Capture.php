@@ -18,6 +18,7 @@ class Capture extends PayPalStruct
      * @var bool
      */
     protected $isFinalCapture;
+
     /**
      * @var string
      */

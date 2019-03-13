@@ -25,6 +25,7 @@ use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteSaleResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetOrderResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleWithRefundResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
 use SwagPayPal\Test\PayPal\Resource\PaymentResourceTest;
 use SwagPayPal\Test\PayPal\Resource\WebhookResourceTest;
@@ -69,6 +70,10 @@ class PayPalClientMock extends PayPalClient
 
         if (strncmp($resourceUri, 'payments/sale/', 14) === 0 && mb_substr($resourceUri, -7) === '/refund') {
             return RefundSaleResponseFixture::get();
+        }
+
+        if (strncmp($resourceUri, 'payments/capture/', 17) === 0 && mb_substr($resourceUri, -7) === '/refund') {
+            return RefundCaptureResponseFixture::get();
         }
 
         if (strncmp($resourceUri, 'payments/authorization/', 23) === 0 && mb_substr($resourceUri, -8) === '/capture') {

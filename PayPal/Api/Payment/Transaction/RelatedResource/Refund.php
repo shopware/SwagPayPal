@@ -15,8 +15,18 @@ class Refund extends RelatedResource
      */
     private $saleId;
 
+    /**
+     * @var string
+     */
+    private $captureId;
+
     protected function setSaleId(string $saleId): void
     {
         $this->saleId = $saleId;
+    }
+
+    protected function setCaptureId(string $captureId): void
+    {
+        $this->captureId = $captureId;
     }
 }
