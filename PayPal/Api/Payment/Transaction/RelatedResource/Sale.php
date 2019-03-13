@@ -15,7 +15,7 @@ class Sale extends RelatedResource
     /**
      * @var TransactionFee
      */
-    private $transactionFee;
+    protected $transactionFee;
 
     protected function setTransactionFee(TransactionFee $transactionFee): void
     {

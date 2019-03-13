@@ -22,17 +22,27 @@ abstract class RelatedResource extends PayPalStruct
     /**
      * @var string
      */
-    private $state;
+    protected $state;
 
     /**
      * @var Amount
      */
-    private $amount;
+    protected $amount;
 
     /**
      * @var string
      */
-    private $paymentMode;
+    protected $paymentMode;
+
+    /**
+     * @var string
+     */
+    protected $createTime;
+
+    /**
+     * @var string
+     */
+    protected $updateTime;
 
     /**
      * @var string
@@ -48,16 +58,6 @@ abstract class RelatedResource extends PayPalStruct
      * @var string
      */
     private $parentPayment;
-
-    /**
-     * @var string
-     */
-    private $createTime;
-
-    /**
-     * @var string
-     */
-    private $updateTime;
 
     /**
      * @var Link[]

@@ -42,6 +42,11 @@ class Transaction extends PayPalStruct
     protected $relatedResources;
 
     /**
+     * @var string
+     */
+    protected $invoiceNumber;
+
+    /**
      * @return RelatedResource[]
      */
     public function getRelatedResources(): array
@@ -57,6 +62,11 @@ class Transaction extends PayPalStruct
     public function setItemList(ItemList $itemList): void
     {
         $this->itemList = $itemList;
+    }
+
+    protected function setInvoiceNumber(string $invoiceNumber): void
+    {
+        $this->invoiceNumber = $invoiceNumber;
     }
 
     protected function setPayee(Payee $payee): void
