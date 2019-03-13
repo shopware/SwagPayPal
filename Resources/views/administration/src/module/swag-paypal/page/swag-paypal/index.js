@@ -1,7 +1,9 @@
-import { Component, Mixin, State } from 'src/core/shopware';
+import { Mixin, State } from 'src/core/shopware';
 import template from './swag-paypal.html.twig';
 
-Component.register('swag-paypal', {
+export default {
+    name: 'swag-paypal',
+
     template,
 
     mixins: [
@@ -128,4 +130,4 @@ Component.register('swag-paypal', {
             });
         }
     }
-});
+};
