@@ -62,17 +62,20 @@
             "messageWebhookUpdated": "Der Webhook wurde erfolgreich aktualisiert.",
             "messageWebhookError": "Der Webhook konnte nicht gespeichert werden. Folgende Fehler sind aufgetreten:"
         },
-        "orderDetailTab": {
+        "tabs": {
+            "overview": "Übersicht"
+        },
+        "orderDetails": {
             "overview": "Übersicht",
             "cardTitle": "Bestellung",
             "invoice": {
-                "header": "Rechnungsbetrag",
+                "heading": "Rechnungsbetrag",
                 "totalAmount": "Gesamtbetrag:",
                 "subTotal": "Zwischensumme:",
                 "shipping": "Versandkosten:"
             },
             "payment": {
-                "header": "Zahlungsdetails",
+                "heading": "Zahlungsdetails",
                 "intent": "Zahlungsabschluss:",
                 "paymentId": "Zahlungs-ID:",
                 "cartId": "Warenkorb-ID:",
@@ -81,11 +84,31 @@
                 "updateTime": "Zul. aktualisiert:"
             },
             "customer": {
-                "header": "Kunde",
+                "heading": "Kunde",
                 "payerId": "Kunden-ID:"
             },
             "error": {
                 "title": "Fehler beim Abrufen der Zahlungsdaten von PayPal"
+            }
+        },
+        "transactionHistory": {
+            "cardTitle": "Zahlungsverlauf",
+            "states": {
+                "authorization": "Autorisierung",
+                "sale": "Verkauf",
+                "refund": "Rückerstattung",
+                "capture": "Einzug",
+                "order": "Bestellung"
+            },
+            "types": {
+                "type": "Typ",
+                "amount": "Betrag",
+                "createTime": "Erstellt",
+                "updateTime": "Aktualisiert",
+                "state": "Status",
+                "trackingId": "Tracking-ID",
+                "transactionFee": "Aufschlag",
+                "paymentMode": "Zahlungsmodus"
             }
         }
     }

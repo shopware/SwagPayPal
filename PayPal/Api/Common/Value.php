@@ -13,12 +13,12 @@ abstract class Value extends PayPalStruct
     /**
      * @var string
      */
-    private $currency;
+    protected $currency;
 
     /**
      * @var string
      */
-    private $value;
+    protected $value;
 
     protected function setCurrency(string $currency): void
     {

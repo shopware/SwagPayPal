@@ -62,17 +62,19 @@
             "messageWebhookUpdated": "The webhook has been successfully updated.",
             "messageWebhookError": "The webhook could not be saved. Following errors occurred:"
         },
-        "orderDetailTab": {
-            "overview": "Overview",
+        "tabs": {
+            "overview": "Overview"
+        },
+        "orderDetails": {
             "cardTitle": "Order",
             "invoice": {
-                "header": "Invoice amount",
+                "heading": "Invoice amount",
                 "totalAmount": "Total amount:",
                 "subTotal": "Subtotal:",
                 "shipping": "Shipping:"
             },
             "payment": {
-                "header": "Payment details",
+                "heading": "Payment details",
                 "intent": "Intent:",
                 "paymentId": "Payment ID:",
                 "cartId": "Cart ID:",
@@ -81,11 +83,31 @@
                 "updateTime": "Update time:"
             },
             "customer": {
-                "header": "Customer",
+                "heading": "Customer",
                 "payerId": "Payer ID:"
             },
             "error": {
                 "title": "Error fetching payment details from PayPal"
+            }
+        },
+        "transactionHistory": {
+            "cardTitle": "Payment History",
+            "states": {
+                "authorization": "Authorization",
+                "sale": "Sale",
+                "refund": "Refund",
+                "capture": "Capture",
+                "order": "Order"
+            },
+            "types": {
+                "type": "Type",
+                "amount": "Amount",
+                "createTime": "Created",
+                "updateTime": "Updated",
+                "state": "State",
+                "trackingId": "Tracking ID",
+                "transactionFee": "Transaction fee",
+                "paymentMode": "Payment mode"
             }
         }
     }
