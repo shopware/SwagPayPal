@@ -85,20 +85,20 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/refund-payment/{resourceType}/{paymentId}", name="api.action.paypal.refund_payment", methods={"POST"})
+     * @Route("/api/v{version}/_action/paypal/refund-payment/{resourceType}/{resourceId}", name="api.action.paypal.refund_payment", methods={"POST"})
      *
      * @throws RequiredParameterInvalidException
      */
-    public function refundPayment(Request $request, Context $context, string $resourceType, string $paymentId): JsonResponse
+    public function refundPayment(Request $request, Context $context, string $resourceType, string $resourceId): JsonResponse
     {
         $refund = $this->createRefund($request);
 
         switch ($resourceType) {
             case RelatedResource::SALE:
-                $refundResponse = $this->saleResource->refund($paymentId, $refund, $context);
+                $refundResponse = $this->saleResource->refund($resourceId, $refund, $context);
                 break;
             case RelatedResource::CAPTURE:
-                $refundResponse = $this->captureResource->refund($paymentId, $refund, $context);
+                $refundResponse = $this->captureResource->refund($resourceId, $refund, $context);
                 break;
             default:
                 throw new RequiredParameterInvalidException('resourceType');
@@ -108,24 +108,47 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/capture-payment/{resourceType}/{captureId}", name="api.action.paypal.catpure_payment", methods={"POST"})
+     * @Route("/api/v{version}/_action/paypal/capture-payment/{resourceType}/{resourceId}", name="api.action.paypal.catpure_payment", methods={"POST"})
+     *
+     * @throws RequiredParameterInvalidException
      */
-    public function capturePayment(Request $request, Context $context, string $resourceType, string $captureId): JsonResponse
+    public function capturePayment(Request $request, Context $context, string $resourceType, string $resourceId): JsonResponse
     {
         $capture = $this->createCapture($request);
 
         switch ($resourceType) {
             case RelatedResource::AUTHORIZE:
-                $captureResponse = $this->authorizationResource->capture($captureId, $capture, $context);
+                $captureResponse = $this->authorizationResource->capture($resourceId, $capture, $context);
                 break;
             case RelatedResource::ORDER:
-                $captureResponse = $this->ordersResource->capture($captureId, $capture, $context);
+                $captureResponse = $this->ordersResource->capture($resourceId, $capture, $context);
                 break;
             default:
                 throw new RequiredParameterInvalidException('resourceType');
         }
 
         return new JsonResponse($captureResponse);
+    }
+
+    /**
+     * @Route("/api/v{version}/_action/paypal/void-payment/{resourceType}/{resourceId}", name="api.action.paypal.void_payment", methods={"POST"})
+     *
+     * @throws RequiredParameterInvalidException
+     */
+    public function voidPayment(Context $context, string $resourceType, string $resourceId): JsonResponse
+    {
+        switch ($resourceType) {
+            case RelatedResource::AUTHORIZE:
+                $voidResponse = $this->authorizationResource->void($resourceId, $context);
+                break;
+            case RelatedResource::ORDER:
+                $voidResponse = $this->ordersResource->void($resourceId, $context);
+                break;
+            default:
+                throw new RequiredParameterInvalidException('resourceType');
+        }
+
+        return new JsonResponse($voidResponse);
     }
 
     private function createRefund(Request $request): Refund

@@ -22,10 +22,12 @@ class PaymentResourceTest extends TestCase
     use PaymentTransactionTrait,
         ServicesTrait;
 
+    public const CAPTURED_ORDER_PAYMENT_ID = 'testCapturedOrderPaymentId';
     public const ORDER_PAYMENT_ID = 'testOrderPaymentId';
 
-    public const SALE_WITH_REFUND_PAYMENT_ID = 'testSaleWithRefundPaymentId';
+    public const AUTHORIZE_PAYMENT_ID = 'testAuthorizePaymentId';
 
+    public const SALE_WITH_REFUND_PAYMENT_ID = 'testSaleWithRefundPaymentId';
     private const TEST_PAYMENT_ID = 'testPaymentId';
 
     public function testCreate(): void
@@ -53,7 +55,9 @@ class PaymentResourceTest extends TestCase
         $transaction = $executedPayment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
+
         $sale = $transaction->getRelatedResources()[0]->getSale();
+        static::assertNotNull($sale);
         if ($sale !== null) {
             static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $sale->getState());
         }
@@ -72,7 +76,9 @@ class PaymentResourceTest extends TestCase
         $transaction = $executedPayment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
+
         $authorization = $transaction->getRelatedResources()[0]->getAuthorization();
+        static::assertNotNull($authorization);
         if ($authorization !== null) {
             static::assertSame(PaymentStatus::PAYMENT_AUTHORIZED, $authorization->getState());
         }
@@ -91,7 +97,9 @@ class PaymentResourceTest extends TestCase
         $transaction = $executedPayment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
+
         $order = $transaction->getRelatedResources()[0]->getOrder();
+        static::assertNotNull($order);
         if ($order !== null) {
             static::assertSame(PaymentStatus::PAYMENT_PENDING, $order->getState());
         }
@@ -106,7 +114,9 @@ class PaymentResourceTest extends TestCase
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+
         $sale = $transaction->getRelatedResources()[0]->getSale();
+        static::assertNotNull($sale);
         if ($sale !== null) {
             static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $sale->getState());
         }
@@ -121,11 +131,15 @@ class PaymentResourceTest extends TestCase
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+
         $sale = $transaction->getRelatedResources()[0]->getSale();
+        static::assertNotNull($sale);
         if ($sale !== null) {
             static::assertSame(PaymentStatus::PAYMENT_PARTIALLY_REFUNDED, $sale->getState());
         }
+
         $refund = $transaction->getRelatedResources()[1]->getRefund();
+        static::assertNotNull($refund);
         if ($refund !== null) {
             static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $refund->getState());
         }
@@ -141,8 +155,62 @@ class PaymentResourceTest extends TestCase
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
         $order = $transaction->getRelatedResources()[0]->getOrder();
+
+        static::assertNotNull($order);
         if ($order !== null) {
             static::assertSame(PaymentStatus::PAYMENT_PENDING, $order->getState());
+        }
+    }
+
+    public function testGetCapturedAuthorizeWithRefunds(): void
+    {
+        $context = Context::createDefaultContext();
+        $payment = $this->createPaymentResource()->get(self::AUTHORIZE_PAYMENT_ID, $context);
+
+        static::assertInstanceOf(Payment::class, $payment);
+        $transaction = $payment->getTransactions()[0];
+        static::assertInstanceOf(Payment\Transaction::class, $transaction);
+        static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        $authorization = $transaction->getRelatedResources()[0]->getAuthorization();
+
+        static::assertNotNull($authorization);
+        if ($authorization !== null) {
+            static::assertSame(PaymentStatus::PAYMENT_CAPTURED, $authorization->getState());
+        }
+
+        $capture = $authorization = $transaction->getRelatedResources()[1]->getCapture();
+        static::assertNotNull($capture);
+        if ($capture !== null) {
+            static::assertSame(PaymentStatus::PAYMENT_PARTIALLY_REFUNDED, $capture->getState());
+        }
+
+        $refund = $authorization = $transaction->getRelatedResources()[2]->getRefund();
+        static::assertNotNull($refund);
+        if ($refund !== null) {
+            static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $refund->getState());
+        }
+    }
+
+    public function testGetCapturedOrder(): void
+    {
+        $context = Context::createDefaultContext();
+        $payment = $this->createPaymentResource()->get(self::CAPTURED_ORDER_PAYMENT_ID, $context);
+
+        static::assertInstanceOf(Payment::class, $payment);
+        $transaction = $payment->getTransactions()[0];
+        static::assertInstanceOf(Payment\Transaction::class, $transaction);
+        static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+
+        $order = $transaction->getRelatedResources()[0]->getOrder();
+        static::assertNotNull($order);
+        if ($order !== null) {
+            static::assertSame(PaymentStatus::PAYMENT_COMPLETED, mb_strtolower($order->getState()));
+        }
+
+        $capture = $transaction->getRelatedResources()[1]->getCapture();
+        static::assertNotNull($capture);
+        if ($capture !== null) {
+            static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $capture->getState());
         }
     }
 }

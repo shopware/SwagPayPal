@@ -4,6 +4,7 @@ namespace SwagPayPal\PayPal\Resource;
 
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Capture;
+use SwagPayPal\PayPal\Api\DoVoid;
 use SwagPayPal\PayPal\Client\PayPalClientFactory;
 use SwagPayPal\PayPal\RequestUri;
 
@@ -26,9 +27,21 @@ class OrdersResource
             $capture
         );
 
-        $refundStruct = new Capture();
-        $refundStruct->assign($response);
+        $capture->assign($response);
 
-        return $refundStruct;
+        return $capture;
+    }
+
+    public function void(string $orderId, Context $context): DoVoid
+    {
+        $doVoid = new DoVoid();
+        $response = $this->payPalClientFactory->createPaymentClient($context)->sendPostRequest(
+            RequestUri::ORDERS_RESOURCE . '/' . $orderId . '/do-void',
+            $doVoid
+        );
+
+        $doVoid->assign($response);
+
+        return $doVoid;
     }
 }

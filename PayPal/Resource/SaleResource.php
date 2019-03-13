@@ -25,16 +25,15 @@ class SaleResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
-    public function refund(string $paymentId, Refund $refund, Context $context): Refund
+    public function refund(string $saleId, Refund $refund, Context $context): Refund
     {
         $response = $this->payPalClientFactory->createPaymentClient($context)->sendPostRequest(
-            RequestUri::SALE_RESOURCE . '/' . $paymentId . '/refund',
+            RequestUri::SALE_RESOURCE . '/' . $saleId . '/refund',
             $refund
         );
 
-        $refundStruct = new Refund();
-        $refundStruct->assign($response);
+        $refund->assign($response);
 
-        return $refundStruct;
+        return $refund;
     }
 }

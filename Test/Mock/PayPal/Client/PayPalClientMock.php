@@ -22,11 +22,15 @@ use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteAuthorizeResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteOrderResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteSaleResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetAuthorizeResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetCapturedOrderResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetOrderResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleWithRefundResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
 use SwagPayPal\Test\PayPal\Resource\PaymentResourceTest;
 use SwagPayPal\Test\PayPal\Resource\WebhookResourceTest;
 
@@ -80,8 +84,16 @@ class PayPalClientMock extends PayPalClient
             return CaptureAuthorizationResponseFixture::get();
         }
 
+        if (strncmp($resourceUri, 'payments/authorization/', 23) === 0 && mb_substr($resourceUri, -5) === '/void') {
+            return VoidAuthorizationResponseFixture::get();
+        }
+
         if (strncmp($resourceUri, 'payments/orders/', 16) === 0 && mb_substr($resourceUri, -8) === '/capture') {
             return CaptureOrdersResponseFixture::get();
+        }
+
+        if (strncmp($resourceUri, 'payments/orders/', 16) === 0 && mb_substr($resourceUri, -8) === '/do-void') {
+            return VoidOrderResponseFixture::get();
         }
 
         return CreateResponseFixture::get();
@@ -128,6 +140,14 @@ class PayPalClientMock extends PayPalClient
     {
         if (strpos($resourceUri, PaymentResourceTest::ORDER_PAYMENT_ID) !== false) {
             return GetOrderResponseFixture::get();
+        }
+
+        if (strpos($resourceUri, PaymentResourceTest::CAPTURED_ORDER_PAYMENT_ID) !== false) {
+            return GetCapturedOrderResponseFixture::get();
+        }
+
+        if (strpos($resourceUri, PaymentResourceTest::AUTHORIZE_PAYMENT_ID) !== false) {
+            return GetAuthorizeResponseFixture::get();
         }
 
         if (strpos($resourceUri, PaymentResourceTest::SALE_WITH_REFUND_PAYMENT_ID) !== false) {

@@ -74,6 +74,11 @@ class RelatedResource extends PayPalStruct
         $this->refund = $refund;
     }
 
+    public function getCapture(): ?Capture
+    {
+        return $this->capture;
+    }
+
     public function setCapture(Capture $capture): void
     {
         $this->capture = $capture;
