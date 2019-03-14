@@ -33,10 +33,9 @@ class PaymentResource
             $payment
         );
 
-        $paymentStruct = new Payment();
-        $paymentStruct->assign($response);
+        $payment->assign($response);
 
-        return $paymentStruct;
+        return $payment;
     }
 
     public function execute(string $payerId, string $paymentId, Context $context): Payment

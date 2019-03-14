@@ -27,11 +27,6 @@ class Transaction extends PayPalStruct
     protected $payee;
 
     /**
-     * @var string
-     */
-    protected $description;
-
-    /**
      * @var ItemList
      */
     protected $itemList;
@@ -44,7 +39,12 @@ class Transaction extends PayPalStruct
     /**
      * @var string
      */
-    protected $invoiceNumber;
+    private $description;
+
+    /**
+     * @var string
+     */
+    private $invoiceNumber;
 
     /**
      * @return RelatedResource[]

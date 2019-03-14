@@ -11,11 +11,11 @@ namespace SwagPayPal\Test\PayPal\Resource;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Capture;
-use SwagPayPal\PayPal\Resource\AuthorizationResource;
+use SwagPayPal\PayPal\Resource\OrdersResource;
 use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
 
-class AuthorizationResourceTest extends TestCase
+class OrdersResourceTest extends TestCase
 {
     use ServicesTrait;
 
@@ -23,7 +23,7 @@ class AuthorizationResourceTest extends TestCase
     {
         $capture = new Capture();
         $context = Context::createDefaultContext();
-        $captureResponse = $this->createAuthorizationResource()->capture('captureId', $capture, $context);
+        $captureResponse = $this->createOrdersResource()->capture('captureId', $capture, $context);
 
         $capture = json_encode($captureResponse);
         static::assertNotFalse($capture);
@@ -39,7 +39,7 @@ class AuthorizationResourceTest extends TestCase
     public function testVoid(): void
     {
         $context = Context::createDefaultContext();
-        $voidResponse = $this->createAuthorizationResource()->void('voidId', $context);
+        $voidResponse = $this->createOrdersResource()->void('voidId', $context);
 
         $void = json_encode($voidResponse);
         static::assertNotFalse($void);
@@ -49,12 +49,12 @@ class AuthorizationResourceTest extends TestCase
 
         $voidArray = json_decode($void, true);
 
-        static::assertSame(VoidAuthorizationResponseFixture::VOID_ID, $voidArray['id']);
+        static::assertSame(VoidOrderResponseFixture::VOID_ID, $voidArray['id']);
     }
 
-    private function createAuthorizationResource(): AuthorizationResource
+    private function createOrdersResource(): OrdersResource
     {
-        return new AuthorizationResource(
+        return new OrdersResource(
             $this->createPayPalClientFactory()
         );
     }

@@ -14,7 +14,7 @@ use SwagPayPal\PayPal\Resource\SaleResource;
 
 class SaleResourceMock extends SaleResource
 {
-    public function refund(string $paymentId, Refund $refund, Context $context): Refund
+    public function refund(string $saleId, Refund $refund, Context $context): Refund
     {
         return $refund;
     }

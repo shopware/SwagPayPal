@@ -111,11 +111,11 @@ class WebhookResource
     /**
      * @throws ClientException
      */
-    private function getErrorFromResponse(ClientException $e): array
+    private function getErrorFromResponse(ClientException $exception): array
     {
-        $response = $e->getResponse();
+        $response = $exception->getResponse();
         if ($response === null) {
-            throw $e;
+            throw $exception;
         }
 
         return json_decode($response->getBody()->getContents(), true);

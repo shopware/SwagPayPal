@@ -21,11 +21,9 @@ class CaptureResourceTest extends TestCase
 
     public function testRefund(): void
     {
-        $resource = $this->createCaptureResource();
-
         $refund = new Refund();
         $context = Context::createDefaultContext();
-        $refundResponse = $resource->refund('paymentId', $refund, $context);
+        $refundResponse = $this->createCaptureResource()->refund('refundId', $refund, $context);
 
         static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $refundResponse->getState());
     }

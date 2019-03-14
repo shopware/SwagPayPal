@@ -48,10 +48,15 @@ class GetSaleResponseFixture
                         'details' => [
                             'subtotal' => self::TRANSACTION_AMOUNT_DETAILS_SUBTOTAL,
                             'tax' => '36.72',
+                            'shipping' => '3.90',
+                            'insurance' => '0.00',
+                            'handling_fee' => '0.00',
+                            'shipping_discount' => '0.00',
                         ],
                     ],
                     'payee' => [
                         'merchant_id' => 'HCKBUJL8YWQZS',
+                        'email' => 'test@shopware.com',
                     ],
                     'item_list' => [
                         'items' => [],
@@ -65,6 +70,7 @@ class GetSaleResponseFixture
                             'country_code' => 'AT',
                         ],
                     ],
+                    'invoice_number' => 'SW-1234',
                     'related_resources' => [
                         0 => [
                             'sale' => [
@@ -76,6 +82,10 @@ class GetSaleResponseFixture
                                     'details' => [
                                         'subtotal' => '193.28',
                                         'tax' => '36.72',
+                                        'shipping' => '3.90',
+                                        'insurance' => '0.00',
+                                        'handling_fee' => '0.00',
+                                        'shipping_discount' => '0.00',
                                     ],
                                 ],
                                 'payment_mode' => 'INSTANT_TRANSFER',
@@ -111,6 +121,7 @@ class GetSaleResponseFixture
                 ],
             ],
             'create_time' => '2018-12-04T14:03:13Z',
+            'update_time' => '2019-03-07T09:59:58Z',
             'links' => [
                 0 => [
                     'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-3NJ117295B240983LLQDISII',

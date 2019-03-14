@@ -21,11 +21,9 @@ class SaleResourceTest extends TestCase
 
     public function testRefund(): void
     {
-        $resource = $this->createSaleResource();
-
         $refund = new Refund();
         $context = Context::createDefaultContext();
-        $refundResponse = $resource->refund('paymentId', $refund, $context);
+        $refundResponse = $this->createSaleResource()->refund('paymentId', $refund, $context);
 
         static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $refundResponse->getState());
     }
