@@ -195,6 +195,9 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $brandName;
     }
 
+    /**
+     * @return Item[]
+     */
     private function getItemList(PaymentTransactionStruct $transactionStruct, Context $context, string $currency): array
     {
         $items = [];
