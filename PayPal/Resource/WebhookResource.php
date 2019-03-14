@@ -49,7 +49,7 @@ class WebhookResource
                 throw new WebhookAlreadyExistsException($webhookUrl);
             }
 
-            throw  $e;
+            throw $e;
         }
     }
 
@@ -72,7 +72,7 @@ class WebhookResource
                 throw new WebhookIdInvalidException($webhookId);
             }
 
-            throw  $e;
+            throw $e;
         }
     }
 
@@ -104,7 +104,7 @@ class WebhookResource
                 throw new WebhookIdInvalidException($webhookId);
             }
 
-            throw  $e;
+            throw $e;
         }
     }
 
