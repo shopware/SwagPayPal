@@ -83,30 +83,76 @@ class PaymentBuilderService implements PaymentBuilderInterface
     {
         $this->settings = $this->settingsProvider->getSettings($context);
 
+        $intent = $this->getIntent();
+        $payer = $this->createPayer();
+        $redirectUrls = $this->createRedirectUrls($paymentTransaction->getReturnUrl());
+        $transaction = $this->createTransaction($paymentTransaction, $context);
+        $applicationContext = $this->getApplicationContext($context);
+
         $requestPayment = new Payment();
+        $requestPayment->setIntent($intent);
+        $requestPayment->setPayer($payer);
+        $requestPayment->setRedirectUrls($redirectUrls);
+        $requestPayment->setTransactions([$transaction]);
+        $requestPayment->setApplicationContext($applicationContext);
+
+        return $requestPayment;
+    }
+
+    private function getIntent(): string
+    {
         $intent = $this->settings->getIntent();
         $this->validateIntent($intent);
-        $requestPayment->setIntent($intent);
 
+        return $intent;
+    }
+
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
+    private function validateIntent(string $intent): void
+    {
+        if (!\in_array($intent, PaymentIntent::INTENTS, true)) {
+            throw new PayPalSettingsInvalidException('intent');
+        }
+    }
+
+    private function createPayer(): Payer
+    {
         $payer = new Payer();
         $payer->setPaymentMethod('paypal');
 
+        return $payer;
+    }
+
+    private function createRedirectUrls(string $returnUrl): RedirectUrls
+    {
         $redirectUrls = new RedirectUrls();
-        $redirectUrls->setCancelUrl($paymentTransaction->getReturnUrl() . '&cancel=1');
-        $redirectUrls->setReturnUrl($paymentTransaction->getReturnUrl());
+        $redirectUrls->setCancelUrl(sprintf('%s&cancel=1', $returnUrl));
+        $redirectUrls->setReturnUrl($returnUrl);
 
-        $currency = (string) $paymentTransaction->getOrder()->getCurrency()->getShortName();
+        return $redirectUrls;
+    }
 
-        $amount = new Amount();
-        $amount->setTotal($this->formatPrice($paymentTransaction->getAmount()->getTotalPrice()));
-        $amount->setCurrency($currency);
-        $amount->setDetails($this->getAmountDetails($paymentTransaction));
+    private function createTransaction(PaymentTransactionStruct $paymentTransaction, Context $context): Transaction
+    {
+        $order = $paymentTransaction->getOrder();
+        $orderTransactionAmount = $paymentTransaction->getAmount();
+        $currency = (string) $order->getCurrency()->getShortName();
 
         $transaction = new Transaction();
+
+        $amount = $this->createAmount($orderTransactionAmount, $order, $currency);
         $transaction->setAmount($amount);
 
+        if ($this->settings->getSendOrderNumber()) {
+            $orderNumberPrefix = (string) $this->settings->getOrderNumberPrefix();
+            $orderNumber = $orderNumberPrefix . $order->getOrderNumber();
+            $transaction->setInvoiceNumber($orderNumber);
+        }
+
         if ($this->settings->getSubmitCart()) {
-            $items = $this->getItemList($paymentTransaction, $context, $currency);
+            $items = $this->getItemList($order, $context, $currency);
 
             if (!empty($items)) {
                 $itemList = new ItemList();
@@ -115,30 +161,87 @@ class PaymentBuilderService implements PaymentBuilderInterface
             }
         }
 
-        $requestPayment->setPayer($payer);
-        $requestPayment->setRedirectUrls($redirectUrls);
-        $requestPayment->setTransactions([$transaction]);
-
-        $applicationContext = $this->getApplicationContext($context);
-
-        $requestPayment->setApplicationContext($applicationContext);
-
-        return $requestPayment;
+        return $transaction;
     }
 
-    private function getAmountDetails(PaymentTransactionStruct $paymentTransaction): Details
+    private function createAmount(CalculatedPrice $orderTransactionAmount, OrderEntity $order, string $currency): Amount
+    {
+        $amount = new Amount();
+        $amount->setTotal($this->formatPrice($orderTransactionAmount->getTotalPrice()));
+        $amount->setCurrency($currency);
+        $amount->setDetails($this->getAmountDetails($order, $orderTransactionAmount));
+
+        return $amount;
+    }
+
+    private function getAmountDetails(OrderEntity $order, CalculatedPrice $orderTransactionAmount): Details
     {
         $amountDetails = new Details();
 
         $amountDetails->setShipping(
-            $this->formatPrice($paymentTransaction->getOrder()->getShippingCosts()->getTotalPrice())
+            $this->formatPrice($order->getShippingCosts()->getTotalPrice())
         );
-        $totalAmount = $paymentTransaction->getAmount()->getTotalPrice();
-        $taxAmount = $paymentTransaction->getAmount()->getCalculatedTaxes()->getAmount();
+        $totalAmount = $orderTransactionAmount->getTotalPrice();
+        $taxAmount = $orderTransactionAmount->getCalculatedTaxes()->getAmount();
         $amountDetails->setSubtotal($this->formatPrice($totalAmount - $taxAmount));
         $amountDetails->setTax($this->formatPrice($taxAmount));
 
         return $amountDetails;
+    }
+
+    /**
+     * @return Item[]
+     */
+    private function getItemList(OrderEntity $order, Context $context, string $currency): array
+    {
+        $items = [];
+        $orderWithLineItems = $this->getOrderWithLineItems($order, $context);
+
+        if ($orderWithLineItems === null || $orderWithLineItems->getLineItems() === null) {
+            return [];
+        }
+
+        /** @var OrderLineItemEntity[] $lineItems */
+        $lineItems = $orderWithLineItems->getLineItems()->getElements();
+
+        foreach ($lineItems as $id => $lineItem) {
+            $price = $lineItem->getPrice();
+
+            if ($price === null) {
+                return [];
+            }
+
+            $items[] = $this->createItemFromLineItem($lineItem, $currency, $price);
+        }
+
+        return $items;
+    }
+
+    private function getOrderWithLineItems(OrderEntity $order, Context $context): ?OrderEntity
+    {
+        $orderId = $order->get('id');
+        $criteria = new Criteria([$orderId]);
+        $criteria->addAssociation('order.lineItems');
+
+        /** @var OrderEntity|null $orderWithLineItems */
+        $orderWithLineItems = $this->orderRepo->search($criteria, $context)->get($orderId);
+
+        return $orderWithLineItems;
+    }
+
+    private function createItemFromLineItem(OrderLineItemEntity $lineItem, string $currency, CalculatedPrice $price): Item
+    {
+        $taxAmount = $price->getCalculatedTaxes()->getAmount();
+
+        $item = new Item();
+        $item->setName($lineItem->getLabel());
+        $item->setSku($lineItem->getPayload()['id']);
+        $item->setPrice($this->formatPrice($price->getTotalPrice() - $taxAmount));
+        $item->setCurrency($currency);
+        $item->setQuantity($lineItem->getQuantity());
+        $item->setTax($this->formatPrice($taxAmount));
+
+        return $item;
     }
 
     private function getApplicationContext(Context $context): ApplicationContext
@@ -177,9 +280,6 @@ class PaymentBuilderService implements PaymentBuilderInterface
     {
         $brandName = '';
         $salesChannelId = $context->getSourceContext()->getSalesChannelId();
-        if ($salesChannelId === null) {
-            return $brandName;
-        }
 
         /** @var SalesChannelCollection $salesChannelCollection */
         $salesChannelCollection = $this->salesChannelRepo->search(new Criteria([$salesChannelId]), $context);
@@ -195,61 +295,6 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $brandName;
     }
 
-    /**
-     * @return Item[]
-     */
-    private function getItemList(PaymentTransactionStruct $transactionStruct, Context $context, string $currency): array
-    {
-        $items = [];
-        $order = $this->getOrder($transactionStruct, $context);
-
-        if ($order === null || $order->getLineItems() === null) {
-            return [];
-        }
-
-        /** @var OrderLineItemEntity[] $lineItems */
-        $lineItems = $order->getLineItems()->getElements();
-
-        foreach ($lineItems as $id => $lineItem) {
-            $price = $lineItem->getPrice();
-
-            if ($price === null) {
-                return [];
-            }
-
-            $items[] = $this->createItemFromLineItem($lineItem, $currency, $price);
-        }
-
-        return $items;
-    }
-
-    private function getOrder(PaymentTransactionStruct $transactionStruct, Context $context): ?OrderEntity
-    {
-        $orderId = $transactionStruct->getOrder()->get('id');
-        $criteria = new Criteria([$orderId]);
-        $criteria->addAssociation('order.lineItems');
-
-        /** @var OrderEntity $order */
-        $order = $this->orderRepo->search($criteria, $context)->get($orderId);
-
-        return $order;
-    }
-
-    private function createItemFromLineItem(OrderLineItemEntity $lineItem, string $currency, CalculatedPrice $price): Item
-    {
-        $taxAmount = $price->getCalculatedTaxes()->getAmount();
-
-        $item = new Item();
-        $item->setName($lineItem->getLabel());
-        $item->setSku($lineItem->getPayload()['id']);
-        $item->setPrice($this->formatPrice($price->getTotalPrice() - $taxAmount));
-        $item->setCurrency($currency);
-        $item->setQuantity($lineItem->getQuantity());
-        $item->setTax($this->formatPrice($taxAmount));
-
-        return $item;
-    }
-
     private function getLandingPageType(): string
     {
         $landingPageType = $this->settings->getLandingPage();
@@ -258,16 +303,6 @@ class PaymentBuilderService implements PaymentBuilderInterface
         }
 
         return $landingPageType;
-    }
-
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
-    private function validateIntent(string $intent): void
-    {
-        if (!\in_array($intent, PaymentIntent::INTENTS, true)) {
-            throw new PayPalSettingsInvalidException('intent');
-        }
     }
 
     private function formatPrice(float $price): string

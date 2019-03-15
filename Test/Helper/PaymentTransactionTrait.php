@@ -16,6 +16,7 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Struct\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use SwagPayPal\SwagPayPal;
+use SwagPayPal\Test\Payment\PaymentBuilderServiceTest;
 
 trait PaymentTransactionTrait
 {
@@ -41,6 +42,7 @@ trait PaymentTransactionTrait
         $order->setId($id);
         $currency = $this->createCurrencyEntity();
         $order->setCurrency($currency);
+        $order->setOrderNumber(PaymentBuilderServiceTest::TEST_ORDER_NUMBER);
 
         return $order;
     }

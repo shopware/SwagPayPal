@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS `swag_paypal_setting_general` (
     `webhook_execute_token` VARCHAR(32) COLLATE utf8mb4_unicode_ci,
     `brand_name`            VARCHAR(127) COLLATE utf8mb4_unicode_ci,
     `landing_page`          VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Login',
+    `send_order_number`     TINYINT(1)                              NOT NULL DEFAULT 0,
+    `order_number_prefix`   VARCHAR(255) COLLATE utf8mb4_unicode_ci,
     `created_at`            DATETIME(3)                             NOT NULL,
     `updated_at`            DATETIME(3),
     PRIMARY KEY (`id`)

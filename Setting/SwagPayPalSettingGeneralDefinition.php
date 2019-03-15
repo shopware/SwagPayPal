@@ -38,6 +38,8 @@ class SwagPayPalSettingGeneralDefinition extends EntityDefinition
             new StringField('webhook_execute_token', 'webhookExecuteToken'),
             new StringField('brand_name', 'brandName', 127),
             new StringField('landing_page', 'landingPage'),
+            new BoolField('send_order_number', 'sendOrderNumber'),
+            new StringField('order_number_prefix', 'orderNumberPrefix'),
             new CreatedAtField(),
             new UpdatedAtField(),
         ]);

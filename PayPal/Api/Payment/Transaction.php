@@ -39,12 +39,12 @@ class Transaction extends PayPalStruct
     /**
      * @var string
      */
-    private $description;
+    protected $invoiceNumber;
 
     /**
      * @var string
      */
-    private $invoiceNumber;
+    private $description;
 
     /**
      * @return RelatedResource[]
@@ -64,7 +64,7 @@ class Transaction extends PayPalStruct
         $this->itemList = $itemList;
     }
 
-    protected function setInvoiceNumber(string $invoiceNumber): void
+    public function setInvoiceNumber(string $invoiceNumber): void
     {
         $this->invoiceNumber = $invoiceNumber;
     }

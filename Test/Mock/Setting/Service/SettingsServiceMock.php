@@ -17,19 +17,16 @@ use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 class SettingsServiceMock extends SettingsService
 {
     public const PAYPAL_SETTING_ID = 'testSettingsId';
-
     public const PAYPAL_SETTING_WITHOUT_TOKEN = 'settingsWithoutToken';
-
     public const PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID = 'settingsWithoutTokenAndId';
-
     public const PAYPAL_SETTING_WITH_SUBMIT_CART = 'settingWithSubmitCart';
-
     public const PAYPAL_SETTING_WITH_INVALID_INTENT = 'settingWithInvalidIntent';
-
     public const PAYPAL_SETTING_WITHOUT_BRAND_NAME = 'settingWithoutBrandName';
+    public const PAYPAL_SETTING_WITH_ORDER_NUMBER = 'settingWithOrderNumber';
+    public const PAYPAL_SETTING_WITH_ORDER_NUMBER_WITHOUT_PREFIX = 'settingWithOrderNumberWithoutPrefix';
+    public const PAYPAL_SETTING_ORDER_NUMBER_PREFIX = 'TEST_';
 
     public const ALREADY_EXISTING_WEBHOOK_ID = 'alreadyExistingTestWebhookId';
-
     public const ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN = 'testWebhookExecuteToken';
 
     public function getSettings(Context $context): SwagPayPalSettingGeneralEntity
@@ -64,6 +61,15 @@ class SettingsServiceMock extends SettingsService
             $settingsStruct->setLandingPage('Foo');
         }
 
+        if ($context->hasExtension(self::PAYPAL_SETTING_WITH_ORDER_NUMBER)) {
+            $settingsStruct->setSendOrderNumber(true);
+            $settingsStruct->setOrderNumberPrefix(self::PAYPAL_SETTING_ORDER_NUMBER_PREFIX);
+        }
+
+        if ($context->hasExtension(self::PAYPAL_SETTING_WITH_ORDER_NUMBER_WITHOUT_PREFIX)) {
+            $settingsStruct->setSendOrderNumber(true);
+        }
+
         return $settingsStruct;
     }
 
@@ -73,6 +79,7 @@ class SettingsServiceMock extends SettingsService
         $settingsStruct->setId(self::PAYPAL_SETTING_ID);
         $settingsStruct->setIntent(PaymentIntent::SALE);
         $settingsStruct->setSubmitCart(false);
+        $settingsStruct->setSendOrderNumber(false);
 
         return $settingsStruct;
     }

@@ -61,6 +61,16 @@ class SwagPayPalSettingGeneralEntity extends Entity
     protected $landingPage;
 
     /**
+     * @var bool
+     */
+    protected $sendOrderNumber;
+
+    /**
+     * @var string|null
+     */
+    protected $orderNumberPrefix;
+
+    /**
      * @var \DateTime
      */
     protected $createdAt;
@@ -158,6 +168,26 @@ class SwagPayPalSettingGeneralEntity extends Entity
     public function setLandingPage(string $landingPage): void
     {
         $this->landingPage = $landingPage;
+    }
+
+    public function getSendOrderNumber(): bool
+    {
+        return $this->sendOrderNumber;
+    }
+
+    public function setSendOrderNumber(bool $sendOrderNumber): void
+    {
+        $this->sendOrderNumber = $sendOrderNumber;
+    }
+
+    public function getOrderNumberPrefix(): ?string
+    {
+        return $this->orderNumberPrefix;
+    }
+
+    public function setOrderNumberPrefix(string $orderNumberPrefix): void
+    {
+        $this->orderNumberPrefix = $orderNumberPrefix;
     }
 
     public function getCreatedAt(): \DateTime
