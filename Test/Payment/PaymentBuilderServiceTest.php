@@ -27,6 +27,8 @@ class PaymentBuilderServiceTest extends TestCase
     use PaymentTransactionTrait,
         ServicesTrait;
 
+    public const TEST_ORDER_NUMBER = 'SW1234';
+
     public function testGetPayment(): void
     {
         $paymentBuilder = $this->createPaymentBuilder();
@@ -199,6 +201,44 @@ class PaymentBuilderServiceTest extends TestCase
                 ApplicationContext::LANDINGPAGE_TYPE_LOGIN,
             ],
         ];
+    }
+
+    public function testGetPaymentWithOrderNumber(): void
+    {
+        $paymentBuilder = $this->createPaymentBuilder();
+
+        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $context = Context::createDefaultContext();
+        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_ORDER_NUMBER, new Entity());
+
+        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
+        static::assertNotFalse($payment);
+        if ($payment === false) {
+            return;
+        }
+
+        $payment = json_decode($payment, true);
+
+        static::assertSame(SettingsServiceMock::PAYPAL_SETTING_ORDER_NUMBER_PREFIX . self::TEST_ORDER_NUMBER, $payment['transactions'][0]['invoice_number']);
+    }
+
+    public function testGetPaymentWithOrderNumberWithoutPrefix(): void
+    {
+        $paymentBuilder = $this->createPaymentBuilder();
+
+        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $context = Context::createDefaultContext();
+        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_ORDER_NUMBER_WITHOUT_PREFIX, new Entity());
+
+        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
+        static::assertNotFalse($payment);
+        if ($payment === false) {
+            return;
+        }
+
+        $payment = json_decode($payment, true);
+
+        static::assertSame(self::TEST_ORDER_NUMBER, $payment['transactions'][0]['invoice_number']);
     }
 
     private function createContextWithoutSalesChannel(): Context

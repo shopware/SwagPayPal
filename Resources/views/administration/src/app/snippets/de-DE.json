@@ -12,15 +12,15 @@
                 "cardTitle": "API Zugangsdaten",
                 "clientId": {
                     "label": "Client-ID",
-                    "helpText": "Die REST-API Client-ID, die das Plugin dazu verwendet sich mit der PayPal API zu authentifizieren."
+                    "tooltipText": "Die REST-API Client-ID, die das Plugin dazu verwendet sich mit der PayPal API zu authentifizieren."
                 },
                 "clientSecret": {
                     "label": "Client-Secret",
-                    "helpText": "Das REST-API Client-Secret, welches das Plugin dazu verwendet sich mit der PayPal API zu authentifizieren."
+                    "tooltipText": "Das REST-API Client-Secret, welches das Plugin dazu verwendet sich mit der PayPal API zu authentifizieren."
                 },
                 "sandbox": {
                     "label": "Sandbox aktivieren",
-                    "helpText": "Aktiviere diese Option, wenn Du die Integration testen möchtest."
+                    "tooltipText": "Aktiviere diese Option, wenn Du die Integration testen möchtest."
                 }
             },
             "behaviour": {
@@ -37,7 +37,7 @@
                 },
                 "brandName": {
                     "label": "Markenname auf der PayPal Seite",
-                    "helpText": "Dieser Text wird als Markenname auf der PayPal Zahlungsseite angezeigt."
+                    "tooltipText": "Dieser Text wird als Markenname auf der PayPal Zahlungsseite angezeigt."
                 },
                 "landingPage": {
                     "label": "PayPal Landingpage",
@@ -49,6 +49,14 @@
                         "Login": "Anmeldung",
                         "Billing": "Registrierung"
                     }
+                },
+                "sendOrderNumber": {
+                    "label": "Bestellnummer übertragen",
+                    "helpText": "Wenn diese Option aktiv ist, wird die Bestellnummer an PayPal übertragen."
+                },
+                "orderNumberPrefix": {
+                    "label": "Bestellnummer Prefix",
+                    "tooltipText": "Dieser Text wird vor die ursprüngliche Bestellnummer vorgehängt (z.B. MeinShop_SW20001). Das hilft dabei den Shop zu identifizieren, in dem die Zahlung ausgeführt wurde."
                 }
             },
             "titleSaveSuccess": "PayPal Einstellungen",

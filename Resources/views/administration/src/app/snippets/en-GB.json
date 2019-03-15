@@ -12,15 +12,15 @@
                 "cardTitle": "API credentials",
                 "clientId": {
                     "label": "Client-ID",
-                    "helpText": "The REST-API Client-ID that is being used to authenticate this plugin to the PayPal API."
+                    "tooltipText": "The REST-API Client-ID that is being used to authenticate this plugin to the PayPal API."
                 },
                 "clientSecret": {
                     "label": "Client-Secret",
-                    "helpText": "The REST-API Client-Secret that is being used to authenticate this plugin to the PayPal API."
+                    "tooltipText": "The REST-API Client-Secret that is being used to authenticate this plugin to the PayPal API."
                 },
                 "sandbox": {
                     "label": "Enable sandbox",
-                    "helpText": "Enable to test the integration."
+                    "tooltipText": "Enable to test the integration."
                 }
             },
             "behaviour": {
@@ -37,7 +37,7 @@
                 },
                 "brandName": {
                     "label": "Brand name on the PayPal page",
-                    "helpText": "This text will be displayed as the brand name on the PayPal payment page."
+                    "tooltipText": "This text will be displayed as the brand name on the PayPal payment page."
                 },
                 "landingPage": {
                     "label": "PayPal landingpage",
@@ -49,6 +49,14 @@
                         "Login": "Login",
                         "Billing": "Registration"
                     }
+                },
+                "sendOrderNumber": {
+                    "label": "Submit order number",
+                    "helpText": "If this option is active, the order number will be submitted to PayPal."
+                },
+                "orderNumberPrefix": {
+                    "label": "Order number prefix",
+                    "tooltipText": "This text is placed in front of the original order number (e.g MyShop_SW20001). This helps to identify the shop in which the payment was made."
                 }
             },
             "titleSaveSuccess": "PayPal settings",

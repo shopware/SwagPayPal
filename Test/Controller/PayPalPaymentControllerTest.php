@@ -13,7 +13,6 @@ use Shopware\Core\Framework\Context;
 use SwagPayPal\Controller\PayPalPaymentController;
 use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
 use SwagPayPal\PayPal\Exception\RequiredParameterInvalidException;
-use SwagPayPal\PayPal\PaymentIntent;
 use SwagPayPal\PayPal\Resource\AuthorizationResource;
 use SwagPayPal\PayPal\Resource\CaptureResource;
 use SwagPayPal\PayPal\Resource\OrdersResource;
@@ -22,6 +21,8 @@ use SwagPayPal\Test\Helper\ServicesTrait;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
+use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Resource\SaleResourceMock;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -52,7 +53,7 @@ class PayPalPaymentControllerTest extends TestCase
         $response = $this->createPaymentController()->refundPayment(
             $request,
             $context,
-            PaymentIntent::SALE,
+            RelatedResource::SALE,
             'testPaymentId'
         );
 
@@ -86,7 +87,7 @@ class PayPalPaymentControllerTest extends TestCase
         $response = $this->createPaymentControllerWithSaleResourceMock()->refundPayment(
             $request,
             $context,
-            PaymentIntent::SALE,
+            RelatedResource::SALE,
             'testPaymentId'
         );
 
@@ -97,7 +98,7 @@ class PayPalPaymentControllerTest extends TestCase
         static::assertSame(self::TEST_REFUND_INVOICE_NUMBER, $refund['invoice_number']);
     }
 
-    public function testRefundPaymentWithInvalidIntent(): void
+    public function testRefundPaymentWithInvalidResourceType(): void
     {
         $request = new Request();
         $context = Context::createDefaultContext();
@@ -115,7 +116,7 @@ class PayPalPaymentControllerTest extends TestCase
         $response = $this->createPaymentController()->capturePayment(
             $request,
             $context,
-            PaymentIntent::AUTHORIZE,
+            RelatedResource::AUTHORIZE,
             'testPaymentId'
         );
 
@@ -132,7 +133,7 @@ class PayPalPaymentControllerTest extends TestCase
         $response = $this->createPaymentController()->capturePayment(
             $request,
             $context,
-            PaymentIntent::ORDER,
+            RelatedResource::ORDER,
             'testPaymentId'
         );
 
@@ -141,14 +142,42 @@ class PayPalPaymentControllerTest extends TestCase
         static::assertTrue($capture['is_final_capture']);
     }
 
-    public function testCapturePaymentWithInvalidIntent(): void
+    public function testCapturePaymentWithInvalidResourceType(): void
     {
         $request = new Request();
         $context = Context::createDefaultContext();
 
         $this->expectException(RequiredParameterInvalidException::class);
         $this->expectExceptionMessage('Required parameter "resourceType" is missing or invalid');
-        $this->createPaymentController()->capturePayment($request, $context, PaymentIntent::SALE, 'testPaymentId');
+        $this->createPaymentController()->capturePayment($request, $context, RelatedResource::SALE, 'testPaymentId');
+    }
+
+    public function testVoidPaymentOrders(): void
+    {
+        $context = Context::createDefaultContext();
+        $response = $this->createPaymentController()->voidPayment($context, RelatedResource::ORDER, 'testResourceId');
+
+        $void = json_decode($response->getContent(), true);
+
+        static::assertSame(VoidOrderResponseFixture::VOID_ID, $void['id']);
+    }
+
+    public function testVoidPaymentAuthorize(): void
+    {
+        $context = Context::createDefaultContext();
+        $response = $this->createPaymentController()->voidPayment($context, RelatedResource::AUTHORIZE, 'testResourceId');
+
+        $void = json_decode($response->getContent(), true);
+
+        static::assertSame(VoidAuthorizationResponseFixture::VOID_ID, $void['id']);
+    }
+
+    public function testVoidPaymentInvalidResourceType(): void
+    {
+        $context = Context::createDefaultContext();
+        $this->expectException(RequiredParameterInvalidException::class);
+        $this->expectExceptionMessage('Required parameter "resourceType" is missing or invalid');
+        $this->createPaymentController()->voidPayment($context, RelatedResource::SALE, 'testResourceId');
     }
 
     private function createPaymentController(): PayPalPaymentController
