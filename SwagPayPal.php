@@ -103,7 +103,7 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
         $paypal = [
             'technicalName' => self::PAYPAL_PAYMENT_METHOD_NAME,
             'name' => 'PayPal',
-            'additionalDescription' => 'Bezahlung per PayPal - einfach, schnell und sicher.',
+            'description' => 'Bezahlung per PayPal - einfach, schnell und sicher.',
             'class' => PayPalPayment::class,
             'pluginId' => $pluginId,
         ];
