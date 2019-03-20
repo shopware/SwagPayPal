@@ -9,6 +9,7 @@
 namespace SwagPayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\SourceContext;
@@ -28,6 +29,7 @@ class PaymentBuilderServiceTest extends TestCase
         ServicesTrait;
 
     public const TEST_ORDER_NUMBER = 'SW1234';
+    public const TEST_ORDER_ID = 'test-order-id';
 
     public function testGetPayment(): void
     {
@@ -239,6 +241,18 @@ class PaymentBuilderServiceTest extends TestCase
         $payment = json_decode($payment, true);
 
         static::assertSame(self::TEST_ORDER_NUMBER, $payment['transactions'][0]['invoice_number']);
+    }
+
+    public function testGetPaymentInvalidOrder(): void
+    {
+        $paymentBuilder = $this->createPaymentBuilder();
+
+        $paymentTransaction = $this->createPaymentTransactionStruct(null);
+        $context = Context::createDefaultContext();
+
+        $this->expectException(InvalidOrderException::class);
+        $this->expectExceptionMessage('The order with id test-order-id is invalid or could not be found.');
+        $paymentBuilder->getPayment($paymentTransaction, $context);
     }
 
     private function createContextWithoutSalesChannel(): Context

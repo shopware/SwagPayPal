@@ -69,7 +69,7 @@ class PayPalPayment implements PaymentHandlerInterface
         $response = $this->paymentResource->create($payment, $context);
 
         $data = [
-            'id' => $transaction->getTransactionId(),
+            'id' => $transaction->getOrderTransaction()->getId(),
             'attributes' => [
                 SwagPayPal::PAYPAL_TRANSACTION_ATTRIBUTE_NAME => $response->getId(),
             ],

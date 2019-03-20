@@ -11,6 +11,7 @@ namespace SwagPayPal\Test\Helper;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
 use Shopware\Core\Framework\Struct\Uuid;
@@ -20,19 +21,33 @@ use SwagPayPal\Test\Payment\PaymentBuilderServiceTest;
 
 trait PaymentTransactionTrait
 {
-    protected function createPaymentTransactionStruct(string $orderId = 'some-order-id'): PaymentTransactionStruct
+    protected function createPaymentTransactionStruct(?string $orderId = 'some-order-id'): PaymentTransactionStruct
     {
-        $transactionId = Uuid::uuid4()->getHex();
-        $order = $this->createOrderEntity($orderId);
-        $amount = $this->createPriceStruct();
+        $orderTransaction = $this->createOrderTransaction($orderId);
 
         return new PaymentTransactionStruct(
-            $transactionId,
-            'paypal-payment-method-id',
-            $order,
-            $amount,
+            $orderTransaction,
             'http://www.test.de/'
         );
+    }
+
+    private function createOrderTransaction(?string $orderId): OrderTransactionEntity
+    {
+        $orderTransaction = new OrderTransactionEntity();
+        $orderTransaction->setOrderId(PaymentBuilderServiceTest::TEST_ORDER_ID);
+
+        $transactionId = Uuid::uuid4()->getHex();
+        $orderTransaction->setId($transactionId);
+
+        $amount = $this->createPriceStruct();
+        $orderTransaction->setAmount($amount);
+
+        if ($orderId !== null) {
+            $order = $this->createOrderEntity($orderId);
+            $orderTransaction->setOrder($order);
+        }
+
+        return $orderTransaction;
     }
 
     private function createOrderEntity(string $id): OrderEntity

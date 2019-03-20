@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -136,8 +137,13 @@ class PaymentBuilderService implements PaymentBuilderInterface
 
     private function createTransaction(PaymentTransactionStruct $paymentTransaction, Context $context): Transaction
     {
-        $order = $paymentTransaction->getOrder();
-        $orderTransactionAmount = $paymentTransaction->getAmount();
+        $orderTransaction = $paymentTransaction->getOrderTransaction();
+        $order = $orderTransaction->getOrder();
+        if ($order === null) {
+            throw new InvalidOrderException($orderTransaction->getOrderId());
+        }
+
+        $orderTransactionAmount = $orderTransaction->getAmount();
         $currency = (string) $order->getCurrency()->getShortName();
 
         $transaction = new Transaction();
