@@ -1,0 +1,60 @@
+{% block swag_paypal_payment_actions %}
+    <div>
+        <div class="swag-paypal-payment-actions__button-container">
+            <div class="swag-paypal-payment-actions__authorize-button-group">
+                {% block swag_paypal_payment_actions_void %}
+                    <sw-button v-if="showVoidButton"
+                               @click="spawnModal('void')"
+                               size="small">
+                        {{ $tc('swag-paypal.buttons.label.void') }}
+                    </sw-button>
+                {% endblock %}
+
+                {% block swag_paypal_payment_actions_capture %}
+                    <sw-button v-if="captureableAmount > 0"
+                               @click="spawnModal('capture')"
+                               size="small">
+                        {{ $tc('swag-paypal.buttons.label.capture') }}
+                    </sw-button>
+                {% endblock %}
+            </div>
+            {% block swag_paypal_payment_actions_refund %}
+                <sw-button variant="primary"
+                           @click="spawnModal('refund')"
+                           size="small"
+                           :disabled="refundableAmount <= 0">
+                    {{ $tc('swag-paypal.buttons.label.refund') }}
+                </sw-button>
+            {% endblock %}
+        </div>
+
+        {% block swag_paypal_payment_actions_modal %}
+            <sw-modal v-if="showModal"
+                      @closeModal="closeModal"
+                      variant="small"
+                      :title="$tc(`swag-paypal.modal.title.${modalType}`)">
+                {% block swag_paypal_payment_actions_modal_capture %}
+                    <swag-paypal-payment-action-capture v-if="modalType === 'capture'"
+                                                      :paymentResource="paymentResource"
+                                                      :maxCaptureValue="captureableAmount"
+                                                      @closeModal="closeModal">
+                    </swag-paypal-payment-action-capture>
+                {% endblock %}
+
+                {% block swag_paypal_payment_actions_modal_refund %}
+                    <swag-paypal-payment-action-refund v-if="modalType === 'refund'"
+                                                     :paymentResource="paymentResource"
+                                                     @closeModal="closeModal">
+                    </swag-paypal-payment-action-refund>
+                {% endblock %}
+
+                {% block swag_paypal_payment_actions_modal_void %}
+                    <swag-paypal-payment-action-void v-if="modalType === 'void'"
+                                                     :paymentResource="paymentResource"
+                                                     @closeModal="closeModal">
+                    </swag-paypal-payment-action-void>
+                {% endblock %}
+            </sw-modal>
+        {% endblock %}
+    </div>
+{% endblock %}

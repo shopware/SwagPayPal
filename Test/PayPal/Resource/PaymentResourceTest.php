@@ -204,7 +204,7 @@ class PaymentResourceTest extends TestCase
         $order = $transaction->getRelatedResources()[0]->getOrder();
         static::assertNotNull($order);
         if ($order !== null) {
-            static::assertSame(PaymentStatus::PAYMENT_COMPLETED, mb_strtolower($order->getState()));
+            static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $order->getState());
         }
 
         $capture = $transaction->getRelatedResources()[1]->getCapture();

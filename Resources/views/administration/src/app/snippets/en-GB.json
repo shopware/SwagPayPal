@@ -73,8 +73,8 @@
         "tabs": {
             "overview": "Overview"
         },
-        "orderDetails": {
-            "cardTitle": "Order",
+        "paymentDetails": {
+            "cardTitle": "Payment",
             "invoice": {
                 "heading": "Invoice amount",
                 "totalAmount": "Total amount:",
@@ -116,6 +116,54 @@
                 "trackingId": "Tracking ID",
                 "transactionFee": "Transaction fee",
                 "paymentMode": "Payment mode"
+            }
+        },
+        "buttons": {
+            "label": {
+                "refund": "Create a new refund",
+                "capture": "Authorize",
+                "void": "Cancel authorization"
+            }
+        },
+        "modal": {
+            "title": {
+                "refund": "New refund",
+                "capture": "Authorize",
+                "void": "Cancel authorization"
+            }
+        },
+        "refundAction": {
+            "successTitle": "Success",
+            "successMessage": "Your refund was successful.",
+            "invoiceSelect": {
+                "label": "Select capture"
+            },
+            "refundAmount": {
+                "label": "Amount"
+            },
+            "confirmButton": {
+                "text": "Execute"
+            }
+        },
+        "captureAction": {
+            "successTitle": "Success",
+            "successMessage": "Your capture was successful.",
+            "maxAmount": "Maximum amount",
+            "currentAmount": "Amount",
+            "isFinal": "This is final capture",
+            "button": {
+                "text": "Capture payment"
+            }
+        },
+        "voidAction": {
+            "successTitle": "Success",
+            "successMessage": "The payment was successfully voided.",
+            "confirm": {
+                "message": "Do you really want to cancel this payment?",
+                "button": {
+                    "confirm": "Yes",
+                    "cancel": "No"
+                }
             }
         }
     }

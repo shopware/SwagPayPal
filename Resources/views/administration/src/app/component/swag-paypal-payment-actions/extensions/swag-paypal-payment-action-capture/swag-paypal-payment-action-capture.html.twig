@@ -1,0 +1,36 @@
+{% block swag_paypal_payment_action_capture %}
+    <div>
+        {% block swag_paypal_payment_action_capture_max_amount %}
+            <sw-text-field :label="$tc('swag-paypal.captureAction.maxAmount')"
+                           :disabled="true"
+                           v-model="maxCaptureValue">
+            </sw-text-field>
+        {% endblock %}
+
+        {% block swag_paypal_payment_action_capture_value %}
+            <sw-field type="number"
+                      v-model="captureValue"
+                      :max="maxCaptureValue"
+                      :min="0"
+                      :label="$tc('swag-paypal.captureAction.currentAmount')"
+                      :suffix="currency">
+            </sw-field>
+        {% endblock %}
+
+        {% block swag_paypal_payment_action_capture_is_final_capture %}
+            <sw-checkbox-field :label="$tc('swag-paypal.captureAction.isFinal')"
+                               v-model="isFinalCapture">
+            </sw-checkbox-field>
+        {% endblock %}
+
+        {% block swag_paypal_payment_action_capture_submit_button %}
+            <sw-button variant="primary"
+                       @click="capture">
+                {{ $tc('swag-paypal.captureAction.button.text') }}
+            </sw-button>
+        {% endblock %}
+
+        <sw-loader v-if="isLoading">
+        </sw-loader>
+    </div>
+{% endblock %}

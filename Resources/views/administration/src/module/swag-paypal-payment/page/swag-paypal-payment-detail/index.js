@@ -1,9 +1,9 @@
 import { Filter, Mixin, State } from 'src/core/shopware';
-import template from './swag-paypal-order-detail.html.twig';
-import './swag-paypal-order-detail.scss';
+import template from './swag-paypal-payment-detail.html.twig';
+import './swag-paypal-payment-detail.scss';
 
 export default {
-    name: 'swag-paypal-order-detail',
+    name: 'swag-paypal-payment-detail',
 
     template,
 
@@ -12,6 +12,13 @@ export default {
     mixins: [
         Mixin.getByName('notification')
     ],
+
+    watch: {
+        '$route'() {
+            this.resetDataAttributes();
+            this.createdComponent();
+        }
+    },
 
     data() {
         return {
@@ -99,8 +106,8 @@ export default {
                         this.isLoading = false;
                     }).catch((errorResponse) => {
                         this.createNotificationError({
+                            title: this.$tc('swag-paypal.paymentDetails.error.title'),
                             message: errorResponse.message,
-                            title: this.$tc('swag-paypal.orderDetails.error.title'),
                             autoClose: false
                         });
                         this.isLoading = false;
@@ -136,6 +143,10 @@ export default {
                 if (relatedResource.refund) {
                     this.pushRelatedResource('refund', relatedResource.refund);
                 }
+
+                if (relatedResource.capture) {
+                    this.pushRelatedResource('capture', relatedResource.capture);
+                }
             });
         },
 
@@ -156,6 +167,16 @@ export default {
                 status: relatedResource.state,
                 paymentMode: relatedResource.payment_mode
             });
+        },
+
+        resetDataAttributes() {
+            this.paymentResource = {};
+            this.relatedResources = [];
+            this.isLoading = true;
+            this.createDateTime = '';
+            this.updateDateTime = '';
+            this.currency = '';
+            this.amount = {};
         }
     }
 };

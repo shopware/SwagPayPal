@@ -76,7 +76,7 @@ abstract class RelatedResource extends PayPalStruct
 
     protected function setState(string $state): void
     {
-        $this->state = $state;
+        $this->state = mb_strtolower($state);
     }
 
     protected function setAmount(Amount $amount): void
