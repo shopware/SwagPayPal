@@ -14,7 +14,7 @@ final class PaymentStatus
     public const PAYMENT_AUTHORIZED = 'authorized';
     public const PAYMENT_VOIDED = 'voided';
     public const PAYMENT_CAPTURED = 'captured';
-    public const PAYMENT_PENDING = 'PENDING';
+    public const PAYMENT_PENDING = 'pending';
     public const PAYMENT_PARTIALLY_REFUNDED = 'partially_refunded';
 
     private function __construct()
