@@ -34,6 +34,6 @@ class PayPalClientFactory
     {
         $settings = $this->settingsProvider->getSettings($context);
 
-        return new PayPalClient($this->tokenResource, $settings, (string) $context->getSourceContext()->getSalesChannelId());
+        return new PayPalClient($this->tokenResource, $settings, $context->getSalesChannelId());
     }
 }

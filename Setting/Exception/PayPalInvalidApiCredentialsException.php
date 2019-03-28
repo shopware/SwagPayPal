@@ -13,15 +13,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PayPalInvalidApiCredentialsException extends ShopwareHttpException
 {
-    protected $code = 'SWAG-PAYPAL-INVALID-API-CREDENTIALS';
-
-    public function __construct($code = 0, ?\Throwable $previous = null)
+    public function __construct()
     {
-        parent::__construct('Provided API credentials are invalid', $code, $previous);
+        parent::__construct('Provided API credentials are invalid');
     }
 
     public function getStatusCode(): int
     {
         return Response::HTTP_NOT_FOUND;
+    }
+
+    public function getErrorCode(): string
+    {
+        return 'SWAG_PAYPAL__INVALID_API_CREDENTIALS';
     }
 }

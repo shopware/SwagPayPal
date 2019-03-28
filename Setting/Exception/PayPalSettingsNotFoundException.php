@@ -13,15 +13,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PayPalSettingsNotFoundException extends ShopwareHttpException
 {
-    protected $code = 'SWAG-PAYPAL-SETTINGS-NOT-FOUND';
-
-    public function __construct($code = 0, ?\Throwable $previous = null)
+    public function __construct()
     {
-        parent::__construct('PayPal settings not found', $code, $previous);
+        parent::__construct('PayPal settings not found');
     }
 
     public function getStatusCode(): int
     {
         return Response::HTTP_NOT_FOUND;
+    }
+
+    public function getErrorCode(): string
+    {
+        return 'SWAG_PAYPAL__SETTINGS_NOT_FOUND';
     }
 }

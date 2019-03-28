@@ -12,6 +12,9 @@
     "require": {
         "shopware/platform": "dev-master"
     },
+    "require-dev": {
+        "phpunit/phpunit": "8.0.6"
+    },
     "extra": {
         "installer-name": "SwagPayPal",
         "copyright": "(c) by shopware AG",

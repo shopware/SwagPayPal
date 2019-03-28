@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
@@ -80,7 +80,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
      *
      * @throws PayPalSettingsInvalidException
      */
-    public function getPayment(PaymentTransactionStruct $paymentTransaction, Context $context): Payment
+    public function getPayment(AsyncPaymentTransactionStruct $paymentTransaction, Context $context): Payment
     {
         $this->settings = $this->settingsProvider->getSettings($context);
 
@@ -135,7 +135,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $redirectUrls;
     }
 
-    private function createTransaction(PaymentTransactionStruct $paymentTransaction, Context $context): Transaction
+    private function createTransaction(AsyncPaymentTransactionStruct $paymentTransaction, Context $context): Transaction
     {
         $orderTransaction = $paymentTransaction->getOrderTransaction();
         $order = $orderTransaction->getOrder();
@@ -285,7 +285,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
     private function useSalesChannelNameAsBrandName(Context $context): string
     {
         $brandName = '';
-        $salesChannelId = $context->getSourceContext()->getSalesChannelId();
+        $salesChannelId = $context->getSalesChannelId();
 
         /** @var SalesChannelCollection $salesChannelCollection */
         $salesChannelCollection = $this->salesChannelRepo->search(new Criteria([$salesChannelId]), $context);

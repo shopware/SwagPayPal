@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Payment;
 
-use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Payment;
 
@@ -17,5 +17,5 @@ interface PaymentBuilderInterface
     /**
      * The function returns an array with all parameters that are expected by the PayPal API.
      */
-    public function getPayment(PaymentTransactionStruct $paymentTransaction, Context $context): Payment;
+    public function getPayment(AsyncPaymentTransactionStruct $paymentTransaction, Context $context): Payment;
 }

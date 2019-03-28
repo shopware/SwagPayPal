@@ -15,14 +15,18 @@ class WebhookIdInvalidException extends ShopwareHttpException
 {
     protected $code = 'SWAG-PAYPAL-WEBHOOK-ID-INVALID-EXCEPTION';
 
-    public function __construct(string $webhookId, $code = 0, ?\Throwable $previous = null)
+    public function __construct(string $webhookId)
     {
-        $message = sprintf('Webhook with ID "%s" is invalid', $webhookId);
-        parent::__construct($message, $code, $previous);
+        parent::__construct('Webhook with ID "{{ webhookId }}" is invalid', ['webhookId' => $webhookId]);
     }
 
     public function getStatusCode(): int
     {
         return Response::HTTP_BAD_REQUEST;
+    }
+
+    public function getErrorCode(): string
+    {
+        return 'SWAG_PAYPAL__WEBHOOK_ID_INVALID';
     }
 }

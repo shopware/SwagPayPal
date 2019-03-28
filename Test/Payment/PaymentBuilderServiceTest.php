@@ -11,8 +11,8 @@ namespace SwagPayPal\Test\Payment;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use Shopware\Core\Framework\SourceContext;
 use SwagPayPal\PayPal\Api\Payment;
 use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
 use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
@@ -258,8 +258,7 @@ class PaymentBuilderServiceTest extends TestCase
     private function createContextWithoutSalesChannel(): Context
     {
         $defaultContext = Context::createDefaultContext();
-        $sourceContext = new SourceContext();
-        $sourceContext->setSalesChannelId('foo');
+        $sourceContext = new SalesChannelApiSource('foo');
 
         return new Context(
             $sourceContext,

@@ -13,19 +13,18 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Struct\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use SwagPayPal\SwagPayPal;
 use SwagPayPal\Test\Payment\PaymentBuilderServiceTest;
 
 trait PaymentTransactionTrait
 {
-    protected function createPaymentTransactionStruct(?string $orderId = 'some-order-id'): PaymentTransactionStruct
+    protected function createPaymentTransactionStruct(?string $orderId = 'some-order-id'): AsyncPaymentTransactionStruct
     {
         $orderTransaction = $this->createOrderTransaction($orderId);
 
-        return new PaymentTransactionStruct(
+        return new AsyncPaymentTransactionStruct(
             $orderTransaction,
             'http://www.test.de/'
         );

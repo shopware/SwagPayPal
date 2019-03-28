@@ -13,16 +13,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PayPalSettingsInvalidException extends ShopwareHttpException
 {
-    protected $code = 'SWAG-PAYPAL-REQUIRED-SETTING-INVALID';
-
-    public function __construct(string $missingSetting, $code = 0, ?\Throwable $previous = null)
+    public function __construct(string $missingSetting)
     {
-        $message = sprintf('Required setting "%s" is missing or invalid', $missingSetting);
-        parent::__construct($message, $code, $previous);
+        parent::__construct(
+            'Required setting "{{ missingSetting }}" is missing or invalid',
+            ['missingSetting' => $missingSetting]
+        );
     }
 
     public function getStatusCode(): int
     {
         return Response::HTTP_NOT_FOUND;
+    }
+
+    public function getErrorCode(): string
+    {
+        return 'SWAG_PAYPAL__REQUIRED_SETTING_INVALID';
     }
 }

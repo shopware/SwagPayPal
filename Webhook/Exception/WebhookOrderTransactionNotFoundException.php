@@ -12,20 +12,25 @@ use Symfony\Component\HttpFoundation\Response;
 
 class WebhookOrderTransactionNotFoundException extends WebhookException
 {
-    protected $code = 'SWAG-PAYPAL-WEBHOOK-ORDER-TRANSACTION-NOT-FOUND-EXCEPTION';
-
-    public function __construct(string $payPalTransactionId, string $eventType, $code = 0, ?\Throwable $previous = null)
+    public function __construct(string $payPalTransactionId, string $eventType)
     {
-        $message = sprintf(
-            '[PayPal %s Webhook] Could not find associated order with the PayPal ID "%s"',
+        parent::__construct(
             $eventType,
-            $payPalTransactionId
+            '[PayPal {{ eventType }} Webhook] Could not find associated order with the PayPal ID "{{ payPalTransactionId }}"',
+            [
+                'eventType' => $eventType,
+                'payPalTransactionId' => $payPalTransactionId,
+            ]
         );
-        parent::__construct($eventType, $message, $code, $previous);
     }
 
     public function getStatusCode(): int
     {
         return Response::HTTP_NOT_FOUND;
+    }
+
+    public function getErrorCode(): string
+    {
+        return 'SWAG_PAYPAL__WEBHOOK_ORDER_TRANSACTION_NOT_FOUND';
     }
 }

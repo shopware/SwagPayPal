@@ -9,8 +9,8 @@
 namespace SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
-use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerInterface;
-use Shopware\Core\Checkout\Payment\Cart\PaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
@@ -25,7 +25,7 @@ use SwagPayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class PayPalPayment implements PaymentHandlerInterface
+class PayPalPayment implements AsynchronousPaymentHandlerInterface
 {
     public const PAYPAL_REQUEST_PARAMETER_PAYER_ID = 'PayerID';
     public const PAYPAL_REQUEST_PARAMETER_PAYMENT_ID = 'paymentId';
@@ -62,7 +62,7 @@ class PayPalPayment implements PaymentHandlerInterface
         $this->stateMachineRegistry = $stateMachineRegistry;
     }
 
-    public function pay(PaymentTransactionStruct $transaction, Context $context): ?RedirectResponse
+    public function pay(AsyncPaymentTransactionStruct $transaction, Context $context): RedirectResponse
     {
         $payment = $this->paymentBuilder->getPayment($transaction, $context);
 

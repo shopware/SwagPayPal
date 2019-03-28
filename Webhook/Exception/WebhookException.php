@@ -22,10 +22,10 @@ class WebhookException extends ShopwareHttpException
      */
     private $eventType;
 
-    public function __construct(string $eventType, string $message, $code = 0, ?\Throwable $previous = null)
+    public function __construct(string $eventType, string $message, array $parameters = [])
     {
         $this->eventType = $eventType;
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $parameters);
     }
 
     public function getStatusCode(): int
@@ -39,5 +39,10 @@ class WebhookException extends ShopwareHttpException
     public function getEventType(): string
     {
         return $this->eventType;
+    }
+
+    public function getErrorCode(): string
+    {
+        return 'SWAG_PAYPAL__WEBHOOK';
     }
 }

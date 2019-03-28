@@ -13,16 +13,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RequiredParameterInvalidException extends ShopwareHttpException
 {
-    protected $code = 'SWAG-PAYPAL-REQUIRED-PARAMETER-INVALID';
-
-    public function __construct(string $missingParameter, $code = 0, ?\Throwable $previous = null)
+    public function __construct(string $missingParameter)
     {
-        $message = sprintf('Required parameter "%s" is missing or invalid', $missingParameter);
-        parent::__construct($message, $code, $previous);
+        parent::__construct(
+            'Required parameter "{{ missingParameter }}" is missing or invalid',
+            ['missingParameter' => $missingParameter]
+        );
     }
 
     public function getStatusCode(): int
     {
         return Response::HTTP_BAD_REQUEST;
+    }
+
+    public function getErrorCode(): string
+    {
+        return 'SWAG_PAYPAL__REQUIRED_PARAMETER_INVALID';
     }
 }

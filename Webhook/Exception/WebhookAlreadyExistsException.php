@@ -13,16 +13,21 @@ use Symfony\Component\HttpFoundation\Response;
 
 class WebhookAlreadyExistsException extends ShopwareHttpException
 {
-    protected $code = 'SWAG-PAYPAL-WEBHOOK-ALREADY-EXISTS-EXCEPTION';
-
-    public function __construct(string $webhookUrl, $code = 0, ?\Throwable $previous = null)
+    public function __construct(string $webhookUrl)
     {
-        $message = sprintf('WebhookUrl "%s" already exists', $webhookUrl);
-        parent::__construct($message, $code, $previous);
+        parent::__construct(
+            'WebhookUrl "{{ webhookUrl }}" already exists',
+            ['webhookUrl' => $webhookUrl]
+        );
     }
 
     public function getStatusCode(): int
     {
         return Response::HTTP_BAD_REQUEST;
+    }
+
+    public function getErrorCode(): string
+    {
+        return 'SWAG_PAYPAL__WEBHOOK_ALREADY_EXISTS';
     }
 }

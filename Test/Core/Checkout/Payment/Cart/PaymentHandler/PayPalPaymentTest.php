@@ -67,11 +67,6 @@ class PayPalPaymentTest extends TestCase
         $context = Context::createDefaultContext();
         $response = $handler->pay($paymentTransaction, $context);
 
-        static::assertNotNull($response);
-        if ($response === null) {
-            return;
-        }
-
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $response->getTargetUrl());
 
         /** @var OrderTransactionRepoMock $orderTransactionRepo */
