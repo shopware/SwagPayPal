@@ -34,8 +34,8 @@ export default {
 
             this.SwagPayPalPaymentService.voidPayment(resourceType, resourceId).then(() => {
                 this.createNotificationSuccess({
-                    title: this.$tc('swag-paypal.voidAction.successTitle'),
-                    message: this.$tc('swag-paypal.voidAction.successMessage')
+                    title: this.$tc('swag-paypal-payment.voidAction.successTitle'),
+                    message: this.$tc('swag-paypal-payment.voidAction.successMessage')
                 });
                 this.isLoading = false;
                 this.closeModal();

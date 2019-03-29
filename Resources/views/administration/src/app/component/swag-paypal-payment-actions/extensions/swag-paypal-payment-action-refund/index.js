@@ -118,8 +118,8 @@ export default {
                 currency
             ).then(() => {
                 this.createNotificationSuccess({
-                    title: this.$tc('swag-paypal.refundAction.successTitle'),
-                    message: this.$tc('swag-paypal.refundAction.successMessage')
+                    title: this.$tc('swag-paypal-payment.refundAction.successTitle'),
+                    message: this.$tc('swag-paypal-payment.refundAction.successMessage')
                 });
                 this.isLoading = false;
                 this.$emit('closeModal');

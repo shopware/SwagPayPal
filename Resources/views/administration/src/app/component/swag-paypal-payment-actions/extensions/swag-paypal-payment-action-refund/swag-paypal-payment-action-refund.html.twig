@@ -1,7 +1,7 @@
 {% block swag_paypal_payment_action_refund %}
     <div>
         {% block swag_paypal_payment_action_refund_invoice_select %}
-            <sw-select-field :label="$tc('swag-paypal.refundAction.invoiceSelect.label')"
+            <sw-select-field :label="$tc('swag-paypal-payment.refundAction.invoiceSelect.label')"
                              v-model="selectedCaptureId"
                              @change="preserveCapture">
                 <option v-for="capture in captures"
@@ -16,7 +16,7 @@
                       v-model="refundAmount"
                       :max="refundableAmount"
                       :min="0"
-                      :label="$tc('swag-paypal.refundAction.refundAmount.label')"
+                      :label="$tc('swag-paypal-payment.refundAction.refundAmount.label')"
                       :suffix="selectedCapture.currency">
             </sw-field>
         {% endblock %}
@@ -24,7 +24,7 @@
         {% block swag_paypal_payment_action_refund_confirm_button %}
         <sw-button variant="primary"
                    @click="refund">
-            {{ $tc('swag-paypal.refundAction.confirmButton.text') }}
+            {{ $tc('swag-paypal-payment.refundAction.confirmButton.text') }}
         </sw-button>
         {% endblock %}
 

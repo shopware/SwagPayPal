@@ -44,6 +44,11 @@ class Transaction extends PayPalStruct
     /**
      * @var string
      */
+    private $softDescriptor;
+
+    /**
+     * @var string
+     */
     private $description;
 
     /**
@@ -67,6 +72,11 @@ class Transaction extends PayPalStruct
     public function setInvoiceNumber(string $invoiceNumber): void
     {
         $this->invoiceNumber = $invoiceNumber;
+    }
+
+    protected function setSoftDescriptor(string $softDescriptor): void
+    {
+        $this->softDescriptor = $softDescriptor;
     }
 
     protected function setPayee(Payee $payee): void
