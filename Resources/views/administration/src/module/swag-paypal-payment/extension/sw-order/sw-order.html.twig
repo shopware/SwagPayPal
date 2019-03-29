@@ -5,12 +5,12 @@
                 {% block swag_paypal_order_extension_tabs %}
                     <sw-tabs>
                         <sw-tabs-item :route="{ name: 'sw.order.detail', params: { id: $route.params.id } }"
-                                      :title="$tc('swag-paypal.tabs.overview')">
-                            {{ $tc('swag-paypal.tabs.overview') }}
+                                      :title="$tc('swag-paypal-payment.tabs.overview')">
+                            {{ $tc('swag-paypal-payment.tabs.overview') }}
                         </sw-tabs-item>
 
                         <sw-tabs-item :route="{ name: 'swag.paypal.payment.detail', params: { id: $route.params.id } }"
-                                      :title="$tc('swag-paypal.header')">
+                                      :title="$tc('swag-paypal-payment.header')">
                             {{ $tc('swag-paypal.header') }}
                         </sw-tabs-item>
                     </sw-tabs>

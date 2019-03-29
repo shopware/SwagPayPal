@@ -1,6 +1,8 @@
 import { Module } from 'src/core/shopware';
 import paypalSettings from './page/swag-paypal';
 import './extension/sw-settings-index';
+import deDE from './snippet/de_DE.json';
+import enGB from './snippet/en_GB.json';
 
 Module.register('swag-paypal', {
     type: 'plugin',
@@ -10,6 +12,11 @@ Module.register('swag-paypal', {
     targetVersion: '1.0.0',
     color: '#9AA8B5',
     icon: 'default-action-settings',
+
+    snippets: {
+        'de-DE': deDE,
+        'en-GB': enGB
+    },
 
     routes: {
         index: {

@@ -43,42 +43,42 @@ export default {
             return [
                 {
                     property: 'type',
-                    label: this.$tc('swag-paypal.transactionHistory.types.type'),
+                    label: this.$tc('swag-paypal-payment.transactionHistory.types.type'),
                     rawData: true
                 },
                 {
                     property: 'total',
-                    label: this.$tc('swag-paypal.transactionHistory.types.amount'),
+                    label: this.$tc('swag-paypal-payment.transactionHistory.types.amount'),
                     rawData: true
                 },
                 {
                     property: 'id',
-                    label: this.$tc('swag-paypal.transactionHistory.types.trackingId'),
+                    label: this.$tc('swag-paypal-payment.transactionHistory.types.trackingId'),
                     rawData: true
                 },
                 {
                     property: 'status',
-                    label: this.$tc('swag-paypal.transactionHistory.types.state'),
+                    label: this.$tc('swag-paypal-payment.transactionHistory.types.state'),
                     rawData: true
                 },
                 {
                     property: 'transactionFee',
-                    label: this.$tc('swag-paypal.transactionHistory.types.transactionFee'),
+                    label: this.$tc('swag-paypal-payment.transactionHistory.types.transactionFee'),
                     rawData: true
                 },
                 {
                     property: 'paymentMode',
-                    label: this.$tc('swag-paypal.transactionHistory.types.paymentMode'),
+                    label: this.$tc('swag-paypal-payment.transactionHistory.types.paymentMode'),
                     rawData: true
                 },
                 {
                     property: 'create',
-                    label: this.$tc('swag-paypal.transactionHistory.types.createTime'),
+                    label: this.$tc('swag-paypal-payment.transactionHistory.types.createTime'),
                     rawData: true
                 },
                 {
                     property: 'update',
-                    label: this.$tc('swag-paypal.transactionHistory.types.updateTime'),
+                    label: this.$tc('swag-paypal-payment.transactionHistory.types.updateTime'),
                     rawData: true
                 }
             ];
@@ -106,7 +106,7 @@ export default {
                         this.isLoading = false;
                     }).catch((errorResponse) => {
                         this.createNotificationError({
-                            title: this.$tc('swag-paypal.paymentDetails.error.title'),
+                            title: this.$tc('swag-paypal-payment.paymentDetails.error.title'),
                             message: errorResponse.message,
                             autoClose: false
                         });
@@ -159,7 +159,7 @@ export default {
 
             this.relatedResources.push({
                 id: relatedResource.id,
-                type: this.$tc(`swag-paypal.transactionHistory.states.${type}`),
+                type: this.$tc(`swag-paypal-payment.transactionHistory.states.${type}`),
                 total: `${relatedResource.amount.total} ${currency}`,
                 create: this.formatDate(relatedResource.create_time),
                 update: this.formatDate(relatedResource.update_time),

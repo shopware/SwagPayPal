@@ -54,8 +54,8 @@ export default {
             this.SwagPayPalPaymentService.capturePayment(resourceType, resourceId, captureAmount, currency, isFinalCapture)
                 .then(() => {
                     this.createNotificationSuccess({
-                        title: this.$tc('swag-paypal.captureAction.successTitle'),
-                        message: this.$tc('swag-paypal.captureAction.successMessage')
+                        title: this.$tc('swag-paypal-payment.captureAction.successTitle'),
+                        message: this.$tc('swag-paypal-payment.captureAction.successMessage')
                     });
                     this.isLoading = false;
                     this.$emit('closeModal');

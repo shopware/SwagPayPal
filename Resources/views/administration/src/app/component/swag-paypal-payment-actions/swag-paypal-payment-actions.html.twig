@@ -6,7 +6,7 @@
                     <sw-button v-if="showVoidButton"
                                @click="spawnModal('void')"
                                size="small">
-                        {{ $tc('swag-paypal.buttons.label.void') }}
+                        {{ $tc('swag-paypal-payment.buttons.label.void') }}
                     </sw-button>
                 {% endblock %}
 
@@ -14,7 +14,7 @@
                     <sw-button v-if="captureableAmount > 0"
                                @click="spawnModal('capture')"
                                size="small">
-                        {{ $tc('swag-paypal.buttons.label.capture') }}
+                        {{ $tc('swag-paypal-payment.buttons.label.capture') }}
                     </sw-button>
                 {% endblock %}
             </div>
@@ -23,7 +23,7 @@
                            @click="spawnModal('refund')"
                            size="small"
                            :disabled="refundableAmount <= 0">
-                    {{ $tc('swag-paypal.buttons.label.refund') }}
+                    {{ $tc('swag-paypal-payment.buttons.label.refund') }}
                 </sw-button>
             {% endblock %}
         </div>
@@ -32,7 +32,7 @@
             <sw-modal v-if="showModal"
                       @closeModal="closeModal"
                       variant="small"
-                      :title="$tc(`swag-paypal.modal.title.${modalType}`)">
+                      :title="$tc(`swag-paypal-payment.modal.title.${modalType}`)">
                 {% block swag_paypal_payment_actions_modal_capture %}
                     <swag-paypal-payment-action-capture v-if="modalType === 'capture'"
                                                       :paymentResource="paymentResource"
