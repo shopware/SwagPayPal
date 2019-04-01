@@ -14,6 +14,9 @@ use GuzzleHttp\Psr7\Response;
 use SwagPayPal\PayPal\Api\Common\PayPalStruct;
 use SwagPayPal\PayPal\Api\Payment\Payer\PayerInfo;
 use SwagPayPal\PayPal\Client\PayPalClient;
+use SwagPayPal\PayPal\PartnerAttributionId;
+use SwagPayPal\PayPal\Resource\TokenResource;
+use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 use SwagPayPal\Test\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPaymentTest;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CaptureAuthorizationResponseFixture;
@@ -49,6 +52,21 @@ class PayPalClientMock extends PayPalClient
      */
     private $data = [];
 
+    /**
+     * @var string
+     */
+    private $cacheId;
+
+    public function __construct(
+        TokenResource $tokenResource,
+        SwagPayPalSettingGeneralEntity $settings,
+        string $cacheId,
+        string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
+    ) {
+        parent::__construct($tokenResource, $settings, $cacheId, $partnerAttributionId);
+        $this->cacheId = $cacheId;
+    }
+
     public function sendGetRequest(string $resourceUri): array
     {
         if (strncmp($resourceUri, 'notifications/webhooks/', 23) === 0) {
@@ -64,6 +82,10 @@ class PayPalClientMock extends PayPalClient
 
     public function sendPostRequest(string $resourceUri, PayPalStruct $data): array
     {
+        if ($this->cacheId === PayPalClientFactoryMock::THROW_EXCEPTION) {
+            throw new \RuntimeException('A PayPal test error occurred. Create failed');
+        }
+
         if (mb_substr($resourceUri, -8) === '/execute') {
             return $this->handlePaymentExecuteRequests($data);
         }
