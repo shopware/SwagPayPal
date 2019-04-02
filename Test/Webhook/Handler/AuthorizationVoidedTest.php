@@ -10,7 +10,7 @@ namespace SwagPayPal\Test\Webhook\Handler;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
-use Shopware\Core\Defaults;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
@@ -74,8 +74,8 @@ class AuthorizationVoidedTest extends TestCase
         $result = $orderTransactionRepo->getData();
 
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
-            Defaults::ORDER_TRANSACTION_STATE_MACHINE,
-            Defaults::ORDER_TRANSACTION_STATES_CANCELLED,
+            OrderTransactionStates::STATE_MACHINE,
+            OrderTransactionStates::STATE_CANCELLED,
             $context
         )->getId();
 

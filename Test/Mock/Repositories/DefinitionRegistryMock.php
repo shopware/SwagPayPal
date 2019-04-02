@@ -3,7 +3,6 @@
 namespace SwagPayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
-use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\Language\LanguageDefinition;
@@ -24,11 +23,6 @@ class DefinitionRegistryMock extends DefinitionRegistry
     private $salesChannelRepo;
 
     /**
-     * @var OrderRepoMock
-     */
-    private $orderRepo;
-
-    /**
      * @var OrderTransactionRepoMock
      */
     private $orderTransactionRepo;
@@ -43,7 +37,6 @@ class DefinitionRegistryMock extends DefinitionRegistry
         parent::__construct($elements, $container);
         $this->languageRepo = new LanguageRepoMock();
         $this->salesChannelRepo = new SalesChannelRepoMock();
-        $this->orderRepo = new OrderRepoMock();
         $this->orderTransactionRepo = new OrderTransactionRepoMock();
         $this->swagPayPalSettingGeneralRepo = new SwagPayPalSettingGeneralRepoMock();
     }
@@ -58,8 +51,6 @@ class DefinitionRegistryMock extends DefinitionRegistry
                 return $this->languageRepo;
             case SalesChannelDefinition::getEntityName():
                 return $this->salesChannelRepo;
-            case OrderDefinition::getEntityName():
-                return $this->orderRepo;
             case OrderTransactionDefinition::getEntityName():
                 return $this->orderTransactionRepo;
             case SwagPayPalSettingGeneralDefinition::getEntityName():

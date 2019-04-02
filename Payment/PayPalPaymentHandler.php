@@ -6,20 +6,19 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler;
+namespace SwagPayPal\Payment;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use SwagPayPal\Payment\PaymentBuilderInterface;
 use SwagPayPal\PayPal\Api\Payment;
 use SwagPayPal\PayPal\PaymentIntent;
 use SwagPayPal\PayPal\PaymentStatus;
@@ -28,7 +27,7 @@ use SwagPayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class PayPalPayment implements AsynchronousPaymentHandlerInterface
+class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 {
     public const PAYPAL_REQUEST_PARAMETER_PAYER_ID = 'PayerID';
     public const PAYPAL_REQUEST_PARAMETER_PAYMENT_ID = 'paymentId';
@@ -77,7 +76,7 @@ class PayPalPayment implements AsynchronousPaymentHandlerInterface
         } catch (\Exception $e) {
             throw new AsyncPaymentProcessException(
                 $transaction->getOrderTransaction()->getId(),
-                'An error occurred during the communication with PayPal'
+                'An error occurred during the communication with PayPal' . PHP_EOL . $e->getMessage()
             );
         }
 
@@ -114,7 +113,7 @@ class PayPalPayment implements AsynchronousPaymentHandlerInterface
         } catch (\Exception $e) {
             throw new AsyncPaymentFinalizeException(
                 $transactionId,
-                'An error occurred during the communication with PayPal'
+                'An error occurred during the communication with PayPal' . PHP_EOL . $e->getMessage()
             );
         }
 
@@ -123,14 +122,14 @@ class PayPalPayment implements AsynchronousPaymentHandlerInterface
         // apply the payment status if its completed by PayPal
         if ($paymentState === PaymentStatus::PAYMENT_COMPLETED) {
             $stateId = $this->stateMachineRegistry->getStateByTechnicalName(
-                Defaults::ORDER_TRANSACTION_STATE_MACHINE,
-                Defaults::ORDER_TRANSACTION_STATES_PAID,
+                OrderTransactionStates::STATE_MACHINE,
+                OrderTransactionStates::STATE_PAID,
                 $context
             )->getId();
         } else {
             $stateId = $this->stateMachineRegistry->getStateByTechnicalName(
-                Defaults::ORDER_TRANSACTION_STATE_MACHINE,
-                Defaults::ORDER_TRANSACTION_STATES_OPEN,
+                OrderTransactionStates::STATE_MACHINE,
+                OrderTransactionStates::STATE_OPEN,
                 $context
             )->getId();
         }

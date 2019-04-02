@@ -8,7 +8,7 @@
 
 namespace SwagPayPal\Webhook\Handler;
 
-use Shopware\Core\Defaults;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
@@ -35,7 +35,7 @@ class SaleRefunded extends AbstractWebhookHandler
 
         $data = [
             'id' => $orderTransaction->getId(),
-            'stateId' => $this->getStateMachineState(Defaults::ORDER_TRANSACTION_STATES_REFUNDED, $context),
+            'stateId' => $this->getStateMachineState(OrderTransactionStates::STATE_REFUNDED, $context),
         ];
         $this->orderTransactionRepo->update([$data], $context);
     }

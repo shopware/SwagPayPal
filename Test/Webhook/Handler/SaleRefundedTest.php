@@ -10,7 +10,7 @@ namespace SwagPayPal\Test\Webhook\Handler;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
-use Shopware\Core\Defaults;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
@@ -73,8 +73,8 @@ class SaleRefundedTest extends TestCase
         $result = $orderTransactionRepo->getData();
 
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
-            Defaults::ORDER_TRANSACTION_STATE_MACHINE,
-            Defaults::ORDER_TRANSACTION_STATES_REFUNDED,
+            OrderTransactionStates::STATE_MACHINE,
+            OrderTransactionStates::STATE_REFUNDED,
             $context
         )->getId();
 

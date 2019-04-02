@@ -17,7 +17,6 @@ use SwagPayPal\PayPal\Client\PayPalClient;
 use SwagPayPal\PayPal\PartnerAttributionId;
 use SwagPayPal\PayPal\Resource\TokenResource;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
-use SwagPayPal\Test\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPaymentTest;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CaptureAuthorizationResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CaptureOrdersResponseFixture;
@@ -34,6 +33,7 @@ use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
 use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
+use SwagPayPal\Test\Payment\PayPalPaymentHandlerTest;
 use SwagPayPal\Test\PayPal\Resource\PaymentResourceTest;
 use SwagPayPal\Test\PayPal\Resource\WebhookResourceTest;
 
@@ -192,7 +192,7 @@ class PayPalClientMock extends PayPalClient
         }
 
         $response = ExecuteSaleResponseFixture::get();
-        if ($payerInfo->getPayerId() !== PayPalPaymentTest::PAYER_ID_PAYMENT_INCOMPLETE) {
+        if ($payerInfo->getPayerId() !== PayPalPaymentHandlerTest::PAYER_ID_PAYMENT_INCOMPLETE) {
             return $response;
         }
 

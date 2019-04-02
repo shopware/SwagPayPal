@@ -9,7 +9,9 @@
 namespace SwagPayPal\PayPal\Client;
 
 use Shopware\Core\Framework\Context;
+use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use SwagPayPal\PayPal\Resource\TokenResource;
+use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
 use SwagPayPal\Setting\Service\SettingsServiceInterface;
 
 class PayPalClientFactory
@@ -30,6 +32,10 @@ class PayPalClientFactory
         $this->settingsProvider = $settingsProvider;
     }
 
+    /**
+     * @throws PayPalSettingsInvalidException
+     * @throws PayPalSettingsNotFoundException
+     */
     public function createPaymentClient(Context $context): PayPalClient
     {
         $settings = $this->settingsProvider->getSettings($context);

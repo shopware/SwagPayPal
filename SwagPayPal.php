@@ -21,7 +21,7 @@ use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
-use SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPayment;
+use SwagPayPal\Payment\PayPalPaymentHandler;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -97,7 +97,7 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
         }
 
         $paypal = [
-            'handlerIdentifier' => PayPalPayment::class,
+            'handlerIdentifier' => PayPalPaymentHandler::class,
             'name' => 'PayPal',
             'description' => 'Bezahlung per PayPal - einfach, schnell und sicher.',
             'pluginId' => $pluginId,
@@ -132,7 +132,7 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
         $paymentRepository = $this->container->get('payment_method.repository');
 
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('handlerIdentifier', PayPalPayment::class));
+        $criteria->addFilter(new EqualsFilter('handlerIdentifier', PayPalPaymentHandler::class));
 
         $result = $paymentRepository->searchIds($criteria, $context);
         if ($result->getTotal() === 0) {
