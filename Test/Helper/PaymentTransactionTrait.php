@@ -14,15 +14,17 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Framework\Struct\Uuid;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use SwagPayPal\Test\Payment\PaymentBuilderServiceTest;
 
 trait PaymentTransactionTrait
 {
-    protected function createPaymentTransactionStruct(?string $orderId = 'some-order-id'): AsyncPaymentTransactionStruct
-    {
-        $orderTransaction = $this->createOrderTransaction($orderId);
+    protected function createPaymentTransactionStruct(
+        ?string $orderId = 'some-order-id',
+        ?string $transactionId = null
+    ): AsyncPaymentTransactionStruct {
+        $orderTransaction = $this->createOrderTransaction($orderId, $transactionId);
 
         return new AsyncPaymentTransactionStruct(
             $orderTransaction,
@@ -30,12 +32,14 @@ trait PaymentTransactionTrait
         );
     }
 
-    private function createOrderTransaction(?string $orderId): OrderTransactionEntity
+    private function createOrderTransaction(?string $orderId, ?string $transactionId): OrderTransactionEntity
     {
         $orderTransaction = new OrderTransactionEntity();
         $orderTransaction->setOrderId(PaymentBuilderServiceTest::TEST_ORDER_ID);
 
-        $transactionId = Uuid::uuid4()->getHex();
+        if ($transactionId === null) {
+            $transactionId = Uuid::randomHex();
+        }
         $orderTransaction->setId($transactionId);
 
         $amount = $this->createPriceStruct();

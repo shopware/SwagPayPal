@@ -70,6 +70,7 @@ class GetSaleResponseFixture
                             'country_code' => 'AT',
                         ],
                     ],
+                    'soft_descriptor' => 'the soft descriptor',
                     'invoice_number' => 'SW-1234',
                     'related_resources' => [
                         0 => [

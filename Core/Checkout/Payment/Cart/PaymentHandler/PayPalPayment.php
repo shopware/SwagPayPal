@@ -11,6 +11,9 @@ namespace SwagPayPal\Core\Checkout\Payment\Cart\PaymentHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
+use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
+use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
@@ -62,11 +65,21 @@ class PayPalPayment implements AsynchronousPaymentHandlerInterface
         $this->stateMachineRegistry = $stateMachineRegistry;
     }
 
+    /**
+     * @throws AsyncPaymentProcessException
+     */
     public function pay(AsyncPaymentTransactionStruct $transaction, Context $context): RedirectResponse
     {
         $payment = $this->paymentBuilder->getPayment($transaction, $context);
 
-        $response = $this->paymentResource->create($payment, $context);
+        try {
+            $response = $this->paymentResource->create($payment, $context);
+        } catch (\Exception $e) {
+            throw new AsyncPaymentProcessException(
+                $transaction->getOrderTransaction()->getId(),
+                'An error occurred during the communication with PayPal'
+            );
+        }
 
         $data = [
             'id' => $transaction->getOrderTransaction()->getId(),
@@ -79,27 +92,31 @@ class PayPalPayment implements AsynchronousPaymentHandlerInterface
         return new RedirectResponse($response->getLinks()[1]->getHref());
     }
 
-    public function finalize(string $transactionId, Request $request, Context $context): void
+    /**
+     * @throws AsyncPaymentFinalizeException
+     * @throws CustomerCanceledAsyncPaymentException
+     */
+    public function finalize(AsyncPaymentTransactionStruct $transaction, Request $request, Context $context): void
     {
+        $transactionId = $transaction->getOrderTransaction()->getId();
+
         if ($request->query->getBoolean('cancel')) {
-            $stateId = $this->stateMachineRegistry->getStateByTechnicalName(
-                Defaults::ORDER_TRANSACTION_STATE_MACHINE,
-                Defaults::ORDER_TRANSACTION_STATES_CANCELLED,
-                $context
-            )->getId();
-
-            $transaction = [
-                'id' => $transactionId,
-                'stateId' => $stateId,
-            ];
-            $this->orderTransactionRepo->update([$transaction], $context);
-
-            return;
+            throw new CustomerCanceledAsyncPaymentException(
+                $transactionId,
+                'Customer canceled the payment on the PayPal page'
+            );
         }
 
         $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
         $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
-        $response = $this->paymentResource->execute($payerId, $paymentId, $context);
+        try {
+            $response = $this->paymentResource->execute($payerId, $paymentId, $context);
+        } catch (\Exception $e) {
+            throw new AsyncPaymentFinalizeException(
+                $transactionId,
+                'An error occurred during the communication with PayPal'
+            );
+        }
 
         $paymentState = $this->getPaymentState($response);
 
@@ -118,12 +135,12 @@ class PayPalPayment implements AsynchronousPaymentHandlerInterface
             )->getId();
         }
 
-        $transaction = [
+        $transactionUpdate = [
             'id' => $transactionId,
             'stateId' => $stateId,
         ];
 
-        $this->orderTransactionRepo->update([$transaction], $context);
+        $this->orderTransactionRepo->update([$transactionUpdate], $context);
     }
 
     private function getPaymentState(Payment $response): string

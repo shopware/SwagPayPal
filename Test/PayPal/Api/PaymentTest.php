@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\PayPal\API;
+namespace SwagPayPal\Test\PayPal\Api;
 
 use PHPUnit\Framework\TestCase;
 use SwagPayPal\PayPal\Api\Payment;
