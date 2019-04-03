@@ -10,7 +10,6 @@ namespace SwagPayPal\Payment;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
-use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
@@ -35,6 +34,7 @@ use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList;
 use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
 use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use SwagPayPal\PayPal\PaymentIntent;
+use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
 use SwagPayPal\Setting\Service\SettingsServiceInterface;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
 
@@ -49,11 +49,6 @@ class PaymentBuilderService implements PaymentBuilderInterface
      * @var EntityRepositoryInterface
      */
     private $salesChannelRepo;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderRepo;
 
     /**
      * @var SettingsServiceInterface
@@ -71,14 +66,13 @@ class PaymentBuilderService implements PaymentBuilderInterface
     ) {
         $this->languageRepo = $definitionRegistry->getRepository(LanguageDefinition::getEntityName());
         $this->salesChannelRepo = $definitionRegistry->getRepository(SalesChannelDefinition::getEntityName());
-        $this->orderRepo = $definitionRegistry->getRepository(OrderDefinition::getEntityName());
         $this->settingsProvider = $settingsProvider;
     }
 
     /**
      * {@inheritdoc}
      *
-     * @throws PayPalSettingsInvalidException
+     * @throws PayPalSettingsNotFoundException
      */
     public function getPayment(AsyncPaymentTransactionStruct $paymentTransaction, Context $context): Payment
     {
@@ -87,7 +81,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
         $intent = $this->getIntent();
         $payer = $this->createPayer();
         $redirectUrls = $this->createRedirectUrls($paymentTransaction->getReturnUrl());
-        $transaction = $this->createTransaction($paymentTransaction, $context);
+        $transaction = $this->createTransaction($paymentTransaction);
         $applicationContext = $this->getApplicationContext($context);
 
         $requestPayment = new Payment();
@@ -135,13 +129,10 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $redirectUrls;
     }
 
-    private function createTransaction(AsyncPaymentTransactionStruct $paymentTransaction, Context $context): Transaction
+    private function createTransaction(AsyncPaymentTransactionStruct $paymentTransaction): Transaction
     {
         $orderTransaction = $paymentTransaction->getOrderTransaction();
-        $order = $orderTransaction->getOrder();
-        if ($order === null) {
-            throw new InvalidOrderException($orderTransaction->getOrderId());
-        }
+        $order = $paymentTransaction->getOrder();
 
         $orderTransactionAmount = $orderTransaction->getAmount();
         $currency = (string) $order->getCurrency()->getShortName();
@@ -158,7 +149,7 @@ class PaymentBuilderService implements PaymentBuilderInterface
         }
 
         if ($this->settings->getSubmitCart()) {
-            $items = $this->getItemList($order, $context, $currency);
+            $items = $this->getItemList($order, $currency);
 
             if (!empty($items)) {
                 $itemList = new ItemList();
@@ -198,17 +189,15 @@ class PaymentBuilderService implements PaymentBuilderInterface
     /**
      * @return Item[]
      */
-    private function getItemList(OrderEntity $order, Context $context, string $currency): array
+    private function getItemList(OrderEntity $order, string $currency): array
     {
         $items = [];
-        $orderWithLineItems = $this->getOrderWithLineItems($order, $context);
-
-        if ($orderWithLineItems === null || $orderWithLineItems->getLineItems() === null) {
-            return [];
+        if ($order->getLineItems() === null) {
+            throw new InvalidOrderException($order->getId());
         }
 
         /** @var OrderLineItemEntity[] $lineItems */
-        $lineItems = $orderWithLineItems->getLineItems()->getElements();
+        $lineItems = $order->getLineItems()->getElements();
 
         foreach ($lineItems as $id => $lineItem) {
             $price = $lineItem->getPrice();
@@ -221,18 +210,6 @@ class PaymentBuilderService implements PaymentBuilderInterface
         }
 
         return $items;
-    }
-
-    private function getOrderWithLineItems(OrderEntity $order, Context $context): ?OrderEntity
-    {
-        $orderId = $order->get('id');
-        $criteria = new Criteria([$orderId]);
-        $criteria->addAssociation('order.lineItems');
-
-        /** @var OrderEntity|null $orderWithLineItems */
-        $orderWithLineItems = $this->orderRepo->search($criteria, $context)->get($orderId);
-
-        return $orderWithLineItems;
     }
 
     private function createItemFromLineItem(OrderLineItemEntity $lineItem, string $currency, CalculatedPrice $price): Item

@@ -12,9 +12,9 @@ use Shopware\Core\Framework\Context;
 use SwagPayPal\PayPal\Client\PayPalClient;
 use SwagPayPal\PayPal\Client\PayPalClientFactory;
 use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
-use SwagPayPal\Test\Core\Checkout\Payment\Cart\PaymentHandler\PayPalPaymentTest;
 use SwagPayPal\Test\Mock\CacheMock;
 use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
+use SwagPayPal\Test\Payment\PayPalPaymentHandlerTest;
 
 class PayPalClientFactoryMock extends PayPalClientFactory
 {
@@ -33,7 +33,7 @@ class PayPalClientFactoryMock extends PayPalClientFactory
         $settings->setSandbox(true);
 
         $cacheId = 'test';
-        if ($context->hasExtension(PayPalPaymentTest::PAYPAL_RESOURCE_THROWS_EXCEPTION)) {
+        if ($context->hasExtension(PayPalPaymentHandlerTest::PAYPAL_RESOURCE_THROWS_EXCEPTION)) {
             $cacheId = self::THROW_EXCEPTION;
         }
 

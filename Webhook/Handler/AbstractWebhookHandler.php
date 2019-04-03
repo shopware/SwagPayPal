@@ -10,7 +10,7 @@ namespace SwagPayPal\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
-use Shopware\Core\Defaults;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -71,7 +71,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
     protected function getStateMachineState(string $technicalStateName, Context $context): string
     {
         return $this->stateMachineRegistry->getStateByTechnicalName(
-            Defaults::ORDER_TRANSACTION_STATE_MACHINE,
+            OrderTransactionStates::STATE_MACHINE,
             $technicalStateName,
             $context
         )->getId();

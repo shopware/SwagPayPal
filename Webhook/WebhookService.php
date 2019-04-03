@@ -9,11 +9,11 @@
 namespace SwagPayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Util\Random;
 use SwagPayPal\PayPal\Api\CreateWebhooks;
 use SwagPayPal\PayPal\Api\Webhook;
 use SwagPayPal\PayPal\Resource\WebhookResource;
+use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
 use SwagPayPal\Setting\Service\SettingsServiceInterface;
 use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use SwagPayPal\Webhook\Exception\WebhookException;
@@ -35,11 +35,6 @@ class WebhookService implements WebhookServiceInterface
      * @var WebhookResource
      */
     private $webhookResource;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $settingGeneralRepo;
 
     /**
      * @var RouterInterface
@@ -68,6 +63,9 @@ class WebhookService implements WebhookServiceInterface
         $this->router = $router;
     }
 
+    /**
+     * @throws PayPalSettingsNotFoundException
+     */
     public function registerWebhook(Context $context): string
     {
         $settings = $this->settingsService->getSettings($context);

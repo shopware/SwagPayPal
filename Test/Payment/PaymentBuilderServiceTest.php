@@ -19,7 +19,6 @@ use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use SwagPayPal\Test\Helper\ConstantsForTesting;
 use SwagPayPal\Test\Helper\PaymentTransactionTrait;
 use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\Repositories\OrderRepoMock;
 use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 
@@ -30,6 +29,11 @@ class PaymentBuilderServiceTest extends TestCase
 
     public const TEST_ORDER_NUMBER = 'SW1234';
     public const TEST_ORDER_ID = 'test-order-id';
+    public const EXPECTED_ITEM_NAME = 'Aerodynamic Paper Ginger Vitro';
+    public const EXPECTED_ITEM_ID = '0716562764cd43389abe16faad1838b8';
+    public const EXPECTED_ITEM_CURRENCY = 'EUR';
+    public const EXPECTED_ITEM_TAX = 37.81;
+    public const EXPECTED_ITEM_QUANTITY = 1;
 
     public function testGetPayment(): void
     {
@@ -117,12 +121,12 @@ class PaymentBuilderServiceTest extends TestCase
         $transaction = json_decode($transaction, true);
         $item = $transaction['item_list']['items'][0];
 
-        static::assertSame(OrderRepoMock::EXPECTED_ITEM_NAME, $item['name']);
-        static::assertSame(OrderRepoMock::EXPECTED_ITEM_CURRENCY, $item['currency']);
-        static::assertSame(OrderRepoMock::EXPECTED_ITEM_PRICE, $item['price']);
-        static::assertSame(OrderRepoMock::EXPECTED_ITEM_QUANTITY, $item['quantity']);
-        static::assertSame(OrderRepoMock::EXPECTED_ITEM_SKU, $item['sku']);
-        static::assertSame(OrderRepoMock::EXPECTED_ITEM_TAX, $item['tax']);
+        static::assertSame(self::EXPECTED_ITEM_NAME, $item['name']);
+        static::assertSame(self::EXPECTED_ITEM_CURRENCY, $item['currency']);
+        static::assertSame('540.19', $item['price']);
+        static::assertSame(self::EXPECTED_ITEM_QUANTITY, $item['quantity']);
+        static::assertSame(self::EXPECTED_ITEM_ID, $item['sku']);
+        static::assertSame((string) self::EXPECTED_ITEM_TAX, $item['tax']);
     }
 
     public function testGetPaymentWithoutPrice(): void
@@ -153,17 +157,9 @@ class PaymentBuilderServiceTest extends TestCase
         $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);
 
-        $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
-        $transaction = json_encode($payment->getTransactions()[0]);
-
-        static::assertNotFalse($transaction);
-        if ($transaction === false) {
-            return;
-        }
-
-        $transaction = json_decode($transaction, true)['item_list'];
-
-        static::assertNull($transaction);
+        $this->expectException(InvalidOrderException::class);
+        $this->expectExceptionMessage('The order with id order-id-missing-line-items is invalid or could not be found.');
+        $paymentBuilder->getPayment($paymentTransaction, $context);
     }
 
     /**
@@ -174,7 +170,7 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentBuilder = $this->createPaymentBuilder();
         $context = Context::createDefaultContext();
         $context->addExtension($extensionName, new Entity());
-        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
         $paymentJsonString = json_encode($payment);
@@ -221,7 +217,10 @@ class PaymentBuilderServiceTest extends TestCase
 
         $payment = json_decode($payment, true);
 
-        static::assertSame(SettingsServiceMock::PAYPAL_SETTING_ORDER_NUMBER_PREFIX . self::TEST_ORDER_NUMBER, $payment['transactions'][0]['invoice_number']);
+        static::assertSame(
+            SettingsServiceMock::PAYPAL_SETTING_ORDER_NUMBER_PREFIX . self::TEST_ORDER_NUMBER,
+            $payment['transactions'][0]['invoice_number']
+        );
     }
 
     public function testGetPaymentWithOrderNumberWithoutPrefix(): void
@@ -241,18 +240,6 @@ class PaymentBuilderServiceTest extends TestCase
         $payment = json_decode($payment, true);
 
         static::assertSame(self::TEST_ORDER_NUMBER, $payment['transactions'][0]['invoice_number']);
-    }
-
-    public function testGetPaymentInvalidOrder(): void
-    {
-        $paymentBuilder = $this->createPaymentBuilder();
-
-        $paymentTransaction = $this->createPaymentTransactionStruct(null);
-        $context = Context::createDefaultContext();
-
-        $this->expectException(InvalidOrderException::class);
-        $this->expectExceptionMessage('The order with id test-order-id is invalid or could not be found.');
-        $paymentBuilder->getPayment($paymentTransaction, $context);
     }
 
     private function createContextWithoutSalesChannel(): Context
