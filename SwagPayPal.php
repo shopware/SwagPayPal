@@ -89,7 +89,7 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
     {
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
-        $pluginId = $pluginIdProvider->getPluginIdByTechnicalName($this->getName(), $context);
+        $pluginId = $pluginIdProvider->getPluginIdByBaseClass($this->getClassName(), $context);
         $paymentMethodId = $this->getPaymentMethodId($context);
 
         if ($paymentMethodId !== null) {

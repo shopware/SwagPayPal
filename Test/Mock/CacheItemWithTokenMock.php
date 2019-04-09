@@ -23,7 +23,7 @@ class CacheItemWithTokenMock implements CacheItemInterface
     {
         $expireDate = new \DateTime();
         $expireDate->add(new \DateInterval('PT5H'));
-        $expireDate = $expireDate->format(Defaults::DATE_FORMAT);
+        $expireDate = $expireDate->format(Defaults::STORAGE_DATE_FORMAT);
 
         return 'O:27:"SwagPayPal\\PayPal\\Api\\Token":7:{s:34:"'
             . "\0" . 'SwagPayPal\\PayPal\\Api\\Token' . "\0" . 'scope";s:275:"https://uri.paypal.com/services/subscriptions https://api.paypal.com/v1/payments/.* https://api.paypal.com/v1/vault/credit-card https://uri.paypal.com/services/applications/webhooks openid https://uri.paypal.com/payments/payouts https://api.paypal.com/v1/vault/credit-card/.*";s:34:"'

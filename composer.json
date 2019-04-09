@@ -2,7 +2,7 @@
     "name": "swag/paypal",
     "description": "PayPal integration for shopware/platform",
     "version": "1.0.0",
-    "type": "shopware-plugin",
+    "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [
         {
@@ -16,7 +16,7 @@
         "phpunit/phpunit": "8.0.6"
     },
     "extra": {
-        "installer-name": "SwagPayPal",
+        "shopware-plugin-class": "SwagPayPal\\SwagPayPal",
         "copyright": "(c) by shopware AG",
         "label": {
             "de_DE": "PayPal Produkte für Shopware",
