@@ -15,7 +15,7 @@
 
     <testsuites>
         <testsuite name="SwagPayPal Testsuite">
-            <directory>Test</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 
