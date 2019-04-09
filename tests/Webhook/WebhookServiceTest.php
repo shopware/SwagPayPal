@@ -6,26 +6,26 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Webhook;
+namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use SwagPayPal\PayPal\Api\Webhook;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralDefinition;
-use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\DIContainerMock;
-use SwagPayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
-use SwagPayPal\Test\Mock\Repositories\DefinitionRegistryMock;
-use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use SwagPayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
-use SwagPayPal\Test\Mock\RouterMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
-use SwagPayPal\Test\Mock\Webhook\Handler\DummyWebhook;
-use SwagPayPal\Webhook\WebhookService;
-use SwagPayPal\Webhook\WebhookServiceInterface;
+use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
+use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\DIContainerMock;
+use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionRegistryMock;
+use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
+use Swag\PayPal\Test\Mock\RouterMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
+use Swag\PayPal\Webhook\WebhookService;
+use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 class WebhookServiceTest extends TestCase
 {

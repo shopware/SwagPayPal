@@ -6,10 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\PayPal\Exeption;
+namespace Swag\PayPal\Test\PayPal\Exeption;
 
 use PHPUnit\Framework\TestCase;
-use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use Symfony\Component\HttpFoundation\Response;
 
 class PayPalSettingsInvalidExceptionTest extends TestCase

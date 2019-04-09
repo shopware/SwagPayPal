@@ -6,15 +6,15 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\PayPal\Client;
+namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Client\PayPalClient;
-use SwagPayPal\PayPal\Client\PayPalClientFactory;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
-use SwagPayPal\Test\Mock\CacheMock;
-use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
-use SwagPayPal\Test\Payment\PayPalPaymentHandlerTest;
+use Swag\PayPal\PayPal\Client\PayPalClient;
+use Swag\PayPal\PayPal\Client\PayPalClientFactory;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
+use Swag\PayPal\Test\Mock\CacheMock;
+use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
+use Swag\PayPal\Test\Payment\PayPalPaymentHandlerTest;
 
 class PayPalClientFactoryMock extends PayPalClientFactory
 {

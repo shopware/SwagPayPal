@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Webhook;
+namespace Swag\PayPal\Webhook;
 
 /**
  * @url https://developer.paypal.com/docs/integration/direct/rest/webhooks/event-names/

@@ -6,13 +6,13 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Client;
+namespace Swag\PayPal\PayPal\Client;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
-use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
-use SwagPayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 
 class PayPalClientFactory
 {

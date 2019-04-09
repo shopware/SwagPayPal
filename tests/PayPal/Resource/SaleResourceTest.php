@@ -6,14 +6,14 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\PayPal\Resource;
+namespace Swag\PayPal\Test\PayPal\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Refund;
-use SwagPayPal\PayPal\PaymentStatus;
-use SwagPayPal\PayPal\Resource\SaleResource;
-use SwagPayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\PayPal\Api\Refund;
+use Swag\PayPal\PayPal\PaymentStatus;
+use Swag\PayPal\PayPal\Resource\SaleResource;
+use Swag\PayPal\Test\Helper\ServicesTrait;
 
 class SaleResourceTest extends TestCase
 {

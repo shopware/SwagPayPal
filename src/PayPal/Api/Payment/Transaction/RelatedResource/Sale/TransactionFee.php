@@ -6,9 +6,9 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Sale;
+namespace Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource\Sale;
 
-use SwagPayPal\PayPal\Api\Common\Value;
+use Swag\PayPal\PayPal\Api\Common\Value;
 
 class TransactionFee extends Value
 {

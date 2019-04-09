@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\Repositories;
+namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;

@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal;
+namespace Swag\PayPal;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Attribute\AttributeTypes;
@@ -21,7 +21,7 @@ use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
-use SwagPayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;

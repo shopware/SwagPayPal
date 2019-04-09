@@ -6,36 +6,36 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\PayPal\Client;
+namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use SwagPayPal\PayPal\Api\Common\PayPalStruct;
-use SwagPayPal\PayPal\Api\Payment\Payer\PayerInfo;
-use SwagPayPal\PayPal\Client\PayPalClient;
-use SwagPayPal\PayPal\PartnerAttributionId;
-use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
-use SwagPayPal\Test\Helper\ConstantsForTesting;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CaptureAuthorizationResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CaptureOrdersResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteAuthorizeResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteOrderResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteSaleResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetAuthorizeResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetCapturedOrderResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetOrderResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleWithRefundResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
-use SwagPayPal\Test\Payment\PayPalPaymentHandlerTest;
-use SwagPayPal\Test\PayPal\Resource\PaymentResourceTest;
-use SwagPayPal\Test\PayPal\Resource\WebhookResourceTest;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\Payment\Payer\PayerInfo;
+use Swag\PayPal\PayPal\Client\PayPalClient;
+use Swag\PayPal\PayPal\PartnerAttributionId;
+use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CaptureAuthorizationResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CaptureOrdersResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetCapturedOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleWithRefundResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
+use Swag\PayPal\Test\Payment\PayPalPaymentHandlerTest;
+use Swag\PayPal\Test\PayPal\Resource\PaymentResourceTest;
+use Swag\PayPal\Test\PayPal\Resource\WebhookResourceTest;
 
 class PayPalClientMock extends PayPalClient
 {

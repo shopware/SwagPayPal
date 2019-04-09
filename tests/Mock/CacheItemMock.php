@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock;
+namespace Swag\PayPal\Test\Mock;
 
 use Psr\Cache\CacheItemInterface;
 

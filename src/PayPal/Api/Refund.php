@@ -6,14 +6,14 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api;
+namespace Swag\PayPal\PayPal\Api;
 
-use SwagPayPal\PayPal\Api\Common\PayPalStruct;
-use SwagPayPal\PayPal\Api\Refund\Amount;
-use SwagPayPal\PayPal\Api\Refund\Link;
-use SwagPayPal\PayPal\Api\Refund\RefundFromReceivedAmount;
-use SwagPayPal\PayPal\Api\Refund\RefundFromTransactionFee;
-use SwagPayPal\PayPal\Api\Refund\TotalRefundedAmount;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\Refund\Amount;
+use Swag\PayPal\PayPal\Api\Refund\Link;
+use Swag\PayPal\PayPal\Api\Refund\RefundFromReceivedAmount;
+use Swag\PayPal\PayPal\Api\Refund\RefundFromTransactionFee;
+use Swag\PayPal\PayPal\Api\Refund\TotalRefundedAmount;
 
 class Refund extends PayPalStruct
 {

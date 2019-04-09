@@ -6,12 +6,12 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\Webhook\Handler;
+namespace Swag\PayPal\Test\Mock\Webhook\Handler;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Webhook;
-use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use SwagPayPal\Webhook\WebhookHandler;
+use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Webhook\WebhookHandler;
 
 class DummyWebhook implements WebhookHandler
 {

@@ -6,10 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Webhook\Exception;
+namespace Swag\PayPal\Test\Webhook\Exception;
 
 use PHPUnit\Framework\TestCase;
-use SwagPayPal\Webhook\Exception\WebhookException;
+use Swag\PayPal\Webhook\Exception\WebhookException;
 use Symfony\Component\HttpFoundation\Response;
 
 class WebhookExceptionTest extends TestCase

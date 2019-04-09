@@ -16,7 +16,7 @@
         "phpunit/phpunit": "8.0.6"
     },
     "extra": {
-        "shopware-plugin-class": "SwagPayPal\\SwagPayPal",
+        "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
         "copyright": "(c) by shopware AG",
         "label": {
             "de_DE": "PayPal Produkte für Shopware",
@@ -25,7 +25,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SwagPayPal\\": "src/"
+            "Swag\\PayPal\\": "src/"
         }
     }
 }

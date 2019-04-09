@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\PayPal\Client\_fixtures;
+namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures;
 
 class RefundSaleResponseFixture
 {

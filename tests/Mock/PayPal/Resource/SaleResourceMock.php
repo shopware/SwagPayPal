@@ -6,11 +6,11 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\PayPal\Resource;
+namespace Swag\PayPal\Test\Mock\PayPal\Resource;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Refund;
-use SwagPayPal\PayPal\Resource\SaleResource;
+use Swag\PayPal\PayPal\Api\Refund;
+use Swag\PayPal\PayPal\Resource\SaleResource;
 
 class SaleResourceMock extends SaleResource
 {

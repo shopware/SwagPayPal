@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace SwagPayPal\Test\PayPal\Api\Common;
+namespace Swag\PayPal\Test\PayPal\Api\Common;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
-use SwagPayPal\Test\PayPal\Api\Common\_fixtures\TestStruct;
+use Swag\PayPal\Test\PayPal\Api\Common\_fixtures\TestStruct;
 
 class PayPalStructTest extends TestCase
 {

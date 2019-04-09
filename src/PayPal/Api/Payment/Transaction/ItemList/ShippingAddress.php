@@ -6,9 +6,9 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api\Payment\Transaction\ItemList;
+namespace Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList;
 
-use SwagPayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
 class ShippingAddress extends PayPalStruct
 {

@@ -6,10 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api\Payment\Payer;
+namespace Swag\PayPal\PayPal\Api\Payment\Payer;
 
-use SwagPayPal\PayPal\Api\Common\PayPalStruct;
-use SwagPayPal\PayPal\Api\Payment\Payer\PayerInfo\ShippingAddress;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\Payment\Payer\PayerInfo\ShippingAddress;
 
 class PayerInfo extends PayPalStruct
 {

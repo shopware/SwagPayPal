@@ -6,14 +6,14 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\PayPal\Resource;
+namespace Swag\PayPal\Test\PayPal\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Capture;
-use SwagPayPal\PayPal\Resource\OrdersResource;
-use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
+use Swag\PayPal\PayPal\Api\Capture;
+use Swag\PayPal\PayPal\Resource\OrdersResource;
+use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
 
 class OrdersResourceTest extends TestCase
 {

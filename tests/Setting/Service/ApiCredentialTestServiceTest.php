@@ -6,16 +6,16 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Setting\Service;
+namespace Swag\PayPal\Test\Setting\Service;
 
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
-use SwagPayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
-use SwagPayPal\Setting\Service\ApiCredentialTestService;
-use SwagPayPal\Test\Helper\ConstantsForTesting;
-use SwagPayPal\Test\Mock\CacheMock;
-use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
+use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
+use Swag\PayPal\Setting\Service\ApiCredentialTestService;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Mock\CacheMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 
 class ApiCredentialTestServiceTest extends TestCase
 {

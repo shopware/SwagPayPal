@@ -6,16 +6,16 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Controller;
+namespace Swag\PayPal\Test\Controller;
 
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
-use SwagPayPal\Controller\SettingsController;
-use SwagPayPal\Setting\Service\ApiCredentialTestService;
-use SwagPayPal\Test\Helper\ConstantsForTesting;
-use SwagPayPal\Test\Mock\CacheMock;
-use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use SwagPayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
+use Swag\PayPal\Controller\SettingsController;
+use Swag\PayPal\Setting\Service\ApiCredentialTestService;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Mock\CacheMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class SettingsControllerTest extends TestCase

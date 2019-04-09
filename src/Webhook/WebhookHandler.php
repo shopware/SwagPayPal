@@ -6,10 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Webhook;
+namespace Swag\PayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Webhook;
+use Swag\PayPal\PayPal\Api\Webhook;
 
 interface WebhookHandler
 {

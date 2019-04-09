@@ -6,13 +6,13 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Webhook\Handler;
+namespace Swag\PayPal\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Webhook;
-use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
-use SwagPayPal\Webhook\WebhookEventTypes;
+use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
+use Swag\PayPal\Webhook\WebhookEventTypes;
 
 class SaleRefunded extends AbstractWebhookHandler
 {

@@ -6,9 +6,9 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Client;
+namespace Swag\PayPal\PayPal\Client;
 
-use SwagPayPal\PayPal\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\Api\OAuthCredentials;
 
 class TokenClientFactory
 {

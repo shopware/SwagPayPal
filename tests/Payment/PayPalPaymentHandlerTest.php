@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Payment;
+namespace Swag\PayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
@@ -19,16 +19,16 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use SwagPayPal\Payment\PayPalPaymentHandler;
-use SwagPayPal\SwagPayPal;
-use SwagPayPal\Test\Helper\ConstantsForTesting;
-use SwagPayPal\Test\Helper\PaymentTransactionTrait;
-use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\DIContainerMock;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
-use SwagPayPal\Test\Mock\Repositories\DefinitionRegistryMock;
-use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
+use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\DIContainerMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionRegistryMock;
+use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPaymentHandlerTest extends TestCase

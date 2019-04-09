@@ -6,11 +6,11 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\PayPal\Client;
+namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
-use SwagPayPal\PayPal\Api\OAuthCredentials;
-use SwagPayPal\PayPal\Client\TokenClient;
-use SwagPayPal\PayPal\Client\TokenClientFactory;
+use Swag\PayPal\PayPal\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\Client\TokenClient;
+use Swag\PayPal\PayPal\Client\TokenClientFactory;
 
 class TokenClientFactoryMock extends TokenClientFactory
 {

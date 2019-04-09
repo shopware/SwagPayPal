@@ -6,18 +6,18 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\PayPal\Resource;
+namespace Swag\PayPal\Test\PayPal\Resource;
 
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\CreateWebhooks;
-use SwagPayPal\PayPal\Resource\WebhookResource;
-use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
-use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientMock;
-use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
-use SwagPayPal\Webhook\Exception\WebhookIdInvalidException;
+use Swag\PayPal\PayPal\Api\CreateWebhooks;
+use Swag\PayPal\PayPal\Resource\WebhookResource;
+use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientMock;
+use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
+use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 
 class WebhookResourceTest extends TestCase
 {

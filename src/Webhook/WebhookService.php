@@ -6,18 +6,18 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Webhook;
+namespace Swag\PayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Util\Random;
-use SwagPayPal\PayPal\Api\CreateWebhooks;
-use SwagPayPal\PayPal\Api\Webhook;
-use SwagPayPal\PayPal\Resource\WebhookResource;
-use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
-use SwagPayPal\Setting\Service\SettingsServiceInterface;
-use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
-use SwagPayPal\Webhook\Exception\WebhookException;
-use SwagPayPal\Webhook\Exception\WebhookIdInvalidException;
+use Swag\PayPal\PayPal\Api\CreateWebhooks;
+use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\PayPal\Resource\WebhookResource;
+use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
+use Swag\PayPal\Webhook\Exception\WebhookException;
+use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 

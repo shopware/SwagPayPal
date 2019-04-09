@@ -6,11 +6,11 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Setting\Service;
+namespace Swag\PayPal\Setting\Service;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
+use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
 
 interface SettingsServiceInterface
 {

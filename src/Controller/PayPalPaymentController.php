@@ -6,20 +6,20 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Controller;
+namespace Swag\PayPal\Controller;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Capture;
-use SwagPayPal\PayPal\Api\Capture\Amount as CaptureAmount;
-use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
-use SwagPayPal\PayPal\Api\Refund;
-use SwagPayPal\PayPal\Api\Refund\Amount as RefundAmount;
-use SwagPayPal\PayPal\Exception\RequiredParameterInvalidException;
-use SwagPayPal\PayPal\Resource\AuthorizationResource;
-use SwagPayPal\PayPal\Resource\CaptureResource;
-use SwagPayPal\PayPal\Resource\OrdersResource;
-use SwagPayPal\PayPal\Resource\PaymentResource;
-use SwagPayPal\PayPal\Resource\SaleResource;
+use Swag\PayPal\PayPal\Api\Capture;
+use Swag\PayPal\PayPal\Api\Capture\Amount as CaptureAmount;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource;
+use Swag\PayPal\PayPal\Api\Refund;
+use Swag\PayPal\PayPal\Api\Refund\Amount as RefundAmount;
+use Swag\PayPal\PayPal\Exception\RequiredParameterInvalidException;
+use Swag\PayPal\PayPal\Resource\AuthorizationResource;
+use Swag\PayPal\PayPal\Resource\CaptureResource;
+use Swag\PayPal\PayPal\Resource\OrdersResource;
+use Swag\PayPal\PayPal\Resource\PaymentResource;
+use Swag\PayPal\PayPal\Resource\SaleResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

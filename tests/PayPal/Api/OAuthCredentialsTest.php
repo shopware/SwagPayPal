@@ -6,10 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\PayPal\Api;
+namespace Swag\PayPal\Test\PayPal\Api;
 
 use PHPUnit\Framework\TestCase;
-use SwagPayPal\PayPal\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\Api\OAuthCredentials;
 
 class OAuthCredentialsTest extends TestCase
 {

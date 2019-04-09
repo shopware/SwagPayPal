@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api;
+namespace Swag\PayPal\PayPal\Api;
 
 class OAuthCredentials
 {

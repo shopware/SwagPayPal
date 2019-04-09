@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\Repositories;
+namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -17,11 +17,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Event\NestedEventCollection;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
-use SwagPayPal\Test\Helper\ConstantsForTesting;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
-use SwagPayPal\Test\Setting\Service\SettingsServiceTest;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralCollection;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Test\Setting\Service\SettingsServiceTest;
 
 class SwagPayPalSettingGeneralRepoMock implements EntityRepositoryInterface
 {

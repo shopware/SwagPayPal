@@ -6,9 +6,9 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
+namespace Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource;
 
-use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Sale\TransactionFee;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource\Sale\TransactionFee;
 
 class Sale extends RelatedResource
 {

@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Payment;
+namespace Swag\PayPal\Payment;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -19,11 +19,11 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use SwagPayPal\PayPal\Api\Payment;
-use SwagPayPal\PayPal\PaymentIntent;
-use SwagPayPal\PayPal\PaymentStatus;
-use SwagPayPal\PayPal\Resource\PaymentResource;
-use SwagPayPal\SwagPayPal;
+use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\PayPal\PaymentStatus;
+use Swag\PayPal\PayPal\Resource\PaymentResource;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 

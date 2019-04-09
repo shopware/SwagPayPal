@@ -6,22 +6,22 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Helper;
+namespace Swag\PayPal\Test\Helper;
 
-use SwagPayPal\Payment\PaymentBuilderService;
-use SwagPayPal\PayPal\Resource\PaymentResource;
-use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Setting\Service\SettingsServiceInterface;
-use SwagPayPal\Test\Mock\CacheMock;
-use SwagPayPal\Test\Mock\DIContainerMock;
-use SwagPayPal\Test\Mock\DummyCollection;
-use SwagPayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
-use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use SwagPayPal\Test\Mock\Repositories\DefinitionRegistryMock;
-use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
-use SwagPayPal\Test\Mock\Webhook\Handler\DummyWebhook;
-use SwagPayPal\Webhook\WebhookRegistry;
+use Swag\PayPal\Payment\PaymentBuilderService;
+use Swag\PayPal\PayPal\Resource\PaymentResource;
+use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Test\Mock\CacheMock;
+use Swag\PayPal\Test\Mock\DIContainerMock;
+use Swag\PayPal\Test\Mock\DummyCollection;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionRegistryMock;
+use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
+use Swag\PayPal\Webhook\WebhookRegistry;
 
 trait ServicesTrait
 {

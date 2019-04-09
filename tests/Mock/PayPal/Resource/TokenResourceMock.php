@@ -6,16 +6,16 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\PayPal\Resource;
+namespace Swag\PayPal\Test\Mock\PayPal\Resource;
 
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use SwagPayPal\PayPal\Api\OAuthCredentials;
-use SwagPayPal\PayPal\Api\Token;
-use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Test\Helper\ConstantsForTesting;
-use SwagPayPal\Test\Setting\Service\ApiCredentialTestServiceTest;
+use Swag\PayPal\PayPal\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\Api\Token;
+use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Setting\Service\ApiCredentialTestServiceTest;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class TokenResourceMock extends TokenResource

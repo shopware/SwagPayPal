@@ -6,13 +6,13 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Setting\Service;
+namespace Swag\PayPal\Setting\Service;
 
 use GuzzleHttp\Exception\ClientException;
-use SwagPayPal\PayPal\Api\OAuthCredentials;
-use SwagPayPal\PayPal\BaseURL;
-use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
+use Swag\PayPal\PayPal\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\BaseURL;
+use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Symfony\Component\HttpFoundation\Response;
 
 class ApiCredentialTestService implements ApiCredentialTestServiceInterface

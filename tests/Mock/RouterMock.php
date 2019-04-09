@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock;
+namespace Swag\PayPal\Test\Mock;
 
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;

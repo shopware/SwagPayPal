@@ -6,15 +6,15 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\Webhook;
+namespace Swag\PayPal\Test\Mock\Webhook;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Webhook;
-use SwagPayPal\Test\Controller\WebhookControllerTest;
-use SwagPayPal\Test\Mock\Webhook\Handler\DummyWebhook;
-use SwagPayPal\Webhook\Exception\WebhookException;
-use SwagPayPal\Webhook\WebhookService;
-use SwagPayPal\Webhook\WebhookServiceInterface;
+use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\Test\Controller\WebhookControllerTest;
+use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
+use Swag\PayPal\Webhook\Exception\WebhookException;
+use Swag\PayPal\Webhook\WebhookService;
+use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 class WebhookServiceMock implements WebhookServiceInterface
 {

@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Webhook\Handler;
+namespace Swag\PayPal\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -17,10 +17,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use SwagPayPal\PayPal\Api\Webhook;
-use SwagPayPal\SwagPayPal;
-use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
-use SwagPayPal\Webhook\WebhookHandler;
+use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
+use Swag\PayPal\Webhook\WebhookHandler;
 
 abstract class AbstractWebhookHandler implements WebhookHandler
 {

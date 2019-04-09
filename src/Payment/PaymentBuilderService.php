@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Payment;
+namespace Swag\PayPal\Payment;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
@@ -23,20 +23,20 @@ use Shopware\Core\Framework\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use SwagPayPal\PayPal\Api\Payment;
-use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
-use SwagPayPal\PayPal\Api\Payment\Payer;
-use SwagPayPal\PayPal\Api\Payment\RedirectUrls;
-use SwagPayPal\PayPal\Api\Payment\Transaction;
-use SwagPayPal\PayPal\Api\Payment\Transaction\Amount;
-use SwagPayPal\PayPal\Api\Payment\Transaction\Amount\Details;
-use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList;
-use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
-use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
-use SwagPayPal\PayPal\PaymentIntent;
-use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
-use SwagPayPal\Setting\Service\SettingsServiceInterface;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
+use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
+use Swag\PayPal\PayPal\Api\Payment\Payer;
+use Swag\PayPal\PayPal\Api\Payment\RedirectUrls;
+use Swag\PayPal\PayPal\Api\Payment\Transaction;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\Amount;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\Amount\Details;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
+use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
 
 class PaymentBuilderService implements PaymentBuilderInterface
 {

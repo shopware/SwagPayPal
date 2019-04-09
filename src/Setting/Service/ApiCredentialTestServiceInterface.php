@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Setting\Service;
+namespace Swag\PayPal\Setting\Service;
 
 interface ApiCredentialTestServiceInterface
 {

@@ -6,12 +6,12 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Resource;
+namespace Swag\PayPal\PayPal\Resource;
 
 use Psr\Cache\CacheItemPoolInterface;
-use SwagPayPal\PayPal\Api\OAuthCredentials;
-use SwagPayPal\PayPal\Api\Token;
-use SwagPayPal\PayPal\Client\TokenClientFactory;
+use Swag\PayPal\PayPal\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\Api\Token;
+use Swag\PayPal\PayPal\Client\TokenClientFactory;
 
 class TokenResource
 {

@@ -6,21 +6,21 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Payment;
+namespace Swag\PayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use SwagPayPal\PayPal\Api\Payment;
-use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
-use SwagPayPal\PayPal\Exception\PayPalSettingsInvalidException;
-use SwagPayPal\Test\Helper\ConstantsForTesting;
-use SwagPayPal\Test\Helper\PaymentTransactionTrait;
-use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\Repositories\SalesChannelRepoMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
+use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
+use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 
 class PaymentBuilderServiceTest extends TestCase
 {

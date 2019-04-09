@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Helper;
+namespace Swag\PayPal\Test\Helper;
 
 final class ConstantsForTesting
 {

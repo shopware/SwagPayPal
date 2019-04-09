@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwagPayPal\Test\Mock;
+namespace Swag\PayPal\Test\Mock;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

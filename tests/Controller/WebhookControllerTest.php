@@ -6,20 +6,20 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Controller;
+namespace Swag\PayPal\Test\Controller;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
-use SwagPayPal\Controller\WebhookController;
-use SwagPayPal\Test\Controller\_fixtures\WebhookDataFixture;
-use SwagPayPal\Test\Mock\DIContainerMock;
-use SwagPayPal\Test\Mock\LoggerMock;
-use SwagPayPal\Test\Mock\Repositories\DefinitionRegistryMock;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
-use SwagPayPal\Test\Mock\Webhook\WebhookServiceMock;
-use SwagPayPal\Webhook\WebhookService;
+use Swag\PayPal\Controller\WebhookController;
+use Swag\PayPal\Test\Controller\_fixtures\WebhookDataFixture;
+use Swag\PayPal\Test\Mock\DIContainerMock;
+use Swag\PayPal\Test\Mock\LoggerMock;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionRegistryMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Test\Mock\Webhook\WebhookServiceMock;
+use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;

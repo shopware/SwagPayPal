@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace SwagPayPal\PayPal\Api;
+namespace Swag\PayPal\PayPal\Api;
 
-use SwagPayPal\PayPal\Api\Common\PayPalStruct;
-use SwagPayPal\PayPal\Api\DoVoid\Amount;
-use SwagPayPal\PayPal\Api\DoVoid\Link;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\DoVoid\Amount;
+use Swag\PayPal\PayPal\Api\DoVoid\Link;
 
 class DoVoid extends PayPalStruct
 {

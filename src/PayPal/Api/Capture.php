@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace SwagPayPal\PayPal\Api;
+namespace Swag\PayPal\PayPal\Api;
 
-use SwagPayPal\PayPal\Api\Capture\Amount;
-use SwagPayPal\PayPal\Api\Capture\Link;
-use SwagPayPal\PayPal\Api\Capture\TransactionFee;
-use SwagPayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\Capture\Amount;
+use Swag\PayPal\PayPal\Api\Capture\Link;
+use Swag\PayPal\PayPal\Api\Capture\TransactionFee;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
 class Capture extends PayPalStruct
 {

@@ -6,16 +6,16 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Setting\Service;
+namespace Swag\PayPal\Setting\Service;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralCollection;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralDefinition;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
+use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralCollection;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
 
 class SettingsService implements SettingsServiceInterface
 {

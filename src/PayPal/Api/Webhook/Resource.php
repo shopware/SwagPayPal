@@ -6,11 +6,11 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api\Webhook;
+namespace Swag\PayPal\PayPal\Api\Webhook;
 
-use SwagPayPal\PayPal\Api\Common\PayPalStruct;
-use SwagPayPal\PayPal\Api\Webhook\Resource\Amount;
-use SwagPayPal\PayPal\Api\Webhook\Resource\Link;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\Webhook\Resource\Amount;
+use Swag\PayPal\PayPal\Api\Webhook\Resource\Link;
 
 class Resource extends PayPalStruct
 {

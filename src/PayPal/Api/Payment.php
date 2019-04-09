@@ -6,14 +6,14 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api;
+namespace Swag\PayPal\PayPal\Api;
 
-use SwagPayPal\PayPal\Api\Common\PayPalStruct;
-use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
-use SwagPayPal\PayPal\Api\Payment\Link;
-use SwagPayPal\PayPal\Api\Payment\Payer;
-use SwagPayPal\PayPal\Api\Payment\RedirectUrls;
-use SwagPayPal\PayPal\Api\Payment\Transaction;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
+use Swag\PayPal\PayPal\Api\Payment\Link;
+use Swag\PayPal\PayPal\Api\Payment\Payer;
+use Swag\PayPal\PayPal\Api\Payment\RedirectUrls;
+use Swag\PayPal\PayPal\Api\Payment\Transaction;
 
 class Payment extends PayPalStruct
 {

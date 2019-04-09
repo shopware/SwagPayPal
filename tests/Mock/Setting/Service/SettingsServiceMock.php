@@ -6,13 +6,13 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\Setting\Service;
+namespace Swag\PayPal\Test\Mock\Setting\Service;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Payment\ApplicationContext;
-use SwagPayPal\PayPal\PaymentIntent;
-use SwagPayPal\Setting\Service\SettingsService;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralEntity;
+use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
+use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
 
 class SettingsServiceMock extends SettingsService
 {

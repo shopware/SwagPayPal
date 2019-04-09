@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Webhook\Handler;
+namespace Swag\PayPal\Test\Webhook\Handler;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
@@ -15,13 +15,13 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use SwagPayPal\PayPal\Api\Webhook;
-use SwagPayPal\Test\Mock\DIContainerMock;
-use SwagPayPal\Test\Mock\Repositories\DefinitionRegistryMock;
-use SwagPayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use SwagPayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
-use SwagPayPal\Webhook\Handler\AuthorizationVoided;
-use SwagPayPal\Webhook\WebhookEventTypes;
+use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\Test\Mock\DIContainerMock;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionRegistryMock;
+use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
+use Swag\PayPal\Webhook\Handler\AuthorizationVoided;
+use Swag\PayPal\Webhook\WebhookEventTypes;
 
 class AuthorizationVoidedTest extends TestCase
 {

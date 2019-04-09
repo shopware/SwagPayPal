@@ -6,11 +6,11 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Payment;
+namespace Swag\PayPal\Payment;
 
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\Api\Payment;
 
 interface PaymentBuilderInterface
 {

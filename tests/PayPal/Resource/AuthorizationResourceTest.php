@@ -6,14 +6,14 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\PayPal\Resource;
+namespace Swag\PayPal\Test\PayPal\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Capture;
-use SwagPayPal\PayPal\Resource\AuthorizationResource;
-use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
+use Swag\PayPal\PayPal\Api\Capture;
+use Swag\PayPal\PayPal\Resource\AuthorizationResource;
+use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
 
 class AuthorizationResourceTest extends TestCase
 {

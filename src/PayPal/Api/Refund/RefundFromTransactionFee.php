@@ -6,9 +6,9 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api\Refund;
+namespace Swag\PayPal\PayPal\Api\Refund;
 
-use SwagPayPal\PayPal\Api\Common\Value;
+use Swag\PayPal\PayPal\Api\Common\Value;
 
 class RefundFromTransactionFee extends Value
 {

@@ -6,10 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Setting\Service\Exception;
+namespace Swag\PayPal\Test\Setting\Service\Exception;
 
 use PHPUnit\Framework\TestCase;
-use SwagPayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
 use Symfony\Component\HttpFoundation\Response;
 
 class PayPalSettingsNotFoundExceptionTest extends TestCase

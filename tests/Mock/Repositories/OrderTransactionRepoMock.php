@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\Repositories;
+namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Framework\Context;
@@ -19,7 +19,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Event\NestedEventCollection;
-use SwagPayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
 
 class OrderTransactionRepoMock implements EntityRepositoryInterface
 {

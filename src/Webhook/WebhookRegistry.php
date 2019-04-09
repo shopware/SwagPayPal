@@ -6,9 +6,9 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Webhook;
+namespace Swag\PayPal\Webhook;
 
-use SwagPayPal\Webhook\Exception\WebhookException;
+use Swag\PayPal\Webhook\Exception\WebhookException;
 
 class WebhookRegistry
 {

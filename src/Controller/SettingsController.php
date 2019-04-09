@@ -6,9 +6,9 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Controller;
+namespace Swag\PayPal\Controller;
 
-use SwagPayPal\Setting\Service\ApiCredentialTestServiceInterface;
+use Swag\PayPal\Setting\Service\ApiCredentialTestServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

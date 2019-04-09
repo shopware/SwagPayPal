@@ -6,12 +6,12 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Client;
+namespace Swag\PayPal\PayPal\Client;
 
 use GuzzleHttp\Client;
-use SwagPayPal\PayPal\Api\OAuthCredentials;
-use SwagPayPal\PayPal\PartnerAttributionId;
-use SwagPayPal\PayPal\RequestUri;
+use Swag\PayPal\PayPal\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\PartnerAttributionId;
+use Swag\PayPal\PayPal\RequestUri;
 
 class TokenClient
 {

@@ -6,14 +6,14 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Webhook;
+namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
-use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\DummyCollection;
-use SwagPayPal\Test\Mock\Webhook\Handler\DummyWebhook;
-use SwagPayPal\Webhook\Exception\WebhookException;
-use SwagPayPal\Webhook\WebhookRegistry;
+use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\DummyCollection;
+use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
+use Swag\PayPal\Webhook\Exception\WebhookException;
+use Swag\PayPal\Webhook\WebhookRegistry;
 
 class WebhookRegistryTest extends TestCase
 {

@@ -6,16 +6,16 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Resource;
+namespace Swag\PayPal\PayPal\Resource;
 
 use GuzzleHttp\Exception\ClientException;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\CreateWebhooks;
-use SwagPayPal\PayPal\Api\Patch;
-use SwagPayPal\PayPal\Client\PayPalClientFactory;
-use SwagPayPal\PayPal\RequestUri;
-use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
-use SwagPayPal\Webhook\Exception\WebhookIdInvalidException;
+use Swag\PayPal\PayPal\Api\CreateWebhooks;
+use Swag\PayPal\PayPal\Api\Patch;
+use Swag\PayPal\PayPal\Client\PayPalClientFactory;
+use Swag\PayPal\PayPal\RequestUri;
+use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
+use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 
 class WebhookResource
 {

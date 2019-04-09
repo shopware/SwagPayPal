@@ -6,16 +6,16 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\PayPal\Resource;
+namespace Swag\PayPal\Test\PayPal\Resource;
 
 use PHPUnit\Framework\TestCase;
-use SwagPayPal\PayPal\Api\OAuthCredentials;
-use SwagPayPal\PayPal\Api\Token;
-use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Test\Mock\CacheItemWithTokenMock;
-use SwagPayPal\Test\Mock\CacheMock;
-use SwagPayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use SwagPayPal\Test\Mock\PayPal\Client\TokenClientMock;
+use Swag\PayPal\PayPal\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\Api\Token;
+use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\Test\Mock\CacheItemWithTokenMock;
+use Swag\PayPal\Test\Mock\CacheMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientMock;
 
 class TokenResourceTest extends TestCase
 {

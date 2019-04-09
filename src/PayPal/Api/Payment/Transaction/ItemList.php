@@ -6,11 +6,11 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api\Payment\Transaction;
+namespace Swag\PayPal\PayPal\Api\Payment\Transaction;
 
-use SwagPayPal\PayPal\Api\Common\PayPalStruct;
-use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
-use SwagPayPal\PayPal\Api\Payment\Transaction\ItemList\ShippingAddress;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\ShippingAddress;
 
 class ItemList extends PayPalStruct
 {

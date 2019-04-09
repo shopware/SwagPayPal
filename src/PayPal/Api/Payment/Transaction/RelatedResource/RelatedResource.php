@@ -6,11 +6,11 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
+namespace Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource;
 
-use SwagPayPal\PayPal\Api\Common\Amount;
-use SwagPayPal\PayPal\Api\Common\Link;
-use SwagPayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\Common\Amount;
+use Swag\PayPal\PayPal\Api\Common\Link;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
 abstract class RelatedResource extends PayPalStruct
 {

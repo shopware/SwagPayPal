@@ -6,24 +6,24 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Controller;
+namespace Swag\PayPal\Test\Controller;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
-use SwagPayPal\Controller\PayPalPaymentController;
-use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
-use SwagPayPal\PayPal\Exception\RequiredParameterInvalidException;
-use SwagPayPal\PayPal\Resource\AuthorizationResource;
-use SwagPayPal\PayPal\Resource\CaptureResource;
-use SwagPayPal\PayPal\Resource\OrdersResource;
-use SwagPayPal\PayPal\Resource\SaleResource;
-use SwagPayPal\Test\Helper\ServicesTrait;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
-use SwagPayPal\Test\Mock\PayPal\Resource\SaleResourceMock;
+use Swag\PayPal\Controller\PayPalPaymentController;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource;
+use Swag\PayPal\PayPal\Exception\RequiredParameterInvalidException;
+use Swag\PayPal\PayPal\Resource\AuthorizationResource;
+use Swag\PayPal\PayPal\Resource\CaptureResource;
+use Swag\PayPal\PayPal\Resource\OrdersResource;
+use Swag\PayPal\PayPal\Resource\SaleResource;
+use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Resource\SaleResourceMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPaymentControllerTest extends TestCase

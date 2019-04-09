@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwagPayPal\Test\Mock\PayPal\Client\_fixtures;
+namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures;
 
 class CaptureOrdersResponseFixture
 {

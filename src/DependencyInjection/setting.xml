@@ -5,19 +5,19 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="SwagPayPal\Setting\SwagPayPalSettingGeneralDefinition">
+        <service id="Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition">
             <tag name="shopware.entity.definition" entity="swag_paypal_setting_general"/>
         </service>
 
-        <service id="SwagPayPal\Controller\SettingsController" public="true">
-            <argument type="service" id="SwagPayPal\Setting\Service\ApiCredentialTestService"/>
+        <service id="Swag\PayPal\Controller\SettingsController" public="true">
+            <argument type="service" id="Swag\PayPal\Setting\Service\ApiCredentialTestService"/>
         </service>
 
-        <service id="SwagPayPal\Setting\Service\ApiCredentialTestService">
-            <argument type="service" id="SwagPayPal\PayPal\Resource\TokenResource"/>
+        <service id="Swag\PayPal\Setting\Service\ApiCredentialTestService">
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\TokenResource"/>
         </service>
 
-        <service id="SwagPayPal\Setting\Service\SettingsService">
+        <service id="Swag\PayPal\Setting\Service\SettingsService">
             <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
         </service>
     </services>

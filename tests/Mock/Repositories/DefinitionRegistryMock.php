@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace SwagPayPal\Test\Mock\Repositories;
+namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Language\LanguageDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
-use SwagPayPal\Setting\SwagPayPalSettingGeneralDefinition;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DefinitionRegistryMock extends DefinitionRegistry

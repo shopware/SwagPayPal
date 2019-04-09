@@ -6,10 +6,10 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Setting\Service\Exception;
+namespace Swag\PayPal\Test\Setting\Service\Exception;
 
 use PHPUnit\Framework\TestCase;
-use SwagPayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
+use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Symfony\Component\HttpFoundation\Response;
 
 class PayPalInvalidApiCredentialsExceptionTest extends TestCase

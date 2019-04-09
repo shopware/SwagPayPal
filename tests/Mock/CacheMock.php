@@ -6,12 +6,12 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock;
+namespace Swag\PayPal\Test\Mock;
 
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
-use SwagPayPal\PayPal\Resource\TokenResource;
-use SwagPayPal\Test\PayPal\Resource\TokenResourceTest;
+use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\Test\PayPal\Resource\TokenResourceTest;
 
 class CacheMock implements CacheItemPoolInterface
 {

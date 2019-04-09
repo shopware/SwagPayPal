@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace SwagPayPal\Test\PayPal\Api\Common\_fixtures;
+namespace Swag\PayPal\Test\PayPal\Api\Common\_fixtures;
 
-use SwagPayPal\PayPal\Api\Common\PayPalStruct;
-use SwagPayPal\Test\PayPal\Api\Common\_fixtures\TestStruct\Bar;
-use SwagPayPal\Test\PayPal\Api\Common\_fixtures\TestStruct\Foo;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\Test\PayPal\Api\Common\_fixtures\TestStruct\Bar;
+use Swag\PayPal\Test\PayPal\Api\Common\_fixtures\TestStruct\Foo;
 
 class TestStruct extends PayPalStruct
 {

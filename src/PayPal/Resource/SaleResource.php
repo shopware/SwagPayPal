@@ -6,12 +6,12 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Resource;
+namespace Swag\PayPal\PayPal\Resource;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Refund;
-use SwagPayPal\PayPal\Client\PayPalClientFactory;
-use SwagPayPal\PayPal\RequestUri;
+use Swag\PayPal\PayPal\Api\Refund;
+use Swag\PayPal\PayPal\Client\PayPalClientFactory;
+use Swag\PayPal\PayPal\RequestUri;
 
 class SaleResource
 {

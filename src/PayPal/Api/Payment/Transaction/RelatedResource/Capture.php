@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource;
+namespace Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource;
 
-use SwagPayPal\PayPal\Api\Payment\Transaction\RelatedResource\Capture\TransactionFee;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource\Capture\TransactionFee;
 
 class Capture extends RelatedResource
 {

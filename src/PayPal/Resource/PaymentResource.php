@@ -6,13 +6,13 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\PayPal\Resource;
+namespace Swag\PayPal\PayPal\Resource;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\Payment;
-use SwagPayPal\PayPal\Api\Payment\Payer\PayerInfo;
-use SwagPayPal\PayPal\Client\PayPalClientFactory;
-use SwagPayPal\PayPal\RequestUri;
+use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\Api\Payment\Payer\PayerInfo;
+use Swag\PayPal\PayPal\Client\PayPalClientFactory;
+use Swag\PayPal\PayPal\RequestUri;
 
 class PaymentResource
 {

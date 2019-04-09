@@ -6,15 +6,15 @@
  * file that was distributed with this source code.
  */
 
-namespace SwagPayPal\Test\Mock\PayPal\Resource;
+namespace Swag\PayPal\Test\Mock\PayPal\Resource;
 
 use Shopware\Core\Framework\Context;
-use SwagPayPal\PayPal\Api\CreateWebhooks;
-use SwagPayPal\PayPal\Resource\WebhookResource;
-use SwagPayPal\Test\Mock\Setting\Service\SettingsServiceMock;
-use SwagPayPal\Webhook\Exception\WebhookAlreadyExistsException;
-use SwagPayPal\Webhook\Exception\WebhookIdInvalidException;
-use SwagPayPal\Webhook\WebhookService;
+use Swag\PayPal\PayPal\Api\CreateWebhooks;
+use Swag\PayPal\PayPal\Resource\WebhookResource;
+use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
+use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
+use Swag\PayPal\Webhook\WebhookService;
 
 class WebhookResourceMock extends WebhookResource
 {
