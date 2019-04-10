@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Controller\WebhookController" public="true">
+            <argument type="service" id="logger"/>
+            <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\WebhookService">
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\WebhookResource"/>
+            <argument type="service" id="Swag\PayPal\Webhook\WebhookRegistry"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="router.default"/>
+        </service>
+
+        <!-- handler registry -->
+        <service id="Swag\PayPal\Webhook\WebhookRegistry">
+            <argument type="tagged" tag="swag.paypal.webhook.handler"/>
+        </service>
+
+        <!-- handler -->
+        <service id="Swag\PayPal\Webhook\Handler\AuthorizationVoided">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
+            <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\SaleComplete">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
+            <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\SaleDenied">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
+            <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Handler\SaleRefunded">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
+            <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+            <tag name="swag.paypal.webhook.handler"/>
+        </service>
+    </services>
+</container>

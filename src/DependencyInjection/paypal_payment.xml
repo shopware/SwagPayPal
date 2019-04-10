@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Payment\PayPalPaymentHandler">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
+            <argument type="service" id="Swag\PayPal\Payment\PaymentBuilderService"/>
+            <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+            <tag name="payment.method"/>
+        </service>
+
+        <service id="Swag\PayPal\Controller\PayPalPaymentController" public="true">
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\SaleResource"/>
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\AuthorizationResource"/>
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\OrdersResource"/>
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\CaptureResource"/>
+        </service>
+
+        <service id="Swag\PayPal\Payment\PaymentBuilderService">
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+        </service>
+    </services>
+</container>

@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\PayPal\Client\PayPalClientFactory">
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\TokenResource"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+        </service>
+
+        <service id="Swag\PayPal\PayPal\Client\TokenClientFactory" class="Swag\PayPal\PayPal\Client\TokenClientFactory"/>
+    </services>
+</container>
