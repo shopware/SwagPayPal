@@ -10,7 +10,7 @@
             <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
             <argument type="service" id="Swag\PayPal\Payment\PaymentBuilderService"/>
             <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
-            <tag name="payment.method"/>
+            <tag name="shopware.payment.method.async"/>
         </service>
 
         <service id="Swag\PayPal\Controller\PayPalPaymentController" public="true">
