@@ -181,6 +181,8 @@ class PaymentBuilderServiceTest extends TestCase
 
         $applicationContext = json_decode($paymentJsonString, true)['application_context'];
         static::assertSame($expectedResult, $applicationContext['landing_page']);
+        static::assertSame('en-GB', $applicationContext['locale']);
+        static::assertSame('commit', $applicationContext['user_action']);
     }
 
     public function dataProviderTestApplicationContext(): array

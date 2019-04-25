@@ -22,7 +22,7 @@ use Shopware\Core\System\Locale\LocaleEntity;
 
 class LanguageRepoMock implements EntityRepositoryInterface
 {
-    public const LOCALE_CODE = 'en_GB';
+    public const LOCALE_CODE = 'en-GB';
 
     public function aggregate(Criteria $criteria, Context $context): AggregatorResult
     {
