@@ -5,8 +5,8 @@ import paymentActions from '../../app/component/swag-paypal-payment-actions';
 import captureAction from '../../app/component/swag-paypal-payment-actions/extensions/swag-paypal-payment-action-capture';
 import refundAction from '../../app/component/swag-paypal-payment-actions/extensions/swag-paypal-payment-action-refund';
 import voidAction from '../../app/component/swag-paypal-payment-actions/extensions/swag-paypal-payment-action-void';
-import deDE from './snippet/de_DE.json';
-import enGB from './snippet/en_GB.json';
+import deDE from './snippet/de-DE.json';
+import enGB from './snippet/en-GB.json';
 
 Module.register('swag-paypal-payment', {
     type: 'plugin',

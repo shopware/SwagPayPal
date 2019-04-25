@@ -19,8 +19,8 @@
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
         "copyright": "(c) by shopware AG",
         "label": {
-            "de_DE": "PayPal Produkte für Shopware",
-            "en_GB": "PayPal Products for Shopware"
+            "de-DE": "PayPal Produkte für Shopware",
+            "en-GB": "PayPal Products for Shopware"
         }
     },
     "autoload": {
