@@ -9,6 +9,8 @@
 namespace Swag\PayPal\PayPal\Client;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Context\Exception\InvalidContextSourceException;
+use Shopware\Core\Framework\Context\SalesChannelApiSource;
 use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
@@ -33,6 +35,7 @@ class PayPalClientFactory
     }
 
     /**
+     * @throws InvalidContextSourceException
      * @throws PayPalSettingsInvalidException
      * @throws PayPalSettingsNotFoundException
      */
@@ -40,6 +43,12 @@ class PayPalClientFactory
     {
         $settings = $this->settingsProvider->getSettings($context);
 
-        return new PayPalClient($this->tokenResource, $settings, $context->getSalesChannelId());
+        /** @var SalesChannelApiSource $contextSource */
+        $contextSource = $context->getSource();
+        if (!$contextSource instanceof SalesChannelApiSource) {
+            throw new InvalidContextSourceException(SalesChannelApiSource::class, \get_class($context->getSource()));
+        }
+
+        return new PayPalClient($this->tokenResource, $settings, $contextSource->getSalesChannelId());
     }
 }

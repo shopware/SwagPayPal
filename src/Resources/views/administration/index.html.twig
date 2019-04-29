@@ -1,5 +1,11 @@
 {% sw_extends 'administration/index.html.twig' %}
 
+{% block administration_stylesheets %}
+    {{ parent() }}
+
+    <link rel="stylesheet" href="{{ asset('bundles/swagpaypal/static/css/SwagPayPal.css') }}">
+{% endblock %}
+
 {% block administration_scripts %}
     {{ parent() }}
 

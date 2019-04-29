@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -68,7 +69,7 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentBuilder = $this->createPaymentBuilder();
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
-        $context = Context::createDefaultContext();
+        $context = Context::createDefaultContext(new SalesChannelApiSource(Defaults::SALES_CHANNEL));
         $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
@@ -168,7 +169,7 @@ class PaymentBuilderServiceTest extends TestCase
     public function testApplicationContext(string $extensionName, string $expectedResult): void
     {
         $paymentBuilder = $this->createPaymentBuilder();
-        $context = Context::createDefaultContext();
+        $context = Context::createDefaultContext(new SalesChannelApiSource(Defaults::SALES_CHANNEL));
         $context->addExtension($extensionName, new Entity());
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
 
