@@ -122,7 +122,7 @@ export default {
                     message: this.$tc('swag-paypal-payment.refundAction.successMessage')
                 });
                 this.isLoading = false;
-                this.$emit('closeModal');
+                this.$emit('modal-close');
                 this.$nextTick(() => {
                     this.$router.replace(`${this.$route.path}?hash=${utils.createId()}`);
                 });
