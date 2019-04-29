@@ -14,15 +14,18 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Context\Exception\InvalidContextSourceException;
+use Shopware\Core\Framework\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\RepositoryNotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Language\LanguageCollection;
 use Shopware\Core\Framework\Language\LanguageDefinition;
 use Shopware\Core\Framework\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\Api\Payment\Payer;
@@ -60,6 +63,9 @@ class PaymentBuilderService implements PaymentBuilderInterface
      */
     private $settings;
 
+    /**
+     * @throws RepositoryNotFoundException
+     */
     public function __construct(
         DefinitionRegistry $definitionRegistry,
         SettingsServiceInterface $settingsProvider
@@ -72,6 +78,10 @@ class PaymentBuilderService implements PaymentBuilderInterface
     /**
      * {@inheritdoc}
      *
+     * @throws InconsistentCriteriaIdsException
+     * @throws InvalidContextSourceException
+     * @throws InvalidOrderException
+     * @throws PayPalSettingsInvalidException
      * @throws PayPalSettingsNotFoundException
      */
     public function getPayment(AsyncPaymentTransactionStruct $paymentTransaction, Context $context): Payment
@@ -94,6 +104,9 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $requestPayment;
     }
 
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
     private function getIntent(): string
     {
         $intent = $this->settings->getIntent();
@@ -129,6 +142,9 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $redirectUrls;
     }
 
+    /**
+     * @throws InvalidOrderException
+     */
     private function createTransaction(AsyncPaymentTransactionStruct $paymentTransaction): Transaction
     {
         $orderTransaction = $paymentTransaction->getOrderTransaction();
@@ -187,6 +203,8 @@ class PaymentBuilderService implements PaymentBuilderInterface
     }
 
     /**
+     * @throws InvalidOrderException
+     *
      * @return Item[]
      */
     private function getItemList(OrderEntity $order, string $currency): array
@@ -212,8 +230,11 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $items;
     }
 
-    private function createItemFromLineItem(OrderLineItemEntity $lineItem, string $currency, CalculatedPrice $price): Item
-    {
+    private function createItemFromLineItem(
+        OrderLineItemEntity $lineItem,
+        string $currency,
+        CalculatedPrice $price
+    ): Item {
         $taxAmount = $price->getCalculatedTaxes()->getAmount();
 
         $item = new Item();
@@ -227,6 +248,10 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $item;
     }
 
+    /**
+     * @throws InvalidContextSourceException
+     * @throws InconsistentCriteriaIdsException
+     */
     private function getApplicationContext(Context $context): ApplicationContext
     {
         $applicationContext = new ApplicationContext();
@@ -237,6 +262,9 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $applicationContext;
     }
 
+    /**
+     * @throws InconsistentCriteriaIdsException
+     */
     private function getLocaleCode(Context $context): string
     {
         $languageId = $context->getLanguageId();
@@ -248,6 +276,10 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $language->getLocale()->getCode();
     }
 
+    /**
+     * @throws InvalidContextSourceException
+     * @throws InconsistentCriteriaIdsException
+     */
     private function getBrandName(Context $context): string
     {
         $brandName = $this->settings->getBrandName();
@@ -259,15 +291,24 @@ class PaymentBuilderService implements PaymentBuilderInterface
         return $brandName;
     }
 
+    /**
+     * @throws InvalidContextSourceException
+     * @throws InconsistentCriteriaIdsException
+     */
     private function useSalesChannelNameAsBrandName(Context $context): string
     {
-        $brandName = '';
-        $salesChannelId = $context->getSalesChannelId();
+        /** @var SalesChannelApiSource $contextSource */
+        $contextSource = $context->getSource();
+        if (!$contextSource instanceof SalesChannelApiSource) {
+            throw new InvalidContextSourceException(SalesChannelApiSource::class, \get_class($context->getSource()));
+        }
 
+        $salesChannelId = $contextSource->getSalesChannelId();
         /** @var SalesChannelCollection $salesChannelCollection */
         $salesChannelCollection = $this->salesChannelRepo->search(new Criteria([$salesChannelId]), $context);
-        /** @var SalesChannelEntity $salesChannel */
         $salesChannel = $salesChannelCollection->get($salesChannelId);
+
+        $brandName = '';
         if ($salesChannel !== null) {
             $salesChannelName = $salesChannel->getName();
             if ($salesChannelName !== null) {
