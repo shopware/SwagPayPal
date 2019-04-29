@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
@@ -257,7 +258,7 @@ An error occurred during the communication with PayPal');
             $this->definitionRegistry,
             $this->createPaymentResource($settingsProvider),
             $this->createPaymentBuilder($settingsProvider),
-            $this->stateMachineRegistry
+            new OrderTransactionStateHandler($this->orderTransactionRepo, $this->stateMachineRegistry)
         );
     }
 

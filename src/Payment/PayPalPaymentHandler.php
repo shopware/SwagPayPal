@@ -9,7 +9,7 @@
 namespace Swag\PayPal\Payment;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
@@ -18,7 +18,6 @@ use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentExcepti
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\PaymentStatus;
@@ -48,20 +47,20 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     private $paymentBuilder;
 
     /**
-     * @var StateMachineRegistry
+     * @var OrderTransactionStateHandler
      */
-    private $stateMachineRegistry;
+    private $orderTransactionStateHandler;
 
     public function __construct(
         DefinitionRegistry $definitionRegistry,
         PaymentResource $paymentResource,
         PaymentBuilderInterface $paymentBuilder,
-        StateMachineRegistry $stateMachineRegistry
+        OrderTransactionStateHandler $orderTransactionStateHandler
     ) {
         $this->orderTransactionRepo = $definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
         $this->paymentResource = $paymentResource;
         $this->paymentBuilder = $paymentBuilder;
-        $this->stateMachineRegistry = $stateMachineRegistry;
+        $this->orderTransactionStateHandler = $orderTransactionStateHandler;
     }
 
     /**
@@ -126,25 +125,10 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
         // apply the payment status if its completed by PayPal
         if ($paymentState === PaymentStatus::PAYMENT_COMPLETED) {
-            $stateId = $this->stateMachineRegistry->getStateByTechnicalName(
-                OrderTransactionStates::STATE_MACHINE,
-                OrderTransactionStates::STATE_PAID,
-                $context
-            )->getId();
+            $this->orderTransactionStateHandler->complete($transactionId, $context);
         } else {
-            $stateId = $this->stateMachineRegistry->getStateByTechnicalName(
-                OrderTransactionStates::STATE_MACHINE,
-                OrderTransactionStates::STATE_OPEN,
-                $context
-            )->getId();
+            $this->orderTransactionStateHandler->open($transactionId, $context);
         }
-
-        $transactionUpdate = [
-            'id' => $transactionId,
-            'stateId' => $stateId,
-        ];
-
-        $this->orderTransactionRepo->update([$transactionUpdate], $context);
     }
 
     private function getPaymentState(Payment $response): string
