@@ -70,16 +70,6 @@ class SwagPayPalSettingGeneralEntity extends Entity
      */
     protected $orderNumberPrefix;
 
-    /**
-     * @var \DateTime
-     */
-    protected $createdAt;
-
-    /**
-     * @var \DateTime|null
-     */
-    protected $updatedAt;
-
     public function getClientId(): ?string
     {
         return $this->clientId;
@@ -188,25 +178,5 @@ class SwagPayPalSettingGeneralEntity extends Entity
     public function setOrderNumberPrefix(string $orderNumberPrefix): void
     {
         $this->orderNumberPrefix = $orderNumberPrefix;
-    }
-
-    public function getCreatedAt(): \DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTime $createdAt): void
-    {
-        $this->createdAt = $createdAt;
-    }
-
-    public function getUpdatedAt(): ?\DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTime $updatedAt): void
-    {
-        $this->updatedAt = $updatedAt;
     }
 }
