@@ -15,9 +15,9 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandle
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\PaymentIntent;
@@ -67,10 +67,11 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     /**
      * @throws AsyncPaymentProcessException
      */
-    public function pay(AsyncPaymentTransactionStruct $transaction, Context $context): RedirectResponse
+    public function pay(AsyncPaymentTransactionStruct $transaction, SalesChannelContext $salesChannelContext): RedirectResponse
     {
-        $payment = $this->paymentBuilder->getPayment($transaction, $context);
+        $payment = $this->paymentBuilder->getPayment($transaction, $salesChannelContext);
 
+        $context = $salesChannelContext->getContext();
         try {
             $response = $this->paymentResource->create($payment, $context);
         } catch (\Exception $e) {
@@ -95,8 +96,11 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
      * @throws AsyncPaymentFinalizeException
      * @throws CustomerCanceledAsyncPaymentException
      */
-    public function finalize(AsyncPaymentTransactionStruct $transaction, Request $request, Context $context): void
-    {
+    public function finalize(
+        AsyncPaymentTransactionStruct $transaction,
+        Request $request,
+        SalesChannelContext $salesChannelContext
+    ): void {
         $transactionId = $transaction->getOrderTransaction()->getId();
 
         if ($request->query->getBoolean('cancel')) {
@@ -108,6 +112,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
         $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
         $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
+        $context = $salesChannelContext->getContext();
         try {
             $response = $this->paymentResource->execute($payerId, $paymentId, $context);
         } catch (\Exception $e) {

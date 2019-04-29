@@ -23,12 +23,13 @@
         <whitelist>
             <directory suffix=".php">./</directory>
             <exclude>
-                <directory suffix=".php">./Test</directory>
-                <directory suffix=".php">./Migration</directory>
+                <directory suffix=".php">./tests</directory>
+                <directory suffix=".php">./vendor</directory>
+                <directory suffix=".php">./src/Migration</directory>
                 <directory suffix="Definition.php">./</directory>
                 <directory suffix="Exception.php">./</directory>
 
-                <file>SwagPayPal.php</file>
+                <file>src/SwagPayPal.php</file>
             </exclude>
         </whitelist>
     </filter>

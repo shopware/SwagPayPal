@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
+use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Context\SalesChannelApiSource;
@@ -41,9 +42,9 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentBuilder = $this->createPaymentBuilder();
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
-        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
 
-        $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
+        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
         static::assertInstanceOf(Payment::class, $payment);
 
@@ -56,12 +57,12 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentBuilder = $this->createPaymentBuilder();
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
-        $context = Context::createDefaultContext();
-        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_INVALID_INTENT, new Entity());
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext->getContext()->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_INVALID_INTENT, new Entity());
 
         $this->expectException(PayPalSettingsInvalidException::class);
         $this->expectExceptionMessage('Required setting "intent" is missing or invalid');
-        $paymentBuilder->getPayment($paymentTransaction, $context);
+        $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
     }
 
     public function testGetPaymentWithoutBrandName(): void
@@ -69,10 +70,12 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentBuilder = $this->createPaymentBuilder();
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
-        $context = Context::createDefaultContext(new SalesChannelApiSource(Defaults::SALES_CHANNEL));
+        $context = Context::createDefaultContext();
         $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
+        $salesChannelContext = Generator::createSalesChannelContext($context);
+        $salesChannelContext->getSalesChannel()->setId(Defaults::SALES_CHANNEL);
 
-        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
+        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
         if ($payment === false) {
             return;
@@ -90,8 +93,9 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = $this->createContextWithoutSalesChannel();
         $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
+        $salesChannelContext = Generator::createSalesChannelContext($context);
 
-        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
+        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
         if ($payment === false) {
             return;
@@ -108,9 +112,10 @@ class PaymentBuilderServiceTest extends TestCase
 
         $context = Context::createDefaultContext();
         $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
+        $salesChannelContext = Generator::createSalesChannelContext($context);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
 
-        $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
+        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
         $transaction = json_encode($payment->getTransactions()[0]);
 
@@ -136,9 +141,10 @@ class PaymentBuilderServiceTest extends TestCase
 
         $context = Context::createDefaultContext();
         $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
+        $salesChannelContext = Generator::createSalesChannelContext($context);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_PRICE);
 
-        $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
+        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
         $transaction = json_encode($payment->getTransactions()[0]);
 
         static::assertNotFalse($transaction);
@@ -156,11 +162,12 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentBuilder = $this->createPaymentBuilder();
         $context = Context::createDefaultContext();
         $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
+        $salesChannelContext = Generator::createSalesChannelContext($context);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);
 
         $this->expectException(InvalidOrderException::class);
         $this->expectExceptionMessage('The order with id order-id-missing-line-items is invalid or could not be found.');
-        $paymentBuilder->getPayment($paymentTransaction, $context);
+        $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
     }
 
     /**
@@ -171,9 +178,10 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentBuilder = $this->createPaymentBuilder();
         $context = Context::createDefaultContext(new SalesChannelApiSource(Defaults::SALES_CHANNEL));
         $context->addExtension($extensionName, new Entity());
+        $salesChannelContext = Generator::createSalesChannelContext($context);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
 
-        $payment = $paymentBuilder->getPayment($paymentTransaction, $context);
+        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
         $paymentJsonString = json_encode($payment);
         static::assertNotFalse($paymentJsonString);
         if ($paymentJsonString === false) {
@@ -211,8 +219,9 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = Context::createDefaultContext();
         $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_ORDER_NUMBER, new Entity());
+        $salesChannelContext = Generator::createSalesChannelContext($context);
 
-        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
+        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
         if ($payment === false) {
             return;
@@ -233,8 +242,9 @@ class PaymentBuilderServiceTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = Context::createDefaultContext();
         $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_ORDER_NUMBER_WITHOUT_PREFIX, new Entity());
+        $salesChannelContext = Generator::createSalesChannelContext($context);
 
-        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $context));
+        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
         if ($payment === false) {
             return;
@@ -252,7 +262,7 @@ class PaymentBuilderServiceTest extends TestCase
 
         return new Context(
             $sourceContext,
-            $defaultContext->getRules(),
+            $defaultContext->getRuleIds(),
             $defaultContext->getCurrencyId(),
             $defaultContext->getLanguageIdChain(),
             $defaultContext->getVersionId(),

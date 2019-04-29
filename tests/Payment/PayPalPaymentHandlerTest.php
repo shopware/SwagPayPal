@@ -14,7 +14,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
-use Shopware\Core\Framework\Context;
+use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
@@ -69,8 +69,8 @@ class PayPalPaymentHandlerTest extends TestCase
         $handler = $this->createPayPalPaymentHandler();
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
-        $context = Context::createDefaultContext();
-        $response = $handler->pay($paymentTransaction, $context);
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $response = $handler->pay($paymentTransaction, $salesChannelContext);
 
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $response->getTargetUrl());
 
@@ -88,13 +88,13 @@ class PayPalPaymentHandlerTest extends TestCase
         $handler = $this->createPayPalPaymentHandler();
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
-        $context = Context::createDefaultContext();
-        $context->addExtension(self::PAYPAL_RESOURCE_THROWS_EXCEPTION, new Entity());
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext->getContext()->addExtension(self::PAYPAL_RESOURCE_THROWS_EXCEPTION, new Entity());
 
         $this->expectException(AsyncPaymentProcessException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 An error occurred during the communication with PayPal');
-        $handler->pay($paymentTransaction, $context);
+        $handler->pay($paymentTransaction, $salesChannelContext);
     }
 
     public function testFinalizeSale(): void
@@ -103,11 +103,11 @@ An error occurred during the communication with PayPal');
 
         $transactionId = 'testTransactionId';
         $request = $this->createRequest();
-        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
-            $context
+            $salesChannelContext
         );
         /** @var OrderTransactionRepoMock $orderTransactionRepo */
         $orderTransactionRepo = $this->orderTransactionRepo;
@@ -116,7 +116,7 @@ An error occurred during the communication with PayPal');
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
             OrderTransactionStates::STATE_MACHINE,
             OrderTransactionStates::STATE_PAID,
-            $context
+            $salesChannelContext->getContext()
         )->getId();
 
         static::assertSame($transactionId, $updatedData['id']);
@@ -133,11 +133,11 @@ An error occurred during the communication with PayPal');
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
             ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE
         );
-        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
-            $context
+            $salesChannelContext
         );
         /** @var OrderTransactionRepoMock $orderTransactionRepo */
         $orderTransactionRepo = $this->orderTransactionRepo;
@@ -146,7 +146,7 @@ An error occurred during the communication with PayPal');
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
             OrderTransactionStates::STATE_MACHINE,
             OrderTransactionStates::STATE_OPEN,
-            $context
+            $salesChannelContext->getContext()
         )->getId();
 
         static::assertSame($transactionId, $updatedData['id']);
@@ -163,11 +163,11 @@ An error occurred during the communication with PayPal');
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
             ConstantsForTesting::PAYER_ID_PAYMENT_ORDER
         );
-        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
-            $context
+            $salesChannelContext
         );
         /** @var OrderTransactionRepoMock $orderTransactionRepo */
         $orderTransactionRepo = $this->orderTransactionRepo;
@@ -176,7 +176,7 @@ An error occurred during the communication with PayPal');
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
             OrderTransactionStates::STATE_MACHINE,
             OrderTransactionStates::STATE_OPEN,
-            $context
+            $salesChannelContext->getContext()
         )->getId();
 
         static::assertSame($transactionId, $updatedData['id']);
@@ -189,7 +189,7 @@ An error occurred during the communication with PayPal');
 
         $transactionId = 'testTransactionId';
         $request = new Request(['cancel' => true]);
-        $context = Context::createDefaultContext();
+        $context = Generator::createSalesChannelContext();
         $this->expectException(CustomerCanceledAsyncPaymentException::class);
         $this->expectExceptionMessage('The customer canceled the external payment process. Additional information:
 Customer canceled the payment on the PayPal page');
@@ -207,11 +207,11 @@ Customer canceled the payment on the PayPal page');
         $transactionId = 'testTransactionId';
         $request = $this->createRequest();
         $request->query->set(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID, self::PAYER_ID_PAYMENT_INCOMPLETE);
-        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
-            $context
+            $salesChannelContext
         );
         /** @var OrderTransactionRepoMock $orderTransactionRepo */
         $orderTransactionRepo = $this->orderTransactionRepo;
@@ -220,7 +220,7 @@ Customer canceled the payment on the PayPal page');
         $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
             OrderTransactionStates::STATE_MACHINE,
             OrderTransactionStates::STATE_OPEN,
-            $context
+            $salesChannelContext->getContext()
         )->getId();
 
         static::assertSame($transactionId, $updatedData['id']);
@@ -237,15 +237,15 @@ Customer canceled the payment on the PayPal page');
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
             ConstantsForTesting::PAYER_ID_PAYMENT_ORDER
         );
-        $context = Context::createDefaultContext();
-        $context->addExtension(self::PAYPAL_RESOURCE_THROWS_EXCEPTION, new Entity());
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext->getContext()->addExtension(self::PAYPAL_RESOURCE_THROWS_EXCEPTION, new Entity());
         $this->expectException(AsyncPaymentFinalizeException::class);
         $this->expectExceptionMessage('The asynchronous payment finalize was interrupted due to the following error:
 An error occurred during the communication with PayPal');
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
-            $context
+            $salesChannelContext
         );
     }
 
