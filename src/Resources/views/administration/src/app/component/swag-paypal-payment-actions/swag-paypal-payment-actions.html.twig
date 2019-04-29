@@ -30,28 +30,28 @@
 
         {% block swag_paypal_payment_actions_modal %}
             <sw-modal v-if="showModal"
-                      @closeModal="closeModal"
+                      @modal-close="closeModal"
                       variant="small"
                       :title="$tc(`swag-paypal-payment.modal.title.${modalType}`)">
                 {% block swag_paypal_payment_actions_modal_capture %}
                     <swag-paypal-payment-action-capture v-if="modalType === 'capture'"
                                                       :paymentResource="paymentResource"
                                                       :maxCaptureValue="captureableAmount"
-                                                      @closeModal="closeModal">
+                                                      @modal-close="closeModal">
                     </swag-paypal-payment-action-capture>
                 {% endblock %}
 
                 {% block swag_paypal_payment_actions_modal_refund %}
                     <swag-paypal-payment-action-refund v-if="modalType === 'refund'"
                                                      :paymentResource="paymentResource"
-                                                     @closeModal="closeModal">
+                                                     @modal-close="closeModal">
                     </swag-paypal-payment-action-refund>
                 {% endblock %}
 
                 {% block swag_paypal_payment_actions_modal_void %}
                     <swag-paypal-payment-action-void v-if="modalType === 'void'"
                                                      :paymentResource="paymentResource"
-                                                     @closeModal="closeModal">
+                                                     @modal-close="closeModal">
                     </swag-paypal-payment-action-void>
                 {% endblock %}
             </sw-modal>
