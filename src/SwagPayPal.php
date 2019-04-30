@@ -9,8 +9,8 @@
 namespace Swag\PayPal;
 
 use Doctrine\DBAL\Connection;
-use Shopware\Core\Framework\Attribute\AttributeTypes;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\CustomField\CustomFieldTypes;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -28,7 +28,7 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class SwagPayPal extends Plugin
 {
-    public const PAYPAL_TRANSACTION_ATTRIBUTE_NAME = 'swag_paypal_transaction_id';
+    public const PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME = 'swag_paypal_transaction_id';
 
     /**
      * {@inheritdoc}
@@ -71,7 +71,7 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
     {
         $shopwareContext = $context->getContext();
         $this->setPaymentMethodIsActive(true, $shopwareContext);
-        $this->activateOrderTransactionAttribute($shopwareContext);
+        $this->activateOrderTransactionCustomField($shopwareContext);
 
         parent::activate($context);
     }
@@ -80,7 +80,7 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
     {
         $shopwareContext = $context->getContext();
         $this->setPaymentMethodIsActive(false, $shopwareContext);
-        $this->deactivateOrderTransactionAttribute($shopwareContext);
+        $this->deactivateOrderTransactionCustomField($shopwareContext);
 
         parent::deactivate($context);
     }
@@ -144,49 +144,49 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
         return array_shift($paymentMethodIds);
     }
 
-    private function activateOrderTransactionAttribute(Context $context): void
+    private function activateOrderTransactionCustomField(Context $context): void
     {
-        /** @var EntityRepositoryInterface $attributeRepository */
-        $attributeRepository = $this->container->get('attribute.repository');
-        $attributeIds = $this->getAttributeIds($attributeRepository, $context);
+        /** @var EntityRepositoryInterface $customFieldRepository */
+        $customFieldRepository = $this->container->get('custom_field.repository');
+        $customFieldIds = $this->getCustomFieldIds($customFieldRepository, $context);
 
-        if ($attributeIds->getTotal() !== 0) {
+        if ($customFieldIds->getTotal() !== 0) {
             return;
         }
 
-        $attributeRepository->upsert(
+        $customFieldRepository->upsert(
             [
                 [
-                    'name' => self::PAYPAL_TRANSACTION_ATTRIBUTE_NAME,
-                    'type' => AttributeTypes::TEXT,
+                    'name' => self::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME,
+                    'type' => CustomFieldTypes::TEXT,
                 ],
             ],
             $context
         );
     }
 
-    private function deactivateOrderTransactionAttribute(Context $context): void
+    private function deactivateOrderTransactionCustomField(Context $context): void
     {
-        /** @var EntityRepositoryInterface $attributeRepository */
-        $attributeRepository = $this->container->get('attribute.repository');
-        $attributeIds = $this->getAttributeIds($attributeRepository, $context);
+        /** @var EntityRepositoryInterface $customFieldRepository */
+        $customFieldRepository = $this->container->get('custom_field.repository');
+        $customFieldIds = $this->getCustomFieldIds($customFieldRepository, $context);
 
-        if ($attributeIds->getTotal() === 0) {
+        if ($customFieldIds->getTotal() !== 0) {
             return;
         }
 
         $ids = [];
-        foreach ($attributeIds->getIds() as $attributeId) {
-            $ids[] = ['id' => $attributeId];
+        foreach ($customFieldIds->getIds() as $customFieldId) {
+            $ids[] = ['id' => $customFieldId];
         }
-        $attributeRepository->delete($ids, $context);
+        $customFieldRepository->delete($ids, $context);
     }
 
-    private function getAttributeIds(EntityRepositoryInterface $attributeRepository, Context $context): IdSearchResult
+    private function getCustomFieldIds(EntityRepositoryInterface $customFieldRepository, Context $context): IdSearchResult
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('name', self::PAYPAL_TRANSACTION_ATTRIBUTE_NAME));
+        $criteria->addFilter(new EqualsFilter('name', self::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME));
 
-        return $attributeRepository->searchIds($criteria, $context);
+        return $customFieldRepository->searchIds($criteria, $context);
     }
 }

@@ -80,7 +80,7 @@ class PayPalPaymentHandlerTest extends TestCase
         $updatedData = $orderTransactionRepo->getData();
         static::assertSame(
             CreateResponseFixture::CREATE_PAYMENT_ID,
-            $updatedData['attributes'][SwagPayPal::PAYPAL_TRANSACTION_ATTRIBUTE_NAME]
+            $updatedData['customFields'][SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME]
         );
     }
 

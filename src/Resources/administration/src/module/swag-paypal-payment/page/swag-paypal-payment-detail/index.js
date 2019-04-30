@@ -95,7 +95,7 @@ export default {
 
             this.orderStore.getByIdAsync(orderId).then((order) => {
                 order.getAssociation('transactions').getList({ page: 1, limit: 1 }).then((orderTransactions) => {
-                    const paypalPaymentId = orderTransactions.items[0].attributes.swag_paypal_transaction_id;
+                    const paypalPaymentId = orderTransactions.items[0].customFields.swag_paypal_transaction_id;
                     this.SwagPayPalPaymentService.getPaymentDetails(paypalPaymentId).then((payment) => {
                         this.paymentResource = payment;
                         this.setRelatedResources();

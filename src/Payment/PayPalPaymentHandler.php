@@ -82,8 +82,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
         $data = [
             'id' => $transaction->getOrderTransaction()->getId(),
-            'attributes' => [
-                SwagPayPal::PAYPAL_TRANSACTION_ATTRIBUTE_NAME => $response->getId(),
+            'customFields' => [
+                SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME => $response->getId(),
             ],
         ];
         $this->orderTransactionRepo->update([$data], $context);
