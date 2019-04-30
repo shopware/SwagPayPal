@@ -9,6 +9,7 @@
 namespace Swag\PayPal\Test\PayPal\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\PaymentStatus;
@@ -32,10 +33,10 @@ class PaymentResourceTest extends TestCase
 
     public function testCreate(): void
     {
-        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext();
         $paymentTransaction = $this->createPaymentTransactionStruct();
-        $payment = $this->createPaymentBuilder()->getPayment($paymentTransaction, $context);
-        $createdPayment = $this->createPaymentResource()->create($payment, $context);
+        $payment = $this->createPaymentBuilder()->getPayment($paymentTransaction, $salesChannelContext);
+        $createdPayment = $this->createPaymentResource()->create($payment, $salesChannelContext->getContext());
 
         static::assertInstanceOf(Payment::class, $createdPayment);
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $createdPayment->getId());

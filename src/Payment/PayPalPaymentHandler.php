@@ -9,16 +9,15 @@
 namespace Swag\PayPal\Payment;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\PaymentStatus;
@@ -48,29 +47,30 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     private $paymentBuilder;
 
     /**
-     * @var StateMachineRegistry
+     * @var OrderTransactionStateHandler
      */
-    private $stateMachineRegistry;
+    private $orderTransactionStateHandler;
 
     public function __construct(
         DefinitionRegistry $definitionRegistry,
         PaymentResource $paymentResource,
         PaymentBuilderInterface $paymentBuilder,
-        StateMachineRegistry $stateMachineRegistry
+        OrderTransactionStateHandler $orderTransactionStateHandler
     ) {
         $this->orderTransactionRepo = $definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
         $this->paymentResource = $paymentResource;
         $this->paymentBuilder = $paymentBuilder;
-        $this->stateMachineRegistry = $stateMachineRegistry;
+        $this->orderTransactionStateHandler = $orderTransactionStateHandler;
     }
 
     /**
      * @throws AsyncPaymentProcessException
      */
-    public function pay(AsyncPaymentTransactionStruct $transaction, Context $context): RedirectResponse
+    public function pay(AsyncPaymentTransactionStruct $transaction, SalesChannelContext $salesChannelContext): RedirectResponse
     {
-        $payment = $this->paymentBuilder->getPayment($transaction, $context);
+        $payment = $this->paymentBuilder->getPayment($transaction, $salesChannelContext);
 
+        $context = $salesChannelContext->getContext();
         try {
             $response = $this->paymentResource->create($payment, $context);
         } catch (\Exception $e) {
@@ -95,8 +95,11 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
      * @throws AsyncPaymentFinalizeException
      * @throws CustomerCanceledAsyncPaymentException
      */
-    public function finalize(AsyncPaymentTransactionStruct $transaction, Request $request, Context $context): void
-    {
+    public function finalize(
+        AsyncPaymentTransactionStruct $transaction,
+        Request $request,
+        SalesChannelContext $salesChannelContext
+    ): void {
         $transactionId = $transaction->getOrderTransaction()->getId();
 
         if ($request->query->getBoolean('cancel')) {
@@ -108,6 +111,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
         $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
         $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
+        $context = $salesChannelContext->getContext();
         try {
             $response = $this->paymentResource->execute($payerId, $paymentId, $context);
         } catch (\Exception $e) {
@@ -121,25 +125,10 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
         // apply the payment status if its completed by PayPal
         if ($paymentState === PaymentStatus::PAYMENT_COMPLETED) {
-            $stateId = $this->stateMachineRegistry->getStateByTechnicalName(
-                OrderTransactionStates::STATE_MACHINE,
-                OrderTransactionStates::STATE_PAID,
-                $context
-            )->getId();
+            $this->orderTransactionStateHandler->complete($transactionId, $context);
         } else {
-            $stateId = $this->stateMachineRegistry->getStateByTechnicalName(
-                OrderTransactionStates::STATE_MACHINE,
-                OrderTransactionStates::STATE_OPEN,
-                $context
-            )->getId();
+            $this->orderTransactionStateHandler->open($transactionId, $context);
         }
-
-        $transactionUpdate = [
-            'id' => $transactionId,
-            'stateId' => $stateId,
-        ];
-
-        $this->orderTransactionRepo->update([$transactionUpdate], $context);
     }
 
     private function getPaymentState(Payment $response): string

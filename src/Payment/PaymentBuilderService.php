@@ -14,8 +14,6 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Context\Exception\InvalidContextSourceException;
-use Shopware\Core\Framework\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
@@ -25,6 +23,7 @@ use Shopware\Core\Framework\Language\LanguageCollection;
 use Shopware\Core\Framework\Language\LanguageDefinition;
 use Shopware\Core\Framework\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
@@ -79,20 +78,19 @@ class PaymentBuilderService implements PaymentBuilderInterface
      * {@inheritdoc}
      *
      * @throws InconsistentCriteriaIdsException
-     * @throws InvalidContextSourceException
      * @throws InvalidOrderException
      * @throws PayPalSettingsInvalidException
      * @throws PayPalSettingsNotFoundException
      */
-    public function getPayment(AsyncPaymentTransactionStruct $paymentTransaction, Context $context): Payment
+    public function getPayment(AsyncPaymentTransactionStruct $paymentTransaction, SalesChannelContext $salesChannelContext): Payment
     {
-        $this->settings = $this->settingsProvider->getSettings($context);
+        $this->settings = $this->settingsProvider->getSettings($salesChannelContext->getContext());
 
         $intent = $this->getIntent();
         $payer = $this->createPayer();
         $redirectUrls = $this->createRedirectUrls($paymentTransaction->getReturnUrl());
         $transaction = $this->createTransaction($paymentTransaction);
-        $applicationContext = $this->getApplicationContext($context);
+        $applicationContext = $this->getApplicationContext($salesChannelContext);
 
         $requestPayment = new Payment();
         $requestPayment->setIntent($intent);
@@ -249,14 +247,13 @@ class PaymentBuilderService implements PaymentBuilderInterface
     }
 
     /**
-     * @throws InvalidContextSourceException
      * @throws InconsistentCriteriaIdsException
      */
-    private function getApplicationContext(Context $context): ApplicationContext
+    private function getApplicationContext(SalesChannelContext $salesChannelContext): ApplicationContext
     {
         $applicationContext = new ApplicationContext();
-        $applicationContext->setLocale($this->getLocaleCode($context));
-        $applicationContext->setBrandName($this->getBrandName($context));
+        $applicationContext->setLocale($this->getLocaleCode($salesChannelContext->getContext()));
+        $applicationContext->setBrandName($this->getBrandName($salesChannelContext));
         $applicationContext->setLandingPage($this->getLandingPageType());
 
         return $applicationContext;
@@ -277,35 +274,30 @@ class PaymentBuilderService implements PaymentBuilderInterface
     }
 
     /**
-     * @throws InvalidContextSourceException
      * @throws InconsistentCriteriaIdsException
      */
-    private function getBrandName(Context $context): string
+    private function getBrandName(SalesChannelContext $salesChannelContext): string
     {
         $brandName = $this->settings->getBrandName();
 
         if ($brandName === null || $brandName === '') {
-            $brandName = $this->useSalesChannelNameAsBrandName($context);
+            $brandName = $this->useSalesChannelNameAsBrandName($salesChannelContext);
         }
 
         return $brandName;
     }
 
     /**
-     * @throws InvalidContextSourceException
      * @throws InconsistentCriteriaIdsException
      */
-    private function useSalesChannelNameAsBrandName(Context $context): string
+    private function useSalesChannelNameAsBrandName(SalesChannelContext $salesChannelContext): string
     {
-        /** @var SalesChannelApiSource $contextSource */
-        $contextSource = $context->getSource();
-        if (!$contextSource instanceof SalesChannelApiSource) {
-            throw new InvalidContextSourceException(SalesChannelApiSource::class, \get_class($context->getSource()));
-        }
-
-        $salesChannelId = $contextSource->getSalesChannelId();
+        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
         /** @var SalesChannelCollection $salesChannelCollection */
-        $salesChannelCollection = $this->salesChannelRepo->search(new Criteria([$salesChannelId]), $context);
+        $salesChannelCollection = $this->salesChannelRepo->search(
+            new Criteria([$salesChannelId]),
+            $salesChannelContext->getContext()
+        );
         $salesChannel = $salesChannelCollection->get($salesChannelId);
 
         $brandName = '';
