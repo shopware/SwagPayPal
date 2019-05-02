@@ -6,10 +6,11 @@
 
     <services>
         <service id="Swag\PayPal\Payment\PayPalPaymentHandler">
-            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
             <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
             <argument type="service" id="Swag\PayPal\Payment\PaymentBuilderService"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition"/>
             <tag name="shopware.payment.method.async"/>
         </service>
 
@@ -22,8 +23,10 @@
         </service>
 
         <service id="Swag\PayPal\Payment\PaymentBuilderService">
-            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry"/>
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Shopware\Core\Framework\Language\LanguageDefinition"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannelDefinition"/>
         </service>
     </services>
 </container>

@@ -11,17 +11,24 @@ namespace Swag\PayPal\Test\Mock\Repositories;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class SalesChannelRepoMock implements EntityRepositoryInterface
 {
     public const SALES_CHANNEL_NAME = 'SwagPayPal Test SalesChannel';
+
+    public function getDefinition(): EntityDefinition
+    {
+        return new SalesChannelDefinition();
+    }
 
     public function aggregate(Criteria $criteria, Context $context): AggregatorResult
     {

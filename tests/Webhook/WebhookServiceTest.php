@@ -49,8 +49,12 @@ class WebhookServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->definitionRegistry = new DefinitionRegistryMock([], new DIContainerMock());
-        $this->swagPayPalSettingGeneralRepo = $this->definitionRegistry->getRepository(SwagPayPalSettingGeneralDefinition::getEntityName());
-        $this->orderTransactionRepo = $this->definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
+        $this->swagPayPalSettingGeneralRepo = $this->definitionRegistry->getRepository(
+            (new SwagPayPalSettingGeneralDefinition())->getEntityName()
+        );
+        $this->orderTransactionRepo = $this->definitionRegistry->getRepository(
+            (new OrderTransactionDefinition())->getEntityName()
+        );
     }
 
     public function testRegisterWebhookWithAlreadyExistingTokenAndId(): void
@@ -148,7 +152,7 @@ class WebhookServiceTest extends TestCase
         return new WebhookService(
             $webhookResourceMock,
             $this->createWebhookRegistry($orderTransactionRepo),
-            new SettingsServiceMock($this->definitionRegistry),
+            new SettingsServiceMock($this->definitionRegistry, new SwagPayPalSettingGeneralDefinition()),
             new RouterMock()
         );
     }

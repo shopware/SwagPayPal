@@ -8,7 +8,6 @@
 
 namespace Swag\PayPal\Webhook\Handler;
 
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
@@ -33,10 +32,6 @@ class AuthorizationVoided extends AbstractWebhookHandler
     {
         $orderTransaction = $this->getOrderTransaction($webhook, $context);
 
-        $data = [
-            'id' => $orderTransaction->getId(),
-            'stateId' => $this->getStateMachineState(OrderTransactionStates::STATE_CANCELLED, $context),
-        ];
-        $this->orderTransactionRepo->update([$data], $context);
+        $this->orderTransactionStateHandler->cancel($orderTransaction->getId(), $context);
     }
 }

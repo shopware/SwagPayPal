@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
 use Swag\PayPal\Controller\WebhookController;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
 use Swag\PayPal\Test\Controller\_fixtures\WebhookDataFixture;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
@@ -125,7 +126,7 @@ class WebhookControllerTest extends TestCase
         return new WebhookController(
             new LoggerMock(),
             new WebhookServiceMock(),
-            new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()))
+            new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()), new SwagPayPalSettingGeneralDefinition())
         );
     }
 

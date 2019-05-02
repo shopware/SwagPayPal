@@ -20,12 +20,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
 class SwagPayPalSettingGeneralDefinition extends EntityDefinition
 {
-    public static function getEntityName(): string
+    public function getEntityName(): string
     {
         return 'swag_paypal_setting_general';
     }
 
-    public static function defineFields(): FieldCollection
+    public function defineFields(): FieldCollection
     {
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
@@ -45,12 +45,12 @@ class SwagPayPalSettingGeneralDefinition extends EntityDefinition
         ]);
     }
 
-    public static function getCollectionClass(): string
+    public function getCollectionClass(): string
     {
         return SwagPayPalSettingGeneralCollection::class;
     }
 
-    public static function getEntityClass(): string
+    public function getEntityClass(): string
     {
         return SwagPayPalSettingGeneralEntity::class;
     }

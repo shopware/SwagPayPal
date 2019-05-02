@@ -8,9 +8,11 @@
 
 namespace Swag\PayPal\Test\Mock\Repositories;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
@@ -30,6 +32,11 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
     public const WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION = 'webhookIdWithoutTransaction';
 
     private $data = [];
+
+    public function getDefinition(): EntityDefinition
+    {
+        return new OrderTransactionDefinition();
+    }
 
     public function aggregate(Criteria $criteria, Context $context): AggregatorResult
     {

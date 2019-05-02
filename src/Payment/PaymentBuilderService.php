@@ -14,10 +14,9 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
+use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\RepositoryNotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Language\LanguageCollection;
 use Shopware\Core\Framework\Language\LanguageDefinition;
@@ -62,15 +61,14 @@ class PaymentBuilderService implements PaymentBuilderInterface
      */
     private $settings;
 
-    /**
-     * @throws RepositoryNotFoundException
-     */
     public function __construct(
-        DefinitionRegistry $definitionRegistry,
-        SettingsServiceInterface $settingsProvider
+        DefinitionInstanceRegistry $definitionRegistry,
+        SettingsServiceInterface $settingsProvider,
+        LanguageDefinition $languageDefinition,
+        SalesChannelDefinition $salesChannelDefinition
     ) {
-        $this->languageRepo = $definitionRegistry->getRepository(LanguageDefinition::getEntityName());
-        $this->salesChannelRepo = $definitionRegistry->getRepository(SalesChannelDefinition::getEntityName());
+        $this->languageRepo = $definitionRegistry->getRepository($languageDefinition->getEntityName());
+        $this->salesChannelRepo = $definitionRegistry->getRepository($salesChannelDefinition->getEntityName());
         $this->settingsProvider = $settingsProvider;
     }
 
