@@ -26,15 +26,5 @@ Module.register('swag-paypal', {
                 parentPath: 'sw.settings.index'
             }
         }
-    },
-
-    navigation: [{
-        id: 'swag-paypal',
-        parent: 'sw-settings',
-        label: 'swag-paypal.general.mainMenuItemGeneral',
-        color: '#0070ba',
-        path: 'swag.paypal.index',
-        icon: 'default-money-cash',
-        position: 1010
-    }]
+    }
 });
