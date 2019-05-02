@@ -8,10 +8,13 @@
 
 namespace Swag\PayPal\Test\Helper;
 
+use Shopware\Core\Framework\Language\LanguageDefinition;
+use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Swag\PayPal\Payment\PaymentBuilderService;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\DummyCollection;
@@ -29,7 +32,7 @@ trait ServicesTrait
         ?SettingsServiceInterface $settingsProvider = null
     ): PayPalClientFactoryMock {
         if ($settingsProvider === null) {
-            $settingsProvider = new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()));
+            $settingsProvider = new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()), new SwagPayPalSettingGeneralDefinition());
         }
 
         return new PayPalClientFactoryMock(
@@ -51,12 +54,14 @@ trait ServicesTrait
     protected function createPaymentBuilder(?SettingsServiceInterface $settingsProvider = null): PaymentBuilderService
     {
         if ($settingsProvider === null) {
-            $settingsProvider = new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()));
+            $settingsProvider = new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()), new SwagPayPalSettingGeneralDefinition());
         }
 
         return new PaymentBuilderService(
             new DefinitionRegistryMock([], new DIContainerMock()),
-            $settingsProvider
+            $settingsProvider,
+            new LanguageDefinition(),
+            new SalesChannelDefinition()
         );
     }
 

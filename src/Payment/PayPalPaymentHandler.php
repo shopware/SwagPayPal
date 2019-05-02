@@ -15,7 +15,7 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandle
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
-use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
+use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\PayPal\Api\Payment;
@@ -52,12 +52,13 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     private $orderTransactionStateHandler;
 
     public function __construct(
-        DefinitionRegistry $definitionRegistry,
+        DefinitionInstanceRegistry $definitionRegistry,
         PaymentResource $paymentResource,
         PaymentBuilderInterface $paymentBuilder,
-        OrderTransactionStateHandler $orderTransactionStateHandler
+        OrderTransactionStateHandler $orderTransactionStateHandler,
+        OrderTransactionDefinition $orderTransactionDefinition
     ) {
-        $this->orderTransactionRepo = $definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
+        $this->orderTransactionRepo = $definitionRegistry->getRepository($orderTransactionDefinition->getEntityName());
         $this->paymentResource = $paymentResource;
         $this->paymentBuilder = $paymentBuilder;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
@@ -125,7 +126,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
         // apply the payment status if its completed by PayPal
         if ($paymentState === PaymentStatus::PAYMENT_COMPLETED) {
-            $this->orderTransactionStateHandler->complete($transactionId, $context);
+            $this->orderTransactionStateHandler->pay($transactionId, $context);
         } else {
             $this->orderTransactionStateHandler->open($transactionId, $context);
         }

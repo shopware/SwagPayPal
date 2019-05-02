@@ -2,15 +2,11 @@
 
 namespace Swag\PayPal\Test\Mock\Repositories;
 
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
+use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\Language\LanguageDefinition;
-use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class DefinitionRegistryMock extends DefinitionRegistry
+class DefinitionRegistryMock extends DefinitionInstanceRegistry
 {
     /**
      * @var LanguageRepoMock
@@ -34,7 +30,7 @@ class DefinitionRegistryMock extends DefinitionRegistry
 
     public function __construct(array $elements, ContainerInterface $container)
     {
-        parent::__construct($elements, $container);
+        parent::__construct($container, $elements, []);
         $this->languageRepo = new LanguageRepoMock();
         $this->salesChannelRepo = new SalesChannelRepoMock();
         $this->orderTransactionRepo = new OrderTransactionRepoMock();
@@ -47,13 +43,13 @@ class DefinitionRegistryMock extends DefinitionRegistry
     public function getRepository(string $entityName): EntityRepositoryInterface
     {
         switch ($entityName) {
-            case LanguageDefinition::getEntityName():
+            case $this->languageRepo->getDefinition()->getEntityName():
                 return $this->languageRepo;
-            case SalesChannelDefinition::getEntityName():
+            case $this->salesChannelRepo->getDefinition()->getEntityName():
                 return $this->salesChannelRepo;
-            case OrderTransactionDefinition::getEntityName():
+            case $this->orderTransactionRepo->getDefinition()->getEntityName():
                 return $this->orderTransactionRepo;
-            case SwagPayPalSettingGeneralDefinition::getEntityName():
+            case $this->swagPayPalSettingGeneralRepo->getDefinition()->getEntityName():
                 return $this->swagPayPalSettingGeneralRepo;
             default:
                 return parent::getRepository($entityName);

@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Webhook\Handler;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -50,7 +51,9 @@ class AuthorizationVoidedTest extends TestCase
     protected function setUp(): void
     {
         $this->definitionRegistry = new DefinitionRegistryMock([], new DIContainerMock());
-        $this->orderTransactionRepo = $this->definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
+        $this->orderTransactionRepo = $this->definitionRegistry->getRepository(
+            (new OrderTransactionDefinition())->getEntityName()
+        );
         /** @var StateMachineRegistry $stateMachineRegistry */
         $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
         $this->stateMachineRegistry = $stateMachineRegistry;
@@ -101,6 +104,10 @@ class AuthorizationVoidedTest extends TestCase
 
     private function createWebhookHandler(): AuthorizationVoided
     {
-        return new AuthorizationVoided($this->definitionRegistry, $this->stateMachineRegistry);
+        return new AuthorizationVoided(
+            $this->definitionRegistry,
+            new OrderTransactionStateHandler($this->orderTransactionRepo, $this->stateMachineRegistry),
+            new OrderTransactionDefinition()
+        );
     }
 }

@@ -11,18 +11,25 @@ namespace Swag\PayPal\Test\Mock\Repositories;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\Language\LanguageDefinition;
 use Shopware\Core\Framework\Language\LanguageEntity;
 use Shopware\Core\System\Locale\LocaleEntity;
 
 class LanguageRepoMock implements EntityRepositoryInterface
 {
     public const LOCALE_CODE = 'en-GB';
+
+    public function getDefinition(): EntityDefinition
+    {
+        return new LanguageDefinition();
+    }
 
     public function aggregate(Criteria $criteria, Context $context): AggregatorResult
     {

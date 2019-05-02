@@ -9,7 +9,7 @@
 namespace Swag\PayPal\Setting\Service;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
+use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
@@ -24,9 +24,11 @@ class SettingsService implements SettingsServiceInterface
      */
     private $settingGeneralRepo;
 
-    public function __construct(DefinitionRegistry $definitionRegistry)
-    {
-        $this->settingGeneralRepo = $definitionRegistry->getRepository(SwagPayPalSettingGeneralDefinition::getEntityName());
+    public function __construct(
+        DefinitionInstanceRegistry $definitionRegistry,
+        SwagPayPalSettingGeneralDefinition $swagPayPalSettingGeneralDefinition
+    ) {
+        $this->settingGeneralRepo = $definitionRegistry->getRepository($swagPayPalSettingGeneralDefinition->getEntityName());
     }
 
     /**

@@ -21,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
@@ -59,7 +60,9 @@ class PayPalPaymentHandlerTest extends TestCase
     protected function setUp(): void
     {
         $this->definitionRegistry = new DefinitionRegistryMock([], new DIContainerMock());
-        $this->orderTransactionRepo = $this->definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
+        $this->orderTransactionRepo = $this->definitionRegistry->getRepository(
+            (new OrderTransactionDefinition())->getEntityName()
+        );
         /** @var StateMachineRegistry $stateMachineRegistry */
         $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
         $this->stateMachineRegistry = $stateMachineRegistry;
@@ -252,13 +255,14 @@ An error occurred during the communication with PayPal');
 
     private function createPayPalPaymentHandler(): PayPalPaymentHandler
     {
-        $settingsProvider = new SettingsServiceMock($this->definitionRegistry);
+        $settingsProvider = new SettingsServiceMock($this->definitionRegistry, new SwagPayPalSettingGeneralDefinition());
 
         return new PayPalPaymentHandler(
             $this->definitionRegistry,
             $this->createPaymentResource($settingsProvider),
             $this->createPaymentBuilder($settingsProvider),
-            new OrderTransactionStateHandler($this->orderTransactionRepo, $this->stateMachineRegistry)
+            new OrderTransactionStateHandler($this->orderTransactionRepo, $this->stateMachineRegistry),
+            new OrderTransactionDefinition()
         );
     }
 

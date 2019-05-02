@@ -10,13 +10,12 @@ namespace Swag\PayPal\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\DefinitionRegistry;
+use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
@@ -30,16 +29,17 @@ abstract class AbstractWebhookHandler implements WebhookHandler
     protected $orderTransactionRepo;
 
     /**
-     * @var StateMachineRegistry
+     * @var OrderTransactionStateHandler
      */
-    private $stateMachineRegistry;
+    protected $orderTransactionStateHandler;
 
     public function __construct(
-        DefinitionRegistry $definitionRegistry,
-        StateMachineRegistry $stateMachineRegistry
+        DefinitionInstanceRegistry $definitionRegistry,
+        OrderTransactionStateHandler $orderTransactionStateHandler,
+        OrderTransactionDefinition $orderTransactionDefinition
     ) {
-        $this->orderTransactionRepo = $definitionRegistry->getRepository(OrderTransactionDefinition::getEntityName());
-        $this->stateMachineRegistry = $stateMachineRegistry;
+        $this->orderTransactionRepo = $definitionRegistry->getRepository($orderTransactionDefinition->getEntityName());
+        $this->orderTransactionStateHandler = $orderTransactionStateHandler;
     }
 
     abstract public function getEventType(): string;
@@ -66,14 +66,5 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         }
 
         return $result->getEntities()->first();
-    }
-
-    protected function getStateMachineState(string $technicalStateName, Context $context): string
-    {
-        return $this->stateMachineRegistry->getStateByTechnicalName(
-            OrderTransactionStates::STATE_MACHINE,
-            $technicalStateName,
-            $context
-        )->getId();
     }
 }
