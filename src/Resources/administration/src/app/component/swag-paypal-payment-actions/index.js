@@ -1,10 +1,12 @@
+import { Component } from 'src/core/shopware';
 import template from './swag-paypal-payment-actions.html.twig';
 import './swag-paypal-payment-actions.scss';
+import './extensions/swag-paypal-payment-action-capture';
+import './extensions/swag-paypal-payment-action-refund';
+import './extensions/swag-paypal-payment-action-void';
 import { REFUNDED_STATE, PARTIALLY_REFUNDED_STATE, VOIDED_STATE, CAPTURED_STATE } from './swag-paypal-payment-consts';
 
-export default {
-    name: 'swag-paypal-payment-actions',
-
+Component.register('swag-paypal-payment-actions', {
     template,
 
     props: {
@@ -107,4 +109,4 @@ export default {
             return Number(`${Math.round(`${value}e2`)}e-2`);
         }
     }
-};
+});
