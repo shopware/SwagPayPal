@@ -51,10 +51,11 @@
                                     {% endblock %}
 
                                     {% block swag_paypal_content_credentials_form_sandbox %}
-                                        <sw-boolean-field :label="$tc('swag-paypal.settingForm.credentials.sandbox.label')"
-                                                          v-model="setting.sandbox"
-                                                          :tooltipText="$tc('swag-paypal.settingForm.credentials.sandbox.tooltipText')">
-                                        </sw-boolean-field>
+                                        <sw-switch-field :label="$tc('swag-paypal.settingForm.credentials.sandbox.label')"
+                                                         v-model="setting.sandbox"
+                                                         :tooltipText="$tc('swag-paypal.settingForm.credentials.sandbox.tooltipText')"
+                                                         bordered>
+                                        </sw-switch-field>
                                     {% endblock %}
                                 </sw-container>
                             </div>
@@ -80,10 +81,11 @@
                                     {% endblock %}
 
                                     {% block swag_paypal_content_behaviour_form_submitCart %}
-                                        <sw-boolean-field :label="$tc('swag-paypal.settingForm.behaviour.submitCart.label')"
-                                                          v-model="setting.submitCart"
-                                                          :helpText="$tc('swag-paypal.settingForm.behaviour.submitCart.helpText')">
-                                        </sw-boolean-field>
+                                        <sw-switch-field :label="$tc('swag-paypal.settingForm.behaviour.submitCart.label')"
+                                                         v-model="setting.submitCart"
+                                                         :helpText="$tc('swag-paypal.settingForm.behaviour.submitCart.helpText')"
+                                                         bordered>
+                                        </sw-switch-field>
                                     {% endblock %}
 
                                     {% block swag_paypal_content_behaviour_form_brandName %}
@@ -108,10 +110,11 @@
                                     {% endblock %}
 
                                     {% block swag_paypal_content_behaviour_form_sendOrderNumber %}
-                                        <sw-boolean-field :label="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.label')"
-                                                          v-model="setting.sendOrderNumber"
-                                                          :helpText="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.helpText')">
-                                        </sw-boolean-field>
+                                        <sw-switch-field :label="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.label')"
+                                                         v-model="setting.sendOrderNumber"
+                                                         :helpText="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.helpText')"
+                                                         bordered>
+                                        </sw-switch-field>
                                     {% endblock %}
 
                                     {% block swag_paypal_content_behaviour_form_orderNumberPrefix %}
