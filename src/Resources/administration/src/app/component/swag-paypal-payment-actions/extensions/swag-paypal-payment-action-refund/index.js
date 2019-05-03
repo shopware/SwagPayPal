@@ -1,4 +1,4 @@
-import { Filter, Mixin } from 'src/core/shopware';
+import { Component, Filter, Mixin } from 'src/core/shopware';
 import utils from 'src/core/service/util.service';
 import template from './swag-paypal-payment-action-refund.html.twig';
 import {
@@ -8,9 +8,7 @@ import {
     CAPTURE_RESOURCE_TYPE
 } from '../../swag-paypal-payment-consts';
 
-export default {
-    name: 'swag-paypal-payment-action-refund',
-
+Component.register('swag-paypal-payment-action-refund', {
     template,
 
     inject: ['SwagPayPalPaymentService'],
@@ -135,4 +133,4 @@ export default {
             });
         }
     }
-};
+});

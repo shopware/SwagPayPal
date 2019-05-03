@@ -1,10 +1,8 @@
-import { Mixin } from 'src/core/shopware';
+import { Component, Mixin } from 'src/core/shopware';
 import utils from 'src/core/service/util.service';
 import template from './swag-paypal-payment-action-void.html.twig';
 
-export default {
-    name: 'swag-paypal-payment-action-void',
-
+Component.register('swag-paypal-payment-action-void', {
     template,
 
     inject: ['SwagPayPalPaymentService'],
@@ -65,4 +63,4 @@ export default {
             this.$emit('modal-close');
         }
     }
-};
+});
