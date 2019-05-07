@@ -20,8 +20,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 
 class PaymentResourceTest extends TestCase
 {
-    use PaymentTransactionTrait,
-        ServicesTrait;
+    use PaymentTransactionTrait;
+    use ServicesTrait;
 
     public const CAPTURED_ORDER_PAYMENT_ID = 'testCapturedOrderPaymentId';
     public const ORDER_PAYMENT_ID = 'testOrderPaymentId';

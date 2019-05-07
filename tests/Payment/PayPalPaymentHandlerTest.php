@@ -35,9 +35,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPaymentHandlerTest extends TestCase
 {
-    use PaymentTransactionTrait,
-        ServicesTrait,
-        KernelTestBehaviour;
+    use PaymentTransactionTrait;
+    use ServicesTrait;
+    use KernelTestBehaviour;
 
     public const PAYER_ID_PAYMENT_INCOMPLETE = 'testPayerIdIncomplete';
     public const PAYPAL_RESOURCE_THROWS_EXCEPTION = 'createRequestThrowsException';
