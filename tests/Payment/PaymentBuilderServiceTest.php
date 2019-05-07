@@ -26,8 +26,8 @@ use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 
 class PaymentBuilderServiceTest extends TestCase
 {
-    use PaymentTransactionTrait,
-        ServicesTrait;
+    use PaymentTransactionTrait;
+    use ServicesTrait;
 
     public const TEST_ORDER_NUMBER = 'SW1234';
     public const TEST_ORDER_ID = 'test-order-id';
