@@ -2,3 +2,4 @@
 coverage/
 .phpunit.result.cache
 vendor/
+node_modules

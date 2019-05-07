@@ -30,6 +30,14 @@ class SwagPayPal extends Plugin
 {
     public const PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME = 'swag_paypal_transaction_id';
 
+    public function getViewPaths(): array
+    {
+        $viewPaths = parent::getViewPaths();
+        $viewPaths[] = 'Resources/views/storefront';
+
+        return $viewPaths;
+    }
+
     /**
      * {@inheritdoc}
      */
