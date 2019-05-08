@@ -22,6 +22,7 @@ use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Util\PaymentMethodIdProvider;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -29,14 +30,6 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 class SwagPayPal extends Plugin
 {
     public const PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME = 'swag_paypal_transaction_id';
-
-    public function getViewPaths(): array
-    {
-        $viewPaths = parent::getViewPaths();
-        $viewPaths[] = 'Resources/views/storefront';
-
-        return $viewPaths;
-    }
 
     /**
      * {@inheritdoc}
@@ -50,7 +43,16 @@ class SwagPayPal extends Plugin
         $loader->load('paypal_payment.xml');
         $loader->load('resource.xml');
         $loader->load('setting.xml');
+        $loader->load('util.xml');
         $loader->load('webhook.xml');
+    }
+
+    public function getViewPaths(): array
+    {
+        $viewPaths = parent::getViewPaths();
+        $viewPaths[] = 'Resources/views/storefront';
+
+        return $viewPaths;
     }
 
     public function install(InstallContext $context): void
@@ -98,7 +100,9 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         $pluginId = $pluginIdProvider->getPluginIdByBaseClass($this->getClassName(), $context);
-        $paymentMethodId = $this->getPaymentMethodId($context);
+        /** @var EntityRepositoryInterface $paymentRepository */
+        $paymentRepository = $this->container->get('payment_method.repository');
+        $paymentMethodId = (new PaymentMethodIdProvider($paymentRepository))->getPayPalPaymentMethodId($context);
 
         if ($paymentMethodId !== null) {
             return;
@@ -111,8 +115,6 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
             'pluginId' => $pluginId,
         ];
 
-        /** @var EntityRepositoryInterface $paymentRepository */
-        $paymentRepository = $this->container->get('payment_method.repository');
         $paymentRepository->create([$paypal], $context);
     }
 
@@ -120,7 +122,7 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
     {
         /** @var EntityRepositoryInterface $paymentRepository */
         $paymentRepository = $this->container->get('payment_method.repository');
-        $paymentMethodId = $this->getPaymentMethodId($context);
+        $paymentMethodId = (new PaymentMethodIdProvider($paymentRepository))->getPayPalPaymentMethodId($context);
 
         if ($paymentMethodId === null) {
             return;
@@ -132,24 +134,6 @@ DROP TABLE IF EXISTS swag_paypal_setting_general;
         ];
 
         $paymentRepository->update([$paymentMethod], $context);
-    }
-
-    private function getPaymentMethodId(Context $context): ?string
-    {
-        /** @var EntityRepositoryInterface $paymentRepository */
-        $paymentRepository = $this->container->get('payment_method.repository');
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('handlerIdentifier', PayPalPaymentHandler::class));
-
-        $result = $paymentRepository->searchIds($criteria, $context);
-        if ($result->getTotal() === 0) {
-            return null;
-        }
-
-        $paymentMethodIds = $result->getIds();
-
-        return array_shift($paymentMethodIds);
     }
 
     private function activateOrderTransactionCustomField(Context $context): void

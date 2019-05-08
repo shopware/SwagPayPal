@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Payment;
+namespace Swag\PayPal\Test\Payment\Builder;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
@@ -24,7 +24,7 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 
-class PaymentBuilderServiceTest extends TestCase
+class OrderPaymentBuilderTest extends TestCase
 {
     use PaymentTransactionTrait;
     use ServicesTrait;

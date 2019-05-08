@@ -18,7 +18,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\Test\Mock\DIContainerMock;
-use Swag\PayPal\Test\Mock\Repositories\DefinitionRegistryMock;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use Swag\PayPal\Webhook\Handler\AuthorizationVoided;
@@ -44,13 +44,13 @@ class AuthorizationVoidedTest extends TestCase
     private $stateMachineRegistry;
 
     /**
-     * @var DefinitionRegistryMock
+     * @var DefinitionInstanceRegistryMock
      */
     private $definitionRegistry;
 
     protected function setUp(): void
     {
-        $this->definitionRegistry = new DefinitionRegistryMock([], new DIContainerMock());
+        $this->definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
         $this->orderTransactionRepo = $this->definitionRegistry->getRepository(
             (new OrderTransactionDefinition())->getEntityName()
         );

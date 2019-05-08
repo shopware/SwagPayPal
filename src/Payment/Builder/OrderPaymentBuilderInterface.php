@@ -6,16 +6,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Payment;
+namespace Swag\PayPal\Payment\Builder;
 
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\PayPal\Api\Payment;
 
-interface PaymentBuilderInterface
+interface OrderPaymentBuilderInterface
 {
     /**
-     * The function returns an array with all parameters that are expected by the PayPal API.
+     * Returns all necessary data to create a payment via the PayPal API. Uses data given by a Shopware order
      */
     public function getPayment(AsyncPaymentTransactionStruct $paymentTransaction, SalesChannelContext $salesChannelContext): Payment;
 }

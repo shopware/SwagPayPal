@@ -17,7 +17,11 @@ use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\StateMachine\Exception\StateMachineNotFoundException;
+use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
+use Swag\PayPal\Payment\Builder\OrderPaymentBuilderInterface;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\PaymentStatus;
@@ -42,7 +46,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     private $paymentResource;
 
     /**
-     * @var PaymentBuilderInterface
+     * @var OrderPaymentBuilderInterface
      */
     private $paymentBuilder;
 
@@ -54,7 +58,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     public function __construct(
         DefinitionInstanceRegistry $definitionRegistry,
         PaymentResource $paymentResource,
-        PaymentBuilderInterface $paymentBuilder,
+        OrderPaymentBuilderInterface $paymentBuilder,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         OrderTransactionDefinition $orderTransactionDefinition
     ) {
@@ -67,8 +71,10 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     /**
      * @throws AsyncPaymentProcessException
      */
-    public function pay(AsyncPaymentTransactionStruct $transaction, SalesChannelContext $salesChannelContext): RedirectResponse
-    {
+    public function pay(
+        AsyncPaymentTransactionStruct $transaction,
+        SalesChannelContext $salesChannelContext
+    ): RedirectResponse {
         $payment = $this->paymentBuilder->getPayment($transaction, $salesChannelContext);
 
         $context = $salesChannelContext->getContext();
@@ -95,6 +101,9 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     /**
      * @throws AsyncPaymentFinalizeException
      * @throws CustomerCanceledAsyncPaymentException
+     * @throws InconsistentCriteriaIdsException
+     * @throws StateMachineNotFoundException
+     * @throws StateMachineStateNotFoundException
      */
     public function finalize(
         AsyncPaymentTransactionStruct $transaction,

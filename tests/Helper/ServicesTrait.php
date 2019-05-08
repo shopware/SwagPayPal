@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\Helper;
 
 use Shopware\Core\Framework\Language\LanguageDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
-use Swag\PayPal\Payment\PaymentBuilderService;
+use Swag\PayPal\Payment\Builder\OrderPaymentBuilder;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -20,7 +20,7 @@ use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\DummyCollection;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use Swag\PayPal\Test\Mock\Repositories\DefinitionRegistryMock;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
@@ -29,10 +29,10 @@ use Swag\PayPal\Webhook\WebhookRegistry;
 trait ServicesTrait
 {
     protected function createPayPalClientFactory(
-        ?SettingsServiceInterface $settingsProvider = null
+        ?SettingsServiceInterface $settingsService = null
     ): PayPalClientFactoryMock {
-        if ($settingsProvider === null) {
-            $settingsProvider = new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()), new SwagPayPalSettingGeneralDefinition());
+        if ($settingsService === null) {
+            $settingsService = new SettingsServiceMock(new DefinitionInstanceRegistryMock([], new DIContainerMock()), new SwagPayPalSettingGeneralDefinition());
         }
 
         return new PayPalClientFactoryMock(
@@ -40,28 +40,28 @@ trait ServicesTrait
                 new CacheMock(),
                 new TokenClientFactoryMock()
             ),
-            $settingsProvider
+            $settingsService
         );
     }
 
-    protected function createPaymentResource(?SettingsServiceInterface $settingsProvider = null): PaymentResource
+    protected function createPaymentResource(?SettingsServiceInterface $settingsService = null): PaymentResource
     {
         return new PaymentResource(
-            $this->createPayPalClientFactory($settingsProvider)
+            $this->createPayPalClientFactory($settingsService)
         );
     }
 
-    protected function createPaymentBuilder(?SettingsServiceInterface $settingsProvider = null): PaymentBuilderService
+    protected function createPaymentBuilder(?SettingsServiceInterface $settingsService = null): OrderPaymentBuilder
     {
-        if ($settingsProvider === null) {
-            $settingsProvider = new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()), new SwagPayPalSettingGeneralDefinition());
+        $definitionInstanceRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
+        if ($settingsService === null) {
+            $settingsService = new SettingsServiceMock($definitionInstanceRegistry, new SwagPayPalSettingGeneralDefinition());
         }
 
-        return new PaymentBuilderService(
-            new DefinitionRegistryMock([], new DIContainerMock()),
-            $settingsProvider,
-            new LanguageDefinition(),
-            new SalesChannelDefinition()
+        return new OrderPaymentBuilder(
+            $settingsService,
+            $definitionInstanceRegistry->getRepository((new LanguageDefinition())->getEntityName()),
+            $definitionInstanceRegistry->getRepository((new SalesChannelDefinition())->getEntityName())
         );
     }
 

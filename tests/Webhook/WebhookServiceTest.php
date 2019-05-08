@@ -18,7 +18,7 @@ use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
-use Swag\PayPal\Test\Mock\Repositories\DefinitionRegistryMock;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\SwagPayPalSettingGeneralRepoMock;
 use Swag\PayPal\Test\Mock\RouterMock;
@@ -42,13 +42,13 @@ class WebhookServiceTest extends TestCase
     private $orderTransactionRepo;
 
     /**
-     * @var DefinitionRegistryMock
+     * @var DefinitionInstanceRegistryMock
      */
     private $definitionRegistry;
 
     protected function setUp(): void
     {
-        $this->definitionRegistry = new DefinitionRegistryMock([], new DIContainerMock());
+        $this->definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
         $this->swagPayPalSettingGeneralRepo = $this->definitionRegistry->getRepository(
             (new SwagPayPalSettingGeneralDefinition())->getEntityName()
         );

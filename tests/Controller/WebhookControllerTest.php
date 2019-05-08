@@ -17,7 +17,7 @@ use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
 use Swag\PayPal\Test\Controller\_fixtures\WebhookDataFixture;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
-use Swag\PayPal\Test\Mock\Repositories\DefinitionRegistryMock;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\WebhookServiceMock;
 use Swag\PayPal\Webhook\WebhookService;
@@ -126,7 +126,7 @@ class WebhookControllerTest extends TestCase
         return new WebhookController(
             new LoggerMock(),
             new WebhookServiceMock(),
-            new SettingsServiceMock(new DefinitionRegistryMock([], new DIContainerMock()), new SwagPayPalSettingGeneralDefinition())
+            new SettingsServiceMock(new DefinitionInstanceRegistryMock([], new DIContainerMock()), new SwagPayPalSettingGeneralDefinition())
         );
     }
 
