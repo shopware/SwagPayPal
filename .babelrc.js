@@ -1,3 +1,7 @@
 module.exports = {
-    presets: ['@babel/preset-env']
+    presets: ['@babel/preset-env'],
+    plugins: [
+        '@babel/plugin-proposal-class-properties',
+        '@babel/plugin-transform-object-assign',
+    ]
 };
