@@ -16,7 +16,7 @@ use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
 use Swag\PayPal\Test\Mock\DIContainerMock;
-use Swag\PayPal\Test\Mock\Repositories\DefinitionRegistryMock;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 
 class SettingsServiceTest extends TestCase
 {
@@ -49,7 +49,7 @@ class SettingsServiceTest extends TestCase
     private function createSettingsProvider(): SettingsService
     {
         return new SettingsService(
-            new DefinitionRegistryMock([], new DIContainerMock()),
+            new DefinitionInstanceRegistryMock([], new DIContainerMock()),
             new SwagPayPalSettingGeneralDefinition()
         );
     }

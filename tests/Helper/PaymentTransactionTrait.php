@@ -20,7 +20,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Swag\PayPal\Test\Payment\PaymentBuilderServiceTest;
+use Swag\PayPal\Test\Payment\Builder\OrderPaymentBuilderTest;
 
 trait PaymentTransactionTrait
 {
@@ -41,7 +41,7 @@ trait PaymentTransactionTrait
     private function createOrderTransaction(?string $transactionId): OrderTransactionEntity
     {
         $orderTransaction = new OrderTransactionEntity();
-        $orderTransaction->setOrderId(PaymentBuilderServiceTest::TEST_ORDER_ID);
+        $orderTransaction->setOrderId(OrderPaymentBuilderTest::TEST_ORDER_ID);
 
         if ($transactionId === null) {
             $transactionId = Uuid::randomHex();
@@ -61,7 +61,7 @@ trait PaymentTransactionTrait
         $order->setId($orderId);
         $currency = $this->createCurrencyEntity();
         $order->setCurrency($currency);
-        $order->setOrderNumber(PaymentBuilderServiceTest::TEST_ORDER_NUMBER);
+        $order->setOrderNumber(OrderPaymentBuilderTest::TEST_ORDER_NUMBER);
 
         switch ($orderId) {
             case ConstantsForTesting::VALID_ORDER_ID:
@@ -93,7 +93,7 @@ trait PaymentTransactionTrait
     private function createCurrencyEntity(): CurrencyEntity
     {
         $currency = new CurrencyEntity();
-        $currency->setShortName(PaymentBuilderServiceTest::EXPECTED_ITEM_CURRENCY);
+        $currency->setShortName(OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY);
 
         return $currency;
     }
@@ -103,7 +103,7 @@ trait PaymentTransactionTrait
         $orderLineItem = new OrderLineItemEntity();
 
         $orderLineItem->setId('6198ff79c4144931919977829dbca3d6');
-        $orderLineItem->setQuantity(PaymentBuilderServiceTest::EXPECTED_ITEM_QUANTITY);
+        $orderLineItem->setQuantity(OrderPaymentBuilderTest::EXPECTED_ITEM_QUANTITY);
 
         if ($setPrice) {
             $orderLineItem->setPrice(
@@ -111,15 +111,15 @@ trait PaymentTransactionTrait
                     578.0,
                     578.0,
                     new CalculatedTaxCollection([
-                        new CalculatedTax(PaymentBuilderServiceTest::EXPECTED_ITEM_TAX, 7, 578),
+                        new CalculatedTax(OrderPaymentBuilderTest::EXPECTED_ITEM_TAX, 7, 578),
                     ]),
                     new TaxRuleCollection([7 => new TaxRule(7)])
                 )
             );
         }
 
-        $orderLineItem->setLabel(PaymentBuilderServiceTest::EXPECTED_ITEM_NAME);
-        $orderLineItem->setPayload(['id' => PaymentBuilderServiceTest::EXPECTED_ITEM_ID]);
+        $orderLineItem->setLabel(OrderPaymentBuilderTest::EXPECTED_ITEM_NAME);
+        $orderLineItem->setPayload(['id' => OrderPaymentBuilderTest::EXPECTED_ITEM_ID]);
 
         return new OrderLineItemCollection([$orderLineItem]);
     }

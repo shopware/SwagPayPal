@@ -6,7 +6,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class DefinitionRegistryMock extends DefinitionInstanceRegistry
+class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
 {
     /**
      * @var LanguageRepoMock
