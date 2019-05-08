@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const isDevMode = (process.env.ENV === 'development');
 const isHotMode = (process.env.MODE === 'hot');
+const babelrc = require('./.babelrc');
 
 let config = {
     entry: './main.js',
@@ -17,25 +18,31 @@ let config = {
         filename: 'swag-paypal-storefront.bundle.js'
     },
     module: {
-        rules: [{
-            test: /\.js$/,
-            exclude: /node_modules/,
-            use: 'babel-loader'
-        },
-        {
-            test: /\.scss$/,
-            use: [
-                {
-                    loader: MiniCssExtractPlugin.loader // extract css files from the js code
-                },
-                {
-                    loader: 'css-loader'
-                },
-                {
-                    loader: 'sass-loader'
-                }
-            ]
-        }]
+        rules: [
+            {
+                test: /\.m?js$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: babelrc
+                    }
+                ]
+            },
+            {
+                test: /\.scss$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader // extract css files from the js code
+                    },
+                    {
+                        loader: 'css-loader'
+                    },
+                    {
+                        loader: 'sass-loader'
+                    }
+                ]
+            }]
     },
     resolve: {
         alias: {
