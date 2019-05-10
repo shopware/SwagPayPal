@@ -45,11 +45,11 @@ class PayPalClient
         $clientId = $settings->getClientId();
         $clientSecret = $settings->getClientSecret();
 
-        if ($clientId === null || $clientId === '') {
+        if ($clientId === '') {
             throw new PayPalSettingsInvalidException('clientId');
         }
 
-        if ($clientSecret === null || $clientSecret === '') {
+        if ($clientSecret === '') {
             throw new PayPalSettingsInvalidException('clientSecret');
         }
 

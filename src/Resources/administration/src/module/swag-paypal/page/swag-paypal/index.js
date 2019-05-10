@@ -46,6 +46,7 @@ export default {
                     this.setting = this.settingStore.create();
                     this.setting.landingPage = this.landingPageTypes[0];
                     this.setting.intent = this.intents[0];
+                    this.setting.sandbox = false;
                 }
                 this.isLoading = false;
             });
@@ -95,6 +96,8 @@ export default {
                     }
                     this.isLoading = false;
                 });
+            }).catch(() => {
+                this.isLoading = false;
             });
         },
 

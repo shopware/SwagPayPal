@@ -23,8 +23,8 @@ class Migration1536761533SettingGeneral extends MigrationStep
         $sql = <<<SQL
 CREATE TABLE IF NOT EXISTS `swag_paypal_setting_general` (
     `id`                    BINARY(16)                              NOT NULL,
-    `client_id`             VARCHAR(255) COLLATE utf8mb4_unicode_ci,
-    `client_secret`         VARCHAR(255) COLLATE utf8mb4_unicode_ci,
+    `client_id`             VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `client_secret`         VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL,
     `sandbox`               TINYINT(1)                              NOT NULL DEFAULT 0,
     `intent`                VARCHAR(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'sale',
     `submit_cart`           TINYINT(1)                              NOT NULL DEFAULT 0,
