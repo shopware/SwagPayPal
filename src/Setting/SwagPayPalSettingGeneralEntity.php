@@ -16,12 +16,12 @@ class SwagPayPalSettingGeneralEntity extends Entity
     use EntityIdTrait;
 
     /**
-     * @var string|null
+     * @var string
      */
     protected $clientId;
 
     /**
-     * @var string|null
+     * @var string
      */
     protected $clientSecret;
 
@@ -70,7 +70,7 @@ class SwagPayPalSettingGeneralEntity extends Entity
      */
     protected $orderNumberPrefix;
 
-    public function getClientId(): ?string
+    public function getClientId(): string
     {
         return $this->clientId;
     }
@@ -80,7 +80,7 @@ class SwagPayPalSettingGeneralEntity extends Entity
         $this->clientId = $clientId;
     }
 
-    public function getClientSecret(): ?string
+    public function getClientSecret(): string
     {
         return $this->clientSecret;
     }

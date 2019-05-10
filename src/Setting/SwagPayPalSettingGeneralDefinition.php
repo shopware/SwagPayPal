@@ -29,8 +29,8 @@ class SwagPayPalSettingGeneralDefinition extends EntityDefinition
     {
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
-            new StringField('client_id', 'clientId'),
-            new StringField('client_secret', 'clientSecret'),
+            (new StringField('client_id', 'clientId'))->addFlags(new Required()),
+            (new StringField('client_secret', 'clientSecret'))->addFlags(new Required()),
             (new BoolField('sandbox', 'sandbox'))->addFlags(new Required()),
             (new StringField('intent', 'intent'))->addFlags(new Required()),
             new BoolField('submit_cart', 'submitCart'),

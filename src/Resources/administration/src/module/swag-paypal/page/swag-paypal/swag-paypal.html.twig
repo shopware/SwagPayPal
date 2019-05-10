@@ -20,7 +20,7 @@
                 {% endblock %}
 
                 {% block swag_paypal_actions_save %}
-                    <sw-button variant="primary" @click="onSave" :disabled="clientCredentialsFilled || isLoading">
+                    <sw-button variant="primary" @click="onSave" :disabled="isLoading">
                         {{ $tc('swag-paypal.settingForm.save') }}
                     </sw-button>
                 {% endblock %}
@@ -38,7 +38,8 @@
                                         <sw-text-field :label="$tc('swag-paypal.settingForm.credentials.clientId.label')"
                                                        v-model="setting.clientId"
                                                        :tooltipText="$tc('swag-paypal.settingForm.credentials.clientId.tooltipText')"
-                                                       validation="required">
+                                                       errorPointer="swagPaypalSettingGeneral.clientId"
+                                                       required>
                                         </sw-text-field>
                                     {% endblock %}
 
@@ -46,7 +47,8 @@
                                         <sw-text-field :label="$tc('swag-paypal.settingForm.credentials.clientSecret.label')"
                                                        v-model="setting.clientSecret"
                                                        :tooltipText="$tc('swag-paypal.settingForm.credentials.clientSecret.tooltipText')"
-                                                       validation="required">
+                                                       errorPointer="swagPaypalSettingGeneral.clientSecret"
+                                                       required>
                                         </sw-text-field>
                                     {% endblock %}
 
