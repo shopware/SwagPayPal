@@ -19,6 +19,7 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
@@ -74,7 +75,7 @@ class PayPalPaymentHandlerTest extends TestCase
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $salesChannelContext = Generator::createSalesChannelContext();
-        $response = $handler->pay($paymentTransaction, $salesChannelContext);
+        $response = $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
 
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $response->getTargetUrl());
 
@@ -98,7 +99,7 @@ class PayPalPaymentHandlerTest extends TestCase
         $this->expectException(AsyncPaymentProcessException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
 An error occurred during the communication with PayPal');
-        $handler->pay($paymentTransaction, $salesChannelContext);
+        $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
     }
 
     public function testFinalizeSale(): void

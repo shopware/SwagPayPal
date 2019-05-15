@@ -18,6 +18,7 @@ use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentExcepti
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Exception\StateMachineNotFoundException;
 use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
@@ -73,6 +74,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
      */
     public function pay(
         AsyncPaymentTransactionStruct $transaction,
+        RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
         $payment = $this->paymentBuilder->getPayment($transaction, $salesChannelContext);
