@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="/home/timo/Code/development/platform/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title>API credentials</title>
+        <title lang="de-DE">API Zugangsdaten</title>
+
+        <input-field>
+            <name>clientId</name>
+            <label>Client-ID</label>
+            <label lang="de-DE">Client-ID</label>
+            <required>true</required>
+        </input-field>
+
+        <input-field>
+            <name>clientSecret</name>
+            <label>Client-Secret</label>
+            <label lang="de-DE">Client-Secret</label>
+            <required>true</required>
+        </input-field>
+
+        <input-field type="bool">
+            <name>sandbox</name>
+            <label>Enable Sandbox</label>
+            <label lang="de-DE">Sandbox aktivieren</label>
+        </input-field>
+
+    </card>
+
+    <card>
+        <title>Behaviour</title>
+        <title lang="de-DE">Verhalten</title>
+
+        <input-field type="single-select">
+            <name>intent</name>
+            <label>Payment acquisition</label>
+            <label lang="de-DE">Zahlungsabschluss</label>
+            <options>
+                <option>
+                    <id>sale</id>
+                    <name>Complete payment immediately (Sale)</name>
+                    <name lang="de-DE">Zahlung sofort abschließen (Sale)</name>
+                </option>
+                <option>
+                    <id>authorize</id>
+                    <name>Delayed payment collection (Auth-Capture)</name>
+                    <name lang="de-DE">Zeitverzögerter Zahlungseinzug (Auth-Capture)</name>
+                </option>
+                <option>
+                    <id>order</id>
+                    <name>Delayed payment collection (Order-Auth-Capture)</name>
+                    <name lang="de-DE">Zeitverzögerter Zahlungseinzug (Order-Auth-Capture)</name>
+                </option>
+            </options>
+        </input-field>
+
+        <input-field type="bool">
+            <name>submitCart</name>
+            <label>Submit cart</label>
+            <label lang="de-DE">Warenkorb übertragen</label>
+            <helpText>If this option is active, the cart will be submitted to PayPal.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Warenkorb an PayPal übertragen.</helpText>
+        </input-field>
+
+        <input-field>
+            <name>brandName</name>
+            <label>Brand name on the PayPal page</label>
+            <label lang="de-DE">Markenname auf der PayPal Seite</label>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>landingPage</name>
+            <label>PayPal landingpage</label>
+            <label lang="de-DE">PayPal Landingpage</label>
+            <helpText>Login: The PayPal site displays a login screen as landingpage.</helpText>
+            <helpText lang="de-DE">Anmeldung: Auf der PayPal Seite wird ein Login als Landingpage angezeigt.</helpText>
+            <options>
+                <option>
+                    <id>login</id>
+                    <name>Login</name>
+                    <name lang="de-DE">Anmeldung</name>
+                </option>
+                <option>
+                    <id>billing</id>
+                    <name>Registration</name>
+                    <name lang="de-DE">Registrierung</name>
+                </option>
+            </options>
+        </input-field>
+
+        <input-field type="bool">
+            <name>sendOrderNumber</name>
+            <label>Submit order number</label>
+            <label lang="de-DE">Bestellnummer übertragen</label>
+            <helpText>If this option is active, the order number will be submitted to PayPal.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird die Bestellnummer an PayPal übertragen.</helpText>
+        </input-field>
+
+        <input-field>
+            <name>orderNumberPrefix</name>
+            <label>Order number prefix</label>
+            <label lang="de-DE">Bestellnummer Prefix</label>
+        </input-field>
+    </card>
+</config>

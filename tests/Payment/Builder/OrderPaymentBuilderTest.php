@@ -14,15 +14,15 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Context\SalesChannelApiSource;
-use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 
 class OrderPaymentBuilderTest extends TestCase
 {
@@ -54,11 +54,12 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentInvalidIntentThrowsException(): void
     {
-        $paymentBuilder = $this->createPaymentBuilder();
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setIntent('invalid');
+        $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $salesChannelContext = Generator::createSalesChannelContext();
-        $salesChannelContext->getContext()->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_INVALID_INTENT, new Entity());
 
         $this->expectException(PayPalSettingsInvalidException::class);
         $this->expectExceptionMessage('Required setting "intent" is missing or invalid');
@@ -67,11 +68,12 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithoutBrandName(): void
     {
-        $paymentBuilder = $this->createPaymentBuilder();
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setBrandName('');
+        $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
         $salesChannelContext = Generator::createSalesChannelContext($context);
         $salesChannelContext->getSalesChannel()->setId(Defaults::SALES_CHANNEL);
 
@@ -88,11 +90,12 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithoutBrandNameAndSalesChannel(): void
     {
-        $paymentBuilder = $this->createPaymentBuilder();
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setBrandName('');
+        $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = $this->createContextWithoutSalesChannel();
-        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITHOUT_BRAND_NAME, new Entity());
         $salesChannelContext = Generator::createSalesChannelContext($context);
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
@@ -108,10 +111,12 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithItemList(): void
     {
-        $paymentBuilder = $this->createPaymentBuilder();
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setSubmitCart(true);
+        $settings->setLandingPage('Foo');
+        $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
         $salesChannelContext = Generator::createSalesChannelContext($context);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
 
@@ -137,10 +142,12 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithoutPrice(): void
     {
-        $paymentBuilder = $this->createPaymentBuilder();
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setSubmitCart(true);
+        $settings->setLandingPage('Foo');
+        $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
         $salesChannelContext = Generator::createSalesChannelContext($context);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_PRICE);
 
@@ -159,9 +166,12 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithoutLineItems(): void
     {
-        $paymentBuilder = $this->createPaymentBuilder();
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setSubmitCart(true);
+        $settings->setLandingPage('Foo');
+        $paymentBuilder = $this->createPaymentBuilder($settings);
+
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART, new Entity());
         $salesChannelContext = Generator::createSalesChannelContext($context);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);
 
@@ -173,11 +183,11 @@ class OrderPaymentBuilderTest extends TestCase
     /**
      * @dataProvider dataProviderTestApplicationContext
      */
-    public function testApplicationContext(string $extensionName, string $expectedResult): void
+    public function testApplicationContext(SwagPayPalSettingGeneralStruct $settings, string $expectedResult): void
     {
-        $paymentBuilder = $this->createPaymentBuilder();
+        $paymentBuilder = $this->createPaymentBuilder($settings);
+
         $context = Context::createDefaultContext(new SalesChannelApiSource(Defaults::SALES_CHANNEL));
-        $context->addExtension($extensionName, new Entity());
         $salesChannelContext = Generator::createSalesChannelContext($context);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
 
@@ -196,17 +206,28 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function dataProviderTestApplicationContext(): array
     {
+        $withoutToken = $this->createDefaultSettingStruct();
+        $withoutToken->setWebhookId(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
+        $withoutToken->setLandingPage(ApplicationContext::LANDINGPAGE_TYPE_BILLING);
+
+        $withoutTokenAndId = $this->createDefaultSettingStruct();
+        $withoutTokenAndId->setLandingPage(ApplicationContext::LANDINGPAGE_TYPE_LOGIN);
+
+        $submitCart = $this->createDefaultSettingStruct();
+        $submitCart->setSubmitCart(true);
+        $submitCart->setLandingPage('Foo');
+
         return [
             [
-                SettingsServiceMock::PAYPAL_SETTING_WITHOUT_TOKEN,
+                $withoutToken,
                 ApplicationContext::LANDINGPAGE_TYPE_BILLING,
             ],
             [
-                SettingsServiceMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID,
+                $withoutTokenAndId,
                 ApplicationContext::LANDINGPAGE_TYPE_LOGIN,
             ],
             [
-                SettingsServiceMock::PAYPAL_SETTING_WITH_SUBMIT_CART,
+                $submitCart,
                 ApplicationContext::LANDINGPAGE_TYPE_LOGIN,
             ],
         ];
@@ -214,11 +235,16 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithOrderNumber(): void
     {
-        $paymentBuilder = $this->createPaymentBuilder();
+        $orderNumberPrefix = 'TEST_';
+
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setSendOrderNumber(true);
+        $settings->setOrderNumberPrefix($orderNumberPrefix);
+
+        $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_ORDER_NUMBER, new Entity());
         $salesChannelContext = Generator::createSalesChannelContext($context);
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
@@ -230,18 +256,20 @@ class OrderPaymentBuilderTest extends TestCase
         $payment = json_decode($payment, true);
 
         static::assertSame(
-            SettingsServiceMock::PAYPAL_SETTING_ORDER_NUMBER_PREFIX . self::TEST_ORDER_NUMBER,
+            $orderNumberPrefix . self::TEST_ORDER_NUMBER,
             $payment['transactions'][0]['invoice_number']
         );
     }
 
     public function testGetPaymentWithOrderNumberWithoutPrefix(): void
     {
-        $paymentBuilder = $this->createPaymentBuilder();
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setSendOrderNumber(true);
+
+        $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = Context::createDefaultContext();
-        $context->addExtension(SettingsServiceMock::PAYPAL_SETTING_WITH_ORDER_NUMBER_WITHOUT_PREFIX, new Entity());
         $salesChannelContext = Generator::createSalesChannelContext($context);
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));

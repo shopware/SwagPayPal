@@ -11,7 +11,6 @@ namespace Swag\PayPal\Test\Mock\PayPal\Resource;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\CreateWebhooks;
 use Swag\PayPal\PayPal\Resource\WebhookResource;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookService;
@@ -24,17 +23,22 @@ class WebhookResourceMock extends WebhookResource
 
     public const THROW_WEBHOOK_ALREADY_EXISTS = 'webhookAlreadyExists';
 
+    public const RETURN_CREATED_WEBHOOK_ID = 'returnCreatedWebhookId';
+
+    public const ALREADY_EXISTING_WEBHOOK_ID = 'alreadyExistingTestWebhookId';
+    public const ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN = 'testWebhookExecuteToken';
+
     public function createWebhook(string $webhookUrl, CreateWebhooks $createWebhooks, Context $context): string
     {
         if ($context->hasExtension(self::THROW_WEBHOOK_ALREADY_EXISTS)) {
             throw new WebhookAlreadyExistsException('');
         }
 
-        if ($context->hasExtension(SettingsServiceMock::PAYPAL_SETTING_WITHOUT_TOKEN_AND_ID)) {
+        if ($context->hasExtension(self::RETURN_CREATED_WEBHOOK_ID)) {
             return self::CREATED_WEBHOOK_ID;
         }
 
-        return SettingsServiceMock::ALREADY_EXISTING_WEBHOOK_ID;
+        return self::ALREADY_EXISTING_WEBHOOK_ID;
     }
 
     public function getWebhookUrl(string $webhookId, Context $context): string
@@ -45,7 +49,7 @@ class WebhookResourceMock extends WebhookResource
 
         return WebhookService::PAYPAL_WEBHOOK_ROUTE . '?'
             . WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME . '='
-            . SettingsServiceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN;
+            . self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN;
     }
 
     public function updateWebhook(string $webhookUrl, string $webhookId, Context $context): void

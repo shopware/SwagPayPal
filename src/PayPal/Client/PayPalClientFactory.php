@@ -40,13 +40,14 @@ class PayPalClientFactory
      */
     public function createPaymentClient(Context $context): PayPalClient
     {
-        $settings = $this->settingsProvider->getSettings($context);
-
         $salesChannelId = Defaults::SALES_CHANNEL;
         $contextSource = $context->getSource();
         if ($contextSource instanceof SalesChannelApiSource) {
             $salesChannelId = $contextSource->getSalesChannelId();
         }
+
+        // TODO: fix salesChannelId
+        $settings = $this->settingsProvider->getSettings();
 
         return new PayPalClient($this->tokenResource, $settings, $salesChannelId);
     }

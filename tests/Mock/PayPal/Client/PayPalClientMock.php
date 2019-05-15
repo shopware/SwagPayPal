@@ -16,7 +16,7 @@ use Swag\PayPal\PayPal\Api\Payment\Payer\PayerInfo;
 use Swag\PayPal\PayPal\Client\PayPalClient;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\TokenResource;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CaptureAuthorizationResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CaptureOrdersResponseFixture;
@@ -59,7 +59,7 @@ class PayPalClientMock extends PayPalClient
 
     public function __construct(
         TokenResource $tokenResource,
-        SwagPayPalSettingGeneralEntity $settings,
+        SwagPayPalSettingGeneralStruct $settings,
         string $cacheId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ) {

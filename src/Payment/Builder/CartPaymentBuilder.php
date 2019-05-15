@@ -27,7 +27,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
      */
     public function getPayment(Cart $cart, SalesChannelContext $salesChannelContext, string $finishUrl): Payment
     {
-        $this->settings = $this->settingsService->getSettings($salesChannelContext->getContext());
+        $this->settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
 
         $intent = $this->getIntent();
         $payer = $this->createPayer();

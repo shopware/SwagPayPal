@@ -68,7 +68,7 @@ class WebhookController extends AbstractController
     public function executeWebhook(Request $request, Context $context): Response
     {
         $token = $this->getShopwareToken($request);
-        $this->validateShopwareToken($token, $context);
+        $this->validateShopwareToken($token);
 
         $webhook = $this->createWebhookFromPostData($request);
         $this->tryToExecuteWebhook($context, $webhook);
@@ -93,9 +93,10 @@ class WebhookController extends AbstractController
      * @throws BadRequestHttpException
      * @throws PayPalSettingsNotFoundException
      */
-    private function validateShopwareToken(string $token, Context $context): void
+    private function validateShopwareToken(string $token): void
     {
-        $settings = $this->settingsProvider->getSettings($context);
+        // TODO: Get sales channel id
+        $settings = $this->settingsProvider->getSettings();
         if ($token !== $settings->getWebhookExecuteToken()) {
             throw new BadRequestHttpException('Shopware token is invalid');
         }

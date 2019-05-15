@@ -5,6 +5,7 @@
             "mainMenuItemGeneral": "PayPal",
             "descriptionTextModule": "Einstellungen für PayPal"
         },
+        "messageNotBlank": "Dieser Wert darf nicht leer sein.",
         "settingForm": {
             "save": "Speichern",
             "test": "API Zugangsdaten testen",

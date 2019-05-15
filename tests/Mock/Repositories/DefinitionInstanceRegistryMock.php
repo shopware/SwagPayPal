@@ -24,9 +24,9 @@ class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
     private $orderTransactionRepo;
 
     /**
-     * @var SwagPayPalSettingGeneralRepoMock
+     * @var SystemConfigRepoMock
      */
-    private $swagPayPalSettingGeneralRepo;
+    private $systemConfigRepo;
 
     public function __construct(array $elements, ContainerInterface $container)
     {
@@ -34,7 +34,7 @@ class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
         $this->languageRepo = new LanguageRepoMock();
         $this->salesChannelRepo = new SalesChannelRepoMock();
         $this->orderTransactionRepo = new OrderTransactionRepoMock();
-        $this->swagPayPalSettingGeneralRepo = new SwagPayPalSettingGeneralRepoMock();
+        $this->systemConfigRepo = new SystemConfigRepoMock();
     }
 
     /**
@@ -49,8 +49,8 @@ class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
                 return $this->salesChannelRepo;
             case $this->orderTransactionRepo->getDefinition()->getEntityName():
                 return $this->orderTransactionRepo;
-            case $this->swagPayPalSettingGeneralRepo->getDefinition()->getEntityName():
-                return $this->swagPayPalSettingGeneralRepo;
+            case $this->systemConfigRepo->getDefinition()->getEntityName():
+                return $this->systemConfigRepo;
             default:
                 return parent::getRepository($entityName);
         }

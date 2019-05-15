@@ -59,8 +59,8 @@ class WebhookService implements WebhookServiceInterface
     ) {
         $this->webhookResource = $webhookResource;
         $this->webhookRegistry = $webhookRegistry;
-        $this->settingsService = $settingsService;
         $this->router = $router;
+        $this->settingsService = $settingsService;
     }
 
     /**
@@ -68,7 +68,8 @@ class WebhookService implements WebhookServiceInterface
      */
     public function registerWebhook(Context $context): string
     {
-        $settings = $this->settingsService->getSettings($context);
+        // TODO: Get sales channel id
+        $settings = $this->settingsService->getSettings();
 
         $webhookExecuteToken = $settings->getWebhookExecuteToken();
         if ($webhookExecuteToken === null) {
@@ -82,10 +83,9 @@ class WebhookService implements WebhookServiceInterface
         );
 
         $webhookId = $settings->getWebhookId();
-        $settingsUuid = $settings->getId();
 
         if ($webhookId === null) {
-            return $this->createWebhook($context, $webhookUrl, $settingsUuid, $webhookExecuteToken);
+            return $this->createWebhook($context, $webhookUrl, $webhookExecuteToken);
         }
 
         try {
@@ -102,7 +102,7 @@ class WebhookService implements WebhookServiceInterface
 
             return self::WEBHOOK_UPDATED;
         } catch (WebhookIdInvalidException $e) {
-            return $this->createWebhook($context, $webhookUrl, $settingsUuid, $webhookExecuteToken);
+            return $this->createWebhook($context, $webhookUrl, $webhookExecuteToken);
         }
     }
 
@@ -118,7 +118,6 @@ class WebhookService implements WebhookServiceInterface
     private function createWebhook(
         Context $context,
         string $webhookUrl,
-        string $settingsUuid,
         string $webhookExecuteToken
     ): string {
         $requestData = [
@@ -136,11 +135,11 @@ class WebhookService implements WebhookServiceInterface
                 $context
             );
 
+            // TODO: Get sales channel id
             $this->settingsService->updateSettings([
-                'id' => $settingsUuid,
-                'webhookId' => $webhookId,
                 'webhookExecuteToken' => $webhookExecuteToken,
-            ], $context);
+                'webhookId' => $webhookId,
+            ]);
 
             return self::WEBHOOK_CREATED;
         } catch (WebhookAlreadyExistsException $e) {
