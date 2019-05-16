@@ -7,6 +7,7 @@ import enGB from './snippet/en-GB.json';
 Module.register('swag-paypal', {
     type: 'plugin',
     name: 'SwagPayPal',
+    title: 'swag-paypal.general.mainMenuItemGeneral',
     description: 'swag-paypal.general.descriptionTextModule',
     version: '1.0.0',
     targetVersion: '1.0.0',

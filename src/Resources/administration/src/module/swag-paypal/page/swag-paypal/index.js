@@ -21,6 +21,12 @@ export default {
         };
     },
 
+    metaInfo() {
+        return {
+            title: this.$createTitle()
+        };
+    },
+
     created() {
         this.createdComponent();
     },
