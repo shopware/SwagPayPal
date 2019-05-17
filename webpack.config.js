@@ -1,9 +1,11 @@
 const { resolve } = require('path');
 const process = require('process');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const isDevMode = (process.env.ENV === 'development');
 const isHotMode = (process.env.MODE === 'hot');
+const isProdMode = (process.env.ENV === 'production');
 const babelrc = require('./.babelrc');
 
 let config = {
@@ -67,7 +69,7 @@ if (isDevMode && isHotMode) {
                 port: 9000,
                 host: '0.0.0.0',
                 hot: true,
-                quiet: true,
+                quiet: false,
                 disableHostCheck: true,
                 open: false,
                 public: 'http://localhost:9000',
@@ -76,6 +78,14 @@ if (isDevMode && isHotMode) {
                 }
             }
         }
+    };
+}
+
+if (isProdMode) {
+    config.optimization = {
+        minimizer: [
+            new OptimizeCSSAssetsPlugin({})
+        ]
     };
 }
 

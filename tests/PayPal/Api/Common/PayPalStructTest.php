@@ -4,6 +4,7 @@ namespace Swag\PayPal\Test\PayPal\Api\Common;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
+use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 use Swag\PayPal\Test\PayPal\Api\Common\_fixtures\TestStruct;
 
 class PayPalStructTest extends TestCase
@@ -41,8 +42,7 @@ class PayPalStructTest extends TestCase
     public function testAssignWithNoGetter(): void
     {
         $testStruct = new TestStruct();
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('setter method for "NoSetter" not found');
-        $testStruct->assign(['noSetter' => 'testValue']);
+        $paypalStruct = $testStruct->assign(['noSetter' => 'testValue']);
+        static::assertInstanceOf(PayPalStruct::class, $paypalStruct);
     }
 }

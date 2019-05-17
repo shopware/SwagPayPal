@@ -14,8 +14,8 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
 use Swag\PayPal\Setting\Service\SettingsService;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
@@ -27,9 +27,8 @@ class SettingsServiceTest extends TestCase
     public function testEmptyGetSettings(): void
     {
         $settingsProvider = new SettingsService($this->createSystemConfigServiceMock());
-        $settings = $settingsProvider->getSettings();
-
-        static::assertInstanceOf(SwagPayPalSettingGeneralStruct::class, $settings);
+        $this->expectException(PayPalSettingsNotFoundException::class);
+        $settingsProvider->getSettings();
     }
 
     public function getProvider(): array
@@ -104,9 +103,8 @@ class SettingsServiceTest extends TestCase
     {
         $values = ['wrongDomain.brandName' => 'Wrong brand'];
         $settingsService = new SettingsService($this->createSystemConfigServiceMock($values));
-        $settings = $settingsService->getSettings();
-
-        static::assertNull($settings->getBrandName());
+        $this->expectException(PayPalSettingsNotFoundException::class);
+        $settingsService->getSettings();
     }
 
     private function createSystemConfigServiceMock(array $settings = []): SystemConfigServiceMock

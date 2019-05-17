@@ -1,0 +1,14 @@
+{% sw_extends '@Storefront/page/checkout/confirm/index.html.twig' %}
+
+{% block page_checkout_confirm_form_submit %}
+    {{ parent() }}
+
+    {% set expressCheckoutData = page.cart.extensions.expressCheckoutData %}
+
+    {% if expressCheckoutData.isExpressCheckout %}
+        <input name="isPayPalExpressCheckout" value="{{ expressCheckoutData.isExpressCheckout }}" hidden
+            data-pay-pal-selector-options='{ "paypalPaymentMethodId": "{{ expressCheckoutData.getPaymentMethodId }}" }'>
+        <input name="paypalTransactionId" value="{{ expressCheckoutData.getTransactionId }}" hidden>
+        <input name="paypalPayerId" value="{{ expressCheckoutData.getPayerId }}" hidden>
+    {% endif %}
+{% endblock %}

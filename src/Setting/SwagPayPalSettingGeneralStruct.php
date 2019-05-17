@@ -69,6 +69,41 @@ class SwagPayPalSettingGeneralStruct extends Struct
      */
     protected $orderNumberPrefix;
 
+    /**
+     * @var bool
+     */
+    protected $ecsCartEnabled;
+
+    /**
+     * @var bool
+     */
+    protected $ecsOffCanvasEnabled;
+
+    /**
+     * @var bool
+     */
+    protected $ecsLoginEnabled;
+
+    /**
+     * @var string
+     */
+    protected $ecsButtonColor = 'gold';
+
+    /**
+     * @var string
+     */
+    protected $ecsButtonShape = 'rect';
+
+    /**
+     * @var bool
+     */
+    protected $ecsSubmitCart;
+
+    /**
+     * @var string|null
+     */
+    protected $ecsButtonLanguageIso;
+
     public function getClientId(): string
     {
         return $this->clientId;
@@ -177,5 +212,75 @@ class SwagPayPalSettingGeneralStruct extends Struct
     public function setOrderNumberPrefix(string $orderNumberPrefix): void
     {
         $this->orderNumberPrefix = $orderNumberPrefix;
+    }
+
+    public function getEcsCartEnabled(): bool
+    {
+        return $this->ecsCartEnabled;
+    }
+
+    public function setEcsCartEnabled(bool $ecsCartEnabled): void
+    {
+        $this->ecsCartEnabled = $ecsCartEnabled;
+    }
+
+    public function getEcsOffCanvasEnabled(): bool
+    {
+        return $this->ecsOffCanvasEnabled;
+    }
+
+    public function setEcsOffCanvasEnabled(bool $ecsOffCanvasEnabled): void
+    {
+        $this->ecsOffCanvasEnabled = $ecsOffCanvasEnabled;
+    }
+
+    public function getEcsLoginEnabled(): bool
+    {
+        return $this->ecsLoginEnabled;
+    }
+
+    public function setEcsLoginEnabled(bool $ecsLoginEnabled): void
+    {
+        $this->ecsLoginEnabled = $ecsLoginEnabled;
+    }
+
+    public function getEcsButtonColor(): string
+    {
+        return $this->ecsButtonColor;
+    }
+
+    public function setEcsButtonColor(string $ecsButtonColor): void
+    {
+        $this->ecsButtonColor = $ecsButtonColor;
+    }
+
+    public function getEcsButtonShape(): string
+    {
+        return $this->ecsButtonShape;
+    }
+
+    public function setEcsButtonShape(string $ecsButtonShape): void
+    {
+        $this->ecsButtonShape = $ecsButtonShape;
+    }
+
+    public function getEcsSubmitCart(): bool
+    {
+        return $this->ecsSubmitCart;
+    }
+
+    public function setEcsSubmitCart(bool $ecsSubmitCart): void
+    {
+        $this->ecsSubmitCart = $ecsSubmitCart;
+    }
+
+    public function getEcsButtonLanguageIso(): ?string
+    {
+        return $this->ecsButtonLanguageIso;
+    }
+
+    public function setEcsButtonLanguageIso(string $ecsButtonLanguageIso): void
+    {
+        $this->ecsButtonLanguageIso = $ecsButtonLanguageIso;
     }
 }

@@ -1,3 +1,0 @@
-paypal:
-  resource: ../../Controller/
-  type: annotation

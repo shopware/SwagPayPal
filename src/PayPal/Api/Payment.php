@@ -103,6 +103,11 @@ class Payment extends PayPalStruct
         $this->intent = $intent;
     }
 
+    public function getPayer(): Payer
+    {
+        return $this->payer;
+    }
+
     public function setPayer(Payer $payer): void
     {
         $this->payer = $payer;

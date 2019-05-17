@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="/home/timo/Code/development/platform/src/Core/System/SystemConfig/Schema/config.xsd">
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
     <card>
         <title>API credentials</title>
         <title lang="de-DE">API Zugangsdaten</title>
@@ -100,6 +100,97 @@
             <name>orderNumberPrefix</name>
             <label>Order number prefix</label>
             <label lang="de-DE">Bestellnummer Prefix</label>
+        </input-field>
+    </card>
+
+    <card>
+        <title>PayPal Express Checkout integration</title>
+        <title lang="de-DE">PayPal Express Checkout Integration</title>
+
+        <input-field type="bool">
+            <name>ecsCartEnabled</name>
+            <label>'Pay now' on cart:</label>
+            <label lang="de-DE">'Direkt zu PayPal' im Warenkorb:</label>
+            <helpText>If this option is active, the Express Checkout button will be shown on the cart.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Warenkorbseite angezeigt.</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>ecsOffCanvasEnabled</name>
+            <label>'Pay Now' on Off-Canvas/modal cart:</label>
+            <label lang="de-DE">'Direkt zu PayPal im Off-Canvas/Modal Warenkorb:</label>
+            <helpText>If this option is active, the Express Checkout button will be shown on the Off-Canvas/modal cart.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Express Checkout Button in dem Off-Canvas/Modal Warenkorb angezeigt.</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>ecsLoginEnabled</name>
+            <label>'Pay Now" on login page:</label>
+            <label lang="de-DE">'Direkt zu PayPal' auf Loginseite:</label>
+            <helpText>If this option is active, the Express Checkout button will be shown on the login and register page.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Login- und Registrierungsseite angezeigt.</helpText>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>ecsButtonColor</name>
+            <label>Button color:</label>
+            <label lang="de-DE">Buttonfarbe:</label>
+            <options>
+                <option>
+                    <id>blue</id>
+                    <name>Blue</name>
+                    <name lang="de-DE">Blau</name>
+                </option>
+                <option>
+                    <id>black</id>
+                    <name>Black</name>
+                    <name lang="de-DE">Schwarz</name>
+                </option>
+                <option>
+                    <id>gold</id>
+                    <name>Gold</name>
+                    <name lang="de-DE">Gold</name>
+                </option>
+                <option>
+                    <id>silver</id>
+                    <name>Silver</name>
+                    <name lang="de-DE">Silber</name>
+                </option>
+            </options>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>ecsButtonShape</name>
+            <label>Button shape:</label>
+            <label lang="de-DE">Buttonform:</label>
+            <options>
+                <option>
+                    <id>pill</id>
+                    <name>Round</name>
+                    <name lang="de-DE">Rund</name>
+                </option>
+                <option>
+                    <id>rect</id>
+                    <name>Rectangular</name>
+                    <name lang="de-DE">Eckig</name>
+                </option>
+            </options>
+        </input-field>
+
+        <input-field type="bool">
+            <name>ecsSubmitCart</name>
+            <label>Submit cart:</label>
+            <label lang="de-DE">Warenkorb übertragen:</label>
+            <helpText>If this option is active, the cart will be submitted to PayPal for Express orders.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Warenkorb bei Express-Bestellungen an PayPal übertragen.</helpText>
+        </input-field>
+
+        <input-field>
+            <name>ecsButtonLanguageIso</name>
+            <label>Button locale:</label>
+            <label lang="de-DE">Buttonsprache:</label>
+            <helpText>If not set, the sales channel locale will be used.</helpText>
+            <helpText lang="de-DE">Wenn nicht gesetzt, wird die Verkaufskanal-Sprache verwendet.</helpText>
         </input-field>
     </card>
 </config>
