@@ -11,7 +11,7 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Client\PayPalClient;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 use Swag\PayPal\Test\Payment\PayPalPaymentHandlerTest;
@@ -27,7 +27,7 @@ class PayPalClientFactoryMock extends PayPalClientFactory
 
     public function createPaymentClient(Context $context): PayPalClient
     {
-        $settings = new SwagPayPalSettingGeneralEntity();
+        $settings = new SwagPayPalSettingGeneralStruct();
         $settings->setClientId('testClientId');
         $settings->setClientSecret('testClientSecret');
         $settings->setSandbox(true);

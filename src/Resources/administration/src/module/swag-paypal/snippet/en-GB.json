@@ -5,6 +5,7 @@
             "mainMenuItemGeneral": "PayPal",
             "descriptionTextModule": "Settings for PayPal"
         },
+      "messageNotBlank": "This value should not be blank.",
         "settingForm": {
             "save": "Save",
             "test": "Test API credentials",

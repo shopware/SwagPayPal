@@ -1,6 +1,5 @@
 {% block swag_paypal %}
     <sw-page class="swag-paypal">
-
         {% block swag_paypal_header %}
             <template slot="smart-bar-header">
                 <h2>
@@ -14,123 +13,40 @@
         {% block swag_paypal_actions %}
             <template slot="smart-bar-actions">
                 {% block swag_paypal_actions_test %}
-                    <sw-button @click="onTest" :disabled="clientCredentialsFilled || isLoading">
+                    <sw-button @click="onTest"
+                               :disabled="isLoading || !clientSecretFilled || !clientIdFilled">
                         {{ $tc('swag-paypal.settingForm.test') }}
                     </sw-button>
                 {% endblock %}
 
                 {% block swag_paypal_actions_save %}
-                    <sw-button variant="primary" @click="onSave" :disabled="isLoading">
+                    <sw-button-process
+                            class="sw-settings-login-registration__save-action"
+                            :isLoading="isLoading"
+                            :processSuccess="isSaveSuccessful"
+                            :disabled="isLoading"
+                            variant="primary"
+                            @process-finish="saveFinish"
+                            @click="onSave">
                         {{ $tc('swag-paypal.settingForm.save') }}
-                    </sw-button>
+                    </sw-button-process>
                 {% endblock %}
             </template>
         {% endblock %}
 
         {% block swag_paypal_content %}
             <sw-card-view slot="content">
-                {% block swag_paypal_content_credentials %}
-                    <sw-card :title="$tc('swag-paypal.settingForm.credentials.cardTitle')" :isLoading="isLoading">
-                        {% block swag_paypal_content_credentials_form %}
-                            <div class="swag-paypal-form">
-                                <sw-container grid="100%">
-                                    {% block swag_paypal_content_credentials_form_clientId %}
-                                        <sw-text-field :label="$tc('swag-paypal.settingForm.credentials.clientId.label')"
-                                                       v-model="setting.clientId"
-                                                       :tooltipText="$tc('swag-paypal.settingForm.credentials.clientId.tooltipText')"
-                                                       errorPointer="swagPaypalSettingGeneral.clientId"
-                                                       required>
-                                        </sw-text-field>
-                                    {% endblock %}
-
-                                    {% block swag_paypal_content_credentials_form_clientSecret %}
-                                        <sw-text-field :label="$tc('swag-paypal.settingForm.credentials.clientSecret.label')"
-                                                       v-model="setting.clientSecret"
-                                                       :tooltipText="$tc('swag-paypal.settingForm.credentials.clientSecret.tooltipText')"
-                                                       errorPointer="swagPaypalSettingGeneral.clientSecret"
-                                                       required>
-                                        </sw-text-field>
-                                    {% endblock %}
-
-                                    {% block swag_paypal_content_credentials_form_sandbox %}
-                                        <sw-switch-field :label="$tc('swag-paypal.settingForm.credentials.sandbox.label')"
-                                                         v-model="setting.sandbox"
-                                                         :tooltipText="$tc('swag-paypal.settingForm.credentials.sandbox.tooltipText')"
-                                                         bordered>
-                                        </sw-switch-field>
-                                    {% endblock %}
-                                </sw-container>
-                            </div>
-                        {% endblock %}
-                    </sw-card>
-                {% endblock %}
-
-                {% block swag_paypal_content_behaviour %}
-                    <sw-card :title="$tc('swag-paypal.settingForm.behaviour.cardTitle')" :isLoading="isLoading">
-                        {% block swag_paypal_content_behaviour_form %}
-                            <div class="swag-paypal-form">
-                                <sw-container grid="100%">
-                                    {% block swag_paypal_content_behaviour_form_intent %}
-                                        <sw-select-field :label="$tc('swag-paypal.settingForm.behaviour.intent.label')"
-                                                         validation="required"
-                                                         v-model="setting.intent">
-                                            {% block swag_paypal_content_behaviour_form_intent_options %}
-                                                <option v-for="intent in intents" :value="intent">
-                                                    {{ $tc('swag-paypal.settingForm.behaviour.intent.' + intent) }}
-                                                </option>
-                                            {% endblock %}
-                                        </sw-select-field>
-                                    {% endblock %}
-
-                                    {% block swag_paypal_content_behaviour_form_submitCart %}
-                                        <sw-switch-field :label="$tc('swag-paypal.settingForm.behaviour.submitCart.label')"
-                                                         v-model="setting.submitCart"
-                                                         :helpText="$tc('swag-paypal.settingForm.behaviour.submitCart.helpText')"
-                                                         bordered>
-                                        </sw-switch-field>
-                                    {% endblock %}
-
-                                    {% block swag_paypal_content_behaviour_form_brandName %}
-                                        <sw-text-field :label="$tc('swag-paypal.settingForm.behaviour.brandName.label')"
-                                                       v-model="setting.brandName"
-                                                       :tooltipText="$tc('swag-paypal.settingForm.behaviour.brandName.tooltipText')"
-                                                       maxlength="127">
-                                        </sw-text-field>
-                                    {% endblock %}
-
-                                    {% block  swag_paypal_content_behaviour_form_landingPage %}
-                                        <sw-select-field :label="$tc('swag-paypal.settingForm.behaviour.landingPage.label')"
-                                                         v-model="setting.landingPage"
-                                                         validation="required"
-                                                         :helpText="$tc(`swag-paypal.settingForm.behaviour.landingPage.helpText.${setting.landingPage}`)">
-                                            {% block swag_paypal_content_behaviour_form_landingPage_options %}
-                                                <option v-for="landingPageType in landingPageTypes" :value="landingPageType">
-                                                    {{ $tc(`swag-paypal.settingForm.behaviour.landingPage.options.${landingPageType}`) }}
-                                                </option>
-                                            {% endblock %}
-                                        </sw-select-field>
-                                    {% endblock %}
-
-                                    {% block swag_paypal_content_behaviour_form_sendOrderNumber %}
-                                        <sw-switch-field :label="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.label')"
-                                                         v-model="setting.sendOrderNumber"
-                                                         :helpText="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.helpText')"
-                                                         bordered>
-                                        </sw-switch-field>
-                                    {% endblock %}
-
-                                    {% block swag_paypal_content_behaviour_form_orderNumberPrefix %}
-                                        <sw-text-field :label="$tc('swag-paypal.settingForm.behaviour.orderNumberPrefix.label')"
-                                                       v-model="setting.orderNumberPrefix"
-                                                       :disabled="!setting.sendOrderNumber"
-                                                       tooltipText="$tc('swag-paypal.settingForm.behaviour.orderNumberPrefix.tooltipText')">
-                                        </sw-text-field>
-                                    {% endblock %}
-                                </sw-container>
-                            </div>
-                        {% endblock %}
-                    </sw-card>
-                {% endblock %}
+                <sw-system-config
+                        ref="systemConfig"
+                        salesChannelSwitchable
+                        @config-changed="onConfigChange"
+                        domain="SwagPayPal.settings">
+                    <template #card-element="{element, config}">
+                        <sw-form-field-renderer v-bind="getBind(element, config)"
+                                                v-model="config[element.name]">
+                        </sw-form-field-renderer>
+                    </template>
+                </sw-system-config>
             </sw-card-view>
         {% endblock %}
     </sw-page>

@@ -72,8 +72,9 @@ class SwagPayPal extends Plugin
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
         $connection->exec('
-DROP TABLE IF EXISTS swag_paypal_setting_general;
+DELETE FROM `system_config` WHERE configuration_key LIKE "SwagPayPal.settings.%"
 ');
+
         parent::uninstall($context);
     }
 

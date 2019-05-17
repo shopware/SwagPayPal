@@ -19,7 +19,7 @@ use Swag\PayPal\PayPal\Api\Payment\Transaction\Amount\Details;
 use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 
 abstract class AbstractPaymentBuilder
 {
@@ -29,7 +29,7 @@ abstract class AbstractPaymentBuilder
     protected $settingsService;
 
     /**
-     * @var SwagPayPalSettingGeneralEntity
+     * @var SwagPayPalSettingGeneralStruct
      */
     protected $settings;
 

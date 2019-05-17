@@ -8,46 +8,50 @@
 
 namespace Swag\PayPal\Setting\Service;
 
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralCollection;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralEntity;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 
 class SettingsService implements SettingsServiceInterface
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var SystemConfigService
      */
-    private $settingGeneralRepo;
+    private $systemConfigService;
 
-    public function __construct(
-        DefinitionInstanceRegistry $definitionRegistry,
-        SwagPayPalSettingGeneralDefinition $swagPayPalSettingGeneralDefinition
-    ) {
-        $this->settingGeneralRepo = $definitionRegistry->getRepository($swagPayPalSettingGeneralDefinition->getEntityName());
+    public function __construct(SystemConfigService $systemConfigService)
+    {
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
      * @throws PayPalSettingsNotFoundException
      */
-    public function getSettings(Context $context): SwagPayPalSettingGeneralEntity
+    public function getSettings(?string $salesChannelId = null): SwagPayPalSettingGeneralStruct
     {
-        /** @var SwagPayPalSettingGeneralCollection $settingsCollection */
-        $settingsCollection = $this->settingGeneralRepo->search(new Criteria(), $context)->getEntities();
-        $settingsEntity = $settingsCollection->first();
-        if ($settingsEntity === null) {
-            throw new PayPalSettingsNotFoundException();
+        $prefix = 'SwagPayPal.settings.';
+        $values = $this->systemConfigService->getDomain($prefix, $salesChannelId, true);
+
+        $propertyValuePairs = [];
+        foreach ($values as $key => $value) {
+            $property = substr($key, strlen($prefix));
+            $propertyValuePairs[$property] = $value;
         }
+
+        $settingsEntity = new SwagPayPalSettingGeneralStruct();
+        $settingsEntity->assign($propertyValuePairs);
 
         return $settingsEntity;
     }
 
-    public function updateSettings(array $updateData, Context $context): void
+    public function updateSettings(array $settings, ?string $salesChannelId = null): void
     {
-        $this->settingGeneralRepo->update([$updateData], $context);
+        foreach ($settings as $key => $value) {
+            $this->systemConfigService->set(
+                'SwagPayPal.settings.' . $key,
+                $value,
+                $salesChannelId
+            );
+        }
     }
 }

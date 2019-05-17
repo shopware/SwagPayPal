@@ -36,7 +36,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         AsyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext
     ): Payment {
-        $this->settings = $this->settingsService->getSettings($salesChannelContext->getContext());
+        $this->settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
 
         $intent = $this->getIntent();
         $payer = $this->createPayer();

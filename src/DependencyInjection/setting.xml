@@ -5,10 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition">
-            <tag name="shopware.entity.definition" entity="swag_paypal_setting_general"/>
-        </service>
-
         <service id="Swag\PayPal\Controller\SettingsController" public="true">
             <argument type="service" id="Swag\PayPal\Setting\Service\ApiCredentialTestService"/>
         </service>
@@ -18,8 +14,7 @@
         </service>
 
         <service id="Swag\PayPal\Setting\Service\SettingsService">
-            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
-            <argument type="service" id="Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
     </services>
 </container>

@@ -22,7 +22,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralDefinition;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
@@ -31,7 +31,6 @@ use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPaymentHandlerTest extends TestCase
@@ -254,14 +253,14 @@ An error occurred during the communication with PayPal');
         );
     }
 
-    private function createPayPalPaymentHandler(): PayPalPaymentHandler
+    private function createPayPalPaymentHandler(?SwagPayPalSettingGeneralStruct $settings = null): PayPalPaymentHandler
     {
-        $settingsProvider = new SettingsServiceMock($this->definitionRegistry, new SwagPayPalSettingGeneralDefinition());
+        $settings = $settings ?? $this->createDefaultSettingStruct();
 
         return new PayPalPaymentHandler(
             $this->definitionRegistry,
-            $this->createPaymentResource($settingsProvider),
-            $this->createPaymentBuilder($settingsProvider),
+            $this->createPaymentResource($settings),
+            $this->createPaymentBuilder($settings),
             new OrderTransactionStateHandler($this->orderTransactionRepo, $this->stateMachineRegistry),
             new OrderTransactionDefinition()
         );

@@ -8,13 +8,12 @@
 
 namespace Swag\PayPal\Setting;
 
-use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
+use Swag\PayPal\PayPal\PaymentIntent;
 
-class SwagPayPalSettingGeneralEntity extends Entity
+class SwagPayPalSettingGeneralStruct extends Struct
 {
-    use EntityIdTrait;
-
     /**
      * @var string
      */
@@ -28,17 +27,17 @@ class SwagPayPalSettingGeneralEntity extends Entity
     /**
      * @var bool
      */
-    protected $sandbox;
+    protected $sandbox = false;
 
     /**
      * @var string
      */
-    protected $intent;
+    protected $intent = PaymentIntent::SALE;
 
     /**
      * @var bool
      */
-    protected $submitCart;
+    protected $submitCart = false;
 
     /**
      * @var string|null
@@ -58,12 +57,12 @@ class SwagPayPalSettingGeneralEntity extends Entity
     /**
      * @var string
      */
-    protected $landingPage;
+    protected $landingPage = ApplicationContext::LANDINGPAGE_TYPE_LOGIN;
 
     /**
      * @var bool
      */
-    protected $sendOrderNumber;
+    protected $sendOrderNumber = false;
 
     /**
      * @var string|null
