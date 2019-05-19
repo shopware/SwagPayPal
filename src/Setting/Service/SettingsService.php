@@ -14,6 +14,8 @@ use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 
 class SettingsService implements SettingsServiceInterface
 {
+    private const SYSTEM_CONFIG_DOMAIN = 'SwagPayPal.settings.';
+
     /**
      * @var SystemConfigService
      */
@@ -29,10 +31,13 @@ class SettingsService implements SettingsServiceInterface
      */
     public function getSettings(?string $salesChannelId = null): SwagPayPalSettingGeneralStruct
     {
-        $prefix = 'SwagPayPal.settings.';
-        $values = $this->systemConfigService->getDomain($prefix, $salesChannelId, true);
+        $values = $this->systemConfigService->getDomain(
+            self::SYSTEM_CONFIG_DOMAIN,
+            $salesChannelId,
+            true
+        );
 
-        if ($values === []) {
+        if (empty($values)) {
             throw new PayPalSettingsNotFoundException();
         }
 
@@ -40,7 +45,7 @@ class SettingsService implements SettingsServiceInterface
 
         /** @var string $key */
         foreach ($values as $key => $value) {
-            $property = substr($key, strlen($prefix));
+            $property = substr($key, strlen(self::SYSTEM_CONFIG_DOMAIN));
             $propertyValuePairs[$property] = $value;
         }
 
@@ -54,7 +59,7 @@ class SettingsService implements SettingsServiceInterface
     {
         foreach ($settings as $key => $value) {
             $this->systemConfigService->set(
-                'SwagPayPal.settings.' . $key,
+                self::SYSTEM_CONFIG_DOMAIN . $key,
                 $value,
                 $salesChannelId
             );

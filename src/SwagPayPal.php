@@ -46,6 +46,7 @@ class SwagPayPal extends Plugin
         $loader->load('util.xml');
         $loader->load('webhook.xml');
         $loader->load('express_checkout.xml');
+        $loader->load('spb_checkout.xml');
     }
 
     public function getViewPaths(): array

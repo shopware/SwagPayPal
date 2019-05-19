@@ -9,6 +9,11 @@ const isHotMode = (process.env.MODE === 'hot');
 const isProdMode = (process.env.ENV === 'production');
 const babelrc = require('./.babelrc');
 
+
+// default host + port where dev server listens for incoming traffic
+const port = process.env.PORT || 9000;
+const host = process.env.HOST || 'localhost';
+
 let config = {
     entry: './main.js',
     mode: process.env.ENV,
@@ -67,13 +72,13 @@ if (isDevMode && isHotMode) {
             devServer: {
                 contentBase: resolve(__dirname, 'src/Resources/public/static/storefront'),
                 compress: true,
-                port: 9000,
+                port: port,
                 host: '0.0.0.0',
                 hot: true,
                 quiet: false,
                 disableHostCheck: true,
                 open: false,
-                public: 'http://localhost:9000',
+                public: `http://${host}:${port}`,
                 headers: {
                     'Access-Control-Allow-Origin': '*'
                 }

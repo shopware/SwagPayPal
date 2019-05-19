@@ -193,4 +193,15 @@
             <helpText lang="de-DE">Wenn nicht gesetzt, wird die Verkaufskanal-Sprache verwendet.</helpText>
         </input-field>
     </card>
+
+    <card>
+        <title>PayPal Checkout with Smart Payment Buttons</title>
+        <title lang="de-DE">PayPal Checkout mit Smart Payment Buttons</title>
+
+        <input-field type="bool">
+            <name>spbCheckoutEnabled</name>
+            <label>Enable Smart Payment Buttons</label>
+            <label lang="de-DE">Smart Payment Buttons aktivieren</label>
+        </input-field>
+    </card>
 </config>

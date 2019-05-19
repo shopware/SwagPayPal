@@ -11,6 +11,7 @@
             <argument type="service" id="Swag\PayPal\Payment\Builder\OrderPaymentBuilder"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition"/>
+
             <tag name="shopware.payment.method.async"/>
         </service>
 
