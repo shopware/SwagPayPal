@@ -14,11 +14,11 @@ class ExpressCheckoutDataTest extends TestCase
         $expressCheckoutData->setPaymentMethodId('testPayPalPaymentMethodId');
         $expressCheckoutData->setPayerId('testPayerId');
         $expressCheckoutData->setIsExpressCheckout(false);
-        $expressCheckoutData->setTransactionId('testTransactionId');
+        $expressCheckoutData->setPaymentId('testTransactionId');
 
         static::assertSame('testPayPalPaymentMethodId', $expressCheckoutData->getPaymentMethodId());
         static::assertSame('testPayerId', $expressCheckoutData->getPayerId());
         static::assertFalse($expressCheckoutData->isExpressCheckout());
-        static::assertSame('testTransactionId', $expressCheckoutData->getTransactionId());
+        static::assertSame('testTransactionId', $expressCheckoutData->getPaymentId());
     }
 }

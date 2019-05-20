@@ -80,19 +80,19 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $context = $salesChannelContext->getContext();
 
         if ($dataBag->get('isPayPalExpressCheckout')) {
-            $paypalTransactionId = $dataBag->get('paypalTransactionId');
+            $paypalPaymentId = $dataBag->get('paypalPaymentId');
             $payerId = $dataBag->get('paypalPayerId');
 
             $data = [
                 'id' => $transaction->getOrderTransaction()->getId(),
                 'customFields' => [
-                    SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME => $paypalTransactionId,
+                    SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME => $paypalPaymentId,
                 ],
             ];
             $this->orderTransactionRepo->update([$data], $context);
 
             $response = new RedirectResponse(
-                $transaction->getReturnUrl() . '&paymentId=' . $paypalTransactionId . '&PayerID=' . $payerId
+                $transaction->getReturnUrl() . '&paymentId=' . $paypalPaymentId . '&PayerID=' . $payerId
             );
 
             return $response;

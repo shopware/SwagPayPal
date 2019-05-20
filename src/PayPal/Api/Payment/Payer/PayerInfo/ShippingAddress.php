@@ -23,7 +23,7 @@ class ShippingAddress extends PayPalStruct
     private $line1;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $line2;
 
@@ -55,6 +55,11 @@ class ShippingAddress extends PayPalStruct
     public function getLine1(): string
     {
         return $this->line1;
+    }
+
+    public function getLine2(): ?string
+    {
+        return $this->line2;
     }
 
     public function getRecipientName(): string

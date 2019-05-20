@@ -14,7 +14,7 @@ class ExpressCheckoutData extends Struct
     /**
      * @var string
      */
-    private $transactionId;
+    private $paymentId;
 
     /**
      * @var string
@@ -36,14 +36,14 @@ class ExpressCheckoutData extends Struct
         $this->isExpressCheckout = $isExpressCheckout;
     }
 
-    public function getTransactionId(): string
+    public function getPaymentId(): string
     {
-        return $this->transactionId;
+        return $this->paymentId;
     }
 
-    public function setTransactionId(string $transactionId): void
+    public function setPaymentId(string $paymentId): void
     {
-        $this->transactionId = $transactionId;
+        $this->paymentId = $paymentId;
     }
 
     public function getPayerId(): string

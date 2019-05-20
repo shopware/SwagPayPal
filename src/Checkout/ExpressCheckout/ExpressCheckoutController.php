@@ -102,7 +102,7 @@ class ExpressCheckoutController extends AbstractController
         $payment = $this->cartPaymentBuilder->getPayment(
             $cart,
             $context,
-            'https://www.paypal.com/checkoutnow/finish',
+            'https://www.example.com/',
             true
         );
         $paymentResource = $this->paymentResource->create($payment, $context->getContext());
@@ -141,7 +141,7 @@ class ExpressCheckoutController extends AbstractController
         $expressCheckoutData = new ExpressCheckoutData();
 
         $expressCheckoutData->setIsExpressCheckout(true);
-        $expressCheckoutData->setTransactionId($paymentId);
+        $expressCheckoutData->setPaymentId($paymentId);
         $expressCheckoutData->setPayerId($payment->getPayer()->getPayerInfo()->getPayerId());
 
         if ($paypalPaymentMethodId) {
@@ -196,6 +196,7 @@ class ExpressCheckoutController extends AbstractController
                 'countryId' => $this->getCountryIdByCode($shippingAddress->getCountryCode(), $context),
                 'phone' => $shippingAddress->getPhone(),
                 'city' => $shippingAddress->getCity(),
+                'additionalAddressLine1' => $shippingAddress->getLine2(),
             ],
         ]);
     }
