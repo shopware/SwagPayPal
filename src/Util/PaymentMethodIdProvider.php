@@ -20,7 +20,7 @@ class PaymentMethodIdProvider
         $this->paymentRepository = $paymentRepository;
     }
 
-    public function getPayPalPaymentMethodId(Context $context)
+    public function getPayPalPaymentMethodId(Context $context): ?string
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('handlerIdentifier', PayPalPaymentHandler::class));

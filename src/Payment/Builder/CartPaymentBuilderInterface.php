@@ -11,5 +11,5 @@ interface CartPaymentBuilderInterface
     /**
      * Returns all necessary data to create a payment via the PayPal API. Uses data given by a Shopware cart
      */
-    public function getPayment(Cart $cart, SalesChannelContext $salesChannelContext, string $finishUrl): Payment;
+    public function getPayment(Cart $cart, SalesChannelContext $salesChannelContext, string $finishUrl, bool $isExpressCheckoutProcess): Payment;
 }

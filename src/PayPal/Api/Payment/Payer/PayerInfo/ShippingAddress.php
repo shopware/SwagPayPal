@@ -48,9 +48,44 @@ class ShippingAddress extends PayPalStruct
     private $countryCode;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $phone;
+
+    public function getLine1(): string
+    {
+        return $this->line1;
+    }
+
+    public function getRecipientName(): string
+    {
+        return $this->recipientName;
+    }
+
+    public function getCity(): string
+    {
+        return $this->city;
+    }
+
+    public function getState(): string
+    {
+        return $this->state;
+    }
+
+    public function getPostalCode(): string
+    {
+        return $this->postalCode;
+    }
+
+    public function getCountryCode(): string
+    {
+        return $this->countryCode;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
 
     protected function setRecipientName(string $recipientName): void
     {

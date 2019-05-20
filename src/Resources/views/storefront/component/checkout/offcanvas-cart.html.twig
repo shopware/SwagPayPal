@@ -1,0 +1,14 @@
+{% sw_extends '@Storefront/component/checkout/offcanvas-cart.html.twig' %}
+
+{% block component_offcanvas_cart_actions %}
+    {{ parent() }}
+
+    {% set expressSettings = page.extensions.payPalExpressData %}
+
+    {% if expressSettings.offCanvasEnabled %}
+        <div class="swag-paypal__offcanvas-express-button"
+             data-swag-paypal-express-button="true"
+             data-swag-pay-pal-express-button-options="{{ expressSettings|json_encode }}">
+        </div>
+    {% endif %}
+{% endblock %}

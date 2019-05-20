@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService">
+            <argument type="service" id="language.repository"/>
+            <argument type="service" id="currency.repository"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController" public="true">
+            <argument type="service" id="Swag\PayPal\Payment\Builder\CartPaymentBuilder"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\AccountRegistrationService"/>
+            <argument type="service" id="country.repository"/>
+            <argument type="service" id="salutation.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\AccountService"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentMethodIdProvider"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber">
+            <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    </services>
+</container>

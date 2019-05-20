@@ -32,7 +32,13 @@ class SettingsService implements SettingsServiceInterface
         $prefix = 'SwagPayPal.settings.';
         $values = $this->systemConfigService->getDomain($prefix, $salesChannelId, true);
 
+        if ($values === []) {
+            throw new PayPalSettingsNotFoundException();
+        }
+
         $propertyValuePairs = [];
+
+        /** @var string $key */
         foreach ($values as $key => $value) {
             $property = substr($key, strlen($prefix));
             $propertyValuePairs[$property] = $value;

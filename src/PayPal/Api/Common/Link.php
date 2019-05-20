@@ -30,6 +30,11 @@ abstract class Link extends PayPalStruct
         return $this->href;
     }
 
+    public function getRel(): string
+    {
+        return $this->rel;
+    }
+
     protected function setHref(string $href): void
     {
         $this->href = $href;

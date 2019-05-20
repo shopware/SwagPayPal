@@ -58,6 +58,26 @@ class PayerInfo extends PayPalStruct
         return $this->payerId;
     }
 
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+
+    public function getShippingAddress(): ShippingAddress
+    {
+        return $this->shippingAddress;
+    }
+
     protected function setEmail(string $email): void
     {
         $this->email = $email;

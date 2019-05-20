@@ -33,6 +33,11 @@ class Payer extends PayPalStruct
         $this->paymentMethod = $paymentMethod;
     }
 
+    public function getPayerInfo(): PayerInfo
+    {
+        return $this->payerInfo;
+    }
+
     protected function setStatus(string $status): void
     {
         $this->status = $status;

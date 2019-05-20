@@ -25,14 +25,18 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
      * @throws PayPalSettingsInvalidException
      * @throws PayPalSettingsNotFoundException
      */
-    public function getPayment(Cart $cart, SalesChannelContext $salesChannelContext, string $finishUrl): Payment
-    {
+    public function getPayment(
+        Cart $cart,
+        SalesChannelContext $salesChannelContext,
+        string $finishUrl,
+        bool $isExpressCheckoutProcess = false
+    ): Payment {
         $this->settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
 
         $intent = $this->getIntent();
         $payer = $this->createPayer();
         $redirectUrls = $this->createRedirectUrls($finishUrl);
-        $transaction = $this->createTransactionFromCart($cart, $salesChannelContext->getCurrency());
+        $transaction = $this->createTransactionFromCart($cart, $salesChannelContext->getCurrency(), $isExpressCheckoutProcess);
         $applicationContext = $this->getApplicationContext($salesChannelContext);
 
         $requestPayment = new Payment();
@@ -48,8 +52,11 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
     /**
      * @throws InvalidTransactionException
      */
-    private function createTransactionFromCart(Cart $cart, CurrencyEntity $currencyEntity): Transaction
-    {
+    private function createTransactionFromCart(
+        Cart $cart,
+        CurrencyEntity $currencyEntity,
+        bool $isExpressCheckoutProcess
+    ): Transaction {
         $transaction = $cart->getTransactions()->first();
         if ($transaction === null) {
             throw new InvalidTransactionException('');
@@ -62,14 +69,14 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         $amount = $this->createAmount($transactionAmount, 0, $currency);
         $transaction->setAmount($amount);
 
-        if ($this->settings->getSubmitCart()) {
-            $items = $this->getItemList($cart->getLineItems(), $currency);
+        // If its an express checkout process, use the ecs submit cart option
+        if ($isExpressCheckoutProcess && $this->settings->getEcsSubmitCart()) {
+            $this->setItemList($transaction, $cart->getLineItems(), $currency);
+        }
 
-            if (!empty($items)) {
-                $itemList = new ItemList();
-                $itemList->setItems($items);
-                $transaction->setItemList($itemList);
-            }
+        // If its not an express checkout process, use the normal submit cart option
+        if (!$isExpressCheckoutProcess && $this->settings->getSubmitCart()) {
+            $this->setItemList($transaction, $cart->getLineItems(), $currency);
         }
 
         return $transaction;
@@ -113,5 +120,16 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         $item->setTax($this->formatPrice($taxAmount));
 
         return $item;
+    }
+
+    private function setItemList(Transaction $transaction, LineItemCollection $lineItemCollection, string $currency): void
+    {
+        $items = $this->getItemList($lineItemCollection, $currency);
+
+        if (!empty($items)) {
+            $itemList = new ItemList();
+            $itemList->setItems($items);
+            $transaction->setItemList($itemList);
+        }
     }
 }
