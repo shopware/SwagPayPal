@@ -65,8 +65,8 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         $currency = (string) $currencyEntity->getShortName();
 
         $transaction = new Transaction();
-
-        $amount = $this->createAmount($transactionAmount, 0, $currency);
+        $shippingCostsTotal = $cart->getDeliveries()->getShippingCosts()->sum()->getTotalPrice();
+        $amount = $this->createAmount($transactionAmount, $shippingCostsTotal, $currency);
         $transaction->setAmount($amount);
 
         // If its an express checkout process, use the ecs submit cart option
