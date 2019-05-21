@@ -72,17 +72,17 @@ class SwagPayPalSettingGeneralStruct extends Struct
     /**
      * @var bool
      */
-    protected $ecsCartEnabled;
+    protected $ecsCartEnabled = false;
 
     /**
      * @var bool
      */
-    protected $ecsOffCanvasEnabled;
+    protected $ecsOffCanvasEnabled = false;
 
     /**
      * @var bool
      */
-    protected $ecsLoginEnabled;
+    protected $ecsLoginEnabled = false;
 
     /**
      * @var string
@@ -97,12 +97,17 @@ class SwagPayPalSettingGeneralStruct extends Struct
     /**
      * @var bool
      */
-    protected $ecsSubmitCart;
+    protected $ecsSubmitCart = false;
 
     /**
      * @var string|null
      */
     protected $ecsButtonLanguageIso;
+
+    /**
+     * @var bool
+     */
+    protected $spbCheckoutEnabled = false;
 
     public function getClientId(): string
     {
@@ -282,5 +287,15 @@ class SwagPayPalSettingGeneralStruct extends Struct
     public function setEcsButtonLanguageIso(string $ecsButtonLanguageIso): void
     {
         $this->ecsButtonLanguageIso = $ecsButtonLanguageIso;
+    }
+
+    public function isSpbCheckoutEnabled(): bool
+    {
+        return $this->spbCheckoutEnabled;
+    }
+
+    public function setSpbCheckoutEnabled(bool $spbCheckoutEnabled): void
+    {
+        $this->spbCheckoutEnabled = $spbCheckoutEnabled;
     }
 }

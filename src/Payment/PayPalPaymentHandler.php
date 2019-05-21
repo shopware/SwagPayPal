@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandle
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
@@ -78,18 +79,10 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
         $context = $salesChannelContext->getContext();
-
-        if ($dataBag->get('isPayPalExpressCheckout')) {
+        if ($dataBag->get('isPayPalExpressCheckout') || $dataBag->get('isPayPalSpbCheckout')) {
             $paypalPaymentId = $dataBag->get('paypalPaymentId');
             $payerId = $dataBag->get('paypalPayerId');
-
-            $data = [
-                'id' => $transaction->getOrderTransaction()->getId(),
-                'customFields' => [
-                    SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME => $paypalPaymentId,
-                ],
-            ];
-            $this->orderTransactionRepo->update([$data], $context);
+            $this->addPayPalTransactionId($transaction, $paypalPaymentId, $context);
 
             $response = new RedirectResponse(
                 $transaction->getReturnUrl() . '&paymentId=' . $paypalPaymentId . '&PayerID=' . $payerId
@@ -109,13 +102,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             );
         }
 
-        $data = [
-            'id' => $transaction->getOrderTransaction()->getId(),
-            'customFields' => [
-                SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME => $response->getId(),
-            ],
-        ];
-        $this->orderTransactionRepo->update([$data], $context);
+        $this->addPayPalTransactionId($transaction, $response->getId(), $context);
 
         return new RedirectResponse($response->getLinks()[1]->getHref());
     }
@@ -161,6 +148,17 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         } else {
             $this->orderTransactionStateHandler->open($transactionId, $context);
         }
+    }
+
+    private function addPayPalTransactionId(AsyncPaymentTransactionStruct $transaction, string $paypalPaymentId, Context $context): void
+    {
+        $data = [
+            'id' => $transaction->getOrderTransaction()->getId(),
+            'customFields' => [
+                SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME => $paypalPaymentId,
+            ],
+        ];
+        $this->orderTransactionRepo->update([$data], $context);
     }
 
     private function getPaymentState(Payment $response): string

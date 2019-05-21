@@ -6,4 +6,5 @@
 
     <import resource="../../Controller/" type="annotation"/>
     <import resource="../../Checkout/ExpressCheckout" type="annotation"/>
+    <import resource="../../Checkout/SPBCheckout" type="annotation"/>
 </routes>

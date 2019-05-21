@@ -16,9 +16,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Salutation\SalutationEntity;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
 use Swag\PayPal\PayPal\Api\Payment;
-use Swag\PayPal\PayPal\Api\Payment\Link;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\Util\PaymentMethodIdProvider;
+use Swag\PayPal\Util\PaymentTokenExtractor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -108,7 +108,7 @@ class ExpressCheckoutController extends AbstractController
         $paymentResource = $this->paymentResource->create($payment, $context->getContext());
 
         return new JsonResponse([
-            'token' => $this->stripPaymentTokenFromPaymentResource($paymentResource),
+            'token' => PaymentTokenExtractor::extract($paymentResource),
         ]);
     }
 
@@ -156,20 +156,6 @@ class ExpressCheckoutController extends AbstractController
         $this->cartService->recalculate($cart, $newContext);
 
         return new JsonResponse($customer);
-    }
-
-    private function stripPaymentTokenFromPaymentResource(Payment $paymentResource): string
-    {
-        /** @var Link $link */
-        foreach ($paymentResource->getLinks() as $link) {
-            if (!($link->getRel() === 'approval_url')) {
-                continue;
-            }
-
-            preg_match('/EC-\w+/', $link->getHref(), $matches);
-
-            return $matches[0];
-        }
     }
 
     private function getCustomerDataBagFromPayment(Payment $payment, Context $context): DataBag
