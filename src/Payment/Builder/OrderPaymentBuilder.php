@@ -93,7 +93,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
             $currencyEntity = $this->getCurrencyFromOrderId($order->getId(), $context);
         }
 
-        $currency = (string) $currencyEntity->getShortName();
+        $currency = (string) $currencyEntity->getIsoCode();
 
         $transaction = new Transaction();
 

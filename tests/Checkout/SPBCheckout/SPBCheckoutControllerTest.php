@@ -13,6 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutController;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutData;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilder;
@@ -77,12 +78,15 @@ class SPBCheckoutControllerTest extends TestCase
         /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
 
+        $currency = new CurrencyEntity();
+        $currency->setIsoCode('TEST');
+
         $salesChannelContext = Generator::createSalesChannelContext(
             null,
             null,
             null,
             null,
-            null,
+            $currency,
             null,
             null,
             null,

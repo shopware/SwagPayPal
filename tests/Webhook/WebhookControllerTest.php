@@ -9,13 +9,14 @@
 namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\LoggerMock;
-use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
+use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookReturnCreatedResourceMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\WebhookServiceMock;
 use Swag\PayPal\Test\Webhook\_fixtures\WebhookDataFixture;
@@ -39,7 +40,7 @@ class WebhookControllerTest extends TestCase
         $webhookController = $this->createWebhookController();
 
         $context = Context::createDefaultContext();
-        $jsonResponse = $webhookController->registerWebhook($context);
+        $jsonResponse = $webhookController->registerWebhook(Defaults::SALES_CHANNEL);
         $result = json_decode($jsonResponse->getContent(), true);
 
         $this->silentAssertArraySubset(['result' => WebhookService::WEBHOOK_CREATED], $result);
@@ -48,8 +49,8 @@ class WebhookControllerTest extends TestCase
     public function testExecuteWebhook(): void
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $settings->setWebhookExecuteToken(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
+        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
+        $settings->setWebhookExecuteToken(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
 
         $webhookController = $this->createWebhookController($settings);
 
@@ -63,8 +64,8 @@ class WebhookControllerTest extends TestCase
     public function testExecuteWebhookThrowsWebhookException(): void
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $settings->setWebhookExecuteToken(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
+        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
+        $settings->setWebhookExecuteToken(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
         $webhookController = $this->createWebhookController($settings);
 
         $context = Context::createDefaultContext();
@@ -79,8 +80,8 @@ class WebhookControllerTest extends TestCase
     public function testExecuteWebhookThrowsGeneralException(): void
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $settings->setWebhookExecuteToken(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
+        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
+        $settings->setWebhookExecuteToken(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
         $webhookController = $this->createWebhookController($settings);
 
         $context = Context::createDefaultContext();
@@ -95,7 +96,7 @@ class WebhookControllerTest extends TestCase
     public function testExecuteWebhookEmptyToken(): void
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
+        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
         $settings->setWebhookExecuteToken('');
         $webhookController = $this->createWebhookController($settings);
 
@@ -110,8 +111,8 @@ class WebhookControllerTest extends TestCase
     public function testExecuteWebhookInvalidToken(): void
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $settings->setWebhookExecuteToken(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
+        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
+        $settings->setWebhookExecuteToken(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
         $webhookController = $this->createWebhookController($settings);
 
         $context = Context::createDefaultContext();
@@ -127,13 +128,13 @@ class WebhookControllerTest extends TestCase
     public function testExecuteWebhookNoData(): void
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $settings->setWebhookExecuteToken(WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
+        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
+        $settings->setWebhookExecuteToken(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
         $webhookController = $this->createWebhookController($settings);
 
         $context = Context::createDefaultContext();
         $request = new Request(
-            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN]
+            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN]
         );
 
         $this->expectException(BadRequestHttpException::class);
@@ -156,7 +157,7 @@ class WebhookControllerTest extends TestCase
     private function createRequestWithWebhookData(): Request
     {
         return new Request(
-            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => WebhookResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN],
+            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN],
             WebhookDataFixture::get()
         );
     }

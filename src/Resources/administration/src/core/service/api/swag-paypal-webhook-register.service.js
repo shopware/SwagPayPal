@@ -5,11 +5,11 @@ class SwagPayPalWebhookRegisterService extends ApiService {
         super(httpClient, loginService, apiEndpoint);
     }
 
-    registerWebhook() {
+    registerWebhook(salesChannelId) {
         const headers = this.getBasicHeaders();
 
         return this.httpClient
-            .post(`_action/${this.getApiBasePath()}/webhook/register`, {}, {
+            .post(`_action/${this.getApiBasePath()}/webhook/register/${salesChannelId}`, {}, {
                 headers
             })
             .then((response) => {

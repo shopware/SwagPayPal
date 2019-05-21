@@ -5,8 +5,8 @@ class SwagPayPalPaymentService extends ApiService {
         super(httpClient, loginService, apiEndpoint);
     }
 
-    getPaymentDetails(payPalPaymentId) {
-        const apiRoute = `${this.getApiBasePath()}/payment-details/${payPalPaymentId}`;
+    getPaymentDetails(orderId, payPalPaymentId) {
+        const apiRoute = `${this.getApiBasePath()}/payment-details/${orderId}/${payPalPaymentId}`;
         return this.httpClient.get(
             apiRoute,
             {
@@ -17,7 +17,7 @@ class SwagPayPalPaymentService extends ApiService {
         });
     }
 
-    capturePayment(resourceType, resourceId, captureAmount, currency, isFinalCapture, orderId) {
+    capturePayment(orderId, resourceType, resourceId, captureAmount, currency, isFinalCapture) {
         const apiRoute = `_action/${this.getApiBasePath()}/capture-payment/${resourceType}/${resourceId}/${orderId}`;
 
         return this.httpClient.post(
@@ -35,7 +35,7 @@ class SwagPayPalPaymentService extends ApiService {
         });
     }
 
-    refundPayment(resourceType, resourceId, refundAmount, currency, orderId) {
+    refundPayment(orderId, resourceType, resourceId, refundAmount, currency) {
         const apiRoute = `_action/${this.getApiBasePath()}/refund-payment/${resourceType}/${resourceId}/${orderId}`;
 
         return this.httpClient.post(
@@ -52,7 +52,7 @@ class SwagPayPalPaymentService extends ApiService {
         });
     }
 
-    voidPayment(resourceType, resourceId, orderId) {
+    voidPayment(orderId, resourceType, resourceId) {
         const apiRoute = `_action/${this.getApiBasePath()}/void-payment/${resourceType}/${resourceId}/${orderId}`;
 
         return this.httpClient.post(

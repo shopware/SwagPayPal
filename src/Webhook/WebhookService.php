@@ -66,10 +66,9 @@ class WebhookService implements WebhookServiceInterface
     /**
      * @throws PayPalSettingsInvalidException
      */
-    public function registerWebhook(Context $context): string
+    public function registerWebhook(?string $salesChannelId): string
     {
-        // TODO: Get sales channel id
-        $settings = $this->settingsService->getSettings();
+        $settings = $this->settingsService->getSettings($salesChannelId);
 
         $webhookExecuteToken = $settings->getWebhookExecuteToken();
         if ($webhookExecuteToken === null) {
@@ -85,11 +84,11 @@ class WebhookService implements WebhookServiceInterface
         $webhookId = $settings->getWebhookId();
 
         if ($webhookId === null) {
-            return $this->createWebhook($context, $webhookUrl, $webhookExecuteToken);
+            return $this->createWebhook($salesChannelId, $webhookUrl, $webhookExecuteToken);
         }
 
         try {
-            $registeredWebhookUrl = $this->webhookResource->getWebhookUrl($webhookId, $context);
+            $registeredWebhookUrl = $this->webhookResource->getWebhookUrl($webhookId, $salesChannelId);
             if ($registeredWebhookUrl === $webhookUrl) {
                 return self::NO_WEBHOOK_ACTION_REQUIRED;
             }
@@ -98,11 +97,11 @@ class WebhookService implements WebhookServiceInterface
         }
 
         try {
-            $this->webhookResource->updateWebhook($webhookUrl, $webhookId, $context);
+            $this->webhookResource->updateWebhook($webhookUrl, $webhookId, $salesChannelId);
 
             return self::WEBHOOK_UPDATED;
         } catch (WebhookIdInvalidException $e) {
-            return $this->createWebhook($context, $webhookUrl, $webhookExecuteToken);
+            return $this->createWebhook($salesChannelId, $webhookUrl, $webhookExecuteToken);
         }
     }
 
@@ -116,7 +115,7 @@ class WebhookService implements WebhookServiceInterface
     }
 
     private function createWebhook(
-        Context $context,
+        ?string $salesChannelId,
         string $webhookUrl,
         string $webhookExecuteToken
     ): string {
@@ -132,7 +131,7 @@ class WebhookService implements WebhookServiceInterface
             $webhookId = $this->webhookResource->createWebhook(
                 $webhookUrl,
                 $createWebhooks,
-                $context
+                $salesChannelId
             );
 
             // TODO: Get sales channel id

@@ -110,7 +110,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         try {
             $response = $this->paymentResource->create(
                 $payment,
-                $context,
+                $salesChannelContext->getSalesChannel()->getId(),
                 PartnerAttributionId::PAYPAL_CLASSIC
             );
         } catch (\Exception $e) {
@@ -155,7 +155,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $context = $salesChannelContext->getContext();
         try {
             $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout);
-            $response = $this->paymentResource->execute($payerId, $paymentId, $context, $partnerAttributionId);
+            $response = $this->paymentResource->execute($payerId, $paymentId, $salesChannelContext->getSalesChannel()->getId(), $partnerAttributionId);
         } catch (\Exception $e) {
             throw new AsyncPaymentFinalizeException(
                 $transactionId,

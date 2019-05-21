@@ -8,7 +8,6 @@
 
 namespace Swag\PayPal\PayPal\Resource;
 
-use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\Payer\PayerInfo;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
@@ -27,9 +26,9 @@ class PaymentResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
-    public function create(Payment $payment, Context $context, string $partnerAttributionId): Payment
+    public function create(Payment $payment, string $salesChannelId, string $partnerAttributionId): Payment
     {
-        $paypalClient = $this->payPalClientFactory->createPaymentClient($context, $partnerAttributionId);
+        $paypalClient = $this->payPalClientFactory->createPaymentClient($salesChannelId, $partnerAttributionId);
         $response = $paypalClient->sendPostRequest(
             RequestUri::PAYMENT_RESOURCE,
             $payment
@@ -43,12 +42,12 @@ class PaymentResource
     public function execute(
         string $payerId,
         string $paymentId,
-        Context $context,
+        string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ): Payment {
         $payerInfo = new PayerInfo();
         $payerInfo->setPayerId($payerId);
-        $paypalClient = $this->payPalClientFactory->createPaymentClient($context, $partnerAttributionId);
+        $paypalClient = $this->payPalClientFactory->createPaymentClient($salesChannelId, $partnerAttributionId);
         $response = $paypalClient->sendPostRequest(
             RequestUri::PAYMENT_RESOURCE . '/' . $paymentId . '/execute',
             $payerInfo
@@ -60,9 +59,9 @@ class PaymentResource
         return $paymentStruct;
     }
 
-    public function get(string $paymentId, Context $context): Payment
+    public function get(string $paymentId, string $salesChannelId): Payment
     {
-        $response = $this->payPalClientFactory->createPaymentClient($context)->sendGetRequest(
+        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
             RequestUri::PAYMENT_RESOURCE . '/' . $paymentId
         );
 

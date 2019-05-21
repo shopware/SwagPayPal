@@ -11,11 +11,11 @@ namespace Swag\PayPal\Test\Mock;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
-class CacheMock implements CacheItemPoolInterface
+class CacheWithTokenMock implements CacheItemPoolInterface
 {
     public function getItem($key): CacheItemInterface
     {
-        return new CacheItemMock();
+        return new CacheItemWithTokenMock();
     }
 
     public function getItems(array $keys = []): array

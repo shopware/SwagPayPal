@@ -2,7 +2,6 @@
 
 namespace Swag\PayPal\PayPal\Resource;
 
-use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Api\DoVoid;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
@@ -20,9 +19,9 @@ class OrdersResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
-    public function capture(string $orderId, Capture $capture, Context $context): Capture
+    public function capture(string $orderId, Capture $capture, string $salesChannelId): Capture
     {
-        $response = $this->payPalClientFactory->createPaymentClient($context)->sendPostRequest(
+        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
             RequestUri::ORDERS_RESOURCE . '/' . $orderId . '/capture',
             $capture
         );
@@ -32,10 +31,10 @@ class OrdersResource
         return $capture;
     }
 
-    public function void(string $orderId, Context $context): DoVoid
+    public function void(string $orderId, string $salesChannelId): DoVoid
     {
         $doVoid = new DoVoid();
-        $response = $this->payPalClientFactory->createPaymentClient($context)->sendPostRequest(
+        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
             RequestUri::ORDERS_RESOURCE . '/' . $orderId . '/do-void',
             $doVoid
         );

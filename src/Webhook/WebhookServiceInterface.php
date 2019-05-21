@@ -14,7 +14,7 @@ use Swag\PayPal\Webhook\Exception\WebhookException;
 
 interface WebhookServiceInterface
 {
-    public function registerWebhook(Context $context): string;
+    public function registerWebhook(?string $salesChannelId): string;
 
     /**
      * @throws WebhookException if no transaction could be found to the given Webhook

@@ -65,7 +65,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
             throw new InvalidTransactionException('');
         }
         $transactionAmount = $transaction->getAmount();
-        $currency = (string) $currencyEntity->getShortName();
+        $currency = (string) $currencyEntity->getIsoCode();
 
         $transaction = new Transaction();
         $shippingCostsTotal = $cart->getDeliveries()->getShippingCosts()->sum()->getTotalPrice();

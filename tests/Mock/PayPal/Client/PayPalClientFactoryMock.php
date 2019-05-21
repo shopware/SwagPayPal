@@ -8,14 +8,12 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
-use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Client\PayPalClient;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
-use Swag\PayPal\Test\Payment\PayPalPaymentHandlerTest;
 
 class PayPalClientFactoryMock extends PayPalClientFactory
 {
@@ -26,16 +24,22 @@ class PayPalClientFactoryMock extends PayPalClientFactory
      */
     private $client;
 
-    public function createPaymentClient(Context $context, string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC): PayPalClient
+    private $throwException = false;
+
+    public function enableException()
+    {
+        $this->throwException = true;
+    }
+
+    public function createPaymentClient(?string $salesChannelId, string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC): PayPalClient
     {
         $settings = new SwagPayPalSettingStruct();
         $settings->setClientId('testClientId');
         $settings->setClientSecret('testClientSecret');
         $settings->setSandbox(true);
 
-        $cacheId = 'test';
-        if ($context->hasExtension(PayPalPaymentHandlerTest::PAYPAL_RESOURCE_THROWS_EXCEPTION)) {
-            $cacheId = self::THROW_EXCEPTION;
+        if ($this->throwException) {
+            throw new \RuntimeException('A PayPal test error occurred.');
         }
 
         $this->client = new PayPalClientMock(
@@ -43,8 +47,7 @@ class PayPalClientFactoryMock extends PayPalClientFactory
                 new CacheMock(),
                 new TokenClientFactoryMock()
             ),
-            $settings,
-            $cacheId
+            $settings
         );
 
         return $this->client;

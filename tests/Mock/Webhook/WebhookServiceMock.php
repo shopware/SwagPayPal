@@ -18,7 +18,7 @@ use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 class WebhookServiceMock implements WebhookServiceInterface
 {
-    public function registerWebhook(Context $context): string
+    public function registerWebhook(?string $salesChannelId): string
     {
         return WebhookService::WEBHOOK_CREATED;
     }

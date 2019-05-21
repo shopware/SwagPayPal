@@ -33,8 +33,9 @@ class TokenResource
         $this->tokenClientFactory = $tokenClientFactory;
     }
 
-    public function getToken(OAuthCredentials $credentials, string $url, string $cacheId): Token
+    public function getToken(OAuthCredentials $credentials, string $url): Token
     {
+        $cacheId = md5((string) $credentials);
         $token = $this->getTokenFromCache($cacheId);
         if ($token === null || !$this->isTokenValid($token)) {
             $tokenClient = $this->tokenClientFactory->createTokenClient($credentials, $url);

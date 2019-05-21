@@ -9,7 +9,6 @@
 namespace Swag\PayPal\PayPal\Resource;
 
 use GuzzleHttp\Exception\ClientException;
-use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\CreateWebhooks;
 use Swag\PayPal\PayPal\Api\Patch;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
@@ -33,10 +32,10 @@ class WebhookResource
      * @throws ClientException
      * @throws WebhookAlreadyExistsException
      */
-    public function createWebhook(string $webhookUrl, CreateWebhooks $createWebhooks, Context $context): string
+    public function createWebhook(string $webhookUrl, CreateWebhooks $createWebhooks, ?string $salesChannelId): string
     {
         try {
-            $response = $this->payPalClientFactory->createPaymentClient($context)->sendPostRequest(
+            $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
                 RequestUri::WEBHOOK_RESOURCE,
                 $createWebhooks
             );
@@ -57,10 +56,10 @@ class WebhookResource
      * @throws ClientException
      * @throws WebhookIdInvalidException
      */
-    public function getWebhookUrl(string $webhookId, Context $context): string
+    public function getWebhookUrl(string $webhookId, ?string $salesChannelId): string
     {
         try {
-            $response = $this->payPalClientFactory->createPaymentClient($context)->sendGetRequest(
+            $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
                 RequestUri::WEBHOOK_RESOURCE . '/' . $webhookId
             );
 
@@ -80,7 +79,7 @@ class WebhookResource
      * @throws ClientException
      * @throws WebhookIdInvalidException
      */
-    public function updateWebhook(string $webhookUrl, string $webhookId, Context $context): void
+    public function updateWebhook(string $webhookUrl, string $webhookId, ?string $salesChannelId): void
     {
         $requestData = [];
         $patchData = [
@@ -93,7 +92,7 @@ class WebhookResource
         $requestData[] = $patch;
 
         try {
-            $this->payPalClientFactory->createPaymentClient($context)->sendPatchRequest(
+            $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPatchRequest(
                 RequestUri::WEBHOOK_RESOURCE . '/' . $webhookId,
                 $requestData
             );

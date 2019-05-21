@@ -1,100 +1,103 @@
 {
-    "swag-paypal-payment": {
-        "tabs": {
-            "overview": "Übersicht"
-        },
-        "paymentDetails": {
-            "cardTitle": "Zahlung",
-            "invoice": {
-                "heading": "Rechnungsbetrag",
-                "totalAmount": "Gesamtbetrag:",
-                "subTotal": "Zwischensumme:",
-                "shipping": "Versandkosten:"
-            },
-            "payment": {
-                "heading": "Zahlungsdetails",
-                "intent": "Zahlungsabschluss:",
-                "paymentId": "Zahlungs-ID:",
-                "cartId": "Warenkorb-ID:",
-                "state": "Status:",
-                "createTime": "Erstellt:",
-                "updateTime": "Zul. aktualisiert:"
-            },
-            "customer": {
-                "heading": "Kunde",
-                "payerId": "Kunden-ID:"
-            },
-            "error": {
-                "title": "Fehler beim Abrufen der Zahlungsdaten von PayPal"
-            }
-        },
-        "transactionHistory": {
-            "cardTitle": "Zahlungsverlauf",
-            "states": {
-                "authorization": "Autorisierung",
-                "sale": "Verkauf",
-                "refund": "Rückerstattung",
-                "capture": "Einzug",
-                "order": "Bestellung"
-            },
-            "types": {
-                "type": "Typ",
-                "amount": "Betrag",
-                "createTime": "Erstellt",
-                "updateTime": "Aktualisiert",
-                "state": "Status",
-                "trackingId": "Tracking-ID",
-                "transactionFee": "Aufschlag",
-                "paymentMode": "Zahlungsmodus"
-            }
-        },
-        "buttons": {
-            "label": {
-                "refund": "Rückerstattung",
-                "capture": "Autorisieren",
-                "void": "Autorisierung abbrechen"
-            }
-        },
-        "modal": {
-            "title": {
-                "refund": "Rückerstattung",
-                "capture": "Zahlung einziehen",
-                "void": "Autorisierung abbrechen"
-            }
-        },
-        "refundAction": {
-            "successTitle": "Erfolg",
-            "successMessage": "Die Rückerstattung war erfolgreich.",
-            "invoiceSelect": {
-                "label": "Einzug wählen"
-            },
-            "refundAmount": {
-                "label": "Betrag"
-            },
-            "confirmButton": {
-                "text": "Ausführen"
-            }
-        },
-        "captureAction": {
-            "successTitle": "Erfolg",
-            "successMessage": "Die Autorisierung war erfolgreich.",
-            "maxAmount": "Maximalbetrag",
-            "currentAmount": "Betrag",
-            "isFinal": "Kein erneuter Einzug möglich",
-            "button": {
-                "text": "Zahlung einziehen"
-            }
-        },
-        "voidAction": {
-            "successTitle": "Erfolg",
-            "successMessage": "Die Autorisierung wurde erfolgreich abgebrochen.",
-            "confirm": {
-                "message": "Möchtest du diese Zahlung wirklich abbrechen?",
-                "button": {
-                    "confirm": "Autorisierung abbrechen",
-                    "cancel": "Nein"
-                }
-            }
+  "swag-paypal-payment": {
+    "general": {
+      "title": "Bestellungen"
+    },
+    "tabs": {
+      "overview": "Übersicht"
+    },
+    "paymentDetails": {
+      "cardTitle": "Zahlung",
+      "invoice": {
+        "heading": "Rechnungsbetrag",
+        "totalAmount": "Gesamtbetrag:",
+        "subTotal": "Zwischensumme:",
+        "shipping": "Versandkosten:"
+      },
+      "payment": {
+        "heading": "Zahlungsdetails",
+        "intent": "Zahlungsabschluss:",
+        "paymentId": "Zahlungs-ID:",
+        "cartId": "Warenkorb-ID:",
+        "state": "Status:",
+        "createTime": "Erstellt:",
+        "updateTime": "Zul. aktualisiert:"
+      },
+      "customer": {
+        "heading": "Kunde",
+        "payerId": "Kunden-ID:"
+      },
+      "error": {
+        "title": "Fehler beim Abrufen der Zahlungsdaten von PayPal"
+      }
+    },
+    "transactionHistory": {
+      "cardTitle": "Zahlungsverlauf",
+      "states": {
+        "authorization": "Autorisierung",
+        "sale": "Verkauf",
+        "refund": "Rückerstattung",
+        "capture": "Einzug",
+        "order": "Bestellung"
+      },
+      "types": {
+        "type": "Typ",
+        "amount": "Betrag",
+        "createTime": "Erstellt",
+        "updateTime": "Aktualisiert",
+        "state": "Status",
+        "trackingId": "Tracking-ID",
+        "transactionFee": "Aufschlag",
+        "paymentMode": "Zahlungsmodus"
+      }
+    },
+    "buttons": {
+      "label": {
+        "refund": "Rückerstattung",
+        "capture": "Autorisieren",
+        "void": "Autorisierung abbrechen"
+      }
+    },
+    "modal": {
+      "title": {
+        "refund": "Rückerstattung",
+        "capture": "Zahlung einziehen",
+        "void": "Autorisierung abbrechen"
+      }
+    },
+    "refundAction": {
+      "successTitle": "Erfolg",
+      "successMessage": "Die Rückerstattung war erfolgreich.",
+      "invoiceSelect": {
+        "label": "Einzug wählen"
+      },
+      "refundAmount": {
+        "label": "Betrag"
+      },
+      "confirmButton": {
+        "text": "Ausführen"
+      }
+    },
+    "captureAction": {
+      "successTitle": "Erfolg",
+      "successMessage": "Die Autorisierung war erfolgreich.",
+      "maxAmount": "Maximalbetrag",
+      "currentAmount": "Betrag",
+      "isFinal": "Kein erneuter Einzug möglich",
+      "button": {
+        "text": "Zahlung einziehen"
+      }
+    },
+    "voidAction": {
+      "successTitle": "Erfolg",
+      "successMessage": "Die Autorisierung wurde erfolgreich abgebrochen.",
+      "confirm": {
+        "message": "Möchtest du diese Zahlung wirklich abbrechen?",
+        "button": {
+          "confirm": "Autorisierung abbrechen",
+          "cancel": "Nein"
         }
+      }
     }
+  }
 }

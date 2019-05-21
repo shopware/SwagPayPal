@@ -20,6 +20,11 @@ Component.register('swag-paypal-payment-action-capture', {
         maxCaptureValue: {
             type: Number,
             required: true
+        },
+
+        orderId: {
+            type: String,
+            required: true
         }
     },
 
@@ -51,12 +56,12 @@ Component.register('swag-paypal-payment-action-capture', {
 
             this.isLoading = true;
             this.SwagPayPalPaymentService.capturePayment(
+                this.orderId,
                 resourceType,
                 resourceId,
                 captureAmount,
                 currency,
-                isFinalCapture,
-                orderId
+                isFinalCapture
             ).then(() => {
                 this.createNotificationSuccess({
                     title: this.$tc('swag-paypal-payment.captureAction.successTitle'),

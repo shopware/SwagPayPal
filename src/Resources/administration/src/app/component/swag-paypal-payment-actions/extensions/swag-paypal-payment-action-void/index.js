@@ -15,6 +15,11 @@ Component.register('swag-paypal-payment-action-void', {
         paymentResource: {
             type: Object,
             required: true
+        },
+
+        orderId: {
+            type: String,
+            required: true
         }
     },
 
@@ -31,7 +36,7 @@ Component.register('swag-paypal-payment-action-void', {
             const resourceId = this.getResourceId();
             const orderId = this.$route.params.id;
 
-            this.SwagPayPalPaymentService.voidPayment(resourceType, resourceId, orderId).then(() => {
+            this.SwagPayPalPaymentService.voidPayment(this.orderId, resourceType, resourceId, orderId).then(() => {
                 this.createNotificationSuccess({
                     title: this.$tc('swag-paypal-payment.voidAction.successTitle'),
                     message: this.$tc('swag-paypal-payment.voidAction.successMessage')

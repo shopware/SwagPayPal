@@ -6,7 +6,7 @@
                     {% block swag_paypal_payment_actions_section %}
                         <sw-card-section secondary
                                          slim>
-                            <swag-paypal-payment-actions :paymentResource="paymentResource">
+                            <swag-paypal-payment-actions :orderId="order.id" :paymentResource="paymentResource">
                             </swag-paypal-payment-actions>
                         </sw-card-section>
                     {% endblock %}
