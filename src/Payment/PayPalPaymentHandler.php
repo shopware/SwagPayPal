@@ -25,6 +25,7 @@ use Shopware\Core\System\StateMachine\Exception\StateMachineNotFoundException;
 use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
 use Swag\PayPal\Payment\Builder\OrderPaymentBuilderInterface;
 use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\PaymentStatus;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
@@ -94,7 +95,11 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $payment = $this->paymentBuilder->getPayment($transaction, $salesChannelContext);
 
         try {
-            $response = $this->paymentResource->create($payment, $context);
+            $response = $this->paymentResource->create(
+                $payment,
+                $context,
+                PartnerAttributionId::PAYPAL_CLASSIC
+            );
         } catch (\Exception $e) {
             throw new AsyncPaymentProcessException(
                 $transaction->getOrderTransaction()->getId(),
@@ -130,9 +135,12 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
         $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
         $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
+        $isExpressCheckout = $request->query->getBoolean('isExpressCheckout');
+        $isSPBCheckout = $request->query->getBoolean('isPayPalSpbCheckout');
         $context = $salesChannelContext->getContext();
         try {
-            $response = $this->paymentResource->execute($payerId, $paymentId, $context);
+            $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout);
+            $response = $this->paymentResource->execute($payerId, $paymentId, $context, $partnerAttributionId);
         } catch (\Exception $e) {
             throw new AsyncPaymentFinalizeException(
                 $transactionId,
@@ -189,5 +197,20 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         }
 
         return $paymentState;
+    }
+
+    private function getPartnerAttributionId(bool $isExpressCheckout, bool $isSPBCheckout): string
+    {
+        $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC;
+
+        if ($isExpressCheckout) {
+            $partnerAttributionId = PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT;
+        }
+
+        if ($isSPBCheckout) {
+            $partnerAttributionId = PartnerAttributionId::SMART_PAYMENT_BUTTONS;
+        }
+
+        return $partnerAttributionId;
     }
 }

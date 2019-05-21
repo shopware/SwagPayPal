@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\PaymentStatus;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
@@ -36,7 +37,11 @@ class PaymentResourceTest extends TestCase
         $salesChannelContext = Generator::createSalesChannelContext();
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $payment = $this->createPaymentBuilder()->getPayment($paymentTransaction, $salesChannelContext);
-        $createdPayment = $this->createPaymentResource()->create($payment, $salesChannelContext->getContext());
+        $createdPayment = $this->createPaymentResource()->create(
+            $payment,
+            $salesChannelContext->getContext(),
+            PartnerAttributionId::PAYPAL_CLASSIC
+        );
 
         static::assertInstanceOf(Payment::class, $createdPayment);
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $createdPayment->getId());

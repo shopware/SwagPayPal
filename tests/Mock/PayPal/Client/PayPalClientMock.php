@@ -14,7 +14,6 @@ use GuzzleHttp\Psr7\Response;
 use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 use Swag\PayPal\PayPal\Api\Payment\Payer\PayerInfo;
 use Swag\PayPal\PayPal\Client\PayPalClient;
-use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -60,10 +59,9 @@ class PayPalClientMock extends PayPalClient
     public function __construct(
         TokenResource $tokenResource,
         SwagPayPalSettingGeneralStruct $settings,
-        string $cacheId,
-        string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
+        string $cacheId
     ) {
-        parent::__construct($tokenResource, $settings, $cacheId, $partnerAttributionId);
+        parent::__construct($tokenResource, $settings, $cacheId);
         $this->cacheId = $cacheId;
     }
 
