@@ -72,17 +72,17 @@ class SwagPayPalSettingGeneralStruct extends Struct
     /**
      * @var bool
      */
-    protected $ecsCartEnabled = false;
+    protected $ecsCartEnabled = true;
 
     /**
      * @var bool
      */
-    protected $ecsOffCanvasEnabled = false;
+    protected $ecsOffCanvasEnabled = true;
 
     /**
      * @var bool
      */
-    protected $ecsLoginEnabled = false;
+    protected $ecsLoginEnabled = true;
 
     /**
      * @var string
