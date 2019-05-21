@@ -5,6 +5,7 @@ namespace Swag\PayPal\Checkout\SPBCheckout;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
+use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\Util\PaymentTokenExtractor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,8 +47,8 @@ class SPBCheckoutController extends AbstractController
     public function createPayment(SalesChannelContext $context): JsonResponse
     {
         $cart = $this->cartService->getCart($context->getToken(), $context);
-        $payment = $this->cartPaymentBuilder->getPayment($cart, $context, 'https://www.paypal.com/checkoutnow/finish', false);
-        $paymentResource = $this->paymentResource->create($payment, $context->getContext());
+        $payment = $this->cartPaymentBuilder->getPayment($cart, $context, 'https://www.example.com/', false);
+        $paymentResource = $this->paymentResource->create($payment, $context->getContext(), PartnerAttributionId::SMART_PAYMENT_BUTTONS);
 
         return new JsonResponse([
             'token' => PaymentTokenExtractor::extract($paymentResource),

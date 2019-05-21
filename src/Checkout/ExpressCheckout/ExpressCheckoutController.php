@@ -16,6 +16,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Salutation\SalutationEntity;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
 use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\Util\PaymentMethodIdProvider;
 use Swag\PayPal\Util\PaymentTokenExtractor;
@@ -105,7 +106,11 @@ class ExpressCheckoutController extends AbstractController
             'https://www.example.com/',
             true
         );
-        $paymentResource = $this->paymentResource->create($payment, $context->getContext());
+        $paymentResource = $this->paymentResource->create(
+            $payment,
+            $context->getContext(),
+            PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT
+        );
 
         return new JsonResponse([
             'token' => PaymentTokenExtractor::extract($paymentResource),
