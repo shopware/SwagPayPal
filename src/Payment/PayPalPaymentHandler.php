@@ -201,16 +201,14 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
     private function getPartnerAttributionId(bool $isExpressCheckout, bool $isSPBCheckout): string
     {
-        $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC;
-
         if ($isExpressCheckout) {
-            $partnerAttributionId = PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT;
+            return PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT;
         }
 
         if ($isSPBCheckout) {
-            $partnerAttributionId = PartnerAttributionId::SMART_PAYMENT_BUTTONS;
+            return PartnerAttributionId::SMART_PAYMENT_BUTTONS;
         }
 
-        return $partnerAttributionId;
+        return PartnerAttributionId::PAYPAL_CLASSIC;
     }
 }

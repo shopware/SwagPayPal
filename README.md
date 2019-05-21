@@ -1,6 +1,6 @@
 # SwagPayPal
 
-## An integration for [shopware/platform](https://github.com/shopware/platform) for many PayPal products
+## An integration for [Shopware 6](https://github.com/shopware/platform) for many PayPal products
 
 ## License
 
