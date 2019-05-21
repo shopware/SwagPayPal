@@ -14,7 +14,7 @@ use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 
 class SettingsService implements SettingsServiceInterface
 {
-    private const SYSTEM_CONFIG_DOMAIN = 'SwagPayPal.settings.';
+    public const SYSTEM_CONFIG_DOMAIN = 'SwagPayPal.settings.';
 
     /**
      * @var SystemConfigService

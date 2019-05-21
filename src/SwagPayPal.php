@@ -9,6 +9,7 @@
 namespace Swag\PayPal;
 
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\CustomField\CustomFieldTypes;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -21,7 +22,11 @@ use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 use Swag\PayPal\Util\PaymentMethodIdProvider;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -59,6 +64,7 @@ class SwagPayPal extends Plugin
 
     public function install(InstallContext $context): void
     {
+        $this->addDefaultConfiguration();
         $this->addPaymentMethod($context->getContext());
     }
 
@@ -73,9 +79,10 @@ class SwagPayPal extends Plugin
 
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
-        $connection->exec('
-DELETE FROM `system_config` WHERE configuration_key LIKE "SwagPayPal.settings.%"
-');
+        $connection->exec(sprintf(
+            'DELETE FROM `system_config` WHERE configuration_key LIKE "%s%%"',
+            SettingsService::SYSTEM_CONFIG_DOMAIN)
+        );
 
         parent::uninstall($context);
     }
@@ -183,5 +190,29 @@ DELETE FROM `system_config` WHERE configuration_key LIKE "SwagPayPal.settings.%"
         $criteria->addFilter(new EqualsFilter('name', self::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME));
 
         return $customFieldRepository->searchIds($criteria, $context);
+    }
+
+    private function addDefaultConfiguration(): void
+    {
+        /** @var Connection $connection */
+        $connection = $this->container->get(Connection::class);
+        $systemConfigEntityName = (new SystemConfigDefinition())->getEntityName();
+        $settings = new SwagPayPalSettingGeneralStruct();
+        $data = array_filter($settings->jsonSerialize());
+
+        foreach ($data as $key => $value) {
+            $key = SettingsService::SYSTEM_CONFIG_DOMAIN . $key;
+
+            $insertData = [
+                'id' => Uuid::randomBytes(),
+                'configuration_key' => $key,
+                'configuration_value' => json_encode([
+                    '_value' => $value,
+                ]),
+                'created_at' => date(Defaults::STORAGE_DATE_FORMAT),
+            ];
+
+            $connection->insert($systemConfigEntityName, $insertData);
+        }
     }
 }
