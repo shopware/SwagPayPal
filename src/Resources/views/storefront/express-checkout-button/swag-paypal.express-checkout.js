@@ -85,7 +85,7 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
         });
     }
 
-    createScript(callback = {}) {
+    createScript(callback) {
         const scriptOptions = this.getScriptUrlOptions();
         const payPalScriptUrl = this.options.useSandbox ? `https://www.paypal.com/sdk/js?client-id=sb${scriptOptions}` :
             `https://www.paypal.com/sdk/js?client-id=${this.options.clientId}${scriptOptions}`;

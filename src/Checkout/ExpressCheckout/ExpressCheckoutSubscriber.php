@@ -23,13 +23,16 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            CheckoutAjaxCartPageletLoadedEvent::NAME => 'onAjaxCartLoaded',
-            CheckoutRegisterPageLoadedEvent::NAME => 'onCheckoutRegisterLoaded',
-            CheckoutCartPageLoadedEvent::NAME => 'onCheckoutCartLoaded',
+            CheckoutAjaxCartPageletLoadedEvent::NAME => 'addExpressCheckoutDataToCart',
+            CheckoutRegisterPageLoadedEvent::NAME => 'addExpressCheckoutDataToCart',
+            CheckoutCartPageLoadedEvent::NAME => 'addExpressCheckoutDataToCart',
         ];
     }
 
-    public function onAjaxCartLoaded(CheckoutAjaxCartPageletLoadedEvent $event): void
+    /**
+     * @param CheckoutAjaxCartPageletLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
+     */
+    public function addExpressCheckoutDataToCart($event): void
     {
         $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext());
 
@@ -37,25 +40,9 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $event->getPagelet()->addExtension('payPalExpressData', $expressCheckoutButtonData);
-    }
+        if ($event instanceof CheckoutAjaxCartPageletLoadedEvent) {
+            $event->getPagelet()->addExtension('payPalExpressData', $expressCheckoutButtonData);
 
-    public function onCheckoutRegisterLoaded(CheckoutRegisterPageLoadedEvent $event): void
-    {
-        $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext());
-
-        if (!$expressCheckoutButtonData) {
-            return;
-        }
-
-        $event->getPage()->addExtension('payPalExpressData', $expressCheckoutButtonData);
-    }
-
-    public function onCheckoutCartLoaded(CheckoutCartPageLoadedEvent $event): void
-    {
-        $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext());
-
-        if (!$expressCheckoutButtonData) {
             return;
         }
 

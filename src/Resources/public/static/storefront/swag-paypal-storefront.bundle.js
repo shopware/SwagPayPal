@@ -1265,8 +1265,7 @@ function (_Plugin) {
     }
   }, {
     key: "createScript",
-    value: function createScript() {
-      var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    value: function createScript(callback) {
       var scriptOptions = this.getScriptUrlOptions();
       var payPalScriptUrl = this.options.useSandbox ? "https://www.paypal.com/sdk/js?client-id=sb".concat(scriptOptions) : "https://www.paypal.com/sdk/js?client-id=".concat(this.options.clientId).concat(scriptOptions);
       var payPalScript = document.createElement('script');

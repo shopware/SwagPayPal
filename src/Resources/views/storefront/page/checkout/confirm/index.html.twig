@@ -8,7 +8,7 @@
     {% if expressCheckoutData.isExpressCheckout %}
         <input name="isPayPalExpressCheckout" value="{{ expressCheckoutData.isExpressCheckout }}" hidden
             data-pay-pal-selector-options='{ "paypalPaymentMethodId": "{{ expressCheckoutData.getPaymentMethodId }}" }'>
-        <input name="paypalTransactionId" value="{{ expressCheckoutData.getTransactionId }}" hidden>
+        <input name="paypalPaymentId" value="{{ expressCheckoutData.getPaymentId }}" hidden>
         <input name="paypalPayerId" value="{{ expressCheckoutData.getPayerId }}" hidden>
     {% endif %}
 {% endblock %}

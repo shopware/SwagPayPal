@@ -117,10 +117,10 @@
 
         <input-field type="bool">
             <name>ecsOffCanvasEnabled</name>
-            <label>'Pay Now' on Off-Canvas/modal cart:</label>
-            <label lang="de-DE">'Direkt zu PayPal im Off-Canvas/Modal Warenkorb:</label>
-            <helpText>If this option is active, the Express Checkout button will be shown on the Off-Canvas/modal cart.</helpText>
-            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Express Checkout Button in dem Off-Canvas/Modal Warenkorb angezeigt.</helpText>
+            <label>'Pay Now' on Off-Canvas cart:</label>
+            <label lang="de-DE">'Direkt zu PayPal im Off-Canvas Warenkorb:</label>
+            <helpText>If this option is active, the Express Checkout button will be shown on the Off-Canvas cart.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Express Checkout Button in dem Off-Canvas Warenkorb angezeigt.</helpText>
         </input-field>
 
         <input-field type="bool">
