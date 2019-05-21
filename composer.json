@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "shopware/platform": "6.0-dp"
+        "shopware/platform": "dev-6.0.0-dp || *"
     },
     "require-dev": {
         "phpunit/phpunit": "8.0.6"

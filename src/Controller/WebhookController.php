@@ -11,7 +11,7 @@ namespace Swag\PayPal\Controller;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Webhook;
-use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookService;
@@ -91,7 +91,7 @@ class WebhookController extends AbstractController
 
     /**
      * @throws BadRequestHttpException
-     * @throws PayPalSettingsNotFoundException
+     * @throws PayPalSettingsInvalidException
      */
     private function validateShopwareToken(string $token): void
     {

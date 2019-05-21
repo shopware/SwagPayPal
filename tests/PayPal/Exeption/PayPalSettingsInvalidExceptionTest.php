@@ -9,7 +9,7 @@
 namespace Swag\PayPal\Test\PayPal\Exeption;
 
 use PHPUnit\Framework\TestCase;
-use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Symfony\Component\HttpFoundation\Response;
 
 class PayPalSettingsInvalidExceptionTest extends TestCase

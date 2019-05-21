@@ -14,7 +14,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\PaymentIntent;
-use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
@@ -24,16 +24,18 @@ class SettingsServiceTest extends TestCase
 {
     use KernelTestBehaviour;
 
+    private const PREFIX = 'SwagPayPal.settings.';
+
     public function testEmptyGetSettings(): void
     {
         $settingsProvider = new SettingsService($this->createSystemConfigServiceMock());
-        $this->expectException(PayPalSettingsNotFoundException::class);
+        $this->expectException(PayPalSettingsInvalidException::class);
         $settingsProvider->getSettings();
     }
 
     public function getProvider(): array
     {
-        $prefix = 'SwagPayPal.settings.';
+        $prefix = static::PREFIX;
 
         return [
             [$prefix . 'clientId', 'getClientId', 'testClientId'],
@@ -56,7 +58,10 @@ class SettingsServiceTest extends TestCase
      */
     public function testGet(string $key, string $getterName, $value): void
     {
-        $settingsService = new SettingsService($this->createSystemConfigServiceMock([$key => $value]));
+        $settingValues = $this->getRequiredConfigValues();
+        $settingValues[$key] = $value;
+
+        $settingsService = new SettingsService($this->createSystemConfigServiceMock($settingValues));
         $settings = $settingsService->getSettings();
 
         static::assertTrue(
@@ -89,7 +94,7 @@ class SettingsServiceTest extends TestCase
      */
     public function testUpdate(string $key, string $getterName, $value): void
     {
-        $settingsService = new SettingsService($this->createSystemConfigServiceMock());
+        $settingsService = new SettingsService($this->createSystemConfigServiceMock($this->getRequiredConfigValues()));
 
         $settingsService->updateSettings([$key => $value]);
         $settings = $settingsService->getSettings();
@@ -105,7 +110,7 @@ class SettingsServiceTest extends TestCase
     {
         $values = ['wrongDomain.brandName' => 'Wrong brand'];
         $settingsService = new SettingsService($this->createSystemConfigServiceMock($values));
-        $this->expectException(PayPalSettingsNotFoundException::class);
+        $this->expectException(PayPalSettingsInvalidException::class);
         $settingsService->getSettings();
     }
 
@@ -124,5 +129,13 @@ class SettingsServiceTest extends TestCase
         }
 
         return $systemConfigService;
+    }
+
+    private function getRequiredConfigValues(): array
+    {
+        return [
+            self::PREFIX . 'clientId' => 'testclientid',
+            self::PREFIX . 'clientSecret' => 'testclientid',
+        ];
     }
 }

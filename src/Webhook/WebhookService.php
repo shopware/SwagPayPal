@@ -13,7 +13,7 @@ use Shopware\Core\Framework\Util\Random;
 use Swag\PayPal\PayPal\Api\CreateWebhooks;
 use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\PayPal\Resource\WebhookResource;
-use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookException;
@@ -64,7 +64,7 @@ class WebhookService implements WebhookServiceInterface
     }
 
     /**
-     * @throws PayPalSettingsNotFoundException
+     * @throws PayPalSettingsInvalidException
      */
     public function registerWebhook(Context $context): string
     {

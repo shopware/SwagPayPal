@@ -38,7 +38,7 @@
             <sw-card-view slot="content">
                 <sw-system-config
                         ref="systemConfig"
-                        salesChannelSwitchable
+                        :salesChannelSwitchable="false"
                         @config-changed="onConfigChange"
                         domain="SwagPayPal.settings">
                     <template #card-element="{element, config}">

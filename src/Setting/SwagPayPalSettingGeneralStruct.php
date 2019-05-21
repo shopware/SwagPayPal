@@ -11,6 +11,7 @@ namespace Swag\PayPal\Setting;
 use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
 class SwagPayPalSettingGeneralStruct extends Struct
 {
@@ -297,5 +298,19 @@ class SwagPayPalSettingGeneralStruct extends Struct
     public function setSpbCheckoutEnabled(bool $spbCheckoutEnabled): void
     {
         $this->spbCheckoutEnabled = $spbCheckoutEnabled;
+    }
+
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
+    public function validate(): void
+    {
+        if ($this->clientId === null) {
+            throw new PayPalSettingsInvalidException('clientId');
+        }
+
+        if ($this->clientSecret === null) {
+            throw new PayPalSettingsInvalidException('clientSecret');
+        }
     }
 }

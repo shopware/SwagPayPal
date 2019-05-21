@@ -9,7 +9,7 @@
 namespace Swag\PayPal\Setting\Service;
 
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 
 class SettingsService implements SettingsServiceInterface
@@ -27,7 +27,7 @@ class SettingsService implements SettingsServiceInterface
     }
 
     /**
-     * @throws PayPalSettingsNotFoundException
+     * @throws PayPalSettingsInvalidException
      */
     public function getSettings(?string $salesChannelId = null): SwagPayPalSettingGeneralStruct
     {
@@ -36,10 +36,6 @@ class SettingsService implements SettingsServiceInterface
             $salesChannelId,
             true
         );
-
-        if (empty($values)) {
-            throw new PayPalSettingsNotFoundException();
-        }
 
         $propertyValuePairs = [];
 
@@ -51,6 +47,7 @@ class SettingsService implements SettingsServiceInterface
 
         $settingsEntity = new SwagPayPalSettingGeneralStruct();
         $settingsEntity->assign($propertyValuePairs);
+        $settingsEntity->validate();
 
         return $settingsEntity;
     }
