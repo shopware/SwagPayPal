@@ -2,6 +2,7 @@ const { resolve } = require('path');
 const process = require('process');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const isDevMode = (process.env.ENV === 'development');
 const isHotMode = (process.env.MODE === 'hot');
@@ -84,6 +85,15 @@ if (isDevMode && isHotMode) {
 if (isProdMode) {
     config.optimization = {
         minimizer: [
+            new TerserPlugin({
+                terserOptions: {
+                    ecma: 6,
+                    warnings: false
+                },
+                cache: true,
+                parallel: true,
+                sourceMap: true
+            }),
             new OptimizeCSSAssetsPlugin({})
         ]
     };
