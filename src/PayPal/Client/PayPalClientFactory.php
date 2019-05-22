@@ -11,10 +11,9 @@ namespace Swag\PayPal\PayPal\Client;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Context\SalesChannelApiSource;
-use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\TokenResource;
-use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 
 class PayPalClientFactory
@@ -37,7 +36,6 @@ class PayPalClientFactory
 
     /**
      * @throws PayPalSettingsInvalidException
-     * @throws PayPalSettingsNotFoundException
      */
     public function createPaymentClient(Context $context, string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC): PayPalClient
     {

@@ -8,7 +8,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
-use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 
@@ -53,7 +53,7 @@ class PayPalExpressCheckoutDataService
 
         try {
             $settings = $this->settingsService->getSettings($context->getSalesChannel()->getId());
-        } catch (PayPalSettingsNotFoundException $e) {
+        } catch (PayPalSettingsInvalidException $e) {
             return null;
         }
 

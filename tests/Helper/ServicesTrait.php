@@ -64,6 +64,8 @@ trait ServicesTrait
     {
         $settingsStruct = new SwagPayPalSettingGeneralStruct();
 
+        $settingsStruct->setClientId('TestClientId');
+        $settingsStruct->setClientSecret('TestClientSecret');
         $settingsStruct->setIntent(PaymentIntent::SALE);
         $settingsStruct->setSubmitCart(false);
         $settingsStruct->setSendOrderNumber(false);

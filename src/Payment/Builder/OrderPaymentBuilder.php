@@ -19,8 +19,7 @@ use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\Transaction;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
-use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
 class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPaymentBuilderInterface
 {
@@ -30,7 +29,6 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
      * @throws InconsistentCriteriaIdsException
      * @throws InvalidOrderException
      * @throws PayPalSettingsInvalidException
-     * @throws PayPalSettingsNotFoundException
      */
     public function getPayment(
         AsyncPaymentTransactionStruct $paymentTransaction,

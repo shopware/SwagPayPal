@@ -16,8 +16,8 @@ use Swag\PayPal\PayPal\Api\Payment\Payer;
 use Swag\PayPal\PayPal\Api\Payment\RedirectUrls;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\Amount;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\Amount\Details;
-use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 

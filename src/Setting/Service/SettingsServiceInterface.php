@@ -8,13 +8,13 @@
 
 namespace Swag\PayPal\Setting\Service;
 
-use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 
 interface SettingsServiceInterface
 {
     /**
-     * @throws PayPalSettingsNotFoundException
+     * @throws PayPalSettingsInvalidException
      */
     public function getSettings(?string $salesChannelId = null): SwagPayPalSettingGeneralStruct;
 

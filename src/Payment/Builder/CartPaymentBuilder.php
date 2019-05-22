@@ -14,8 +14,7 @@ use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\Transaction;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
-use Swag\PayPal\PayPal\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
 class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBuilderInterface
 {
@@ -23,7 +22,6 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
      * @throws InconsistentCriteriaIdsException
      * @throws InvalidTransactionException
      * @throws PayPalSettingsInvalidException
-     * @throws PayPalSettingsNotFoundException
      */
     public function getPayment(
         Cart $cart,

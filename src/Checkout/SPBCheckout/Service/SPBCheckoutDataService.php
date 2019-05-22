@@ -6,7 +6,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
-use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Util\PaymentMethodIdProvider;
 
@@ -33,7 +33,7 @@ class SPBCheckoutDataService
         $context = $checkoutConfirmPage->getContext();
         try {
             $settings = $this->settingsService->getSettings($context->getSalesChannel()->getId());
-        } catch (PayPalSettingsNotFoundException $e) {
+        } catch (PayPalSettingsInvalidException $e) {
             return null;
         }
 

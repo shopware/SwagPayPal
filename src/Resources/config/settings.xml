@@ -76,12 +76,12 @@
             <helpText lang="de-DE">Anmeldung: Auf der PayPal Seite wird ein Login als Landingpage angezeigt.</helpText>
             <options>
                 <option>
-                    <id>login</id>
+                    <id>Login</id>
                     <name>Login</name>
                     <name lang="de-DE">Anmeldung</name>
                 </option>
                 <option>
-                    <id>billing</id>
+                    <id>Billing</id>
                     <name>Registration</name>
                     <name lang="de-DE">Registrierung</name>
                 </option>

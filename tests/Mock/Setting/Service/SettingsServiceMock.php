@@ -2,7 +2,7 @@
 
 namespace Swag\PayPal\Test\Mock\Setting\Service;
 
-use Swag\PayPal\Setting\Exception\PayPalSettingsNotFoundException;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 
@@ -20,9 +20,11 @@ class SettingsServiceMock implements SettingsServiceInterface
 
     public function getSettings(?string $salesChannelId = null): SwagPayPalSettingGeneralStruct
     {
-        if ($this->settings === null) {
-            throw new PayPalSettingsNotFoundException();
+        if (!$this->settings) {
+            throw new PayPalSettingsInvalidException('clientId');
         }
+
+        $this->settings->validate();
 
         return $this->settings;
     }
