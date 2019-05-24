@@ -5,6 +5,7 @@ namespace Swag\PayPal\Test\Mock\Setting\Service;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralStructValidator;
 
 class SettingsServiceMock implements SettingsServiceInterface
 {
@@ -24,7 +25,7 @@ class SettingsServiceMock implements SettingsServiceInterface
             throw new PayPalSettingsInvalidException('clientId');
         }
 
-        $this->settings->validate();
+        SwagPayPalSettingGeneralStructValidator::validate($this->settings);
 
         return $this->settings;
     }
