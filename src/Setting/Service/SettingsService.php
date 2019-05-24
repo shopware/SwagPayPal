@@ -11,6 +11,7 @@ namespace Swag\PayPal\Setting\Service;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralStructValidator;
 
 class SettingsService implements SettingsServiceInterface
 {
@@ -47,7 +48,7 @@ class SettingsService implements SettingsServiceInterface
 
         $settingsEntity = new SwagPayPalSettingGeneralStruct();
         $settingsEntity->assign($propertyValuePairs);
-        $settingsEntity->validate();
+        SwagPayPalSettingGeneralStructValidator::validate($settingsEntity);
 
         return $settingsEntity;
     }
