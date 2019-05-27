@@ -3,8 +3,8 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
-use Shopware\Storefront\Pagelet\Checkout\AjaxCart\CheckoutAjaxCartPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -23,26 +23,20 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            CheckoutAjaxCartPageletLoadedEvent::NAME => 'addExpressCheckoutDataToCart',
+            OffcanvasCartPageLoadedEvent::NAME => 'addExpressCheckoutDataToCart',
             CheckoutRegisterPageLoadedEvent::NAME => 'addExpressCheckoutDataToCart',
             CheckoutCartPageLoadedEvent::NAME => 'addExpressCheckoutDataToCart',
         ];
     }
 
     /**
-     * @param CheckoutAjaxCartPageletLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
+     * @param OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
      */
     public function addExpressCheckoutDataToCart($event): void
     {
         $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext());
 
         if (!$expressCheckoutButtonData) {
-            return;
-        }
-
-        if ($event instanceof CheckoutAjaxCartPageletLoadedEvent) {
-            $event->getPagelet()->addExtension('payPalExpressData', $expressCheckoutButtonData);
-
             return;
         }
 
