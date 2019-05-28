@@ -8,6 +8,7 @@
 
 namespace Swag\PayPal\Payment;
 
+use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Api\Capture\Amount as CaptureAmount;
@@ -20,6 +21,7 @@ use Swag\PayPal\PayPal\Resource\CaptureResource;
 use Swag\PayPal\PayPal\Resource\OrdersResource;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\PayPal\Resource\SaleResource;
+use Swag\PayPal\Util\PaymentStatusUtil;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,18 +62,25 @@ class PayPalPaymentController extends AbstractController
      */
     private $captureResource;
 
+    /**
+     * @var PaymentStatusUtil
+     */
+    private $paymentStatusUtil;
+
     public function __construct(
         PaymentResource $paymentResource,
         SaleResource $saleResource,
         AuthorizationResource $authorizationResource,
         OrdersResource $ordersResource,
-        CaptureResource $captureResource
+        CaptureResource $captureResource,
+        PaymentStatusUtil $paymentStatusUtil
     ) {
         $this->paymentResource = $paymentResource;
         $this->saleResource = $saleResource;
         $this->authorizationResource = $authorizationResource;
         $this->ordersResource = $ordersResource;
         $this->captureResource = $captureResource;
+        $this->paymentStatusUtil = $paymentStatusUtil;
     }
 
     /**
@@ -85,11 +94,11 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/refund-payment/{resourceType}/{resourceId}", name="api.action.paypal.refund_payment", methods={"POST"})
+     * @Route("/api/v{version}/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"})
      *
      * @throws RequiredParameterInvalidException
      */
-    public function refundPayment(Request $request, Context $context, string $resourceType, string $resourceId): JsonResponse
+    public function refundPayment(Request $request, Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
     {
         $refund = $this->createRefund($request);
 
@@ -104,15 +113,17 @@ class PayPalPaymentController extends AbstractController
                 throw new RequiredParameterInvalidException('resourceType');
         }
 
+        $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $request, $context);
+
         return new JsonResponse($refundResponse);
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/capture-payment/{resourceType}/{resourceId}", name="api.action.paypal.catpure_payment", methods={"POST"})
+     * @Route("/api/v{version}/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"})
      *
      * @throws RequiredParameterInvalidException
      */
-    public function capturePayment(Request $request, Context $context, string $resourceType, string $resourceId): JsonResponse
+    public function capturePayment(Request $request, Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
     {
         $capture = $this->createCapture($request);
 
@@ -127,15 +138,18 @@ class PayPalPaymentController extends AbstractController
                 throw new RequiredParameterInvalidException('resourceType');
         }
 
+        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $request, $context);
+
         return new JsonResponse($captureResponse);
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/void-payment/{resourceType}/{resourceId}", name="api.action.paypal.void_payment", methods={"POST"})
+     * @Route("/api/v{version}/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"})
      *
      * @throws RequiredParameterInvalidException
+     * @throws OrderNotFoundException
      */
-    public function voidPayment(Context $context, string $resourceType, string $resourceId): JsonResponse
+    public function voidPayment(Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
     {
         switch ($resourceType) {
             case RelatedResource::AUTHORIZE:
@@ -147,6 +161,8 @@ class PayPalPaymentController extends AbstractController
             default:
                 throw new RequiredParameterInvalidException('resourceType');
         }
+
+        $this->paymentStatusUtil->applyVoidStateToOrder($orderId, $context);
 
         return new JsonResponse($voidResponse);
     }

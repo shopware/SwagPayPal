@@ -21,6 +21,7 @@
             <argument type="service" id="Swag\PayPal\PayPal\Resource\AuthorizationResource"/>
             <argument type="service" id="Swag\PayPal\PayPal\Resource\OrdersResource"/>
             <argument type="service" id="Swag\PayPal\PayPal\Resource\CaptureResource"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentStatusUtil"/>
         </service>
 
         <service id="Swag\PayPal\Payment\Builder\OrderPaymentBuilder">

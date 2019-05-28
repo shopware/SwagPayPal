@@ -4,7 +4,13 @@ import './swag-paypal-payment-actions.scss';
 import './extensions/swag-paypal-payment-action-capture';
 import './extensions/swag-paypal-payment-action-refund';
 import './extensions/swag-paypal-payment-action-void';
-import { REFUNDED_STATE, PARTIALLY_REFUNDED_STATE, VOIDED_STATE, CAPTURED_STATE } from './swag-paypal-payment-consts';
+import {
+    REFUNDED_STATE,
+    PARTIALLY_REFUNDED_STATE,
+    VOIDED_STATE,
+    CAPTURED_STATE,
+    COMPLETED_STATE
+} from './swag-paypal-payment-consts';
 
 Component.register('swag-paypal-payment-actions', {
     template,
@@ -18,7 +24,6 @@ Component.register('swag-paypal-payment-actions', {
 
     data() {
         return {
-            showModal: false,
             modalType: '',
             refundableAmount: 0,
             captureableAmount: 0,
@@ -40,11 +45,10 @@ Component.register('swag-paypal-payment-actions', {
 
         spawnModal(modalType) {
             this.modalType = modalType;
-            this.showModal = true;
         },
 
         closeModal() {
-            this.showModal = false;
+            this.modalType = '';
         },
 
         setPaymentActionAmounts() {
@@ -79,6 +83,7 @@ Component.register('swag-paypal-payment-actions', {
 
         setShowVoidButton() {
             const firstRelatedResource = this.paymentResource.transactions[0].related_resources[0];
+            const nonVoidAbleStates = [VOIDED_STATE, CAPTURED_STATE, COMPLETED_STATE];
 
             if (firstRelatedResource.sale) {
                 return;
@@ -86,7 +91,7 @@ Component.register('swag-paypal-payment-actions', {
 
             if (firstRelatedResource.order) {
                 const order = firstRelatedResource.order;
-                if (order.state === VOIDED_STATE || order.state === CAPTURED_STATE) {
+                if (nonVoidAbleStates.includes(order.state)) {
                     this.captureableAmount = 0;
                     return;
                 }
@@ -96,7 +101,7 @@ Component.register('swag-paypal-payment-actions', {
 
             if (firstRelatedResource.authorization) {
                 const authorization = firstRelatedResource.authorization;
-                if (authorization.state === VOIDED_STATE || authorization.state === CAPTURED_STATE) {
+                if (nonVoidAbleStates.includes(authorization.state)) {
                     this.captureableAmount = 0;
                     return;
                 }

@@ -47,20 +47,27 @@ Component.register('swag-paypal-payment-action-capture', {
             const isFinalCapture = this.isFinalCapture;
             const resourceType = this.paymentResource.intent;
             const resourceId = this.getResourceId(this.paymentResource);
+            const orderId = this.$route.params.id;
 
             this.isLoading = true;
-            this.SwagPayPalPaymentService.capturePayment(resourceType, resourceId, captureAmount, currency, isFinalCapture)
-                .then(() => {
-                    this.createNotificationSuccess({
-                        title: this.$tc('swag-paypal-payment.captureAction.successTitle'),
-                        message: this.$tc('swag-paypal-payment.captureAction.successMessage')
-                    });
-                    this.isLoading = false;
-                    this.$emit('modal-close');
-                    this.$nextTick(() => {
-                        this.$router.replace(`${this.$route.path}?hash=${utils.createId()}`);
-                    });
-                })
+            this.SwagPayPalPaymentService.capturePayment(
+                resourceType,
+                resourceId,
+                captureAmount,
+                currency,
+                isFinalCapture,
+                orderId
+            ).then(() => {
+                this.createNotificationSuccess({
+                    title: this.$tc('swag-paypal-payment.captureAction.successTitle'),
+                    message: this.$tc('swag-paypal-payment.captureAction.successMessage')
+                });
+                this.isLoading = false;
+                this.$emit('modal-close');
+                this.$nextTick(() => {
+                    this.$router.replace(`${this.$route.path}?hash=${utils.createId()}`);
+                });
+            })
                 .catch((errorResponse) => {
                     this.createNotificationError({
                         title: errorResponse.title,

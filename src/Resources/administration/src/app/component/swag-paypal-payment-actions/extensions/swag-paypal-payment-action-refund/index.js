@@ -108,12 +108,14 @@ Component.register('swag-paypal-payment-action-refund', {
             const currency = this.selectedCapture.currency;
             const resourceType = this.selectedCapture.type;
             const resourceId = this.selectedCapture.id;
+            const orderId = this.$route.params.id;
 
             this.SwagPayPalPaymentService.refundPayment(
                 resourceType,
                 resourceId,
                 refundAmount,
-                currency
+                currency,
+                orderId
             ).then(() => {
                 this.createNotificationSuccess({
                     title: this.$tc('swag-paypal-payment.refundAction.successTitle'),

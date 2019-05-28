@@ -17,8 +17,8 @@ class SwagPayPalPaymentService extends ApiService {
         });
     }
 
-    capturePayment(resourceType, resourceId, captureAmount, currency, isFinalCapture) {
-        const apiRoute = `_action/${this.getApiBasePath()}/capture-payment/${resourceType}/${resourceId}`;
+    capturePayment(resourceType, resourceId, captureAmount, currency, isFinalCapture, orderId) {
+        const apiRoute = `_action/${this.getApiBasePath()}/capture-payment/${resourceType}/${resourceId}/${orderId}`;
 
         return this.httpClient.post(
             apiRoute,
@@ -35,8 +35,8 @@ class SwagPayPalPaymentService extends ApiService {
         });
     }
 
-    refundPayment(resourceType, resourceId, refundAmount, currency) {
-        const apiRoute = `_action/${this.getApiBasePath()}/refund-payment/${resourceType}/${resourceId}`;
+    refundPayment(resourceType, resourceId, refundAmount, currency, orderId) {
+        const apiRoute = `_action/${this.getApiBasePath()}/refund-payment/${resourceType}/${resourceId}/${orderId}`;
 
         return this.httpClient.post(
             apiRoute,
@@ -52,8 +52,8 @@ class SwagPayPalPaymentService extends ApiService {
         });
     }
 
-    voidPayment(resourceType, resourceId) {
-        const apiRoute = `_action/${this.getApiBasePath()}/void-payment/${resourceType}/${resourceId}`;
+    voidPayment(resourceType, resourceId, orderId) {
+        const apiRoute = `_action/${this.getApiBasePath()}/void-payment/${resourceType}/${resourceId}/${orderId}`;
 
         return this.httpClient.post(
             apiRoute,

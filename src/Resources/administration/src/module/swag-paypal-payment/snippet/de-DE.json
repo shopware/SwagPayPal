@@ -91,7 +91,7 @@
             "confirm": {
                 "message": "Möchtest du diese Zahlung wirklich abbrechen?",
                 "button": {
-                    "confirm": "Ja",
+                    "confirm": "Autorisierung abbrechen",
                     "cancel": "Nein"
                 }
             }

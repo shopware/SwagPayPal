@@ -10,13 +10,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\System\Currency\CurrencyDefinition;
 
-class CurrencyRepoMock implements EntityRepositoryInterface
+class EntityRepositoryMock implements EntityRepositoryInterface
 {
     public function getDefinition(): EntityDefinition
     {
-        return new CurrencyDefinition();
+        return new EntityDefinitionMock();
     }
 
     public function aggregate(Criteria $criteria, Context $context): AggregatorResult
