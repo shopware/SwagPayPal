@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Controller;
+namespace Swag\PayPal\Setting;
 
 use Swag\PayPal\Setting\Service\ApiCredentialTestServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

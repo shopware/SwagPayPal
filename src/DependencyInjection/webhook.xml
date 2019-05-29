@@ -5,7 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Swag\PayPal\Controller\WebhookController" public="true">
+        <service id="Swag\PayPal\Webhook\WebhookController" public="true">
             <argument type="service" id="logger"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>

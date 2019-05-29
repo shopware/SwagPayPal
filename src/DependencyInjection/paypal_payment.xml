@@ -15,7 +15,7 @@
             <tag name="shopware.payment.method.async"/>
         </service>
 
-        <service id="Swag\PayPal\Controller\PayPalPaymentController" public="true">
+        <service id="Swag\PayPal\Payment\PayPalPaymentController" public="true">
             <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
             <argument type="service" id="Swag\PayPal\PayPal\Resource\SaleResource"/>
             <argument type="service" id="Swag\PayPal\PayPal\Resource\AuthorizationResource"/>

@@ -10,8 +10,8 @@ namespace Swag\PayPal\Test\Controller;
 
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
-use Swag\PayPal\Controller\SettingsController;
 use Swag\PayPal\Setting\Service\ApiCredentialTestService;
+use Swag\PayPal\Setting\SettingsController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
