@@ -1,5 +1,7 @@
 {% block swag_paypal_payment_action_refund %}
-    <div>
+    <sw-modal variant="small"
+              :title="$tc(`swag-paypal-payment.modal.title.refund`)"
+              @modal-close="$emit('modal-close')">
         {% block swag_paypal_payment_action_refund_invoice_select %}
             <sw-select-field :label="$tc('swag-paypal-payment.refundAction.invoiceSelect.label')"
                              v-model="selectedCaptureId"
@@ -10,7 +12,6 @@
                 </option>
             </sw-select-field>
         {% endblock %}
-
         {% block swag_paypal_payment_action_refund_amount %}
             <sw-field type="number"
                       v-model="refundAmount"
@@ -20,15 +21,14 @@
                       :suffix="selectedCapture.currency">
             </sw-field>
         {% endblock %}
-
         {% block swag_paypal_payment_action_refund_confirm_button %}
-        <sw-button variant="primary"
-                   @click="refund">
-            {{ $tc('swag-paypal-payment.refundAction.confirmButton.text') }}
-        </sw-button>
+            <template slot="modal-footer">
+                <sw-button variant="primary"
+                           @click="refund">
+                    {{ $tc('swag-paypal-payment.refundAction.confirmButton.text') }}
+                </sw-button>
+            </template>
         {% endblock %}
-
-        <sw-loader v-if="isLoading">
-        </sw-loader>
-    </div>
+        <sw-loader v-if="isLoading"></sw-loader>
+    </sw-modal>
 {% endblock %}

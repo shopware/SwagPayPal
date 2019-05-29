@@ -8,5 +8,11 @@
         <service id="Swag\PayPal\Util\PaymentMethodIdProvider">
             <argument type="service" id="payment_method.repository"/>
         </service>
+
+        <service id="Swag\PayPal\Util\PaymentStatusUtil">
+            <argument type="service" id="Shopware\Core\System\StateMachine\StateMachineRegistry"/>
+            <argument type="service" id="order.repository"/>
+            <argument type="service" id="order_transaction.repository"/>
+        </service>
     </services>
 </container>

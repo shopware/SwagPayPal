@@ -29,8 +29,9 @@ Component.register('swag-paypal-payment-action-void', {
             this.isLoading = true;
             const resourceType = this.paymentResource.intent;
             const resourceId = this.getResourceId();
+            const orderId = this.$route.params.id;
 
-            this.SwagPayPalPaymentService.voidPayment(resourceType, resourceId).then(() => {
+            this.SwagPayPalPaymentService.voidPayment(resourceType, resourceId, orderId).then(() => {
                 this.createNotificationSuccess({
                     title: this.$tc('swag-paypal-payment.voidAction.successTitle'),
                     message: this.$tc('swag-paypal-payment.voidAction.successMessage')

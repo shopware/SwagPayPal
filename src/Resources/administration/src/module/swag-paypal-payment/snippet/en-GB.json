@@ -91,7 +91,7 @@
             "confirm": {
                 "message": "Do you really want to cancel this payment?",
                 "button": {
-                    "confirm": "Yes",
+                    "confirm": "Cancel authorization",
                     "cancel": "No"
                 }
             }
