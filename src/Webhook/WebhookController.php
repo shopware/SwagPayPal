@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Controller;
+namespace Swag\PayPal\Webhook;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
@@ -14,8 +14,6 @@ use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Webhook\Exception\WebhookException;
-use Swag\PayPal\Webhook\WebhookService;
-use Swag\PayPal\Webhook\WebhookServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

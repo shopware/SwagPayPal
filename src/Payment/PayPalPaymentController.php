@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Controller;
+namespace Swag\PayPal\Payment;
 
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Capture;

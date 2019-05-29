@@ -4,7 +4,8 @@
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <import resource="../../Controller/" type="annotation"/>
-    <import resource="../../Checkout/ExpressCheckout" type="annotation"/>
-    <import resource="../../Checkout/SPBCheckout" type="annotation"/>
+    <import resource="../../Checkout/**/*Controller.php" type="annotation"/>
+    <import resource="../../Payment/**/*Controller.php" type="annotation"/>
+    <import resource="../../Setting/**/*Controller.php" type="annotation"/>
+    <import resource="../../Webhook/**/*Controller.php" type="annotation"/>
 </routes>
