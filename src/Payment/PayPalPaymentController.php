@@ -9,7 +9,11 @@
 namespace Swag\PayPal\Payment;
 
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
+use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
+use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
+use Shopware\Core\System\StateMachine\Exception\StateMachineNotFoundException;
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Api\Capture\Amount as CaptureAmount;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource;
@@ -96,7 +100,12 @@ class PayPalPaymentController extends AbstractController
     /**
      * @Route("/api/v{version}/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"})
      *
+     * @throws OrderNotFoundException
      * @throws RequiredParameterInvalidException
+     * @throws InvalidOrderException
+     * @throws InconsistentCriteriaIdsException
+     * @throws IllegalTransitionException
+     * @throws StateMachineNotFoundException
      */
     public function refundPayment(Request $request, Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
     {
@@ -121,7 +130,12 @@ class PayPalPaymentController extends AbstractController
     /**
      * @Route("/api/v{version}/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"})
      *
+     * @throws OrderNotFoundException
      * @throws RequiredParameterInvalidException
+     * @throws InvalidOrderException
+     * @throws InconsistentCriteriaIdsException
+     * @throws IllegalTransitionException
+     * @throws StateMachineNotFoundException
      */
     public function capturePayment(Request $request, Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
     {
@@ -148,6 +162,11 @@ class PayPalPaymentController extends AbstractController
      *
      * @throws RequiredParameterInvalidException
      * @throws OrderNotFoundException
+     * @throws RequiredParameterInvalidException
+     * @throws InvalidOrderException
+     * @throws InconsistentCriteriaIdsException
+     * @throws IllegalTransitionException
+     * @throws StateMachineNotFoundException
      */
     public function voidPayment(Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
     {

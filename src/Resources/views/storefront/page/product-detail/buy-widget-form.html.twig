@@ -1,0 +1,14 @@
+{% sw_extends '@Storefront/page/product-detail/buy-widget-form.html.twig' %}
+
+{% block page_product_detail_buy_container %}
+    {{ parent() }}
+
+    {% set expressSettings = page.extensions.payPalExpressData %}
+
+    {% if expressSettings.productDetailEnabled %}
+        <div class="swag-paypal__detail-express-button float-right"
+             data-swag-paypal-express-button="true"
+             data-swag-pay-pal-express-button-options="{{ expressSettings|json_encode }}">
+        </div>
+    {% endif %}
+{% endblock %}

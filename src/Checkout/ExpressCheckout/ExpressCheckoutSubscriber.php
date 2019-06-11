@@ -2,10 +2,13 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
+use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
+use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
+use Swag\PayPal\Setting\Service\SettingsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ExpressCheckoutSubscriber implements EventSubscriberInterface
@@ -15,31 +18,76 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
      */
     private $expressCheckoutDataService;
 
-    public function __construct(PayPalExpressCheckoutDataService $service)
-    {
+    /**
+     * @var CartService
+     */
+    private $cartService;
+
+    /**
+     * @var SettingsService
+     */
+    private $settingsService;
+
+    public function __construct(
+        PayPalExpressCheckoutDataService $service,
+        CartService $cartService,
+        SettingsService $settingsService
+    ) {
         $this->expressCheckoutDataService = $service;
+        $this->cartService = $cartService;
+        $this->settingsService = $settingsService;
     }
 
     public static function getSubscribedEvents()
     {
         return [
-            OffcanvasCartPageLoadedEvent::NAME => 'addExpressCheckoutDataToCart',
-            CheckoutRegisterPageLoadedEvent::NAME => 'addExpressCheckoutDataToCart',
-            CheckoutCartPageLoadedEvent::NAME => 'addExpressCheckoutDataToCart',
+            OffcanvasCartPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
+            CheckoutRegisterPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
+            CheckoutCartPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
+            ProductPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
         ];
     }
 
     /**
-     * @param OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
+     * @param ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
      */
-    public function addExpressCheckoutDataToCart($event): void
+    public function addExpressCheckoutDataToPage($event): void
     {
-        $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext());
+        if (!$this->expressOptionForEventEnabled($event)) {
+            return;
+        }
+
+        if ($event instanceof ProductPageLoadedEvent) {
+            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext(), true);
+        } else {
+            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext());
+        }
 
         if (!$expressCheckoutButtonData) {
             return;
         }
 
         $event->getPage()->addExtension('payPalExpressData', $expressCheckoutButtonData);
+    }
+
+    /**
+     * @param ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
+     */
+    private function expressOptionForEventEnabled($event): bool
+    {
+        $settings = $this->settingsService->getSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
+
+        switch ($event->getName()) {
+            case ProductPageLoadedEvent::NAME:
+                return $settings->getEcsDetailEnabled();
+            case OffcanvasCartPageLoadedEvent::NAME:
+                return $settings->getEcsOffCanvasEnabled();
+            case CheckoutRegisterPageLoadedEvent::NAME:
+                return $settings->getEcsLoginEnabled();
+            case CheckoutCartPageLoadedEvent::NAME:
+                return $settings->getEcsCartEnabled();
+            default:
+                return false;
+        }
     }
 }

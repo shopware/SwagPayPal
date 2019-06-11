@@ -119,7 +119,7 @@ trait PaymentTransactionTrait
         }
 
         $orderLineItem->setLabel(OrderPaymentBuilderTest::EXPECTED_ITEM_NAME);
-        $orderLineItem->setPayload(['id' => OrderPaymentBuilderTest::EXPECTED_ITEM_ID]);
+        $orderLineItem->setPayload(['productNumber' => OrderPaymentBuilderTest::EXPECTED_PRODUCT_NUMBER]);
 
         return new OrderLineItemCollection([$orderLineItem]);
     }

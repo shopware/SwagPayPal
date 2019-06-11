@@ -3,12 +3,9 @@
 namespace Swag\PayPal\Payment\Builder;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Language\LanguageCollection;
-use Shopware\Core\Framework\Language\LanguageEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
@@ -20,6 +17,7 @@ use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Util\LocaleCodeProvider;
 
 abstract class AbstractPaymentBuilder
 {
@@ -36,21 +34,21 @@ abstract class AbstractPaymentBuilder
     /**
      * @var EntityRepositoryInterface
      */
-    protected $languageRepo;
+    protected $salesChannelRepo;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var LocaleCodeProvider
      */
-    protected $salesChannelRepo;
+    protected $localeCodeProvider;
 
     public function __construct(
         SettingsServiceInterface $settingsService,
-        EntityRepositoryInterface $languageRepo,
-        EntityRepositoryInterface $salesChannelRepo
+        EntityRepositoryInterface $salesChannelRepo,
+        LocaleCodeProvider $localeCodeProvider
     ) {
         $this->settingsService = $settingsService;
-        $this->languageRepo = $languageRepo;
         $this->salesChannelRepo = $salesChannelRepo;
+        $this->localeCodeProvider = $localeCodeProvider;
     }
 
     /**
@@ -87,7 +85,11 @@ abstract class AbstractPaymentBuilder
     protected function getApplicationContext(SalesChannelContext $salesChannelContext): ApplicationContext
     {
         $applicationContext = new ApplicationContext();
-        $applicationContext->setLocale($this->getLocaleCode($salesChannelContext->getContext()));
+        $applicationContext->setLocale(
+            $this->localeCodeProvider->getLocaleCodeFromContext(
+                $salesChannelContext->getContext()
+            )
+        );
         $applicationContext->setBrandName($this->getBrandName($salesChannelContext));
         $applicationContext->setLandingPage($this->getLandingPageType());
 
@@ -120,20 +122,6 @@ abstract class AbstractPaymentBuilder
         if (!\in_array($intent, PaymentIntent::INTENTS, true)) {
             throw new PayPalSettingsInvalidException('intent');
         }
-    }
-
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
-    private function getLocaleCode(Context $context): string
-    {
-        $languageId = $context->getLanguageId();
-        /** @var LanguageCollection $languageCollection */
-        $languageCollection = $this->languageRepo->search(new Criteria([$languageId]), $context);
-        /** @var LanguageEntity $language */
-        $language = $languageCollection->get($languageId);
-
-        return $language->getLocale()->getCode();
     }
 
     /**

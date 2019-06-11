@@ -10,16 +10,17 @@ use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 use Swag\PayPal\Test\Mock\PaymentMethodIdProviderMock;
+use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
 
 class SPBCheckoutDataServiceTest extends TestCase
 {
@@ -30,9 +31,16 @@ class SPBCheckoutDataServiceTest extends TestCase
      */
     private $paymentMethodIdProvider;
 
+    /**
+     * @var SalesChannelContext
+     */
+    private $salesChannelContext;
+
     public function setUp(): void
     {
         $this->paymentMethodIdProvider = new PaymentMethodIdProviderMock();
+        $context = Context::createDefaultContext();
+        $this->salesChannelContext = Generator::createSalesChannelContext($context);
     }
 
     public function testGetCheckoutData(): void
@@ -41,7 +49,7 @@ class SPBCheckoutDataServiceTest extends TestCase
 
         $service = $this->getService($settings);
         $page = $this->getCheckoutConfirmPage();
-        $buttonData = $service->getCheckoutData($page);
+        $buttonData = $service->getCheckoutData($page, $this->salesChannelContext);
 
         static::assertNotNull($buttonData);
         if ($buttonData === null) {
@@ -62,7 +70,7 @@ class SPBCheckoutDataServiceTest extends TestCase
     {
         $service = $this->getService(null);
         $page = $this->getCheckoutConfirmPage();
-        $buttonData = $service->getCheckoutData($page);
+        $buttonData = $service->getCheckoutData($page, $this->salesChannelContext);
 
         static::assertNull($buttonData);
     }
@@ -74,7 +82,7 @@ class SPBCheckoutDataServiceTest extends TestCase
 
         $service = $this->getService($settings);
         $page = $this->getCheckoutConfirmPage();
-        $buttonData = $service->getCheckoutData($page);
+        $buttonData = $service->getCheckoutData($page, $this->salesChannelContext);
 
         static::assertNull($buttonData);
     }
@@ -87,7 +95,7 @@ class SPBCheckoutDataServiceTest extends TestCase
         $page = $this->getCheckoutConfirmPage();
         $page->getCart()->setLineItems(new LineItemCollection());
 
-        $buttonData = $service->getCheckoutData($page);
+        $buttonData = $service->getCheckoutData($page, $this->salesChannelContext);
 
         static::assertNull($buttonData);
     }
@@ -98,10 +106,9 @@ class SPBCheckoutDataServiceTest extends TestCase
 
         $service = $this->getService($settings);
         $page = $this->getCheckoutConfirmPage();
-        $context = $page->getContext();
-        $context->assign(['customer' => null]);
+        $this->salesChannelContext->assign(['customer' => null]);
 
-        $buttonData = $service->getCheckoutData($page);
+        $buttonData = $service->getCheckoutData($page, $this->salesChannelContext);
 
         static::assertNull($buttonData);
     }
@@ -132,27 +139,18 @@ class SPBCheckoutDataServiceTest extends TestCase
         $paymentMethods = new PaymentMethodCollection([$payPalPaymentMethodEntity]);
         $shippingMethods = new ShippingMethodCollection();
 
-        $context = Context::createDefaultContext();
-        $salesChannelContext = Generator::createSalesChannelContext($context);
-        $salesChannel = $salesChannelContext->getSalesChannel();
+        $salesChannel = $this->salesChannelContext->getSalesChannel();
         $salesChannel->setId(Defaults::SALES_CHANNEL);
 
-        $customer = $salesChannelContext->getCustomer();
+        $customer = $this->salesChannelContext->getCustomer();
         if ($customer) {
             $customer->setActive(true);
         }
 
-        $currency = $salesChannelContext->getCurrency();
+        $currency = $this->salesChannelContext->getCurrency();
         $currency->setIsoCode('EUR');
 
-        /** @var EntityRepositoryInterface $languageRepo */
-        $languageRepo = $this->getContainer()->get('language.repository');
-        $language = $languageRepo
-            ->search(new Criteria([Defaults::LANGUAGE_SYSTEM]), Context::createDefaultContext())
-            ->first();
-        $salesChannel->setLanguage($language);
-
-        $page = new CheckoutConfirmPage($salesChannelContext, $paymentMethods, $shippingMethods);
+        $page = new CheckoutConfirmPage($paymentMethods, $shippingMethods);
         $page->setCart(Generator::createCart());
 
         return $page;
@@ -161,7 +159,8 @@ class SPBCheckoutDataServiceTest extends TestCase
     private function getService(?SwagPayPalSettingGeneralStruct $settings): SPBCheckoutDataService
     {
         $settingsService = new SettingsServiceMock($settings);
+        $localeCodeProviderMock = new LocaleCodeProviderMock(new LanguageRepoMock());
 
-        return new SPBCheckoutDataService($settingsService, $this->paymentMethodIdProvider);
+        return new SPBCheckoutDataService($settingsService, $this->paymentMethodIdProvider, $localeCodeProviderMock);
     }
 }

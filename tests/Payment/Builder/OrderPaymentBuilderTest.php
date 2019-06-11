@@ -32,7 +32,7 @@ class OrderPaymentBuilderTest extends TestCase
     public const TEST_ORDER_NUMBER = 'SW1234';
     public const TEST_ORDER_ID = 'test-order-id';
     public const EXPECTED_ITEM_NAME = 'Aerodynamic Paper Ginger Vitro';
-    public const EXPECTED_ITEM_ID = '0716562764cd43389abe16faad1838b8';
+    public const EXPECTED_PRODUCT_NUMBER = '0716562764cd43389abe16faad1838b8';
     public const EXPECTED_ITEM_CURRENCY = 'EUR';
     public const EXPECTED_ITEM_TAX = 37.81;
     public const EXPECTED_ITEM_QUANTITY = 1;
@@ -136,7 +136,7 @@ class OrderPaymentBuilderTest extends TestCase
         static::assertSame(self::EXPECTED_ITEM_CURRENCY, $item['currency']);
         static::assertSame('540.19', $item['price']);
         static::assertSame(self::EXPECTED_ITEM_QUANTITY, $item['quantity']);
-        static::assertSame(self::EXPECTED_ITEM_ID, $item['sku']);
+        static::assertSame(self::EXPECTED_PRODUCT_NUMBER, $item['sku']);
         static::assertSame((string) self::EXPECTED_ITEM_TAX, $item['tax']);
     }
 

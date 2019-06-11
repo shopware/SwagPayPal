@@ -3,6 +3,7 @@
 import Plugin from 'src/script/helper/plugin/plugin.class';
 import HttpClient from 'src/script/service/http-client.service';
 import ElementLoadingIndicatorUtil from 'src/script/utility/loading-indicator/element-loading-indicator.util';
+import FormSerializeUtil from 'src/script/utility/form/form-serialize.util';
 import './swag-paypal.express-checkout.scss';
 
 const OFF_CANVAS_CART_CLOSE_BUTTON_SELECTOR = '.btn.btn-light.btn-block.offcanvas-close.js-offcanvas-close.sticky-top';
@@ -59,7 +60,12 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
          *
          * @type string
          */
-        paypalScriptLoadedClass: 'paypal-checkout-js-loaded'
+        paypalScriptLoadedClass: 'paypal-checkout-js-loaded',
+
+        /**
+         * This option toggles the Process whether or not the product needs to be added to the cart.
+         */
+        addProductToCart: false
     };
 
     init() {
@@ -131,12 +137,65 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
      * @return {Promise}
      */
     createOrder() {
+        if (this.options.addProductToCart) {
+            return this.addProductToCart().then(() => {
+                return this._createOrder();
+            });
+        }
+
+        return this._createOrder();
+    }
+
+    /**
+     * @return {Promise}
+     */
+    _createOrder() {
         return new Promise(resolve => {
             this._client.get('/sales-channel-api/v1/_action/paypal/create-payment', responseText => {
                 const response = JSON.parse(responseText);
                 resolve(response.token);
             });
         });
+    }
+
+    addProductToCart() {
+        const formattedLineItems = this._formatLineItems();
+
+        return new Promise(resolve => {
+            this._client.post('/checkout/line-item/add', JSON.stringify(formattedLineItems), () => {
+                resolve();
+            });
+        });
+    }
+
+    /**
+     * Returns the line item data with keys like: lineItems[06e28a73ecd44a0e84e5ddf144dff8d7][quantity],
+     * as a proper Object.
+     * @return {Object}
+     */
+    _formatLineItems() {
+        const formData = FormSerializeUtil.serializeJson(this.el.parentElement);
+
+        const formattedLineItems = {};
+        Object.keys(formData).forEach(key => {
+            const matches = key.match(/lineItems\[(.+)]\[(.+)]/);
+
+            if (key !== 'redirectTo' && matches && matches.length === 3) {
+                if (!formattedLineItems[matches[1]]) {
+                    formattedLineItems[matches[1]] = {
+                        [matches[2]]: formData[matches[0]]
+                    };
+                } else {
+                    const lineItem = formattedLineItems[matches[1]];
+
+                    lineItem[matches[2]] = formData[matches[0]];
+                }
+            }
+        });
+
+        return {
+            lineItems: formattedLineItems
+        };
     }
 
     /**
