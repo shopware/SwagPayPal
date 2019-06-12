@@ -7,18 +7,11 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 
 class PayPalExpressCheckoutDataService
 {
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
-
     /**
      * @var CartService
      */
@@ -30,25 +23,20 @@ class PayPalExpressCheckoutDataService
     private $localeCodeProvider;
 
     public function __construct(
-        SettingsServiceInterface $settingsService,
         CartService $cartService,
         LocaleCodeProvider $localeCodeProvider
     ) {
-        $this->settingsService = $settingsService;
         $this->cartService = $cartService;
         $this->localeCodeProvider = $localeCodeProvider;
     }
 
-    public function getExpressCheckoutButtonData(SalesChannelContext $context, ?bool $addProductToCart = false): ?ExpressCheckoutButtonData
-    {
+    public function getExpressCheckoutButtonData(
+        SalesChannelContext $context,
+        SwagPayPalSettingGeneralStruct $settings,
+        ?bool $addProductToCart = false
+    ): ?ExpressCheckoutButtonData {
         $cart = $this->cartService->getCart($context->getToken(), $context);
         $customer = $context->getCustomer();
-
-        try {
-            $settings = $this->settingsService->getSettings($context->getSalesChannel()->getId());
-        } catch (PayPalSettingsInvalidException $e) {
-            return null;
-        }
 
         if ((!$cart instanceof Cart || $cart->getLineItems()->count() === 0) && !$addProductToCart) {
             return null;
