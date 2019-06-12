@@ -72,6 +72,11 @@ class SwagPayPalSettingGeneralStruct extends Struct
     /**
      * @var bool
      */
+    protected $ecsDetailEnabled = true;
+
+    /**
+     * @var bool
+     */
     protected $ecsCartEnabled = true;
 
     /**
@@ -83,6 +88,11 @@ class SwagPayPalSettingGeneralStruct extends Struct
      * @var bool
      */
     protected $ecsLoginEnabled = true;
+
+    /**
+     * @var bool
+     */
+    protected $ecsListingEnabled = false;
 
     /**
      * @var string
@@ -219,6 +229,16 @@ class SwagPayPalSettingGeneralStruct extends Struct
         $this->orderNumberPrefix = $orderNumberPrefix;
     }
 
+    public function getEcsDetailEnabled(): bool
+    {
+        return $this->ecsDetailEnabled;
+    }
+
+    public function setEcsDetailEnabled(bool $ecsDetailEnabled): void
+    {
+        $this->ecsDetailEnabled = $ecsDetailEnabled;
+    }
+
     public function getEcsCartEnabled(): bool
     {
         return $this->ecsCartEnabled;
@@ -247,6 +267,16 @@ class SwagPayPalSettingGeneralStruct extends Struct
     public function setEcsLoginEnabled(bool $ecsLoginEnabled): void
     {
         $this->ecsLoginEnabled = $ecsLoginEnabled;
+    }
+
+    public function getEcsListingEnabled(): bool
+    {
+        return $this->ecsListingEnabled;
+    }
+
+    public function setEcsListingEnabled(bool $ecsListingEnabled): void
+    {
+        $this->ecsListingEnabled = $ecsListingEnabled;
     }
 
     public function getEcsButtonColor(): string

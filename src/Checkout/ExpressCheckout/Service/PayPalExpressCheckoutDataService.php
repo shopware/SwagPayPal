@@ -5,27 +5,17 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Util\LocaleCodeProvider;
 
 class PayPalExpressCheckoutDataService
 {
     /**
-     * @var EntityRepositoryInterface
-     */
-    private $languageRepo;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $currencyRepo;
-
-    /**
-     * @var SettingsService
+     * @var SettingsServiceInterface
      */
     private $settingsService;
 
@@ -34,19 +24,22 @@ class PayPalExpressCheckoutDataService
      */
     private $cartService;
 
+    /**
+     * @var LocaleCodeProvider
+     */
+    private $localeCodeProvider;
+
     public function __construct(
-        EntityRepositoryInterface $languageRepo,
-        EntityRepositoryInterface $currencyRepo,
-        SettingsService $settingsService,
-        CartService $cartService
+        SettingsServiceInterface $settingsService,
+        CartService $cartService,
+        LocaleCodeProvider $localeCodeProvider
     ) {
-        $this->languageRepo = $languageRepo;
-        $this->currencyRepo = $currencyRepo;
         $this->settingsService = $settingsService;
         $this->cartService = $cartService;
+        $this->localeCodeProvider = $localeCodeProvider;
     }
 
-    public function getExpressCheckoutButtonData(SalesChannelContext $context): ?ExpressCheckoutButtonData
+    public function getExpressCheckoutButtonData(SalesChannelContext $context, ?bool $addProductToCart = false): ?ExpressCheckoutButtonData
     {
         $cart = $this->cartService->getCart($context->getToken(), $context);
         $customer = $context->getCustomer();
@@ -57,7 +50,7 @@ class PayPalExpressCheckoutDataService
             return null;
         }
 
-        if (!$cart instanceof Cart || $cart->getLineItems()->count() === 0) {
+        if ((!$cart instanceof Cart || $cart->getLineItems()->count() === 0) && !$addProductToCart) {
             return null;
         }
 
@@ -66,9 +59,11 @@ class PayPalExpressCheckoutDataService
         }
 
         $buttonData = (new ExpressCheckoutButtonData())->assign([
+            'productDetailEnabled' => $settings->getEcsDetailEnabled(),
             'offCanvasEnabled' => $settings->getEcsOffCanvasEnabled(),
             'loginEnabled' => $settings->getEcsLoginEnabled(),
             'cartEnabled' => $settings->getEcsCartEnabled(),
+            'listingEnabled' => $settings->getEcsListingEnabled(),
             'useSandbox' => $settings->getSandbox(),
             'buttonColor' => $settings->getEcsButtonColor(),
             'buttonShape' => $settings->getEcsButtonShape(),
@@ -76,6 +71,7 @@ class PayPalExpressCheckoutDataService
             'languageIso' => $this->getInContextButtonLanguage($settings, $context),
             'currency' => $context->getCurrency()->getIsoCode(),
             'intent' => $settings->getIntent(),
+            'addProductToCart' => $addProductToCart,
         ]);
 
         return $buttonData;
@@ -89,8 +85,10 @@ class PayPalExpressCheckoutDataService
             return $settingsLocale;
         }
 
-        $iso = $context->getSalesChannel()->getLanguage()->getLocale()->getCode();
-
-        return str_replace('-', '_', $iso);
+        return str_replace(
+            '-',
+            '_',
+            $this->localeCodeProvider->getLocaleCodeFromContext($context->getContext())
+        );
     }
 }

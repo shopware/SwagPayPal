@@ -6,6 +6,7 @@ use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
+use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
@@ -48,6 +49,7 @@ class PaymentStatusUtil
      * @throws OrderNotFoundException
      * @throws StateMachineNotFoundException
      * @throws InvalidOrderException
+     * @throws InvalidTransactionException
      */
     public function applyVoidStateToOrder(string $orderId, Context $context): void
     {
@@ -61,6 +63,7 @@ class PaymentStatusUtil
      * @throws OrderNotFoundException
      * @throws StateMachineNotFoundException
      * @throws InvalidOrderException
+     * @throws InvalidTransactionException
      */
     public function applyCaptureStateToPayment(string $orderId, Request $request, Context $context): void
     {
@@ -83,6 +86,7 @@ class PaymentStatusUtil
      * @throws OrderNotFoundException
      * @throws StateMachineNotFoundException
      * @throws InvalidOrderException
+     * @throws InvalidTransactionException
      */
     public function applyRefundStateToPayment(string $orderId, Request $request, Context $context): void
     {
@@ -132,11 +136,18 @@ class PaymentStatusUtil
      * @throws InconsistentCriteriaIdsException
      * @throws IllegalTransitionException
      * @throws StateMachineNotFoundException
+     * @throws InvalidTransactionException
      */
     private function transisitionOrderTransactionState(OrderTransactionEntity $orderTransactionEntity, string $transistionName, Context $context): void
     {
+        $stateMachineState = $orderTransactionEntity->getStateMachineState();
+
+        if (!$stateMachineState) {
+            throw new InvalidTransactionException($orderTransactionEntity->getId());
+        }
+
         $toPlace = $this->stateMachineRegistry->transition($this->stateMachineRegistry->getStateMachine(OrderTransactionStates::STATE_MACHINE, $context),
-            $orderTransactionEntity->getStateMachineState(),
+            $stateMachineState,
             $this->orderTransactionRepository->getDefinition()->getEntityName(),
             $orderTransactionEntity->getId(),
             $context,

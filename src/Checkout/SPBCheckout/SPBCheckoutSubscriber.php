@@ -27,7 +27,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
 
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
-        $buttonData = $this->spbCheckoutDataService->getCheckoutData($event->getPage());
+        $buttonData = $this->spbCheckoutDataService->getCheckoutData($event->getPage(), $event->getSalesChannelContext());
 
         if (!$buttonData) {
             return;

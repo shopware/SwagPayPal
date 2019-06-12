@@ -26,14 +26,15 @@
 
         <service id="Swag\PayPal\Payment\Builder\OrderPaymentBuilder">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
-            <argument type="service" id="language.repository"/>
             <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
+            <argument type="service" id="order.repository"/>
         </service>
 
         <service id="Swag\PayPal\Payment\Builder\CartPaymentBuilder">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
-            <argument type="service" id="language.repository"/>
             <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
         </service>
     </services>
 </container>

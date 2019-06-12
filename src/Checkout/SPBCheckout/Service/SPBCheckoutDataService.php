@@ -8,6 +8,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodIdProvider;
 
 class SPBCheckoutDataService
@@ -22,15 +23,23 @@ class SPBCheckoutDataService
      */
     private $paymentMethodIdProvider;
 
-    public function __construct(SettingsServiceInterface $settingsService, PaymentMethodIdProvider $paymentMethodIdProvider)
-    {
+    /**
+     * @var LocaleCodeProvider
+     */
+    private $localeCodeProvider;
+
+    public function __construct(
+        SettingsServiceInterface $settingsService,
+        PaymentMethodIdProvider $paymentMethodIdProvider,
+        LocaleCodeProvider $localeCodeProvider
+    ) {
         $this->settingsService = $settingsService;
         $this->paymentMethodIdProvider = $paymentMethodIdProvider;
+        $this->localeCodeProvider = $localeCodeProvider;
     }
 
-    public function getCheckoutData(CheckoutConfirmPage $checkoutConfirmPage): ?SPBCheckoutButtonData
+    public function getCheckoutData(CheckoutConfirmPage $checkoutConfirmPage, SalesChannelContext $context): ?SPBCheckoutButtonData
     {
-        $context = $checkoutConfirmPage->getContext();
         try {
             $settings = $this->settingsService->getSettings($context->getSalesChannel()->getId());
         } catch (PayPalSettingsInvalidException $e) {
@@ -67,8 +76,10 @@ class SPBCheckoutDataService
 
     private function getInContextButtonLanguage(SalesChannelContext $context): ?string
     {
-        $iso = $context->getSalesChannel()->getLanguage()->getLocale()->getCode();
-
-        return str_replace('-', '_', $iso);
+        return str_replace(
+            '-',
+            '_',
+            $this->localeCodeProvider->getLocaleCodeFromContext($context->getContext())
+        );
     }
 }

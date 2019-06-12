@@ -58,6 +58,8 @@
             <name>submitCart</name>
             <label>Submit cart</label>
             <label lang="de-DE">Warenkorb übertragen</label>
+            <!-- TODO remove disabled with PT-10534 -->
+            <disabled>true</disabled>
             <helpText>If this option is active, the cart will be submitted to PayPal.</helpText>
             <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Warenkorb an PayPal übertragen.</helpText>
         </input-field>
@@ -108,6 +110,14 @@
         <title lang="de-DE">PayPal Express Checkout Integration</title>
 
         <input-field type="bool">
+            <name>ecsDetailEnabled</name>
+            <label>'Pay now' on detail page:</label>
+            <label lang="de-DE">'Direkt zu PayPal' auf Detailseite:</label>
+            <helpText>If this option is active, the Express Checkout button will be shown on each product detail page.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Express Checkout Button auf jeder Produktdetailseite angezeigt.</helpText>
+        </input-field>
+
+        <input-field type="bool">
             <name>ecsCartEnabled</name>
             <label>'Pay now' on cart:</label>
             <label lang="de-DE">'Direkt zu PayPal' im Warenkorb:</label>
@@ -129,6 +139,14 @@
             <label lang="de-DE">'Direkt zu PayPal' auf Loginseite:</label>
             <helpText>If this option is active, the Express Checkout button will be shown on the login and register page.</helpText>
             <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Login- und Registrierungsseite angezeigt.</helpText>
+        </input-field>
+
+        <input-field type="bool">
+            <name>ecsListingEnabled</name>
+            <label>'Pay now' on listing pages:</label>
+            <label lang="de-DE">'Direkt zu PayPal' auf Listing Seiten:</label>
+            <helpText>If this option is active, the Express Checkout button will be shown on listing pages.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Express Checkout Button auf Listing-Seiten.</helpText>
         </input-field>
 
         <input-field type="single-select">
@@ -181,6 +199,8 @@
             <name>ecsSubmitCart</name>
             <label>Submit cart:</label>
             <label lang="de-DE">Warenkorb übertragen:</label>
+            <!-- TODO remove disabled with PT-10534 -->
+            <disabled>true</disabled>
             <helpText>If this option is active, the cart will be submitted to PayPal for Express orders.</helpText>
             <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Warenkorb bei Express-Bestellungen an PayPal übertragen.</helpText>
         </input-field>

@@ -56,6 +56,11 @@ class ExpressCheckoutButtonData extends Struct
      */
     protected $intent;
 
+    /**
+     * @var bool
+     */
+    protected $addProductToCart;
+
     public function getOffCanvasEnabled(): bool
     {
         return $this->offCanvasEnabled;
@@ -104,5 +109,10 @@ class ExpressCheckoutButtonData extends Struct
     public function getIntent(): string
     {
         return $this->intent;
+    }
+
+    public function getAddProductToCart(): bool
+    {
+        return $this->addProductToCart;
     }
 }

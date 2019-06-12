@@ -8,7 +8,6 @@
 
 namespace Swag\PayPal\Test\Helper;
 
-use Shopware\Core\Framework\Language\LanguageDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Swag\PayPal\Payment\Builder\OrderPaymentBuilder;
 use Swag\PayPal\PayPal\PaymentIntent;
@@ -22,8 +21,10 @@ use Swag\PayPal\Test\Mock\DummyCollection;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
+use Swag\PayPal\Test\Mock\Repositories\EntityRepositoryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Webhook\WebhookRegistry;
 
@@ -84,8 +85,9 @@ trait ServicesTrait
 
         return new OrderPaymentBuilder(
             $settingsService,
-            $definitionInstanceRegistry->getRepository((new LanguageDefinition())->getEntityName()),
-            $definitionInstanceRegistry->getRepository((new SalesChannelDefinition())->getEntityName())
+            $definitionInstanceRegistry->getRepository((new SalesChannelDefinition())->getEntityName()),
+            new LocaleCodeProviderMock(new EntityRepositoryMock()),
+            new EntityRepositoryMock()
         );
     }
 
