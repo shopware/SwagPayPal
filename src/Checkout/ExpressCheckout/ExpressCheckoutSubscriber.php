@@ -9,6 +9,7 @@ use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ExpressCheckoutSubscriber implements EventSubscriberInterface
@@ -53,14 +54,15 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
      */
     public function addExpressCheckoutDataToPage($event): void
     {
-        if (!$this->expressOptionForEventEnabled($event)) {
+        $settings = $this->settingsService->getSettings($event->getSalesChannelContext()->getToken());
+        if (!$this->expressOptionForEventEnabled($settings, $event)) {
             return;
         }
 
         if ($event instanceof ProductPageLoadedEvent) {
-            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext(), true);
+            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext(), $settings, true);
         } else {
-            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext());
+            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext(), $settings);
         }
 
         if (!$expressCheckoutButtonData) {
@@ -73,10 +75,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     /**
      * @param ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
      */
-    private function expressOptionForEventEnabled($event): bool
+    private function expressOptionForEventEnabled(SwagPayPalSettingGeneralStruct $settings, $event): bool
     {
-        $settings = $this->settingsService->getSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
-
         switch ($event->getName()) {
             case ProductPageLoadedEvent::NAME:
                 return $settings->getEcsDetailEnabled();
