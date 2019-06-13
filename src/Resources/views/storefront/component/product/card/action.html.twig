@@ -1,0 +1,14 @@
+{% sw_extends "@Storefront/component/product/card/action.html.twig" %}
+
+{% block component_product_box_action_form %}
+    {{ parent() }}
+
+    {% set expressSettings = page.extensions.payPalExpressData %}
+
+    {% if expressSettings.listingEnabled %}
+        <div class="swag-paypal__listing-express-button"
+             data-swag-paypal-express-button="true"
+             data-swag-pay-pal-express-button-options="{{ expressSettings|json_encode }}">
+        </div>
+    {% endif %}
+{% endblock %}

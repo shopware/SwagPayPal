@@ -9,12 +9,22 @@ class ExpressCheckoutButtonData extends Struct
     /**
      * @var bool
      */
+    protected $productDetailEnabled;
+
+    /**
+     * @var bool
+     */
     protected $offCanvasEnabled;
 
     /**
      * @var bool
      */
     protected $loginEnabled;
+
+    /**
+     * @var bool
+     */
+    protected $listingEnabled;
 
     /**
      * @var bool
@@ -61,6 +71,11 @@ class ExpressCheckoutButtonData extends Struct
      */
     protected $addProductToCart;
 
+    public function getProductDetailEnabled(): bool
+    {
+        return $this->productDetailEnabled;
+    }
+
     public function getOffCanvasEnabled(): bool
     {
         return $this->offCanvasEnabled;
@@ -69,6 +84,11 @@ class ExpressCheckoutButtonData extends Struct
     public function getLoginEnabled(): bool
     {
         return $this->loginEnabled;
+    }
+
+    public function getListingEnabled(): bool
+    {
+        return $this->listingEnabled;
     }
 
     public function getUseSandbox(): bool

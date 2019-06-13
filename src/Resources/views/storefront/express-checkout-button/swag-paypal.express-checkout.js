@@ -7,6 +7,8 @@ import FormSerializeUtil from 'src/script/utility/form/form-serialize.util';
 import './swag-paypal.express-checkout.scss';
 
 const OFF_CANVAS_CART_CLOSE_BUTTON_SELECTOR = '.btn.btn-light.btn-block.offcanvas-close.js-offcanvas-close.sticky-top';
+const SwagPayPalExpressCheckoutButtonInstances = [];
+let isInjectionTriggered = false;
 
 export default class SwagPayPalExpressCheckoutButton extends Plugin {
     static options = {
@@ -71,6 +73,7 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
     init() {
         this._client = new HttpClient(window.accessKey, window.contextToken);
         this.paypal = null;
+        SwagPayPalExpressCheckoutButtonInstances.push(this);
         this.createButton();
     }
 
@@ -83,11 +86,18 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
             return;
         }
 
+        if (isInjectionTriggered) {
+            return;
+        }
+
+        isInjectionTriggered = true;
         this.createScript(() => {
             this.paypal = window.paypal;
             document.head.classList.add(this.options.paypalScriptLoadedClass);
 
-            this.renderButton();
+            SwagPayPalExpressCheckoutButtonInstances.forEach((instance) => {
+                instance.createButton();
+            });
         });
     }
 

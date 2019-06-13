@@ -92,7 +92,7 @@ class SwagPayPalSettingGeneralStruct extends Struct
     /**
      * @var bool
      */
-    protected $ecsListingEnabled = false;
+    protected $ecsListingEnabled = true;
 
     /**
      * @var string
