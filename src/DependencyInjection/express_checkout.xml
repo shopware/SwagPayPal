@@ -6,7 +6,6 @@
 
     <services>
         <service id="Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService">
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
         </service>
