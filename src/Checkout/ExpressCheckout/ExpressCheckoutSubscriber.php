@@ -54,7 +54,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
      */
     public function addExpressCheckoutDataToPage($event): void
     {
-        $settings = $this->settingsService->getSettings($event->getSalesChannelContext()->getToken());
+        $settings = $this->settingsService->getSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
         if (!$this->expressOptionForEventEnabled($settings, $event)) {
             return;
         }

@@ -10,4 +10,6 @@
 .swag-paypal__detail-express-button{
     padding-top: 15px;
     width: 46%;
+    position: relative;
+    z-index: -1;
 }
