@@ -20,7 +20,7 @@ class SwagPayPalSettingGeneralStructValidator
         try {
             $generalStruct->getClientSecret();
         } catch (\TypeError $error) {
-            throw new PayPalSettingsInvalidException('ClientSecre');
+            throw new PayPalSettingsInvalidException('ClientSecret');
         }
     }
 }

@@ -6,8 +6,10 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
+use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -46,20 +48,26 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             CheckoutRegisterPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
             CheckoutCartPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
             ProductPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
+            NavigationPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
         ];
     }
 
     /**
-     * @param ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
+     * @param NavigationPageLoadedEvent|ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
      */
     public function addExpressCheckoutDataToPage($event): void
     {
-        $settings = $this->settingsService->getSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
+        try {
+            $settings = $this->settingsService->getSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
+        } catch (PayPalSettingsInvalidException $e) {
+            return;
+        }
+
         if (!$this->expressOptionForEventEnabled($settings, $event)) {
             return;
         }
 
-        if ($event instanceof ProductPageLoadedEvent) {
+        if ($event instanceof ProductPageLoadedEvent || $event instanceof NavigationPageLoadedEvent) {
             $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext(), $settings, true);
         } else {
             $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext(), $settings);
@@ -73,7 +81,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
+     * @param NavigationPageLoadedEvent|ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
      */
     private function expressOptionForEventEnabled(SwagPayPalSettingGeneralStruct $settings, $event): bool
     {
@@ -86,6 +94,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
                 return $settings->getEcsLoginEnabled();
             case CheckoutCartPageLoadedEvent::NAME:
                 return $settings->getEcsCartEnabled();
+            case NavigationPageLoadedEvent::NAME:
+                return $settings->getEcsListingEnabled();
             default:
                 return false;
         }

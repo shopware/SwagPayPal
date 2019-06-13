@@ -10,9 +10,11 @@ class ExpressCheckoutButtonDataTest extends TestCase
     public function testExpressCheckoutButtonDataStruct(): void
     {
         $buttonData = (new ExpressCheckoutButtonData())->assign([
+            'productDetailEnabled' => true,
             'offCanvasEnabled' => true,
             'loginEnabled' => true,
             'cartEnabled' => true,
+            'listingEnabled' => true,
             'useSandbox' => false,
             'buttonColor' => 'blue',
             'buttonShape' => 'pill',
@@ -22,9 +24,11 @@ class ExpressCheckoutButtonDataTest extends TestCase
             'intent' => 'sale',
         ]);
 
+        static::assertTrue($buttonData->getProductDetailEnabled());
         static::assertTrue($buttonData->getOffCanvasEnabled());
         static::assertTrue($buttonData->getLoginEnabled());
         static::assertTrue($buttonData->getCartEnabled());
+        static::assertTrue($buttonData->getListingEnabled());
         static::assertFalse($buttonData->getUseSandbox());
         static::assertSame('blue', $buttonData->getButtonColor());
         static::assertSame('pill', $buttonData->getButtonShape());
