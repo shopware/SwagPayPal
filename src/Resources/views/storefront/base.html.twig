@@ -5,8 +5,8 @@
     {% set isHMRMode = false %}
 
     {% if isHMRMode %}
-        <script type="text/javascript" src="http://localhost:9000/swag-paypal-storefront.bundle.js"></script>
+        <script type="text/javascript" src="http://localhost:9000/js/swag-pay-pal.js"></script>
     {% else %}
-        <script type="text/javascript" src="{{ asset('bundles/swagpaypal/static/storefront/swag-paypal-storefront.bundle.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('bundles/swagpaypal/storefront/js/swag-pay-pal.js') }}"></script>
     {% endif %}
 {% endblock %}
