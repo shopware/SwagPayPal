@@ -42,6 +42,21 @@ class Item extends PayPalStruct
      */
     protected $tax;
 
+    public function getPrice(): string
+    {
+        return $this->price;
+    }
+
+    public function getQuantity(): int
+    {
+        return $this->quantity;
+    }
+
+    public function getTax(): string
+    {
+        return $this->tax;
+    }
+
     public function setName(string $name): void
     {
         $this->name = $name;

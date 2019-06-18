@@ -10,6 +10,7 @@ use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Payment\Service\TransactionValidator;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\Transaction;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList;
@@ -34,7 +35,11 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         $intent = $this->getIntent();
         $payer = $this->createPayer();
         $redirectUrls = $this->createRedirectUrls($finishUrl);
-        $transaction = $this->createTransactionFromCart($cart, $salesChannelContext->getCurrency(), $isExpressCheckoutProcess);
+        $transaction = $this->createTransactionFromCart(
+            $cart,
+            $salesChannelContext->getCurrency(),
+            $isExpressCheckoutProcess
+        );
         $applicationContext = $this->getApplicationContext($salesChannelContext);
 
         $requestPayment = new Payment();
@@ -67,14 +72,21 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         $amount = $this->createAmount($transactionAmount, $shippingCostsTotal, $currency);
         $transaction->setAmount($amount);
 
+        $itemListValid = true;
         // If its an express checkout process, use the ecs submit cart option
         if ($isExpressCheckoutProcess && $this->settings->getEcsSubmitCart()) {
             $this->setItemList($transaction, $cart->getLineItems(), $currency);
+            $itemListValid = TransactionValidator::validateItemList([$transaction]);
         }
 
         // If its not an express checkout process, use the normal submit cart option
         if (!$isExpressCheckoutProcess && $this->settings->getSubmitCart()) {
             $this->setItemList($transaction, $cart->getLineItems(), $currency);
+            $itemListValid = TransactionValidator::validateItemList([$transaction]);
+        }
+
+        if ($itemListValid === false) {
+            $transaction->setItemList(null);
         }
 
         return $transaction;
@@ -105,23 +117,27 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         return $items;
     }
 
-    private function createItemFromLineItem(LineItem $lineItem, string $currency, CalculatedPrice $price): Item
-    {
-        $taxAmount = $price->getCalculatedTaxes()->getAmount();
-
+    private function createItemFromLineItem(
+        LineItem $lineItem,
+        string $currency,
+        CalculatedPrice $price
+    ): Item {
         $item = new Item();
         $item->setName((string) $lineItem->getLabel());
         $item->setSku($lineItem->getPayload()['productNumber']);
-        $item->setPrice($this->formatPrice($price->getTotalPrice() - $taxAmount));
         $item->setCurrency($currency);
         $item->setQuantity($lineItem->getQuantity());
-        $item->setTax($this->formatPrice($taxAmount));
+        $item->setPrice($this->formatPrice($price->getTotalPrice() / $lineItem->getQuantity()));
+        $item->setTax($this->formatPrice(0));
 
         return $item;
     }
 
-    private function setItemList(Transaction $transaction, LineItemCollection $lineItemCollection, string $currency): void
-    {
+    private function setItemList(
+        Transaction $transaction,
+        LineItemCollection $lineItemCollection,
+        string $currency
+    ): void {
         $items = $this->getItemList($lineItemCollection, $currency);
 
         if (!empty($items)) {

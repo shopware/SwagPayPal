@@ -34,7 +34,7 @@ class OrderPaymentBuilderTest extends TestCase
     public const EXPECTED_ITEM_NAME = 'Aerodynamic Paper Ginger Vitro';
     public const EXPECTED_PRODUCT_NUMBER = '0716562764cd43389abe16faad1838b8';
     public const EXPECTED_ITEM_CURRENCY = 'EUR';
-    public const EXPECTED_ITEM_TAX = 37.81;
+    public const EXPECTED_ITEM_TAX = 0;
     public const EXPECTED_ITEM_QUANTITY = 1;
 
     public function testGetPayment(): void
@@ -130,11 +130,15 @@ class OrderPaymentBuilderTest extends TestCase
         }
 
         $transaction = json_decode($transaction, true);
+        static::assertNotNull(
+            $transaction['item_list'],
+            'ItemList is null, it probably got removed by the TransactionValidator.'
+        );
         $item = $transaction['item_list']['items'][0];
 
         static::assertSame(self::EXPECTED_ITEM_NAME, $item['name']);
         static::assertSame(self::EXPECTED_ITEM_CURRENCY, $item['currency']);
-        static::assertSame('540.19', $item['price']);
+        static::assertSame('855.01', $item['price']);
         static::assertSame(self::EXPECTED_ITEM_QUANTITY, $item['quantity']);
         static::assertSame(self::EXPECTED_PRODUCT_NUMBER, $item['sku']);
         static::assertSame((string) self::EXPECTED_ITEM_TAX, $item['tax']);

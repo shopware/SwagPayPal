@@ -9,6 +9,7 @@
 namespace Swag\PayPal\Test\Helper;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
@@ -57,11 +58,30 @@ trait PaymentTransactionTrait
     private function createOrderEntity(string $orderId): OrderEntity
     {
         $order = new OrderEntity();
-        $order->setShippingCosts(new CalculatedPrice(2.5, 2.5, new CalculatedTaxCollection(), new TaxRuleCollection()));
+        $order->setShippingCosts(new CalculatedPrice(4.99, 4.99, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $order->setId($orderId);
         $currency = $this->createCurrencyEntity();
         $order->setCurrency($currency);
         $order->setOrderNumber(OrderPaymentBuilderTest::TEST_ORDER_NUMBER);
+        $order->setPrice(new CartPrice(
+                722.69,
+                860.0,
+                722.69,
+                new CalculatedTaxCollection([
+                    new CalculatedTax(
+                        137.31,
+                        19.0,
+                        722.6890756302521
+                    ),
+                ]),
+                new TaxRuleCollection([
+                    new TaxRule(
+                        19.0,
+                        100.0
+                    ),
+                ]),
+                CartPrice::TAX_STATE_NET
+            ));
 
         switch ($orderId) {
             case ConstantsForTesting::VALID_ORDER_ID:
@@ -82,11 +102,22 @@ trait PaymentTransactionTrait
     private function createPriceStruct(): CalculatedPrice
     {
         return new CalculatedPrice(
-            1.5,
-            3.0,
-            new CalculatedTaxCollection(),
-            new TaxRuleCollection(),
-            2
+            722.69,
+            860.0,
+            new CalculatedTaxCollection([
+                new CalculatedTax(
+                    137.31,
+                    19.0,
+                    722.69
+                ),
+            ]),
+            new TaxRuleCollection([
+                new TaxRule(
+                    19.0,
+                    100.0
+                ),
+            ]),
+            1
         );
     }
 
@@ -108,12 +139,12 @@ trait PaymentTransactionTrait
         if ($setPrice) {
             $orderLineItem->setPrice(
                 new CalculatedPrice(
-                    578.0,
-                    578.0,
+                    855.01,
+                    855.01,
                     new CalculatedTaxCollection([
-                        new CalculatedTax(OrderPaymentBuilderTest::EXPECTED_ITEM_TAX, 7, 578),
+                        new CalculatedTax(OrderPaymentBuilderTest::EXPECTED_ITEM_TAX, 19, 722.69),
                     ]),
-                    new TaxRuleCollection([7 => new TaxRule(7)])
+                    new TaxRuleCollection([19 => new TaxRule(19)])
                 )
             );
         }

@@ -25,6 +25,16 @@ abstract class Amount extends PayPalStruct
      */
     protected $details;
 
+    public function getTotal(): string
+    {
+        return $this->total;
+    }
+
+    public function getDetails(): Details
+    {
+        return $this->details;
+    }
+
     public function setTotal(string $total): void
     {
         $this->total = $total;

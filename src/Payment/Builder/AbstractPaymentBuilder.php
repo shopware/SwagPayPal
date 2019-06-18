@@ -178,9 +178,8 @@ abstract class AbstractPaymentBuilder
 
         $amountDetails->setShipping($this->formatPrice($shippingCostsTotal));
         $totalAmount = $orderTransactionAmount->getTotalPrice();
-        $taxAmount = $orderTransactionAmount->getCalculatedTaxes()->getAmount();
-        $amountDetails->setSubtotal($this->formatPrice($totalAmount - $taxAmount - $shippingCostsTotal));
-        $amountDetails->setTax($this->formatPrice($taxAmount));
+        $amountDetails->setSubtotal($this->formatPrice($totalAmount - $shippingCostsTotal));
+        $amountDetails->setTax($this->formatPrice(0));
 
         return $amountDetails;
     }
