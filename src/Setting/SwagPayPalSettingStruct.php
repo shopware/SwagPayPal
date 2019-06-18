@@ -12,7 +12,7 @@ use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\PaymentIntent;
 
-class SwagPayPalSettingGeneralStruct extends Struct
+class SwagPayPalSettingStruct extends Struct
 {
     /**
      * @var string
@@ -118,6 +118,16 @@ class SwagPayPalSettingGeneralStruct extends Struct
      * @var bool
      */
     protected $spbCheckoutEnabled = false;
+
+    /**
+     * @var string|null
+     */
+    protected $spbButtonLanguageIso;
+
+    /**
+     * @var bool
+     */
+    protected $payPalPlusEnabled = false;
 
     public function getClientId(): string
     {
@@ -319,7 +329,7 @@ class SwagPayPalSettingGeneralStruct extends Struct
         $this->ecsButtonLanguageIso = $ecsButtonLanguageIso;
     }
 
-    public function isSpbCheckoutEnabled(): bool
+    public function getSpbCheckoutEnabled(): bool
     {
         return $this->spbCheckoutEnabled;
     }
@@ -327,5 +337,25 @@ class SwagPayPalSettingGeneralStruct extends Struct
     public function setSpbCheckoutEnabled(bool $spbCheckoutEnabled): void
     {
         $this->spbCheckoutEnabled = $spbCheckoutEnabled;
+    }
+
+    public function getSpbButtonLanguageIso(): ?string
+    {
+        return $this->spbButtonLanguageIso;
+    }
+
+    public function setSpbButtonLanguageIso(string $spbButtonLanguageIso): void
+    {
+        $this->spbButtonLanguageIso = $spbButtonLanguageIso;
+    }
+
+    public function getPayPalPlusEnabled(): bool
+    {
+        return $this->payPalPlusEnabled;
+    }
+
+    public function setPayPalPlusEnabled(bool $payPalPlusEnabled): void
+    {
+        $this->payPalPlusEnabled = $payPalPlusEnabled;
     }
 }

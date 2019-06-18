@@ -12,7 +12,7 @@ use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Client\PayPalClient;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\PartnerAttributionId;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 use Swag\PayPal\Test\Payment\PayPalPaymentHandlerTest;
@@ -28,7 +28,7 @@ class PayPalClientFactoryMock extends PayPalClientFactory
 
     public function createPaymentClient(Context $context, string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC): PayPalClient
     {
-        $settings = new SwagPayPalSettingGeneralStruct();
+        $settings = new SwagPayPalSettingStruct();
         $settings->setClientId('testClientId');
         $settings->setClientSecret('testClientSecret');
         $settings->setSandbox(true);

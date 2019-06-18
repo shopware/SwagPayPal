@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Controller\_fixtures;
+namespace Swag\PayPal\Test\Webhook\_fixtures;
 
 class WebhookDataFixture
 {

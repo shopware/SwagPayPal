@@ -14,7 +14,7 @@ use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\DummyCollection;
@@ -31,7 +31,7 @@ use Swag\PayPal\Webhook\WebhookRegistry;
 trait ServicesTrait
 {
     protected function createPayPalClientFactory(
-        ?SwagPayPalSettingGeneralStruct $settings = null
+        ?SwagPayPalSettingStruct $settings = null
     ): PayPalClientFactoryMock {
         $settings = $settings ?? $this->createDefaultSettingStruct();
         $settingsService = new SettingsServiceMock($settings);
@@ -56,14 +56,14 @@ trait ServicesTrait
         );
     }
 
-    protected function createPaymentResource(?SwagPayPalSettingGeneralStruct $settings = null): PaymentResource
+    protected function createPaymentResource(?SwagPayPalSettingStruct $settings = null): PaymentResource
     {
         return new PaymentResource($this->createPayPalClientFactory($settings));
     }
 
-    protected function createDefaultSettingStruct(): SwagPayPalSettingGeneralStruct
+    protected function createDefaultSettingStruct(): SwagPayPalSettingStruct
     {
-        $settingsStruct = new SwagPayPalSettingGeneralStruct();
+        $settingsStruct = new SwagPayPalSettingStruct();
 
         $settingsStruct->setClientId('TestClientId');
         $settingsStruct->setClientSecret('TestClientSecret');
@@ -76,7 +76,7 @@ trait ServicesTrait
         return $settingsStruct;
     }
 
-    protected function createPaymentBuilder(?SwagPayPalSettingGeneralStruct $settings = null): OrderPaymentBuilder
+    protected function createPaymentBuilder(?SwagPayPalSettingStruct $settings = null): OrderPaymentBuilder
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
         $definitionInstanceRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());

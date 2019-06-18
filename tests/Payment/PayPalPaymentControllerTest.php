@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Controller;
+namespace Swag\PayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
@@ -30,6 +30,7 @@ use Symfony\Component\HttpFoundation\Request;
 class PayPalPaymentControllerTest extends TestCase
 {
     use ServicesTrait;
+
     private const TEST_REFUND_INVOICE_NUMBER = 'testRefundInvoiceNumber';
     private const TEST_REFUND_AMOUNT = 5.5;
     private const TEST_REFUND_CURRENCY = 'EUR';

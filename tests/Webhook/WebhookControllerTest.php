@@ -6,19 +6,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Controller;
+namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
-use Swag\PayPal\Test\Controller\_fixtures\WebhookDataFixture;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\WebhookServiceMock;
+use Swag\PayPal\Test\Webhook\_fixtures\WebhookDataFixture;
 use Swag\PayPal\Webhook\WebhookController;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\HttpFoundation\Request;
@@ -141,7 +141,7 @@ class WebhookControllerTest extends TestCase
         $webhookController->executeWebhook($request, $context);
     }
 
-    private function createWebhookController(?SwagPayPalSettingGeneralStruct $settings = null): WebhookController
+    private function createWebhookController(?SwagPayPalSettingStruct $settings = null): WebhookController
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
         $settingsService = new SettingsServiceMock($settings);

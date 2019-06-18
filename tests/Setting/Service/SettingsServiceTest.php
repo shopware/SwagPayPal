@@ -49,7 +49,7 @@ class SettingsServiceTest extends TestCase
             [$prefix . 'landingPage', 'getLandingPage', ApplicationContext::LANDINGPAGE_TYPE_LOGIN],
             [$prefix . 'sendOrderNumber', 'getSendOrderNumber', false],
             [$prefix . 'orderNumberPrefix', 'getOrderNumberPrefix', 'TEST_'],
-            [$prefix . 'spbCheckoutEnabled', 'isSpbCheckoutEnabled', true],
+            [$prefix . 'spbCheckoutEnabled', 'getSpbCheckoutEnabled', true],
         ];
     }
 
@@ -85,7 +85,7 @@ class SettingsServiceTest extends TestCase
             ['landingPage', 'getLandingPage', ApplicationContext::LANDINGPAGE_TYPE_LOGIN],
             ['sendOrderNumber', 'getSendOrderNumber', false],
             ['orderNumberPrefix', 'getOrderNumberPrefix', 'TEST_'],
-            ['spbCheckoutEnabled', 'isSpbCheckoutEnabled', true],
+            ['spbCheckoutEnabled', 'getSpbCheckoutEnabled', true],
         ];
     }
 

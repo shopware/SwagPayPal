@@ -5,9 +5,10 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 
 class PayPalExpressCheckoutDataService
@@ -30,18 +31,21 @@ class PayPalExpressCheckoutDataService
         $this->localeCodeProvider = $localeCodeProvider;
     }
 
+    /**
+     * @throws InconsistentCriteriaIdsException
+     */
     public function getExpressCheckoutButtonData(
         SalesChannelContext $context,
-        SwagPayPalSettingGeneralStruct $settings,
-        ?bool $addProductToCart = false
+        SwagPayPalSettingStruct $settings,
+        bool $addProductToCart = false
     ): ?ExpressCheckoutButtonData {
         $cart = $this->cartService->getCart($context->getToken(), $context);
-        $customer = $context->getCustomer();
 
-        if ((!$cart instanceof Cart || $cart->getLineItems()->count() === 0) && !$addProductToCart) {
+        if (!$addProductToCart && (!$cart instanceof Cart || $cart->getLineItems()->count() === 0)) {
             return null;
         }
 
+        $customer = $context->getCustomer();
         if ($customer instanceof CustomerEntity && $customer->getActive()) {
             return null;
         }
@@ -65,9 +69,10 @@ class PayPalExpressCheckoutDataService
         return $buttonData;
     }
 
-    private function getInContextButtonLanguage(
-        SwagPayPalSettingGeneralStruct $settings,
-        SalesChannelContext $context): ?string
+    /**
+     * @throws InconsistentCriteriaIdsException
+     */
+    private function getInContextButtonLanguage(SwagPayPalSettingStruct $settings, SalesChannelContext $context): string
     {
         if ($settingsLocale = $settings->getEcsButtonLanguageIso()) {
             return $settingsLocale;

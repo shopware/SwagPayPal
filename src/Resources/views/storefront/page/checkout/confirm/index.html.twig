@@ -1,5 +1,18 @@
 {% sw_extends '@Storefront/page/checkout/confirm/index.html.twig' %}
 
+{% block page_checkout_confirm_payment %}
+    {{ parent() }}
+
+    {% set payPalPlusData = page.extensions.payPalPlusData %}
+    {% if payPalPlusData and payPalPlusData.approvalUrl and payPalPlusData.paymentMethodId is same as(context.paymentMethod.id) %}
+        <div class="d-none"
+             data-payPalPaymentWall="true"
+             data-swag-pay-pal-plus-payment-wall-options="{{ payPalPlusData|json_encode }}">
+        </div>
+        <div id="ppplus" data-swag-pay-pal-plus-payment-wall-handler-options="{{ payPalPlusData|json_encode }}"></div>
+    {% endif %}
+{% endblock %}
+
 {% block page_checkout_confirm_form_submit %}
     {{ parent() }}
 
@@ -7,11 +20,10 @@
 
     {% if expressCheckoutData.isExpressCheckout %}
         <input name="isPayPalExpressCheckout" value="{{ expressCheckoutData.isExpressCheckout }}" hidden
-            data-pay-pal-selector-options='{ "paypalPaymentMethodId": "{{ expressCheckoutData.getPaymentMethodId }}" }'>
+               data-pay-pal-selector-options='{ "paypalPaymentMethodId": "{{ expressCheckoutData.getPaymentMethodId }}" }'>
         <input name="paypalPaymentId" value="{{ expressCheckoutData.getPaymentId }}" hidden>
         <input name="paypalPayerId" value="{{ expressCheckoutData.getPayerId }}" hidden>
-    {% elseif page.extensions.spbCheckoutButtonData and page.extensions.spbCheckoutButtonData.enabled %}
-        {% set spbCheckoutButtonData = page.extensions.spbCheckoutButtonData %}
+    {% elseif page.extensions.spbCheckoutButtonData %}
         {% set spbCheckoutData = page.cart.extensions.spbCheckoutData %}
 
         <input name="isPayPalSpbCheckout" id="isPayPalSpbCheckout" value="1" hidden>
@@ -20,7 +32,14 @@
 
         <div class="swag-paypal__smart-buttons"
              data-swag-paypal-smart-payment-buttons="true"
-             data-swag-pay-pal-smart-payment-buttons-options="{{ spbCheckoutButtonData|json_encode }}">
+             data-swag-pay-pal-smart-payment-buttons-options="{{ page.extensions.spbCheckoutButtonData|json_encode }}">
         </div>
+    {% endif %}
+{% endblock %}
+
+{% block base_script_hmr_mode %}
+    {{ parent() }}
+    {% if page.extensions.payPalPlusData %}
+        <script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js"></script>
     {% endif %}
 {% endblock %}

@@ -7,11 +7,6 @@ use Shopware\Core\Framework\Struct\Struct;
 class SPBCheckoutButtonData extends Struct
 {
     /**
-     * @var bool
-     */
-    protected $enabled;
-
-    /**
      * @var string
      */
     protected $clientId;
@@ -20,21 +15,6 @@ class SPBCheckoutButtonData extends Struct
      * @var bool
      */
     protected $useSandbox;
-
-    /**
-     * @var string
-     */
-    protected $buttonColor;
-
-    /**
-     * @var string
-     */
-    protected $buttonShape;
-
-    /**
-     * @var string
-     */
-    protected $buttonSize;
 
     /**
      * @var string
@@ -55,6 +35,11 @@ class SPBCheckoutButtonData extends Struct
      * @var string
      */
     protected $paymentMethodId;
+
+    public function getClientId(): string
+    {
+        return $this->clientId;
+    }
 
     public function getUseSandbox(): bool
     {
@@ -79,20 +64,5 @@ class SPBCheckoutButtonData extends Struct
     public function getPaymentMethodId(): string
     {
         return $this->paymentMethodId;
-    }
-
-    public function setPaymentMethodId(string $paymentMethodId): void
-    {
-        $this->paymentMethodId = $paymentMethodId;
-    }
-
-    public function getClientId(): string
-    {
-        return $this->clientId;
-    }
-
-    public function getEnabled(): bool
-    {
-        return $this->enabled;
     }
 }

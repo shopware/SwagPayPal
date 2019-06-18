@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swag\PayPal\Test\Checkout;
+namespace Swag\PayPal\Test\Checkout\ExpressCheckout;
 
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;

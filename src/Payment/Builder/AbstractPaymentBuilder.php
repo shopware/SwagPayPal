@@ -16,7 +16,7 @@ use Swag\PayPal\PayPal\Api\Payment\Transaction\Amount\Details;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 
 abstract class AbstractPaymentBuilder
@@ -27,7 +27,7 @@ abstract class AbstractPaymentBuilder
     protected $settingsService;
 
     /**
-     * @var SwagPayPalSettingGeneralStruct
+     * @var SwagPayPalSettingStruct
      */
     protected $settings;
 
@@ -73,7 +73,7 @@ abstract class AbstractPaymentBuilder
     protected function createRedirectUrls(string $returnUrl): RedirectUrls
     {
         $redirectUrls = new RedirectUrls();
-        $redirectUrls->setCancelUrl(sprintf('%s&cancel=1', $returnUrl));
+        $redirectUrls->setCancelUrl(sprintf('%s?cancel=1', $returnUrl));
         $redirectUrls->setReturnUrl($returnUrl);
 
         return $redirectUrls;
