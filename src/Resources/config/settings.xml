@@ -58,8 +58,6 @@
             <name>submitCart</name>
             <label>Submit cart</label>
             <label lang="de-DE">Warenkorb übertragen</label>
-            <!-- TODO remove disabled with PT-10534 -->
-            <disabled>true</disabled>
             <helpText>If this option is active, the cart will be submitted to PayPal.</helpText>
             <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Warenkorb an PayPal übertragen.</helpText>
         </input-field>
@@ -199,8 +197,6 @@
             <name>ecsSubmitCart</name>
             <label>Submit cart:</label>
             <label lang="de-DE">Warenkorb übertragen:</label>
-            <!-- TODO remove disabled with PT-10534 -->
-            <disabled>true</disabled>
             <helpText>If this option is active, the cart will be submitted to PayPal for Express orders.</helpText>
             <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Warenkorb bei Express-Bestellungen an PayPal übertragen.</helpText>
         </input-field>

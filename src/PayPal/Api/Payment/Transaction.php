@@ -27,7 +27,7 @@ class Transaction extends PayPalStruct
     protected $payee;
 
     /**
-     * @var ItemList
+     * @var ItemList|null
      */
     protected $itemList;
 
@@ -59,12 +59,22 @@ class Transaction extends PayPalStruct
         return $this->relatedResources;
     }
 
+    public function getAmount(): Amount
+    {
+        return $this->amount;
+    }
+
+    public function getItemList(): ?ItemList
+    {
+        return $this->itemList;
+    }
+
     public function setAmount(Amount $amount): void
     {
         $this->amount = $amount;
     }
 
-    public function setItemList(ItemList $itemList): void
+    public function setItemList(?ItemList $itemList): void
     {
         $this->itemList = $itemList;
     }

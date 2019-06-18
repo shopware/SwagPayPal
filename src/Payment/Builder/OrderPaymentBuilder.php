@@ -20,6 +20,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaI
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Payment\Service\TransactionValidator;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\Transaction;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList;
@@ -78,8 +79,10 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
      * @throws InvalidOrderException
      * @throws InconsistentCriteriaIdsException
      */
-    private function createTransaction(AsyncPaymentTransactionStruct $paymentTransaction, Context $context): Transaction
-    {
+    private function createTransaction(
+        AsyncPaymentTransactionStruct $paymentTransaction,
+        Context $context
+    ): Transaction {
         $orderTransaction = $paymentTransaction->getOrderTransaction();
         $order = $paymentTransaction->getOrder();
 
@@ -103,6 +106,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
             $transaction->setInvoiceNumber($orderNumber);
         }
 
+        $itemListValid = true;
         if ($this->settings->getSubmitCart()) {
             $items = $this->getItemList($order, $currency);
 
@@ -111,6 +115,11 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
                 $itemList->setItems($items);
                 $transaction->setItemList($itemList);
             }
+            $itemListValid = TransactionValidator::validateItemList([$transaction]);
+        }
+
+        if ($itemListValid === false) {
+            $transaction->setItemList(null);
         }
 
         return $transaction;
@@ -121,8 +130,10 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
      *
      * @return Item[]
      */
-    private function getItemList(OrderEntity $order, string $currency): array
-    {
+    private function getItemList(
+        OrderEntity $order,
+        string $currency
+    ): array {
         $items = [];
         if ($order->getLineItems() === null) {
             throw new InvalidOrderException($order->getId());
@@ -149,15 +160,13 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         string $currency,
         CalculatedPrice $price
     ): Item {
-        $taxAmount = $price->getCalculatedTaxes()->getAmount();
-
         $item = new Item();
         $item->setName($lineItem->getLabel());
         $item->setSku($lineItem->getPayload()['productNumber']);
-        $item->setPrice($this->formatPrice($price->getTotalPrice() - $taxAmount));
         $item->setCurrency($currency);
         $item->setQuantity($lineItem->getQuantity());
-        $item->setTax($this->formatPrice($taxAmount));
+        $item->setTax($this->formatPrice(0));
+        $item->setPrice($this->formatPrice($price->getTotalPrice() / $lineItem->getQuantity()));
 
         return $item;
     }

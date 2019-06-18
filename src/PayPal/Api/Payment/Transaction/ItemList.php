@@ -24,6 +24,11 @@ class ItemList extends PayPalStruct
      */
     protected $items;
 
+    public function getItems(): array
+    {
+        return $this->items;
+    }
+
     /**
      * @param Item[] $items
      */

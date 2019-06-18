@@ -40,6 +40,21 @@ abstract class Details extends PayPalStruct
      */
     protected $insurance;
 
+    public function getSubtotal(): string
+    {
+        return $this->subtotal;
+    }
+
+    public function getShipping(): string
+    {
+        return $this->shipping;
+    }
+
+    public function getTax(): string
+    {
+        return $this->tax;
+    }
+
     public function setSubtotal(string $subtotal): void
     {
         $this->subtotal = $subtotal;
