@@ -5,10 +5,9 @@
     {% set isHMRMode = false %}
 
     {% if isHMRMode %}
-        <link rel="stylesheet"
-              href="http://localhost:9000/css/swag-paypal-storefront.bundle.css">
+        {# Served by the javascript file #}
     {% else %}
         <link rel="stylesheet"
-              href="{{ asset('bundles/swagpaypal/static/storefront/css/swag-paypal-storefront.bundle.css') }}">
+              href="{{ asset('bundles/swagpaypal/storefront/css/swag-pay-pal.css') }}">
     {% endif %}
 {% endblock %}
