@@ -205,8 +205,8 @@
             <name>ecsButtonLanguageIso</name>
             <label>Button locale:</label>
             <label lang="de-DE">Buttonsprache:</label>
-            <helpText>If not set, the sales channel locale will be used.</helpText>
-            <helpText lang="de-DE">Wenn nicht gesetzt, wird die Verkaufskanal-Sprache verwendet.</helpText>
+            <helpText>If not set, the sales channel language will be used.</helpText>
+            <helpText lang="de-DE">Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet.</helpText>
         </input-field>
     </card>
 
@@ -218,6 +218,25 @@
             <name>spbCheckoutEnabled</name>
             <label>Enable Smart Payment Buttons</label>
             <label lang="de-DE">Smart Payment Buttons aktivieren</label>
+        </input-field>
+
+        <input-field>
+            <name>spbButtonLanguageIso</name>
+            <label>Button locale:</label>
+            <label lang="de-DE">Buttonsprache:</label>
+            <helpText>If not set, the sales channel language will be used.</helpText>
+            <helpText lang="de-DE">Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet.</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>PayPal Plus integration</title>
+        <title lang="de-DE">PayPal Plus Integration</title>
+
+        <input-field type="bool">
+            <name>payPalPlusEnabled</name>
+            <label>Enable PayPal Plus</label>
+            <label lang="de-DE">PayPal Plus aktivieren</label>
         </input-field>
     </card>
 </config>

@@ -80,6 +80,19 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
         $context = $salesChannelContext->getContext();
+
+        if ($dataBag->getBoolean('isPayPalPlusEnabled')) {
+            $data = [
+                'id' => $transaction->getOrderTransaction()->getId(),
+                'customFields' => [
+                    SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME => $dataBag->get('remotePaymentId'),
+                ],
+            ];
+            $this->orderTransactionRepo->update([$data], $context);
+
+            return new RedirectResponse('plusPatched');
+        }
+
         if ($dataBag->get('isPayPalExpressCheckout') || $dataBag->get('isPayPalSpbCheckout')) {
             $paypalPaymentId = $dataBag->get('paypalPaymentId');
             $payerId = $dataBag->get('paypalPayerId');
@@ -106,6 +119,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
                 'An error occurred during the communication with PayPal' . PHP_EOL . $e->getMessage()
             );
         }
+
+        // TODO PT-10570 - update payment with customer address, etc
 
         $this->addPayPalTransactionId($transaction, $response->getId(), $context);
 

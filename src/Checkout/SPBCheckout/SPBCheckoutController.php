@@ -16,6 +16,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SPBCheckoutController extends AbstractController
 {
+    public const PAYPAL_SPB_PARAMETER_PAYMENT_ID = 'paymentId';
+    public const PAYPAL_SPB_PARAMETER_PAYER_ID = 'payerId';
+
     /**
      * @var CartPaymentBuilderInterface
      */
@@ -44,11 +47,20 @@ class SPBCheckoutController extends AbstractController
     /**
      * @Route("/sales-channel-api/v{version}/_action/paypal/spb/create-payment", name="sales-channel-api.action.paypal.spb.create_payment", methods={"GET"})
      */
-    public function createPayment(SalesChannelContext $context): JsonResponse
+    public function createPayment(SalesChannelContext $salesChannelContext): JsonResponse
     {
-        $cart = $this->cartService->getCart($context->getToken(), $context);
-        $payment = $this->cartPaymentBuilder->getPayment($cart, $context, 'https://www.example.com/', false);
-        $paymentResource = $this->paymentResource->create($payment, $context->getContext(), PartnerAttributionId::SMART_PAYMENT_BUTTONS);
+        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+        $payment = $this->cartPaymentBuilder->getPayment(
+            $cart,
+            $salesChannelContext,
+            'https://www.example.com/',
+            false
+        );
+        $paymentResource = $this->paymentResource->create(
+            $payment,
+            $salesChannelContext->getContext(),
+            PartnerAttributionId::SMART_PAYMENT_BUTTONS
+        );
 
         return new JsonResponse([
             'token' => PaymentTokenExtractor::extract($paymentResource),
@@ -58,14 +70,14 @@ class SPBCheckoutController extends AbstractController
     /**
      * @Route("/sales-channel-api/v{version}/_action/paypal/spb/approve-payment", name="sales-channel-api.action.paypal.spb.approve_payment", methods={"POST"}, defaults={"XmlHttpRequest"=true})
      */
-    public function onApprove(SalesChannelContext $context, Request $request): Response
+    public function onApprove(SalesChannelContext $salesChannelContext, Request $request): Response
     {
-        $paymentId = $request->request->get('paymentId');
-        $payerId = $request->request->get('payerId');
+        $paymentId = $request->request->get(self::PAYPAL_SPB_PARAMETER_PAYMENT_ID);
+        $payerId = $request->request->get(self::PAYPAL_SPB_PARAMETER_PAYER_ID);
 
         $checkoutData = new SPBCheckoutData($paymentId, $payerId);
 
-        $cart = $this->cartService->getCart($context->getToken(), $context);
+        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
         $cart->addExtension('spbCheckoutData', $checkoutData);
 
         return new Response(null, Response::HTTP_NO_CONTENT);

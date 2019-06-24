@@ -16,7 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookResourceMock;
@@ -139,7 +139,7 @@ class WebhookServiceTest extends TestCase
         static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
     }
 
-    private function createWebhookService(?SwagPayPalSettingGeneralStruct $settings = null): WebhookServiceInterface
+    private function createWebhookService(?SwagPayPalSettingStruct $settings = null): WebhookServiceInterface
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
         $settingsService = new SettingsServiceMock($settings);

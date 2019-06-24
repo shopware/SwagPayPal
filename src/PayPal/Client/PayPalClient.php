@@ -15,7 +15,7 @@ use Swag\PayPal\PayPal\BaseURL;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 
 class PayPalClient
 {
@@ -34,7 +34,7 @@ class PayPalClient
      */
     public function __construct(
         TokenResource $tokenResource,
-        SwagPayPalSettingGeneralStruct $settings,
+        SwagPayPalSettingStruct $settings,
         string $cacheId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ) {

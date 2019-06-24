@@ -1,16 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Swag\PayPal\Checkout\SPBCheckout;
+namespace Swag\PayPal\Checkout\Plus;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Storefront\Event\CheckoutEvents;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
-use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
+use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class SPBCheckoutSubscriber implements EventSubscriberInterface
+class PlusSubscriber implements EventSubscriberInterface
 {
     /**
      * @var SettingsServiceInterface
@@ -18,16 +18,14 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     private $settingsService;
 
     /**
-     * @var SPBCheckoutDataService
+     * @var PlusDataService
      */
-    private $spbCheckoutDataService;
+    private $plusDataService;
 
-    public function __construct(
-        SettingsServiceInterface $settingsService,
-        SPBCheckoutDataService $spbCheckoutDataService
-    ) {
+    public function __construct(SettingsServiceInterface $settingsService, PlusDataService $plusDataService)
+    {
         $this->settingsService = $settingsService;
-        $this->spbCheckoutDataService = $spbCheckoutDataService;
+        $this->plusDataService = $plusDataService;
     }
 
     public static function getSubscribedEvents(): array
@@ -49,15 +47,16 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$settings->getSpbCheckoutEnabled()) {
+        if (!$settings->getPayPalPlusEnabled()) {
             return;
         }
 
-        $buttonData = $this->spbCheckoutDataService->getCheckoutData(
-            $event->getSalesChannelContext(),
-            $settings
-        );
+        $plusData = $this->plusDataService->getPlusData($event->getPage()->getCart(), $salesChannelContext, $settings);
 
-        $event->getPage()->addExtension('spbCheckoutButtonData', $buttonData);
+        if ($plusData === null) {
+            return;
+        }
+
+        $event->getPage()->addExtension('payPalPlusData', $plusData);
     }
 }

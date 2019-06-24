@@ -17,7 +17,7 @@ use Shopware\Core\Framework\Context\SalesChannelApiSource;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -187,7 +187,7 @@ class OrderPaymentBuilderTest extends TestCase
     /**
      * @dataProvider dataProviderTestApplicationContext
      */
-    public function testApplicationContext(SwagPayPalSettingGeneralStruct $settings, string $expectedResult): void
+    public function testApplicationContext(SwagPayPalSettingStruct $settings, string $expectedResult): void
     {
         $paymentBuilder = $this->createPaymentBuilder($settings);
 

@@ -22,7 +22,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
@@ -253,7 +253,7 @@ An error occurred during the communication with PayPal');
         );
     }
 
-    private function createPayPalPaymentHandler(?SwagPayPalSettingGeneralStruct $settings = null): PayPalPaymentHandler
+    private function createPayPalPaymentHandler(?SwagPayPalSettingStruct $settings = null): PayPalPaymentHandler
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
 

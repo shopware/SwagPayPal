@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Controller;
+namespace Swag\PayPal\Test\Setting;
 
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;

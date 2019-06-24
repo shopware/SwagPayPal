@@ -13,7 +13,7 @@
         "shopware/platform": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "8.1.6"
+        "phpunit/phpunit": "8.2.1"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",

@@ -24,7 +24,6 @@
 
         <service id="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber">
             <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService"/>
-            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <tag name="kernel.event_subscriber"/>
         </service>

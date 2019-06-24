@@ -26,7 +26,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Service\SettingsService;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\PaymentMethodIdProvider;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -46,6 +46,7 @@ class SwagPayPal extends Plugin
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
         $loader->load('client.xml');
         $loader->load('paypal_payment.xml');
+        $loader->load('plus.xml');
         $loader->load('resource.xml');
         $loader->load('setting.xml');
         $loader->load('util.xml');
@@ -197,7 +198,7 @@ class SwagPayPal extends Plugin
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
         $systemConfigEntityName = (new SystemConfigDefinition())->getEntityName();
-        $settings = new SwagPayPalSettingGeneralStruct();
+        $settings = new SwagPayPalSettingStruct();
         $data = array_filter($settings->jsonSerialize());
 
         foreach ($data as $key => $value) {

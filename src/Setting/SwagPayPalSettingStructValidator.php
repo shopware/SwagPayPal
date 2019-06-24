@@ -4,12 +4,12 @@ namespace Swag\PayPal\Setting;
 
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
-class SwagPayPalSettingGeneralStructValidator
+class SwagPayPalSettingStructValidator
 {
     /**
      * @throws PayPalSettingsInvalidException
      */
-    public static function validate(SwagPayPalSettingGeneralStruct $generalStruct): void
+    public static function validate(SwagPayPalSettingStruct $generalStruct): void
     {
         try {
             $generalStruct->getClientId();

@@ -2,7 +2,10 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
-use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
+use Shopware\Storefront\Event\CheckoutEvents;
+use Shopware\Storefront\Event\NavigationEvents;
+use Shopware\Storefront\Event\ProductEvents;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
@@ -10,8 +13,8 @@ use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsService;
-use Swag\PayPal\Setting\SwagPayPalSettingGeneralStruct;
+use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ExpressCheckoutSubscriber implements EventSubscriberInterface
@@ -22,43 +25,39 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     private $expressCheckoutDataService;
 
     /**
-     * @var CartService
-     */
-    private $cartService;
-
-    /**
-     * @var SettingsService
+     * @var SettingsServiceInterface
      */
     private $settingsService;
 
     public function __construct(
         PayPalExpressCheckoutDataService $service,
-        CartService $cartService,
-        SettingsService $settingsService
+        SettingsServiceInterface $settingsService
     ) {
         $this->expressCheckoutDataService = $service;
-        $this->cartService = $cartService;
         $this->settingsService = $settingsService;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
-            OffcanvasCartPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
-            CheckoutRegisterPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
-            CheckoutCartPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
-            ProductPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
-            NavigationPageLoadedEvent::NAME => 'addExpressCheckoutDataToPage',
+            CheckoutEvents::CHECKOUT_OFFCANVAS_CART_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
+            CheckoutEvents::CHECKOUT_REGISTER_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
+            CheckoutEvents::CHECKOUT_CART_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
+            ProductEvents::PRODUCT_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
+            NavigationEvents::NAVIGATION_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
         ];
     }
 
     /**
      * @param NavigationPageLoadedEvent|ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
+     *
+     * @throws InconsistentCriteriaIdsException
      */
     public function addExpressCheckoutDataToPage($event): void
     {
+        $salesChannelContext = $event->getSalesChannelContext();
         try {
-            $settings = $this->settingsService->getSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
+            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
         } catch (PayPalSettingsInvalidException $e) {
             return;
         }
@@ -68,9 +67,16 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         }
 
         if ($event instanceof ProductPageLoadedEvent || $event instanceof NavigationPageLoadedEvent) {
-            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext(), $settings, true);
+            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData(
+                $salesChannelContext,
+                $settings,
+                true
+            );
         } else {
-            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData($event->getSalesChannelContext(), $settings);
+            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData(
+                $salesChannelContext,
+                $settings
+            );
         }
 
         if (!$expressCheckoutButtonData) {
@@ -83,18 +89,18 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     /**
      * @param NavigationPageLoadedEvent|ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
      */
-    private function expressOptionForEventEnabled(SwagPayPalSettingGeneralStruct $settings, $event): bool
+    private function expressOptionForEventEnabled(SwagPayPalSettingStruct $settings, $event): bool
     {
         switch ($event->getName()) {
-            case ProductPageLoadedEvent::NAME:
+            case ProductEvents::PRODUCT_PAGE_LOADED_EVENT:
                 return $settings->getEcsDetailEnabled();
-            case OffcanvasCartPageLoadedEvent::NAME:
+            case CheckoutEvents::CHECKOUT_OFFCANVAS_CART_PAGE_LOADED_EVENT:
                 return $settings->getEcsOffCanvasEnabled();
-            case CheckoutRegisterPageLoadedEvent::NAME:
+            case CheckoutEvents::CHECKOUT_REGISTER_PAGE_LOADED_EVENT:
                 return $settings->getEcsLoginEnabled();
-            case CheckoutCartPageLoadedEvent::NAME:
+            case CheckoutEvents::CHECKOUT_CART_PAGE_LOADED_EVENT:
                 return $settings->getEcsCartEnabled();
-            case NavigationPageLoadedEvent::NAME:
+            case NavigationEvents::NAVIGATION_PAGE_LOADED_EVENT:
                 return $settings->getEcsListingEnabled();
             default:
                 return false;
