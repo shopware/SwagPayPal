@@ -1,15 +1,5 @@
 {% sw_extends '@Storefront/base.html.twig' %}
 
-{% block layout_head_stylesheet %}
-    {{ parent() }}
-
-    {% if isHMRMode %}
-        {# Served by the javascript file #}
-    {% else %}
-        <link rel="stylesheet" href="{{ asset('bundles/swagpaypal/storefront/css/swag-pay-pal.css') }}">
-    {% endif %}
-{% endblock %}
-
 {% block base_script_hmr_mode %}
     {{ parent() }}
 
