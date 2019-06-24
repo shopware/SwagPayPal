@@ -1,0 +1,14 @@
+{% sw_extends '@Storefront/page/checkout/confirm/confirm-payment.html.twig' %}
+
+{% block page_checkout_confirm_payment_inner %}
+    {{ parent() }}
+
+    {% set payPalPlusData = page.extensions.payPalPlusData %}
+    {% if payPalPlusData and payPalPlusData.approvalUrl and payPalPlusData.paymentMethodId is same as(context.paymentMethod.id) %}
+        <div class="d-none"
+             data-payPalPaymentWall="true"
+             data-swag-pay-pal-plus-payment-wall-options="{{ payPalPlusData|json_encode }}">
+        </div>
+        <div id="ppplus" data-swag-pay-pal-plus-payment-wall-handler-options="{{ payPalPlusData|json_encode }}"></div>
+    {% endif %}
+{% endblock %}
