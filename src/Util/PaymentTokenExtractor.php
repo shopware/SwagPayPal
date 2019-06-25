@@ -9,6 +9,8 @@ class PaymentTokenExtractor
 {
     public static function extract(Payment $paymentResource): string
     {
+        $token = '';
+
         /** @var Link $link */
         foreach ($paymentResource->getLinks() as $link) {
             if (!($link->getRel() === 'approval_url')) {
@@ -17,7 +19,9 @@ class PaymentTokenExtractor
 
             preg_match('/EC-\w+/', $link->getHref(), $matches);
 
-            return $matches[0];
+            $token = $matches[0];
         }
+
+        return $token;
     }
 }

@@ -22,10 +22,12 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\EntityRepositoryMock;
+use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Webhook\WebhookRegistry;
 
 trait ServicesTrait
@@ -94,6 +96,11 @@ trait ServicesTrait
     protected function createWebhookRegistry(?OrderTransactionRepoMock $orderTransactionRepo = null): WebhookRegistry
     {
         return new WebhookRegistry(new DummyCollection([$this->createDummyWebhook($orderTransactionRepo)]));
+    }
+
+    protected function createLocaleCodeProvider(): LocaleCodeProvider
+    {
+        return new LocaleCodeProvider(new LanguageRepoMock());
     }
 
     private function createDummyWebhook(?OrderTransactionRepoMock $orderTransactionRepo = null): DummyWebhook

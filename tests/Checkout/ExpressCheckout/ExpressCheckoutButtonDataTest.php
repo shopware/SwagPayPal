@@ -22,6 +22,7 @@ class ExpressCheckoutButtonDataTest extends TestCase
             'languageIso' => 'en_GB',
             'currency' => 'EUR',
             'intent' => 'sale',
+            'addProductToCart' => false,
         ]);
 
         static::assertTrue($buttonData->getProductDetailEnabled());
@@ -36,5 +37,6 @@ class ExpressCheckoutButtonDataTest extends TestCase
         static::assertSame('en_GB', $buttonData->getLanguageIso());
         static::assertSame('EUR', $buttonData->getCurrency());
         static::assertSame('sale', $buttonData->getIntent());
+        static::assertFalse($buttonData->getAddProductToCart());
     }
 }
