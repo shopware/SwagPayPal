@@ -48,7 +48,11 @@ class SettingsService implements SettingsServiceInterface
 
         /** @var string $key */
         foreach ($values as $key => $value) {
-            $property = substr($key, strlen(self::SYSTEM_CONFIG_DOMAIN));
+            /** @var string|false $property */
+            $property = substr($key, \strlen(self::SYSTEM_CONFIG_DOMAIN));
+            if ($property === false) {
+                continue;
+            }
             $propertyValuePairs[$property] = $value;
         }
 

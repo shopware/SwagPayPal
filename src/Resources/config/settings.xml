@@ -234,9 +234,25 @@
         <title lang="de-DE">PayPal Plus Integration</title>
 
         <input-field type="bool">
-            <name>payPalPlusEnabled</name>
+            <name>plusEnabled</name>
             <label>Enable PayPal Plus</label>
             <label lang="de-DE">PayPal Plus aktivieren</label>
+        </input-field>
+
+        <input-field type="text">
+            <name>plusOverwritePaymentName</name>
+            <label>Overwrite payment method name</label>
+            <label lang="de-DE">Zahlungsartbezeichnung überschreiben</label>
+            <helpText>With this setting you are able to overwrite the payment method name of PayPal. Note: This will only affect the storefront view.</helpText>
+            <helpText lang="de-DE">Mit dieser Einstellung kannst du die Zahlungsart-Bezeichnung von PayPal überschreiben. Hinweis: Dies betrifft nur die Storefront Ansicht.</helpText>
+        </input-field>
+
+        <input-field type="text">
+            <name>plusExtendPaymentDescription</name>
+            <label>Extend payment method description</label>
+            <label lang="de-DE">Zahlungsartbeschreibung ergänzen</label>
+            <helpText>With this setting you are able to extend the payment method description of PayPal. Note: This will only affect the storefront view.</helpText>
+            <helpText lang="de-DE">Mit dieser Einstellung kannst du die Zahlungsart-Beschreibung von PayPal ergänzen. Hinweis: Dies betrifft nur die Storefront Ansicht.</helpText>
         </input-field>
     </card>
 </config>

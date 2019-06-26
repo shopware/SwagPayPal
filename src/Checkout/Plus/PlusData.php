@@ -34,7 +34,7 @@ class PlusData extends Struct
     /**
      * @var string
      */
-    protected $remotePaymentId;
+    protected $paypalPaymentId;
 
     public function getApprovalUrl(): string
     {
@@ -61,8 +61,8 @@ class PlusData extends Struct
         return $this->paymentMethodId;
     }
 
-    public function getRemotePaymentId(): string
+    public function getPaypalPaymentId(): string
     {
-        return $this->remotePaymentId;
+        return $this->paypalPaymentId;
     }
 }

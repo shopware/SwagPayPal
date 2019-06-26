@@ -25,7 +25,7 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
          *
          * @type string
          */
-        remotePaymentId: '',
+        paypalPaymentId: '',
 
         /**
          * An ISO-3166 country code.
@@ -223,7 +223,7 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         const orderId = order.data.id;
         const params = {
             isPayPalPlusEnabled: true,
-            remotePaymentId: this.options.remotePaymentId
+            paypalPaymentId: this.options.paypalPaymentId
         };
 
         this._client.post(

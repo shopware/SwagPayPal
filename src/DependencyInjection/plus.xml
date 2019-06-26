@@ -16,6 +16,7 @@
         <service id="Swag\PayPal\Checkout\Plus\PlusSubscriber">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Plus\Service\PlusDataService"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentMethodIdProvider"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

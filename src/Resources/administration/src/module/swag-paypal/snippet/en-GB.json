@@ -5,7 +5,7 @@
             "mainMenuItemGeneral": "PayPal",
             "descriptionTextModule": "Settings for PayPal"
         },
-      "messageNotBlank": "This value should not be blank.",
+        "messageNotBlank": "This value should not be blank.",
         "settingForm": {
             "save": "Save",
             "test": "Test API credentials",
@@ -59,6 +59,10 @@
                     "label": "Order number prefix",
                     "tooltipText": "This text is placed in front of the original order number (e.g MyShop_SW20001). This helps to identify the shop in which the payment was made."
                 }
+            },
+            "plus": {
+                "plusOverwritePaymentName": "PayPal, direct debit or credit card",
+                "plusExtendPaymentDescription": "Paying by direct debit or credit card is possible without PayPal account."
             },
             "titleSaveSuccess": "PayPal settings",
             "titleTestSuccess": "API credentials",
