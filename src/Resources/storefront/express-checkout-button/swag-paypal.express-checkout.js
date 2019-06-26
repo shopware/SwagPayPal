@@ -171,6 +171,8 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
     addProductToCart() {
         const formattedLineItems = this._formatLineItems();
 
+        // TODO PT-10569 Create a new cart
+
         return new Promise(resolve => {
             this._client.post('/checkout/line-item/add', JSON.stringify(formattedLineItems), () => {
                 resolve();
