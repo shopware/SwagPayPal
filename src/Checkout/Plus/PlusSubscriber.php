@@ -2,12 +2,17 @@
 
 namespace Swag\PayPal\Checkout\Plus;
 
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Event\CheckoutEvents;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedEvent;
 use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Util\PaymentMethodIdProvider;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PlusSubscriber implements EventSubscriberInterface
@@ -22,16 +27,26 @@ class PlusSubscriber implements EventSubscriberInterface
      */
     private $plusDataService;
 
-    public function __construct(SettingsServiceInterface $settingsService, PlusDataService $plusDataService)
-    {
+    /**
+     * @var PaymentMethodIdProvider
+     */
+    private $paymentMethodIdProvider;
+
+    public function __construct(
+        SettingsServiceInterface $settingsService,
+        PlusDataService $plusDataService,
+        PaymentMethodIdProvider $paymentMethodIdProvider
+    ) {
         $this->settingsService = $settingsService;
         $this->plusDataService = $plusDataService;
+        $this->paymentMethodIdProvider = $paymentMethodIdProvider;
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
             CheckoutEvents::CHECKOUT_CONFIRM_PAGE_LOADED_EVENT => 'onCheckoutConfirmLoaded',
+            CheckoutEvents::CHECKOUT_FINISH_PAGE_LOADED_EVENT => 'onCheckoutFinishLoaded',
         ];
     }
 
@@ -47,7 +62,7 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$settings->getPayPalPlusEnabled()) {
+        if (!$settings->getPlusEnabled()) {
             return;
         }
 
@@ -57,6 +72,71 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $this->changePaymentMethod($event, $settings, $plusData, $salesChannelContext);
+
         $event->getPage()->addExtension('payPalPlusData', $plusData);
+    }
+
+    public function onCheckoutFinishLoaded(CheckoutFinishPageLoadedEvent $event): void
+    {
+        $salesChannelContext = $event->getSalesChannelContext();
+        try {
+            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
+        } catch (PayPalSettingsInvalidException $e) {
+            return;
+        }
+
+        if (!$settings->getPlusEnabled()) {
+            return;
+        }
+
+        $overwritePaymentName = $settings->getPlusOverwritePaymentName();
+        if ($overwritePaymentName === null || $overwritePaymentName === '') {
+            return;
+        }
+
+        $currentSelectedPaymentMethod = $salesChannelContext->getPaymentMethod();
+        $payPalPaymentId = $this->paymentMethodIdProvider->getPayPalPaymentMethodId($salesChannelContext->getContext());
+        $extendPaymentDescription = $settings->getPlusExtendPaymentDescription();
+        if ($currentSelectedPaymentMethod->getId() === $payPalPaymentId) {
+            $this->setNewValues($currentSelectedPaymentMethod, $overwritePaymentName, $extendPaymentDescription);
+        }
+    }
+
+    private function changePaymentMethod(
+        CheckoutConfirmPageLoadedEvent $event,
+        SwagPayPalSettingStruct $settings,
+        PlusData $plusData,
+        SalesChannelContext $salesChannelContext
+    ): void {
+        $overwritePaymentName = $settings->getPlusOverwritePaymentName();
+        if ($overwritePaymentName === null || $overwritePaymentName === '') {
+            return;
+        }
+
+        $payPalPaymentId = $plusData->getPaymentMethodId();
+        $payPalPaymentMethodFromCollection = $event->getPage()->getPaymentMethods()->get($payPalPaymentId);
+        $extendPaymentDescription = $settings->getPlusExtendPaymentDescription();
+        if ($payPalPaymentMethodFromCollection !== null) {
+            $this->setNewValues($payPalPaymentMethodFromCollection, $overwritePaymentName, $extendPaymentDescription);
+        }
+
+        $currentSelectedPaymentMethod = $salesChannelContext->getPaymentMethod();
+        if ($currentSelectedPaymentMethod->getId() === $payPalPaymentId) {
+            $this->setNewValues($currentSelectedPaymentMethod, $overwritePaymentName, $extendPaymentDescription);
+        }
+    }
+
+    private function setNewValues(
+        PaymentMethodEntity $paymentMethod,
+        string $overwritePaymentName,
+        ?string $extendPaymentDescription
+    ): void {
+        $paymentMethod->addTranslated('name', $overwritePaymentName);
+
+        if ($extendPaymentDescription !== null && $extendPaymentDescription !== '') {
+            $description = $paymentMethod->getTranslation('description');
+            $paymentMethod->addTranslated('description', $description . ' ' . $extendPaymentDescription);
+        }
     }
 }

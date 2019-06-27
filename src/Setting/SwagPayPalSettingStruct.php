@@ -127,7 +127,17 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var bool
      */
-    protected $payPalPlusEnabled = false;
+    protected $plusEnabled = false;
+
+    /**
+     * @var string|null
+     */
+    protected $plusOverwritePaymentName;
+
+    /**
+     * @var string|null
+     */
+    protected $plusExtendPaymentDescription;
 
     public function getClientId(): string
     {
@@ -349,13 +359,33 @@ class SwagPayPalSettingStruct extends Struct
         $this->spbButtonLanguageIso = $spbButtonLanguageIso;
     }
 
-    public function getPayPalPlusEnabled(): bool
+    public function getPlusEnabled(): bool
     {
-        return $this->payPalPlusEnabled;
+        return $this->plusEnabled;
     }
 
-    public function setPayPalPlusEnabled(bool $payPalPlusEnabled): void
+    public function setPlusEnabled(bool $plusEnabled): void
     {
-        $this->payPalPlusEnabled = $payPalPlusEnabled;
+        $this->plusEnabled = $plusEnabled;
+    }
+
+    public function getPlusOverwritePaymentName(): ?string
+    {
+        return $this->plusOverwritePaymentName;
+    }
+
+    public function setPlusOverwritePaymentName(string $plusOverwritePaymentName): void
+    {
+        $this->plusOverwritePaymentName = $plusOverwritePaymentName;
+    }
+
+    public function getPlusExtendPaymentDescription(): ?string
+    {
+        return $this->plusExtendPaymentDescription;
+    }
+
+    public function setPlusExtendPaymentDescription(string $plusExtendPaymentDescription): void
+    {
+        $this->plusExtendPaymentDescription = $plusExtendPaymentDescription;
     }
 }

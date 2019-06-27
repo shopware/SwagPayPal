@@ -88,7 +88,7 @@ class PlusDataService
             'mode' => $sandbox ? 'sandbox' : 'live',
             'customerSelectedLanguage' => $this->getPaymentWallLanguage($salesChannelContext),
             'paymentMethodId' => $this->paymentMethodIdProvider->getPayPalPaymentMethodId($context),
-            'remotePaymentId' => $response->getId(),
+            'paypalPaymentId' => $response->getId(),
         ]);
         $billingAddress = $customer->getDefaultBillingAddress();
         if ($billingAddress !== null) {

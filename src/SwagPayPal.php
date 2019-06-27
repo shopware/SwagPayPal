@@ -67,6 +67,8 @@ class SwagPayPal extends Plugin
     {
         $this->addDefaultConfiguration();
         $this->addPaymentMethod($context->getContext());
+
+        parent::install($context);
     }
 
     public function uninstall(UninstallContext $context): void
@@ -80,9 +82,11 @@ class SwagPayPal extends Plugin
 
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
-        $connection->exec(sprintf(
-            'DELETE FROM `system_config` WHERE configuration_key LIKE "%s%%"',
-            SettingsService::SYSTEM_CONFIG_DOMAIN)
+        $connection->exec(
+            sprintf(
+                'DELETE FROM `system_config` WHERE configuration_key LIKE "%s%%"',
+                SettingsService::SYSTEM_CONFIG_DOMAIN
+            )
         );
 
         parent::uninstall($context);
@@ -122,8 +126,16 @@ class SwagPayPal extends Plugin
         $paypal = [
             'handlerIdentifier' => PayPalPaymentHandler::class,
             'name' => 'PayPal',
-            'description' => 'Bezahlung per PayPal - einfach, schnell und sicher.',
+            'position' => 0,
             'pluginId' => $pluginId,
+            'translations' => [
+                'de-DE' => [
+                    'description' => 'Bezahlung per PayPal - einfach, schnell und sicher.',
+                ],
+                'en-GB' => [
+                    'description' => 'Payment via PayPal - easy, fast and secure.',
+                ],
+            ],
         ];
 
         $paymentRepository->create([$paypal], $context);
@@ -198,19 +210,20 @@ class SwagPayPal extends Plugin
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
         $systemConfigEntityName = (new SystemConfigDefinition())->getEntityName();
-        $settings = new SwagPayPalSettingStruct();
-        $data = array_filter($settings->jsonSerialize());
 
-        foreach ($data as $key => $value) {
+        foreach ((new SwagPayPalSettingStruct())->jsonSerialize() as $key => $value) {
+            if ($value === null) {
+                continue;
+            }
+
             $key = SettingsService::SYSTEM_CONFIG_DOMAIN . $key;
-
             $insertData = [
                 'id' => Uuid::randomBytes(),
                 'configuration_key' => $key,
                 'configuration_value' => json_encode([
                     '_value' => $value,
                 ]),
-                'created_at' => date(Defaults::STORAGE_DATE_TIME_FORMAT),
+                'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
             ];
 
             $connection->insert($systemConfigEntityName, $insertData);

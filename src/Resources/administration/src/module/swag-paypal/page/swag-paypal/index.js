@@ -135,10 +135,16 @@ export default {
             }
             if (this.showValidationErrors) {
                 if (element.name === 'SwagPayPal.settings.clientId' && !this.clientIdFilled) {
-                    element.config.error = { code: 1, detail: this.$tc('swag-paypal.messageNotBlank') };
+                    element.config.error = {
+                        code: 1,
+                        detail: this.$tc('swag-paypal.messageNotBlank')
+                    };
                 }
                 if (element.name === 'SwagPayPal.settings.clientSecret' && !this.clientSecretFilled) {
-                    element.config.error = { code: 1, detail: this.$tc('swag-paypal.messageNotBlank') };
+                    element.config.error = {
+                        code: 1,
+                        detail: this.$tc('swag-paypal.messageNotBlank')
+                    };
                 }
             }
 
@@ -146,7 +152,24 @@ export default {
                 element.config.disabled = !this.config['SwagPayPal.settings.sendOrderNumber'];
             }
 
+            if (element.name === 'SwagPayPal.settings.plusOverwritePaymentName') {
+                this.setPlusDefaultValue(element, 'plusOverwritePaymentName');
+            }
+
+            if (element.name === 'SwagPayPal.settings.plusExtendPaymentDescription') {
+                this.setPlusDefaultValue(element, 'plusExtendPaymentDescription');
+            }
+
             return element;
+        },
+
+        setPlusDefaultValue(element, configName) {
+            element.config.disabled = !this.config['SwagPayPal.settings.plusEnabled'];
+            const configNameWithDomain = `SwagPayPal.settings.${configName}`;
+
+            if (this.config[configNameWithDomain] === undefined || this.config[configNameWithDomain] === '') {
+                this.config[configNameWithDomain] = this.$tc(`swag-paypal.settingForm.plus.${configName}`);
+            }
         }
     }
 };
