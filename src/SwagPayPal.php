@@ -210,7 +210,7 @@ class SwagPayPal extends Plugin
                 'configuration_value' => json_encode([
                     '_value' => $value,
                 ]),
-                'created_at' => date(Defaults::STORAGE_DATE_FORMAT),
+                'created_at' => date(Defaults::STORAGE_DATE_TIME_FORMAT),
             ];
 
             $connection->insert($systemConfigEntityName, $insertData);
