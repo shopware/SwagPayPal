@@ -126,6 +126,7 @@ class SwagPayPal extends Plugin
         $paypal = [
             'handlerIdentifier' => PayPalPaymentHandler::class,
             'name' => 'PayPal',
+            'position' => 0,
             'pluginId' => $pluginId,
             'translations' => [
                 'de-DE' => [
