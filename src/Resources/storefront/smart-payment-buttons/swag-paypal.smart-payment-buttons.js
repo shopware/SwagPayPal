@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 
-import Plugin from 'src/script/helper/plugin/plugin.class';
+import Plugin from 'src/script/plugin-system/plugin.class';
 import HttpClient from 'src/script/service/http-client.service';
 
 export default class SwagPayPalSmartPaymentButtons extends Plugin {
