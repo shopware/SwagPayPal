@@ -24,6 +24,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Resource\SaleResourceMock;
+use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
 use Swag\PayPal\Test\Mock\Util\PaymentStatusUtilMock;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -34,11 +35,12 @@ class PayPalPaymentControllerTest extends TestCase
     private const TEST_REFUND_INVOICE_NUMBER = 'testRefundInvoiceNumber';
     private const TEST_REFUND_AMOUNT = 5.5;
     private const TEST_REFUND_CURRENCY = 'EUR';
+    private const ORDER_ID = '98432def39fc4624b33213a56b8c944d';
 
     public function testGetPaymentDetails(): void
     {
         $context = Context::createDefaultContext();
-        $response = $this->createPaymentController()->paymentDetails($context, 'testPaymentId');
+        $response = $this->createPaymentController()->paymentDetails(self::ORDER_ID, 'testPaymentId', $context);
 
         $paymentDetails = json_decode($response->getContent(), true);
 
@@ -110,7 +112,13 @@ class PayPalPaymentControllerTest extends TestCase
 
         $this->expectException(RequiredParameterInvalidException::class);
         $this->expectExceptionMessage('Required parameter "resourceType" is missing or invalid');
-        $this->createPaymentControllerWithSaleResourceMock()->refundPayment($request, $context, 'foo', 'testPaymentId', 'testOrderId');
+        $this->createPaymentControllerWithSaleResourceMock()->refundPayment(
+            $request,
+            $context,
+            'foo',
+            'testPaymentId',
+            'testOrderId'
+        );
     }
 
     public function testCapturePaymentAuthorization(): void
@@ -156,13 +164,24 @@ class PayPalPaymentControllerTest extends TestCase
 
         $this->expectException(RequiredParameterInvalidException::class);
         $this->expectExceptionMessage('Required parameter "resourceType" is missing or invalid');
-        $this->createPaymentController()->capturePayment($request, $context, RelatedResource::SALE, 'testPaymentId', 'testOrderId');
+        $this->createPaymentController()->capturePayment(
+            $request,
+            $context,
+            RelatedResource::SALE,
+            'testPaymentId',
+            'testOrderId'
+        );
     }
 
     public function testVoidPaymentOrders(): void
     {
         $context = Context::createDefaultContext();
-        $response = $this->createPaymentController()->voidPayment($context, RelatedResource::ORDER, 'testResourceId', 'testOrderId');
+        $response = $this->createPaymentController()->voidPayment(
+            $context,
+            RelatedResource::ORDER,
+            'testResourceId',
+            'testOrderId'
+        );
 
         $void = json_decode($response->getContent(), true);
 
@@ -172,7 +191,12 @@ class PayPalPaymentControllerTest extends TestCase
     public function testVoidPaymentAuthorize(): void
     {
         $context = Context::createDefaultContext();
-        $response = $this->createPaymentController()->voidPayment($context, RelatedResource::AUTHORIZE, 'testResourceId', 'testOrderId');
+        $response = $this->createPaymentController()->voidPayment(
+            $context,
+            RelatedResource::AUTHORIZE,
+            'testResourceId',
+            'testOrderId'
+        );
 
         $void = json_decode($response->getContent(), true);
 
@@ -184,7 +208,12 @@ class PayPalPaymentControllerTest extends TestCase
         $context = Context::createDefaultContext();
         $this->expectException(RequiredParameterInvalidException::class);
         $this->expectExceptionMessage('Required parameter "resourceType" is missing or invalid');
-        $this->createPaymentController()->voidPayment($context, RelatedResource::SALE, 'testResourceId', 'testOrderId');
+        $this->createPaymentController()->voidPayment(
+            $context,
+            RelatedResource::SALE,
+            'testResourceId',
+            'testOrderId'
+        );
     }
 
     private function createPaymentController(): PayPalPaymentController
@@ -195,7 +224,8 @@ class PayPalPaymentControllerTest extends TestCase
             new AuthorizationResource($this->createPayPalClientFactory()),
             new OrdersResource($this->createPayPalClientFactory()),
             new CaptureResource($this->createPayPalClientFactory()),
-            new PaymentStatusUtilMock()
+            new PaymentStatusUtilMock(),
+            new OrderRepositoryMock()
         );
     }
 
@@ -207,7 +237,8 @@ class PayPalPaymentControllerTest extends TestCase
             new AuthorizationResource($this->createPayPalClientFactory()),
             new OrdersResource($this->createPayPalClientFactory()),
             new CaptureResource($this->createPayPalClientFactory()),
-            new PaymentStatusUtilMock()
+            new PaymentStatusUtilMock(),
+            new OrderRepositoryMock()
         );
     }
 }

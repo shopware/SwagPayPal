@@ -12,6 +12,7 @@ Module.register('swag-paypal-payment', {
     version: '1.0.0',
     targetVersion: '1.0.0',
     color: '#2b52ff',
+    title: 'swag-paypal-payment.general.title',
 
     snippets: {
         'de-DE': deDE,

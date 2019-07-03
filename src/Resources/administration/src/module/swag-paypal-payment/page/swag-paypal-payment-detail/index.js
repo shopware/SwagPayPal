@@ -12,6 +12,13 @@ Component.register('swag-paypal-payment-detail', {
         Mixin.getByName('notification')
     ],
 
+    props: {
+        order: {
+            type: Object,
+            required: true
+        }
+    },
+
     watch: {
         '$route'() {
             this.resetDataAttributes();
@@ -95,7 +102,7 @@ Component.register('swag-paypal-payment-detail', {
             this.orderStore.getByIdAsync(orderId).then((order) => {
                 order.getAssociation('transactions').getList({ page: 1, limit: 1 }).then((orderTransactions) => {
                     const paypalPaymentId = orderTransactions.items[0].customFields.swag_paypal_transaction_id;
-                    this.SwagPayPalPaymentService.getPaymentDetails(paypalPaymentId).then((payment) => {
+                    this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId).then((payment) => {
                         this.paymentResource = payment;
                         this.setRelatedResources();
                         this.createDateTime = this.formatDate(this.paymentResource.create_time);

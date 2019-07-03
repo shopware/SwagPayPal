@@ -49,11 +49,11 @@ class WebhookController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/webhook/register", name="api.action.paypal.webhook.register", methods={"POST"})
+     * @Route("/api/v{version}/_action/paypal/webhook/register/{salesChannelId}", name="api.action.paypal.webhook.register", methods={"POST"})
      */
-    public function registerWebhook(Context $context): JsonResponse
+    public function registerWebhook(string $salesChannelId): JsonResponse
     {
-        $result = $this->webhookService->registerWebhook($context);
+        $result = $this->webhookService->registerWebhook($salesChannelId !== 'null' ? $salesChannelId : null);
 
         return new JsonResponse(['result' => $result]);
     }

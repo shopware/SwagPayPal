@@ -19,6 +19,11 @@ Component.register('swag-paypal-payment-actions', {
         paymentResource: {
             type: Object,
             required: true
+        },
+
+        orderId: {
+            type: String,
+            required: true
         }
     },
 
@@ -83,6 +88,11 @@ Component.register('swag-paypal-payment-actions', {
 
         setShowVoidButton() {
             const firstRelatedResource = this.paymentResource.transactions[0].related_resources[0];
+
+            if (!firstRelatedResource) {
+                return;
+            }
+
             const nonVoidAbleStates = [VOIDED_STATE, CAPTURED_STATE, COMPLETED_STATE];
 
             if (firstRelatedResource.sale) {

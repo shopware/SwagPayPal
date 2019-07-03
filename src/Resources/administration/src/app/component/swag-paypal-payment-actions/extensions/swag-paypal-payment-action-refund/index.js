@@ -21,6 +21,11 @@ Component.register('swag-paypal-payment-action-refund', {
         paymentResource: {
             type: Object,
             required: true
+        },
+
+        orderId: {
+            type: String,
+            required: true
         }
     },
 
@@ -111,6 +116,7 @@ Component.register('swag-paypal-payment-action-refund', {
             const orderId = this.$route.params.id;
 
             this.SwagPayPalPaymentService.refundPayment(
+                this.orderId,
                 resourceType,
                 resourceId,
                 refundAmount,

@@ -9,6 +9,7 @@
 namespace Swag\PayPal\Test\PayPal\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Resource\OrdersResource;
@@ -23,7 +24,7 @@ class OrdersResourceTest extends TestCase
     {
         $capture = new Capture();
         $context = Context::createDefaultContext();
-        $captureResponse = $this->createOrdersResource()->capture('captureId', $capture, $context);
+        $captureResponse = $this->createOrdersResource()->capture('captureId', $capture, Defaults::SALES_CHANNEL);
 
         $capture = json_encode($captureResponse);
         static::assertNotFalse($capture);
@@ -39,7 +40,7 @@ class OrdersResourceTest extends TestCase
     public function testVoid(): void
     {
         $context = Context::createDefaultContext();
-        $voidResponse = $this->createOrdersResource()->void('voidId', $context);
+        $voidResponse = $this->createOrdersResource()->void('voidId', Defaults::SALES_CHANNEL);
 
         $void = json_encode($voidResponse);
         static::assertNotFalse($void);

@@ -3,7 +3,6 @@
 namespace Swag\PayPal\Payment\Service;
 
 use Swag\PayPal\PayPal\Api\Payment\Transaction;
-use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
 
 class TransactionValidator

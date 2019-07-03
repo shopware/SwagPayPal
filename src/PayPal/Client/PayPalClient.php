@@ -35,7 +35,6 @@ class PayPalClient
     public function __construct(
         TokenResource $tokenResource,
         SwagPayPalSettingStruct $settings,
-        string $cacheId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ) {
         $this->tokenResource = $tokenResource;
@@ -54,7 +53,7 @@ class PayPalClient
         }
 
         $credentials = $this->createCredentialsObject($clientId, $clientSecret);
-        $authorizationHeader = $this->createAuthorizationHeaderValue($credentials, $url, $cacheId);
+        $authorizationHeader = $this->createAuthorizationHeaderValue($credentials, $url);
 
         $this->client = new Client([
             'base_uri' => $url,
@@ -106,9 +105,9 @@ class PayPalClient
         return $credentials;
     }
 
-    private function createAuthorizationHeaderValue(OAuthCredentials $credentials, string $url, string $cacheId): string
+    private function createAuthorizationHeaderValue(OAuthCredentials $credentials, string $url): string
     {
-        $token = $this->tokenResource->getToken($credentials, $url, $cacheId);
+        $token = $this->tokenResource->getToken($credentials, $url);
 
         return $token->getTokenType() . ' ' . $token->getAccessToken();
     }

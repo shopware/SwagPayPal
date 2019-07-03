@@ -13,7 +13,17 @@ Component.override('sw-order-detail', {
         };
     },
 
+    metaInfo() {
+        return {
+            title: `${this.identifier} | ${this.$tc('swag-paypal-payment.general.title')}`
+        };
+    },
+
     computed: {
+        identifier() {
+            return this.order !== null ? this.order.orderNumber : '';
+        },
+
         paymentMethodStore() {
             return State.getStore('payment_method');
         },
@@ -38,6 +48,9 @@ Component.override('sw-order-detail', {
 
     methods: {
         setIsPayPalPayment(paymentMethodId) {
+            if (!paymentMethodId) {
+                return;
+            }
             this.paymentMethodStore.getByIdAsync(paymentMethodId).then(
                 (paymentMethod) => {
                     this.isPayPalPayment = paymentMethod.formattedHandlerIdentifier === paypalFormattedHandlerIdentifier;

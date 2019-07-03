@@ -74,7 +74,11 @@ class PlusDataService
         $payment->setIntent(PaymentIntent::SALE);
 
         $context = $salesChannelContext->getContext();
-        $response = $this->paymentResource->create($payment, $context, PartnerAttributionId::PAYPAL_PLUS);
+        $response = $this->paymentResource->create(
+            $payment,
+            $salesChannelContext->getSalesChannel()->getId(),
+            PartnerAttributionId::PAYPAL_PLUS
+        );
         $customer = $salesChannelContext->getCustomer();
 
         if ($customer === null) {

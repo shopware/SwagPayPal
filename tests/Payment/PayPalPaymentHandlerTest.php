@@ -89,11 +89,13 @@ class PayPalPaymentHandlerTest extends TestCase
 
     public function testPayWithException(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
+        $settings = $this->createDefaultSettingStruct();
+        $settings->addExtension(self::PAYPAL_RESOURCE_THROWS_EXCEPTION, new Entity());
+
+        $handler = $this->createPayPalPaymentHandler($settings);
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $salesChannelContext = Generator::createSalesChannelContext();
-        $salesChannelContext->getContext()->addExtension(self::PAYPAL_RESOURCE_THROWS_EXCEPTION, new Entity());
 
         $this->expectException(AsyncPaymentProcessException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
@@ -233,7 +235,10 @@ Customer canceled the payment on the PayPal page');
 
     public function testFinalizeWithException(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
+        $settings = $this->createDefaultSettingStruct();
+        $settings->addExtension(self::PAYPAL_RESOURCE_THROWS_EXCEPTION, new Entity());
+
+        $handler = $this->createPayPalPaymentHandler($settings);
 
         $transactionId = 'testTransactionId';
         $request = $this->createRequest();
@@ -242,7 +247,6 @@ Customer canceled the payment on the PayPal page');
             ConstantsForTesting::PAYER_ID_PAYMENT_ORDER
         );
         $salesChannelContext = Generator::createSalesChannelContext();
-        $salesChannelContext->getContext()->addExtension(self::PAYPAL_RESOURCE_THROWS_EXCEPTION, new Entity());
         $this->expectException(AsyncPaymentFinalizeException::class);
         $this->expectExceptionMessage('The asynchronous payment finalize was interrupted due to the following error:
 An error occurred during the communication with PayPal');

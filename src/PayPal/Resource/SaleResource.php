@@ -8,7 +8,6 @@
 
 namespace Swag\PayPal\PayPal\Resource;
 
-use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Refund;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\RequestUri;
@@ -25,9 +24,9 @@ class SaleResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
-    public function refund(string $saleId, Refund $refund, Context $context): Refund
+    public function refund(string $saleId, Refund $refund, string $salesChannelId): Refund
     {
-        $response = $this->payPalClientFactory->createPaymentClient($context)->sendPostRequest(
+        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
             RequestUri::SALE_RESOURCE . '/' . $saleId . '/refund',
             $refund
         );

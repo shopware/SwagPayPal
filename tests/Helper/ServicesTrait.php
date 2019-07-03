@@ -27,6 +27,7 @@ use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
+use Swag\PayPal\Test\Payment\PayPalPaymentHandlerTest;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Webhook\WebhookRegistry;
 
@@ -38,13 +39,19 @@ trait ServicesTrait
         $settings = $settings ?? $this->createDefaultSettingStruct();
         $settingsService = new SettingsServiceMock($settings);
 
-        return new PayPalClientFactoryMock(
+        $clientFactoryMock = new PayPalClientFactoryMock(
             new TokenResource(
                 new CacheMock(),
                 new TokenClientFactoryMock()
             ),
             $settingsService
         );
+
+        if ($settings->hasExtension(PayPalPaymentHandlerTest::PAYPAL_RESOURCE_THROWS_EXCEPTION)) {
+            $clientFactoryMock->enableException();
+        }
+
+        return $clientFactoryMock;
     }
 
     protected function createPayPalClientFactoryWithService(SettingsServiceInterface $settingsService): PayPalClientFactoryMock

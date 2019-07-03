@@ -14,16 +14,15 @@ use Swag\PayPal\PayPal\Api\Token;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Test\Mock\CacheItemWithTokenMock;
 use Swag\PayPal\Test\Mock\CacheMock;
+use Swag\PayPal\Test\Mock\CacheWithTokenMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientMock;
 
 class TokenResourceTest extends TestCase
 {
-    public const CACHE_ID_WITH_TOKEN = 'salesChannelIdWithToken';
-
     public function testGetToken(): void
     {
-        $token = $this->getTokenResource()->getToken(new OAuthCredentials(), 'url', 'cacheId');
+        $token = $this->getTokenResource(false)->getToken(new OAuthCredentials(), 'url');
 
         $dateNow = new \DateTime('now');
 
@@ -43,7 +42,7 @@ class TokenResourceTest extends TestCase
 
     public function testGetTokenFromCache(): void
     {
-        $token = $this->getTokenResource()->getToken(new OAuthCredentials(), 'url', self::CACHE_ID_WITH_TOKEN);
+        $token = $this->getTokenResource()->getToken(new OAuthCredentials(), 'url');
 
         static::assertInstanceOf(Token::class, $token);
         static::assertSame(CacheItemWithTokenMock::ACCESS_TOKEN, $token->getAccessToken());
@@ -51,8 +50,12 @@ class TokenResourceTest extends TestCase
         static::assertInstanceOf(\DateTime::class, $token->getExpireDateTime());
     }
 
-    private function getTokenResource(): TokenResource
+    private function getTokenResource(bool $withToken = true): TokenResource
     {
+        if ($withToken) {
+            return new TokenResource(new CacheWithTokenMock(), new TokenClientFactoryMock());
+        }
+
         return new TokenResource(new CacheMock(), new TokenClientFactoryMock());
     }
 }

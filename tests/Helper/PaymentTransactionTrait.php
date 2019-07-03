@@ -124,7 +124,7 @@ trait PaymentTransactionTrait
     private function createCurrencyEntity(): CurrencyEntity
     {
         $currency = new CurrencyEntity();
-        $currency->setShortName(OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY);
+        $currency->setIsoCode(OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY);
 
         return $currency;
     }

@@ -108,7 +108,7 @@ class ExpressCheckoutController extends AbstractController
         );
         $paymentResource = $this->paymentResource->create(
             $payment,
-            $context->getContext(),
+            $context->getSalesChannel()->getId(),
             PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT
         );
 
@@ -123,7 +123,7 @@ class ExpressCheckoutController extends AbstractController
     public function onApprove(SalesChannelContext $context, Request $request): JsonResponse
     {
         $paymentId = $request->request->get('paymentId');
-        $payment = $this->paymentResource->get($paymentId, $context->getContext());
+        $payment = $this->paymentResource->get($paymentId, $context->getSalesChannel()->getId());
         $paypalPaymentMethodId = $this->paymentMethodIdProvider->getPayPalPaymentMethodId($context->getContext());
 
         /**

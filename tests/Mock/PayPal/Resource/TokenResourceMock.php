@@ -22,7 +22,7 @@ class TokenResourceMock extends TokenResource
 {
     public const GENERAL_CLIENT_EXCEPTION_MESSAGE = 'generalClientExceptionMessage';
 
-    public function getToken(OAuthCredentials $credentials, string $url, string $cacheId): Token
+    public function getToken(OAuthCredentials $credentials, string $url): Token
     {
         $token = new Token();
         $token->assign([
@@ -60,7 +60,7 @@ class TokenResourceMock extends TokenResource
     {
         return new ClientException(
             self::GENERAL_CLIENT_EXCEPTION_MESSAGE,
-            new Request('', ''),
+            new Request('TEST', ''),
             new Response($httpCode)
         );
     }

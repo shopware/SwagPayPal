@@ -31,6 +31,7 @@
         {% block swag_paypal_payment_actions_modal %}
                 {% block swag_paypal_payment_actions_modal_capture %}
                     <swag-paypal-payment-action-capture v-if="modalType === 'capture'"
+                                                        :orderId="orderId"
                                                         :paymentResource="paymentResource"
                                                         :maxCaptureValue="captureableAmount"
                                                         @modal-close="closeModal">
@@ -39,6 +40,7 @@
 
                 {% block swag_paypal_payment_actions_modal_refund %}
                     <swag-paypal-payment-action-refund v-if="modalType === 'refund'"
+                                                       :orderId="orderId"
                                                        :paymentResource="paymentResource"
                                                        @modal-close="closeModal">
                     </swag-paypal-payment-action-refund>
@@ -46,6 +48,7 @@
 
                 {% block swag_paypal_payment_actions_modal_void %}
                     <swag-paypal-payment-action-void v-if="modalType === 'void'"
+                                                     :orderId="orderId"
                                                      :paymentResource="paymentResource"
                                                      @modal-close="closeModal">
                     </swag-paypal-payment-action-void>

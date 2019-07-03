@@ -8,9 +8,6 @@
 
 namespace Swag\PayPal\PayPal\Client;
 
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Context\SalesChannelApiSource;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -37,17 +34,10 @@ class PayPalClientFactory
     /**
      * @throws PayPalSettingsInvalidException
      */
-    public function createPaymentClient(Context $context, string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC): PayPalClient
+    public function createPaymentClient(?string $salesChannelId, string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC): PayPalClient
     {
-        $salesChannelId = Defaults::SALES_CHANNEL;
-        $contextSource = $context->getSource();
-        if ($contextSource instanceof SalesChannelApiSource) {
-            $salesChannelId = $contextSource->getSalesChannelId();
-        }
+        $settings = $this->settingsProvider->getSettings($salesChannelId);
 
-        // TODO: fix salesChannelId
-        $settings = $this->settingsProvider->getSettings();
-
-        return new PayPalClient($this->tokenResource, $settings, $salesChannelId, $partnerAttributionId);
+        return new PayPalClient($this->tokenResource, $settings, $partnerAttributionId);
     }
 }

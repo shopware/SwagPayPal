@@ -9,9 +9,12 @@
 namespace Swag\PayPal\Payment;
 
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
 use Shopware\Core\System\StateMachine\Exception\StateMachineNotFoundException;
 use Swag\PayPal\PayPal\Api\Capture;
@@ -71,13 +74,19 @@ class PayPalPaymentController extends AbstractController
      */
     private $paymentStatusUtil;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $orderRepository;
+
     public function __construct(
         PaymentResource $paymentResource,
         SaleResource $saleResource,
         AuthorizationResource $authorizationResource,
         OrdersResource $ordersResource,
         CaptureResource $captureResource,
-        PaymentStatusUtil $paymentStatusUtil
+        PaymentStatusUtil $paymentStatusUtil,
+        EntityRepositoryInterface $orderRepository
     ) {
         $this->paymentResource = $paymentResource;
         $this->saleResource = $saleResource;
@@ -85,14 +94,15 @@ class PayPalPaymentController extends AbstractController
         $this->ordersResource = $ordersResource;
         $this->captureResource = $captureResource;
         $this->paymentStatusUtil = $paymentStatusUtil;
+        $this->orderRepository = $orderRepository;
     }
 
     /**
-     * @Route("/api/v{version}/paypal/payment-details/{paymentId}", name="api.paypal.payment_details", methods={"GET"})
+     * @Route("/api/v{version}/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"})
      */
-    public function paymentDetails(Context $context, string $paymentId): JsonResponse
+    public function paymentDetails(string $orderId, string $paymentId, Context $context): JsonResponse
     {
-        $payment = $this->paymentResource->get($paymentId, $context);
+        $payment = $this->paymentResource->get($paymentId, $this->getSalesChannelIdByOrderId($orderId, $context));
 
         return new JsonResponse($payment);
     }
@@ -113,10 +123,18 @@ class PayPalPaymentController extends AbstractController
 
         switch ($resourceType) {
             case RelatedResource::SALE:
-                $refundResponse = $this->saleResource->refund($resourceId, $refund, $context);
+                $refundResponse = $this->saleResource->refund(
+                    $resourceId,
+                    $refund,
+                    $this->getSalesChannelIdByOrderId($orderId, $context)
+                );
                 break;
             case RelatedResource::CAPTURE:
-                $refundResponse = $this->captureResource->refund($resourceId, $refund, $context);
+                $refundResponse = $this->captureResource->refund(
+                    $resourceId,
+                    $refund,
+                    $this->getSalesChannelIdByOrderId($orderId, $context)
+                );
                 break;
             default:
                 throw new RequiredParameterInvalidException('resourceType');
@@ -143,10 +161,15 @@ class PayPalPaymentController extends AbstractController
 
         switch ($resourceType) {
             case RelatedResource::AUTHORIZE:
-                $captureResponse = $this->authorizationResource->capture($resourceId, $capture, $context);
+                $captureResponse = $this->authorizationResource->capture(
+                    $resourceId,
+                    $capture,
+                    $this->getSalesChannelIdByOrderId($orderId, $context)
+                );
                 break;
             case RelatedResource::ORDER:
-                $captureResponse = $this->ordersResource->capture($resourceId, $capture, $context);
+                $salesChannelId = $this->getSalesChannelIdByOrderId($orderId, $context);
+                $captureResponse = $this->ordersResource->capture($resourceId, $capture, $salesChannelId);
                 break;
             default:
                 throw new RequiredParameterInvalidException('resourceType');
@@ -172,10 +195,16 @@ class PayPalPaymentController extends AbstractController
     {
         switch ($resourceType) {
             case RelatedResource::AUTHORIZE:
-                $voidResponse = $this->authorizationResource->void($resourceId, $context);
+                $voidResponse = $this->authorizationResource->void(
+                    $resourceId,
+                    $this->getSalesChannelIdByOrderId($orderId, $context)
+                );
                 break;
             case RelatedResource::ORDER:
-                $voidResponse = $this->ordersResource->void($resourceId, $context);
+                $voidResponse = $this->ordersResource->void(
+                    $resourceId,
+                    $this->getSalesChannelIdByOrderId($orderId, $context)
+                );
                 break;
             default:
                 throw new RequiredParameterInvalidException('resourceType');
@@ -184,6 +213,18 @@ class PayPalPaymentController extends AbstractController
         $this->paymentStatusUtil->applyVoidStateToOrder($orderId, $context);
 
         return new JsonResponse($voidResponse);
+    }
+
+    private function getSalesChannelIdByOrderId(string $orderId, Context $context): string
+    {
+        /** @var OrderEntity|null $order */
+        $order = $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
+
+        if ($order === null) {
+            throw new OrderNotFoundException($orderId);
+        }
+
+        return $order->getSalesChannelId();
     }
 
     private function createRefund(Request $request): Refund

@@ -58,7 +58,7 @@ class SPBCheckoutController extends AbstractController
         );
         $paymentResource = $this->paymentResource->create(
             $payment,
-            $salesChannelContext->getContext(),
+            $salesChannelContext->getSalesChannel()->getId(),
             PartnerAttributionId::SMART_PAYMENT_BUTTONS
         );
 

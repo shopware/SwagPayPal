@@ -37,10 +37,24 @@ export default {
         onConfigChange(config) {
             this.config = config;
 
-            this.clientIdFilled = !!this.config['SwagPayPal.settings.clientId'];
-            this.clientSecretFilled = !!this.config['SwagPayPal.settings.clientSecret'];
+            this.checkCredentialsFilled();
 
             this.showValidationErrors = false;
+        },
+
+        checkCredentialsFilled() {
+            const defaultConfig = this.$refs.systemConfig.actualConfigData.null;
+            const salesChannelId = this.$refs.systemConfig.currentSalesChannelId;
+
+            if (salesChannelId === null) {
+                this.clientIdFilled = !!this.config['SwagPayPal.settings.clientId'];
+                this.clientSecretFilled = !!this.config['SwagPayPal.settings.clientSecret'];
+            } else {
+                this.clientIdFilled = !!this.config['SwagPayPal.settings.clientId']
+                    || !!defaultConfig['SwagPayPal.settings.clientId'];
+                this.clientSecretFilled = !!this.config['SwagPayPal.settings.clientSecret']
+                    || !!defaultConfig['SwagPayPal.settings.clientSecret'];
+            }
         },
 
         onSave() {
@@ -55,43 +69,44 @@ export default {
                 this.isLoading = false;
                 this.isSaveSuccessful = true;
 
-                this.SwagPayPalWebhookRegisterService.registerWebhook().then((response) => {
-                    const result = response.result;
+                this.SwagPayPalWebhookRegisterService.registerWebhook(this.$refs.systemConfig.currentSalesChannelId)
+                    .then((response) => {
+                        const result = response.result;
 
-                    if (result === 'nothing') {
-                        return;
-                    }
+                        if (result === 'nothing') {
+                            return;
+                        }
 
-                    if (result === 'created') {
-                        this.createNotificationSuccess({
-                            title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
-                            message: this.$tc('swag-paypal.settingForm.messageWebhookCreated')
-                        });
+                        if (result === 'created') {
+                            this.createNotificationSuccess({
+                                title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
+                                message: this.$tc('swag-paypal.settingForm.messageWebhookCreated')
+                            });
 
-                        return;
-                    }
+                            return;
+                        }
 
-                    if (result === 'updated') {
-                        this.createNotificationSuccess({
-                            title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
-                            message: this.$tc('swag-paypal.settingForm.messageWebhookUpdated')
-                        });
-                    }
-                    this.isLoading = false;
-                }).catch((errorResponse) => {
-                    if (errorResponse.response.data && errorResponse.response.data.errors) {
-                        let message = `${this.$tc('swag-paypal.settingForm.messageWebhookError')}<br><br><ul>`;
-                        errorResponse.response.data.errors.forEach((error) => {
-                            message = `${message}<li>${error.detail}</li>`;
-                        });
-                        message += '</li>';
-                        this.createNotificationError({
-                            title: this.$tc('swag-paypal.settingForm.titleSaveError'),
-                            message: message
-                        });
-                    }
-                    this.isLoading = false;
-                });
+                        if (result === 'updated') {
+                            this.createNotificationSuccess({
+                                title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
+                                message: this.$tc('swag-paypal.settingForm.messageWebhookUpdated')
+                            });
+                        }
+                        this.isLoading = false;
+                    }).catch((errorResponse) => {
+                        if (errorResponse.response.data && errorResponse.response.data.errors) {
+                            let message = `${this.$tc('swag-paypal.settingForm.messageWebhookError')}<br><br><ul>`;
+                            errorResponse.response.data.errors.forEach((error) => {
+                                message = `${message}<li>${error.detail}</li>`;
+                            });
+                            message += '</li>';
+                            this.createNotificationError({
+                                title: this.$tc('swag-paypal.settingForm.titleSaveError'),
+                                message: message
+                            });
+                        }
+                        this.isLoading = false;
+                    });
             }).catch(() => {
                 this.isLoading = false;
             });
