@@ -21,7 +21,6 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Storefront\Event\CheckoutEvents;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPage;
@@ -76,8 +75,8 @@ class PlusSubscriberTest extends TestCase
         $events = PlusSubscriber::getSubscribedEvents();
 
         static::assertCount(2, $events);
-        static::assertSame('onCheckoutConfirmLoaded', $events[CheckoutEvents::CHECKOUT_CONFIRM_PAGE_LOADED_EVENT]);
-        static::assertSame('onCheckoutFinishLoaded', $events[CheckoutEvents::CHECKOUT_FINISH_PAGE_LOADED_EVENT]);
+        static::assertSame('onCheckoutConfirmLoaded', $events[CheckoutConfirmPageLoadedEvent::class]);
+        static::assertSame('onCheckoutFinishLoaded', $events[CheckoutFinishPageLoadedEvent::class]);
     }
 
     public function testOnCheckoutConfirmLoadedPlusNoSettings(): void

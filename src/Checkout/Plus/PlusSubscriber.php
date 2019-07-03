@@ -5,7 +5,6 @@ namespace Swag\PayPal\Checkout\Plus;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Storefront\Event\CheckoutEvents;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedEvent;
 use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
@@ -45,8 +44,8 @@ class PlusSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            CheckoutEvents::CHECKOUT_CONFIRM_PAGE_LOADED_EVENT => 'onCheckoutConfirmLoaded',
-            CheckoutEvents::CHECKOUT_FINISH_PAGE_LOADED_EVENT => 'onCheckoutFinishLoaded',
+            CheckoutConfirmPageLoadedEvent::class => 'onCheckoutConfirmLoaded',
+            CheckoutFinishPageLoadedEvent::class => 'onCheckoutFinishLoaded',
         ];
     }
 
