@@ -73,6 +73,18 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertNull($event->getPage()->getExtension('spbCheckoutButtonData'));
     }
 
+    public function testOnCheckoutConfirmLoadedSPBDisabledWithGermanMerchantLocation(): void
+    {
+        $subscriber = $this->createSubscriber(true, true, false);
+        $event = $this->createEvent();
+        $subscriber->onCheckoutConfirmLoaded($event);
+
+        /** @var SPBCheckoutButtonData|null $spbExtension */
+        $spbExtension = $event->getPage()->getExtension('spbCheckoutButtonData');
+
+        static::assertNull($spbExtension);
+    }
+
     public function testOnCheckoutConfirmLoadedSPBEnabled(): void
     {
         $subscriber = $this->createSubscriber();
@@ -93,11 +105,12 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame('de_DE', $spbExtension->getLanguageIso());
         static::assertSame(PaymentMethodIdProviderMock::PAYMENT_METHOD_ID, $spbExtension->getPaymentMethodId());
         static::assertSame(PaymentIntent::SALE, $spbExtension->getIntent());
+        static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
     }
 
     public function testOnCheckoutConfirmLoadedSPBWithCustomLanguage(): void
     {
-        $subscriber = $this->createSubscriber(true, true, 'en_GB');
+        $subscriber = $this->createSubscriber(true, true, true, 'en_GB');
         $event = $this->createEvent();
         $subscriber->onCheckoutConfirmLoaded($event);
 
@@ -115,11 +128,13 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame('en_GB', $spbExtension->getLanguageIso());
         static::assertSame(PaymentMethodIdProviderMock::PAYMENT_METHOD_ID, $spbExtension->getPaymentMethodId());
         static::assertSame(PaymentIntent::SALE, $spbExtension->getIntent());
+        static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
     }
 
     private function createSubscriber(
         bool $withSettings = true,
         bool $spbEnabled = true,
+        bool $noneGermanMerchantCountry = true,
         ?string $languageIso = null
     ): SPBCheckoutSubscriber {
         $settings = null;
@@ -128,6 +143,10 @@ class SPBCheckoutSubscriberTest extends TestCase
             $settings->setClientId(self::TEST_CLIENT_ID);
             $settings->setClientSecret('testClientSecret');
             $settings->setSpbCheckoutEnabled($spbEnabled);
+            $settings->setMerchantCountry(
+                $noneGermanMerchantCountry ? SwagPayPalSettingStruct::MERCHANT_COUNTRY_OTHER
+                    : SwagPayPalSettingStruct::MERCHANT_COUNTRY_GERMANY)
+            ;
 
             if ($languageIso !== null) {
                 $settings->setSpbButtonLanguageIso($languageIso);

@@ -7,6 +7,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SPBCheckoutSubscriber implements EventSubscriberInterface
@@ -48,7 +49,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$settings->getSpbCheckoutEnabled()) {
+        if (!$settings->getSpbCheckoutEnabled() || $settings->getMerchantCountry() === SwagPayPalSettingStruct::MERCHANT_COUNTRY_GERMANY) {
             return;
         }
 

@@ -1,5 +1,7 @@
 import { Mixin } from 'src/core/shopware';
 import template from './swag-paypal.html.twig';
+import './swag-paypal.scss';
+import constants from './swag-paypal-consts';
 
 export default {
     name: 'swag-paypal',
@@ -19,7 +21,8 @@ export default {
             config: {},
             clientIdFilled: false,
             clientSecretFilled: false,
-            showValidationErrors: false
+            showValidationErrors: false,
+            ...constants
         };
     },
 
@@ -73,11 +76,11 @@ export default {
                     .then((response) => {
                         const result = response.result;
 
-                        if (result === 'nothing') {
+                        if (result === this.WEBHOOK_RESULT_NOTHING) {
                             return;
                         }
 
-                        if (result === 'created') {
+                        if (result === this.WEBHOOK_RESULT_CREATED) {
                             this.createNotificationSuccess({
                                 title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
                                 message: this.$tc('swag-paypal.settingForm.messageWebhookCreated')
@@ -86,7 +89,7 @@ export default {
                             return;
                         }
 
-                        if (result === 'updated') {
+                        if (result === this.WEBHOOK_RESULT_UPDATED) {
                             this.createNotificationSuccess({
                                 title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
                                 message: this.$tc('swag-paypal.settingForm.messageWebhookUpdated')
@@ -144,7 +147,7 @@ export default {
             });
         },
 
-        getBind(element, config) {
+        getBind(element, config, card) {
             if (config !== this.config) {
                 this.onConfigChange(config);
             }
@@ -173,6 +176,22 @@ export default {
 
             if (element.name === 'SwagPayPal.settings.plusExtendPaymentDescription') {
                 this.setPlusDefaultValue(element, 'plusExtendPaymentDescription');
+            }
+
+            if (element.name === 'SwagPayPal.settings.spbButtonLanguageIso') {
+                element.config.disabled = !this.config['SwagPayPal.settings.spbCheckoutEnabled'];
+            }
+
+            if (element.name === 'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled') {
+                element.config.disabled = !this.config['SwagPayPal.settings.spbCheckoutEnabled'];
+            }
+
+            if (card.name === 'spb' && config['SwagPayPal.settings.merchantCountry'] === this.MERCHANT_COUNTRY_GERMANY) {
+                element.config.disabled = true;
+            }
+
+            if (card.name === 'plus' && config['SwagPayPal.settings.merchantCountry'] === this.MERCHANT_COUNTRY_OTHER) {
+                element.config.disabled = true;
             }
 
             return element;

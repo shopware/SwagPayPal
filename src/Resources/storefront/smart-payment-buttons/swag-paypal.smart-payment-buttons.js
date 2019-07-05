@@ -13,6 +13,7 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
         clientId: '',
         commit: false,
         tagline: false,
+        useAlternativePaymentMethods: true,
 
         /**
          * The selector for the indicator whether the PayPal javascript is already loaded or not
@@ -165,6 +166,10 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
 
         if (this.options.intent && this.options.intent !== 'sale') {
             config += `&intent=${this.options.intent}`;
+        }
+
+        if (!this.options.useAlternativePaymentMethods) {
+            config += '&disable-funding=card,credit,sepa';
         }
 
         return config;

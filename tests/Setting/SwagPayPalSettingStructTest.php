@@ -44,6 +44,7 @@ class SwagPayPalSettingStructTest extends TestCase
             'ecsSubmitCart' => false,
             'ecsButtonLanguageIso' => static::BUTTON_LANGUAGE_ISO,
             'spbCheckoutEnabled' => false,
+            'spbAlternativePaymentMethodsEnabled' => false,
         ]);
 
         $this->assertStruct($settings);
@@ -73,6 +74,7 @@ class SwagPayPalSettingStructTest extends TestCase
         $settings->setEcsSubmitCart(false);
         $settings->setEcsButtonLanguageIso(static::BUTTON_LANGUAGE_ISO);
         $settings->setSpbCheckoutEnabled(false);
+        $settings->setSpbAlternativePaymentMethodsEnabled(false);
 
         $this->assertStruct($settings);
     }
@@ -100,5 +102,6 @@ class SwagPayPalSettingStructTest extends TestCase
         static::assertFalse($settings->getEcsSubmitCart());
         static::assertSame(static::BUTTON_LANGUAGE_ISO, $settings->getEcsButtonLanguageIso());
         static::assertFalse($settings->getSpbCheckoutEnabled());
+        static::assertFalse($settings->getSpbAlternativePaymentMethodsEnabled());
     }
 }

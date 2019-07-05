@@ -42,10 +42,23 @@
                         inherit
                         @config-changed="onConfigChange"
                         domain="SwagPayPal.settings">
-                    <template #card-element="{element, config}">
-                        <sw-form-field-renderer v-bind="getBind(element, config)"
+                    <template #card-element="{ element, config, card }">
+                        <sw-form-field-renderer v-bind="getBind(element, config, card)"
                                                 v-model="config[element.name]">
                         </sw-form-field-renderer>
+                    </template>
+                    <template #beforeElements="{ card, config }">
+                        <template v-if="config && card.name === 'spb' && config['SwagPayPal.settings.merchantCountry'] === MERCHANT_COUNTRY_GERMANY">
+                            <sw-alert variant="info">
+                                {{ $tc('swag-paypal.settingForm.componentUnavailable') }}
+                            </sw-alert>
+                        </template>
+
+                        <template v-if="config && card.name === 'plus' && config['SwagPayPal.settings.merchantCountry'] === MERCHANT_COUNTRY_OTHER">
+                            <sw-alert variant="info">
+                                {{ $tc('swag-paypal.settingForm.componentUnavailable') }}
+                            </sw-alert>
+                        </template>
                     </template>
                 </sw-system-config>
             </sw-card-view>
