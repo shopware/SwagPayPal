@@ -12,7 +12,7 @@ use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
-use Swag\PayPal\Util\PaymentMethodIdProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -34,9 +34,9 @@ class PlusDataService
     private $paymentResource;
 
     /**
-     * @var PaymentMethodIdProvider
+     * @var PaymentMethodUtil
      */
-    private $paymentMethodIdProvider;
+    private $paymentMethodUtil;
 
     /**
      * @var LocaleCodeProvider
@@ -47,13 +47,13 @@ class PlusDataService
         CartPaymentBuilderInterface $paymentBuilder,
         PaymentResource $paymentResource,
         RouterInterface $router,
-        PaymentMethodIdProvider $paymentMethodIdProvider,
+        PaymentMethodUtil $paymentMethodUtil,
         LocaleCodeProvider $localeCodeProvider
     ) {
         $this->paymentBuilder = $paymentBuilder;
         $this->paymentResource = $paymentResource;
         $this->router = $router;
-        $this->paymentMethodIdProvider = $paymentMethodIdProvider;
+        $this->paymentMethodUtil = $paymentMethodUtil;
         $this->localeCodeProvider = $localeCodeProvider;
     }
 
@@ -91,7 +91,7 @@ class PlusDataService
             'approvalUrl' => $response->getLinks()[1]->getHref(),
             'mode' => $sandbox ? 'sandbox' : 'live',
             'customerSelectedLanguage' => $this->getPaymentWallLanguage($salesChannelContext),
-            'paymentMethodId' => $this->paymentMethodIdProvider->getPayPalPaymentMethodId($context),
+            'paymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
             'paypalPaymentId' => $response->getId(),
         ]);
         $billingAddress = $customer->getDefaultBillingAddress();

@@ -11,7 +11,7 @@ use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
-use Swag\PayPal\Util\PaymentMethodIdProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PlusSubscriber implements EventSubscriberInterface
@@ -27,18 +27,18 @@ class PlusSubscriber implements EventSubscriberInterface
     private $plusDataService;
 
     /**
-     * @var PaymentMethodIdProvider
+     * @var PaymentMethodUtil
      */
-    private $paymentMethodIdProvider;
+    private $paymentMethodUtil;
 
     public function __construct(
         SettingsServiceInterface $settingsService,
         PlusDataService $plusDataService,
-        PaymentMethodIdProvider $paymentMethodIdProvider
+        PaymentMethodUtil $paymentMethodUtil
     ) {
         $this->settingsService = $settingsService;
         $this->plusDataService = $plusDataService;
-        $this->paymentMethodIdProvider = $paymentMethodIdProvider;
+        $this->paymentMethodUtil = $paymentMethodUtil;
     }
 
     public static function getSubscribedEvents(): array
@@ -55,6 +55,10 @@ class PlusSubscriber implements EventSubscriberInterface
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
+        if (!$this->paymentMethodUtil->getPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
+            return;
+        }
+
         try {
             $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
         } catch (PayPalSettingsInvalidException $e) {
@@ -95,7 +99,7 @@ class PlusSubscriber implements EventSubscriberInterface
         }
 
         $currentSelectedPaymentMethod = $salesChannelContext->getPaymentMethod();
-        $payPalPaymentId = $this->paymentMethodIdProvider->getPayPalPaymentMethodId($salesChannelContext->getContext());
+        $payPalPaymentId = $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext());
         $extendPaymentDescription = $settings->getPlusExtendPaymentDescription();
         if ($currentSelectedPaymentMethod->getId() === $payPalPaymentId) {
             $this->setNewValues($currentSelectedPaymentMethod, $overwritePaymentName, $extendPaymentDescription);

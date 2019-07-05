@@ -7,14 +7,14 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
-use Swag\PayPal\Util\PaymentMethodIdProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
 
 class SPBCheckoutDataService
 {
     /**
-     * @var PaymentMethodIdProvider
+     * @var PaymentMethodUtil
      */
-    private $paymentMethodIdProvider;
+    private $paymentMethodUtil;
 
     /**
      * @var LocaleCodeProvider
@@ -22,10 +22,10 @@ class SPBCheckoutDataService
     private $localeCodeProvider;
 
     public function __construct(
-        PaymentMethodIdProvider $paymentMethodIdProvider,
+        PaymentMethodUtil $paymentMethodUtil,
         LocaleCodeProvider $localeCodeProvider
     ) {
-        $this->paymentMethodIdProvider = $paymentMethodIdProvider;
+        $this->paymentMethodUtil = $paymentMethodUtil;
         $this->localeCodeProvider = $localeCodeProvider;
     }
 
@@ -36,7 +36,7 @@ class SPBCheckoutDataService
         SalesChannelContext $context,
         SwagPayPalSettingStruct $settings
     ): SPBCheckoutButtonData {
-        $paymentMethodId = $this->paymentMethodIdProvider->getPayPalPaymentMethodId($context->getContext());
+        $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context->getContext());
         $expressCheckoutData = (new SPBCheckoutButtonData())->assign([
             'clientId' => $settings->getClientId(),
             'useSandbox' => $settings->getSandbox(),

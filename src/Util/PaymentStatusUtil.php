@@ -69,7 +69,7 @@ class PaymentStatusUtil
     {
         $transaction = $this->getOrderTransaction($orderId, $context);
         $amountToCapture = round((float) $request->request->get(PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_AMOUNT), 2);
-        $isFinalCapture = $request->request->getBoolean(PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_IS_FINAL, true);
+        $isFinalCapture = $request->request->getBoolean(PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_IS_FINAL, false);
 
         if ($isFinalCapture || $amountToCapture === $transaction->getAmount()->getTotalPrice()) {
             $this->transisitionOrderTransactionState($transaction, StateMachineTransitionActions::ACTION_PAY, $context);

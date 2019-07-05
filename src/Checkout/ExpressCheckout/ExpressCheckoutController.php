@@ -18,7 +18,7 @@ use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
-use Swag\PayPal\Util\PaymentMethodIdProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Swag\PayPal\Util\PaymentTokenExtractor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -68,9 +68,9 @@ class ExpressCheckoutController extends AbstractController
     private $paymentResource;
 
     /**
-     * @var PaymentMethodIdProvider
+     * @var PaymentMethodUtil
      */
-    private $paymentMethodIdProvider;
+    private $paymentMethodUtil;
 
     public function __construct(
         CartPaymentBuilderInterface $cartPaymentBuilder,
@@ -81,7 +81,7 @@ class ExpressCheckoutController extends AbstractController
         AccountService $accountService,
         SalesChannelContextFactory $salesChannelContextFactory,
         PaymentResource $paymentResource,
-        PaymentMethodIdProvider $paymentMethodIdProvider
+        PaymentMethodUtil $paymentMethodUtil
     ) {
         $this->cartPaymentBuilder = $cartPaymentBuilder;
         $this->cartService = $cartService;
@@ -91,7 +91,7 @@ class ExpressCheckoutController extends AbstractController
         $this->accountService = $accountService;
         $this->salesChannelContextFactory = $salesChannelContextFactory;
         $this->paymentResource = $paymentResource;
-        $this->paymentMethodIdProvider = $paymentMethodIdProvider;
+        $this->paymentMethodUtil = $paymentMethodUtil;
     }
 
     /**
@@ -124,7 +124,7 @@ class ExpressCheckoutController extends AbstractController
     {
         $paymentId = $request->request->get('paymentId');
         $payment = $this->paymentResource->get($paymentId, $context->getSalesChannel()->getId());
-        $paypalPaymentMethodId = $this->paymentMethodIdProvider->getPayPalPaymentMethodId($context->getContext());
+        $paypalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context->getContext());
 
         /**
          * Create and login a new guest customer

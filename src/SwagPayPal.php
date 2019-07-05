@@ -27,7 +27,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
-use Swag\PayPal\Util\PaymentMethodIdProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -117,7 +117,9 @@ class SwagPayPal extends Plugin
         $pluginId = $pluginIdProvider->getPluginIdByBaseClass($this->getClassName(), $context);
         /** @var EntityRepositoryInterface $paymentRepository */
         $paymentRepository = $this->container->get('payment_method.repository');
-        $paymentMethodId = (new PaymentMethodIdProvider($paymentRepository))->getPayPalPaymentMethodId($context);
+        /** @var EntityRepositoryInterface $salesChannelRepository */
+        $salesChannelRepository = $this->container->get('sales_channel.repository');
+        $paymentMethodId = (new PaymentMethodUtil($paymentRepository, $salesChannelRepository))->getPayPalPaymentMethodId($context);
 
         if ($paymentMethodId !== null) {
             return;
@@ -145,7 +147,9 @@ class SwagPayPal extends Plugin
     {
         /** @var EntityRepositoryInterface $paymentRepository */
         $paymentRepository = $this->container->get('payment_method.repository');
-        $paymentMethodId = (new PaymentMethodIdProvider($paymentRepository))->getPayPalPaymentMethodId($context);
+        /** @var EntityRepositoryInterface $salesChannelRepository */
+        $salesChannelRepository = $this->container->get('sales_channel.repository');
+        $paymentMethodId = (new PaymentMethodUtil($paymentRepository, $salesChannelRepository))->getPayPalPaymentMethodId($context);
 
         if ($paymentMethodId === null) {
             return;

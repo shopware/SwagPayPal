@@ -32,9 +32,10 @@ use Swag\PayPal\Payment\Builder\CartPaymentBuilder;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
+use Swag\PayPal\Test\Mock\Repositories\PaymentMethodRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
-use Swag\PayPal\Util\PaymentMethodIdProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -47,9 +48,9 @@ class PlusSubscriberTest extends TestCase
     private const PAYMENT_DESCRIPTION_EXTENSION = 'Additional text for testing purpose';
 
     /**
-     * @var PaymentMethodIdProvider
+     * @var PaymentMethodUtil
      */
-    private $paymentMethodIdProvider;
+    private $paymentMethodUtil;
 
     /**
      * @var Context
@@ -65,9 +66,11 @@ class PlusSubscriberTest extends TestCase
     {
         /** @var EntityRepositoryInterface $paymentMethodRepo */
         $paymentMethodRepo = $this->getContainer()->get('payment_method.repository');
-        $this->paymentMethodIdProvider = new PaymentMethodIdProvider($paymentMethodRepo);
+        /** @var EntityRepositoryInterface $salesChannelRepo */
+        $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
+        $this->paymentMethodUtil = new PaymentMethodUtil($paymentMethodRepo, $salesChannelRepo);
         $this->context = Context::createDefaultContext();
-        $this->paypalPaymentMethodId = (string) $this->paymentMethodIdProvider->getPayPalPaymentMethodId($this->context);
+        $this->paypalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($this->context);
     }
 
     public function testGetSubscribedEvents(): void
@@ -110,6 +113,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createConfirmEvent();
+        $this->addPayPalToDefaultsSalesChannel();
         $subscriber->onCheckoutConfirmLoaded($event);
 
         /** @var PlusData|null $plusExtension */
@@ -132,6 +136,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(true, true, true);
         $event = $this->createConfirmEvent();
+        $this->addPayPalToDefaultsSalesChannel();
         $subscriber->onCheckoutConfirmLoaded($event);
 
         /** @var PlusData|null $plusExtension */
@@ -166,6 +171,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(false);
         $event = $this->createFinishEvent();
+        $this->addPayPalToDefaultsSalesChannel();
         $subscriber->onCheckoutFinishLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -176,6 +182,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(true, false);
         $event = $this->createFinishEvent();
+        $this->addPayPalToDefaultsSalesChannel();
         $subscriber->onCheckoutFinishLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -186,6 +193,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createFinishEvent();
+        $this->addPayPalToDefaultsSalesChannel();
         $subscriber->onCheckoutFinishLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -196,6 +204,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(true, true, true);
         $event = $this->createFinishEvent();
+        $this->addPayPalToDefaultsSalesChannel();
         $subscriber->onCheckoutFinishLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -203,7 +212,49 @@ class PlusSubscriberTest extends TestCase
         static::assertStringContainsString(self::PAYMENT_DESCRIPTION_EXTENSION, $paymentMethod->getTranslated()['description']);
     }
 
-    private function createConfirmEvent(bool $withCustomer = true): CheckoutConfirmPageLoadedEvent
+    public function testOnCheckoutFinishLoadedWithoutPayPalInSalesChannel(): void
+    {
+        $subscriber = $this->createSubscriber(true, true, true);
+        $event = $this->createConfirmEvent();
+        $subscriber->onCheckoutConfirmLoaded($event);
+
+        static::assertNull($event->getPage()->getExtension('payPalPlusData'));
+    }
+
+    public function testOnCheckoutFinishLoadedWithoutSettings(): void
+    {
+        $subscriber = $this->createSubscriber(false);
+        $event = $this->createConfirmEvent();
+        $this->addPayPalToDefaultsSalesChannel();
+        $subscriber->onCheckoutConfirmLoaded($event);
+
+        static::assertNull($event->getPage()->getExtension('payPalPlusData'));
+    }
+
+    public function testOnCheckoutFinishLoadedWithSettingsButPlusDisabled(): void
+    {
+        $subscriber = $this->createSubscriber(true, false);
+        $event = $this->createConfirmEvent();
+        $this->addPayPalToDefaultsSalesChannel();
+        $subscriber->onCheckoutConfirmLoaded($event);
+
+        static::assertNull($event->getPage()->getExtension('payPalPlusData'));
+    }
+
+    public function testOnCheckoutFinishLoadedWithoutCustomer(): void
+    {
+        $subscriber = $this->createSubscriber();
+        $event = $this->createConfirmEvent();
+        $event->getSalesChannelContext()->assign([
+            'customer' => null,
+        ]);
+        $this->addPayPalToDefaultsSalesChannel();
+        $subscriber->onCheckoutConfirmLoaded($event);
+
+        static::assertNull($event->getPage()->getExtension('payPalPlusData'));
+    }
+
+    private function createConfirmEvent(bool $withCustomer = true, bool $withPayPalPaymentMethod = true): CheckoutConfirmPageLoadedEvent
     {
         /** @var EntityRepositoryInterface $languageRepo */
         $languageRepo = $this->getContainer()->get('language.repository');
@@ -229,6 +280,16 @@ class PlusSubscriberTest extends TestCase
             $options
         );
 
+        if ($withPayPalPaymentMethod) {
+            $payPalPaymentMethod = new PaymentMethodEntity();
+            $payPalPaymentMethod->setId(PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID);
+            $salesChannelContext->getSalesChannel()->setPaymentMethods(
+                new PaymentMethodCollection([
+                    $payPalPaymentMethod,
+                ])
+            );
+        }
+
         $paymentMethod = new PaymentMethodEntity();
         $paymentMethod->setId($this->paypalPaymentMethodId);
         $page = new CheckoutConfirmPage(
@@ -244,7 +305,7 @@ class PlusSubscriberTest extends TestCase
                 new CalculatedTaxCollection(),
                 new TaxRuleCollection()
             ),
-            (string) $this->paymentMethodIdProvider->getPayPalPaymentMethodId(Context::createDefaultContext())
+            (string) $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext())
         );
         $cart->setTransactions(new TransactionCollection([$transaction]));
         $page->setCart($cart);
@@ -326,11 +387,11 @@ class PlusSubscriberTest extends TestCase
             ),
             $this->createPaymentResource($settings),
             $router,
-            $this->paymentMethodIdProvider,
+            $this->paymentMethodUtil,
             $localeCodeProvider
         );
 
-        return new PlusSubscriber($settingsService, $plusDataService, $this->paymentMethodIdProvider);
+        return new PlusSubscriber($settingsService, $plusDataService, $this->paymentMethodUtil);
     }
 
     private function createFinishEvent(): CheckoutFinishPageLoadedEvent
@@ -346,5 +407,23 @@ class PlusSubscriberTest extends TestCase
         );
 
         return new CheckoutFinishPageLoadedEvent(new CheckoutFinishPage(), $salesChannelContext, new Request());
+    }
+
+    private function addPayPalToDefaultsSalesChannel(): void
+    {
+        $payPalPaymentMethod = $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
+        /** @var EntityRepositoryInterface $salesChannelRepo */
+        $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
+
+        $salesChannelRepo->update([
+            [
+                'id' => Defaults::SALES_CHANNEL,
+                'paymentMethods' => [
+                    $payPalPaymentMethod => [
+                        'id' => $payPalPaymentMethod,
+                    ],
+                ],
+            ],
+        ], Context::createDefaultContext());
     }
 }
