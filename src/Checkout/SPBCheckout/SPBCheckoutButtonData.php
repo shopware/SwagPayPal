@@ -36,6 +36,11 @@ class SPBCheckoutButtonData extends Struct
      */
     protected $paymentMethodId;
 
+    /**
+     * @var bool
+     */
+    protected $useAlternativePaymentMethods;
+
     public function getClientId(): string
     {
         return $this->clientId;
@@ -64,5 +69,10 @@ class SPBCheckoutButtonData extends Struct
     public function getPaymentMethodId(): string
     {
         return $this->paymentMethodId;
+    }
+
+    public function getUseAlternativePaymentMethods(): bool
+    {
+        return $this->useAlternativePaymentMethods;
     }
 }

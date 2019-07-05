@@ -44,6 +44,7 @@ class SPBCheckoutDataService
             'currency' => $context->getCurrency()->getIsoCode(),
             'intent' => $settings->getIntent(),
             'paymentMethodId' => $paymentMethodId,
+            'useAlternativePaymentMethods' => $settings->getSpbAlternativePaymentMethodsEnabled(),
         ]);
 
         return $expressCheckoutData;

@@ -14,6 +14,9 @@ use Swag\PayPal\PayPal\PaymentIntent;
 
 class SwagPayPalSettingStruct extends Struct
 {
+    public const MERCHANT_COUNTRY_GERMANY = 'germany';
+    public const MERCHANT_COUNTRY_OTHER = 'other';
+
     /**
      * @var string
      */
@@ -117,7 +120,12 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var bool
      */
-    protected $spbCheckoutEnabled = false;
+    protected $spbCheckoutEnabled = true;
+
+    /**
+     * @var bool
+     */
+    protected $spbAlternativePaymentMethodsEnabled = true;
 
     /**
      * @var string|null
@@ -138,6 +146,11 @@ class SwagPayPalSettingStruct extends Struct
      * @var string|null
      */
     protected $plusExtendPaymentDescription;
+
+    /**
+     * @var string
+     */
+    protected $merchantCountry = self::MERCHANT_COUNTRY_GERMANY;
 
     public function getClientId(): string
     {
@@ -349,6 +362,16 @@ class SwagPayPalSettingStruct extends Struct
         $this->spbCheckoutEnabled = $spbCheckoutEnabled;
     }
 
+    public function getSpbAlternativePaymentMethodsEnabled(): bool
+    {
+        return $this->spbAlternativePaymentMethodsEnabled;
+    }
+
+    public function setSpbAlternativePaymentMethodsEnabled(bool $spbAlternativePaymentMethodsEnabled): void
+    {
+        $this->spbAlternativePaymentMethodsEnabled = $spbAlternativePaymentMethodsEnabled;
+    }
+
     public function getSpbButtonLanguageIso(): ?string
     {
         return $this->spbButtonLanguageIso;
@@ -387,5 +410,15 @@ class SwagPayPalSettingStruct extends Struct
     public function setPlusExtendPaymentDescription(string $plusExtendPaymentDescription): void
     {
         $this->plusExtendPaymentDescription = $plusExtendPaymentDescription;
+    }
+
+    public function getMerchantCountry(): string
+    {
+        return $this->merchantCountry;
+    }
+
+    public function setMerchantCountry(string $merchantCountry): void
+    {
+        $this->merchantCountry = $merchantCountry;
     }
 }

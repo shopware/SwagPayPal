@@ -32,6 +32,27 @@
         <title lang="de-DE">Verhalten</title>
 
         <input-field type="single-select">
+            <name>merchantCountry</name>
+            <label>Merchant country</label>
+            <label lang="de-DE">Händlerstandort</label>
+            <placeholder>Please select your merchant country</placeholder>
+            <placeholder lang="de-DE">Bitte wähle deinen Händlerstandort</placeholder>
+            <options>
+                <option>
+                    <id>germany</id>
+                    <name>Germany</name>
+                    <name lang="de-DE">Deutschland</name>
+                </option>
+                <option>
+                    <id>other</id>
+                    <name>Other merchant country</name>
+                    <name lang="de-DE">Anderer Händlerstandort</name>
+                </option>
+            </options>
+            <required>true</required>
+        </input-field>
+
+        <input-field type="single-select">
             <name>intent</name>
             <label>Payment acquisition</label>
             <label lang="de-DE">Zahlungsabschluss</label>
@@ -195,7 +216,7 @@
 
         <input-field type="bool">
             <name>ecsSubmitCart</name>
-            <label>Submit cart:</label>
+            <label>Submit cart</label>
             <label lang="de-DE">Warenkorb übertragen:</label>
             <helpText>If this option is active, the cart will be submitted to PayPal for Express orders.</helpText>
             <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Warenkorb bei Express-Bestellungen an PayPal übertragen.</helpText>
@@ -213,6 +234,7 @@
     <card>
         <title>PayPal Checkout with Smart Payment Buttons</title>
         <title lang="de-DE">PayPal Checkout mit Smart Payment Buttons</title>
+        <name>spb</name>
 
         <input-field type="bool">
             <name>spbCheckoutEnabled</name>
@@ -227,11 +249,20 @@
             <helpText>If not set, the sales channel language will be used.</helpText>
             <helpText lang="de-DE">Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet.</helpText>
         </input-field>
+
+        <input-field type="bool">
+            <name>spbAlternativePaymentMethodsEnabled</name>
+            <label>Enable the alternative payment methods for the Smart Payment Buttons.</label>
+            <label lang="de-DE">Aktiviert die alternativen Zahlungsarten der Smart Payment Buttons.</label>
+            <helpText>Alternative payment methods are, Creditcards, Invoice and more.</helpText>
+            <helpText lang="de-DE">Die alternativen Zahlungsarten sind, Kreditkarten, SEPA und mehr.</helpText>
+        </input-field>
     </card>
 
     <card>
         <title>PayPal Plus integration</title>
         <title lang="de-DE">PayPal Plus Integration</title>
+        <name>plus</name>
 
         <input-field type="bool">
             <name>plusEnabled</name>
@@ -239,7 +270,7 @@
             <label lang="de-DE">PayPal Plus aktivieren</label>
         </input-field>
 
-        <input-field type="text">
+        <input-field>
             <name>plusOverwritePaymentName</name>
             <label>Overwrite payment method name</label>
             <label lang="de-DE">Zahlungsartbezeichnung überschreiben</label>
@@ -247,7 +278,7 @@
             <helpText lang="de-DE">Mit dieser Einstellung kannst du die Zahlungsart-Bezeichnung von PayPal überschreiben. Hinweis: Dies betrifft nur die Storefront Ansicht.</helpText>
         </input-field>
 
-        <input-field type="text">
+        <input-field>
             <name>plusExtendPaymentDescription</name>
             <label>Extend payment method description</label>
             <label lang="de-DE">Zahlungsartbeschreibung ergänzen</label>

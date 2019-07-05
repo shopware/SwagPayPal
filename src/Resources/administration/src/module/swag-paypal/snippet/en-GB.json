@@ -73,7 +73,8 @@
             "messageTestError": "The API credentials could not been validated.",
             "messageWebhookCreated": "The webhook has been successfully registered.",
             "messageWebhookUpdated": "The webhook has been successfully updated.",
-            "messageWebhookError": "The webhook could not be saved. Following errors occurred:"
+            "messageWebhookError": "The webhook could not be saved. Following errors occurred:",
+            "componentUnavailable": "This component is currently unavailable, due to your merchant country."
         }
     }
 }

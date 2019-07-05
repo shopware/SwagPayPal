@@ -52,7 +52,6 @@ Component.register('swag-paypal-payment-action-capture', {
             const isFinalCapture = this.isFinalCapture;
             const resourceType = this.paymentResource.intent;
             const resourceId = this.getResourceId(this.paymentResource);
-            const orderId = this.$route.params.id;
 
             this.isLoading = true;
             this.SwagPayPalPaymentService.capturePayment(

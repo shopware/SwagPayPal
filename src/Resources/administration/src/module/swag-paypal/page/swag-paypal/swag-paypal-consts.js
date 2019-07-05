@@ -1,0 +1,13 @@
+export const MERCHANT_COUNTRY_GERMANY = 'germany';
+export const MERCHANT_COUNTRY_OTHER = 'other';
+export const WEBHOOK_RESULT_NOTHING = 'nothing';
+export const WEBHOOK_RESULT_CREATED = 'created';
+export const WEBHOOK_RESULT_UPDATED = 'updated';
+
+export default {
+    MERCHANT_COUNTRY_GERMANY,
+    MERCHANT_COUNTRY_OTHER,
+    WEBHOOK_RESULT_CREATED,
+    WEBHOOK_RESULT_NOTHING,
+    WEBHOOK_RESULT_UPDATED
+};
