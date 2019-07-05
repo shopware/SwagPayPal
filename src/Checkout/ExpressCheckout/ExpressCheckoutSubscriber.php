@@ -3,9 +3,6 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
-use Shopware\Storefront\Event\CheckoutEvents;
-use Shopware\Storefront\Event\NavigationEvents;
-use Shopware\Storefront\Event\ProductEvents;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
@@ -40,11 +37,11 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            CheckoutEvents::CHECKOUT_OFFCANVAS_CART_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
-            CheckoutEvents::CHECKOUT_REGISTER_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
-            CheckoutEvents::CHECKOUT_CART_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
-            ProductEvents::PRODUCT_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
-            NavigationEvents::NAVIGATION_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
+            OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            CheckoutRegisterPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            CheckoutCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            NavigationPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
         ];
     }
 
@@ -91,16 +88,16 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
      */
     private function expressOptionForEventEnabled(SwagPayPalSettingStruct $settings, $event): bool
     {
-        switch ($event->getName()) {
-            case ProductEvents::PRODUCT_PAGE_LOADED_EVENT:
+        switch (\get_class($event)) {
+            case ProductPageLoadedEvent::class:
                 return $settings->getEcsDetailEnabled();
-            case CheckoutEvents::CHECKOUT_OFFCANVAS_CART_PAGE_LOADED_EVENT:
+            case OffcanvasCartPageLoadedEvent::class:
                 return $settings->getEcsOffCanvasEnabled();
-            case CheckoutEvents::CHECKOUT_REGISTER_PAGE_LOADED_EVENT:
+            case CheckoutRegisterPageLoadedEvent::class:
                 return $settings->getEcsLoginEnabled();
-            case CheckoutEvents::CHECKOUT_CART_PAGE_LOADED_EVENT:
+            case CheckoutCartPageLoadedEvent::class:
                 return $settings->getEcsCartEnabled();
-            case NavigationEvents::NAVIGATION_PAGE_LOADED_EVENT:
+            case NavigationPageLoadedEvent::class:
                 return $settings->getEcsListingEnabled();
             default:
                 return false;

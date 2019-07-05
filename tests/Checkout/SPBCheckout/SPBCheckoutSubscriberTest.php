@@ -20,7 +20,6 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Storefront\Event\CheckoutEvents;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
@@ -53,7 +52,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $events = SPBCheckoutSubscriber::getSubscribedEvents();
 
         static::assertCount(1, $events);
-        static::assertSame('onCheckoutConfirmLoaded', $events[CheckoutEvents::CHECKOUT_CONFIRM_PAGE_LOADED_EVENT]);
+        static::assertSame('onCheckoutConfirmLoaded', $events[CheckoutConfirmPageLoadedEvent::class]);
     }
 
     public function testOnCheckoutConfirmSPBNoSettings(): void

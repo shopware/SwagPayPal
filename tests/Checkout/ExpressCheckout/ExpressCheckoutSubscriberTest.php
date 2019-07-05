@@ -9,9 +9,9 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Storefront\Event\CheckoutEvents;
-use Shopware\Storefront\Event\NavigationEvents;
-use Shopware\Storefront\Event\ProductEvents;
+use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\Navigation\NavigationPage;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
@@ -33,11 +33,11 @@ class ExpressCheckoutSubscriberTest extends TestCase
     {
         $subscribedEvents = ExpressCheckoutSubscriber::getSubscribedEvents();
         $expectedEvents = [
-            CheckoutEvents::CHECKOUT_OFFCANVAS_CART_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
-            CheckoutEvents::CHECKOUT_REGISTER_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
-            CheckoutEvents::CHECKOUT_CART_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
-            ProductEvents::PRODUCT_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
-            NavigationEvents::NAVIGATION_PAGE_LOADED_EVENT => 'addExpressCheckoutDataToPage',
+            OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            CheckoutRegisterPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            CheckoutCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            NavigationPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
         ];
 
         static::assertSame($expectedEvents, $subscribedEvents);

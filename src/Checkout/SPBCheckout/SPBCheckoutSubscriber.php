@@ -3,7 +3,6 @@
 namespace Swag\PayPal\Checkout\SPBCheckout;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
-use Shopware\Storefront\Event\CheckoutEvents;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -33,7 +32,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            CheckoutEvents::CHECKOUT_CONFIRM_PAGE_LOADED_EVENT => 'onCheckoutConfirmLoaded',
+            CheckoutConfirmPageLoadedEvent::class => 'onCheckoutConfirmLoaded',
         ];
     }
 
