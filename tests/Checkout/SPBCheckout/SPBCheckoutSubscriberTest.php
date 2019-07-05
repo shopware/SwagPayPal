@@ -10,6 +10,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Cart\Transaction\Struct\Transaction;
 use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -27,7 +28,7 @@ use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
-use Swag\PayPal\Test\Mock\PaymentMethodIdProviderMock;
+use Swag\PayPal\Test\Mock\PaymentMethodUtilMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,13 +39,13 @@ class SPBCheckoutSubscriberTest extends TestCase
     private const TEST_CLIENT_ID = 'testClientId';
 
     /**
-     * @var PaymentMethodIdProviderMock
+     * @var PaymentMethodUtilMock
      */
-    private $paymentMethodIdProvider;
+    private $paymentMethodUtil;
 
     protected function setUp(): void
     {
-        $this->paymentMethodIdProvider = new PaymentMethodIdProviderMock();
+        $this->paymentMethodUtil = new PaymentMethodUtilMock();
     }
 
     public function testGetSubscribedEvents(): void
@@ -59,6 +60,18 @@ class SPBCheckoutSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(false);
         $event = $this->createEvent();
+        $subscriber->onCheckoutConfirmLoaded($event);
+
+        static::assertNull($event->getPage()->getExtension('spbCheckoutButtonData'));
+    }
+
+    public function testOnCheckoutConfirmSPBPayPalNotInActiveSalesChannel(): void
+    {
+        $subscriber = $this->createSubscriber();
+        $event = $this->createEvent();
+        $event->getSalesChannelContext()->getSalesChannel()->setPaymentMethods(
+            new PaymentMethodCollection([])
+        );
         $subscriber->onCheckoutConfirmLoaded($event);
 
         static::assertNull($event->getPage()->getExtension('spbCheckoutButtonData'));
@@ -103,7 +116,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertFalse($spbExtension->getUseSandbox());
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('de_DE', $spbExtension->getLanguageIso());
-        static::assertSame(PaymentMethodIdProviderMock::PAYMENT_METHOD_ID, $spbExtension->getPaymentMethodId());
+        static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbExtension->getPaymentMethodId());
         static::assertSame(PaymentIntent::SALE, $spbExtension->getIntent());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
     }
@@ -126,7 +139,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertFalse($spbExtension->getUseSandbox());
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('en_GB', $spbExtension->getLanguageIso());
-        static::assertSame(PaymentMethodIdProviderMock::PAYMENT_METHOD_ID, $spbExtension->getPaymentMethodId());
+        static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbExtension->getPaymentMethodId());
         static::assertSame(PaymentIntent::SALE, $spbExtension->getIntent());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
     }
@@ -158,11 +171,11 @@ class SPBCheckoutSubscriberTest extends TestCase
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
 
         $spbDataService = new SPBCheckoutDataService(
-            $this->paymentMethodIdProvider,
+            $this->paymentMethodUtil,
             $localeCodeProvider
         );
 
-        return new SPBCheckoutSubscriber($settingsService, $spbDataService);
+        return new SPBCheckoutSubscriber($settingsService, $spbDataService, new PaymentMethodUtilMock());
     }
 
     private function createEvent(): CheckoutConfirmPageLoadedEvent
@@ -188,6 +201,12 @@ class SPBCheckoutSubscriberTest extends TestCase
             $options
         );
 
+        $paypalPaymentMethod = new PaymentMethodEntity();
+        $paypalPaymentMethod->setId(PaymentMethodUtilMock::PAYMENT_METHOD_ID);
+        $salesChannelContext->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection([
+            $paypalPaymentMethod,
+        ]));
+
         $page = new CheckoutConfirmPage(
             new PaymentMethodCollection([]),
             new ShippingMethodCollection([])
@@ -201,7 +220,7 @@ class SPBCheckoutSubscriberTest extends TestCase
                 new CalculatedTaxCollection(),
                 new TaxRuleCollection()
             ),
-            $this->paymentMethodIdProvider->getPayPalPaymentMethodId(Context::createDefaultContext())
+            $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext())
         );
         $cart->setTransactions(new TransactionCollection([$transaction]));
         $page->setCart($cart);

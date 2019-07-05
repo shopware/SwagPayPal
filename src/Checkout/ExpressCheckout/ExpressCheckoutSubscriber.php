@@ -12,6 +12,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataServic
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ExpressCheckoutSubscriber implements EventSubscriberInterface
@@ -26,12 +27,19 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
      */
     private $settingsService;
 
+    /**
+     * @var PaymentMethodUtil
+     */
+    private $paymentMethodUtil;
+
     public function __construct(
         PayPalExpressCheckoutDataService $service,
-        SettingsServiceInterface $settingsService
+        SettingsServiceInterface $settingsService,
+        PaymentMethodUtil $paymentMethodUtil
     ) {
         $this->expressCheckoutDataService = $service;
         $this->settingsService = $settingsService;
+        $this->paymentMethodUtil = $paymentMethodUtil;
     }
 
     public static function getSubscribedEvents(): array
@@ -53,6 +61,10 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     public function addExpressCheckoutDataToPage($event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
+        if (!$this->paymentMethodUtil->getPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
+            return;
+        }
+
         try {
             $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
         } catch (PayPalSettingsInvalidException $e) {

@@ -8,6 +8,8 @@
 
 namespace Swag\PayPal\Test\Mock\Repositories;
 
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
@@ -42,7 +44,11 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
     {
         return new EntitySearchResult(
             1,
-            new EntityCollection([$this->createSalesChannelEntity()]),
+            new EntityCollection([
+                Defaults::SALES_CHANNEL => $this->createSalesChannelEntity(
+                    $criteria->getIds()[0] === Defaults::SALES_CHANNEL
+                ),
+            ]),
             null,
             $criteria,
             $context
@@ -77,11 +83,23 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
     {
     }
 
-    private function createSalesChannelEntity(): SalesChannelEntity
+    private function createSalesChannelEntity(bool $withPaymentMethods = false): SalesChannelEntity
     {
         $salesChannelEntity = new SalesChannelEntity();
-        $salesChannelEntity->setId(Defaults::SALES_CHANNEL);
+        $salesChannelEntity->setId(
+            $withPaymentMethods ? Defaults::SALES_CHANNEL : 'c3adfab083bf4182b44d880c209caa98'
+        );
         $salesChannelEntity->setName(self::SALES_CHANNEL_NAME);
+
+        if ($withPaymentMethods) {
+            $paymentMethod = new PaymentMethodEntity();
+            $paymentMethod->setId(PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID);
+            $salesChannelEntity->setPaymentMethods(
+                new PaymentMethodCollection([
+                    $paymentMethod,
+                ])
+            );
+        }
 
         return $salesChannelEntity;
     }
