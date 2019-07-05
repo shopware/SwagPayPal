@@ -17,6 +17,8 @@ use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutController;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutData;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilder;
+use Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder;
+use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
@@ -143,6 +145,7 @@ class SPBCheckoutControllerTest extends TestCase
 
         $criteria = new Criteria([$customerId]);
         $criteria->addAssociationPath('defaultBillingAddress.country');
+        $criteria->addAssociationPath('defaultShippingAddress.country');
 
         return $customerRepo->search($criteria, $context)->first();
     }
@@ -175,6 +178,12 @@ class SPBCheckoutControllerTest extends TestCase
             $localeCodeProvider
         );
 
-        return new SPBCheckoutController($cartPaymentBuilder, $cartService, $this->createPaymentResource());
+        return new SPBCheckoutController(
+            $cartPaymentBuilder,
+            $cartService,
+            $this->createPaymentResource(),
+            new PayerInfoPatchBuilder(),
+            new ShippingAddressPatchBuilder()
+        );
     }
 }

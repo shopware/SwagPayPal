@@ -30,6 +30,11 @@ class Patch extends PayPalStruct
      */
     protected $value;
 
+    public function setValue($value): void
+    {
+        $this->value = $value;
+    }
+
     protected function setOp(string $op): void
     {
         $this->op = $op;
@@ -38,10 +43,5 @@ class Patch extends PayPalStruct
     protected function setPath(string $path): void
     {
         $this->path = $path;
-    }
-
-    protected function setValue($value): void
-    {
-        $this->value = $value;
     }
 }

@@ -2,11 +2,16 @@
 
 namespace Swag\PayPal\Checkout\SPBCheckout;
 
+use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
+use Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder;
+use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Util\PaymentTokenExtractor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,21 +39,44 @@ class SPBCheckoutController extends AbstractController
      */
     private $paymentResource;
 
+    /**
+     * @var PayerInfoPatchBuilder
+     */
+    private $payerInfoPatchBuilder;
+
+    /**
+     * @var ShippingAddressPatchBuilder
+     */
+    private $shippingAddressPatchBuilder;
+
     public function __construct(
         CartPaymentBuilderInterface $cartPaymentBuilder,
         CartService $cartService,
-        PaymentResource $paymentResource
+        PaymentResource $paymentResource,
+        PayerInfoPatchBuilder $payerInfoPatchBuilder,
+        ShippingAddressPatchBuilder $shippingAddressPatchBuilder
     ) {
         $this->cartPaymentBuilder = $cartPaymentBuilder;
         $this->cartService = $cartService;
         $this->paymentResource = $paymentResource;
+        $this->payerInfoPatchBuilder = $payerInfoPatchBuilder;
+        $this->shippingAddressPatchBuilder = $shippingAddressPatchBuilder;
     }
 
     /**
      * @Route("/sales-channel-api/v{version}/_action/paypal/spb/create-payment", name="sales-channel-api.action.paypal.spb.create_payment", methods={"GET"})
+     *
+     * @throws AddressNotFoundException
+     * @throws CustomerNotLoggedInException
+     * @throws PayPalSettingsInvalidException
      */
     public function createPayment(SalesChannelContext $salesChannelContext): JsonResponse
     {
+        $customer = $salesChannelContext->getCustomer();
+        if ($customer === null) {
+            throw new CustomerNotLoggedInException();
+        }
+
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
         $payment = $this->cartPaymentBuilder->getPayment(
             $cart,
@@ -56,14 +84,22 @@ class SPBCheckoutController extends AbstractController
             'https://www.example.com/',
             false
         );
-        $paymentResource = $this->paymentResource->create(
+
+        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
+        $response = $this->paymentResource->create(
             $payment,
-            $salesChannelContext->getSalesChannel()->getId(),
+            $salesChannelId,
             PartnerAttributionId::SMART_PAYMENT_BUTTONS
         );
 
+        $patches = [
+            $this->shippingAddressPatchBuilder->createShippingAddressPatch($customer),
+            $this->payerInfoPatchBuilder->createPayerInfoPatch($customer),
+        ];
+        $this->paymentResource->patch($patches, $response->getId(), $salesChannelId);
+
         return new JsonResponse([
-            'token' => PaymentTokenExtractor::extract($paymentResource),
+            'token' => PaymentTokenExtractor::extract($response),
         ]);
     }
 

@@ -5,6 +5,7 @@ namespace Swag\PayPal\PayPal\Resource;
 use Swag\PayPal\PayPal\Api\Refund;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\RequestUri;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
 class CaptureResource
 {
@@ -18,6 +19,9 @@ class CaptureResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
     public function refund(string $captureId, Refund $refund, string $salesChannelId): Refund
     {
         $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(

@@ -11,23 +11,25 @@ namespace Swag\PayPal\Payment;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
+use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
 use Shopware\Core\System\StateMachine\Exception\StateMachineNotFoundException;
+use Swag\PayPal\Payment\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Api\Capture\Amount as CaptureAmount;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource;
 use Swag\PayPal\PayPal\Api\Refund;
 use Swag\PayPal\PayPal\Api\Refund\Amount as RefundAmount;
-use Swag\PayPal\PayPal\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\PayPal\Resource\AuthorizationResource;
 use Swag\PayPal\PayPal\Resource\CaptureResource;
 use Swag\PayPal\PayPal\Resource\OrdersResource;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\PayPal\Resource\SaleResource;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,10 +39,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class PayPalPaymentController extends AbstractController
 {
     public const REQUEST_PARAMETER_CURRENCY = 'currency';
-
     public const REQUEST_PARAMETER_REFUND_AMOUNT = 'refundAmount';
     public const REQUEST_PARAMETER_REFUND_INVOICE_NUMBER = 'refundInvoiceNumber';
-
     public const REQUEST_PARAMETER_CAPTURE_AMOUNT = 'captureAmount';
     public const REQUEST_PARAMETER_CAPTURE_IS_FINAL = 'captureIsFinal';
 
@@ -99,6 +99,10 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Route("/api/v{version}/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"})
+     *
+     * @throws InconsistentCriteriaIdsException
+     * @throws OrderNotFoundException
+     * @throws PayPalSettingsInvalidException
      */
     public function paymentDetails(string $orderId, string $paymentId, Context $context): JsonResponse
     {
@@ -110,15 +114,22 @@ class PayPalPaymentController extends AbstractController
     /**
      * @Route("/api/v{version}/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"})
      *
+     * @throws IllegalTransitionException
+     * @throws InconsistentCriteriaIdsException
+     * @throws InvalidOrderException
      * @throws OrderNotFoundException
      * @throws RequiredParameterInvalidException
-     * @throws InvalidOrderException
-     * @throws InconsistentCriteriaIdsException
-     * @throws IllegalTransitionException
      * @throws StateMachineNotFoundException
+     * @throws InvalidTransactionException
+     * @throws PayPalSettingsInvalidException
      */
-    public function refundPayment(Request $request, Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
-    {
+    public function refundPayment(
+        Request $request,
+        Context $context,
+        string $resourceType,
+        string $resourceId,
+        string $orderId
+    ): JsonResponse {
         $refund = $this->createRefund($request);
 
         switch ($resourceType) {
@@ -148,15 +159,22 @@ class PayPalPaymentController extends AbstractController
     /**
      * @Route("/api/v{version}/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"})
      *
-     * @throws OrderNotFoundException
-     * @throws RequiredParameterInvalidException
-     * @throws InvalidOrderException
-     * @throws InconsistentCriteriaIdsException
      * @throws IllegalTransitionException
+     * @throws InconsistentCriteriaIdsException
+     * @throws InvalidOrderException
+     * @throws InvalidTransactionException
+     * @throws OrderNotFoundException
+     * @throws PayPalSettingsInvalidException
+     * @throws RequiredParameterInvalidException
      * @throws StateMachineNotFoundException
      */
-    public function capturePayment(Request $request, Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
-    {
+    public function capturePayment(
+        Request $request,
+        Context $context,
+        string $resourceType,
+        string $resourceId,
+        string $orderId
+    ): JsonResponse {
         $capture = $this->createCapture($request);
 
         switch ($resourceType) {
@@ -183,16 +201,21 @@ class PayPalPaymentController extends AbstractController
     /**
      * @Route("/api/v{version}/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"})
      *
-     * @throws RequiredParameterInvalidException
-     * @throws OrderNotFoundException
-     * @throws RequiredParameterInvalidException
-     * @throws InvalidOrderException
-     * @throws InconsistentCriteriaIdsException
      * @throws IllegalTransitionException
+     * @throws InconsistentCriteriaIdsException
+     * @throws InvalidOrderException
+     * @throws InvalidTransactionException
+     * @throws OrderNotFoundException
+     * @throws PayPalSettingsInvalidException
+     * @throws RequiredParameterInvalidException
      * @throws StateMachineNotFoundException
      */
-    public function voidPayment(Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
-    {
+    public function voidPayment(
+        Context $context,
+        string $resourceType,
+        string $resourceId,
+        string $orderId
+    ): JsonResponse {
         switch ($resourceType) {
             case RelatedResource::AUTHORIZE:
                 $voidResponse = $this->authorizationResource->void(
@@ -215,6 +238,10 @@ class PayPalPaymentController extends AbstractController
         return new JsonResponse($voidResponse);
     }
 
+    /**
+     * @throws InconsistentCriteriaIdsException
+     * @throws OrderNotFoundException
+     */
     private function getSalesChannelIdByOrderId(string $orderId, Context $context): string
     {
         /** @var OrderEntity|null $order */

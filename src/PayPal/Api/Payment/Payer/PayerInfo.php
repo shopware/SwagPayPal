@@ -8,35 +8,30 @@
 
 namespace Swag\PayPal\PayPal\Api\Payment\Payer;
 
-use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\Payment\Payer\PayerInfo\BillingAddress;
 use Swag\PayPal\PayPal\Api\Payment\Payer\PayerInfo\ShippingAddress;
 
-class PayerInfo extends PayPalStruct
+class PayerInfo extends ExecutePayerInfo
 {
     /**
      * @var string
      */
-    protected $payerId;
+    protected $email;
 
     /**
      * @var string
      */
-    private $email;
+    protected $firstName;
 
     /**
      * @var string
      */
-    private $firstName;
+    protected $lastName;
 
     /**
-     * @var string
+     * @var BillingAddress|null
      */
-    private $lastName;
-
-    /**
-     * @var string
-     */
-    private $phone;
+    protected $billingAddress;
 
     /**
      * @var ShippingAddress
@@ -46,21 +41,21 @@ class PayerInfo extends PayPalStruct
     /**
      * @var string
      */
+    private $phone;
+
+    /**
+     * @var string
+     */
     private $countryCode;
-
-    public function setPayerId(string $payerId): void
-    {
-        $this->payerId = $payerId;
-    }
-
-    public function getPayerId(): string
-    {
-        return $this->payerId;
-    }
 
     public function getEmail(): string
     {
         return $this->email;
+    }
+
+    public function setEmail(string $email): void
+    {
+        $this->email = $email;
     }
 
     public function getFirstName(): string
@@ -68,9 +63,19 @@ class PayerInfo extends PayPalStruct
         return $this->firstName;
     }
 
+    public function setFirstName(string $firstName): void
+    {
+        $this->firstName = $firstName;
+    }
+
     public function getLastName(): string
     {
         return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): void
+    {
+        $this->lastName = $lastName;
     }
 
     public function getShippingAddress(): ShippingAddress
@@ -78,33 +83,28 @@ class PayerInfo extends PayPalStruct
         return $this->shippingAddress;
     }
 
-    protected function setEmail(string $email): void
+    public function setShippingAddress(ShippingAddress $shippingAddress): void
     {
-        $this->email = $email;
+        $this->shippingAddress = $shippingAddress;
     }
 
-    protected function setFirstName(string $firstName): void
+    public function getBillingAddress(): ?BillingAddress
     {
-        $this->firstName = $firstName;
+        return $this->billingAddress;
     }
 
-    protected function setLastName(string $lastName): void
+    public function setBillingAddress(BillingAddress $billingAddress): void
     {
-        $this->lastName = $lastName;
+        $this->billingAddress = $billingAddress;
+    }
+
+    public function setCountryCode(string $countryCode): void
+    {
+        $this->countryCode = $countryCode;
     }
 
     protected function setPhone(string $phone): void
     {
         $this->phone = $phone;
-    }
-
-    protected function setShippingAddress(ShippingAddress $shippingAddress): void
-    {
-        $this->shippingAddress = $shippingAddress;
-    }
-
-    protected function setCountryCode(string $countryCode): void
-    {
-        $this->countryCode = $countryCode;
     }
 }

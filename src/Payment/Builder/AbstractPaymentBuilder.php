@@ -2,7 +2,6 @@
 
 namespace Swag\PayPal\Payment\Builder;
 
-use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -11,8 +10,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\Api\Payment\Payer;
 use Swag\PayPal\PayPal\Api\Payment\RedirectUrls;
-use Swag\PayPal\PayPal\Api\Payment\Transaction\Amount;
-use Swag\PayPal\PayPal\Api\Payment\Transaction\Amount\Details;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -96,24 +93,6 @@ abstract class AbstractPaymentBuilder
         return $applicationContext;
     }
 
-    protected function createAmount(
-        CalculatedPrice $transactionAmount,
-        float $shippingCostsTotal,
-        string $currency
-    ): Amount {
-        $amount = new Amount();
-        $amount->setTotal($this->formatPrice($transactionAmount->getTotalPrice()));
-        $amount->setCurrency($currency);
-        $amount->setDetails($this->getAmountDetails($shippingCostsTotal, $transactionAmount));
-
-        return $amount;
-    }
-
-    protected function formatPrice(float $price): string
-    {
-        return (string) round($price, 2);
-    }
-
     /**
      * @throws PayPalSettingsInvalidException
      */
@@ -170,17 +149,5 @@ abstract class AbstractPaymentBuilder
         }
 
         return $landingPageType;
-    }
-
-    private function getAmountDetails(float $shippingCostsTotal, CalculatedPrice $orderTransactionAmount): Details
-    {
-        $amountDetails = new Details();
-
-        $amountDetails->setShipping($this->formatPrice($shippingCostsTotal));
-        $totalAmount = $orderTransactionAmount->getTotalPrice();
-        $amountDetails->setSubtotal($this->formatPrice($totalAmount - $shippingCostsTotal));
-        $amountDetails->setTax($this->formatPrice(0));
-
-        return $amountDetails;
     }
 }

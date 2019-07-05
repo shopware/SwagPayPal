@@ -91,6 +91,7 @@ class PlusPaymentFinalizeController extends AbstractController
         }
 
         $paymentTransactionStruct = new AsyncPaymentTransactionStruct($orderTransaction, $order, '');
+        $request->query->set('isPayPalPlus', true);
 
         $this->paymentHandler->finalize($paymentTransactionStruct, $request, $salesChannelContext);
 

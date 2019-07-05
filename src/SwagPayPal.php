@@ -8,12 +8,11 @@
 
 namespace Swag\PayPal;
 
-use Doctrine\DBAL\Connection;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\CustomField\CustomFieldTypes;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Plugin;
@@ -23,7 +22,6 @@ use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -63,51 +61,56 @@ class SwagPayPal extends Plugin
         return $viewPaths;
     }
 
-    public function install(InstallContext $context): void
+    public function install(InstallContext $installContext): void
     {
         $this->addDefaultConfiguration();
-        $this->addPaymentMethod($context->getContext());
+        $this->addPaymentMethod($installContext->getContext());
 
-        parent::install($context);
+        parent::install($installContext);
     }
 
-    public function uninstall(UninstallContext $context): void
+    public function uninstall(UninstallContext $uninstallContext): void
     {
-        $this->setPaymentMethodIsActive(false, $context->getContext());
-        if ($context->keepUserData()) {
-            parent::uninstall($context);
+        $context = $uninstallContext->getContext();
+        $this->setPaymentMethodIsActive(false, $context);
+        if ($uninstallContext->keepUserData()) {
+            parent::uninstall($uninstallContext);
 
             return;
         }
 
-        /** @var Connection $connection */
-        $connection = $this->container->get(Connection::class);
-        $connection->exec(
-            sprintf(
-                'DELETE FROM `system_config` WHERE configuration_key LIKE "%s%%"',
-                SettingsService::SYSTEM_CONFIG_DOMAIN
-            )
-        );
+        /** @var EntityRepositoryInterface $systemConfigRepository */
+        $systemConfigRepository = $this->container->get('system_config.repository');
 
-        parent::uninstall($context);
+        $criteria = (new Criteria())
+            ->addFilter(new ContainsFilter('configurationKey', SettingsService::SYSTEM_CONFIG_DOMAIN));
+        $idSearchResult = $systemConfigRepository->searchIds($criteria, $context);
+
+        $ids = array_map(static function ($id) {
+            return ['id' => $id];
+        }, $idSearchResult->getIds());
+
+        $systemConfigRepository->delete($ids, $context);
+
+        parent::uninstall($uninstallContext);
     }
 
-    public function activate(ActivateContext $context): void
+    public function activate(ActivateContext $activateContext): void
     {
-        $shopwareContext = $context->getContext();
+        $shopwareContext = $activateContext->getContext();
         $this->setPaymentMethodIsActive(true, $shopwareContext);
         $this->activateOrderTransactionCustomField($shopwareContext);
 
-        parent::activate($context);
+        parent::activate($activateContext);
     }
 
-    public function deactivate(DeactivateContext $context): void
+    public function deactivate(DeactivateContext $deactivateContext): void
     {
-        $shopwareContext = $context->getContext();
+        $shopwareContext = $deactivateContext->getContext();
         $this->setPaymentMethodIsActive(false, $shopwareContext);
         $this->deactivateOrderTransactionCustomField($shopwareContext);
 
-        parent::deactivate($context);
+        parent::deactivate($deactivateContext);
     }
 
     private function addPaymentMethod(Context $context): void
@@ -194,10 +197,9 @@ class SwagPayPal extends Plugin
             return;
         }
 
-        $ids = [];
-        foreach ($customFieldIds->getIds() as $customFieldId) {
-            $ids[] = ['id' => $customFieldId];
-        }
+        $ids = array_map(static function ($id) {
+            return ['id' => $id];
+        }, $customFieldIds->getIds());
         $customFieldRepository->delete($ids, $context);
     }
 
@@ -211,26 +213,22 @@ class SwagPayPal extends Plugin
 
     private function addDefaultConfiguration(): void
     {
-        /** @var Connection $connection */
-        $connection = $this->container->get(Connection::class);
-        $systemConfigEntityName = (new SystemConfigDefinition())->getEntityName();
+        /** @var EntityRepositoryInterface $systemConfigRepository */
+        $systemConfigRepository = $this->container->get('system_config.repository');
 
+        $data = [];
         foreach ((new SwagPayPalSettingStruct())->jsonSerialize() as $key => $value) {
-            if ($value === null) {
+            if ($value === null || $value === []) {
                 continue;
             }
 
             $key = SettingsService::SYSTEM_CONFIG_DOMAIN . $key;
-            $insertData = [
-                'id' => Uuid::randomBytes(),
-                'configuration_key' => $key,
-                'configuration_value' => json_encode([
-                    '_value' => $value,
-                ]),
-                'created_at' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT),
+            $data[] = [
+                'id' => Uuid::randomHex(),
+                'configurationKey' => $key,
+                'configurationValue' => $value,
             ];
-
-            $connection->insert($systemConfigEntityName, $insertData);
         }
+        $systemConfigRepository->upsert($data, Context::createDefaultContext());
     }
 }
