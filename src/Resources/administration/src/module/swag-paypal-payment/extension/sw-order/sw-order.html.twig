@@ -7,3 +7,10 @@
         {{ $tc('swag-paypal.header') }}
     </sw-tabs-item>
 {% endblock %}
+
+
+{% block sw_order_detail_actions %}
+    <template v-if="isEditable">
+        {% parent %}
+    </template>
+{% endblock %}

@@ -8,11 +8,11 @@ import enGB from './snippet/en-GB.json';
 Module.register('swag-paypal-payment', {
     type: 'plugin',
     name: 'SwagPayPal',
+    title: 'swag-paypal-payment.general.title',
     description: 'swag-paypal-payment.general.descriptionTextModule',
     version: '1.0.0',
     targetVersion: '1.0.0',
     color: '#2b52ff',
-    title: 'swag-paypal-payment.general.title',
 
     snippets: {
         'de-DE': deDE,

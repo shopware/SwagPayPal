@@ -15,7 +15,8 @@ Component.override('sw-order-detail', {
 
     metaInfo() {
         return {
-            title: `${this.identifier} | ${this.$tc('swag-paypal-payment.general.title')}`
+            // ToDo with NEXT-3911: Replace with $createTitle(this.identifier);
+            title: `${this.identifier} | ${this.$tc('swag-paypal-payment.general.title')} | ${this.$tc('global.sw-admin-menu.textShopwareAdmin')}`
         };
     },
 
@@ -28,10 +29,19 @@ Component.override('sw-order-detail', {
             return State.getStore('payment_method');
         },
 
+        isEditable() {
+            return !this.isPayPalPayment || this.$route.name !== 'swag.paypal.payment.detail';
+        },
+
         // TODO remove with PT-10455
         showTabs() {
             return true;
         }
+    },
+
+    created() {
+        // ToDo with NEXT-3911: Remove this Quickfix
+        this.$router.push({ name: 'sw.order.detail', params: { id: this.orderId } })
     },
 
     watch: {
