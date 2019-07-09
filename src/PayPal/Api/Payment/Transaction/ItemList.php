@@ -11,6 +11,7 @@ namespace Swag\PayPal\PayPal\Api\Payment\Transaction;
 use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\ShippingAddress;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\ShippingOption;
 
 class ItemList extends PayPalStruct
 {
@@ -23,6 +24,11 @@ class ItemList extends PayPalStruct
      * @var Item[]
      */
     protected $items;
+
+    /**
+     * @var ShippingOption[]
+     */
+    protected $shippingOptions;
 
     public function getItems(): array
     {
@@ -40,5 +46,13 @@ class ItemList extends PayPalStruct
     protected function setShippingAddress(ShippingAddress $shippingAddress): void
     {
         $this->shippingAddress = $shippingAddress;
+    }
+
+    /**
+     * @param ShippingOption[] $shippingOptions
+     */
+    protected function setShippingOptions(array $shippingOptions): void
+    {
+        $this->shippingOptions = $shippingOptions;
     }
 }

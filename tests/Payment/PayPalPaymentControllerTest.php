@@ -10,9 +10,9 @@ namespace Swag\PayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Swag\PayPal\Payment\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\Payment\PayPalPaymentController;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource;
-use Swag\PayPal\PayPal\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\PayPal\Resource\AuthorizationResource;
 use Swag\PayPal\PayPal\Resource\CaptureResource;
 use Swag\PayPal\PayPal\Resource\OrdersResource;

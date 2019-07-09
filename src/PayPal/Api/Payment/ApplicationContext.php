@@ -33,6 +33,11 @@ class ApplicationContext extends PayPalStruct
     /**
      * @var string
      */
+    protected $shippingPreference = 'SET_PROVIDED_ADDRESS';
+
+    /**
+     * @var string
+     */
     protected $userAction = 'commit';
 
     public function setBrandName(string $brandName): void
@@ -53,5 +58,10 @@ class ApplicationContext extends PayPalStruct
     protected function setUserAction(string $userAction): void
     {
         $this->userAction = $userAction;
+    }
+
+    protected function setShippingPreference(string $shippingPreference): void
+    {
+        $this->shippingPreference = $shippingPreference;
     }
 }

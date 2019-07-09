@@ -3,6 +3,7 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Customer\Exception\BadCredentialsException;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountRegistrationService;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Framework\Context;
@@ -18,6 +19,7 @@ use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Swag\PayPal\Util\PaymentTokenExtractor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -119,6 +121,9 @@ class ExpressCheckoutController extends AbstractController
 
     /**
      * @Route("/paypal/approve-payment", name="paypal.approve_payment", methods={"POST"}, defaults={"XmlHttpRequest"=true})
+     *
+     * @throws BadCredentialsException
+     * @throws PayPalSettingsInvalidException
      */
     public function onApprove(SalesChannelContext $context, Request $request): JsonResponse
     {
@@ -168,7 +173,7 @@ class ExpressCheckoutController extends AbstractController
         /** @var Payment\Payer $payer */
         $payer = $payment->getPayer();
         $payerInfo = $payer->getPayerInfo();
-        $shippingAddress = $payerInfo->getShippingAddress();
+        $billingAddress = $payerInfo->getBillingAddress() ?? $payerInfo->getShippingAddress();
         $firstName = $payerInfo->getFirstName();
         $lastName = $payerInfo->getLastName();
         $salutationId = $this->getSalutationId($context);
@@ -182,12 +187,12 @@ class ExpressCheckoutController extends AbstractController
                 'firstName' => $firstName,
                 'lastName' => $lastName,
                 'salutationId' => $salutationId,
-                'street' => $shippingAddress->getLine1(),
-                'zipcode' => $shippingAddress->getPostalCode(),
-                'countryId' => $this->getCountryIdByCode($shippingAddress->getCountryCode(), $context),
-                'phone' => $shippingAddress->getPhone(),
-                'city' => $shippingAddress->getCity(),
-                'additionalAddressLine1' => $shippingAddress->getLine2(),
+                'street' => $billingAddress->getLine1(),
+                'zipcode' => $billingAddress->getPostalCode(),
+                'countryId' => $this->getCountryIdByCode($billingAddress->getCountryCode(), $context),
+                'phone' => $billingAddress->getPhone(),
+                'city' => $billingAddress->getCity(),
+                'additionalAddressLine1' => $billingAddress->getLine2(),
             ],
         ]);
     }

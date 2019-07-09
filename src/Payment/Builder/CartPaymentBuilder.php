@@ -7,18 +7,37 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Payment\Builder\Util\AmountProvider;
+use Swag\PayPal\Payment\Builder\Util\PriceFormatter;
 use Swag\PayPal\Payment\Service\TransactionValidator;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\Transaction;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Util\LocaleCodeProvider;
 
 class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBuilderInterface
 {
+    /**
+     * @var PriceFormatter
+     */
+    private $priceFormatter;
+
+    public function __construct(
+        SettingsServiceInterface $settingsService,
+        EntityRepositoryInterface $salesChannelRepo,
+        LocaleCodeProvider $localeCodeProvider
+    ) {
+        parent::__construct($settingsService, $salesChannelRepo, $localeCodeProvider);
+        $this->priceFormatter = new PriceFormatter();
+    }
+
     /**
      * @throws InconsistentCriteriaIdsException
      * @throws InvalidTransactionException
@@ -65,11 +84,11 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
             throw new InvalidTransactionException('');
         }
         $transactionAmount = $transaction->getAmount();
-        $currency = (string) $currencyEntity->getIsoCode();
+        $currency = $currencyEntity->getIsoCode();
 
         $transaction = new Transaction();
         $shippingCostsTotal = $cart->getDeliveries()->getShippingCosts()->sum()->getTotalPrice();
-        $amount = $this->createAmount($transactionAmount, $shippingCostsTotal, $currency);
+        $amount = (new AmountProvider())->createAmount($transactionAmount, $shippingCostsTotal, $currency);
         $transaction->setAmount($amount);
 
         $itemListValid = true;
@@ -127,8 +146,8 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         $item->setSku($lineItem->getPayload()['productNumber']);
         $item->setCurrency($currency);
         $item->setQuantity($lineItem->getQuantity());
-        $item->setPrice($this->formatPrice($price->getTotalPrice() / $lineItem->getQuantity()));
-        $item->setTax($this->formatPrice(0));
+        $item->setPrice($this->priceFormatter->formatPrice($price->getTotalPrice() / $lineItem->getQuantity()));
+        $item->setTax($this->priceFormatter->formatPrice(0));
 
         return $item;
     }

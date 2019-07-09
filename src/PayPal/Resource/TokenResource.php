@@ -65,7 +65,7 @@ class TokenResource
             return null;
         }
 
-        return unserialize($token, [Token::class, \DateTime::class]);
+        return unserialize($token, ['allowed_classes' => [Token::class, \DateTime::class]]);
     }
 
     private function setToken(Token $token, string $cacheId): void

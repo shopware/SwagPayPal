@@ -41,6 +41,9 @@ abstract class PayPalStruct implements \JsonSerializable
             $arrayWithToManyAssociations = [];
             /** @var array $value */
             foreach ($value as $toManyAssociation) {
+                if ($toManyAssociation === null) {
+                    continue;
+                }
                 $className = $this->getClassNameOfOneToManyAssociation($camelCaseKey);
                 $instance = $this->createNewAssociation($namespace . $className, $toManyAssociation);
 

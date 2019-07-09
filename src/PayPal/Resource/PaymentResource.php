@@ -8,11 +8,13 @@
 
 namespace Swag\PayPal\PayPal\Resource;
 
+use Swag\PayPal\PayPal\Api\Patch;
 use Swag\PayPal\PayPal\Api\Payment;
-use Swag\PayPal\PayPal\Api\Payment\Payer\PayerInfo;
+use Swag\PayPal\PayPal\Api\Payment\Payer\ExecutePayerInfo;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\RequestUri;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
 class PaymentResource
 {
@@ -26,6 +28,9 @@ class PaymentResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
     public function create(Payment $payment, string $salesChannelId, string $partnerAttributionId): Payment
     {
         $paypalClient = $this->payPalClientFactory->createPaymentClient($salesChannelId, $partnerAttributionId);
@@ -39,13 +44,16 @@ class PaymentResource
         return $payment;
     }
 
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
     public function execute(
         string $payerId,
         string $paymentId,
         string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ): Payment {
-        $payerInfo = new PayerInfo();
+        $payerInfo = new ExecutePayerInfo();
         $payerInfo->setPayerId($payerId);
         $paypalClient = $this->payPalClientFactory->createPaymentClient($salesChannelId, $partnerAttributionId);
         $response = $paypalClient->sendPostRequest(
@@ -59,10 +67,31 @@ class PaymentResource
         return $paymentStruct;
     }
 
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
     public function get(string $paymentId, string $salesChannelId): Payment
     {
         $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
             RequestUri::PAYMENT_RESOURCE . '/' . $paymentId
+        );
+
+        $paymentStruct = new Payment();
+        $paymentStruct->assign($response);
+
+        return $paymentStruct;
+    }
+
+    /**
+     * @param Patch[] $patches
+     *
+     * @throws PayPalSettingsInvalidException
+     */
+    public function patch(array $patches, string $paymentId, string $salesChannelId): Payment
+    {
+        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPatchRequest(
+            RequestUri::PAYMENT_RESOURCE . '/' . $paymentId,
+            $patches
         );
 
         $paymentStruct = new Payment();

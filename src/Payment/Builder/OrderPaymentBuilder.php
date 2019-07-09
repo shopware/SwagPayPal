@@ -8,23 +8,22 @@
 
 namespace Swag\PayPal\Payment\Builder;
 
-use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
-use Shopware\Core\Checkout\Order\OrderCollection;
-use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Payment\Builder\Util\AmountProvider;
+use Swag\PayPal\Payment\Builder\Util\ItemListProvider;
+use Swag\PayPal\Payment\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Payment\Service\TransactionValidator;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\Transaction;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList;
-use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -34,21 +33,22 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
     /**
      * @var EntityRepositoryInterface
      */
-    private $orderRepository;
+    private $currencyRepository;
 
     public function __construct(
         SettingsServiceInterface $settingsService,
         EntityRepositoryInterface $salesChannelRepo,
         LocaleCodeProvider $localeCodeProvider,
-        EntityRepositoryInterface $orderRepository
+        EntityRepositoryInterface $currencyRepository
     ) {
         parent::__construct($settingsService, $salesChannelRepo, $localeCodeProvider);
-        $this->orderRepository = $orderRepository;
+        $this->currencyRepository = $currencyRepository;
     }
 
     /**
      * {@inheritdoc}
      *
+     * @throws CurrencyNotFoundException
      * @throws InconsistentCriteriaIdsException
      * @throws InvalidOrderException
      * @throws PayPalSettingsInvalidException
@@ -76,8 +76,9 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
     }
 
     /**
-     * @throws InvalidOrderException
+     * @throws CurrencyNotFoundException
      * @throws InconsistentCriteriaIdsException
+     * @throws InvalidOrderException
      */
     private function createTransaction(
         AsyncPaymentTransactionStruct $paymentTransaction,
@@ -89,15 +90,19 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         $orderTransactionAmount = $orderTransaction->getAmount();
 
         $currencyEntity = $order->getCurrency();
-        if (!$currencyEntity) {
-            $currencyEntity = $this->getCurrencyFromOrderId($order->getId(), $context);
+        if ($currencyEntity === null) {
+            $currencyEntity = $this->getCurrency($order->getCurrencyId(), $context);
         }
 
-        $currency = (string) $currencyEntity->getIsoCode();
+        $currency = $currencyEntity->getIsoCode();
 
         $transaction = new Transaction();
 
-        $amount = $this->createAmount($orderTransactionAmount, $order->getShippingCosts()->getTotalPrice(), $currency);
+        $amount = (new AmountProvider())->createAmount(
+            $orderTransactionAmount,
+            $order->getShippingCosts()->getTotalPrice(),
+            $currency
+        );
         $transaction->setAmount($amount);
 
         if ($this->settings->getSendOrderNumber()) {
@@ -108,7 +113,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 
         $itemListValid = true;
         if ($this->settings->getSubmitCart()) {
-            $items = $this->getItemList($order, $currency);
+            $items = (new ItemListProvider())->getItemList($order, $currency);
 
             if (!empty($items)) {
                 $itemList = new ItemList();
@@ -126,71 +131,19 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
     }
 
     /**
-     * @throws InvalidOrderException
-     *
-     * @return Item[]
-     */
-    private function getItemList(
-        OrderEntity $order,
-        string $currency
-    ): array {
-        $items = [];
-        if ($order->getLineItems() === null) {
-            throw new InvalidOrderException($order->getId());
-        }
-
-        /** @var OrderLineItemEntity[] $lineItems */
-        $lineItems = $order->getLineItems()->getElements();
-
-        foreach ($lineItems as $id => $lineItem) {
-            $price = $lineItem->getPrice();
-
-            if ($price === null) {
-                return [];
-            }
-
-            $items[] = $this->createItemFromLineItem($lineItem, $currency, $price);
-        }
-
-        return $items;
-    }
-
-    private function createItemFromLineItem(
-        OrderLineItemEntity $lineItem,
-        string $currency,
-        CalculatedPrice $price
-    ): Item {
-        $item = new Item();
-        $item->setName($lineItem->getLabel());
-        $item->setSku($lineItem->getPayload()['productNumber']);
-        $item->setCurrency($currency);
-        $item->setQuantity($lineItem->getQuantity());
-        $item->setTax($this->formatPrice(0));
-        $item->setPrice($this->formatPrice($price->getTotalPrice() / $lineItem->getQuantity()));
-
-        return $item;
-    }
-
-    /**
+     * @throws CurrencyNotFoundException
      * @throws InconsistentCriteriaIdsException
-     * @throws InvalidOrderException
      */
-    private function getCurrencyFromOrderId(string $orderId, Context $context): CurrencyEntity
+    private function getCurrency(string $currencyId, Context $context): CurrencyEntity
     {
-        $criteria = new Criteria([$orderId]);
-        $criteria->addAssociation('currency');
+        $criteria = new Criteria([$currencyId]);
 
-        /** @var OrderCollection $orderCollection */
-        $orderCollection = $this->orderRepository->search($criteria, $context);
+        /** @var CurrencyCollection $currencyCollection */
+        $currencyCollection = $this->currencyRepository->search($criteria, $context);
 
-        $order = $orderCollection->get($orderId);
-        if (!$order) {
-            throw new InvalidOrderException($orderId);
-        }
-
-        $currency = $order->getCurrency();
-        if (!$currency) {
-            throw new InvalidOrderException($orderId);
+        $currency = $currencyCollection->get($currencyId);
+        if ($currency === null) {
+            throw new CurrencyNotFoundException($currencyId);
         }
 
         return $currency;

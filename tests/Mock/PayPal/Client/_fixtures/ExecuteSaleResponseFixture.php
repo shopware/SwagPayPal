@@ -65,6 +65,9 @@ class ExecuteSaleResponseFixture
                             'postal_code' => '4862',
                             'country_code' => 'AT',
                         ],
+                        'shipping_options' => [
+                            0 => null,
+                        ],
                     ],
                     'related_resources' => [
                         0 => [

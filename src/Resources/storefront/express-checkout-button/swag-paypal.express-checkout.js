@@ -217,7 +217,7 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
         const offCanvasCloseButton = document.querySelector(OFF_CANVAS_CART_CLOSE_BUTTON_SELECTOR);
         const requestPayload = { paymentId: data.paymentID };
 
-        // If the offCanvasCartCloseButton is visible, we close the offCanvsCart by clicking the element
+        // If the offCanvasCartCloseButton is visible, we close the offCanvasCart by clicking the element
         if (offCanvasCloseButton) {
             offCanvasCloseButton.click();
         }
