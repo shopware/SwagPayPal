@@ -147,7 +147,7 @@ class SPBCheckoutSubscriberTest extends TestCase
     private function createSubscriber(
         bool $withSettings = true,
         bool $spbEnabled = true,
-        bool $noneGermanMerchantCountry = true,
+        bool $nonGermanMerchantLocation = true,
         ?string $languageIso = null
     ): SPBCheckoutSubscriber {
         $settings = null;
@@ -156,9 +156,9 @@ class SPBCheckoutSubscriberTest extends TestCase
             $settings->setClientId(self::TEST_CLIENT_ID);
             $settings->setClientSecret('testClientSecret');
             $settings->setSpbCheckoutEnabled($spbEnabled);
-            $settings->setMerchantCountry(
-                $noneGermanMerchantCountry ? SwagPayPalSettingStruct::MERCHANT_COUNTRY_OTHER
-                    : SwagPayPalSettingStruct::MERCHANT_COUNTRY_GERMANY)
+            $settings->setMerchantLocation(
+                $nonGermanMerchantLocation ? SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER
+                    : SwagPayPalSettingStruct::MERCHANT_LOCATION_GERMANY)
             ;
 
             if ($languageIso !== null) {

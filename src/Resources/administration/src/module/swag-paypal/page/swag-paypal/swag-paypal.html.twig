@@ -48,13 +48,13 @@
                         </sw-form-field-renderer>
                     </template>
                     <template #beforeElements="{ card, config }">
-                        <template v-if="config && card.name === 'spb' && config['SwagPayPal.settings.merchantCountry'] === MERCHANT_COUNTRY_GERMANY">
+                        <template v-if="config && card.name === 'spb' && config['SwagPayPal.settings.merchantLocation'] === MERCHANT_LOCATION_GERMANY">
                             <sw-alert variant="info">
                                 {{ $tc('swag-paypal.settingForm.componentUnavailable') }}
                             </sw-alert>
                         </template>
 
-                        <template v-if="config && card.name === 'plus' && config['SwagPayPal.settings.merchantCountry'] === MERCHANT_COUNTRY_OTHER">
+                        <template v-if="config && card.name === 'plus' && config['SwagPayPal.settings.merchantLocation'] === MERCHANT_LOCATION_OTHER">
                             <sw-alert variant="info">
                                 {{ $tc('swag-paypal.settingForm.componentUnavailable') }}
                             </sw-alert>
