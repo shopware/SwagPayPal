@@ -25,6 +25,7 @@ use Swag\PayPal\Util\PaymentTokenExtractor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ExpressCheckoutController extends AbstractController
@@ -94,6 +95,17 @@ class ExpressCheckoutController extends AbstractController
         $this->salesChannelContextFactory = $salesChannelContextFactory;
         $this->paymentResource = $paymentResource;
         $this->paymentMethodUtil = $paymentMethodUtil;
+    }
+
+    /**
+     * @Route("/sales-channel-api/v{version}/_action/paypal/create-new-cart", name="sales-channel-api.action.paypal.create_new_cart", methods={"GET"})
+     */
+    public function createNewCart(SalesChannelContext $context): Response
+    {
+        $cart = $this->cartService->createNew($context->getToken());
+        $this->cartService->recalculate($cart, $context);
+
+        return new Response();
     }
 
     /**
