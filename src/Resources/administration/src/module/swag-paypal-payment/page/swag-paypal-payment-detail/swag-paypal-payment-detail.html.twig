@@ -2,7 +2,7 @@
     <div class="swag-paypal-payment-detail">
         <div v-if="!isLoading">
             <sw-card :title="$tc('swag-paypal-payment.paymentDetails.cardTitle')">
-                <template slot="grid">
+                <template #grid>
                     {% block swag_paypal_payment_actions_section %}
                         <sw-card-section secondary
                                          slim>
@@ -79,7 +79,7 @@
             </sw-card>
             {% block swag_paypal_payment_transaction_history_card %}
                 <sw-card :title="$tc('swag-paypal-payment.transactionHistory.cardTitle')">
-                    <template slot="grid">
+                    <template #grid>
                         {% block swag_paypal_payment_transaction_history_grid %}
                             <sw-data-grid :dataSource="relatedResources"
                                           :columns="relatedResourceColumns"

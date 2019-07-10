@@ -1,7 +1,7 @@
 {% block swag_paypal %}
     <sw-page class="swag-paypal">
         {% block swag_paypal_header %}
-            <template slot="smart-bar-header">
+            <template #smart-bar-header>
                 <h2>
                     {{ $tc('sw-settings.index.title') }}
                     <sw-icon name="small-arrow-medium-right" small></sw-icon>
@@ -11,7 +11,7 @@
         {% endblock %}
 
         {% block swag_paypal_actions %}
-            <template slot="smart-bar-actions">
+            <template #smart-bar-actions>
                 {% block swag_paypal_actions_test %}
                     <sw-button @click="onTest"
                                :disabled="isLoading || !clientSecretFilled || !clientIdFilled">
@@ -35,33 +35,35 @@
         {% endblock %}
 
         {% block swag_paypal_content %}
-            <sw-card-view slot="content">
-                <sw-system-config
-                        ref="systemConfig"
-                        salesChannelSwitchable
-                        inherit
-                        @config-changed="onConfigChange"
-                        domain="SwagPayPal.settings">
-                    <template #card-element="{ element, config, card }">
-                        <sw-form-field-renderer v-bind="getBind(element, config, card)"
-                                                v-model="config[element.name]">
-                        </sw-form-field-renderer>
-                    </template>
-                    <template #beforeElements="{ card, config }">
-                        <template v-if="config && card.name === 'spb' && config['SwagPayPal.settings.merchantLocation'] === MERCHANT_LOCATION_GERMANY">
-                            <sw-alert variant="info">
-                                {{ $tc('swag-paypal.settingForm.componentUnavailable') }}
-                            </sw-alert>
+            <template #content>
+                <sw-card-view>
+                    <sw-system-config
+                            ref="systemConfig"
+                            salesChannelSwitchable
+                            inherit
+                            @config-changed="onConfigChange"
+                            domain="SwagPayPal.settings">
+                        <template #card-element="{ element, config, card }">
+                            <sw-form-field-renderer v-bind="getBind(element, config, card)"
+                                                    v-model="config[element.name]">
+                            </sw-form-field-renderer>
                         </template>
+                        <template #beforeElements="{ card, config }">
+                            <template v-if="config && card.name === 'spb' && config['SwagPayPal.settings.merchantLocation'] === MERCHANT_LOCATION_GERMANY">
+                                <sw-alert variant="info">
+                                    {{ $tc('swag-paypal.settingForm.componentUnavailable') }}
+                                </sw-alert>
+                            </template>
 
-                        <template v-if="config && card.name === 'plus' && config['SwagPayPal.settings.merchantLocation'] === MERCHANT_LOCATION_OTHER">
-                            <sw-alert variant="info">
-                                {{ $tc('swag-paypal.settingForm.componentUnavailable') }}
-                            </sw-alert>
+                            <template v-if="config && card.name === 'plus' && config['SwagPayPal.settings.merchantLocation'] === MERCHANT_LOCATION_OTHER">
+                                <sw-alert variant="info">
+                                    {{ $tc('swag-paypal.settingForm.componentUnavailable') }}
+                                </sw-alert>
+                            </template>
                         </template>
-                    </template>
-                </sw-system-config>
-            </sw-card-view>
+                    </sw-system-config>
+                </sw-card-view>
+            </template>
         {% endblock %}
     </sw-page>
 {% endblock %}

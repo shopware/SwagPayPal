@@ -22,7 +22,7 @@
             </sw-field>
         {% endblock %}
         {% block swag_paypal_payment_action_refund_confirm_button %}
-            <template slot="modal-footer">
+            <template #modal-footer>
                 <sw-button variant="primary"
                            @click="refund">
                     {{ $tc('swag-paypal-payment.refundAction.confirmButton.text') }}

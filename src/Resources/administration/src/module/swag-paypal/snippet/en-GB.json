@@ -37,7 +37,7 @@
                     "helpText": "If this option is active, cart data will be submitted to PayPal at checkout."
                 },
                 "brandName": {
-                    "label": "Your own Brand name on PayPal page",
+                    "label": "Your own brand name on PayPal page",
                     "tooltipText": "This text will be displayed as the brand name on the PayPal payment page."
                 },
                 "landingPage": {
