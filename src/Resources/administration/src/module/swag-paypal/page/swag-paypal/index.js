@@ -11,7 +11,7 @@ export default {
         Mixin.getByName('notification')
     ],
 
-    inject: ['SwagPayPalWebhookRegisterService', 'SwagPayPalValidateApiCredentialsService'],
+    inject: ['SwagPayPalWebhookRegisterService', 'SwagPayPalApiCredentialsService'],
 
     data() {
         return {
@@ -116,7 +116,7 @@ export default {
 
         onTest() {
             this.isLoading = true;
-            this.SwagPayPalValidateApiCredentialsService.validateApiCredentials(
+            this.SwagPayPalApiCredentialsService.validateApiCredentials(
                 this.config['SwagPayPal.settings.clientId'],
                 this.config['SwagPayPal.settings.clientSecret'],
                 this.config['SwagPayPal.settings.sandbox']

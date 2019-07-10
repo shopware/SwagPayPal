@@ -1,6 +1,6 @@
 import ApiService from 'src/core/service/api.service';
 
-class SwagPayPalValidateApiCredentialsService extends ApiService {
+class SwagPayPalApiCredentialsService extends ApiService {
     constructor(httpClient, loginService, apiEndpoint = 'paypal') {
         super(httpClient, loginService, apiEndpoint);
     }
@@ -20,6 +20,19 @@ class SwagPayPalValidateApiCredentialsService extends ApiService {
                 return ApiService.handleResponse(response);
             });
     }
+
+    getApiCredentials(authCode, sharedId, nonce, sandboxActive, additionalParams = {}, additionalHeaders = {}) {
+        const params = additionalParams;
+        const headers = this.getBasicHeaders(additionalHeaders);
+
+        return this.httpClient
+            .post(`_action/${this.getApiBasePath()}/get-api-credentials`,
+                { authCode, sharedId, nonce, sandboxActive },
+                { params, headers })
+            .then((response) => {
+                return ApiService.handleResponse(response);
+            });
+    }
 }
 
-export default SwagPayPalValidateApiCredentialsService;
+export default SwagPayPalApiCredentialsService;

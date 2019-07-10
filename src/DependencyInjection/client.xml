@@ -10,6 +10,8 @@
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
         </service>
 
+        <service id="Swag\PayPal\PayPal\Client\OnboardingClient"/>
+
         <service id="Swag\PayPal\PayPal\Client\TokenClientFactory"/>
     </services>
 </container>

@@ -15,7 +15,7 @@ use Swag\PayPal\PayPal\Api\OAuthCredentials;
 use Swag\PayPal\PayPal\Api\Token;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
-use Swag\PayPal\Test\Setting\Service\ApiCredentialTestServiceTest;
+use Swag\PayPal\Test\Setting\Service\ApiCredentialServiceTest;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class TokenResourceMock extends TokenResource
@@ -40,7 +40,7 @@ class TokenResourceMock extends TokenResource
             return true;
         }
 
-        if ($this->getAuthenticationHeader(ApiCredentialTestServiceTest::INVALID_API_CLIENT_ID) === (string) $credentials) {
+        if ($this->getAuthenticationHeader(ApiCredentialServiceTest::INVALID_API_CLIENT_ID) === (string) $credentials) {
             throw $this->createClientException(SymfonyResponse::HTTP_UNAUTHORIZED);
         }
 

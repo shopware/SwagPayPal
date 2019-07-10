@@ -6,9 +6,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Setting\Service;
+namespace Swag\PayPal\PayPal;
 
-interface ApiCredentialTestServiceInterface
+final class PartnerId
 {
-    public function testApiCredentials(string $clientId, string $clientSecret, bool $sandboxActive): bool;
+    public const SANDBOX = 'APQ6CNQVEK4R6';
+    public const LIVE = '';
+
+    private function __construct()
+    {
+    }
 }

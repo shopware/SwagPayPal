@@ -8,7 +8,8 @@
 
 namespace Swag\PayPal\Setting;
 
-use Swag\PayPal\Setting\Service\ApiCredentialTestServiceInterface;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Swag\PayPal\Setting\Service\ApiCredentialServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,13 +18,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class SettingsController extends AbstractController
 {
     /**
-     * @var ApiCredentialTestServiceInterface
+     * @var ApiCredentialServiceInterface
      */
-    private $apiCredentialTestService;
+    private $apiCredentialService;
 
-    public function __construct(ApiCredentialTestServiceInterface $apiService)
+    public function __construct(ApiCredentialServiceInterface $apiService)
     {
-        $this->apiCredentialTestService = $apiService;
+        $this->apiCredentialService = $apiService;
     }
 
     /**
@@ -35,8 +36,23 @@ class SettingsController extends AbstractController
         $clientSecret = $request->query->get('clientSecret');
         $sandboxActive = $request->query->getBoolean('sandboxActive');
 
-        $credentialsValid = $this->apiCredentialTestService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
+        $credentialsValid = $this->apiCredentialService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
 
         return new JsonResponse(['credentialsValid' => $credentialsValid]);
+    }
+
+    /**
+     * @Route("/api/v{version}/_action/paypal/get-api-credentials", name="api.action.paypal.get.api.credentials", methods={"POST"})
+     */
+    public function getApiCredentials(RequestDataBag $requestDataBag): JsonResponse
+    {
+        $authCode = $requestDataBag->get('authCode');
+        $sharedId = $requestDataBag->get('sharedId');
+        $nonce = $requestDataBag->get('nonce');
+        $sandboxActive = $requestDataBag->getBoolean('sandboxActive');
+
+        $credentials = $this->apiCredentialService->getApiCredentials($authCode, $sharedId, $nonce, $sandboxActive);
+
+        return new JsonResponse($credentials);
     }
 }

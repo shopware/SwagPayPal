@@ -11,20 +11,28 @@ namespace Swag\PayPal\Setting\Service;
 use GuzzleHttp\Exception\ClientException;
 use Swag\PayPal\PayPal\Api\OAuthCredentials;
 use Swag\PayPal\PayPal\BaseURL;
+use Swag\PayPal\PayPal\Client\OnboardingClient;
+use Swag\PayPal\PayPal\PartnerId;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Symfony\Component\HttpFoundation\Response;
 
-class ApiCredentialTestService implements ApiCredentialTestServiceInterface
+class ApiCredentialService implements ApiCredentialServiceInterface
 {
     /**
      * @var TokenResource
      */
     private $tokenResource;
 
-    public function __construct(TokenResource $tokenResource)
+    /**
+     * @var onboardingClient
+     */
+    private $onboardingClient;
+
+    public function __construct(TokenResource $tokenResource, Onboardingclient $onboardingClient)
     {
         $this->tokenResource = $tokenResource;
+        $this->onboardingClient = $onboardingClient;
     }
 
     /**
@@ -46,5 +54,13 @@ class ApiCredentialTestService implements ApiCredentialTestServiceInterface
 
             throw $ce;
         }
+    }
+
+    public function getApiCredentials(string $authCode, string $sharedId, string $nonce, bool $sandboxActive): array
+    {
+        $url = $sandboxActive ? BaseURL::SANDBOX : BaseURL::LIVE;
+        $partnerId = $sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE;
+
+        return $this->onboardingClient->getClientCredentials($authCode, $sharedId, $nonce, $url, $partnerId);
     }
 }
