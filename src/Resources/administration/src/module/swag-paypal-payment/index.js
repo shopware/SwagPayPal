@@ -1,5 +1,6 @@
 import { Module } from 'src/core/shopware';
 import './extension/sw-order';
+import './extension/sw-plugin';
 import './page/swag-paypal-payment-detail';
 
 import deDE from './snippet/de-DE.json';

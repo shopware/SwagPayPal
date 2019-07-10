@@ -3,18 +3,18 @@
         xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
     <card>
         <title>API credentials</title>
-        <title lang="de-DE">API Zugangsdaten</title>
+        <title lang="de-DE">API-Zugangsdaten</title>
 
         <input-field>
             <name>clientId</name>
-            <label>Client-ID</label>
+            <label>Client ID</label>
             <label lang="de-DE">Client-ID</label>
             <required>true</required>
         </input-field>
 
         <input-field>
             <name>clientSecret</name>
-            <label>Client-Secret</label>
+            <label>Client secret</label>
             <label lang="de-DE">Client-Secret</label>
             <required>true</required>
         </input-field>
@@ -79,22 +79,22 @@
             <name>submitCart</name>
             <label>Submit cart</label>
             <label lang="de-DE">Warenkorb übertragen</label>
-            <helpText>If this option is active, the cart will be submitted to PayPal.</helpText>
-            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Warenkorb an PayPal übertragen.</helpText>
+            <helpText>If this option is active, cart data will be submitted to PayPal at checkout.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, werden beim Checkout die Warenkorbdaten an PayPal übertragen.</helpText>
         </input-field>
 
         <input-field>
             <name>brandName</name>
-            <label>Brand name on the PayPal page</label>
-            <label lang="de-DE">Markenname auf der PayPal Seite</label>
+            <label>Your own brand name on the PayPal page</label>
+            <label lang="de-DE">Eigener Markenname auf der PayPal-Seite</label>
         </input-field>
 
         <input-field type="single-select">
             <name>landingPage</name>
-            <label>PayPal landingpage</label>
-            <label lang="de-DE">PayPal Landingpage</label>
-            <helpText>Login: The PayPal site displays a login screen as landingpage.</helpText>
-            <helpText lang="de-DE">Anmeldung: Auf der PayPal Seite wird ein Login als Landingpage angezeigt.</helpText>
+            <label>PayPal landing page</label>
+            <label lang="de-DE">PayPal-Landingpage</label>
+            <helpText>Login: The PayPal site displays a login screen as landing page.</helpText>
+            <helpText lang="de-DE">Anmeldung: Auf der PayPal-Seite wird der Login als Landingpage angezeigt.</helpText>
             <options>
                 <option>
                     <id>Login</id>
@@ -113,14 +113,14 @@
             <name>sendOrderNumber</name>
             <label>Submit order number</label>
             <label lang="de-DE">Bestellnummer übertragen</label>
-            <helpText>If this option is active, the order number will be submitted to PayPal.</helpText>
-            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird die Bestellnummer an PayPal übertragen.</helpText>
+            <helpText>If this option is active, the order number will be submitted to PayPal at checkout.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird beim Checkout die Bestellnummer an PayPal übertragen.</helpText>-
         </input-field>
 
         <input-field>
             <name>orderNumberPrefix</name>
             <label>Order number prefix</label>
-            <label lang="de-DE">Bestellnummer Prefix</label>
+            <label lang="de-DE">Bestellnummer-Präfix</label>
         </input-field>
     </card>
 
@@ -149,7 +149,7 @@
             <label>'Pay Now' on Off-Canvas cart:</label>
             <label lang="de-DE">'Direkt zu PayPal im Off-Canvas Warenkorb:</label>
             <helpText>If this option is active, the Express Checkout button will be shown on the Off-Canvas cart.</helpText>
-            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Express Checkout Button in dem Off-Canvas Warenkorb angezeigt.</helpText>
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird der Express Checkout Button in dem Off-Canvas-Warenkorb angezeigt.</helpText>
         </input-field>
 
         <input-field type="bool">
@@ -275,7 +275,7 @@
             <label>Overwrite payment method name</label>
             <label lang="de-DE">Zahlungsartbezeichnung überschreiben</label>
             <helpText>With this setting you are able to overwrite the payment method name of PayPal. Note: This will only affect the storefront view.</helpText>
-            <helpText lang="de-DE">Mit dieser Einstellung kannst du die Zahlungsart-Bezeichnung von PayPal überschreiben. Hinweis: Dies betrifft nur die Storefront Ansicht.</helpText>
+            <helpText lang="de-DE">Mit dieser Einstellung kannst du die Zahlungsart-Bezeichnung von PayPal überschreiben. Hinweis: Dies betrifft nur die Storefront-Ansicht.</helpText>
         </input-field>
 
         <input-field>
@@ -283,7 +283,7 @@
             <label>Extend payment method description</label>
             <label lang="de-DE">Zahlungsartbeschreibung ergänzen</label>
             <helpText>With this setting you are able to extend the payment method description of PayPal. Note: This will only affect the storefront view.</helpText>
-            <helpText lang="de-DE">Mit dieser Einstellung kannst du die Zahlungsart-Beschreibung von PayPal ergänzen. Hinweis: Dies betrifft nur die Storefront Ansicht.</helpText>
+            <helpText lang="de-DE">Mit dieser Einstellung kannst du die Zahlungsart-Beschreibung von PayPal ergänzen. Hinweis: Dies betrifft nur die Storefront-Ansicht.</helpText>
         </input-field>
     </card>
 </config>
