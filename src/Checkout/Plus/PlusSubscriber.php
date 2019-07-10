@@ -65,7 +65,7 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$settings->getPlusEnabled() || $settings->getMerchantCountry() === SwagPayPalSettingStruct::MERCHANT_COUNTRY_OTHER) {
+        if (!$settings->getPlusEnabled() || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER) {
             return;
         }
 

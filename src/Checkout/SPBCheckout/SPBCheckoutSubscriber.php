@@ -61,7 +61,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$settings->getSpbCheckoutEnabled() || $settings->getMerchantCountry() === SwagPayPalSettingStruct::MERCHANT_COUNTRY_GERMANY) {
+        if (!$settings->getSpbCheckoutEnabled() || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_GERMANY) {
             return;
         }
 

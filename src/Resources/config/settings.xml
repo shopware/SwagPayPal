@@ -32,10 +32,10 @@
         <title lang="de-DE">Verhalten</title>
 
         <input-field type="single-select">
-            <name>merchantCountry</name>
-            <label>Merchant country</label>
+            <name>merchantLocation</name>
+            <label>Merchant location</label>
             <label lang="de-DE">Händlerstandort</label>
-            <placeholder>Please select your merchant country</placeholder>
+            <placeholder>Please select your merchant location</placeholder>
             <placeholder lang="de-DE">Bitte wähle deinen Händlerstandort</placeholder>
             <options>
                 <option>
@@ -45,7 +45,7 @@
                 </option>
                 <option>
                     <id>other</id>
-                    <name>Other merchant country</name>
+                    <name>Other merchant location</name>
                     <name lang="de-DE">Anderer Händlerstandort</name>
                 </option>
             </options>

@@ -1,6 +1,5 @@
 import { Mixin } from 'src/core/shopware';
 import template from './swag-paypal.html.twig';
-import './swag-paypal.scss';
 import constants from './swag-paypal-consts';
 
 export default {
@@ -82,7 +81,7 @@ export default {
 
                         if (result === this.WEBHOOK_RESULT_CREATED) {
                             this.createNotificationSuccess({
-                                title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
+                                title: this.$tc('swag-paypal.settingForm.titleSuccess'),
                                 message: this.$tc('swag-paypal.settingForm.messageWebhookCreated')
                             });
 
@@ -91,7 +90,7 @@ export default {
 
                         if (result === this.WEBHOOK_RESULT_UPDATED) {
                             this.createNotificationSuccess({
-                                title: this.$tc('swag-paypal.settingForm.titleSaveSuccess'),
+                                title: this.$tc('swag-paypal.settingForm.titleSuccess'),
                                 message: this.$tc('swag-paypal.settingForm.messageWebhookUpdated')
                             });
                         }
@@ -104,7 +103,7 @@ export default {
                             });
                             message += '</li>';
                             this.createNotificationError({
-                                title: this.$tc('swag-paypal.settingForm.titleSaveError'),
+                                title: this.$tc('swag-paypal.settingForm.titleError'),
                                 message: message
                             });
                         }
@@ -126,7 +125,7 @@ export default {
 
                 if (credentialsValid) {
                     this.createNotificationSuccess({
-                        title: this.$tc('swag-paypal.settingForm.titleTestSuccess'),
+                        title: this.$tc('swag-paypal.settingForm.titleSuccess'),
                         message: this.$tc('swag-paypal.settingForm.messageTestSuccess')
                     });
                     this.isLoading = false;
@@ -139,7 +138,7 @@ export default {
                     });
                     message += '</li>';
                     this.createNotificationError({
-                        title: this.$tc('swag-paypal.settingForm.titleTestError'),
+                        title: this.$tc('swag-paypal.settingForm.titleError'),
                         message: message
                     });
                     this.isLoading = false;
@@ -186,11 +185,11 @@ export default {
                 element.config.disabled = !this.config['SwagPayPal.settings.spbCheckoutEnabled'];
             }
 
-            if (card.name === 'spb' && config['SwagPayPal.settings.merchantCountry'] === this.MERCHANT_COUNTRY_GERMANY) {
+            if (card.name === 'spb' && config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY) {
                 element.config.disabled = true;
             }
 
-            if (card.name === 'plus' && config['SwagPayPal.settings.merchantCountry'] === this.MERCHANT_COUNTRY_OTHER) {
+            if (card.name === 'plus' && config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER) {
                 element.config.disabled = true;
             }
 

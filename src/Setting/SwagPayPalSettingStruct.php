@@ -14,8 +14,8 @@ use Swag\PayPal\PayPal\PaymentIntent;
 
 class SwagPayPalSettingStruct extends Struct
 {
-    public const MERCHANT_COUNTRY_GERMANY = 'germany';
-    public const MERCHANT_COUNTRY_OTHER = 'other';
+    public const MERCHANT_LOCATION_GERMANY = 'germany';
+    public const MERCHANT_LOCATION_OTHER = 'other';
 
     /**
      * @var string
@@ -150,7 +150,7 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var string
      */
-    protected $merchantCountry = self::MERCHANT_COUNTRY_GERMANY;
+    protected $merchantLocation = self::MERCHANT_LOCATION_GERMANY;
 
     public function getClientId(): string
     {
@@ -412,13 +412,13 @@ class SwagPayPalSettingStruct extends Struct
         $this->plusExtendPaymentDescription = $plusExtendPaymentDescription;
     }
 
-    public function getMerchantCountry(): string
+    public function getMerchantLocation(): string
     {
-        return $this->merchantCountry;
+        return $this->merchantLocation;
     }
 
-    public function setMerchantCountry(string $merchantCountry): void
+    public function setMerchantLocation(string $merchantLocation): void
     {
-        $this->merchantCountry = $merchantCountry;
+        $this->merchantLocation = $merchantLocation;
     }
 }

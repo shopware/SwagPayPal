@@ -8,20 +8,20 @@
         "messageNotBlank": "Dieser Wert darf nicht leer sein.",
         "settingForm": {
             "save": "Speichern",
-            "test": "API Zugangsdaten testen",
+            "test": "API-Zugangsdaten testen",
             "credentials": {
-                "cardTitle": "API Zugangsdaten",
+                "cardTitle": "API-Zugangsdaten",
                 "clientId": {
                     "label": "Client-ID",
-                    "tooltipText": "Die REST-API Client-ID, die das Plugin dazu verwendet sich mit der PayPal API zu authentifizieren."
+                    "tooltipText": "Die REST-API Client-ID, die das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren."
                 },
                 "clientSecret": {
                     "label": "Client-Secret",
-                    "tooltipText": "Das REST-API Client-Secret, welches das Plugin dazu verwendet sich mit der PayPal API zu authentifizieren."
+                    "tooltipText": "Das REST-API Client-Secret, das das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren."
                 },
                 "sandbox": {
                     "label": "Sandbox aktivieren",
-                    "tooltipText": "Aktiviere diese Option, wenn Du die Integration testen möchtest."
+                    "tooltipText": "Aktiviere diese Option, um die Integration zu testen."
                 }
             },
             "behaviour": {
@@ -34,17 +34,17 @@
                 },
                 "submitCart": {
                     "label": "Warenkorb übertragen",
-                    "helpText": "Wenn diese Option aktiv ist, wird der Warenkorb an PayPal übertragen."
+                    "helpText": "Wenn diese Option aktiv ist, werden beim Checkout die Warenkorbdaten an PayPal übertragen."
                 },
                 "brandName": {
-                    "label": "Markenname auf der PayPal Seite",
-                    "tooltipText": "Dieser Text wird als Markenname auf der PayPal Zahlungsseite angezeigt."
+                    "label": "Eigener Markenname auf der PayPal-Seite",
+                    "tooltipText": "Dieser Text wird als Markenname auf der PayPal-Zahlungsseite angezeigt."
                 },
                 "landingPage": {
-                    "label": "PayPal Landingpage",
+                    "label": "PayPal-Landingpage",
                     "helpText": {
-                        "Login": "Anmeldung: Auf der PayPal Seite wird ein Login als Landingpage angezeigt.",
-                        "Billing": "Registrierung: Auf der PayPal Seite wird eine Registrierung als Landingpage angezeigt."
+                        "Login": "Anmeldung: Auf der PayPal-Seite wird der Login als Landingpage angezeigt.",
+                        "Billing": "Registrierung: Auf der PayPal-Seite wird die Registrierung als Landingpage angezeigt."
                     },
                     "options": {
                         "Login": "Anmeldung",
@@ -53,28 +53,26 @@
                 },
                 "sendOrderNumber": {
                     "label": "Bestellnummer übertragen",
-                    "helpText": "Wenn diese Option aktiv ist, wird die Bestellnummer an PayPal übertragen."
+                    "helpText": "Wenn diese Option aktiv ist, wird beim Checkout die Bestellnummer an PayPal übertragen."
                 },
                 "orderNumberPrefix": {
-                    "label": "Bestellnummer Prefix",
-                    "tooltipText": "Dieser Text wird vor die ursprüngliche Bestellnummer vorgehängt (z.B. MeinShop_SW20001). Das hilft dabei den Shop zu identifizieren, in dem die Zahlung ausgeführt wurde."
+                    "label": "Bestellnummer-Präfix",
+                    "tooltipText": "Dieser Text wird vor die ursprüngliche Bestellnummer gehängt (z.B. MeinShop_SW20001). Das hilft dabei der Identifizierung des Shops, in dem die Zahlung ausgeführt wurde."
                 }
             },
             "plus": {
                 "plusOverwritePaymentName": "PayPal, Lastschrift oder Kreditkarte",
-                "plusExtendPaymentDescription": "Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal Konto möglich."
+                "plusExtendPaymentDescription": "Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal-Konto möglich."
             },
-            "titleSaveSuccess": "PayPal Einstellungen",
-            "titleTestSuccess": "API Zugangsdaten",
-            "titleTestError": "API Zugangsdaten Fehler",
-            "titleSaveError": "PayPal Einstellungen Fehler",
-            "messageSaveSuccess": "Die PayPal Einstellungen wurden erfolgreich gespeichert.",
-            "messageTestSuccess": "Die API Zugangsdaten wurden erfolgreich validiert.",
-            "messageTestError": "Die API Zugangsdaten konnten nicht validiert werden.",
-            "messageWebhookCreated": "Der Webhook wurde erfolgreich registriert.",
-            "messageWebhookUpdated": "Der Webhook wurde erfolgreich aktualisiert.",
+            "titleSuccess": "Erfolg",
+            "titleError": "Fehler",
+            "messageSaveSuccess": "Die PayPal-Einstellungen wurden gespeichert.",
+            "messageTestSuccess": "Die API-Zugangsdaten wurden validiert.",
+            "messageTestError": "Die API-Zugangsdaten konnten nicht validiert werden.",
+            "messageWebhookCreated": "Der Webhook wurde registriert.",
+            "messageWebhookUpdated": "Der Webhook wurde aktualisiert.",
             "messageWebhookError": "Der Webhook konnte nicht gespeichert werden. Folgende Fehler sind aufgetreten:",
-            "componentUnavailable": "Diese Komponente ist aufgrund ihres Händlerstandorts nicht verfügbar."
+            "componentUnavailable": "Diese Komponente ist aufgrund Ihres Händlerstandorts nicht verfügbar."
         }
     }
 }
