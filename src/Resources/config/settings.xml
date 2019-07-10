@@ -114,7 +114,7 @@
             <label>Submit order number</label>
             <label lang="de-DE">Bestellnummer übertragen</label>
             <helpText>If this option is active, the order number will be submitted to PayPal at checkout.</helpText>
-            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird beim Checkout die Bestellnummer an PayPal übertragen.</helpText>-
+            <helpText lang="de-DE">Wenn diese Option aktiv ist, wird beim Checkout die Bestellnummer an PayPal übertragen.</helpText>
         </input-field>
 
         <input-field>
