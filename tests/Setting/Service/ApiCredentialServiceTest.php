@@ -11,19 +11,20 @@ namespace Swag\PayPal\Test\Setting\Service;
 use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
-use Swag\PayPal\Setting\Service\ApiCredentialTestService;
+use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\CacheMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\OnboardingClientMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 
-class ApiCredentialTestServiceTest extends TestCase
+class ApiCredentialServiceTest extends TestCase
 {
     public const INVALID_API_CLIENT_ID = 'invalid-id';
 
     public function testValidApiCredentials(): void
     {
-        $apiService = $this->createApiCredentialTestService();
+        $apiService = $this->createApiCredentialService();
         $clientId = ConstantsForTesting::VALID_CLIENT_ID;
         $clientSecret = ConstantsForTesting::VALID_CLIENT_SECRET;
         $sandboxActive = true;
@@ -35,7 +36,7 @@ class ApiCredentialTestServiceTest extends TestCase
 
     public function testApiCredentialsThrowsException(): void
     {
-        $apiService = $this->createApiCredentialTestService();
+        $apiService = $this->createApiCredentialService();
         $clientId = ConstantsForTesting::VALID_CLIENT_ID;
         $clientSecret = 'invalid-secret';
         $sandboxActive = false;
@@ -47,7 +48,7 @@ class ApiCredentialTestServiceTest extends TestCase
 
     public function testApiCredentialsThrowsInvalidApiCredentialsException(): void
     {
-        $apiService = $this->createApiCredentialTestService();
+        $apiService = $this->createApiCredentialService();
         $clientId = self::INVALID_API_CLIENT_ID;
         $clientSecret = ConstantsForTesting::VALID_CLIENT_SECRET;
         $sandboxActive = false;
@@ -57,8 +58,21 @@ class ApiCredentialTestServiceTest extends TestCase
         $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
     }
 
-    private function createApiCredentialTestService(): ApiCredentialTestService
+    public function testGetApiCredentials()
     {
-        return new ApiCredentialTestService(new TokenResourceMock(new CacheMock(), new TokenClientFactoryMock()));
+        $apiService = $this->createApiCredentialService();
+
+        $credentials = $apiService->getApiCredentials('authCode', 'sharedId', 'nonce', true);
+
+        static::assertEquals(ConstantsForTesting::VALID_CLIENT_ID, $credentials['client_id']);
+        static::assertEquals(ConstantsForTesting::VALID_CLIENT_SECRET, $credentials['client_secret']);
+    }
+
+    private function createApiCredentialService(): ApiCredentialService
+    {
+        return new ApiCredentialService(
+            new TokenResourceMock(new CacheMock(), new TokenClientFactoryMock()),
+            new OnboardingClientMock()
+        );
     }
 }
