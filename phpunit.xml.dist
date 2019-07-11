@@ -16,6 +16,7 @@
     <testsuites>
         <testsuite name="SwagPayPal Testsuite">
             <directory>tests</directory>
+            <exclude>./tests/Checkout/Plus</exclude>
         </testsuite>
     </testsuites>
 
@@ -26,8 +27,10 @@
                 <directory suffix=".php">./tests</directory>
                 <directory suffix=".php">./vendor</directory>
                 <directory suffix=".php">./src/Migration</directory>
+                <directory suffix=".php">./src/Checkout/Plus</directory>
                 <directory suffix="Definition.php">./</directory>
                 <directory suffix="Exception.php">./</directory>
+                <directory suffix="PlusHandler.php">./src/Payment/Handler</directory>
 
                 <file>src/SwagPayPal.php</file>
             </exclude>
