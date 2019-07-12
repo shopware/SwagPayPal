@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "shopware/platform": "dev-master"
+        "shopware/core": "~6.0 || dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "8.2.1"
@@ -32,5 +32,13 @@
         "psr-4": {
             "Swag\\PayPal\\Test\\": "tests/"
         }
+    },
+    "suggest": {
+        "shopware/storefront": "Enables special payment features like 'Smart Payment Buttons' or 'Express Checkout'",
+        "shopware/administration": "Allows you to to set up the plugin easily"
+    },
+    "conflict": {
+        "shopware/storefront": "<6,>=7",
+        "shopware/administration": "<6,>=7"
     }
 }
