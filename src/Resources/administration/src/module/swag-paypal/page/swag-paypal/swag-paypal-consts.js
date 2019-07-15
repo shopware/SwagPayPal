@@ -1,12 +1,8 @@
-export const MERCHANT_LOCATION_GERMANY = 'germany';
-export const MERCHANT_LOCATION_OTHER = 'other';
 export const WEBHOOK_RESULT_NOTHING = 'nothing';
 export const WEBHOOK_RESULT_CREATED = 'created';
 export const WEBHOOK_RESULT_UPDATED = 'updated';
 
 export default {
-    MERCHANT_LOCATION_GERMANY,
-    MERCHANT_LOCATION_OTHER,
     WEBHOOK_RESULT_CREATED,
     WEBHOOK_RESULT_NOTHING,
     WEBHOOK_RESULT_UPDATED
