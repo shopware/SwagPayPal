@@ -4,6 +4,9 @@ namespace Swag\PayPal\Test\Mock\Util;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Swag\PayPal\Test\Mock\DIContainerMock;
+use Swag\PayPal\Test\Mock\EventDispatcherMock;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\EntityRepositoryMock;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +20,9 @@ class PaymentStatusUtilMock extends PaymentStatusUtil
         parent::__construct(
             new StateMachineRegistry(
                 $entityRepository,
-                $entityRepository
+                $entityRepository,
+                new EventDispatcherMock(),
+                new DefinitionInstanceRegistryMock([], new DIContainerMock())
             ),
             $entityRepository,
             $entityRepository
