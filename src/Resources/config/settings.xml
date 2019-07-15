@@ -32,27 +32,6 @@
         <title lang="de-DE">Verhalten</title>
 
         <input-field type="single-select">
-            <name>merchantLocation</name>
-            <label>Merchant location</label>
-            <label lang="de-DE">Händlerstandort</label>
-            <placeholder>Please select your merchant location</placeholder>
-            <placeholder lang="de-DE">Bitte wähle deinen Händlerstandort</placeholder>
-            <options>
-                <option>
-                    <id>germany</id>
-                    <name>Germany</name>
-                    <name lang="de-DE">Deutschland</name>
-                </option>
-                <option>
-                    <id>other</id>
-                    <name>Other merchant location</name>
-                    <name lang="de-DE">Anderer Händlerstandort</name>
-                </option>
-            </options>
-            <required>true</required>
-        </input-field>
-
-        <input-field type="single-select">
             <name>intent</name>
             <label>Payment acquisition</label>
             <label lang="de-DE">Zahlungsabschluss</label>

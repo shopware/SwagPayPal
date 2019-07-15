@@ -71,8 +71,7 @@
             "messageTestError": "Die API-Zugangsdaten konnten nicht validiert werden.",
             "messageWebhookCreated": "Der Webhook wurde registriert.",
             "messageWebhookUpdated": "Der Webhook wurde aktualisiert.",
-            "messageWebhookError": "Der Webhook konnte nicht gespeichert werden. Folgende Fehler sind aufgetreten:",
-            "componentUnavailable": "Diese Komponente ist aufgrund Ihres Händlerstandorts nicht verfügbar."
+            "messageWebhookError": "Der Webhook konnte nicht gespeichert werden. Folgende Fehler sind aufgetreten:"
         }
     }
 }

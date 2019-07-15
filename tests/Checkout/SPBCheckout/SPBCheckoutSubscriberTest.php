@@ -86,18 +86,6 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertNull($event->getPage()->getExtension('spbCheckoutButtonData'));
     }
 
-    public function testOnCheckoutConfirmLoadedSPBDisabledWithGermanMerchantLocation(): void
-    {
-        $subscriber = $this->createSubscriber(true, true, false);
-        $event = $this->createEvent();
-        $subscriber->onCheckoutConfirmLoaded($event);
-
-        /** @var SPBCheckoutButtonData|null $spbExtension */
-        $spbExtension = $event->getPage()->getExtension('spbCheckoutButtonData');
-
-        static::assertNull($spbExtension);
-    }
-
     public function testOnCheckoutConfirmLoadedSPBEnabled(): void
     {
         $subscriber = $this->createSubscriber();
@@ -123,7 +111,7 @@ class SPBCheckoutSubscriberTest extends TestCase
 
     public function testOnCheckoutConfirmLoadedSPBWithCustomLanguage(): void
     {
-        $subscriber = $this->createSubscriber(true, true, true, 'en_GB');
+        $subscriber = $this->createSubscriber(true, true, 'en_GB');
         $event = $this->createEvent();
         $subscriber->onCheckoutConfirmLoaded($event);
 
@@ -147,7 +135,6 @@ class SPBCheckoutSubscriberTest extends TestCase
     private function createSubscriber(
         bool $withSettings = true,
         bool $spbEnabled = true,
-        bool $nonGermanMerchantLocation = true,
         ?string $languageIso = null
     ): SPBCheckoutSubscriber {
         $settings = null;
@@ -156,10 +143,6 @@ class SPBCheckoutSubscriberTest extends TestCase
             $settings->setClientId(self::TEST_CLIENT_ID);
             $settings->setClientSecret('testClientSecret');
             $settings->setSpbCheckoutEnabled($spbEnabled);
-            $settings->setMerchantLocation(
-                $nonGermanMerchantLocation ? SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER
-                    : SwagPayPalSettingStruct::MERCHANT_LOCATION_GERMANY)
-            ;
 
             if ($languageIso !== null) {
                 $settings->setSpbButtonLanguageIso($languageIso);

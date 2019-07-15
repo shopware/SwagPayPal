@@ -146,7 +146,7 @@ export default {
             });
         },
 
-        getBind(element, config, card) {
+        getBind(element, config) {
             if (config !== this.config) {
                 this.onConfigChange(config);
             }
@@ -183,14 +183,6 @@ export default {
 
             if (element.name === 'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled') {
                 element.config.disabled = !this.config['SwagPayPal.settings.spbCheckoutEnabled'];
-            }
-
-            if (card.name === 'spb' && config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY) {
-                element.config.disabled = true;
-            }
-
-            if (card.name === 'plus' && config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER) {
-                element.config.disabled = true;
             }
 
             return element;
