@@ -4,7 +4,6 @@ import Plugin from 'src/script/plugin-system/plugin.class';
 import HttpClient from 'src/script/service/http-client.service';
 import ElementLoadingIndicatorUtil from 'src/script/utility/loading-indicator/element-loading-indicator.util';
 import FormSerializeUtil from 'src/script/utility/form/form-serialize.util';
-import './swag-paypal.express-checkout.scss';
 
 const OFF_CANVAS_CART_CLOSE_BUTTON_SELECTOR = '.btn.btn-light.btn-block.offcanvas-close.js-offcanvas-close.sticky-top';
 const SwagPayPalExpressCheckoutButtonInstances = [];

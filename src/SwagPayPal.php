@@ -113,6 +113,11 @@ class SwagPayPal extends Plugin
         parent::deactivate($deactivateContext);
     }
 
+    public function getStorefrontScriptPath(): string
+    {
+        return 'Resources/dist/storefront/js';
+    }
+
     private function addPaymentMethod(Context $context): void
     {
         /** @var PluginIdProvider $pluginIdProvider */
