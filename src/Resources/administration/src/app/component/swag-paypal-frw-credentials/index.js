@@ -3,10 +3,10 @@ import utils from 'src/core/service/util.service';
 import template from './swag-paypal-frw-credentials.html.twig';
 import './swag-paypal-frw.scss';
 
-const payPalPartnerIdSandbox = 'APQ6CNQVEK4R6';
-const payPalPartnerIdLive = '';
-const payPalPartnerClientIdSandbox = 'AUejkuN1rw6T54Bt8hmQbHKrKRLbFVYa1SiI4BpKos6WKx0oKVt1OK2i2b483GGPYgTxKr0YMpxneV8-';
-const payPalPartnerClientIdLive = '';
+const payPalPartnerIdLive = 'W8HDQ6LB42CJW';
+const payPalPartnerClientIdLive = 'AVTKpaE_t1zRCDfiJOP1ZYMAW0S_IvASFOIhhbeszRUFY0vsFIsGrt_FFsgHKU4VJiqub-tI30dpnANJ';
+const payPalPartnerIdSandbox = 'J425NKDMLL4YA';
+const payPalPartnerClientIdSandbox = 'AdRxw_8f4e2MOEduZB6D6ZOkdjnbR3SQJ1dQP3Y6GDLkxK0g4j0km2V2tRjoVDe0T2ZqQX6NlzpKsBwE';
 
 window.onboardedCallback = function onboardedCallback(authCode, sharedId) {
     Shopware.Application.getApplicationRoot().$emit('paypal-onboarding-finish', { authCode, sharedId });
