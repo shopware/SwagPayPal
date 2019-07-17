@@ -5,14 +5,67 @@ import HttpClient from 'src/script/service/http-client.service';
 
 export default class SwagPayPalSmartPaymentButtons extends Plugin {
     static options = {
+        /**
+         * This option specifies the PayPal button color
+         *
+         * @type string
+         */
         buttonColor: 'gold',
+
+        /**
+         * This option specifies the PayPal button shape
+         *
+         * @type string
+         */
         buttonShape: 'rect',
+
+        /**
+         * This option specifies the PayPal button size
+         *
+         * @type string
+         */
         buttonSize: 'small',
+
+        /**
+         * This option specifies the language of the PayPal button
+         *
+         * @type string
+         */
         languageIso: 'en_GB',
+
+        /**
+         * This option toggles the SandboxMode
+         *
+         * @type boolean
+         */
         useSandbox: true,
+
+        /**
+         * This option holds the client id specified in the settings
+         *
+         * @type string
+         */
         clientId: '',
+
+        /**
+         * This option toggles the PayNow/Login text at PayPal
+         *
+         * @type boolean
+         */
         commit: false,
+
+        /**
+         * This option toggles the text below the Smart Payment buttons
+         *
+         * @type boolean
+         */
         tagline: false,
+
+        /**
+         * This option toggles if credit card and ELV should be shown
+         *
+         * @type boolean
+         */
         useAlternativePaymentMethods: true,
 
         /**
@@ -20,7 +73,21 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
          *
          * @type string
          */
-        paypalScriptLoadedClass: 'paypal-checkout-js-loaded'
+        paypalScriptLoadedClass: 'paypal-checkout-js-loaded',
+
+        /**
+         * URL to create a new PayPal payment
+         *
+         * @type string
+         */
+        createPaymentUrl: '',
+
+        /**
+         * URL for the payment approval
+         *
+         * @type string
+         */
+        approvePaymentUrl: ''
     };
 
     init() {
@@ -124,7 +191,7 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
      */
     createOrder() {
         return new Promise(resolve => {
-            this._client.get('/sales-channel-api/v1/_action/paypal/spb/create-payment', responseText => {
+            this._client.get(this.options.createPaymentUrl, responseText => {
                 const response = JSON.parse(responseText);
                 resolve(response.token);
             });
@@ -141,7 +208,7 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
         };
 
         this._client.post(
-            '/sales-channel-api/v1/_action/paypal/spb/approve-payment',
+            this.options.approvePaymentUrl,
             JSON.stringify(requestPayload),
             () => {
                 if (data.payerID && data.paymentID) {
