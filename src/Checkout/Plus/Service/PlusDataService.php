@@ -93,6 +93,7 @@ class PlusDataService
             'customerSelectedLanguage' => $this->getPaymentWallLanguage($salesChannelContext),
             'paymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
             'paypalPaymentId' => $response->getId(),
+            'checkoutOrderUrl' => $this->router->generate('sales-channel-api.checkout.order.create', ['version' => 1]),
         ]);
         $billingAddress = $customer->getDefaultBillingAddress();
         if ($billingAddress !== null) {

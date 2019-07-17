@@ -13,46 +13,64 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
     static options = {
         /**
          * This option specifies the PayPal button color
+         *
+         * @type string
          */
         buttonColor: 'gold',
 
         /**
          * This option specifies the PayPal button shape
+         *
+         * @type string
          */
         buttonShape: 'rect',
 
         /**
          * This option specifies the PayPal button size
+         *
+         * @type string
          */
         buttonSize: 'small',
 
         /**
          * This option specifies the language of the PayPal button
+         *
+         * @type string
          */
         languageIso: 'en_GB',
 
         /**
          * This option specifies if the PayPal button appears on the checkout/register page
+         *
+         * @type boolean
          */
         loginEnabled: false,
 
         /**
          * This option toggles the SandboxMode
+         *
+         * @type boolean
          */
         useSandbox: false,
 
         /**
          * This option holds the client id specified in the settings
+         *
+         * @type string
          */
         clientId: '',
 
         /**
          * This option toggles the PayNow/Login text at PayPal
+         *
+         * @type boolean
          */
         commit: false,
 
         /**
-         * This option toggles the Text below the PayPal Express button
+         * This option toggles the text below the PayPal Express button
+         *
+         * @type boolean
          */
         tagline: false,
 
@@ -65,8 +83,45 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
 
         /**
          * This option toggles the Process whether or not the product needs to be added to the cart.
+         *
+         * @type boolean
          */
-        addProductToCart: false
+        addProductToCart: false,
+
+        /**
+         * URL to create a new PayPal payment
+         *
+         * @type string
+         */
+        createPaymentUrl: '',
+
+        /**
+         * URL to create a new cart in Shopware
+         *
+         * @type string
+         */
+        createNewCartUrl: '',
+
+        /**
+         * URL to add a new LineItem to the cart
+         *
+         * @type string
+         */
+        addLineItemUrl: '',
+
+        /**
+         * URL for the payment approval
+         *
+         * @type string
+         */
+        approvePaymentUrl: '',
+
+        /**
+         * URL to the checkout confirm page
+         *
+         * @type string
+         */
+        checkoutConfirmUrl: ''
     };
 
     init() {
@@ -160,7 +215,7 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
      */
     _createOrder() {
         return new Promise(resolve => {
-            this._client.get('/sales-channel-api/v1/_action/paypal/create-payment', responseText => {
+            this._client.get(this.options.createPaymentUrl, responseText => {
                 const response = JSON.parse(responseText);
                 resolve(response.token);
             });
@@ -171,8 +226,8 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
         const formattedLineItems = this._formatLineItems();
 
         return new Promise(resolve => {
-            this._client.get('/sales-channel-api/v1/_action/paypal/create-new-cart', () => {
-                this._client.post('/checkout/line-item/add', JSON.stringify(formattedLineItems), () => {
+            this._client.get(this.options.createNewCartUrl, () => {
+                this._client.post(this.options.addLineItemUrl, JSON.stringify(formattedLineItems), () => {
                     resolve();
                 });
             });
@@ -225,10 +280,10 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
         ElementLoadingIndicatorUtil.create(document.body);
 
         this._client.post(
-            '/paypal/approve-payment',
+            this.options.approvePaymentUrl,
             JSON.stringify(requestPayload),
             () => {
-                window.location.replace('/checkout/confirm');
+                window.location.replace(this.options.checkoutConfirmUrl);
                 ElementLoadingIndicatorUtil.remove(document.body);
             }
         );

@@ -71,6 +71,31 @@ class ExpressCheckoutButtonData extends Struct
      */
     protected $addProductToCart;
 
+    /**
+     * @var string
+     */
+    protected $createPaymentUrl;
+
+    /**
+     * @var string
+     */
+    protected $createNewCartUrl;
+
+    /**
+     * @var string
+     */
+    protected $addLineItemUrl;
+
+    /**
+     * @var string
+     */
+    protected $approvePaymentUrl;
+
+    /**
+     * @var string
+     */
+    protected $checkoutConfirmUrl;
+
     public function getProductDetailEnabled(): bool
     {
         return $this->productDetailEnabled;
@@ -134,5 +159,30 @@ class ExpressCheckoutButtonData extends Struct
     public function getAddProductToCart(): bool
     {
         return $this->addProductToCart;
+    }
+
+    public function getCreatePaymentUrl(): string
+    {
+        return $this->createPaymentUrl;
+    }
+
+    public function getCreateNewCartUrl(): string
+    {
+        return $this->createNewCartUrl;
+    }
+
+    public function getAddLineItemUrl(): string
+    {
+        return $this->addLineItemUrl;
+    }
+
+    public function getApprovePaymentUrl(): string
+    {
+        return $this->approvePaymentUrl;
+    }
+
+    public function getCheckoutConfirmUrl(): string
+    {
+        return $this->checkoutConfirmUrl;
     }
 }

@@ -130,6 +130,7 @@ class PlusSubscriberTest extends TestCase
         static::assertSame('de_DE', $plusExtension->getCustomerSelectedLanguage());
         static::assertSame($this->paypalPaymentMethodId, $plusExtension->getPaymentMethodId());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $plusExtension->getPaypalPaymentId());
+        static::assertSame('/sales-channel-api/v1/checkout/order', $plusExtension->getCheckoutOrderUrl());
     }
 
     public function testOnCheckoutConfirmLoadedPlusEnabledWithPaymentOverwrite(): void

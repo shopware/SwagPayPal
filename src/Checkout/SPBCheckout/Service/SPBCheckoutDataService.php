@@ -8,6 +8,7 @@ use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Symfony\Component\Routing\RouterInterface;
 
 class SPBCheckoutDataService
 {
@@ -21,12 +22,19 @@ class SPBCheckoutDataService
      */
     private $localeCodeProvider;
 
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
     public function __construct(
         PaymentMethodUtil $paymentMethodUtil,
-        LocaleCodeProvider $localeCodeProvider
+        LocaleCodeProvider $localeCodeProvider,
+        RouterInterface $router
     ) {
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->localeCodeProvider = $localeCodeProvider;
+        $this->router = $router;
     }
 
     /**
@@ -45,6 +53,8 @@ class SPBCheckoutDataService
             'intent' => $settings->getIntent(),
             'paymentMethodId' => $paymentMethodId,
             'useAlternativePaymentMethods' => $settings->getSpbAlternativePaymentMethodsEnabled(),
+            'createPaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.spb.create_payment', ['version' => 1]),
+            'approvePaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.spb.approve_payment', ['version' => 1]),
         ]);
 
         return $expressCheckoutData;
