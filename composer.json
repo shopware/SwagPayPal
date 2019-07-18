@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "shopware/core": "v6.0.0+ea1"
+        "shopware/core": "dev-master"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
@@ -31,8 +31,8 @@
         }
     },
     "suggest": {
-        "shopware/storefront": "Require 'v6.0.0+ea1'. Enables special payment features like 'Smart Payment Buttons' or 'Express Checkout'",
-        "shopware/administration": "Require 'v6.0.0+ea1'. Allows you to to set up the plugin easily"
+        "shopware/storefront": "Require 'dev-master'. Enables special payment features like 'Smart Payment Buttons' or 'Express Checkout'",
+        "shopware/administration": "Require 'dev-master'. Allows you to to set up the plugin easily"
     },
     "conflict": {
         "shopware/storefront": "<6,>=7",
