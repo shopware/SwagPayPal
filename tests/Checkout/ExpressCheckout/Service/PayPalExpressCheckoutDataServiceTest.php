@@ -20,6 +20,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataServic
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Symfony\Component\Routing\RouterInterface;
 
 class PayPalExpressCheckoutDataServiceTest extends TestCase
 {
@@ -57,16 +58,19 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     {
         parent::setUp();
         $container = $this->getContainer();
-        /** @var CartService $cartService */
-        $cartService = $container->get(CartService::class);
-        $this->cartService = $cartService;
 
         /** @var SalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
         $this->salesChannelContextFactory = $salesChannelContextFactory;
+        /** @var CartService $cartService */
+        $cartService = $container->get(CartService::class);
+        $this->cartService = $cartService;
+        /** @var RouterInterface $router */
+        $router = $container->get('router');
         $this->payPalExpressCheckoutDataService = new PayPalExpressCheckoutDataService(
             $this->cartService,
-            $this->createLocaleCodeProvider()
+            $this->createLocaleCodeProvider(),
+            $router
         );
         /** @var EntityRepositoryInterface $productRepo */
         $productRepo = $container->get('product.repository');
@@ -164,6 +168,11 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame('EUR', $expressCheckoutButtonData->getCurrency());
         static::assertSame(PaymentIntent::SALE, $expressCheckoutButtonData->getIntent());
         static::assertFalse($expressCheckoutButtonData->getAddProductToCart());
+        static::assertSame('/sales-channel-api/v1/_action/paypal/create-payment', $expressCheckoutButtonData->getCreatePaymentUrl());
+        static::assertSame('/sales-channel-api/v1/_action/paypal/create-new-cart', $expressCheckoutButtonData->getCreateNewCartUrl());
+        static::assertSame('/checkout/line-item/add', $expressCheckoutButtonData->getAddLineItemUrl());
+        static::assertSame('/paypal/approve-payment', $expressCheckoutButtonData->getApprovePaymentUrl());
+        static::assertSame('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());
     }
 
     public function dataProviderTestGetExpressCheckoutButtonDataWithCredentials()
