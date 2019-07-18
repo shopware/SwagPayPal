@@ -32,6 +32,7 @@ use Swag\PayPal\Test\Mock\PaymentMethodUtilMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
 
 class SPBCheckoutSubscriberTest extends TestCase
 {
@@ -107,6 +108,8 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbExtension->getPaymentMethodId());
         static::assertSame(PaymentIntent::SALE, $spbExtension->getIntent());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
+        static::assertSame('/sales-channel-api/v1/_action/paypal/spb/create-payment', $spbExtension->getCreatePaymentUrl());
+        static::assertSame('/sales-channel-api/v1/_action/paypal/spb/approve-payment', $spbExtension->getApprovePaymentUrl());
     }
 
     public function testOnCheckoutConfirmLoadedSPBWithCustomLanguage(): void
@@ -152,10 +155,13 @@ class SPBCheckoutSubscriberTest extends TestCase
         $settingsService = new SettingsServiceMock($settings);
         /** @var LocaleCodeProvider $localeCodeProvider */
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
+        /** @var RouterInterface $router */
+        $router = $this->getContainer()->get('router');
 
         $spbDataService = new SPBCheckoutDataService(
             $this->paymentMethodUtil,
-            $localeCodeProvider
+            $localeCodeProvider,
+            $router
         );
 
         return new SPBCheckoutSubscriber($settingsService, $spbDataService, new PaymentMethodUtilMock());

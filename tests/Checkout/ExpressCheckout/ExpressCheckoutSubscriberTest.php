@@ -36,6 +36,7 @@ use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
 
 class ExpressCheckoutSubscriberTest extends TestCase
 {
@@ -291,11 +292,14 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
+        /** @var RouterInterface $router */
+        $router = $this->getContainer()->get('router');
 
         return new ExpressCheckoutSubscriber(
             new PayPalExpressCheckoutDataService(
                 $cartService,
-                $this->createLocaleCodeProvider()
+                $this->createLocaleCodeProvider(),
+                $router
             ),
             new SettingsServiceMock($settings ?? null),
             new PaymentMethodUtil(

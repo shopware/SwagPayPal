@@ -16,8 +16,13 @@ class OnboardingClient
         $this->client = new Client();
     }
 
-    public function getClientCredentials(string $authCode, string $sharedId, string $nonce, string $url, string $partnerId): array
-    {
+    public function getClientCredentials(
+        string $authCode,
+        string $sharedId,
+        string $nonce,
+        string $url,
+        string $partnerId
+    ): array {
         $accessToken = $this->getAccesToken($authCode, $sharedId, $nonce, $url);
 
         return $this->getCredentials($accessToken, $url, $partnerId);

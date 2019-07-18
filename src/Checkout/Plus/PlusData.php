@@ -36,6 +36,11 @@ class PlusData extends Struct
      */
     protected $paypalPaymentId;
 
+    /**
+     * @var string
+     */
+    protected $checkoutOrderUrl;
+
     public function getApprovalUrl(): string
     {
         return $this->approvalUrl;
@@ -64,5 +69,10 @@ class PlusData extends Struct
     public function getPaypalPaymentId(): string
     {
         return $this->paypalPaymentId;
+    }
+
+    public function getCheckoutOrderUrl(): string
+    {
+        return $this->checkoutOrderUrl;
     }
 }

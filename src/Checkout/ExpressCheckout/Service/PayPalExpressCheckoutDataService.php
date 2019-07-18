@@ -10,6 +10,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Symfony\Component\Routing\RouterInterface;
 
 class PayPalExpressCheckoutDataService
 {
@@ -23,29 +24,36 @@ class PayPalExpressCheckoutDataService
      */
     private $localeCodeProvider;
 
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
     public function __construct(
         CartService $cartService,
-        LocaleCodeProvider $localeCodeProvider
+        LocaleCodeProvider $localeCodeProvider,
+        RouterInterface $router
     ) {
         $this->cartService = $cartService;
         $this->localeCodeProvider = $localeCodeProvider;
+        $this->router = $router;
     }
 
     /**
      * @throws InconsistentCriteriaIdsException
      */
     public function getExpressCheckoutButtonData(
-        SalesChannelContext $context,
+        SalesChannelContext $salesChannelContext,
         SwagPayPalSettingStruct $settings,
         bool $addProductToCart = false
     ): ?ExpressCheckoutButtonData {
-        $cart = $this->cartService->getCart($context->getToken(), $context);
+        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
         if (!$addProductToCart && (!$cart instanceof Cart || $cart->getLineItems()->count() === 0)) {
             return null;
         }
 
-        $customer = $context->getCustomer();
+        $customer = $salesChannelContext->getCustomer();
         if ($customer instanceof CustomerEntity && $customer->getActive()) {
             return null;
         }
@@ -60,10 +68,15 @@ class PayPalExpressCheckoutDataService
             'buttonColor' => $settings->getEcsButtonColor(),
             'buttonShape' => $settings->getEcsButtonShape(),
             'clientId' => $settings->getClientId(),
-            'languageIso' => $this->getInContextButtonLanguage($settings, $context),
-            'currency' => $context->getCurrency()->getIsoCode(),
+            'languageIso' => $this->getInContextButtonLanguage($settings, $salesChannelContext),
+            'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
             'intent' => $settings->getIntent(),
             'addProductToCart' => $addProductToCart,
+            'createPaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.create_payment', ['version' => 1]),
+            'createNewCartUrl' => $this->router->generate('sales-channel-api.action.paypal.create_new_cart', ['version' => 1]),
+            'addLineItemUrl' => $this->router->generate('frontend.checkout.line-item.add'),
+            'approvePaymentUrl' => $this->router->generate('paypal.approve_payment'),
+            'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page'),
         ]);
 
         return $buttonData;

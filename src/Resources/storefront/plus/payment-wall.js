@@ -108,7 +108,14 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
          *
          * @type boolean
          */
-        showPuiOnSandbox: true
+        showPuiOnSandbox: true,
+
+        /**
+         * URL for creating and paying the Shopware order
+         *
+         * @type string
+         */
+        checkoutOrderUrl: ''
     };
 
     init() {
@@ -212,7 +219,7 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         }
 
         this._client = new HttpClient(window.accessKey, window.contextToken);
-        this._client.post('/sales-channel-api/v1/checkout/order', JSON.stringify({}), this.afterCreateOrder.bind(this));
+        this._client.post(this.options.checkoutOrderUrl, JSON.stringify({}), this.afterCreateOrder.bind(this));
     }
 
     /**
@@ -227,7 +234,7 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         };
 
         this._client.post(
-            `/sales-channel-api/v1/checkout/order/${orderId}/pay`,
+            `${this.options.checkoutOrderUrl + orderId}/pay`,
             JSON.stringify(params),
             this.afterPayOrder.bind(this)
         );

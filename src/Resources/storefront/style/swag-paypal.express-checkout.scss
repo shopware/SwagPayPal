@@ -1,20 +1,12 @@
-.swag-paypal__cart-express-button {
-  padding-top: 16px;
+.swag-paypal__login-express-button {
+    padding-bottom: $spacer-sm;
 }
 
-.swag-paypal__login-express-button{
-  width: 38%;
-  padding-bottom: 5px;
-}
-
-.swag-paypal__detail-express-button{
-    padding-top: 15px;
-    width: 46%;
-    position: relative;
+.swag-paypal__detail-express-button {
+    padding-top: $spacer-md;
     z-index: 0;
 }
 
-.swag-paypal__listing-express-button{
-    padding-top: 15px;
-    width: 66%;
+.swag-paypal__listing-express-button {
+    padding-top: $spacer-md;
 }
