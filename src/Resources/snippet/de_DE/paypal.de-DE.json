@@ -1,0 +1,18 @@
+{
+    "pay-upon-invoice": {
+        "checkout-finish": {
+            "instructions": {
+                "transferRequest": "Bitte überweisen Sie %value% %currency% bis zum %date% an PayPal",
+                "table": {
+                    "bank": "Bank:",
+                    "iban": "IBAN:",
+                    "bic": "BIC:",
+                    "holder": "Kontoinhaber:",
+                    "amount": "Betrag:",
+                    "reference": "Verwendungszweck"
+                },
+                "legalMessage": "Warum PayPal? Rechnungskauf ist ein Service für den wir mit PayPal zusammenarbeiten. Der Betrag wurde von PayPal soeben direkt an uns gezahlt. Sie bezahlen den Rechnungsbetrag gemäß den Zahlungshinweisen an PayPal, nachdem Sie die Ware erhalten und geprüft haben."
+            }
+        }
+    }
+}

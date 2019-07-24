@@ -15,7 +15,9 @@ use Swag\PayPal\Payment\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
 use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\Api\Payment\PaymentInstruction;
 use Swag\PayPal\PayPal\PartnerAttributionId;
+use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
@@ -60,9 +62,16 @@ class PayPalHandler extends AbstractPaymentHandler
     public function handlePayPalPayment(
         AsyncPaymentTransactionStruct $transaction,
         SalesChannelContext $salesChannelContext,
-        CustomerEntity $customer
+        CustomerEntity $customer,
+        bool $payUponInvoice = false
     ): Payment {
         $payment = $this->paymentBuilder->getPayment($transaction, $salesChannelContext);
+        if ($payUponInvoice) {
+            $payment->setIntent(PaymentIntent::SALE);
+            $payment->getPayer()->setExternalSelectedFundingInstrumentType(PaymentInstruction::TYPE_INVOICE);
+            $payment->getApplicationContext()->setLocale('de_DE');
+        }
+
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
         $orderTransactionId = $transaction->getOrderTransaction()->getId();
 

@@ -104,7 +104,7 @@ class PayPalPaymentHandlerTest extends TestCase
         $updatedData = $orderTransactionRepo->getData();
         static::assertSame(
             CreateResponseFixture::CREATE_PAYMENT_ID,
-            $updatedData['customFields'][SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME]
+            $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID]
         );
     }
 
@@ -415,7 +415,7 @@ An error occurred during the communication with PayPal');
             $paymentResource,
             new OrderTransactionStateHandler($this->orderTransactionRepo, $this->stateMachineRegistry),
             $ecsSpbHandler,
-            $payPalHandler = new PayPalHandler(
+            new PayPalHandler(
                 $paymentResource,
                 $this->orderTransactionRepo,
                 $this->createPaymentBuilder($settings),

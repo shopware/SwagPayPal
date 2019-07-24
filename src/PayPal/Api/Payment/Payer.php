@@ -28,6 +28,11 @@ class Payer extends PayPalStruct
      */
     protected $payerInfo;
 
+    /**
+     * @var string
+     */
+    protected $externalSelectedFundingInstrumentType;
+
     public function setPaymentMethod(string $paymentMethod): void
     {
         $this->paymentMethod = $paymentMethod;
@@ -38,13 +43,18 @@ class Payer extends PayPalStruct
         return $this->payerInfo;
     }
 
+    public function setExternalSelectedFundingInstrumentType(string $externalSelectedFundingInstrumentType): void
+    {
+        $this->externalSelectedFundingInstrumentType = $externalSelectedFundingInstrumentType;
+    }
+
+    public function setPayerInfo(PayerInfo $payerInfo): void
+    {
+        $this->payerInfo = $payerInfo;
+    }
+
     protected function setStatus(string $status): void
     {
         $this->status = $status;
-    }
-
-    protected function setPayerInfo(PayerInfo $payerInfo): void
-    {
-        $this->payerInfo = $payerInfo;
     }
 }

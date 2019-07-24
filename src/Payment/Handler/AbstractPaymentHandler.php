@@ -57,7 +57,7 @@ abstract class AbstractPaymentHandler
         $data = [
             'id' => $transaction->getOrderTransaction()->getId(),
             'customFields' => [
-                SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME => $paypalPaymentId,
+                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID => $paypalPaymentId,
             ],
         ];
         $this->orderTransactionRepo->update([$data], $context);

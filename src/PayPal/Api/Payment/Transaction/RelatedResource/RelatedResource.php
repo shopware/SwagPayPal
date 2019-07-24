@@ -57,6 +57,11 @@ abstract class RelatedResource extends PayPalStruct
     /**
      * @var string
      */
+    private $receiptId;
+
+    /**
+     * @var string
+     */
     private $parentPayment;
 
     /**
@@ -89,6 +94,16 @@ abstract class RelatedResource extends PayPalStruct
         $this->paymentMode = $paymentMode;
     }
 
+    protected function setCreateTime(string $createTime): void
+    {
+        $this->createTime = $createTime;
+    }
+
+    protected function setUpdateTime(string $updateTime): void
+    {
+        $this->updateTime = $updateTime;
+    }
+
     protected function setProtectionEligibility(string $protectionEligibility): void
     {
         $this->protectionEligibility = $protectionEligibility;
@@ -99,19 +114,14 @@ abstract class RelatedResource extends PayPalStruct
         $this->protectionEligibilityType = $protectionEligibilityType;
     }
 
+    protected function setReceiptId(string $receiptId): void
+    {
+        $this->receiptId = $receiptId;
+    }
+
     protected function setParentPayment(string $parentPayment): void
     {
         $this->parentPayment = $parentPayment;
-    }
-
-    protected function setCreateTime(string $createTime): void
-    {
-        $this->createTime = $createTime;
-    }
-
-    protected function setUpdateTime(string $updateTime): void
-    {
-        $this->updateTime = $updateTime;
     }
 
     /**

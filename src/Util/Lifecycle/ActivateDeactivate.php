@@ -85,7 +85,7 @@ class ActivateDeactivate
         $this->customFieldRepository->upsert(
             [
                 [
-                    'name' => SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME,
+                    'name' => SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID,
                     'type' => CustomFieldTypes::TEXT,
                 ],
             ],
@@ -110,7 +110,7 @@ class ActivateDeactivate
     private function getCustomFieldIds(Context $context): IdSearchResult
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('name', SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME));
+        $criteria->addFilter(new EqualsFilter('name', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID));
 
         return $this->customFieldRepository->searchIds($criteria, $context);
     }

@@ -154,9 +154,9 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $isExpressCheckout = $request->query->getBoolean('isPayPalExpressCheckout');
         $isSPBCheckout = $request->query->getBoolean('isPayPalSpbCheckout');
         $isPlus = $request->query->getBoolean('isPayPalPlus');
+        $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout, $isPlus);
 
         try {
-            $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout, $isPlus);
             $response = $this->paymentResource->execute(
                 $payerId,
                 $paymentId,
@@ -198,10 +198,10 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         return PartnerAttributionId::PAYPAL_CLASSIC;
     }
 
-    private function getPaymentState(Payment $response): string
+    private function getPaymentState(Payment $payment): string
     {
-        $intent = $response->getIntent();
-        $relatedResource = $response->getTransactions()[0]->getRelatedResources()[0];
+        $intent = $payment->getIntent();
+        $relatedResource = $payment->getTransactions()[0]->getRelatedResources()[0];
         $paymentState = '';
 
         switch ($intent) {

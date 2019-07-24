@@ -1,0 +1,18 @@
+{
+    "pay-upon-invoice": {
+        "checkout-finish": {
+            "instructions": {
+                "transferRequest": "Please transfer %value% %currency% until %date% to PayPal",
+                "table": {
+                    "bank": "Bank:",
+                    "iban": "IBAN:",
+                    "bic": "BIC:",
+                    "holder": "Account holder:",
+                    "amount": "Amount:",
+                    "reference": "Reference"
+                },
+                "legalMessage": "Why PayPal? PayPal is our partner for processing invoice payments. PayPal has just transferred the amount to us directly. You pay the amount to PayPal according to the payment instructions after you have received and checked your purchase."
+            }
+        }
+    }
+}

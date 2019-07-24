@@ -24,6 +24,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CaptureOrdersResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteAuthorizeResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePuiResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetAuthorizeResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetCapturedOrderResponseFixture;
@@ -179,6 +180,10 @@ class PayPalClientMock extends PayPalClient
 
         if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_ORDER) {
             return ExecuteOrderResponseFixture::get();
+        }
+
+        if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_PUI) {
+            return ExecutePuiResponseFixture::get();
         }
 
         $response = ExecuteSaleResponseFixture::get();

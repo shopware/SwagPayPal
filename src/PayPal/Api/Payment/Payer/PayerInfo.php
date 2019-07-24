@@ -83,11 +83,6 @@ class PayerInfo extends ExecutePayerInfo
         return $this->shippingAddress;
     }
 
-    public function setShippingAddress(ShippingAddress $shippingAddress): void
-    {
-        $this->shippingAddress = $shippingAddress;
-    }
-
     public function getBillingAddress(): ?BillingAddress
     {
         return $this->billingAddress;
@@ -98,7 +93,12 @@ class PayerInfo extends ExecutePayerInfo
         $this->billingAddress = $billingAddress;
     }
 
-    public function setCountryCode(string $countryCode): void
+    protected function setShippingAddress(ShippingAddress $shippingAddress): void
+    {
+        $this->shippingAddress = $shippingAddress;
+    }
+
+    protected function setCountryCode(string $countryCode): void
     {
         $this->countryCode = $countryCode;
     }

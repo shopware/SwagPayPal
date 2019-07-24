@@ -68,7 +68,7 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
     {
-        $this->data = $data;
+        $this->data = array_merge($this->data, $data[0]);
 
         return new EntityWrittenContainerEvent($context, new NestedEventCollection([]), []);
     }
@@ -95,7 +95,7 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
 
     public function getData(): array
     {
-        return $this->data[0];
+        return $this->data;
     }
 
     public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent

@@ -6,7 +6,7 @@
     {% set expressSettings = page.extensions.payPalExpressData %}
 
     {% if expressSettings.listingEnabled %}
-        <div class="swag-paypal__listing-express-button"
+        <div class="pt-3"
              data-swag-paypal-express-button="true"
              data-swag-pay-pal-express-button-options="{{ expressSettings|json_encode }}">
         </div>

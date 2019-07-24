@@ -30,6 +30,11 @@ class ItemList extends PayPalStruct
      */
     protected $shippingOptions;
 
+    /**
+     * @var string
+     */
+    protected $shippingPhoneNumber;
+
     public function getItems(): array
     {
         return $this->items;
@@ -54,5 +59,10 @@ class ItemList extends PayPalStruct
     protected function setShippingOptions(array $shippingOptions): void
     {
         $this->shippingOptions = $shippingOptions;
+    }
+
+    protected function setShippingPhoneNumber(string $shippingPhoneNumber): void
+    {
+        $this->shippingPhoneNumber = $shippingPhoneNumber;
     }
 }

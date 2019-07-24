@@ -34,4 +34,8 @@ final class PartnerAttributionId
      * Shopware Partner Id for Installments
      */
     public const PAYPAL_RATE = 'Shopware_Cart_Rate_6native';
+
+    private function __construct()
+    {
+    }
 }
