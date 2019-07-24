@@ -1,18 +1,22 @@
 {
-    "pay-upon-invoice": {
-        "checkout-finish": {
-            "instructions": {
-                "transferRequest": "Please transfer %value% %currency% until %date% to PayPal",
-                "table": {
-                    "bank": "Bank:",
-                    "iban": "IBAN:",
-                    "bic": "BIC:",
-                    "holder": "Account holder:",
-                    "amount": "Amount:",
-                    "reference": "Reference"
-                },
-                "legalMessage": "Why PayPal? PayPal is our partner for processing invoice payments. PayPal has just transferred the amount to us directly. You pay the amount to PayPal according to the payment instructions after you have received and checked your purchase."
-            }
+    "payUponInvoice": {
+        "instructions": {
+            "transferRequest": "Please transfer %value% %currency% until %date% to PayPal.",
+            "table": {
+                "bank": "Bank:",
+                "iban": "IBAN:",
+                "bic": "BIC:",
+                "holder": "Account holder:",
+                "amount": "Amount:",
+                "reference": "Reference:"
+            },
+            "legalMessage": "Why PayPal? PayPal is our partner for processing invoice payments. PayPal has just transferred the amount to us directly. You pay the amount to PayPal according to the payment instructions after you have received and checked your purchase."
+        },
+        "document": {
+            "paymentShippingInfo": {
+                "payPalPuiPaymentMethod": "Payment method: Pay upon invoice"
+            },
+            "paymentNote": "%companyName% has assigned the claim against you to PayPal (Europe) S.àr.l. et Cie, S.C.A. as part of a current factoring agreement. Payments with debt discharging effect can only be made to PayPal (Europe) S.àr.l. et Cie, S.C.A."
         }
     }
 }

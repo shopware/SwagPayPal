@@ -1,18 +1,22 @@
 {
-    "pay-upon-invoice": {
-        "checkout-finish": {
-            "instructions": {
-                "transferRequest": "Bitte überweisen Sie %value% %currency% bis zum %date% an PayPal",
-                "table": {
-                    "bank": "Bank:",
-                    "iban": "IBAN:",
-                    "bic": "BIC:",
-                    "holder": "Kontoinhaber:",
-                    "amount": "Betrag:",
-                    "reference": "Verwendungszweck"
-                },
-                "legalMessage": "Warum PayPal? Rechnungskauf ist ein Service für den wir mit PayPal zusammenarbeiten. Der Betrag wurde von PayPal soeben direkt an uns gezahlt. Sie bezahlen den Rechnungsbetrag gemäß den Zahlungshinweisen an PayPal, nachdem Sie die Ware erhalten und geprüft haben."
-            }
+    "payUponInvoice": {
+        "instructions": {
+            "transferRequest": "Bitte überweisen Sie %value% %currency% bis zum %date% an PayPal.",
+            "table": {
+                "bank": "Bank:",
+                "iban": "IBAN:",
+                "bic": "BIC:",
+                "holder": "Kontoinhaber:",
+                "amount": "Betrag:",
+                "reference": "Verwendungszweck:"
+            },
+            "legalMessage": "Warum PayPal? Rechnungskauf ist ein Service für den wir mit PayPal zusammenarbeiten. Der Betrag wurde von PayPal soeben direkt an uns gezahlt. Sie bezahlen den Rechnungsbetrag gemäß den Zahlungshinweisen an PayPal, nachdem Sie die Ware erhalten und geprüft haben."
+        },
+        "document": {
+            "paymentShippingInfo": {
+                "payPalPuiPaymentMethod": "Gewählte Zahlungsart: Rechnungskauf"
+            },
+            "paymentNote": "%companyName% hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.àr.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.àr.l. et Cie, S.C.A. geleistet werden."
         }
     }
 }
