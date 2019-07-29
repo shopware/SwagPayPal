@@ -56,4 +56,31 @@ class PaymentTokenExtractorTest extends TestCase
         $token = PaymentTokenExtractor::extract($payment);
         static::assertSame('', $token);
     }
+
+    public function testExtractWithInvalidApprovalUrl(): void
+    {
+        $payment = new Payment();
+        $payment->assign([
+            'links' => [
+                [
+                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-3A3234483P2338009KTTFX7Q',
+                    'rel' => 'self',
+                    'method' => 'GET',
+                ],
+                [
+                    'href' => 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout',
+                    'rel' => 'approval_url',
+                    'method' => 'REDIRECT',
+                ],
+                [
+                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-3A3234483P2338009KTTFX7Q/execute',
+                    'rel' => 'execute',
+                    'method' => 'POST',
+                ],
+            ],
+        ]);
+
+        $token = PaymentTokenExtractor::extract($payment);
+        static::assertSame('', $token);
+    }
 }
