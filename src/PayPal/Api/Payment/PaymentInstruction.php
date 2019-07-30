@@ -17,11 +17,6 @@ class PaymentInstruction extends PayPalStruct
     protected $referenceNumber;
 
     /**
-     * @var string
-     */
-    private $instructionType;
-
-    /**
      * @var RecipientBankingInstruction
      */
     protected $recipientBankingInstruction;
@@ -35,6 +30,11 @@ class PaymentInstruction extends PayPalStruct
      * @var string
      */
     protected $paymentDueDate;
+
+    /**
+     * @var string
+     */
+    private $instructionType;
 
     /**
      * @var Link[]

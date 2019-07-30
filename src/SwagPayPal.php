@@ -68,12 +68,18 @@ class SwagPayPal extends Plugin
         $paymentRepository = $this->container->get('payment_method.repository');
         /** @var EntityRepositoryInterface $salesChannelRepository */
         $salesChannelRepository = $this->container->get('sales_channel.repository');
+        /** @var EntityRepositoryInterface $ruleRepository */
+        $ruleRepository = $this->container->get('rule.repository');
+        /** @var EntityRepositoryInterface $countryRepository */
+        $countryRepository = $this->container->get('country.repository');
 
         (new InstallUninstall(
             $systemConfigRepository,
-            $pluginIdProvider,
             $paymentRepository,
             $salesChannelRepository,
+            $ruleRepository,
+            $countryRepository,
+            $pluginIdProvider,
             $this->getClassName()
         ))->install($installContext->getContext());
 
@@ -106,14 +112,20 @@ class SwagPayPal extends Plugin
         $systemConfigRepository = $this->container->get('system_config.repository');
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
+        /** @var EntityRepositoryInterface $countryRepository */
+        $countryRepository = $this->container->get('country.repository');
+        /** @var EntityRepositoryInterface $ruleRepository */
+        $ruleRepository = $this->container->get('rule.repository');
 
         (new InstallUninstall(
             $systemConfigRepository,
-            $pluginIdProvider,
             $paymentRepository,
             $salesChannelRepository,
+            $ruleRepository,
+            $countryRepository,
+            $pluginIdProvider,
             $this->getClassName()
-        ))->uninstall($context);
+        ))->uninstall($context, $uninstallContext->keepUserData());
 
         parent::uninstall($uninstallContext);
     }
