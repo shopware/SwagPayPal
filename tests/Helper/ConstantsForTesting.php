@@ -28,4 +28,6 @@ final class ConstantsForTesting
     public const PAYER_ID_PAYMENT_AUTHORIZE = 'testPayerIdAuthorize';
 
     public const PAYER_ID_PAYMENT_ORDER = 'testPayerIdOrder';
+
+    public const PAYER_ID_PAYMENT_PUI = 'testPayerIdPui';
 }

@@ -55,7 +55,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         $criteria = new Criteria();
         $criteria->addFilter(
             new EqualsFilter(
-                sprintf('customFields.%s', SwagPayPal::PAYPAL_TRANSACTION_CUSTOM_FIELD_NAME),
+                sprintf('customFields.%s', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID),
                 $payPalTransactionId
             )
         );

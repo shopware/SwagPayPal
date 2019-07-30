@@ -23,8 +23,8 @@ class PayerInfoPatchBuilder
 
         $payerInfo = new PayerInfo();
         $payerInfo->setEmail($customer->getEmail());
-        $payerInfo->setFirstName($customer->getFirstName());
-        $payerInfo->setLastName($customer->getLastName());
+        $payerInfo->setFirstName($customerBillingAddress->getFirstName());
+        $payerInfo->setLastName($customerBillingAddress->getLastName());
         $payerInfo->setBillingAddress($this->createBillingAddress($customerBillingAddress));
 
         $payerInfoArray = json_decode((string) json_encode($payerInfo), true);

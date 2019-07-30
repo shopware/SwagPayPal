@@ -7,12 +7,12 @@ use Swag\PayPal\PayPal\Api\Payment\Link;
 
 class PaymentTokenExtractor
 {
-    public static function extract(Payment $paymentResource): string
+    public static function extract(Payment $payment): string
     {
         $token = '';
 
         /** @var Link $link */
-        foreach ($paymentResource->getLinks() as $link) {
+        foreach ($payment->getLinks() as $link) {
             if (!($link->getRel() === 'approval_url')) {
                 continue;
             }
