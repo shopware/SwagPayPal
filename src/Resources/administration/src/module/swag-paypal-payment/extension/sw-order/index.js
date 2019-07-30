@@ -1,6 +1,6 @@
 import { Component, State } from 'src/core/shopware';
-import template from './sw-order.html.twig';
 import Criteria from 'src/core/data-new/criteria.data';
+import template from './sw-order.html.twig';
 
 const paypalFormattedHandlerIdentifier = 'handler_swag_paypalpaymenthandler';
 

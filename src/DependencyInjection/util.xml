@@ -19,5 +19,10 @@
         <service id="Swag\PayPal\Util\LocaleCodeProvider">
             <argument type="service" id="language.repository"/>
         </service>
+
+        <service id="Swag\PayPal\Util\Logger" class="Monolog\Logger">
+            <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
+            <argument type="string">swag_paypal</argument>
+        </service>
     </services>
 </container>

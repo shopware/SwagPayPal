@@ -8,6 +8,7 @@
 
 namespace Swag\PayPal\Test\Helper;
 
+use Monolog\Logger;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Swag\PayPal\Payment\Builder\OrderPaymentBuilder;
 use Swag\PayPal\PayPal\PaymentIntent;
@@ -44,7 +45,8 @@ trait ServicesTrait
                 new CacheMock(),
                 new TokenClientFactoryMock()
             ),
-            $settingsService
+            $settingsService,
+            new Logger('testLogger')
         );
 
         if ($settings->hasExtension(PayPalPaymentHandlerTest::PAYPAL_RESOURCE_THROWS_EXCEPTION)) {
@@ -61,7 +63,8 @@ trait ServicesTrait
                 new CacheMock(),
                 new TokenClientFactoryMock()
             ),
-            $settingsService
+            $settingsService,
+            new Logger('testLogger')
         );
     }
 
