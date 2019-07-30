@@ -11,6 +11,7 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Monolog\Logger;
 use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 use Swag\PayPal\PayPal\Api\Payment\Payer\PayerInfo;
 use Swag\PayPal\PayPal\Client\PayPalClient;
@@ -57,7 +58,7 @@ class PayPalClientMock extends PayPalClient
         SwagPayPalSettingStruct $settings,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ) {
-        parent::__construct($tokenResource, $settings, $partnerAttributionId);
+        parent::__construct($tokenResource, $settings, new Logger('testLogger'), $partnerAttributionId);
     }
 
     public function sendGetRequest(string $resourceUri): array

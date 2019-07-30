@@ -9,6 +9,8 @@
 namespace Swag\PayPal\PayPal\Client;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Monolog\Logger;
 use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 use Swag\PayPal\PayPal\Api\OAuthCredentials;
 use Swag\PayPal\PayPal\BaseURL;
@@ -30,14 +32,21 @@ class PayPalClient
     private $client;
 
     /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
      * @throws PayPalSettingsInvalidException
      */
     public function __construct(
         TokenResource $tokenResource,
         SwagPayPalSettingStruct $settings,
+        Logger $logger,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ) {
         $this->tokenResource = $tokenResource;
+        $this->logger = $logger;
 
         $url = $settings->getSandbox() ? BaseURL::SANDBOX : BaseURL::LIVE;
 
@@ -70,14 +79,24 @@ class PayPalClient
             'headers' => ['content-type' => 'application/json'],
             'json' => $data,
         ];
-        $response = $this->client->post($resourceUri, $options)->getBody()->getContents();
+        try {
+            $response = $this->client->post($resourceUri, $options)->getBody()->getContents();
+        } catch (RequestException $requestException) {
+            $this->logger->error($requestException->getMessage(), [$resourceUri, $data]);
+            throw $requestException;
+        }
 
         return $this->decodeJsonResponse($response);
     }
 
     public function sendGetRequest(string $resourceUri): array
     {
-        $response = $this->client->get($resourceUri)->getBody()->getContents();
+        try {
+            $response = $this->client->get($resourceUri)->getBody()->getContents();
+        } catch (RequestException $requestException) {
+            $this->logger->error($requestException->getMessage(), [$resourceUri]);
+            throw $requestException;
+        }
 
         return $this->decodeJsonResponse($response);
     }
@@ -91,7 +110,12 @@ class PayPalClient
             'headers' => ['content-type' => 'application/json'],
             'json' => $data,
         ];
-        $response = $this->client->patch($resourceUri, $options)->getBody()->getContents();
+        try {
+            $response = $this->client->patch($resourceUri, $options)->getBody()->getContents();
+        } catch (RequestException $requestException) {
+            $this->logger->error($requestException->getMessage(), [$resourceUri, $data]);
+            throw $requestException;
+        }
 
         return $this->decodeJsonResponse($response);
     }

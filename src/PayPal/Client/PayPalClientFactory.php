@@ -8,6 +8,7 @@
 
 namespace Swag\PayPal\PayPal\Client;
 
+use Monolog\Logger;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -25,10 +26,19 @@ class PayPalClientFactory
      */
     private $settingsProvider;
 
-    public function __construct(TokenResource $tokenResource, SettingsServiceInterface $settingsProvider)
-    {
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    public function __construct(
+        TokenResource $tokenResource,
+        SettingsServiceInterface $settingsProvider,
+        Logger $logger
+    ) {
         $this->tokenResource = $tokenResource;
         $this->settingsProvider = $settingsProvider;
+        $this->logger = $logger;
     }
 
     /**
@@ -38,6 +48,6 @@ class PayPalClientFactory
     {
         $settings = $this->settingsProvider->getSettings($salesChannelId);
 
-        return new PayPalClient($this->tokenResource, $settings, $partnerAttributionId);
+        return new PayPalClient($this->tokenResource, $settings, $this->logger, $partnerAttributionId);
     }
 }
