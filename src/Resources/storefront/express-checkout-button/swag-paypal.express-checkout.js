@@ -121,7 +121,7 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
          *
          * @type string
          */
-        checkoutConfirmUrl: ''
+        checkoutConfirmUrl: '',
     };
 
     init() {
@@ -182,7 +182,7 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
                 tagline: this.options.tagline,
                 layout: 'horizontal',
                 label: 'checkout',
-                height: 40
+                height: 40,
             },
 
             /**
@@ -193,7 +193,7 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
             /**
              * Will be called if the payment process is approved by paypal
              */
-            onApprove: this.onApprove.bind(this)
+            onApprove: this.onApprove.bind(this),
         };
     }
 
@@ -249,7 +249,7 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
             if (key !== 'redirectTo' && matches && matches.length === 3) {
                 if (!formattedLineItems[matches[1]]) {
                     formattedLineItems[matches[1]] = {
-                        [matches[2]]: formData[matches[0]]
+                        [matches[2]]: formData[matches[0]],
                     };
                 } else {
                     const lineItem = formattedLineItems[matches[1]];
@@ -260,7 +260,7 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
         });
 
         return {
-            lineItems: formattedLineItems
+            lineItems: formattedLineItems,
         };
     }
 

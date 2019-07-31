@@ -11,7 +11,7 @@ export default class PayPalSelector extends Plugin {
         /**
          * This option is used to select the PayPal radio button
          */
-        paypalPaymentMethodId: ''
+        paypalPaymentMethodId: '',
     };
 
     init() {

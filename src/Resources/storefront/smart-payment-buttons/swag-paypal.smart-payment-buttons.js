@@ -87,7 +87,7 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
          *
          * @type string
          */
-        approvePaymentUrl: ''
+        approvePaymentUrl: '',
     };
 
     init() {
@@ -162,7 +162,7 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
                 shape: this.options.buttonShape,
                 color: this.options.buttonColor,
                 tagline: this.options.tagline,
-                label: 'pay'
+                label: 'pay',
             },
 
             onClick: this.onClick.bind(this),
@@ -175,7 +175,7 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
             /**
              * Will be called if the payment process is approved by paypal
              */
-            onApprove: this.onApprove.bind(this)
+            onApprove: this.onApprove.bind(this),
         };
     }
 
@@ -204,7 +204,7 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
     onApprove(data) {
         const requestPayload = {
             paymentId: data.paymentID,
-            payerId: data.payerID
+            payerId: data.payerID,
         };
 
         this._client.post(
