@@ -252,7 +252,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
         static::assertSame($expectedExpressCheckoutButtonData->getLoginEnabled(), $actualExpressCheckoutButtonData->getLoginEnabled());
         static::assertSame($expectedExpressCheckoutButtonData->getListingEnabled(), $actualExpressCheckoutButtonData->getListingEnabled());
         static::assertSame($expectedExpressCheckoutButtonData->getListingEnabled(), $actualExpressCheckoutButtonData->getListingEnabled());
-        static::assertSame($expectedExpressCheckoutButtonData->getUseSandbox(), $actualExpressCheckoutButtonData->getUseSandbox());
         static::assertSame($expectedExpressCheckoutButtonData->getButtonColor(), $actualExpressCheckoutButtonData->getButtonColor());
         static::assertSame($expectedExpressCheckoutButtonData->getButtonShape(), $actualExpressCheckoutButtonData->getButtonShape());
         static::assertSame($expectedExpressCheckoutButtonData->getLanguageIso(), $actualExpressCheckoutButtonData->getLanguageIso());
@@ -269,7 +268,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
             'offCanvasEnabled' => true,
             'loginEnabled' => true,
             'listingEnabled' => true,
-            'useSandbox' => false,
             'buttonColor' => 'gold',
             'buttonShape' => 'rect',
             'languageIso' => 'en_GB',

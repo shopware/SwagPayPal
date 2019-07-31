@@ -156,7 +156,6 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertTrue($expressCheckoutButtonData->getLoginEnabled());
         static::assertTrue($expressCheckoutButtonData->getListingEnabled());
         static::assertTrue($expressCheckoutButtonData->getCartEnabled());
-        static::assertFalse($expressCheckoutButtonData->getUseSandbox());
         static::assertSame('gold', $expressCheckoutButtonData->getButtonColor());
         static::assertSame('rect', $expressCheckoutButtonData->getButtonShape());
         if ($withSettingsLocale) {

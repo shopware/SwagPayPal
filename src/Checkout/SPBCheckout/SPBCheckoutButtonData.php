@@ -12,11 +12,6 @@ class SPBCheckoutButtonData extends Struct
     protected $clientId;
 
     /**
-     * @var bool
-     */
-    protected $useSandbox;
-
-    /**
      * @var string
      */
     protected $languageIso;
@@ -54,11 +49,6 @@ class SPBCheckoutButtonData extends Struct
     public function getClientId(): string
     {
         return $this->clientId;
-    }
-
-    public function getUseSandbox(): bool
-    {
-        return $this->useSandbox;
     }
 
     public function getLanguageIso(): string

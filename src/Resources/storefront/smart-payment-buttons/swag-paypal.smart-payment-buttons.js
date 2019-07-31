@@ -1,9 +1,9 @@
 /* eslint-disable import/no-unresolved */
 
-import Plugin from 'src/script/plugin-system/plugin.class';
 import HttpClient from 'src/script/service/http-client.service';
+import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
-export default class SwagPayPalSmartPaymentButtons extends Plugin {
+export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractButtons {
     static options = {
         /**
          * This option specifies the PayPal button color
@@ -32,13 +32,6 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
          * @type string
          */
         languageIso: 'en_GB',
-
-        /**
-         * This option toggles the SandboxMode
-         *
-         * @type boolean
-         */
-        useSandbox: true,
 
         /**
          * This option holds the client id specified in the settings
@@ -113,21 +106,6 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
         });
     }
 
-    createScript(callback = {}) {
-        const scriptOptions = this.getScriptUrlOptions();
-        const payPalScriptUrl = this.options.useSandbox
-            ? `https://www.paypal.com/sdk/js?client-id=sb${scriptOptions}`
-            : `https://www.paypal.com/sdk/js?client-id=${this.options.clientId}${scriptOptions}`;
-        const payPalScript = document.createElement('script');
-        payPalScript.type = 'text/javascript';
-        payPalScript.src = payPalScriptUrl;
-
-        payPalScript.addEventListener('load', callback.bind(this), false);
-        document.head.appendChild(payPalScript);
-
-        return payPalScript;
-    }
-
     renderButton() {
         const toggleButtons = () => {
             const checked = document.querySelectorAll('input.payment-method-input[checked=checked]')[0];
@@ -152,7 +130,6 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
 
         return this.paypal.Buttons(this.getButtonConfig()).render(this.el);
     }
-
 
     getButtonConfig() {
         return {
@@ -191,10 +168,12 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
      */
     createOrder() {
         return new Promise(resolve => {
-            this._client.get(this.options.createPaymentUrl, responseText => {
-                const response = JSON.parse(responseText);
-                resolve(response.token);
-            });
+            this._client.post(this.options.createPaymentUrl,
+                null,
+                responseText => {
+                    const response = JSON.parse(responseText);
+                    resolve(response.token);
+                });
         });
     }
 
@@ -223,18 +202,7 @@ export default class SwagPayPalSmartPaymentButtons extends Plugin {
     }
 
     getScriptUrlOptions() {
-        let config = '';
-        config += `&locale=${this.options.languageIso}`;
-        config += `&commit=${this.options.commit}`;
-
-        if (this.options.currency) {
-            config += `&currency=${this.options.currency}`;
-        }
-
-        if (this.options.intent && this.options.intent !== 'sale') {
-            config += `&intent=${this.options.intent}`;
-        }
-
+        let config = super.getScriptUrlOptions();
         if (!this.options.useAlternativePaymentMethods) {
             config += '&disable-funding=card,credit,sepa';
         }
