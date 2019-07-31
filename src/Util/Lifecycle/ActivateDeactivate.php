@@ -55,21 +55,14 @@ class ActivateDeactivate
         $paymentMethodUtil = new PaymentMethodUtil($this->paymentRepository, $this->salesChannelRepository);
         $payPalPaymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId($context);
 
-        $updateData = [];
-        if ($payPalPaymentMethodId !== null) {
-            $updateData[] = [
-                'id' => $payPalPaymentMethodId,
-                'active' => $active,
-            ];
+        if ($payPalPaymentMethodId === null) {
+            return;
         }
 
-        $payPalPuiPaymentMethodId = $paymentMethodUtil->getPayPalPuiPaymentMethodId($context);
-        if ($payPalPuiPaymentMethodId !== null) {
-            $updateData[] = [
-                'id' => $payPalPuiPaymentMethodId,
-                'active' => $active,
-            ];
-        }
+        $updateData[] = [
+            'id' => $payPalPaymentMethodId,
+            'active' => $active,
+        ];
 
         $this->paymentRepository->update($updateData, $context);
     }
