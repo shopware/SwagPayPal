@@ -43,6 +43,7 @@ class SwagPayPal extends Plugin
         $loader->load('webhook.xml');
         $loader->load('express_checkout.xml');
         $loader->load('spb_checkout.xml');
+        $loader->load('pui_checkout.xml');
     }
 
     public function getViewPaths(): array
@@ -125,7 +126,7 @@ class SwagPayPal extends Plugin
             $countryRepository,
             $pluginIdProvider,
             $this->getClassName()
-        ))->uninstall($context, $uninstallContext->keepUserData());
+        ))->uninstall($context);
 
         parent::uninstall($uninstallContext);
     }

@@ -3,6 +3,7 @@ import Criteria from 'src/core/data-new/criteria.data';
 import template from './sw-order.html.twig';
 
 const paypalFormattedHandlerIdentifier = 'handler_swag_paypalpaymenthandler';
+const paypalPuiFormattedHandlerIdentifier = 'handler_swag_paypalpuipaymenthandler';
 
 Component.override('sw-order-detail', {
     template,
@@ -83,7 +84,8 @@ Component.override('sw-order-detail', {
             }
             this.paymentMethodStore.getByIdAsync(paymentMethodId).then(
                 (paymentMethod) => {
-                    this.isPayPalPayment = paymentMethod.formattedHandlerIdentifier === paypalFormattedHandlerIdentifier;
+                    this.isPayPalPayment = paymentMethod.formattedHandlerIdentifier === paypalFormattedHandlerIdentifier ||
+                        paymentMethod.formattedHandlerIdentifier === paypalPuiFormattedHandlerIdentifier;
                 }
             );
         }

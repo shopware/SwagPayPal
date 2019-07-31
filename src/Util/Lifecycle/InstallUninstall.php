@@ -6,6 +6,7 @@ use Shopware\Core\Checkout\Cart\Rule\CartAmountRule;
 use Shopware\Core\Checkout\Customer\Rule\BillingCountryRule;
 use Shopware\Core\Checkout\Customer\Rule\IsCompanyRule;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Content\Rule\RuleEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -16,14 +17,19 @@ use Shopware\Core\Framework\Rule\Container\AndRule;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Country\Exception\CountryNotFoundException;
+use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\SwagPayPalSettingStructValidator;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
 class InstallUninstall
 {
+    private const PAYPAL_PUI_AVAILABILITY_RULE_NAME = 'PayPalPuiAvailabilityRule';
+
     /**
      * @var EntityRepositoryInterface
      */
@@ -83,7 +89,7 @@ class InstallUninstall
         $this->addPaymentMethods($context);
     }
 
-    public function uninstall(Context $context, bool $keepUserData): void
+    public function uninstall(Context $context): void
     {
         $this->removeConfiguration($context);
         $this->removePuiAvailabilityRule($context);
@@ -91,6 +97,10 @@ class InstallUninstall
 
     private function addDefaultConfiguration(): void
     {
+        if ($this->validSettingsExists()) {
+            return;
+        }
+
         $data = [];
         foreach ((new SwagPayPalSettingStruct())->jsonSerialize() as $key => $value) {
             if ($value === null || $value === []) {
@@ -182,11 +192,15 @@ class InstallUninstall
 
     private function getPuiAvailabilityRuleId(Context $context): string
     {
+        if ($paypalPuiAvailabilityRuleId = $this->getPayPalPuiAvailabilityRuleId($context)) {
+            return $paypalPuiAvailabilityRuleId;
+        }
+
         $germanCountryId = $this->getGermanCountryId($context);
         $ruleId = Uuid::randomHex();
         $data = [
             'id' => $ruleId,
-            'name' => 'PayPalPuiAvailabilityRule',
+            'name' => self::PAYPAL_PUI_AVAILABILITY_RULE_NAME,
             'priority' => 1,
             'description' => 'Determines whether or not the PayPal - Pay upon invoice payment method is available for the given rule context.',
             'conditions' => [
@@ -273,5 +287,54 @@ class InstallUninstall
                 'id' => $payPalPuiPaymentMethodAvailabilityRuleId,
             ],
         ], $context);
+    }
+
+    private function getPayPalPuiAvailabilityRuleId(Context $context): ?string
+    {
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('name', self::PAYPAL_PUI_AVAILABILITY_RULE_NAME));
+
+        /** @var RuleEntity|null $paypalPuiRule */
+        $paypalPuiRule = $this->ruleRepository->search($criteria, $context)->first();
+        if ($paypalPuiRule === null) {
+            return null;
+        }
+
+        return $paypalPuiRule->getId();
+    }
+
+    private function validSettingsExists(): bool
+    {
+        $settingsCollection = $this->getPayPalConfigurationCollection();
+
+        $structData = [];
+        foreach ($settingsCollection as $systemConfigEntity) {
+            $configurationKey = $systemConfigEntity->getConfigurationKey();
+            $identifier = (string) substr($configurationKey, \strlen(SettingsService::SYSTEM_CONFIG_DOMAIN));
+            if ($identifier === '') {
+                continue;
+            }
+            $structData[$identifier] = $systemConfigEntity->getConfigurationValue();
+        }
+
+        $settings = (new SwagPayPalSettingStruct())->assign($structData);
+
+        try {
+            SwagPayPalSettingStructValidator::validate($settings);
+        } catch (PayPalSettingsInvalidException $e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function getPayPalConfigurationCollection(): SystemConfigCollection
+    {
+        $criteria = (new Criteria())
+            ->addFilter(new ContainsFilter('configurationKey', SettingsService::SYSTEM_CONFIG_DOMAIN));
+
+        /** @var SystemConfigCollection $systemConfigCollection */
+        $systemConfigCollection = $this->systemConfigRepository->search($criteria, Context::createDefaultContext())->getEntities();
+
+        return $systemConfigCollection;
     }
 }
