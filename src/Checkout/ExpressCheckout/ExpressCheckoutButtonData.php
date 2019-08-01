@@ -27,11 +27,6 @@ class ExpressCheckoutButtonData extends Struct
     protected $listingEnabled;
 
     /**
-     * @var bool
-     */
-    protected $useSandbox;
-
-    /**
      * @var string
      */
     protected $buttonColor;
@@ -114,11 +109,6 @@ class ExpressCheckoutButtonData extends Struct
     public function getListingEnabled(): bool
     {
         return $this->listingEnabled;
-    }
-
-    public function getUseSandbox(): bool
-    {
-        return $this->useSandbox;
     }
 
     public function getButtonColor(): string

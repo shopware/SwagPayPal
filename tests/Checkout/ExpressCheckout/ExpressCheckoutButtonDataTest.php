@@ -15,7 +15,6 @@ class ExpressCheckoutButtonDataTest extends TestCase
             'loginEnabled' => true,
             'cartEnabled' => true,
             'listingEnabled' => true,
-            'useSandbox' => false,
             'buttonColor' => 'blue',
             'buttonShape' => 'pill',
             'clientId' => 'testClientId',
@@ -30,7 +29,6 @@ class ExpressCheckoutButtonDataTest extends TestCase
         static::assertTrue($buttonData->getLoginEnabled());
         static::assertTrue($buttonData->getCartEnabled());
         static::assertTrue($buttonData->getListingEnabled());
-        static::assertFalse($buttonData->getUseSandbox());
         static::assertSame('blue', $buttonData->getButtonColor());
         static::assertSame('pill', $buttonData->getButtonShape());
         static::assertSame('testClientId', $buttonData->getClientId());

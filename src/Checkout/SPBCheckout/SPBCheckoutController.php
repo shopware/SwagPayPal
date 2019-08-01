@@ -64,7 +64,7 @@ class SPBCheckoutController extends AbstractController
     }
 
     /**
-     * @Route("/sales-channel-api/v{version}/_action/paypal/spb/create-payment", name="sales-channel-api.action.paypal.spb.create_payment", methods={"GET"})
+     * @Route("/sales-channel-api/v{version}/_action/paypal/spb/create-payment", name="sales-channel-api.action.paypal.spb.create_payment", methods={"POST"})
      *
      * @throws AddressNotFoundException
      * @throws CustomerNotLoggedInException

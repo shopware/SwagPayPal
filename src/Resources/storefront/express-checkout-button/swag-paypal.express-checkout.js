@@ -1,15 +1,15 @@
 /* eslint-disable import/no-unresolved */
 
-import Plugin from 'src/script/plugin-system/plugin.class';
 import HttpClient from 'src/script/service/http-client.service';
 import ElementLoadingIndicatorUtil from 'src/script/utility/loading-indicator/element-loading-indicator.util';
 import FormSerializeUtil from 'src/script/utility/form/form-serialize.util';
+import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 const OFF_CANVAS_CART_CLOSE_BUTTON_SELECTOR = '.btn.btn-light.btn-block.offcanvas-close.js-offcanvas-close.sticky-top';
 const SwagPayPalExpressCheckoutButtonInstances = [];
 let isInjectionTriggered = false;
 
-export default class SwagPayPalExpressCheckoutButton extends Plugin {
+export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractButtons {
     static options = {
         /**
          * This option specifies the PayPal button color
@@ -45,13 +45,6 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
          * @type boolean
          */
         loginEnabled: false,
-
-        /**
-         * This option toggles the SandboxMode
-         *
-         * @type boolean
-         */
-        useSandbox: false,
 
         /**
          * This option holds the client id specified in the settings
@@ -153,20 +146,6 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
                 instance.createButton();
             });
         });
-    }
-
-    createScript(callback) {
-        const scriptOptions = this.getScriptUrlOptions();
-        const payPalScriptUrl = this.options.useSandbox ? `https://www.paypal.com/sdk/js?client-id=sb${scriptOptions}` :
-            `https://www.paypal.com/sdk/js?client-id=${this.options.clientId}${scriptOptions}`;
-        const payPalScript = document.createElement('script');
-        payPalScript.type = 'text/javascript';
-        payPalScript.src = payPalScriptUrl;
-
-        payPalScript.addEventListener('load', callback.bind(this), false);
-        document.head.appendChild(payPalScript);
-
-        return payPalScript;
     }
 
     renderButton() {
@@ -293,18 +272,8 @@ export default class SwagPayPalExpressCheckoutButton extends Plugin {
      * @return {string}
      */
     getScriptUrlOptions() {
-        let config = '';
-        config += `&locale=${this.options.languageIso}`;
-        config += `&commit=${this.options.commit}`;
+        let config = super.getScriptUrlOptions();
         config += '&disable-funding=card,credit,sepa';
-
-        if (this.options.currency) {
-            config += `&currency=${this.options.currency}`;
-        }
-
-        if (this.options.intent && this.options.intent !== 'sale') {
-            config += `&intent=${this.options.intent}`;
-        }
 
         return config;
     }

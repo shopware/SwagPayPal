@@ -64,7 +64,6 @@ class PayPalExpressCheckoutDataService
             'loginEnabled' => $settings->getEcsLoginEnabled(),
             'cartEnabled' => $settings->getEcsCartEnabled(),
             'listingEnabled' => $settings->getEcsListingEnabled(),
-            'useSandbox' => $settings->getSandbox(),
             'buttonColor' => $settings->getEcsButtonColor(),
             'buttonShape' => $settings->getEcsButtonShape(),
             'clientId' => $settings->getClientId(),

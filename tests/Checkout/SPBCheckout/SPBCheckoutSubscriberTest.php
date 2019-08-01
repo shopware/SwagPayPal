@@ -102,7 +102,6 @@ class SPBCheckoutSubscriberTest extends TestCase
         }
 
         static::assertSame(self::TEST_CLIENT_ID, $spbExtension->getClientId());
-        static::assertFalse($spbExtension->getUseSandbox());
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('de_DE', $spbExtension->getLanguageIso());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbExtension->getPaymentMethodId());
@@ -127,7 +126,6 @@ class SPBCheckoutSubscriberTest extends TestCase
         }
 
         static::assertSame(self::TEST_CLIENT_ID, $spbExtension->getClientId());
-        static::assertFalse($spbExtension->getUseSandbox());
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('en_GB', $spbExtension->getLanguageIso());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbExtension->getPaymentMethodId());
