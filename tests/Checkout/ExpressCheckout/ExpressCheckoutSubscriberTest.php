@@ -69,7 +69,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
         /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPage()->getExtension('payPalExpressData');
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         $this->assertExpressCheckoutButtonData(
             $this->getExpectedExpressCheckoutButtonDataForAddProductEvents(),
@@ -89,7 +89,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
         /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPage()->getExtension('payPalExpressData');
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         $this->assertExpressCheckoutButtonData(
             $this->getExpectedExpressCheckoutButtonDataForAddProductEvents(),
@@ -109,7 +109,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
         /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPage()->getExtension('payPalExpressData');
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         $this->assertExpressCheckoutButtonData(
             $this->getExpectedExpressCheckoutButtonDataForAddProductEvents(),
@@ -129,7 +129,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
         /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPage()->getExtension('payPalExpressData');
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         $this->assertExpressCheckoutButtonData(
             $this->getExpectedExpressCheckoutButtonDataForAddProductEvents(),
@@ -149,7 +149,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
         /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPage()->getExtension('payPalExpressData');
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         $this->assertExpressCheckoutButtonData(
             $this->getExpectedExpressCheckoutButtonDataForAddProductEvents(),
@@ -170,7 +170,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
         /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPage()->getExtension('payPalExpressData');
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
@@ -186,7 +186,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $this->getExpressCheckoutSubscriber(false)->addExpressCheckoutDataToPage($event);
 
         /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPage()->getExtension('payPalExpressData');
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
@@ -202,7 +202,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $this->getExpressCheckoutSubscriber(true, true)->addExpressCheckoutDataToPage($event);
 
         /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPage()->getExtension('payPalExpressData');
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
@@ -219,7 +219,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
         /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPage()->getExtension('payPalExpressData');
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
@@ -238,7 +238,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
         /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPage()->getExtension('payPalExpressData');
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
         static::assertNull($actualExpressCheckoutButtonData);
     }
 

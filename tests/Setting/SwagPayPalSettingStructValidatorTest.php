@@ -15,7 +15,8 @@ class SwagPayPalSettingStructValidatorTest extends TestCase
         $settings->setClientId('SomeClientId');
         $settings->setClientSecret('SomeClientSecret');
 
-        // If the Settings struct is invalid an exception gets thrown means if we can assert after this statement everything is fine
+        // If the Settings struct is invalid, an exception gets thrown.
+        // That means able to assert after this statement, everything is fine.
         SwagPayPalSettingStructValidator::validate($settings);
         static::assertTrue(true);
     }

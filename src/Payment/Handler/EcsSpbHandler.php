@@ -19,6 +19,7 @@ use Swag\PayPal\Payment\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Payment\Patch\AmountPatchBuilder;
 use Swag\PayPal\Payment\Patch\ItemListPatchBuilder;
 use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
+use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -26,6 +27,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class EcsSpbHandler extends AbstractPaymentHandler
 {
+    public const PAYPAL_PAYMENT_ID_INPUT_NAME = 'paypalPaymentId';
+    public const PAYPAL_PAYER_ID_INPUT_NAME = 'paypalPayerId';
     /**
      * @var SettingsServiceInterface
      */
@@ -82,7 +85,9 @@ class EcsSpbHandler extends AbstractPaymentHandler
         SalesChannelContext $salesChannelContext,
         CustomerEntity $customer
     ): RedirectResponse {
-        $paypalPaymentId = $dataBag->get('paypalPaymentId');
+        $paypalPaymentId = $dataBag->get(self::PAYPAL_PAYMENT_ID_INPUT_NAME);
+        $payerId = $dataBag->get(self::PAYPAL_PAYER_ID_INPUT_NAME);
+
         $this->addPayPalTransactionId($transaction, $paypalPaymentId, $salesChannelContext->getContext());
 
         $order = $transaction->getOrder();
@@ -110,13 +115,11 @@ class EcsSpbHandler extends AbstractPaymentHandler
 
         $this->patchPayPalPayment($patches, $paypalPaymentId, $salesChannelId, $orderTransaction->getId());
 
-        $payerId = $dataBag->get('paypalPayerId');
-
         return $this->createResponse(
             $transaction->getReturnUrl(),
             $paypalPaymentId,
             $payerId,
-            'sPayPalExpressCheckout'
+            PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID
         );
     }
 
@@ -125,11 +128,16 @@ class EcsSpbHandler extends AbstractPaymentHandler
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
-        $paypalPaymentId = $dataBag->get('paypalPaymentId');
-        $payerId = $dataBag->get('paypalPayerId');
+        $paypalPaymentId = $dataBag->get(self::PAYPAL_PAYMENT_ID_INPUT_NAME);
+        $payerId = $dataBag->get(self::PAYPAL_PAYER_ID_INPUT_NAME);
         $this->addPayPalTransactionId($transaction, $paypalPaymentId, $salesChannelContext->getContext());
 
-        return $this->createResponse($transaction->getReturnUrl(), $paypalPaymentId, $payerId, 'isPayPalSpbCheckout');
+        return $this->createResponse(
+            $transaction->getReturnUrl(),
+            $paypalPaymentId,
+            $payerId,
+            PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID
+        );
     }
 
     private function createResponse(
@@ -138,11 +146,13 @@ class EcsSpbHandler extends AbstractPaymentHandler
         string $payerId,
         string $payPalType
     ): RedirectResponse {
-        $response = new RedirectResponse(
-            sprintf('%s&paymentId=%s&PayerID=%s&%s=1', $returnUrl, $paypalPaymentId, $payerId, $payPalType)
-        );
+        $parameters = http_build_query([
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID => $paypalPaymentId,
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID => $payerId,
+            $payPalType => true,
+        ]);
 
-        return $response;
+        return new RedirectResponse(sprintf('%s&%s', $returnUrl, $parameters));
     }
 
     /**

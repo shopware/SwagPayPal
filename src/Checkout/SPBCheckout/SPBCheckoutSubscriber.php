@@ -12,6 +12,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SPBCheckoutSubscriber implements EventSubscriberInterface
 {
+    public const PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID = 'payPalSpbButtonData';
+
     /**
      * @var SettingsServiceInterface
      */
@@ -69,6 +71,6 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             $settings
         );
 
-        $event->getPage()->addExtension('spbCheckoutButtonData', $buttonData);
+        $event->getPage()->addExtension(self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID, $buttonData);
     }
 }

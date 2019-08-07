@@ -63,7 +63,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $event = $this->createEvent();
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        static::assertNull($event->getPage()->getExtension('spbCheckoutButtonData'));
+        static::assertNull($event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
     }
 
     public function testOnCheckoutConfirmSPBPayPalNotInActiveSalesChannel(): void
@@ -75,7 +75,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         );
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        static::assertNull($event->getPage()->getExtension('spbCheckoutButtonData'));
+        static::assertNull($event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
     }
 
     public function testOnCheckoutConfirmSPBNotEnabled(): void
@@ -84,7 +84,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $event = $this->createEvent();
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        static::assertNull($event->getPage()->getExtension('spbCheckoutButtonData'));
+        static::assertNull($event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
     }
 
     public function testOnCheckoutConfirmLoadedSPBEnabled(): void
@@ -94,7 +94,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $subscriber->onCheckoutConfirmLoaded($event);
 
         /** @var SPBCheckoutButtonData|null $spbExtension */
-        $spbExtension = $event->getPage()->getExtension('spbCheckoutButtonData');
+        $spbExtension = $event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID);
 
         static::assertNotNull($spbExtension);
         if ($spbExtension === null) {
@@ -108,7 +108,6 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame(PaymentIntent::SALE, $spbExtension->getIntent());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
         static::assertSame('/sales-channel-api/v1/_action/paypal/spb/create-payment', $spbExtension->getCreatePaymentUrl());
-        static::assertSame('/sales-channel-api/v1/_action/paypal/spb/approve-payment', $spbExtension->getApprovePaymentUrl());
     }
 
     public function testOnCheckoutConfirmLoadedSPBWithCustomLanguage(): void
@@ -118,7 +117,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $subscriber->onCheckoutConfirmLoaded($event);
 
         /** @var SPBCheckoutButtonData|null $spbExtension */
-        $spbExtension = $event->getPage()->getExtension('spbCheckoutButtonData');
+        $spbExtension = $event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID);
 
         static::assertNotNull($spbExtension);
         if ($spbExtension === null) {

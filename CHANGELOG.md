@@ -1,3 +1,6 @@
+# 0.10.2
+- PT-10715 - Paypal is selected correctly again as payment method for Express Checkout
+
 # 0.10.1
 - Improved link generation for Javascript API calls
 

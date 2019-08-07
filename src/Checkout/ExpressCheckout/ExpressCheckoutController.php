@@ -13,9 +13,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SalesChannel\SalesChannel\SalesChannelContextSwitcher;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Salutation\SalutationEntity;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
+use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
@@ -30,6 +33,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ExpressCheckoutController extends AbstractController
 {
+    public const PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID = 'payPalEcsCartData';
+
     /**
      * @var CartPaymentBuilderInterface
      */
@@ -75,6 +80,11 @@ class ExpressCheckoutController extends AbstractController
      */
     private $paymentMethodUtil;
 
+    /**
+     * @var SalesChannelContextSwitcher
+     */
+    private $salesChannelContextSwitcher;
+
     public function __construct(
         CartPaymentBuilderInterface $cartPaymentBuilder,
         CartService $cartService,
@@ -84,7 +94,8 @@ class ExpressCheckoutController extends AbstractController
         AccountService $accountService,
         SalesChannelContextFactory $salesChannelContextFactory,
         PaymentResource $paymentResource,
-        PaymentMethodUtil $paymentMethodUtil
+        PaymentMethodUtil $paymentMethodUtil,
+        SalesChannelContextSwitcher $salesChannelContextSwitcher
     ) {
         $this->cartPaymentBuilder = $cartPaymentBuilder;
         $this->cartService = $cartService;
@@ -95,6 +106,7 @@ class ExpressCheckoutController extends AbstractController
         $this->salesChannelContextFactory = $salesChannelContextFactory;
         $this->paymentResource = $paymentResource;
         $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->salesChannelContextSwitcher = $salesChannelContextSwitcher;
     }
 
     /**
@@ -105,7 +117,7 @@ class ExpressCheckoutController extends AbstractController
         $cart = $this->cartService->createNew($context->getToken());
         $this->cartService->recalculate($cart, $context);
 
-        return new Response();
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -137,47 +149,39 @@ class ExpressCheckoutController extends AbstractController
      * @throws BadCredentialsException
      * @throws PayPalSettingsInvalidException
      */
-    public function onApprove(SalesChannelContext $context, Request $request): JsonResponse
+    public function onApprove(SalesChannelContext $salesChannelContext, Request $request): JsonResponse
     {
-        $paymentId = $request->request->get('paymentId');
-        $payment = $this->paymentResource->get($paymentId, $context->getSalesChannel()->getId());
-        $paypalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context->getContext());
+        $paymentId = $request->request->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
+        $payment = $this->paymentResource->get($paymentId, $salesChannelContext->getSalesChannel()->getId());
+        $paypalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext());
 
-        /**
-         * Create and login a new guest customer
-         */
-        $customerDataBag = $this->getCustomerDataBagFromPayment($payment, $context->getContext());
-        $customer = $this->accountRegistrationService->register($customerDataBag, true, $context);
-        $newContextToken = $this->accountService->login($customerDataBag->get('email'), $context, true);
+        //Create and login a new guest customer
+        $customerDataBag = $this->getCustomerDataBagFromPayment($payment, $salesChannelContext->getContext());
+        $this->accountRegistrationService->register($customerDataBag, true, $salesChannelContext);
+        $newContextToken = $this->accountService->login($customerDataBag->get('email'), $salesChannelContext, true);
 
-        /**
-         * Since we logged in a new Customer the context changed in the system but this doesnt effect our context.
-         * Because of that we need to create a new Context for the following operations
-         */
-        $newContext = $this->salesChannelContextFactory->create($newContextToken, $context->getSalesChannel()->getId());
+        // Since a new customer was logged in, the context changed in the system,
+        // but this doesn't effect the current context given as parameter.
+        // Because of that a new context for the following operations is created
+        $newSalesChannelContext = $this->salesChannelContextFactory->create(
+            $newContextToken,
+            $salesChannelContext->getSalesChannel()->getId()
+        );
 
-        /**
-         * Get the cart and add the PayPalExpress extension to it
-         */
-        $cart = $this->cartService->getCart($newContext->getToken(), $context);
-        $expressCheckoutData = new ExpressCheckoutData();
+        // Set the payment method to PayPal
+        $salesChannelDataBag = new DataBag([
+            SalesChannelContextService::PAYMENT_METHOD_ID => $paypalPaymentMethodId,
+        ]);
+        $this->salesChannelContextSwitcher->update($salesChannelDataBag, $newSalesChannelContext);
 
-        $expressCheckoutData->setIsExpressCheckout(true);
-        $expressCheckoutData->setPaymentId($paymentId);
-        $expressCheckoutData->setPayerId($payment->getPayer()->getPayerInfo()->getPayerId());
+        $cart = $this->cartService->getCart($newSalesChannelContext->getToken(), $salesChannelContext);
+        $expressCheckoutData = new ExpressCheckoutData($paymentId, $payment->getPayer()->getPayerInfo()->getPayerId());
+        $cart->addExtension(self::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID, $expressCheckoutData);
 
-        if ($paypalPaymentMethodId) {
-            $expressCheckoutData->setPaymentMethodId($paypalPaymentMethodId);
-        }
+        // The cart needs to be saved.
+        $this->cartService->recalculate($cart, $newSalesChannelContext);
 
-        $cart->addExtension('expressCheckoutData', $expressCheckoutData);
-
-        /*
-         * The cart needs to be saved.
-         */
-        $this->cartService->recalculate($cart, $newContext);
-
-        return new JsonResponse($customer);
+        return new JsonResponse(['cart_token' => $cart->getToken()]);
     }
 
     private function getCustomerDataBagFromPayment(Payment $payment, Context $context): DataBag

@@ -41,11 +41,6 @@ class SPBCheckoutButtonData extends Struct
      */
     protected $createPaymentUrl;
 
-    /**
-     * @var string
-     */
-    protected $approvePaymentUrl;
-
     public function getClientId(): string
     {
         return $this->clientId;
@@ -79,10 +74,5 @@ class SPBCheckoutButtonData extends Struct
     public function getCreatePaymentUrl(): string
     {
         return $this->createPaymentUrl;
-    }
-
-    public function getApprovePaymentUrl(): string
-    {
-        return $this->approvePaymentUrl;
     }
 }

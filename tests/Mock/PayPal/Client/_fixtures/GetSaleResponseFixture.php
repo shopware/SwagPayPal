@@ -11,6 +11,12 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures;
 class GetSaleResponseFixture
 {
     public const TRANSACTION_AMOUNT_DETAILS_SUBTOTAL = '193.28';
+    public const PAYER_PAYER_INFO_EMAIL = 'test@shopware.com';
+    public const PAYER_PAYER_INFO_FIRST_NAME = 'Test FirstName';
+    public const PAYER_PAYER_INFO_LAST_NAME = 'Test LasName';
+    public const PAYER_PAYER_INFO_PAYER_ID = 'BNJDKJVFBCXPJ';
+    public const PAYER_PAYER_INFO_SHIPPING_ADDRESS_STREET = 'Teststraße 1';
+    public const PAYER_PAYER_INFO_SHIPPING_ADDRESS_CITY = 'Wien';
 
     public static function get(): array
     {
@@ -23,15 +29,15 @@ class GetSaleResponseFixture
                 'payment_method' => 'paypal',
                 'status' => 'VERIFIED',
                 'payer_info' => [
-                    'email' => 'test@shopware.com',
-                    'first_name' => 'Test',
-                    'last_name' => 'Test',
-                    'payer_id' => 'BNJDKJVFBCXPJ',
+                    'email' => self::PAYER_PAYER_INFO_EMAIL,
+                    'first_name' => self::PAYER_PAYER_INFO_FIRST_NAME,
+                    'last_name' => self::PAYER_PAYER_INFO_LAST_NAME,
+                    'payer_id' => self::PAYER_PAYER_INFO_PAYER_ID,
                     'shipping_address' => [
                         'recipient_name' => 'Test Test',
-                        'line1' => 'Wienerstraß1',
+                        'line1' => self::PAYER_PAYER_INFO_SHIPPING_ADDRESS_STREET,
                         'line2' => 'Adresszusatz',
-                        'city' => 'Wien',
+                        'city' => self::PAYER_PAYER_INFO_SHIPPING_ADDRESS_CITY,
                         'state' => '',
                         'postal_code' => '1234',
                         'country_code' => 'AT',

@@ -243,14 +243,11 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         };
     }
 
-    /**
-     * @param data
-     */
-    onApprove(data) {
+    onApprove(data, actions) {
         const offCanvasCloseButton = document.querySelector(OFF_CANVAS_CART_CLOSE_BUTTON_SELECTOR);
         const requestPayload = { paymentId: data.paymentID };
 
-        // If the offCanvasCartCloseButton is visible, we close the offCanvasCart by clicking the element
+        // If the offCanvasCartCloseButton is visible, the offCanvasCart is closed by clicking the element
         if (offCanvasCloseButton) {
             offCanvasCloseButton.click();
         }
@@ -262,8 +259,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
             this.options.approvePaymentUrl,
             JSON.stringify(requestPayload),
             () => {
-                window.location.replace(this.options.checkoutConfirmUrl);
-                ElementLoadingIndicatorUtil.remove(document.body);
+                actions.redirect(this.options.checkoutConfirmUrl);
             }
         );
     }
