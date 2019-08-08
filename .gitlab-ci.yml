@@ -29,10 +29,10 @@ PHP analyze:
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - bin/phpstan.sh
         - cd $CI_PROJECT_DIR/development
-        - php vendor/shopware/platform/bin/php-cs-fixer.phar fix --config=vendor/shopware/platform/.php_cs.dist --dry-run -vvv --allow-risky=yes --format=junit custom/plugins/SwagPayPal > php-cs-fixer.xml
+        - php vendor/shopware/platform/bin/php-cs-fixer.phar fix --config=vendor/shopware/platform/.php_cs.dist --dry-run -vvv --allow-risky=yes --format=junit custom/plugins/SwagPayPal | tee php-cs-fixer.xml
     artifacts:
         reports:
-            junit: development/php-cs-fixer.xml
+            junit: php-cs-fixer.xml
 
 PHPUnit (MariaDB):
     stage: Testing
@@ -44,13 +44,18 @@ PHPUnit (MariaDB):
         - php bin/console plugin:install --activate SwagPayPal
         - composer dump-autoload -d custom/plugins/SwagPayPal
         - ./psh.phar init-test-databases
-        - php -d pcov.enabled=1
+        - php -d pcov.enabled=1 -d pcov.directory=$CI_PROJECT_DIR
             vendor/bin/phpunit
             --configuration custom/plugins/SwagPayPal/phpunit.xml.dist
             --log-junit build/artifacts/phpunit.junit.xml
-            --coverage-text
+            --colors=never
             --coverage-clover build/artifacts/phpunit.clover.xml
+            --coverage-html build/artifacts/phpunit-coverage-html
+            --coverage-text
+
     coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
     artifacts:
+        paths:
+            - development/build/artifacts/phpunit.clover.xml
         reports:
             junit: development/build/artifacts/phpunit.junit.xml
