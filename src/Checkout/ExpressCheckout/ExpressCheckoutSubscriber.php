@@ -17,6 +17,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ExpressCheckoutSubscriber implements EventSubscriberInterface
 {
+    public const PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID = 'payPalEcsButtonData';
+
     /**
      * @var PayPalExpressCheckoutDataService
      */
@@ -92,7 +94,10 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $event->getPage()->addExtension('payPalExpressData', $expressCheckoutButtonData);
+        $event->getPage()->addExtension(
+            self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
+            $expressCheckoutButtonData
+        );
     }
 
     /**

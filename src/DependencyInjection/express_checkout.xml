@@ -21,6 +21,7 @@
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\SalesChannelContextSwitcher"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber">

@@ -221,11 +221,11 @@ Component.register('swag-paypal-frw-credentials', {
             }
         },
         renderPayPalButton() {
-            // We override the original render function inside the partner.js here.
-            // The function gets overridden again, as soon as PayPals signup.js is loaded.
-            // We create a loop and execute the render() function until the real render() function is available
-            // PayPal does originally nearly the same, but only once and not in a loop. If the signup.js is loaded to slow
-            // the button is not rendered.
+            // The original render function inside the partner.js is overwritten here.
+            // The function gets overwritten again, as soon as PayPals signup.js is loaded.
+            // A loop is created and the render() function is executed until the real render() function is available.
+            // PayPal does originally nearly the same, but only once and not in a loop.
+            // If the signup.js is loaded to slow the button is not rendered.
             window.PAYPAL.apps.Signup.render = function proxyPPrender() {
                 if (window.PAYPAL.apps.Signup.timeout) {
                     clearTimeout(window.PAYPAL.apps.Signup.timeout);

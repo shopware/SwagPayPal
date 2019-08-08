@@ -15,7 +15,6 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutController;
-use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutData;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilder;
 use Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
@@ -23,7 +22,6 @@ use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -31,49 +29,6 @@ class SPBCheckoutControllerTest extends TestCase
 {
     use IntegrationTestBehaviour;
     use ServicesTrait;
-
-    public function testOnApprove(): void
-    {
-        /** @var CartService $cartService */
-        $cartService = $this->getContainer()->get(CartService::class);
-
-        $salesChannelContext = Generator::createSalesChannelContext(
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            $this->getShippingMethod(),
-            $this->createCustomer()
-        );
-
-        $request = new Request([], [
-            SPBCheckoutController::PAYPAL_SPB_PARAMETER_PAYER_ID => 'testPayerId',
-            SPBCheckoutController::PAYPAL_SPB_PARAMETER_PAYMENT_ID => 'testPaymentId',
-        ]);
-        $response = $this->createController($cartService)->onApprove($salesChannelContext, $request);
-
-        static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
-
-        $cart = $cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
-        static::assertTrue($cart->hasExtension('spbCheckoutData'));
-
-        /** @var SPBCheckoutData|null $spbCheckoutDataExtension */
-        $spbCheckoutDataExtension = $cart->getExtension('spbCheckoutData');
-        static::assertNotNull($spbCheckoutDataExtension);
-
-        if ($spbCheckoutDataExtension === null) {
-            return;
-        }
-
-        static::assertSame('testPayerId', $spbCheckoutDataExtension->getPayerId());
-        static::assertSame('testPaymentId', $spbCheckoutDataExtension->getPaymentId());
-    }
 
     public function testCreatePayment(): void
     {

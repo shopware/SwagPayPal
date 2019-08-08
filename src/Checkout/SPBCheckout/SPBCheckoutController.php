@@ -15,15 +15,10 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Util\PaymentTokenExtractor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SPBCheckoutController extends AbstractController
 {
-    public const PAYPAL_SPB_PARAMETER_PAYMENT_ID = 'paymentId';
-    public const PAYPAL_SPB_PARAMETER_PAYER_ID = 'payerId';
-
     /**
      * @var CartPaymentBuilderInterface
      */
@@ -101,21 +96,5 @@ class SPBCheckoutController extends AbstractController
         return new JsonResponse([
             'token' => PaymentTokenExtractor::extract($response),
         ]);
-    }
-
-    /**
-     * @Route("/sales-channel-api/v{version}/_action/paypal/spb/approve-payment", name="sales-channel-api.action.paypal.spb.approve_payment", methods={"POST"}, defaults={"XmlHttpRequest"=true})
-     */
-    public function onApprove(SalesChannelContext $salesChannelContext, Request $request): Response
-    {
-        $paymentId = $request->request->get(self::PAYPAL_SPB_PARAMETER_PAYMENT_ID);
-        $payerId = $request->request->get(self::PAYPAL_SPB_PARAMETER_PAYER_ID);
-
-        $checkoutData = new SPBCheckoutData($paymentId, $payerId);
-
-        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
-        $cart->addExtension('spbCheckoutData', $checkoutData);
-
-        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 }

@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 
 import HttpClient from 'src/script/service/http-client.service';
+import DomAccess from 'src/script/helper/dom-access.helper';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractButtons {
@@ -73,14 +74,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          *
          * @type string
          */
-        createPaymentUrl: '',
-
-        /**
-         * URL for the payment approval
-         *
-         * @type string
-         */
-        approvePaymentUrl: '',
+        createPaymentUrl: ''
     };
 
     init() {
@@ -108,20 +102,20 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
 
     renderButton() {
         const toggleButtons = () => {
-            const checked = document.querySelectorAll('input.payment-method-input[checked=checked]')[0];
+            const checked = DomAccess.querySelector(document, 'input.payment-method-input[checked=checked]');
 
             if (checked.value === this.options.paymentMethodId) {
-                document.getElementById('confirmFormSubmit').style.display = 'none';
+                DomAccess.querySelector(document, '#confirmFormSubmit').style.display = 'none';
                 this.el.style.display = 'block';
             } else {
-                document.getElementById('confirmFormSubmit').style.display = 'block';
+                DomAccess.querySelector(document, '#confirmFormSubmit').style.display = 'block';
                 this.el.style.display = 'none';
             }
         };
 
         toggleButtons();
 
-        const targetNode = document.querySelector('.confirm-payment');
+        const targetNode = DomAccess.querySelector(document, '.confirm-payment');
         const config = { attributes: false, childList: true, subtree: false };
         const observer = new MutationObserver(() => {
             toggleButtons();
@@ -139,10 +133,10 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
                 shape: this.options.buttonShape,
                 color: this.options.buttonColor,
                 tagline: this.options.tagline,
-                label: 'pay',
+                label: 'pay'
             },
 
-            onClick: this.onClick.bind(this),
+            onClick: this.onClick,
 
             /**
              * Will be called if the express button is clicked
@@ -152,12 +146,12 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
             /**
              * Will be called if the payment process is approved by paypal
              */
-            onApprove: this.onApprove.bind(this),
+            onApprove: this.onApprove
         };
     }
 
     onClick(data, actions) {
-        if (document.getElementById('confirmOrderForm').checkValidity()) {
+        if (DomAccess.querySelector(document, '#confirmOrderForm').checkValidity()) {
             return actions.resolve();
         }
         return actions.reject();
@@ -177,28 +171,11 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         });
     }
 
-    /**
-     * @param data
-     */
     onApprove(data) {
-        const requestPayload = {
-            paymentId: data.paymentID,
-            payerId: data.payerID,
-        };
+        DomAccess.querySelector(document, 'input[name=paypalPaymentId]').value = data.paymentID;
+        DomAccess.querySelector(document, 'input[name=paypalPayerId]').value = data.payerID;
 
-        this._client.post(
-            this.options.approvePaymentUrl,
-            JSON.stringify(requestPayload),
-            () => {
-                if (data.payerID && data.paymentID) {
-                    document.getElementById('isPayPalSpbCheckout').value = '1';
-                    document.getElementById('paypalPaymentId').value = data.paymentID;
-                    document.getElementById('paypalPayerId').value = data.payerID;
-
-                    document.getElementById('confirmOrderForm').submit();
-                }
-            }
-        );
+        DomAccess.querySelector(document, '#confirmOrderForm').submit();
     }
 
     getScriptUrlOptions() {

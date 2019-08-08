@@ -21,7 +21,7 @@ abstract class PayPalStruct implements \JsonSerializable
             $setterMethod = 'set' . $camelCaseKey;
             if (!method_exists($this, $setterMethod)) {
                 // There is no setter/property for a given data key from PayPal.
-                // Continue here to not break the plugin, if we are not up-to-date with the PayPal API
+                // Continue here to not break the plugin, if the plugin is not up-to-date with the PayPal API
                 continue;
             }
 

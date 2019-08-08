@@ -75,7 +75,7 @@ class PayPalExpressCheckoutDataService
             'createNewCartUrl' => $this->router->generate('sales-channel-api.action.paypal.create_new_cart', ['version' => 1]),
             'addLineItemUrl' => $this->router->generate('frontend.checkout.line-item.add'),
             'approvePaymentUrl' => $this->router->generate('paypal.approve_payment'),
-            'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page'),
+            'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
         ]);
 
         return $buttonData;

@@ -39,6 +39,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 {
     public const PAYPAL_REQUEST_PARAMETER_PAYER_ID = 'PayerID';
     public const PAYPAL_REQUEST_PARAMETER_PAYMENT_ID = 'paymentId';
+    public const PAYPAL_EXPRESS_CHECKOUT_ID = 'isPayPalExpressCheckout';
+    public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
 
     /**
      * @var PaymentResource
@@ -95,7 +97,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             );
         }
 
-        if ($dataBag->get('isPayPalExpressCheckout')) {
+        if ($dataBag->get(self::PAYPAL_EXPRESS_CHECKOUT_ID)) {
             try {
                 return $this->ecsSpbHandler->handleEcsPayment($transaction, $dataBag, $salesChannelContext, $customer);
             } catch (AddressNotFoundException | CurrencyNotFoundException | InconsistentCriteriaIdsException
@@ -105,7 +107,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             }
         }
 
-        if ($dataBag->get('isPayPalSpbCheckout')) {
+        if ($dataBag->get(self::PAYPAL_SMART_PAYMENT_BUTTONS_ID)) {
             return $this->ecsSpbHandler->handleSpbPayment($transaction, $dataBag, $salesChannelContext);
         }
 
@@ -151,8 +153,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
         $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
         $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
-        $isExpressCheckout = $request->query->getBoolean('isPayPalExpressCheckout');
-        $isSPBCheckout = $request->query->getBoolean('isPayPalSpbCheckout');
+        $isExpressCheckout = $request->query->getBoolean(self::PAYPAL_EXPRESS_CHECKOUT_ID);
+        $isSPBCheckout = $request->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ID);
         $isPlus = $request->query->getBoolean('isPayPalPlus');
         $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout, $isPlus);
 

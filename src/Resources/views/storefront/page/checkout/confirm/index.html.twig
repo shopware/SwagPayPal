@@ -3,23 +3,22 @@
 {% block page_checkout_confirm_form_submit %}
     {{ parent() }}
 
-    {% set expressCheckoutData = page.cart.extensions.expressCheckoutData %}
+    {% set expressCheckoutData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
+    {% set spbCheckoutButtonData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
 
-    {% if expressCheckoutData.isExpressCheckout %}
-        <input name="isPayPalExpressCheckout" value="{{ expressCheckoutData.isExpressCheckout }}" hidden
-               data-pay-pal-selector-options='{ "paypalPaymentMethodId": "{{ expressCheckoutData.getPaymentMethodId }}" }'>
-        <input name="paypalPaymentId" value="{{ expressCheckoutData.getPaymentId }}" hidden>
-        <input name="paypalPayerId" value="{{ expressCheckoutData.getPayerId }}" hidden>
-    {% elseif page.extensions.spbCheckoutButtonData %}
-        {% set spbCheckoutData = page.cart.extensions.spbCheckoutData %}
-
-        <input name="isPayPalSpbCheckout" id="isPayPalSpbCheckout" value="1" hidden>
-        <input name="paypalPaymentId" id="paypalPaymentId" value="{{ spbCheckoutData.getPaymentId }}" hidden>
-        <input name="paypalPayerId" id="paypalPayerId" value="{{ spbCheckoutData.getPayerId }}" hidden>
+    {% if expressCheckoutData %}
+        <input hidden name="{{ constant('Swag\\PayPal\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}" value="1">
+        <input hidden name="{{ constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.getPaymentId }}">
+        <input hidden name="{{ constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.getPayerId }}">
+    {% elseif spbCheckoutButtonData %}
+        <input hidden name="{{ constant('Swag\\PayPal\\Payment\\PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID') }}" value="1">
+        {# Will be filled via Javascript #}
+        <input hidden name="{{ constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ID_INPUT_NAME') }}" value="">
+        <input hidden name="{{ constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME') }}" value="">
 
         <div class="swag-paypal__smart-buttons"
              data-swag-paypal-smart-payment-buttons="true"
-             data-swag-pay-pal-smart-payment-buttons-options="{{ page.extensions.spbCheckoutButtonData|json_encode }}">
+             data-swag-pay-pal-smart-payment-buttons-options="{{ spbCheckoutButtonData|json_encode }}">
         </div>
     {% endif %}
 {% endblock %}

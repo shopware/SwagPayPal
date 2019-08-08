@@ -199,7 +199,7 @@ Customer is not logged in.');
 
         $transactionId = 'testTransactionId';
         $request = $this->createRequest();
-        $request->query->set('isPayPalExpressCheckout', true);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, true);
         $salesChannelContext = Generator::createSalesChannelContext();
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),

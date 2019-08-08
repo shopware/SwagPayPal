@@ -4,6 +4,7 @@ namespace Swag\PayPal\Test\Util;
 
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 use Swag\PayPal\Util\PaymentTokenExtractor;
 
 class PaymentTokenExtractorTest extends TestCase
@@ -19,7 +20,7 @@ class PaymentTokenExtractorTest extends TestCase
                     'method' => 'GET',
                 ],
                 [
-                    'href' => 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-44X706219E3526258',
+                    'href' => 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=' . CreateResponseFixture::CREATE_PAYMENT_APPROVAL_TOKEN,
                     'rel' => 'approval_url',
                     'method' => 'REDIRECT',
                 ],
@@ -32,7 +33,7 @@ class PaymentTokenExtractorTest extends TestCase
         ]);
 
         $token = PaymentTokenExtractor::extract($payment);
-        static::assertSame('EC-44X706219E3526258', $token);
+        static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_TOKEN, $token);
     }
 
     public function testExtractWithoutApprovalUrl(): void

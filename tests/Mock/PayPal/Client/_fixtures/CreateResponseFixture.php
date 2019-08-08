@@ -11,8 +11,8 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures;
 class CreateResponseFixture
 {
     public const CREATE_PAYMENT_ID = 'PAY-9FS21791UL732760GLP2ASLY';
-
-    public const CREATE_PAYMENT_APPROVAL_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-44X706219E3526258';
+    public const CREATE_PAYMENT_APPROVAL_TOKEN = 'EC-44X706219E3526258';
+    public const CREATE_PAYMENT_APPROVAL_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=' . self::CREATE_PAYMENT_APPROVAL_TOKEN;
 
     public static function get(): array
     {

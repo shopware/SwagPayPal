@@ -171,7 +171,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame('/sales-channel-api/v1/_action/paypal/create-new-cart', $expressCheckoutButtonData->getCreateNewCartUrl());
         static::assertSame('/checkout/line-item/add', $expressCheckoutButtonData->getAddLineItemUrl());
         static::assertSame('/paypal/approve-payment', $expressCheckoutButtonData->getApprovePaymentUrl());
-        static::assertSame('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());
+        static::assertStringContainsString('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());
     }
 
     public function dataProviderTestGetExpressCheckoutButtonDataWithCredentials()

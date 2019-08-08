@@ -54,10 +54,8 @@ class PlusSubscriber implements EventSubscriberInterface
      */
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
-        /*
-         * PayPal Plus was disabled with PT-10610,
-         * but we may need this business logic for the payment by invoice integration.
-         */
+        // PayPal Plus was disabled with PT-10610
+        // Will be removed with 1.0.0
         return;
 
         $salesChannelContext = $event->getSalesChannelContext();
@@ -88,10 +86,8 @@ class PlusSubscriber implements EventSubscriberInterface
 
     public function onCheckoutFinishLoaded(CheckoutFinishPageLoadedEvent $event): void
     {
-        /*
-         * PayPal Plus was disabled with PT-10610,
-         * but we may need this business logic for the payment by invoice integration.
-         */
+        // PayPal Plus was disabled with PT-10610
+        // Will be removed with 1.0.0
         return;
 
         $salesChannelContext = $event->getSalesChannelContext();
