@@ -3,6 +3,7 @@
 - PT-10695 - Add error logging for API calls
 - PT-10702 - Changed URL for Smart Payment Buttons javascript
 - PT-10715 - Paypal is selected correctly again as payment method for Express Checkout
+- PT-10723 - Smart Payment Buttons now no longer complete the order directly
 
 # 0.10.1
 - Improved link generation for Javascript API calls
