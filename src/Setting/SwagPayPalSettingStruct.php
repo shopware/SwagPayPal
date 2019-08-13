@@ -57,7 +57,7 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var string
      */
-    protected $landingPage = ApplicationContext::LANDINGPAGE_TYPE_LOGIN;
+    protected $landingPage = ApplicationContext::LANDING_PAGE_TYPE_LOGIN;
 
     /**
      * @var bool

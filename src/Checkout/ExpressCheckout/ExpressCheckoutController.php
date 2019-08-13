@@ -20,6 +20,7 @@ use Shopware\Core\System\Salutation\SalutationEntity;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -132,6 +133,8 @@ class ExpressCheckoutController extends AbstractController
             'https://www.example.com/',
             true
         );
+        $payment->getApplicationContext()->setUserAction(ApplicationContext::USER_ACTION_TYPE_CONTINUE);
+
         $paymentResource = $this->paymentResource->create(
             $payment,
             $context->getSalesChannel()->getId(),

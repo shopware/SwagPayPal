@@ -12,8 +12,11 @@ use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
 class ApplicationContext extends PayPalStruct
 {
-    public const LANDINGPAGE_TYPE_LOGIN = 'Login';
-    public const LANDINGPAGE_TYPE_BILLING = 'Billing';
+    public const LANDING_PAGE_TYPE_LOGIN = 'Login';
+    public const LANDING_PAGE_TYPE_BILLING = 'Billing';
+
+    public const USER_ACTION_TYPE_COMMIT = 'commit';
+    public const USER_ACTION_TYPE_CONTINUE = 'continue';
 
     /**
      * @var string
@@ -38,7 +41,7 @@ class ApplicationContext extends PayPalStruct
     /**
      * @var string
      */
-    protected $userAction = 'commit';
+    protected $userAction = self::USER_ACTION_TYPE_COMMIT;
 
     public function setBrandName(string $brandName): void
     {
@@ -55,7 +58,7 @@ class ApplicationContext extends PayPalStruct
         $this->landingPage = $landingPageType;
     }
 
-    protected function setUserAction(string $userAction): void
+    public function setUserAction(string $userAction): void
     {
         $this->userAction = $userAction;
     }

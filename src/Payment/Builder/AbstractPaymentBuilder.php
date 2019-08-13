@@ -144,8 +144,8 @@ abstract class AbstractPaymentBuilder
     private function getLandingPageType(): string
     {
         $landingPageType = $this->settings->getLandingPage();
-        if ($landingPageType !== ApplicationContext::LANDINGPAGE_TYPE_BILLING) {
-            $landingPageType = ApplicationContext::LANDINGPAGE_TYPE_LOGIN;
+        if ($landingPageType !== ApplicationContext::LANDING_PAGE_TYPE_BILLING) {
+            $landingPageType = ApplicationContext::LANDING_PAGE_TYPE_LOGIN;
         }
 
         return $landingPageType;
