@@ -9,6 +9,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
 use Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
+use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -79,6 +80,7 @@ class SPBCheckoutController extends AbstractController
             'https://www.example.com/',
             false
         );
+        $payment->getApplicationContext()->setUserAction(ApplicationContext::USER_ACTION_TYPE_CONTINUE);
 
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
         $response = $this->paymentResource->create(

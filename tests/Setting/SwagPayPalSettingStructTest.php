@@ -31,7 +31,7 @@ class SwagPayPalSettingStructTest extends TestCase
             'webhookId' => static::WEBHOOK_ID,
             'webhookExecuteToken' => static::WEBHOOK_EXECUTE_TOKEN,
             'brandName' => static::BRAND_NAME,
-            'landingPage' => ApplicationContext::LANDINGPAGE_TYPE_LOGIN,
+            'landingPage' => ApplicationContext::LANDING_PAGE_TYPE_LOGIN,
             'sendOrderNumber' => false,
             'orderNumberPrefix' => static::ORDER_NUMBER_PREFIX,
             'ecsDetailEnabled' => false,
@@ -61,7 +61,7 @@ class SwagPayPalSettingStructTest extends TestCase
         $settings->setWebhookId(static::WEBHOOK_ID);
         $settings->setWebhookExecuteToken(static::WEBHOOK_EXECUTE_TOKEN);
         $settings->setBrandName(static::BRAND_NAME);
-        $settings->setLandingPage(ApplicationContext::LANDINGPAGE_TYPE_LOGIN);
+        $settings->setLandingPage(ApplicationContext::LANDING_PAGE_TYPE_LOGIN);
         $settings->setSendOrderNumber(false);
         $settings->setOrderNumberPrefix(static::ORDER_NUMBER_PREFIX);
         $settings->setEcsDetailEnabled(false);
@@ -89,7 +89,7 @@ class SwagPayPalSettingStructTest extends TestCase
         static::assertSame(static::WEBHOOK_ID, $settings->getWebhookId());
         static::assertSame(static::WEBHOOK_EXECUTE_TOKEN, $settings->getWebhookExecuteToken());
         static::assertSame(static::BRAND_NAME, $settings->getBrandName());
-        static::assertSame(ApplicationContext::LANDINGPAGE_TYPE_LOGIN, $settings->getLandingPage());
+        static::assertSame(ApplicationContext::LANDING_PAGE_TYPE_LOGIN, $settings->getLandingPage());
         static::assertFalse($settings->getSendOrderNumber());
         static::assertSame(static::ORDER_NUMBER_PREFIX, $settings->getOrderNumberPrefix());
         static::assertFalse($settings->getEcsDetailEnabled());

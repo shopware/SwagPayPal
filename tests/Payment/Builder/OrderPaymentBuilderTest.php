@@ -212,10 +212,10 @@ class OrderPaymentBuilderTest extends TestCase
     {
         $withoutToken = $this->createDefaultSettingStruct();
         $withoutToken->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $withoutToken->setLandingPage(ApplicationContext::LANDINGPAGE_TYPE_BILLING);
+        $withoutToken->setLandingPage(ApplicationContext::LANDING_PAGE_TYPE_BILLING);
 
         $withoutTokenAndId = $this->createDefaultSettingStruct();
-        $withoutTokenAndId->setLandingPage(ApplicationContext::LANDINGPAGE_TYPE_LOGIN);
+        $withoutTokenAndId->setLandingPage(ApplicationContext::LANDING_PAGE_TYPE_LOGIN);
 
         $submitCart = $this->createDefaultSettingStruct();
         $submitCart->setSubmitCart(true);
@@ -224,15 +224,15 @@ class OrderPaymentBuilderTest extends TestCase
         return [
             [
                 $withoutToken,
-                ApplicationContext::LANDINGPAGE_TYPE_BILLING,
+                ApplicationContext::LANDING_PAGE_TYPE_BILLING,
             ],
             [
                 $withoutTokenAndId,
-                ApplicationContext::LANDINGPAGE_TYPE_LOGIN,
+                ApplicationContext::LANDING_PAGE_TYPE_LOGIN,
             ],
             [
                 $submitCart,
-                ApplicationContext::LANDINGPAGE_TYPE_LOGIN,
+                ApplicationContext::LANDING_PAGE_TYPE_LOGIN,
             ],
         ];
     }
