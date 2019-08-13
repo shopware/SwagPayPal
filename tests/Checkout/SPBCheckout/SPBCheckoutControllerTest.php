@@ -3,6 +3,7 @@
 namespace Swag\PayPal\Test\Checkout\SPBCheckout;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
@@ -57,6 +58,18 @@ class SPBCheckoutControllerTest extends TestCase
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertStringContainsString('{"token":"EC-', $response->getContent());
+    }
+
+    public function testCreatePaymentWithoutCustomer(): void
+    {
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $salesChannelContext->assign(['customer' => null]);
+
+        /** @var CartService $cartService */
+        $cartService = $this->getContainer()->get(CartService::class);
+
+        $this->expectException(CustomerNotLoggedInException::class);
+        $this->createController($cartService)->createPayment($salesChannelContext);
     }
 
     private function createCustomer(): CustomerEntity

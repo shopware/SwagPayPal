@@ -49,13 +49,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         commit: false,
 
         /**
-         * This option toggles the text below the Smart Payment buttons
-         *
-         * @type boolean
-         */
-        tagline: false,
-
-        /**
          * This option toggles if credit card and ELV should be shown
          *
          * @type boolean
@@ -74,7 +67,14 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          *
          * @type string
          */
-        createPaymentUrl: ''
+        createPaymentUrl: '',
+
+        /**
+         * URL to the checkout confirm page
+         *
+         * @type string
+         */
+        checkoutConfirmUrl: ''
     };
 
     init() {
@@ -128,15 +128,11 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     getButtonConfig() {
         return {
             style: {
-                layout: 'vertical',
                 size: this.options.buttonSize,
                 shape: this.options.buttonShape,
                 color: this.options.buttonColor,
-                tagline: this.options.tagline,
-                label: 'pay'
+                label: 'checkout'
             },
-
-            onClick: this.onClick,
 
             /**
              * Will be called if the express button is clicked
@@ -146,15 +142,8 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
             /**
              * Will be called if the payment process is approved by paypal
              */
-            onApprove: this.onApprove
+            onApprove: this.onApprove.bind(this)
         };
-    }
-
-    onClick(data, actions) {
-        if (DomAccess.querySelector(document, '#confirmOrderForm').checkValidity()) {
-            return actions.resolve();
-        }
-        return actions.reject();
     }
 
     /**
@@ -171,11 +160,14 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         });
     }
 
-    onApprove(data) {
-        DomAccess.querySelector(document, 'input[name=paypalPaymentId]').value = data.paymentID;
-        DomAccess.querySelector(document, 'input[name=paypalPayerId]').value = data.payerID;
+    onApprove(data, actions) {
+        const params = new URLSearchParams();
+        params.append('paypalPayerId', data.payerID);
+        params.append('paypalPaymentId', data.paymentID);
 
-        DomAccess.querySelector(document, '#confirmOrderForm').submit();
+        const redirectUrl = `${this.options.checkoutConfirmUrl}?${params.toString()}`;
+
+        actions.redirect(redirectUrl);
     }
 
     getScriptUrlOptions() {

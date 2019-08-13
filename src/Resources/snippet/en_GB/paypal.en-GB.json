@@ -18,5 +18,8 @@
             },
             "paymentNote": "%companyName% has assigned the claim against you to PayPal (Europe) S.àr.l. et Cie, S.C.A. as part of a current factoring agreement. Payments with debt discharging effect can only be made to PayPal (Europe) S.àr.l. et Cie, S.C.A."
         }
+    },
+    "smartPaymentButtons": {
+        "confirmPageHint": "Your payment has been accepted. You can now confirm your order."
     }
 }

@@ -53,6 +53,7 @@ class SPBCheckoutDataService
             'paymentMethodId' => $paymentMethodId,
             'useAlternativePaymentMethods' => $settings->getSpbAlternativePaymentMethodsEnabled(),
             'createPaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.spb.create_payment', ['version' => 1]),
+            'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
         ]);
 
         return $expressCheckoutData;
