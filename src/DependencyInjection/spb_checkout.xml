@@ -23,6 +23,8 @@
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
+            <argument type="service" id="session.flash_bag"/>
+            <argument type="service" id="translator"/>
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>

@@ -26,13 +26,16 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber;
+use Swag\PayPal\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\PaymentMethodUtilMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SPBCheckoutSubscriberTest extends TestCase
 {
@@ -108,6 +111,21 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame(PaymentIntent::SALE, $spbExtension->getIntent());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
         static::assertSame('/sales-channel-api/v1/_action/paypal/spb/create-payment', $spbExtension->getCreatePaymentUrl());
+        static::assertStringContainsString('/checkout/confirm', $spbExtension->getCheckoutConfirmUrl());
+    }
+
+    public function testOnCheckoutConfirmLoadedPayerIdInRequest(): void
+    {
+        $subscriber = $this->createSubscriber();
+        $event = $this->createEvent();
+        $event->getRequest()->query->set(EcsSpbHandler::PAYPAL_PAYMENT_ID_INPUT_NAME, 'testPaymentId');
+        $event->getRequest()->query->set(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME, 'testPayerId');
+        $subscriber->onCheckoutConfirmLoaded($event);
+
+        static::assertNull($event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
+        /** @var FlashBagInterface $flashBag */
+        $flashBag = $this->getContainer()->get('session.flash_bag');
+        static::assertCount(1, $flashBag->get('success'));
     }
 
     public function testOnCheckoutConfirmLoadedSPBWithCustomLanguage(): void
@@ -161,7 +179,18 @@ class SPBCheckoutSubscriberTest extends TestCase
             $router
         );
 
-        return new SPBCheckoutSubscriber($settingsService, $spbDataService, new PaymentMethodUtilMock());
+        /** @var FlashBagInterface $flashBag */
+        $flashBag = $this->getContainer()->get('session.flash_bag');
+        /** @var TranslatorInterface $translator */
+        $translator = $this->getContainer()->get('translator');
+
+        return new SPBCheckoutSubscriber(
+            $settingsService,
+            $spbDataService,
+            new PaymentMethodUtilMock(),
+            $flashBag,
+            $translator
+        );
     }
 
     private function createEvent(): CheckoutConfirmPageLoadedEvent
