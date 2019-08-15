@@ -25,8 +25,10 @@ class PaymentMethodUtil
      */
     private $salesChannelRepository;
 
-    public function __construct(EntityRepositoryInterface $paymentRepository, EntityRepositoryInterface $salesChannelRepository)
-    {
+    public function __construct(
+        EntityRepositoryInterface $paymentRepository,
+        EntityRepositoryInterface $salesChannelRepository
+    ) {
         $this->paymentRepository = $paymentRepository;
         $this->salesChannelRepository = $salesChannelRepository;
     }
@@ -36,14 +38,7 @@ class PaymentMethodUtil
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('handlerIdentifier', PayPalPaymentHandler::class));
 
-        $result = $this->paymentRepository->searchIds($criteria, $context);
-        if ($result->getTotal() === 0) {
-            return null;
-        }
-
-        $paymentMethodIds = $result->getIds();
-
-        return array_shift($paymentMethodIds);
+        return $this->paymentRepository->searchIds($criteria, $context)->firstId();
     }
 
     public function getPayPalPuiPaymentMethodId(Context $context): ?string
@@ -51,17 +46,10 @@ class PaymentMethodUtil
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('handlerIdentifier', PayPalPuiPaymentHandler::class));
 
-        $result = $this->paymentRepository->searchIds($criteria, $context);
-        if ($result->getTotal() === 0) {
-            return null;
-        }
-
-        $paymentMethodIds = $result->getIds();
-
-        return array_shift($paymentMethodIds);
+        return $this->paymentRepository->searchIds($criteria, $context)->firstId();
     }
 
-    public function getPaypalPaymentMethodInSalesChannel(SalesChannelContext $salesChannelContext): bool
+    public function isPaypalPaymentMethodInSalesChannel(SalesChannelContext $salesChannelContext): bool
     {
         $context = $salesChannelContext->getContext();
         $paypalPaymentMethodId = $this->getPayPalPaymentMethodId($context);
@@ -81,8 +69,10 @@ class PaymentMethodUtil
         return false;
     }
 
-    private function getSalesChannelPaymentMethods(SalesChannelEntity $salesChannelEntity, Context $context): ?PaymentMethodCollection
-    {
+    private function getSalesChannelPaymentMethods(
+        SalesChannelEntity $salesChannelEntity,
+        Context $context
+    ): ?PaymentMethodCollection {
         $salesChannelId = $salesChannelEntity->getId();
         $criteria = new Criteria([$salesChannelId]);
         $criteria->addAssociation('paymentMethods');

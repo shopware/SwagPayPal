@@ -22,7 +22,7 @@ class PaymentMethodUtilMock extends PaymentMethodUtil
         return self::PAYMENT_METHOD_ID;
     }
 
-    public function getPaypalPaymentMethodInSalesChannel(SalesChannelContext $salesChannelContext): bool
+    public function isPaypalPaymentMethodInSalesChannel(SalesChannelContext $salesChannelContext): bool
     {
         $paymentMethodCollection = $salesChannelContext->getSalesChannel()->getPaymentMethods();
         if (!$paymentMethodCollection) {

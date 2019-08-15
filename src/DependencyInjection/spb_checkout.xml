@@ -12,7 +12,7 @@
         </service>
 
         <service id="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutController" public="true">
-            <argument type="service" id="Swag\PayPal\Payment\Builder\CartPaymentBuilder" />
+            <argument type="service" id="Swag\PayPal\Payment\Builder\CartPaymentBuilder"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
             <argument type="service" id="Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder"/>
@@ -25,6 +25,12 @@
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <argument type="service" id="session.flash_bag"/>
             <argument type="service" id="translator"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\SPBCheckout\SPBMarksSubscriber">
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>

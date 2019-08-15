@@ -12,3 +12,14 @@
         <div id="ppplus" data-swag-pay-pal-plus-payment-wall-handler-options="{{ payPalPlusData|json_encode }}"></div>
     {% endif %}
 {% endblock %}
+
+{% block page_checkout_confirm_payment_invalid_tooltip %}
+    {{ parent() }}
+
+    {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData spbCheckoutButtonData #}
+    {% set spbCheckoutButtonData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
+
+    {% if spbCheckoutButtonData and spbCheckoutButtonData.paymentMethodId is same as(context.paymentMethod.id) %}
+        <div class="swag-paypal__marks" data-swag-paypal-marks-confirm="true"></div>
+    {% endif %}
+{% endblock %}

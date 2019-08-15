@@ -74,7 +74,14 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          *
          * @type string
          */
-        checkoutConfirmUrl: ''
+        checkoutConfirmUrl: '',
+
+        /**
+         * Selector of the payment marks div element
+         *
+         * @type string
+         */
+        marksContainerSelector: '[data-swag-paypal-marks-confirm]'
     };
 
     init() {
@@ -89,6 +96,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         if (paypalScriptLoaded) {
             this.paypal = window.paypal;
             this.renderButton();
+            this.renderMarks();
             return;
         }
 
@@ -97,6 +105,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
             document.head.classList.add(this.options.paypalScriptLoadedClass);
 
             this.renderButton();
+            this.renderMarks();
         });
     }
 
@@ -123,6 +132,13 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         observer.observe(targetNode, config);
 
         return this.paypal.Buttons(this.getButtonConfig()).render(this.el);
+    }
+
+    renderMarks() {
+        const marksContainers = DomAccess.querySelectorAll(document, this.options.marksContainerSelector);
+        marksContainers.forEach((marksContainer) => {
+            this.paypal.Marks().render(marksContainer);
+        });
     }
 
     getButtonConfig() {
@@ -171,7 +187,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     }
 
     getScriptUrlOptions() {
-        let config = super.getScriptUrlOptions();
+        let config = `${super.getScriptUrlOptions()}&components=buttons,marks`;
         if (!this.options.useAlternativePaymentMethods) {
             config += '&disable-funding=card,credit,sepa';
         }

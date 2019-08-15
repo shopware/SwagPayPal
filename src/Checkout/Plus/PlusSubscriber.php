@@ -59,7 +59,7 @@ class PlusSubscriber implements EventSubscriberInterface
         return;
 
         $salesChannelContext = $event->getSalesChannelContext();
-        if (!$this->paymentMethodUtil->getPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
+        if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
             return;
         }
 
