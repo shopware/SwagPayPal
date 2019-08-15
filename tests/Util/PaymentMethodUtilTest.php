@@ -49,7 +49,7 @@ class PaymentMethodUtilTest extends TestCase
             null,
             $salesChannel
         );
-        static::assertTrue($this->paymentMethodUtil->getPaypalPaymentMethodInSalesChannel($salesChannelContext));
+        static::assertTrue($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext));
     }
 
     public function testGetPaypalPaymentMethodInSalesChannelWithoutPayPalPaymentMethodId(): void
@@ -66,7 +66,7 @@ class PaymentMethodUtilTest extends TestCase
             null,
             $salesChannel
         );
-        static::assertFalse($this->paymentMethodUtil->getPaypalPaymentMethodInSalesChannel($salesChannelContext));
+        static::assertFalse($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext));
     }
 
     private function getContextWithoutPaymentId(): Context

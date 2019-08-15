@@ -63,7 +63,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     public function addExpressCheckoutDataToPage($event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
-        if (!$this->paymentMethodUtil->getPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
+        if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
             return;
         }
 
