@@ -260,7 +260,7 @@ class PlusSubscriberTest extends TestCase
         /** @var EntityRepositoryInterface $languageRepo */
         $languageRepo = $this->getContainer()->get('language.repository');
         $criteria = new Criteria();
-        $criteria->addAssociationPath('language. locale');
+        $criteria->addAssociation('language.locale');
         $criteria->addFilter(new EqualsFilter('language.locale.code', 'de-DE'));
 
         $languageId = $languageRepo->searchIds($criteria, Context::createDefaultContext())->firstId();

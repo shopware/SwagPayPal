@@ -54,10 +54,6 @@ class PlusSubscriber implements EventSubscriberInterface
      */
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
-        // PayPal Plus was disabled with PT-10610
-        // Will be removed with 1.0.0
-        return;
-
         $salesChannelContext = $event->getSalesChannelContext();
         if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
             return;
@@ -86,10 +82,6 @@ class PlusSubscriber implements EventSubscriberInterface
 
     public function onCheckoutFinishLoaded(CheckoutFinishPageLoadedEvent $event): void
     {
-        // PayPal Plus was disabled with PT-10610
-        // Will be removed with 1.0.0
-        return;
-
         $salesChannelContext = $event->getSalesChannelContext();
         try {
             $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());

@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "shopware/core": "dev-master"
+        "shopware/core": "*"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
