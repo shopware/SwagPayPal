@@ -36,7 +36,6 @@ class SwagPayPal extends Plugin
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
         $loader->load('client.xml');
         $loader->load('paypal_payment.xml');
-        $loader->load('plus.xml');
         $loader->load('resource.xml');
         $loader->load('setting.xml');
         $loader->load('util.xml');
@@ -44,6 +43,10 @@ class SwagPayPal extends Plugin
         $loader->load('express_checkout.xml');
         $loader->load('spb_checkout.xml');
         $loader->load('pui_checkout.xml');
+
+        // PayPal Plus was disabled with PT-10610
+        // Will be removed with 1.0.0
+        // $loader->load('plus.xml');
     }
 
     public function getViewPaths(): array

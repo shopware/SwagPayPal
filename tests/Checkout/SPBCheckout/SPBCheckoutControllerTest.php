@@ -111,9 +111,9 @@ class SPBCheckoutControllerTest extends TestCase
         $context = Context::createDefaultContext();
         $customerRepo->upsert([$customer], $context);
 
-        $criteria = new Criteria([$customerId]);
-        $criteria->addAssociationPath('defaultBillingAddress.country');
-        $criteria->addAssociationPath('defaultShippingAddress.country');
+        $criteria = (new Criteria([$customerId]))
+            ->addAssociation('defaultBillingAddress.country')
+            ->addAssociation('defaultShippingAddress.country');
 
         return $customerRepo->search($criteria, $context)->first();
     }
