@@ -4,6 +4,7 @@
 - PT-10702 - Changed URL for Smart Payment Buttons javascript
 - PT-10715 - Paypal is selected correctly again as payment method for Express Checkout
 - PT-10723 - Smart Payment Buttons now no longer complete the order directly
+- PT-10729 - The PayPal payment description now shows available payments with icons
 
 # 0.10.1
 - Improved link generation for Javascript API calls

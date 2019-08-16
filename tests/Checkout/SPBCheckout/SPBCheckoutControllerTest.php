@@ -112,8 +112,8 @@ class SPBCheckoutControllerTest extends TestCase
         $customerRepo->upsert([$customer], $context);
 
         $criteria = (new Criteria([$customerId]))
-            ->addAssociation('defaultBillingAddress.country')
-            ->addAssociation('defaultShippingAddress.country');
+            ->addAssociationPath('defaultBillingAddress.country')
+            ->addAssociationPath('defaultShippingAddress.country');
 
         return $customerRepo->search($criteria, $context)->first();
     }
