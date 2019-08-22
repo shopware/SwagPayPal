@@ -1,3 +1,6 @@
+# 0.11.1
+- PT-10755 - Fehler bei der Deinstallation und Konfigurationsfehler behoben
+
 # 0.11.0
 - PT-10391 - Kauf auf Rechnung implementiert
 - PT-10695 - Error-Logging für API-Calls hinzugefügt

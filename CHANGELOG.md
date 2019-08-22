@@ -1,3 +1,6 @@
+# 0.11.1
+- PT-10755 - Fix error while uninstalling and configuration error
+
 # 0.11.0
 - PT-10391 - Implement pay upon invoice
 - PT-10695 - Add error logging for API calls
