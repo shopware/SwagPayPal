@@ -1,4 +1,4 @@
-import ApiService from 'src/core/service/api.service';
+const ApiService = Shopware.Classes.ApiService;
 
 class SwagPayPalPaymentService extends ApiService {
     constructor(httpClient, loginService, apiEndpoint = 'paypal') {

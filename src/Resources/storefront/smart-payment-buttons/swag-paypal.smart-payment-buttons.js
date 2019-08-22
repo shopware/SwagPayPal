@@ -56,13 +56,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         useAlternativePaymentMethods: true,
 
         /**
-         * The selector for the indicator whether the PayPal javascript is already loaded or not
-         *
-         * @type string
-         */
-        paypalScriptLoadedClass: 'paypal-checkout-js-loaded',
-
-        /**
          * URL to create a new PayPal payment
          *
          * @type string
@@ -91,19 +84,8 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     }
 
     createButton() {
-        const paypalScriptLoaded = document.head.classList.contains(this.options.paypalScriptLoadedClass);
-
-        if (paypalScriptLoaded) {
-            this.paypal = window.paypal;
-            this.renderButton();
-            this.renderMarks();
-            return;
-        }
-
         this.createScript(() => {
             this.paypal = window.paypal;
-            document.head.classList.add(this.options.paypalScriptLoadedClass);
-
             this.renderButton();
             this.renderMarks();
         });
@@ -184,14 +166,5 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         const redirectUrl = `${this.options.checkoutConfirmUrl}?${params.toString()}`;
 
         actions.redirect(redirectUrl);
-    }
-
-    getScriptUrlOptions() {
-        let config = `${super.getScriptUrlOptions()}&components=buttons,marks`;
-        if (!this.options.useAlternativePaymentMethods) {
-            config += '&disable-funding=card,credit,sepa';
-        }
-
-        return config;
     }
 }

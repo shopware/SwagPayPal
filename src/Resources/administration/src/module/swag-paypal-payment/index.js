@@ -1,10 +1,11 @@
-import { Module } from 'src/core/shopware';
 import './extension/sw-order';
 import './extension/sw-plugin';
 import './page/swag-paypal-payment-detail';
 
 import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';
+
+const { Module } = Shopware;
 
 Module.register('swag-paypal-payment', {
     type: 'plugin',
