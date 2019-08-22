@@ -1,4 +1,3 @@
-import { Component } from 'src/core/shopware';
 import template from './swag-paypal-payment-actions.html.twig';
 import './swag-paypal-payment-actions.scss';
 import './extensions/swag-paypal-payment-action-capture';
@@ -11,6 +10,8 @@ import {
     CAPTURED_STATE,
     COMPLETED_STATE
 } from './swag-paypal-payment-consts';
+
+const { Component } = Shopware;
 
 Component.register('swag-paypal-payment-actions', {
     template,

@@ -1,7 +1,8 @@
-import { Component, Mixin } from 'src/core/shopware';
-import utils from 'src/core/service/util.service';
 import template from './swag-paypal-frw-credentials.html.twig';
 import './swag-paypal-frw.scss';
+
+const { Component, Mixin } = Shopware;
+const utils = Shopware.Utils;
 
 const payPalPartnerIdLive = 'W8HDQ6LB42CJW';
 const payPalPartnerClientIdLive = 'AVTKpaE_t1zRCDfiJOP1ZYMAW0S_IvASFOIhhbeszRUFY0vsFIsGrt_FFsgHKU4VJiqub-tI30dpnANJ';
