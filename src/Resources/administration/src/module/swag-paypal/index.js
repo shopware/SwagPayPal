@@ -1,8 +1,9 @@
-import { Module } from 'src/core/shopware';
 import paypalSettings from './page/swag-paypal';
 import './extension/sw-settings-index';
 import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';
+
+const { Module } = Shopware;
 
 Module.register('swag-paypal', {
     type: 'plugin',

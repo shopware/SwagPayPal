@@ -6,8 +6,6 @@ import FormSerializeUtil from 'src/script/utility/form/form-serialize.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 const OFF_CANVAS_CART_CLOSE_BUTTON_SELECTOR = '.btn.btn-light.btn-block.offcanvas-close.js-offcanvas-close.sticky-top';
-const SwagPayPalExpressCheckoutButtonInstances = [];
-let isInjectionTriggered = false;
 
 export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractButtons {
     static options = {
@@ -68,13 +66,6 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         tagline: false,
 
         /**
-         * The class that indicates if the script is loaded
-         *
-         * @type string
-         */
-        paypalScriptLoadedClass: 'paypal-checkout-js-loaded',
-
-        /**
          * This option toggles the Process whether or not the product needs to be added to the cart.
          *
          * @type boolean
@@ -120,31 +111,13 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     init() {
         this._client = new HttpClient(window.accessKey, window.contextToken);
         this.paypal = null;
-        SwagPayPalExpressCheckoutButtonInstances.push(this);
         this.createButton();
     }
 
     createButton() {
-        const paypalScriptLoaded = document.head.classList.contains(this.options.paypalScriptLoadedClass);
-
-        if (paypalScriptLoaded) {
-            this.paypal = window.paypal;
-            this.renderButton();
-            return;
-        }
-
-        if (isInjectionTriggered) {
-            return;
-        }
-
-        isInjectionTriggered = true;
         this.createScript(() => {
             this.paypal = window.paypal;
-            document.head.classList.add(this.options.paypalScriptLoadedClass);
-
-            SwagPayPalExpressCheckoutButtonInstances.forEach((instance) => {
-                instance.createButton();
-            });
+            this.renderButton();
         });
     }
 
@@ -219,7 +192,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
      * @return {Object}
      */
     _formatLineItems() {
-        const formData = FormSerializeUtil.serializeJson(this.el.parentElement);
+        const formData = FormSerializeUtil.serializeJson(this.el.closest('form'));
 
         const formattedLineItems = {};
         Object.keys(formData).forEach(key => {
@@ -262,15 +235,5 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                 actions.redirect(this.options.checkoutConfirmUrl);
             }
         );
-    }
-
-    /**
-     * @return {string}
-     */
-    getScriptUrlOptions() {
-        let config = super.getScriptUrlOptions();
-        config += '&disable-funding=card,credit,sepa';
-
-        return config;
     }
 }
