@@ -14,6 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\SwagPayPal;
@@ -43,6 +44,7 @@ class PlusPaymentFinalizeController extends AbstractController
     }
 
     /**
+     * @RouteScope(scopes={"storefront"})
      * @Route("/paypal/plus/payment/finalize-transaction", name="paypal.plus.payment.finalize.transaction", methods={"GET"}, defaults={"auth_required"=false})
      *
      * @throws InvalidTransactionException

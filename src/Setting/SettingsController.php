@@ -8,6 +8,7 @@
 
 namespace Swag\PayPal\Setting;
 
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Swag\PayPal\Setting\Service\ApiCredentialServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,6 +16,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @RouteScope(scopes={"api"})
+ */
 class SettingsController extends AbstractController
 {
     /**
