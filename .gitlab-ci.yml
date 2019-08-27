@@ -12,12 +12,10 @@ default:
     image: shopware/development:latest
     before_script:
         - zip -rq plugin.zip .
-        - git clone --branch 6.0+ea http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git
         - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform
         - unzip -q plugin.zip -d development/custom/plugins/SwagPayPal
         - cd development
-        - cd platform && git checkout 6.0+ea && cd ..
-        - composer require shopware/platform dev-master --no-update --no-suggest --no-scripts
         - cp -v dev-ops/gitlab/.psh.yaml.override .
         - /entrypoint supervisord > /dev/null 2>&1 &
 

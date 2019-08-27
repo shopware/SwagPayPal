@@ -79,7 +79,12 @@ class PaymentMethodRepoMock implements EntityRepositoryInterface
             return new IdSearchResult(
                 1,
                 [
-                    self::PAYPAL_PAYMENT_METHOD_ID => self::PAYPAL_PAYMENT_METHOD_ID,
+                    [
+                        'primaryKey' => self::PAYPAL_PAYMENT_METHOD_ID,
+                        'data' => [
+                            'id' => self::PAYPAL_PAYMENT_METHOD_ID,
+                        ],
+                    ],
                 ],
                 $criteria,
                 $context
