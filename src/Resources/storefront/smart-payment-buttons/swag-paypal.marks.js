@@ -1,7 +1,6 @@
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 const SwagPayPalSpbMarksInstances = [];
-let isInjectionTriggered = false;
 
 export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
     static options = {
@@ -10,14 +9,7 @@ export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
          *
          * @type string
          */
-        clientId: '',
-
-        /**
-         * The selector for the indicator whether the PayPal javascript is already loaded or not
-         *
-         * @type string
-         */
-        paypalScriptLoadedClass: 'paypal-marks-js-loaded'
+        clientId: ''
     };
 
     init() {
@@ -27,30 +19,12 @@ export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
     }
 
     createMarks() {
-        const paypalScriptLoaded = document.head.classList.contains(this.options.paypalScriptLoadedClass);
-
-        if (paypalScriptLoaded) {
-            this.paypal = window.paypal;
-            this.paypal.Marks().render(this.el);
-            return;
-        }
-
-        if (isInjectionTriggered) {
-            return;
-        }
-
-        isInjectionTriggered = true;
         this.createScript(() => {
             this.paypal = window.paypal;
-            document.head.classList.add(this.options.paypalScriptLoadedClass);
 
             SwagPayPalSpbMarksInstances.forEach((instance) => {
                 this.paypal.Marks().render(instance.el);
             });
         });
-    }
-
-    getScriptUrlOptions() {
-        return '&components=marks';
     }
 }

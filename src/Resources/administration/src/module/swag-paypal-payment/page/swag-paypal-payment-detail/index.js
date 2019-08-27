@@ -1,7 +1,8 @@
-import { Component, Filter, Mixin, State } from 'src/core/shopware';
 import '../../../../app/component/swag-paypal-payment-actions';
 import template from './swag-paypal-payment-detail.html.twig';
 import './swag-paypal-payment-detail.scss';
+
+const { Component, Mixin, Filter, State } = Shopware;
 
 Component.register('swag-paypal-payment-detail', {
     template,

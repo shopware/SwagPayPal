@@ -19,7 +19,6 @@ default:
         - cp -v dev-ops/gitlab/.psh.yaml.override .
         - /entrypoint supervisord > /dev/null 2>&1 &
 
-
 # Stage: static
 
 PHP analyze:
@@ -32,7 +31,7 @@ PHP analyze:
         - php vendor/shopware/platform/bin/php-cs-fixer.phar fix --config=vendor/shopware/platform/.php_cs.dist --dry-run -vvv --allow-risky=yes --format=junit custom/plugins/SwagPayPal | tee php-cs-fixer.xml
     artifacts:
         reports:
-            junit: php-cs-fixer.xml
+            junit: development/php-cs-fixer.xml
 
 PHPUnit (MariaDB):
     stage: Testing

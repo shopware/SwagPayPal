@@ -1,6 +1,7 @@
-import { Mixin } from 'src/core/shopware';
 import template from './swag-paypal.html.twig';
 import constants from './swag-paypal-consts';
+
+const { Mixin } = Shopware;
 
 export default {
     name: 'swag-paypal',

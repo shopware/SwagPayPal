@@ -90,7 +90,7 @@ class ActivateDeactivate
     {
         $customFieldIds = $this->getCustomFieldIds($context);
 
-        if ($customFieldIds->getTotal() !== 0) {
+        if ($customFieldIds->getTotal() === 0) {
             return;
         }
 

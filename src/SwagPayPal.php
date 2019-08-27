@@ -43,6 +43,7 @@ class SwagPayPal extends Plugin
         $loader->load('express_checkout.xml');
         $loader->load('spb_checkout.xml');
         $loader->load('pui_checkout.xml');
+        $loader->load('checkout.xml');
 
         // PayPal Plus was disabled with PT-10610
         // Will be removed with 1.0.0
