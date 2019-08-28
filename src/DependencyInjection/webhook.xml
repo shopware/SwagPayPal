@@ -6,7 +6,7 @@
 
     <services>
         <service id="Swag\PayPal\Webhook\WebhookController" public="true">
-            <argument type="service" id="logger"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
         </service>

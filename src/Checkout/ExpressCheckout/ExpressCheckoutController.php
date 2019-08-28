@@ -10,6 +10,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
@@ -111,6 +112,7 @@ class ExpressCheckoutController extends AbstractController
     }
 
     /**
+     * @RouteScope(scopes={"sales-channel-api "})
      * @Route("/sales-channel-api/v{version}/_action/paypal/create-new-cart", name="sales-channel-api.action.paypal.create_new_cart", methods={"GET"})
      */
     public function createNewCart(SalesChannelContext $context): Response
@@ -122,6 +124,7 @@ class ExpressCheckoutController extends AbstractController
     }
 
     /**
+     * @RouteScope(scopes={"sales-channel-api "})
      * @Route("/sales-channel-api/v{version}/_action/paypal/create-payment", name="sales-channel-api.action.paypal.create_payment", methods={"GET"})
      */
     public function createPayment(SalesChannelContext $context): JsonResponse
@@ -147,6 +150,7 @@ class ExpressCheckoutController extends AbstractController
     }
 
     /**
+     * @RouteScope(scopes={"storefront"})
      * @Route("/paypal/approve-payment", name="paypal.approve_payment", methods={"POST"}, defaults={"XmlHttpRequest"=true})
      *
      * @throws BadCredentialsException

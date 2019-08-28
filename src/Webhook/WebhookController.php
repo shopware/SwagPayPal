@@ -10,6 +10,7 @@ namespace Swag\PayPal\Webhook;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -49,6 +50,7 @@ class WebhookController extends AbstractController
     }
 
     /**
+     * @RouteScope(scopes={"api"})
      * @Route("/api/v{version}/_action/paypal/webhook/register/{salesChannelId}", name="api.action.paypal.webhook.register", methods={"POST"})
      */
     public function registerWebhook(string $salesChannelId): JsonResponse
@@ -59,6 +61,7 @@ class WebhookController extends AbstractController
     }
 
     /**
+     * @RouteScope(scopes={"storefront"})
      * @Route("/paypal/webhook/execute", name="paypal.webhook.execute", methods={"POST"})
      *
      * @throws BadRequestHttpException

@@ -134,11 +134,13 @@ class WebhookService implements WebhookServiceInterface
                 $salesChannelId
             );
 
-            // TODO: Get sales channel id
-            $this->settingsService->updateSettings([
-                'webhookExecuteToken' => $webhookExecuteToken,
-                'webhookId' => $webhookId,
-            ]);
+            $this->settingsService->updateSettings(
+                [
+                    'webhookExecuteToken' => $webhookExecuteToken,
+                    'webhookId' => $webhookId,
+                ],
+                $salesChannelId
+            );
 
             return self::WEBHOOK_CREATED;
         } catch (WebhookAlreadyExistsException $e) {
