@@ -24,11 +24,11 @@ default:
 PHP analyze:
     stage: Static analyzes
     script:
-        - composer install --no-interaction --optimize-autoloader --no-suggest --no-scripts
+        - php psh.phar init-composer
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        - bin/phpstan.sh
+        - bin/static-analyze.sh
         - cd $CI_PROJECT_DIR/development
-        - php vendor/shopware/platform/bin/php-cs-fixer.phar fix --config=vendor/shopware/platform/.php_cs.dist --dry-run -vvv --allow-risky=yes --format=junit custom/plugins/SwagPayPal | tee php-cs-fixer.xml
+        - php dev-ops/analyze/vendor/bin/php-cs-fixer fix --config=vendor/shopware/platform/.php_cs.dist --dry-run -vvv --allow-risky=yes --format=junit custom/plugins/SwagPayPal | tee php-cs-fixer.xml
     artifacts:
         reports:
             junit: development/php-cs-fixer.xml

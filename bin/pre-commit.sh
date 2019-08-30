@@ -30,7 +30,7 @@ then
         php -l -d display_errors=0 "$FILE" 1> /dev/null
     done
 
-    ../../../vendor/shopware/platform/bin/phpstan.phar analyze --level 7 --no-progress --configuration phpstan.neon --autoload-file="$AUTOLOAD_FILE" ${PHP_FILES}
+    php ../../../dev-ops/analyze/vendor/bin/phpstan analyze --no-progress --configuration phpstan.neon --autoload-file="$AUTOLOAD_FILE" ${PHP_FILES}
 fi
 
 UNSTAGED_FILES="$(git diff --name-only -- ${PHP_FILES} ${JS_FILES})"
@@ -49,7 +49,7 @@ fi
 if [[ -n "$PHP_FILES" ]]
 then
     # fix code style and update the commit
-    ../../../vendor/shopware/platform/bin/php-cs-fixer.phar fix --config=../../../vendor/shopware/platform/.php_cs.dist --quiet -vv ${PHP_FILES}
+    php ../../../dev-ops/analyze/vendor/bin/php-cs-fixer fix --config=../../../vendor/shopware/platform/.php_cs.dist --quiet -vv ${PHP_FILES}
 fi
 
 if [[ -n "$JS_FILES" && -x ../../../vendor/shopware/platform/src/Administration/Resources/administration/node_modules/.bin/eslint ]]
