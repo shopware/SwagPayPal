@@ -1,4 +1,5 @@
 parameters:
+    level: 7
     reportUnmatchedIgnoredErrors: false
     excludes_analyse:
         - tests/TestBootstrap.php
