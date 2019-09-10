@@ -46,7 +46,7 @@ Component.register('swag-paypal-frw-credentials', {
             urlParams.append('partnerId', this.payPalPartnerId);
             urlParams.append('productIntentId', 'addipmt');
             urlParams.append('integrationType', 'FO');
-            urlParams.append('features', 'READ_SELLER_DISPUTED,UPDATE_SELLER_DISPUTE,ADVANCED_TRANSACTIONS_SEARCH');
+            urlParams.append('features', 'PAYMENT,REFUND,READ_SELLER_DISPUTE,UPDATE_SELLER_DISPUTE,ADVANCED_TRANSACTIONS_SEARCH');
             urlParams.append('partnerClientId', this.payPalPartnerClientId);
             urlParams.append('returnToPartnerUrl', $returnUrl);
             urlParams.append('displayMode', 'minibrowser');
