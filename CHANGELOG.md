@@ -1,3 +1,6 @@
+# 0.11.2
+- PT-10733 - Fixed problem when automatically fetching API credentials in first run wizard
+
 # 0.11.1
 - PT-10755 - Fix error while uninstalling and configuration error
 

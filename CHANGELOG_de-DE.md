@@ -1,3 +1,6 @@
+# 0.11.2
+- PT-10733 - Problem beim automatischen Holen der API Credentials im First-Run-Wizard behoben
+
 # 0.11.1
 - PT-10755 - Fehler bei der Deinstallation und Konfigurationsfehler behoben
 
