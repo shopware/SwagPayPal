@@ -17,12 +17,13 @@ use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
+use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -37,8 +38,10 @@ use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
@@ -50,7 +53,10 @@ class PayPalPaymentHandlerTest extends TestCase
     use PaymentTransactionTrait;
     use ServicesTrait;
     use KernelTestBehaviour;
-    use BasicTestDataBehaviour;
+    use StateMachineStateTrait;
+    use OrderFixture;
+    use DatabaseTransactionBehaviour;
+    use OrderTransactionTrait;
 
     public const PAYER_ID_PAYMENT_INCOMPLETE = 'testPayerIdIncomplete';
     public const PAYPAL_RESOURCE_THROWS_EXCEPTION = 'createRequestThrowsException';
@@ -171,167 +177,164 @@ Customer is not logged in.');
     {
         $handler = $this->createPayPalPaymentHandler();
 
-        $transactionId = 'testTransactionId';
         $request = $this->createRequest();
         $salesChannelContext = Generator::createSalesChannelContext();
+        $container = $this->getContainer();
+        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
             $salesChannelContext
         );
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-        $updatedData = $orderTransactionRepo->getData();
 
-        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
-            OrderTransactionStates::STATE_MACHINE,
-            OrderTransactionStates::STATE_PAID,
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
+            OrderTransactionStates::STATE_PAID, $container,
             $salesChannelContext->getContext()
-        )->getId();
+        );
 
-        static::assertSame($transactionId, $updatedData['id']);
-        static::assertSame($expectedStateId, $updatedData['stateId']);
+        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
     }
 
     public function testFinalizeEcs(): void
     {
         $handler = $this->createPayPalPaymentHandler();
 
-        $transactionId = 'testTransactionId';
         $request = $this->createRequest();
         $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, true);
         $salesChannelContext = Generator::createSalesChannelContext();
+        $container = $this->getContainer();
+        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
             $salesChannelContext
         );
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-        $updatedData = $orderTransactionRepo->getData();
 
-        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
-            OrderTransactionStates::STATE_MACHINE,
-            OrderTransactionStates::STATE_PAID,
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
+            OrderTransactionStates::STATE_PAID, $container,
             $salesChannelContext->getContext()
-        )->getId();
+        );
 
-        static::assertSame($transactionId, $updatedData['id']);
-        static::assertSame($expectedStateId, $updatedData['stateId']);
+        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
     }
 
     public function testFinalizeSpb(): void
     {
         $handler = $this->createPayPalPaymentHandler();
 
-        $transactionId = 'testTransactionId';
         $request = $this->createRequest();
         $request->query->set('isPayPalSpbCheckout', true);
         $salesChannelContext = Generator::createSalesChannelContext();
+        $container = $this->getContainer();
+        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
             $salesChannelContext
         );
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-        $updatedData = $orderTransactionRepo->getData();
 
-        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
-            OrderTransactionStates::STATE_MACHINE,
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
             OrderTransactionStates::STATE_PAID,
+            $container,
             $salesChannelContext->getContext()
-        )->getId();
+        );
 
-        static::assertSame($transactionId, $updatedData['id']);
-        static::assertSame($expectedStateId, $updatedData['stateId']);
+        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
     }
 
     public function testFinalizePlus(): void
     {
         $handler = $this->createPayPalPaymentHandler();
 
-        $transactionId = 'testTransactionId';
         $request = $this->createRequest();
         $request->query->set('isPayPalPlus', true);
         $salesChannelContext = Generator::createSalesChannelContext();
+        $container = $this->getContainer();
+        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
             $salesChannelContext
         );
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-        $updatedData = $orderTransactionRepo->getData();
 
-        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
-            OrderTransactionStates::STATE_MACHINE,
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
             OrderTransactionStates::STATE_PAID,
+            $container,
             $salesChannelContext->getContext()
-        )->getId();
+        );
 
-        static::assertSame($transactionId, $updatedData['id']);
-        static::assertSame($expectedStateId, $updatedData['stateId']);
+        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
     }
 
     public function testFinalizeAuthorization(): void
     {
         $handler = $this->createPayPalPaymentHandler();
 
-        $transactionId = 'testTransactionId';
         $request = $this->createRequest();
         $request->query->set(
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
             ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE
         );
         $salesChannelContext = Generator::createSalesChannelContext();
+        $container = $this->getContainer();
+        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
             $salesChannelContext
         );
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-        $updatedData = $orderTransactionRepo->getData();
 
-        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
-            OrderTransactionStates::STATE_MACHINE,
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
             OrderTransactionStates::STATE_OPEN,
+            $container,
             $salesChannelContext->getContext()
-        )->getId();
-
-        static::assertSame($transactionId, $updatedData['id']);
-        static::assertSame($expectedStateId, $updatedData['stateId']);
+        );
+        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
     }
 
     public function testFinalizeOrder(): void
     {
         $handler = $this->createPayPalPaymentHandler();
 
-        $transactionId = 'testTransactionId';
         $request = $this->createRequest();
         $request->query->set(
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
             ConstantsForTesting::PAYER_ID_PAYMENT_ORDER
         );
         $salesChannelContext = Generator::createSalesChannelContext();
+        $container = $this->getContainer();
+        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
             $salesChannelContext
         );
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-        $updatedData = $orderTransactionRepo->getData();
 
-        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
-            OrderTransactionStates::STATE_MACHINE,
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
             OrderTransactionStates::STATE_OPEN,
+            $container,
             $salesChannelContext->getContext()
-        )->getId();
+        );
 
-        static::assertSame($transactionId, $updatedData['id']);
-        static::assertSame($expectedStateId, $updatedData['stateId']);
+        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
     }
 
     public function testFinalizeWithCancel(): void
@@ -355,27 +358,27 @@ Customer canceled the payment on the PayPal page');
     {
         $handler = $this->createPayPalPaymentHandler();
 
-        $transactionId = 'testTransactionId';
         $request = $this->createRequest();
         $request->query->set(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID, self::PAYER_ID_PAYMENT_INCOMPLETE);
         $salesChannelContext = Generator::createSalesChannelContext();
+        $container = $this->getContainer();
+        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
             $salesChannelContext
         );
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-        $updatedData = $orderTransactionRepo->getData();
 
-        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
-            OrderTransactionStates::STATE_MACHINE,
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
             OrderTransactionStates::STATE_OPEN,
+            $container,
             $salesChannelContext->getContext()
-        )->getId();
+        );
 
-        static::assertSame($transactionId, $updatedData['id']);
-        static::assertSame($expectedStateId, $updatedData['stateId']);
+        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
     }
 
     public function testFinalizeWithException(): void
@@ -413,7 +416,7 @@ An error occurred during the communication with PayPal');
 
         return new PayPalPaymentHandler(
             $paymentResource,
-            new OrderTransactionStateHandler($this->orderTransactionRepo, $this->stateMachineRegistry),
+            new OrderTransactionStateHandler($this->stateMachineRegistry),
             $ecsSpbHandler,
             new PayPalHandler(
                 $paymentResource,

@@ -100,10 +100,6 @@ class SPBCheckoutSubscriberTest extends TestCase
         $spbExtension = $event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID);
 
         static::assertNotNull($spbExtension);
-        if ($spbExtension === null) {
-            return;
-        }
-
         static::assertSame(self::TEST_CLIENT_ID, $spbExtension->getClientId());
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('de_DE', $spbExtension->getLanguageIso());
@@ -138,10 +134,6 @@ class SPBCheckoutSubscriberTest extends TestCase
         $spbExtension = $event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID);
 
         static::assertNotNull($spbExtension);
-        if ($spbExtension === null) {
-            return;
-        }
-
         static::assertSame(self::TEST_CLIENT_ID, $spbExtension->getClientId());
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('en_GB', $spbExtension->getLanguageIso());

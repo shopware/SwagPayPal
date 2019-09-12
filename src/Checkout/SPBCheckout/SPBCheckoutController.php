@@ -61,7 +61,7 @@ class SPBCheckoutController extends AbstractController
     }
 
     /**
-     * @RouteScope(scopes={"sales-channel-api "})
+     * @RouteScope(scopes={"sales-channel-api"})
      * @Route("/sales-channel-api/v{version}/_action/paypal/spb/create-payment", name="sales-channel-api.action.paypal.spb.create_payment", methods={"POST"})
      *
      * @throws AddressNotFoundException

@@ -12,13 +12,16 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\PayPal\Api\Webhook;
-use Swag\PayPal\Test\Mock\DIContainerMock;
-use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
+use Swag\PayPal\Test\Helper\OrderTransactionTrait;
+use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Webhook\Handler\SaleRefunded;
 use Swag\PayPal\Webhook\WebhookEventTypes;
@@ -26,6 +29,10 @@ use Swag\PayPal\Webhook\WebhookEventTypes;
 class SaleRefundedTest extends TestCase
 {
     use KernelTestBehaviour;
+    use StateMachineStateTrait;
+    use DatabaseTransactionBehaviour;
+    use OrderTransactionTrait;
+    use OrderFixture;
 
     /**
      * @var SaleRefunded
@@ -43,13 +50,15 @@ class SaleRefundedTest extends TestCase
     private $stateMachineRegistry;
 
     /**
-     * @var DefinitionInstanceRegistryMock
+     * @var DefinitionInstanceRegistry
      */
     private $definitionRegistry;
 
     protected function setUp(): void
     {
-        $this->definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
+        /** @var DefinitionInstanceRegistry $definitionInstanceRegistry */
+        $definitionInstanceRegistry = $this->getContainer()->get(DefinitionInstanceRegistry::class);
+        $this->definitionRegistry = $definitionInstanceRegistry;
         $this->orderTransactionRepo = $this->definitionRegistry->getRepository(
             (new OrderTransactionDefinition())->getEntityName()
         );
@@ -69,27 +78,26 @@ class SaleRefundedTest extends TestCase
         $webhook = new Webhook();
         $webhook->assign(['resource' => ['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]]);
         $context = Context::createDefaultContext();
+        $container = $this->getContainer();
+        $transactionId = $this->getTransactionId($context, $container, OrderTransactionStates::STATE_PAID);
         $this->webhookHandler->invoke($webhook, $context);
 
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-        $result = $orderTransactionRepo->getData();
-
-        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
-            OrderTransactionStates::STATE_MACHINE,
-            OrderTransactionStates::STATE_REFUNDED,
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
+            OrderTransactionStates::STATE_REFUNDED, $container,
             $context
-        )->getId();
+        );
 
-        static::assertSame(OrderTransactionRepoMock::ORDER_TRANSACTION_ID, $result['id']);
-        static::assertSame($expectedStateId, $result['stateId']);
+        $transaction = $this->getTransaction($transactionId, $container, $context);
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
     }
 
     private function createWebhookHandler(): SaleRefunded
     {
         return new SaleRefunded(
             $this->definitionRegistry,
-            new OrderTransactionStateHandler($this->orderTransactionRepo, $this->stateMachineRegistry),
+            new OrderTransactionStateHandler($this->stateMachineRegistry),
             new OrderTransactionDefinition()
         );
     }

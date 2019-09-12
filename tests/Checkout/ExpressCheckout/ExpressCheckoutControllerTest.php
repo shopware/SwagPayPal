@@ -88,6 +88,8 @@ class ExpressCheckoutControllerTest extends TestCase
         ]);
 
         $response = $this->createController()->createPayment($salesChannelContext);
+        static::assertNotFalse($response->getContent());
+
         $token = json_decode($response->getContent(), true)['token'];
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -122,6 +124,7 @@ class ExpressCheckoutControllerTest extends TestCase
         /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
         $response = $this->createController($cartService)->onApprove($salesChannelContext, $request);
+        static::assertNotFalse($response->getContent());
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
 
@@ -134,24 +137,15 @@ class ExpressCheckoutControllerTest extends TestCase
         /** @var CustomerEntity|null $customer */
         $customer = $customerRepo->search($criteria, $salesChannelContext->getContext())->first();
         static::assertNotNull($customer);
-        if ($customer === null) {
-            return;
-        }
 
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_FIRST_NAME, $customer->getFirstName());
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_LAST_NAME, $customer->getLastName());
 
         $addresses = $customer->getAddresses();
         static::assertNotNull($addresses);
-        if ($addresses === null) {
-            return;
-        }
 
         $address = $addresses->first();
         static::assertNotNull($address);
-        if ($address === null) {
-            return;
-        }
 
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_SHIPPING_ADDRESS_STREET, $address->getStreet());
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_SHIPPING_ADDRESS_CITY, $address->getCity());
@@ -162,9 +156,6 @@ class ExpressCheckoutControllerTest extends TestCase
             ->getExtension(ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID);
 
         static::assertInstanceOf(ExpressCheckoutData::class, $ecsCartExtension);
-        if ($ecsCartExtension === null) {
-            return;
-        }
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_PAYER_ID, $ecsCartExtension->getPayerId());
         static::assertSame($testPaymentId, $ecsCartExtension->getPaymentId());
     }

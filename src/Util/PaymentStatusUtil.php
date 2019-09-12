@@ -4,14 +4,13 @@ namespace Swag\PayPal\Util;
 
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
 use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
 use Shopware\Core\System\StateMachine\Exception\StateMachineNotFoundException;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
@@ -30,17 +29,22 @@ class PaymentStatusUtil
      */
     private $orderRepository;
 
-    /** @var EntityRepositoryInterface */
+    /**
+     * @var EntityRepositoryInterface
+     */
     private $orderTransactionRepository;
 
+    /**
+     * @var OrderTransactionStateHandler
+     */
+    private $orderTransactionStateHandler;
+
     public function __construct(
-        StateMachineRegistry $stateMachineRegistry,
         EntityRepositoryInterface $orderRepository,
-        EntityRepositoryInterface $orderTransactionRepository
+        OrderTransactionStateHandler $orderTransactionStateHandler
     ) {
-        $this->stateMachineRegistry = $stateMachineRegistry;
         $this->orderRepository = $orderRepository;
-        $this->orderTransactionRepository = $orderTransactionRepository;
+        $this->orderTransactionStateHandler = $orderTransactionStateHandler;
     }
 
     /**
@@ -54,7 +58,8 @@ class PaymentStatusUtil
     public function applyVoidStateToOrder(string $orderId, Context $context): void
     {
         $transaction = $this->getOrderTransaction($orderId, $context);
-        $this->transisitionOrderTransactionState($transaction, StateMachineTransitionActions::ACTION_CANCEL, $context);
+
+        $this->orderTransactionStateHandler->cancel($transaction->getId(), $context);
     }
 
     /**
@@ -72,12 +77,12 @@ class PaymentStatusUtil
         $isFinalCapture = $request->request->getBoolean(PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_IS_FINAL, false);
 
         if ($isFinalCapture || $amountToCapture === $transaction->getAmount()->getTotalPrice()) {
-            $this->transisitionOrderTransactionState($transaction, StateMachineTransitionActions::ACTION_PAY, $context);
+            $this->orderTransactionStateHandler->pay($transaction->getId(), $context);
 
             return;
         }
 
-        $this->transisitionOrderTransactionState($transaction, StateMachineTransitionActions::ACTION_PAY_PARTIALLY, $context);
+        $this->orderTransactionStateHandler->payPartially($transaction->getId(), $context);
     }
 
     /**
@@ -94,12 +99,12 @@ class PaymentStatusUtil
         $refundAmount = round((float) $request->request->get(PayPalPaymentController::REQUEST_PARAMETER_REFUND_AMOUNT), 2);
 
         if ($refundAmount === $transaction->getAmount()->getTotalPrice()) {
-            $this->transisitionOrderTransactionState($transaction, StateMachineTransitionActions::ACTION_REFUND, $context);
+            $this->orderTransactionStateHandler->refund($transaction->getId(), $context);
 
             return;
         }
 
-        $this->transisitionOrderTransactionState($transaction, StateMachineTransitionActions::ACTION_REFUND_PARTIALLY, $context);
+        $this->orderTransactionStateHandler->refundPartially($transaction->getId(), $context);
     }
 
     /**
@@ -130,35 +135,5 @@ class PaymentStatusUtil
         }
 
         return $transaction;
-    }
-
-    /**
-     * @throws InconsistentCriteriaIdsException
-     * @throws IllegalTransitionException
-     * @throws StateMachineNotFoundException
-     * @throws InvalidTransactionException
-     */
-    private function transisitionOrderTransactionState(OrderTransactionEntity $orderTransactionEntity, string $transistionName, Context $context): void
-    {
-        $stateMachineState = $orderTransactionEntity->getStateMachineState();
-
-        if (!$stateMachineState) {
-            throw new InvalidTransactionException($orderTransactionEntity->getId());
-        }
-
-        $toPlace = $this->stateMachineRegistry->transition($this->stateMachineRegistry->getStateMachine(OrderTransactionStates::STATE_MACHINE, $context),
-            $stateMachineState,
-            $this->orderTransactionRepository->getDefinition()->getEntityName(),
-            $orderTransactionEntity->getId(),
-            $context,
-            $transistionName);
-
-        $payload = [
-            ['id' => $orderTransactionEntity->getId(), 'stateId' => $toPlace->getId()],
-        ];
-
-        $this->orderTransactionRepository->update($payload, $context);
-        $orderTransactionEntity->setStateMachineState($toPlace);
-        $orderTransactionEntity->setStateId($toPlace->getId());
     }
 }

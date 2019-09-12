@@ -30,9 +30,6 @@ class PayPalStructTest extends TestCase
 
         $testJsonString = json_encode($testStruct);
         static::assertNotFalse($testJsonString);
-        if ($testJsonString === false) {
-            return;
-        }
 
         $testArray = json_decode($testJsonString, true);
 

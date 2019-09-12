@@ -41,6 +41,8 @@ class WebhookControllerTest extends TestCase
 
         $context = Context::createDefaultContext();
         $jsonResponse = $webhookController->registerWebhook(Defaults::SALES_CHANNEL);
+        static::assertNotFalse($jsonResponse->getContent());
+
         $result = json_decode($jsonResponse->getContent(), true);
 
         $this->silentAssertArraySubset(['result' => WebhookService::WEBHOOK_CREATED], $result);
