@@ -29,6 +29,7 @@ class EcsSpbHandler extends AbstractPaymentHandler
 {
     public const PAYPAL_PAYMENT_ID_INPUT_NAME = 'paypalPaymentId';
     public const PAYPAL_PAYER_ID_INPUT_NAME = 'paypalPayerId';
+
     /**
      * @var SettingsServiceInterface
      */

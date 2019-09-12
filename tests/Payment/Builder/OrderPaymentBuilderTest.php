@@ -79,9 +79,6 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
-        if ($payment === false) {
-            return;
-        }
 
         $payment = json_decode($payment, true);
 
@@ -100,9 +97,6 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
-        if ($payment === false) {
-            return;
-        }
 
         $payment = json_decode($payment, true);
 
@@ -125,9 +119,6 @@ class OrderPaymentBuilderTest extends TestCase
         $transaction = json_encode($payment->getTransactions()[0]);
 
         static::assertNotFalse($transaction);
-        if ($transaction === false) {
-            return;
-        }
 
         $transaction = json_decode($transaction, true);
         static::assertNotNull(
@@ -159,9 +150,6 @@ class OrderPaymentBuilderTest extends TestCase
         $transaction = json_encode($payment->getTransactions()[0]);
 
         static::assertNotFalse($transaction);
-        if ($transaction === false) {
-            return;
-        }
 
         $transaction = json_decode($transaction, true)['item_list'];
 
@@ -198,9 +186,6 @@ class OrderPaymentBuilderTest extends TestCase
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
         $paymentJsonString = json_encode($payment);
         static::assertNotFalse($paymentJsonString);
-        if ($paymentJsonString === false) {
-            return;
-        }
 
         $applicationContext = json_decode($paymentJsonString, true)['application_context'];
         static::assertSame($expectedResult, $applicationContext['landing_page']);
@@ -253,9 +238,6 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
-        if ($payment === false) {
-            return;
-        }
 
         $payment = json_decode($payment, true);
 
@@ -278,9 +260,6 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
-        if ($payment === false) {
-            return;
-        }
 
         $payment = json_decode($payment, true);
 

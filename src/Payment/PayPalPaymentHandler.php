@@ -178,8 +178,6 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         // apply the payment status if its completed by PayPal
         if ($paymentState === PaymentStatus::PAYMENT_COMPLETED) {
             $this->orderTransactionStateHandler->pay($transactionId, $context);
-        } else {
-            $this->orderTransactionStateHandler->open($transactionId, $context);
         }
     }
 

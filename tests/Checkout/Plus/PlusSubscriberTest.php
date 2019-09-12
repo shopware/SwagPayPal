@@ -120,10 +120,6 @@ class PlusSubscriberTest extends TestCase
         $plusExtension = $event->getPage()->getExtension('payPalPlusData');
 
         static::assertNotNull($plusExtension);
-        if ($plusExtension === null) {
-            return;
-        }
-
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $plusExtension->getApprovalUrl());
         static::assertSame(2, \strlen($plusExtension->getCustomerCountryIso()));
         static::assertSame('live', $plusExtension->getMode());
@@ -144,10 +140,6 @@ class PlusSubscriberTest extends TestCase
         $plusExtension = $event->getPage()->getExtension('payPalPlusData');
 
         static::assertNotNull($plusExtension);
-        if ($plusExtension === null) {
-            return;
-        }
-
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $plusExtension->getApprovalUrl());
         static::assertSame(2, \strlen($plusExtension->getCustomerCountryIso()));
         static::assertSame('live', $plusExtension->getMode());
@@ -161,9 +153,6 @@ class PlusSubscriberTest extends TestCase
 
         $paymentMethod = $event->getPage()->getPaymentMethods()->get($this->paypalPaymentMethodId);
         static::assertNotNull($paymentMethod);
-        if ($paymentMethod === null) {
-            return;
-        }
         static::assertSame(self::NEW_PAYMENT_NAME, $paymentMethod->getTranslated()['name']);
         static::assertStringContainsString(self::PAYMENT_DESCRIPTION_EXTENSION, $paymentMethod->getTranslated()['description']);
     }

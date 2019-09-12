@@ -103,9 +103,6 @@ class WebhookResourceTest extends TestCase
         $data = $this->clientFactory->getClient()->getData();
         $patchJsonString = json_encode($data[0]);
         static::assertNotFalse($patchJsonString);
-        if ($patchJsonString === false) {
-            return;
-        }
 
         $patch = json_decode($patchJsonString, true);
         static::assertSame($patch['value'], self::TEST_URL);

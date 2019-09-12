@@ -112,7 +112,7 @@ class ExpressCheckoutController extends AbstractController
     }
 
     /**
-     * @RouteScope(scopes={"sales-channel-api "})
+     * @RouteScope(scopes={"sales-channel-api"})
      * @Route("/sales-channel-api/v{version}/_action/paypal/create-new-cart", name="sales-channel-api.action.paypal.create_new_cart", methods={"GET"})
      */
     public function createNewCart(SalesChannelContext $context): Response
@@ -124,7 +124,7 @@ class ExpressCheckoutController extends AbstractController
     }
 
     /**
-     * @RouteScope(scopes={"sales-channel-api "})
+     * @RouteScope(scopes={"sales-channel-api"})
      * @Route("/sales-channel-api/v{version}/_action/paypal/create-payment", name="sales-channel-api.action.paypal.create_payment", methods={"GET"})
      */
     public function createPayment(SalesChannelContext $context): JsonResponse

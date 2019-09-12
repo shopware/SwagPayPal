@@ -58,7 +58,7 @@ class ApiCredentialServiceTest extends TestCase
         $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
     }
 
-    public function testGetApiCredentials()
+    public function testGetApiCredentials(): void
     {
         $apiService = $this->createApiCredentialService();
 

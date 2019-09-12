@@ -7,7 +7,9 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefi
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
+use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Payment\Handler\PayPalHandler;
@@ -17,11 +19,12 @@ use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Payment\PayPalPuiPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
-use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPuiPaymentHandlerTest extends TestCase
@@ -29,6 +32,10 @@ class PayPalPuiPaymentHandlerTest extends TestCase
     use KernelTestBehaviour;
     use ServicesTrait;
     use PaymentTransactionTrait;
+    use OrderFixture;
+    use StateMachineStateTrait;
+    use OrderTransactionTrait;
+    use DatabaseTransactionBehaviour;
 
     /**
      * @var EntityRepositoryInterface
@@ -56,26 +63,26 @@ class PayPalPuiPaymentHandlerTest extends TestCase
     {
         $handler = $this->createPayPalPuiPaymentHandler();
 
-        $transactionId = mb_strtolower('8F45CE6FD7FC40D8BFF40D56FDCD4AE6');
         $request = $this->createRequest();
         $salesChannelContext = Generator::createSalesChannelContext();
+        $container = $this->getContainer();
+        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
         $handler->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
             $request,
             $salesChannelContext
         );
-        /** @var OrderTransactionRepoMock $orderTransactionRepo */
-        $orderTransactionRepo = $this->orderTransactionRepo;
-        $updatedData = $orderTransactionRepo->getData();
 
-        $expectedStateId = $this->stateMachineRegistry->getStateByTechnicalName(
-            OrderTransactionStates::STATE_MACHINE,
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
             OrderTransactionStates::STATE_PAID,
+            $container,
             $salesChannelContext->getContext()
-        )->getId();
+        );
 
-        static::assertSame($transactionId, $updatedData['id']);
-        static::assertSame($expectedStateId, $updatedData['stateId']);
+        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
     }
 
     private function createRequest(): Request
@@ -102,7 +109,7 @@ class PayPalPuiPaymentHandlerTest extends TestCase
                 new ShippingAddressPatchBuilder()
             ),
             $paymentResource,
-            new OrderTransactionStateHandler($this->orderTransactionRepo, $this->stateMachineRegistry),
+            new OrderTransactionStateHandler($this->stateMachineRegistry),
             $this->orderTransactionRepo
         );
     }

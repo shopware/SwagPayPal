@@ -82,10 +82,6 @@ class SPBMarksSubscriberTest extends TestCase
         );
 
         static::assertNotNull($spbMarksExtension);
-        if ($spbMarksExtension === null) {
-            return;
-        }
-
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
     }
@@ -113,10 +109,6 @@ class SPBMarksSubscriberTest extends TestCase
         );
 
         static::assertNotNull($spbMarksExtension);
-        if ($spbMarksExtension === null) {
-            return;
-        }
-
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
     }

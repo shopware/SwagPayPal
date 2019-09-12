@@ -40,9 +40,10 @@ class PayPalPaymentControllerTest extends TestCase
     public function testGetPaymentDetails(): void
     {
         $context = Context::createDefaultContext();
-        $response = $this->createPaymentController()->paymentDetails(self::ORDER_ID, 'testPaymentId', $context);
+        $responseContent = $this->createPaymentController()->paymentDetails(self::ORDER_ID, 'testPaymentId', $context)->getContent();
+        static::assertNotFalse($responseContent);
 
-        $paymentDetails = json_decode($response->getContent(), true);
+        $paymentDetails = json_decode($responseContent, true);
 
         static::assertSame(
             GetSaleResponseFixture::TRANSACTION_AMOUNT_DETAILS_SUBTOTAL,
@@ -54,30 +55,32 @@ class PayPalPaymentControllerTest extends TestCase
     {
         $request = new Request();
         $context = Context::createDefaultContext();
-        $response = $this->createPaymentController()->refundPayment(
+        $responseContent = $this->createPaymentController()->refundPayment(
             $request,
             $context,
             RelatedResource::SALE,
             'testPaymentId',
             'testOrderId'
-        );
+        )->getContent();
+        static::assertNotFalse($responseContent);
 
-        $refund = json_decode($response->getContent(), true);
+        $refund = json_decode($responseContent, true);
 
         static::assertSame(RefundSaleResponseFixture::REFUND_AMOUNT, $refund['amount']['total']);
     }
 
     public function testRefundCapture(): void
     {
-        $response = $this->createPaymentController()->refundPayment(
+        $responseContent = $this->createPaymentController()->refundPayment(
             new Request(),
             Context::createDefaultContext(),
             RelatedResource::CAPTURE,
             'testPaymentId',
             'testOrderId'
-        );
+        )->getContent();
+        static::assertNotFalse($responseContent);
 
-        $refund = json_decode($response->getContent(), true);
+        $refund = json_decode($responseContent, true);
 
         static::assertSame(RefundCaptureResponseFixture::REFUND_AMOUNT, $refund['amount']['total']);
     }
@@ -90,15 +93,16 @@ class PayPalPaymentControllerTest extends TestCase
             PayPalPaymentController::REQUEST_PARAMETER_CURRENCY => self::TEST_REFUND_CURRENCY,
         ]);
         $context = Context::createDefaultContext();
-        $response = $this->createPaymentControllerWithSaleResourceMock()->refundPayment(
+        $responseContent = $this->createPaymentControllerWithSaleResourceMock()->refundPayment(
             $request,
             $context,
             RelatedResource::SALE,
             'testPaymentId',
             'testOrderId'
-        );
+        )->getContent();
+        static::assertNotFalse($responseContent);
 
-        $refund = json_decode($response->getContent(), true);
+        $refund = json_decode($responseContent, true);
 
         static::assertSame((string) self::TEST_REFUND_AMOUNT, $refund['amount']['total']);
         static::assertSame(self::TEST_REFUND_CURRENCY, $refund['amount']['currency']);
@@ -126,15 +130,16 @@ class PayPalPaymentControllerTest extends TestCase
         $request = new Request();
         $context = Context::createDefaultContext();
 
-        $response = $this->createPaymentController()->capturePayment(
+        $responseContent = $this->createPaymentController()->capturePayment(
             $request,
             $context,
             RelatedResource::AUTHORIZE,
             'testPaymentId',
             'testOrderId'
-        );
+        )->getContent();
+        static::assertNotFalse($responseContent);
 
-        $capture = json_decode($response->getContent(), true);
+        $capture = json_decode($responseContent, true);
 
         static::assertTrue($capture['is_final_capture']);
     }
@@ -144,15 +149,16 @@ class PayPalPaymentControllerTest extends TestCase
         $request = new Request();
         $context = Context::createDefaultContext();
 
-        $response = $this->createPaymentController()->capturePayment(
+        $responseContent = $this->createPaymentController()->capturePayment(
             $request,
             $context,
             RelatedResource::ORDER,
             'testPaymentId',
             'testOrderId'
-        );
+        )->getContent();
+        static::assertNotFalse($responseContent);
 
-        $capture = json_decode($response->getContent(), true);
+        $capture = json_decode($responseContent, true);
 
         static::assertTrue($capture['is_final_capture']);
     }
@@ -176,14 +182,15 @@ class PayPalPaymentControllerTest extends TestCase
     public function testVoidPaymentOrders(): void
     {
         $context = Context::createDefaultContext();
-        $response = $this->createPaymentController()->voidPayment(
+        $responseContent = $this->createPaymentController()->voidPayment(
             $context,
             RelatedResource::ORDER,
             'testResourceId',
             'testOrderId'
-        );
+        )->getContent();
+        static::assertNotFalse($responseContent);
 
-        $void = json_decode($response->getContent(), true);
+        $void = json_decode($responseContent, true);
 
         static::assertSame(VoidOrderResponseFixture::VOID_ID, $void['id']);
     }
@@ -191,14 +198,15 @@ class PayPalPaymentControllerTest extends TestCase
     public function testVoidPaymentAuthorize(): void
     {
         $context = Context::createDefaultContext();
-        $response = $this->createPaymentController()->voidPayment(
+        $responseContent = $this->createPaymentController()->voidPayment(
             $context,
             RelatedResource::AUTHORIZE,
             'testResourceId',
             'testOrderId'
-        );
+        )->getContent();
+        static::assertNotFalse($responseContent);
 
-        $void = json_decode($response->getContent(), true);
+        $void = json_decode($responseContent, true);
 
         static::assertSame(VoidAuthorizationResponseFixture::VOID_ID, $void['id']);
     }

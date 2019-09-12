@@ -6,6 +6,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EventDispatcherMock implements EventDispatcherInterface
 {
+    /**
+     * @return object
+     */
     public function dispatch($event)
     {
     }

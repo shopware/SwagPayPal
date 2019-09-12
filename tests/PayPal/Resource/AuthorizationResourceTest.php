@@ -32,9 +32,6 @@ class AuthorizationResourceTest extends TestCase
 
         $capture = json_encode($captureResponse);
         static::assertNotFalse($capture);
-        if ($capture === false) {
-            return;
-        }
 
         $captureArray = json_decode($capture, true);
 
@@ -48,9 +45,6 @@ class AuthorizationResourceTest extends TestCase
 
         $void = json_encode($voidResponse);
         static::assertNotFalse($void);
-        if ($void === false) {
-            return;
-        }
 
         $voidArray = json_decode($void, true);
 

@@ -26,7 +26,7 @@ class PayPalClientFactoryMock extends PayPalClientFactory
 
     private $throwException = false;
 
-    public function enableException()
+    public function enableException(): void
     {
         $this->throwException = true;
     }

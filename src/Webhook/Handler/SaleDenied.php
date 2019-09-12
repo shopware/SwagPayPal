@@ -38,6 +38,6 @@ class SaleDenied extends AbstractWebhookHandler
     {
         $orderTransaction = $this->getOrderTransaction($webhook, $context);
 
-        $this->orderTransactionStateHandler->open($orderTransaction->getId(), $context);
+        $this->orderTransactionStateHandler->cancel($orderTransaction->getId(), $context);
     }
 }

@@ -28,9 +28,6 @@ class OrdersResourceTest extends TestCase
 
         $capture = json_encode($captureResponse);
         static::assertNotFalse($capture);
-        if ($capture === false) {
-            return;
-        }
 
         $captureArray = json_decode($capture, true);
 
@@ -44,9 +41,6 @@ class OrdersResourceTest extends TestCase
 
         $void = json_encode($voidResponse);
         static::assertNotFalse($void);
-        if ($void === false) {
-            return;
-        }
 
         $voidArray = json_decode($void, true);
 

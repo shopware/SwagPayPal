@@ -5,6 +5,7 @@ namespace Swag\PayPal\Test\Util;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
@@ -12,7 +13,6 @@ use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -31,21 +31,27 @@ class PaymentStatusUtilTest extends TestCase
     /**
      * @var PaymentStatusUtil
      */
-    private $paymenStatusutil;
+    private $paymentStatusUtil;
+
+    /**
+     * @var StateMachineRegistry
+     */
+    private $stateMachineRegistry;
 
     protected function setUp(): void
     {
         $container = $this->getContainer();
         /** @var StateMachineRegistry $stateMachineRegistry */
         $stateMachineRegistry = $container->get(StateMachineRegistry::class);
+        $this->stateMachineRegistry = $stateMachineRegistry;
         /** @var EntityRepositoryInterface $orderRepository */
         $orderRepository = $container->get('order.repository');
-        /** @var EntityRepositoryInterface $orderTransactionRepository */
-        $orderTransactionRepository = $container->get('order_transaction.repository');
-        $this->paymenStatusutil = new PaymentStatusUtil(
-            $stateMachineRegistry,
+        /** @var OrderTransactionStateHandler $orderTransactionStateHandler */
+        $orderTransactionStateHandler = $container->get(OrderTransactionStateHandler::class);
+
+        $this->paymentStatusUtil = new PaymentStatusUtil(
             $orderRepository,
-            $orderTransactionRepository
+            $orderTransactionStateHandler
         );
     }
 
@@ -53,7 +59,7 @@ class PaymentStatusUtilTest extends TestCase
     {
         $orderId = $this->createBasicOrder();
 
-        $this->paymenStatusutil->applyVoidStateToOrder($orderId, Context::createDefaultContext());
+        $this->paymentStatusUtil->applyVoidStateToOrder($orderId, Context::createDefaultContext());
 
         /** @var mixed $changedOrder */
         $changedOrder = $this->getOrder($orderId);
@@ -101,7 +107,7 @@ class PaymentStatusUtilTest extends TestCase
     public function testApplyCaptureStateToPayment(Request $request, string $expectedOrderTransactionState): void
     {
         $orderId = $this->createBasicOrder();
-        $this->paymenStatusutil->applyCaptureStateToPayment($orderId, $request, Context::createDefaultContext());
+        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $request, Context::createDefaultContext());
 
         /** @var mixed $changedOrder */
         $changedOrder = $this->getOrder($orderId);
@@ -146,8 +152,8 @@ class PaymentStatusUtilTest extends TestCase
             PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_AMOUNT => 15.0,
             PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_IS_FINAL => true,
         ]);
-        $this->paymenStatusutil->applyCaptureStateToPayment($orderId, $captureRequest, Context::createDefaultContext());
-        $this->paymenStatusutil->applyRefundStateToPayment($orderId, $request, Context::createDefaultContext());
+        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $captureRequest, Context::createDefaultContext());
+        $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $request, Context::createDefaultContext());
 
         /** @var mixed $changedOrder */
         $changedOrder = $this->getOrder($orderId);
@@ -167,14 +173,14 @@ class PaymentStatusUtilTest extends TestCase
     public function testApplyVoidStateToOrderWithNoOrder(): void
     {
         $this->expectException(OrderNotFoundException::class);
-        $this->paymenStatusutil->applyVoidStateToOrder(Uuid::randomHex(), Context::createDefaultContext());
+        $this->paymentStatusUtil->applyVoidStateToOrder(Uuid::randomHex(), Context::createDefaultContext());
     }
 
     public function testApplyVoidStateToOrderWithNoOrderTransaction(): void
     {
         $orderId = $this->createBasicOrder(false);
         $this->expectException(InvalidOrderException::class);
-        $this->paymenStatusutil->applyVoidStateToOrder($orderId, Context::createDefaultContext());
+        $this->paymentStatusUtil->applyVoidStateToOrder($orderId, Context::createDefaultContext());
     }
 
     private function createBasicOrder(bool $withTransaction = true): string
@@ -187,7 +193,6 @@ class PaymentStatusUtilTest extends TestCase
         $context = Context::createDefaultContext();
 
         $orderData = $this->getOrderData($orderId, $context);
-        $stateId = $this->getOpenOrderStateId();
         $orderRepo->create($orderData, $context);
 
         if ($withTransaction) {
@@ -203,7 +208,10 @@ class PaymentStatusUtilTest extends TestCase
                         'calculatedTaxes' => [],
                         'taxRules' => [],
                     ],
-                    'stateId' => $stateId,
+                    'stateId' => $this->stateMachineRegistry->getInitialState(
+                        OrderTransactionStates::STATE_MACHINE,
+                        $context
+                    )->getId(),
                 ],
             ];
             $orderTransactionRepo->create($orderTransactionData, $context);
@@ -230,17 +238,5 @@ class PaymentStatusUtilTest extends TestCase
         $criteria->addAssociation('transactions');
 
         return $orderRepo->search($criteria, Context::createDefaultContext())->get($orderId);
-    }
-
-    private function getOpenOrderStateId(): ?string
-    {
-        /** @var EntityRepositoryInterface $stateMachineStateRepository */
-        $stateMachineStateRepository = $this->getContainer()->get('state_machine_state.repository');
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsFilter('technicalName', 'open')
-        );
-
-        return $stateMachineStateRepository->searchIds($criteria, Context::createDefaultContext())->firstId();
     }
 }
