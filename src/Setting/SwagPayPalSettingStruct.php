@@ -125,6 +125,16 @@ class SwagPayPalSettingStruct extends Struct
     protected $spbAlternativePaymentMethodsEnabled = true;
 
     /**
+     * @var string
+     */
+    protected $spbButtonColor = 'gold';
+
+    /**
+     * @var string
+     */
+    protected $spbButtonShape = 'rect';
+
+    /**
      * @var string|null
      */
     protected $spbButtonLanguageIso;
@@ -362,6 +372,26 @@ class SwagPayPalSettingStruct extends Struct
     public function setSpbAlternativePaymentMethodsEnabled(bool $spbAlternativePaymentMethodsEnabled): void
     {
         $this->spbAlternativePaymentMethodsEnabled = $spbAlternativePaymentMethodsEnabled;
+    }
+
+    public function getSpbButtonColor(): string
+    {
+        return $this->spbButtonColor;
+    }
+
+    public function setSpbButtonColor(string $spbButtonColor): void
+    {
+        $this->spbButtonColor = $spbButtonColor;
+    }
+
+    public function getSpbButtonShape(): string
+    {
+        return $this->spbButtonShape;
+    }
+
+    public function setSpbButtonShape(string $spbButtonShape): void
+    {
+        $this->spbButtonShape = $spbButtonShape;
     }
 
     public function getSpbButtonLanguageIso(): ?string
