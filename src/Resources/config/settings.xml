@@ -236,5 +236,51 @@
             <helpText>Alternative payment methods are, Creditcards, Invoice and more.</helpText>
             <helpText lang="de-DE">Die alternativen Zahlungsarten sind, Kreditkarten, SEPA und mehr.</helpText>
         </input-field>
+
+        <input-field type="single-select">
+            <name>spbButtonColor</name>
+            <label>Button color:</label>
+            <label lang="de-DE">Buttonfarbe:</label>
+            <options>
+                <option>
+                    <id>blue</id>
+                    <name>Blue</name>
+                    <name lang="de-DE">Blau</name>
+                </option>
+                <option>
+                    <id>black</id>
+                    <name>Black</name>
+                    <name lang="de-DE">Schwarz</name>
+                </option>
+                <option>
+                    <id>gold</id>
+                    <name>Gold</name>
+                    <name lang="de-DE">Gold</name>
+                </option>
+                <option>
+                    <id>silver</id>
+                    <name>Silver</name>
+                    <name lang="de-DE">Silber</name>
+                </option>
+            </options>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>spbButtonShape</name>
+            <label>Button shape:</label>
+            <label lang="de-DE">Buttonform:</label>
+            <options>
+                <option>
+                    <id>pill</id>
+                    <name>Round</name>
+                    <name lang="de-DE">Rund</name>
+                </option>
+                <option>
+                    <id>rect</id>
+                    <name>Rectangular</name>
+                    <name lang="de-DE">Eckig</name>
+                </option>
+            </options>
+        </input-field>
     </card>
 </config>
