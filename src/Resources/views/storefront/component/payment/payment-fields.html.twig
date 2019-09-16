@@ -1,19 +1,18 @@
 {% sw_extends '@Storefront/component/payment/payment-fields.html.twig' %}
 
 {% block component_payment_method_description %}
-    {{ parent() }}
-
-    {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData spbCheckoutButtonData #}
-    {% set spbCheckoutButtonData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBMarksData spbCheckoutMarksData #}
     {% set spbCheckoutMarksData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID')] %}
 
-    {% if spbCheckoutButtonData and spbCheckoutButtonData.paymentMethodId is same as(payment.id) %}
-        <div class="swag-paypal__marks" data-swag-paypal-marks-confirm="true"></div>
-    {% elseif spbCheckoutMarksData and spbCheckoutMarksData.paymentMethodId is same as(payment.id) %}
+    {% if spbCheckoutMarksData and spbCheckoutMarksData.paymentMethodId is same as(payment.id) %}
         <div class="swag-paypal__marks"
              data-swag-paypal-marks="true"
              data-swag-pay-pal-marks-options="{{ spbCheckoutMarksData|json_encode }}">
         </div>
+        {% if payment.translated.description %}
+            <p>{{ payment.translated.description|raw }}</p>
+        {% endif %}
+    {% else %}
+        {{ parent() }}
     {% endif %}
 {% endblock %}

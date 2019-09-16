@@ -4,6 +4,7 @@ namespace Swag\PayPal\Checkout\SPBCheckout;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -33,25 +34,25 @@ class SPBMarksSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            AccountPaymentMethodPageLoadedEvent::class => 'onAccountPaymentMethodPageLoaded',
-            FooterPageletLoadedEvent::class => 'onFooterPageletLoaded',
+            AccountPaymentMethodPageLoadedEvent::class => 'addMarksExtension',
+            FooterPageletLoadedEvent::class => 'addMarksExtension',
+            CheckoutConfirmPageLoadedEvent::class => 'addMarksExtension',
         ];
     }
 
-    public function onAccountPaymentMethodPageLoaded(AccountPaymentMethodPageLoadedEvent $event): void
+    /**
+     * @param AccountPaymentMethodPageLoadedEvent|FooterPageletLoadedEvent|CheckoutConfirmPageLoadedEvent $event
+     */
+    public function addMarksExtension($event): void
     {
         $spbMarksData = $this->getSpbMarksData($event->getSalesChannelContext());
         if ($spbMarksData === null) {
             return;
         }
 
-        $event->getPage()->addExtension(self::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID, $spbMarksData);
-    }
+        if ($event instanceof AccountPaymentMethodPageLoadedEvent || $event instanceof CheckoutConfirmPageLoadedEvent) {
+            $event->getPage()->addExtension(self::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID, $spbMarksData);
 
-    public function onFooterPageletLoaded(FooterPageletLoadedEvent $event): void
-    {
-        $spbMarksData = $this->getSpbMarksData($event->getSalesChannelContext());
-        if ($spbMarksData === null) {
             return;
         }
 
