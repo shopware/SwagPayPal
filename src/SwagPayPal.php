@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Symfony\Component\Config\FileLocator;
@@ -77,6 +78,8 @@ class SwagPayPal extends Plugin
         $ruleRepository = $this->container->get('rule.repository');
         /** @var EntityRepositoryInterface $countryRepository */
         $countryRepository = $this->container->get('country.repository');
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->container->get(SystemConfigService::class);
 
         (new InstallUninstall(
             $systemConfigRepository,
@@ -85,6 +88,7 @@ class SwagPayPal extends Plugin
             $ruleRepository,
             $countryRepository,
             $pluginIdProvider,
+            $systemConfigService,
             $this->getClassName()
         ))->install($installContext->getContext());
 
@@ -121,6 +125,8 @@ class SwagPayPal extends Plugin
         $countryRepository = $this->container->get('country.repository');
         /** @var EntityRepositoryInterface $ruleRepository */
         $ruleRepository = $this->container->get('rule.repository');
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->container->get(SystemConfigService::class);
 
         (new InstallUninstall(
             $systemConfigRepository,
@@ -129,6 +135,7 @@ class SwagPayPal extends Plugin
             $ruleRepository,
             $countryRepository,
             $pluginIdProvider,
+            $systemConfigService,
             $this->getClassName()
         ))->uninstall($context);
 

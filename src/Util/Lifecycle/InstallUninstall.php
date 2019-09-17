@@ -17,7 +17,7 @@ use Shopware\Core\Framework\Rule\Container\AndRule;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Country\Exception\CountryNotFoundException;
-use Shopware\Core\System\SystemConfig\SystemConfigCollection;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Payment\PayPalPuiPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -65,6 +65,11 @@ class InstallUninstall
      */
     private $className;
 
+    /**
+     * @var SystemConfigService
+     */
+    private $systemConfig;
+
     public function __construct(
         EntityRepositoryInterface $systemConfigRepository,
         EntityRepositoryInterface $paymentRepository,
@@ -72,6 +77,7 @@ class InstallUninstall
         EntityRepositoryInterface $ruleRepository,
         EntityRepositoryInterface $countryRepository,
         PluginIdProvider $pluginIdProvider,
+        SystemConfigService $systemConfig,
         string $className
     ) {
         $this->systemConfigRepository = $systemConfigRepository;
@@ -81,6 +87,7 @@ class InstallUninstall
         $this->countryRepository = $countryRepository;
         $this->pluginIdProvider = $pluginIdProvider;
         $this->className = $className;
+        $this->systemConfig = $systemConfig;
     }
 
     public function install(Context $context): void
@@ -101,20 +108,12 @@ class InstallUninstall
             return;
         }
 
-        $data = [];
         foreach ((new SwagPayPalSettingStruct())->jsonSerialize() as $key => $value) {
             if ($value === null || $value === []) {
                 continue;
             }
-
-            $key = SettingsService::SYSTEM_CONFIG_DOMAIN . $key;
-            $data[] = [
-                'id' => Uuid::randomHex(),
-                'configurationKey' => $key,
-                'configurationValue' => $value,
-            ];
+            $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . $key, $value);
         }
-        $this->systemConfigRepository->upsert($data, Context::createDefaultContext());
     }
 
     private function removeConfiguration(Context $context): void
@@ -304,16 +303,15 @@ class InstallUninstall
 
     private function validSettingsExists(): bool
     {
-        $settingsCollection = $this->getPayPalConfigurationCollection();
+        $keyValuePairs = $this->systemConfig->getDomain(SettingsService::SYSTEM_CONFIG_DOMAIN);
 
         $structData = [];
-        foreach ($settingsCollection as $systemConfigEntity) {
-            $configurationKey = $systemConfigEntity->getConfigurationKey();
-            $identifier = (string) substr($configurationKey, \strlen(SettingsService::SYSTEM_CONFIG_DOMAIN));
+        foreach ($keyValuePairs as $key => $value) {
+            $identifier = (string) substr($key, \strlen(SettingsService::SYSTEM_CONFIG_DOMAIN));
             if ($identifier === '') {
                 continue;
             }
-            $structData[$identifier] = $systemConfigEntity->getConfigurationValue();
+            $structData[$identifier] = $value;
         }
 
         $settings = (new SwagPayPalSettingStruct())->assign($structData);
@@ -325,16 +323,5 @@ class InstallUninstall
         }
 
         return true;
-    }
-
-    private function getPayPalConfigurationCollection(): SystemConfigCollection
-    {
-        $criteria = (new Criteria())
-            ->addFilter(new ContainsFilter('configurationKey', SettingsService::SYSTEM_CONFIG_DOMAIN));
-
-        /** @var SystemConfigCollection $systemConfigCollection */
-        $systemConfigCollection = $this->systemConfigRepository->search($criteria, Context::createDefaultContext())->getEntities();
-
-        return $systemConfigCollection;
     }
 }
