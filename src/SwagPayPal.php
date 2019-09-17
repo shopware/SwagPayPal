@@ -22,6 +22,11 @@ class SwagPayPal extends Plugin
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION = 'swag_paypal_pui_payment_instruction';
 
     /**
+     * @var ActivateDeactivate
+     */
+    private $activateDeactivate;
+
+    /**
      * {@inheritdoc}
      */
     public function build(ContainerBuilder $container): void
@@ -92,14 +97,6 @@ class SwagPayPal extends Plugin
         $paymentRepository = $this->container->get('payment_method.repository');
         /** @var EntityRepositoryInterface $salesChannelRepository */
         $salesChannelRepository = $this->container->get('sales_channel.repository');
-        /** @var EntityRepositoryInterface $customFieldRepository */
-        $customFieldRepository = $this->container->get('custom_field.repository');
-
-        (new ActivateDeactivate(
-            $paymentRepository,
-            $salesChannelRepository,
-            $customFieldRepository
-        ))->deactivate($context);
 
         if ($uninstallContext->keepUserData()) {
             parent::uninstall($uninstallContext);
@@ -128,39 +125,25 @@ class SwagPayPal extends Plugin
         parent::uninstall($uninstallContext);
     }
 
+    /**
+     * @Required
+     */
+    public function setActivateDeactivate(ActivateDeactivate $activateDeactivate): void
+    {
+        $this->activateDeactivate = $activateDeactivate;
+    }
+
     public function activate(ActivateContext $activateContext): void
     {
-        /** @var EntityRepositoryInterface $paymentRepository */
-        $paymentRepository = $this->container->get('payment_method.repository');
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->container->get('sales_channel.repository');
-        /** @var EntityRepositoryInterface $customFieldRepository */
-        $customFieldRepository = $this->container->get('custom_field.repository');
-
-        (new ActivateDeactivate(
-            $paymentRepository,
-            $salesChannelRepository,
-            $customFieldRepository
-        ))->activate($activateContext->getContext());
-
         parent::activate($activateContext);
+
+        $this->activateDeactivate->activate($activateContext->getContext());
     }
 
     public function deactivate(DeactivateContext $deactivateContext): void
     {
-        /** @var EntityRepositoryInterface $paymentRepository */
-        $paymentRepository = $this->container->get('payment_method.repository');
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->container->get('sales_channel.repository');
-        /** @var EntityRepositoryInterface $customFieldRepository */
-        $customFieldRepository = $this->container->get('custom_field.repository');
-
-        (new ActivateDeactivate(
-            $paymentRepository,
-            $salesChannelRepository,
-            $customFieldRepository
-        ))->deactivate($deactivateContext->getContext());
-
         parent::deactivate($deactivateContext);
+
+        $this->activateDeactivate->deactivate($deactivateContext->getContext());
     }
 }
