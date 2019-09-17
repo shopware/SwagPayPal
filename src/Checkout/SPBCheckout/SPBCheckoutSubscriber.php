@@ -2,6 +2,8 @@
 
 namespace Swag\PayPal\Checkout\SPBCheckout;
 
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
@@ -97,6 +99,25 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             $settings
         );
 
+        $this->changePaymentMethodDescription($event->getPage()->getPaymentMethods(), $event->getContext());
+
         $event->getPage()->addExtension(self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID, $buttonData);
+    }
+
+    private function changePaymentMethodDescription(PaymentMethodCollection $paymentMethods, Context $context): void
+    {
+        $payPalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context);
+        if (!$payPalPaymentMethodId) {
+            return;
+        }
+
+        $paypalPaymentMethod = $paymentMethods->get($payPalPaymentMethodId);
+        if (!$paypalPaymentMethod) {
+            return;
+        }
+
+        $paypalPaymentMethod->setTranslated([
+            'description' => $this->translator->trans('smartPaymentButtons.description'),
+        ]);
     }
 }

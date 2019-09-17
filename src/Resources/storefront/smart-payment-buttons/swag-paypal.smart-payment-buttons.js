@@ -67,14 +67,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          *
          * @type string
          */
-        checkoutConfirmUrl: '',
-
-        /**
-         * Selector of the payment marks div element
-         *
-         * @type string
-         */
-        marksContainerSelector: '[data-swag-paypal-marks-confirm]'
+        checkoutConfirmUrl: ''
     };
 
     init() {
@@ -87,7 +80,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         this.createScript(() => {
             this.paypal = window.paypal;
             this.renderButton();
-            this.renderMarks();
         });
     }
 
@@ -114,13 +106,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         observer.observe(targetNode, config);
 
         return this.paypal.Buttons(this.getButtonConfig()).render(this.el);
-    }
-
-    renderMarks() {
-        const marksContainers = DomAccess.querySelectorAll(document, this.options.marksContainerSelector);
-        marksContainers.forEach((marksContainer) => {
-            this.paypal.Marks().render(marksContainer);
-        });
     }
 
     getButtonConfig() {

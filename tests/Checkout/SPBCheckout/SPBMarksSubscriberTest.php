@@ -11,6 +11,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPage;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksData;
@@ -29,9 +30,10 @@ class SPBMarksSubscriberTest extends TestCase
     {
         $events = SPBMarksSubscriber::getSubscribedEvents();
 
-        static::assertCount(2, $events);
-        static::assertSame('onAccountPaymentMethodPageLoaded', $events[AccountPaymentMethodPageLoadedEvent::class]);
-        static::assertSame('onFooterPageletLoaded', $events[FooterPageletLoadedEvent::class]);
+        static::assertCount(3, $events);
+        static::assertSame('addMarksExtension', $events[AccountPaymentMethodPageLoadedEvent::class]);
+        static::assertSame('addMarksExtension', $events[FooterPageletLoadedEvent::class]);
+        static::assertSame('addMarksExtension', $events[CheckoutConfirmPageLoadedEvent::class]);
     }
 
     public function testOnAccountPaymentMethodPageLoadedPayPalNotInActiveSalesChannel(): void
@@ -41,7 +43,7 @@ class SPBMarksSubscriberTest extends TestCase
         $event->getSalesChannelContext()->getSalesChannel()->setPaymentMethods(
             new PaymentMethodCollection([])
         );
-        $subscriber->onAccountPaymentMethodPageLoaded($event);
+        $subscriber->addMarksExtension($event);
 
         static::assertNull(
             $event->getPage()->getExtension(SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID)
@@ -52,7 +54,7 @@ class SPBMarksSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(false);
         $event = $this->createAccountEvent();
-        $subscriber->onAccountPaymentMethodPageLoaded($event);
+        $subscriber->addMarksExtension($event);
 
         static::assertNull(
             $event->getPage()->getExtension(SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID)
@@ -63,7 +65,7 @@ class SPBMarksSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(true, false);
         $event = $this->createAccountEvent();
-        $subscriber->onAccountPaymentMethodPageLoaded($event);
+        $subscriber->addMarksExtension($event);
 
         static::assertNull(
             $event->getPage()->getExtension(SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID)
@@ -74,7 +76,7 @@ class SPBMarksSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createAccountEvent();
-        $subscriber->onAccountPaymentMethodPageLoaded($event);
+        $subscriber->addMarksExtension($event);
 
         /** @var SPBMarksData|null $spbMarksExtension */
         $spbMarksExtension = $event->getPage()->getExtension(
@@ -90,7 +92,7 @@ class SPBMarksSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(true, false);
         $event = $this->createFooterEvent();
-        $subscriber->onFooterPageletLoaded($event);
+        $subscriber->addMarksExtension($event);
 
         static::assertNull(
             $event->getPagelet()->getExtension(SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID)
@@ -101,7 +103,7 @@ class SPBMarksSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createFooterEvent();
-        $subscriber->onFooterPageletLoaded($event);
+        $subscriber->addMarksExtension($event);
 
         /** @var SPBMarksData|null $spbMarksExtension */
         $spbMarksExtension = $event->getPagelet()->getExtension(

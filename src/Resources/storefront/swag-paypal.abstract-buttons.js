@@ -42,7 +42,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
     getScriptUrlOptions() {
         let config = '';
 
-        if (this.options.commit) {
+        if (typeof this.options.commit !== 'undefined') {
             config += `&commit=${this.options.commit}`;
         }
 

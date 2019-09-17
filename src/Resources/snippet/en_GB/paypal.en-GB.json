@@ -20,6 +20,7 @@
         }
     },
     "smartPaymentButtons": {
-        "confirmPageHint": "Your payment has been accepted. You can now confirm your order."
+        "confirmPageHint": "Your payment has been created. Please complete it, by confirming your order.",
+        "description": "Pay easy, fast and secure - Please choose one of these payment methods on the confirm page."
     }
 }
