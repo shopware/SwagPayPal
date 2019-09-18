@@ -72,7 +72,20 @@
         "label": "Einzug wählen"
       },
       "refundAmount": {
-        "label": "Betrag"
+        "label": "Betrag",
+        "placeholder": "Betrag angeben"
+      },
+      "refundDescription": {
+        "label": "Beschreibung",
+        "placeholder": "Beschreibung eintragen"
+      },
+      "refundReason": {
+        "label": "Begründung",
+        "placeholder": "Begründung eintragen"
+      },
+      "refundInvoiceNumber": {
+        "label": "Rechnungsnummer",
+        "placeholder": "Rechnungsnummer eintragen"
       },
       "confirmButton": {
         "text": "Ausführen"

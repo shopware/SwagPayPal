@@ -29,6 +29,8 @@ class PayPalPaymentControllerTest extends TestCase
     private const TEST_REFUND_INVOICE_NUMBER = 'testRefundInvoiceNumber';
     private const TEST_REFUND_AMOUNT = 5.5;
     private const TEST_REFUND_CURRENCY = 'EUR';
+    private const TEST_REFUND_DESCRIPTION = 'testDescription';
+    private const TEST_REFUND_REASON = 'testReason';
     private const ORDER_ID = '98432def39fc4624b33213a56b8c944d';
 
     public function testGetPaymentDetails(): void
@@ -101,6 +103,34 @@ class PayPalPaymentControllerTest extends TestCase
         static::assertSame((string) self::TEST_REFUND_AMOUNT, $refund['amount']['total']);
         static::assertSame(self::TEST_REFUND_CURRENCY, $refund['amount']['currency']);
         static::assertSame(self::TEST_REFUND_INVOICE_NUMBER, $refund['invoice_number']);
+    }
+
+    public function testRefundPaymentWithReasonAndDescription(): void
+    {
+        $request = new Request([], [
+            PayPalPaymentController::REQUEST_PARAMETER_REFUND_INVOICE_NUMBER => self::TEST_REFUND_INVOICE_NUMBER,
+            PayPalPaymentController::REQUEST_PARAMETER_REFUND_AMOUNT => self::TEST_REFUND_AMOUNT,
+            PayPalPaymentController::REQUEST_PARAMETER_CURRENCY => self::TEST_REFUND_CURRENCY,
+            PayPalPaymentController::REQUEST_PARAMETER_DESCRIPTION => self::TEST_REFUND_DESCRIPTION,
+            PayPalPaymentController::REQUEST_PARAMETER_REASON => self::TEST_REFUND_REASON,
+        ]);
+        $context = Context::createDefaultContext();
+        $responseContent = $this->createPaymentControllerWithSaleResourceMock()->refundPayment(
+          $request,
+          $context,
+          RelatedResource::SALE,
+          'testPaymentId',
+          'testOrderId'
+        )->getContent();
+        static::assertNotFalse($responseContent);
+
+        $refund = json_decode($responseContent, true);
+
+        static::assertSame((string) self::TEST_REFUND_AMOUNT, $refund['amount']['total']);
+        static::assertSame(self::TEST_REFUND_CURRENCY, $refund['amount']['currency']);
+        static::assertSame(self::TEST_REFUND_INVOICE_NUMBER, $refund['invoice_number']);
+        static::assertSame(self::TEST_REFUND_REASON, $refund['reason']);
+        static::assertSame(self::TEST_REFUND_DESCRIPTION, $refund['description']);
     }
 
     public function testRefundPaymentWithInvalidResourceType(): void

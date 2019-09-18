@@ -42,6 +42,9 @@ Component.register('swag-paypal-payment-action-refund', {
             selectedCapture: {},
             refundAmount: 0,
             refundableAmount: 0,
+            refundDescription: '',
+            refundReason: '',
+            refundInvoiceNumber: '',
             isLoading: true,
             selectedCaptureId: ''
         };
@@ -111,10 +114,12 @@ Component.register('swag-paypal-payment-action-refund', {
             this.isLoading = true;
 
             const refundAmount = this.refundAmount;
+            const description = this.refundDescription;
             const currency = this.selectedCapture.currency;
             const resourceType = this.selectedCapture.type;
             const resourceId = this.selectedCapture.id;
-            const orderId = this.$route.params.id;
+            const reason = this.refundReason;
+            const invoiceNumber = this.refundInvoiceNumber;
 
             this.SwagPayPalPaymentService.refundPayment(
                 this.orderId,
@@ -122,7 +127,9 @@ Component.register('swag-paypal-payment-action-refund', {
                 resourceId,
                 refundAmount,
                 currency,
-                orderId
+                description,
+                reason,
+                invoiceNumber
             ).then(() => {
                 this.createNotificationSuccess({
                     title: this.$tc('swag-paypal-payment.refundAction.successTitle'),
