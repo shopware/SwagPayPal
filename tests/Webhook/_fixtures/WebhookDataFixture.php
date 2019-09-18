@@ -24,12 +24,20 @@ class WebhookDataFixture
                 'amount' => [
                     'total' => '0.48',
                     'currency' => 'USD',
+                    'details' => [
+                        'subtotal' => '0.48',
+                    ],
                 ],
                 'payment_mode' => 'ECHECK',
                 'create_time' => '2014-10-23T17:22:56Z',
                 'clearing_time' => '2014-10-30T07:00:00Z',
                 'protection_eligibility_type' => 'ITEM_NOT_RECEIVED_ELIGIBLE,UNAUTHORIZED_PAYMENT_ELIGIBLE',
                 'protection_eligibility' => 'ELIGIBLE',
+                'transaction_fee' => [
+                    'value' => '0.02',
+                    'currency' => 'USD',
+                ],
+                'invoice_number' => 'SW12345',
                 'links' => [
                     0 => [
                         'href' => 'https://api.paypal.com/v1/payments/sale/80021663DE681814L',

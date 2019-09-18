@@ -32,8 +32,12 @@ abstract class PayPalStruct implements \JsonSerializable
 
             $namespace = $this->getNamespaceOfAssociation();
             if ($this->isAssociativeArray($value)) {
-                $instance = $this->createNewAssociation($namespace . $camelCaseKey, $value);
+                $className = $namespace . $camelCaseKey;
+                if (!class_exists($className)) {
+                    continue;
+                }
 
+                $instance = $this->createNewAssociation($className, $value);
                 $this->$setterMethod($instance);
                 continue;
             }
@@ -44,9 +48,13 @@ abstract class PayPalStruct implements \JsonSerializable
                 if ($toManyAssociation === null) {
                     continue;
                 }
-                $className = $this->getClassNameOfOneToManyAssociation($camelCaseKey);
-                $instance = $this->createNewAssociation($namespace . $className, $toManyAssociation);
 
+                $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
+                if (!class_exists($className)) {
+                    continue;
+                }
+
+                $instance = $this->createNewAssociation($className, $toManyAssociation);
                 $arrayWithToManyAssociations[] = $instance;
             }
             $this->$setterMethod($arrayWithToManyAssociations);

@@ -212,7 +212,7 @@ class PayPalClientMock extends PayPalClient
 
     private function createClientException(): ClientException
     {
-        return new ClientException(self::CLIENT_EXCEPTION_MESSAGE_WITHOUT_RESPONSE, new Request('', ''));
+        return new ClientException(self::CLIENT_EXCEPTION_MESSAGE_WITHOUT_RESPONSE, new Request('GET', ''));
     }
 
     private function createClientExceptionWithResponse(): ClientException

@@ -62,9 +62,4 @@ class ApplicationContext extends PayPalStruct
     {
         $this->userAction = $userAction;
     }
-
-    protected function setShippingPreference(string $shippingPreference): void
-    {
-        $this->shippingPreference = $shippingPreference;
-    }
 }
