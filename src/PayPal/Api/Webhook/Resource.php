@@ -79,11 +79,6 @@ class Resource extends PayPalStruct
         return $this->parentPayment;
     }
 
-    public function setInvoiceNumber(string $invoiceNumber): void
-    {
-        $this->invoiceNumber = $invoiceNumber;
-    }
-
     protected function setParentPayment(string $parentPayment): void
     {
         $this->parentPayment = $parentPayment;
@@ -127,6 +122,11 @@ class Resource extends PayPalStruct
     protected function setTransactionFee(TransactionFee $transactionFee): void
     {
         $this->transactionFee = $transactionFee;
+    }
+
+    protected function setInvoiceNumber(string $invoiceNumber): void
+    {
+        $this->invoiceNumber = $invoiceNumber;
     }
 
     /**
