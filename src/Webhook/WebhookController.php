@@ -1,19 +1,16 @@
 <?php declare(strict_types=1);
-/**
- * (c) shopware AG <info@shopware.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Swag\PayPal\Webhook;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Swag\PayPal\PayPal\Api\Webhook;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,18 +32,18 @@ class WebhookController extends AbstractController
     private $webhookService;
 
     /**
-     * @var SettingsServiceInterface
+     * @var EntityRepositoryInterface
      */
-    private $settingsProvider;
+    private $systemConfigRepository;
 
     public function __construct(
         LoggerInterface $logger,
         WebhookServiceInterface $webhookService,
-        SettingsServiceInterface $settingsProvider
+        EntityRepositoryInterface $systemConfigRepository
     ) {
         $this->logger = $logger;
         $this->webhookService = $webhookService;
-        $this->settingsProvider = $settingsProvider;
+        $this->systemConfigRepository = $systemConfigRepository;
     }
 
     /**
@@ -69,7 +66,7 @@ class WebhookController extends AbstractController
     public function executeWebhook(Request $request, Context $context): Response
     {
         $token = $this->getShopwareToken($request);
-        $this->validateShopwareToken($token);
+        $this->validateShopwareToken($token, $context);
 
         $webhook = $this->createWebhookFromPostData($request);
         $this->tryToExecuteWebhook($context, $webhook);
@@ -92,15 +89,20 @@ class WebhookController extends AbstractController
 
     /**
      * @throws BadRequestHttpException
-     * @throws PayPalSettingsInvalidException
      */
-    private function validateShopwareToken(string $token): void
+    private function validateShopwareToken(string $token, Context $context): void
     {
-        // TODO: Get sales channel id
-        $settings = $this->settingsProvider->getSettings();
-        if ($token !== $settings->getWebhookExecuteToken()) {
-            throw new BadRequestHttpException('Shopware token is invalid');
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('configurationValue', $token));
+        /** @var SystemConfigCollection $systemConfigCollection */
+        $systemConfigCollection = $this->systemConfigRepository->search($criteria, $context)->getEntities();
+
+        foreach ($systemConfigCollection as $systemConfigEntity) {
+            if ($systemConfigEntity->getConfigurationKey() === SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_TOKEN_CONFIG_KEY) {
+                return;
+            }
         }
+
+        throw new BadRequestHttpException('Shopware token is invalid');
     }
 
     /**

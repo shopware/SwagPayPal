@@ -1,10 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * (c) shopware AG <info@shopware.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Swag\PayPal\Webhook;
 
@@ -23,6 +17,8 @@ use Symfony\Component\Routing\RouterInterface;
 
 class WebhookService implements WebhookServiceInterface
 {
+    public const WEBHOOK_TOKEN_CONFIG_KEY = 'webhookExecuteToken';
+
     public const WEBHOOK_CREATED = 'created';
     public const WEBHOOK_UPDATED = 'updated';
     public const NO_WEBHOOK_ACTION_REQUIRED = 'nothing';
@@ -136,7 +132,7 @@ class WebhookService implements WebhookServiceInterface
 
             $this->settingsService->updateSettings(
                 [
-                    'webhookExecuteToken' => $webhookExecuteToken,
+                    self::WEBHOOK_TOKEN_CONFIG_KEY => $webhookExecuteToken,
                     'webhookId' => $webhookId,
                 ],
                 $salesChannelId

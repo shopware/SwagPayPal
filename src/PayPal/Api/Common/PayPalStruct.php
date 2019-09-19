@@ -1,10 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * (c) shopware AG <info@shopware.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Swag\PayPal\PayPal\Api\Common;
 
@@ -32,8 +26,12 @@ abstract class PayPalStruct implements \JsonSerializable
 
             $namespace = $this->getNamespaceOfAssociation();
             if ($this->isAssociativeArray($value)) {
-                $instance = $this->createNewAssociation($namespace . $camelCaseKey, $value);
+                $className = $namespace . $camelCaseKey;
+                if (!class_exists($className)) {
+                    continue;
+                }
 
+                $instance = $this->createNewAssociation($className, $value);
                 $this->$setterMethod($instance);
                 continue;
             }
@@ -44,9 +42,13 @@ abstract class PayPalStruct implements \JsonSerializable
                 if ($toManyAssociation === null) {
                     continue;
                 }
-                $className = $this->getClassNameOfOneToManyAssociation($camelCaseKey);
-                $instance = $this->createNewAssociation($namespace . $className, $toManyAssociation);
 
+                $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
+                if (!class_exists($className)) {
+                    continue;
+                }
+
+                $instance = $this->createNewAssociation($className, $toManyAssociation);
                 $arrayWithToManyAssociations[] = $instance;
             }
             $this->$setterMethod($arrayWithToManyAssociations);

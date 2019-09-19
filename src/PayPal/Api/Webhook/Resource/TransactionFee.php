@@ -2,8 +2,8 @@
 
 namespace Swag\PayPal\PayPal\Api\Webhook\Resource;
 
-use Swag\PayPal\PayPal\Api\Common\Link as CommonLink;
+use Swag\PayPal\PayPal\Api\Common\Value;
 
-class Link extends CommonLink
+class TransactionFee extends Value
 {
 }

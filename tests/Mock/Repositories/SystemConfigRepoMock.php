@@ -3,14 +3,22 @@
 namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregatorResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
+use Shopware\Core\System\SystemConfig\SystemConfigEntity;
+use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookReturnCreatedResourceMock;
+use Swag\PayPal\Test\Webhook\WebhookControllerTest;
+use Swag\PayPal\Webhook\WebhookService;
 
 class SystemConfigRepoMock implements EntityRepositoryInterface
 {
@@ -21,51 +29,74 @@ class SystemConfigRepoMock implements EntityRepositoryInterface
 
     public function aggregate(Criteria $criteria, Context $context): AggregatorResult
     {
-        // TODO: Implement aggregate() method.
     }
 
     public function searchIds(Criteria $criteria, Context $context): IdSearchResult
     {
-        // TODO: Implement searchIds() method.
     }
 
     public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
     {
-        // TODO: Implement clone() method.
     }
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-        // TODO: Implement search() method.
+        /** @var EqualsFilter $filter */
+        $filter = $criteria->getFilters()[0];
+        if ($context->hasExtension(WebhookControllerTest::EMPTY_TOKEN)
+            || $filter->getValue() !== WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN
+        ) {
+            return new EntitySearchResult(
+                0,
+                new EntityCollection([]),
+                null,
+                $criteria,
+                $context
+            );
+        }
+
+        return new EntitySearchResult(
+            1,
+            new EntityCollection([
+                $this->createConfigEntity(),
+            ]),
+            null,
+            $criteria,
+            $context
+        );
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
     {
-        // TODO: Implement update() method.
     }
 
     public function upsert(array $data, Context $context): EntityWrittenContainerEvent
     {
-        // TODO: Implement upsert() method.
     }
 
     public function create(array $data, Context $context): EntityWrittenContainerEvent
     {
-        // TODO: Implement create() method.
     }
 
     public function delete(array $data, Context $context): EntityWrittenContainerEvent
     {
-        // TODO: Implement delete() method.
     }
 
     public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
     {
-        // TODO: Implement createVersion() method.
     }
 
     public function merge(string $versionId, Context $context): void
     {
-        // TODO: Implement merge() method.
+    }
+
+    private function createConfigEntity(): SystemConfigEntity
+    {
+        $systemConfigEntity = new SystemConfigEntity();
+        $systemConfigEntity->setId(Uuid::randomHex());
+        $systemConfigEntity->setConfigurationKey(SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_TOKEN_CONFIG_KEY);
+        $systemConfigEntity->setConfigurationValue(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
+
+        return $systemConfigEntity;
     }
 }

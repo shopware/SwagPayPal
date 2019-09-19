@@ -1,10 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * (c) shopware AG <info@shopware.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Swag\PayPal\Test\Webhook;
 
@@ -13,11 +7,13 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookReturnCreatedResourceMock;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Webhook\WebhookServiceMock;
 use Swag\PayPal\Test\Webhook\_fixtures\WebhookDataFixture;
 use Swag\PayPal\Webhook\WebhookController;
@@ -30,17 +26,15 @@ class WebhookControllerTest extends TestCase
 {
     use AssertArraySubsetBehaviour;
     use ServicesTrait;
+    use IntegrationTestBehaviour;
 
     public const THROW_WEBHOOK_EXCEPTION = 'executeWebhookThrowsWebhookException';
-
     public const THROW_GENERAL_EXCEPTION = 'executeWebhookThrowsGeneralException';
+    public const EMPTY_TOKEN = 'emptyExecuteToken';
 
     public function testRegisterWebhook(): void
     {
-        $webhookController = $this->createWebhookController();
-
-        $context = Context::createDefaultContext();
-        $jsonResponse = $webhookController->registerWebhook(Defaults::SALES_CHANNEL);
+        $jsonResponse = $this->createWebhookController()->registerWebhook(Defaults::SALES_CHANNEL);
         static::assertNotFalse($jsonResponse->getContent());
 
         $result = json_decode($jsonResponse->getContent(), true);
@@ -50,73 +44,58 @@ class WebhookControllerTest extends TestCase
 
     public function testExecuteWebhook(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $settings->setWebhookExecuteToken(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
-
-        $webhookController = $this->createWebhookController($settings);
-
         $context = Context::createDefaultContext();
         $request = $this->createRequestWithWebhookData();
-        $response = $webhookController->executeWebhook($request, $context);
 
+        $response = $this->createWebhookController()->executeWebhook($request, $context);
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
     }
 
     public function testExecuteWebhookThrowsWebhookException(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $settings->setWebhookExecuteToken(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
-        $webhookController = $this->createWebhookController($settings);
-
         $context = Context::createDefaultContext();
         $context->addExtension(self::THROW_WEBHOOK_EXCEPTION, new Entity());
         $request = $this->createRequestWithWebhookData();
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('An error occurred during execution of webhook');
-        $webhookController->executeWebhook($request, $context);
+        $this->createWebhookController()->executeWebhook($request, $context);
     }
 
     public function testExecuteWebhookThrowsGeneralException(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $settings->setWebhookExecuteToken(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
-        $webhookController = $this->createWebhookController($settings);
-
         $context = Context::createDefaultContext();
         $context->addExtension(self::THROW_GENERAL_EXCEPTION, new Entity());
         $request = $this->createRequestWithWebhookData();
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('An error occurred during execution of webhook');
-        $webhookController->executeWebhook($request, $context);
+        $this->createWebhookController()->executeWebhook($request, $context);
     }
 
     public function testExecuteWebhookEmptyToken(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $settings->setWebhookExecuteToken('');
-        $webhookController = $this->createWebhookController($settings);
+        $context = Context::createDefaultContext();
+        $context->addExtension(self::EMPTY_TOKEN, new Entity());
+        $request = $this->createRequestWithWebhookData();
 
+        $this->expectException(BadRequestHttpException::class);
+        $this->expectExceptionMessage('Shopware token is invalid');
+        $this->createWebhookController()->executeWebhook($request, $context);
+    }
+
+    public function testExecuteWebhookEmptyTokenSent(): void
+    {
         $context = Context::createDefaultContext();
         $request = new Request();
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('Shopware token is invalid');
-        $webhookController->executeWebhook($request, $context);
+        $this->createWebhookController()->executeWebhook($request, $context);
     }
 
     public function testExecuteWebhookInvalidToken(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $settings->setWebhookExecuteToken(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
-        $webhookController = $this->createWebhookController($settings);
-
         $context = Context::createDefaultContext();
         $request = new Request(
             [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => 'invalid-token']
@@ -124,16 +103,11 @@ class WebhookControllerTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('Shopware token is invalid');
-        $webhookController->executeWebhook($request, $context);
+        $this->createWebhookController()->executeWebhook($request, $context);
     }
 
     public function testExecuteWebhookNoData(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
-        $settings->setWebhookExecuteToken(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
-        $webhookController = $this->createWebhookController($settings);
-
         $context = Context::createDefaultContext();
         $request = new Request(
             [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN]
@@ -141,18 +115,20 @@ class WebhookControllerTest extends TestCase
 
         $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('No webhook data sent');
-        $webhookController->executeWebhook($request, $context);
+        $this->createWebhookController()->executeWebhook($request, $context);
     }
 
-    private function createWebhookController(?SwagPayPalSettingStruct $settings = null): WebhookController
+    private function createWebhookController(): WebhookController
     {
-        $settings = $settings ?? $this->createDefaultSettingStruct();
-        $settingsService = new SettingsServiceMock($settings);
+        $definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
+        $systemConfigRepo = $definitionRegistry->getRepository(
+            (new SystemConfigDefinition())->getEntityName()
+        );
 
         return new WebhookController(
             new LoggerMock(),
             new WebhookServiceMock(),
-            $settingsService
+            $systemConfigRepo
         );
     }
 

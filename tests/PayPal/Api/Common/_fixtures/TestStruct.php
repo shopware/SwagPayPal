@@ -23,7 +23,16 @@ class TestStruct extends PayPalStruct
      */
     protected $foo;
 
-    public function setBar(Bar $bar): void
+    protected $notExistingClass;
+
+    protected $notExistingCollectionClass;
+
+    protected function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+    protected function setBar(Bar $bar): void
     {
         $this->bar = $bar;
     }
@@ -31,13 +40,18 @@ class TestStruct extends PayPalStruct
     /**
      * @param Foo[] $foo
      */
-    public function setFoo(array $foo): void
+    protected function setFoo(array $foo): void
     {
         $this->foo = $foo;
     }
 
-    protected function setId(string $id): void
+    protected function setNotExistingClass($notExistingClass): void
     {
-        $this->id = $id;
+        $this->notExistingClass = $notExistingClass;
+    }
+
+    protected function setNotExistingCollectionClass(array $notExistingCollectionClass): void
+    {
+        $this->notExistingCollectionClass = $notExistingCollectionClass;
     }
 }

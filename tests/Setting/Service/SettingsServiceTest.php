@@ -1,10 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * (c) shopware AG <info@shopware.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Swag\PayPal\Test\Setting\Service;
 
@@ -19,6 +13,7 @@ use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
+use Swag\PayPal\Webhook\WebhookService;
 
 class SettingsServiceTest extends TestCase
 {
@@ -44,7 +39,7 @@ class SettingsServiceTest extends TestCase
             [$prefix . 'intent', 'getIntent', PaymentIntent::SALE],
             [$prefix . 'submitCart', 'getSubmitCart', false],
             [$prefix . 'webhookId', 'getWebhookId', 'testWebhookId'],
-            [$prefix . 'webhookExecuteToken', 'getwebhookExecuteToken', 'testWebhookToken'],
+            [$prefix . WebhookService::WEBHOOK_TOKEN_CONFIG_KEY, 'getwebhookExecuteToken', 'testWebhookToken'],
             [$prefix . 'brandName', 'getBrandName', 'Awesome brand'],
             [$prefix . 'landingPage', 'getLandingPage', ApplicationContext::LANDING_PAGE_TYPE_LOGIN],
             [$prefix . 'sendOrderNumber', 'getSendOrderNumber', false],
@@ -80,7 +75,7 @@ class SettingsServiceTest extends TestCase
             ['intent', 'getIntent', PaymentIntent::SALE],
             ['submitCart', 'getSubmitCart', false],
             ['webhookId', 'getWebhookId', 'testWebhookId'],
-            ['webhookExecuteToken', 'getwebhookExecuteToken', 'testWebhookToken'],
+            [WebhookService::WEBHOOK_TOKEN_CONFIG_KEY, 'getwebhookExecuteToken', 'testWebhookToken'],
             ['brandName', 'getBrandName', 'Awesome brand'],
             ['landingPage', 'getLandingPage', ApplicationContext::LANDING_PAGE_TYPE_LOGIN],
             ['sendOrderNumber', 'getSendOrderNumber', false],

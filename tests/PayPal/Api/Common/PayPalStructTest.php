@@ -38,8 +38,20 @@ class PayPalStructTest extends TestCase
 
     public function testAssignWithNoGetter(): void
     {
-        $testStruct = new TestStruct();
-        $paypalStruct = $testStruct->assign(['noSetter' => 'testValue']);
+        $data = [
+            'no_setter' => 'testValue',
+            'not_existing_class' => [
+                'test' => 'value',
+            ],
+            'not_existing_collection_class' => [
+                [
+                    'test' => 'value',
+                ],
+            ],
+        ];
+
+        $paypalStruct = new TestStruct();
+        $paypalStruct->assign($data);
         static::assertInstanceOf(PayPalStruct::class, $paypalStruct);
     }
 }
