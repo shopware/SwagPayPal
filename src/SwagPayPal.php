@@ -62,8 +62,6 @@ class SwagPayPal extends Plugin
     {
         /** @var EntityRepositoryInterface $systemConfigRepository */
         $systemConfigRepository = $this->container->get('system_config.repository');
-        /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         /** @var EntityRepositoryInterface $paymentRepository */
         $paymentRepository = $this->container->get('payment_method.repository');
         /** @var EntityRepositoryInterface $salesChannelRepository */
@@ -72,8 +70,6 @@ class SwagPayPal extends Plugin
         $ruleRepository = $this->container->get('rule.repository');
         /** @var EntityRepositoryInterface $countryRepository */
         $countryRepository = $this->container->get('country.repository');
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->container->get(SystemConfigService::class);
 
         (new InstallUninstall(
             $systemConfigRepository,
@@ -81,8 +77,8 @@ class SwagPayPal extends Plugin
             $salesChannelRepository,
             $ruleRepository,
             $countryRepository,
-            $pluginIdProvider,
-            $systemConfigService,
+            $this->container->get(PluginIdProvider::class),
+            $this->container->get(SystemConfigService::class),
             $this->getClassName()
         ))->install($installContext->getContext());
 
@@ -113,14 +109,10 @@ class SwagPayPal extends Plugin
 
         /** @var EntityRepositoryInterface $systemConfigRepository */
         $systemConfigRepository = $this->container->get('system_config.repository');
-        /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         /** @var EntityRepositoryInterface $countryRepository */
         $countryRepository = $this->container->get('country.repository');
         /** @var EntityRepositoryInterface $ruleRepository */
         $ruleRepository = $this->container->get('rule.repository');
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->container->get(SystemConfigService::class);
 
         (new InstallUninstall(
             $systemConfigRepository,
@@ -128,8 +120,8 @@ class SwagPayPal extends Plugin
             $salesChannelRepository,
             $ruleRepository,
             $countryRepository,
-            $pluginIdProvider,
-            $systemConfigService,
+            $this->container->get(PluginIdProvider::class),
+            $this->container->get(SystemConfigService::class),
             $this->getClassName()
         ))->uninstall($context);
 

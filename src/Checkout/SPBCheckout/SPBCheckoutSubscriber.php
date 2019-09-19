@@ -12,7 +12,7 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SPBCheckoutSubscriber implements EventSubscriberInterface
@@ -35,9 +35,9 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     private $paymentMethodUtil;
 
     /**
-     * @var FlashBagInterface
+     * @var Session
      */
-    private $flashBag;
+    private $session;
 
     /**
      * @var TranslatorInterface
@@ -48,13 +48,13 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         SettingsServiceInterface $settingsService,
         SPBCheckoutDataService $spbCheckoutDataService,
         PaymentMethodUtil $paymentMethodUtil,
-        FlashBagInterface $flashBag,
+        Session $session,
         TranslatorInterface $translator
     ) {
         $this->settingsService = $settingsService;
         $this->spbCheckoutDataService = $spbCheckoutDataService;
         $this->paymentMethodUtil = $paymentMethodUtil;
-        $this->flashBag = $flashBag;
+        $this->session = $session;
         $this->translator = $translator;
     }
 
@@ -89,7 +89,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         if ($requestQuery->has(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
             && $requestQuery->has(EcsSpbHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
         ) {
-            $this->flashBag->add('success', $this->translator->trans('smartPaymentButtons.confirmPageHint'));
+            $this->session->getFlashBag()->add('success', $this->translator->trans('smartPaymentButtons.confirmPageHint'));
 
             return;
         }

@@ -1,0 +1,10 @@
+parameters:
+    level: 7
+    reportUnmatchedIgnoredErrors: false
+    inferPrivatePropertyTypeFromConstructor: true
+    symfony:
+        constant_hassers: false
+        # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by dev-ops/analyze/phpstan-config-generator.php script
+        container_xml_path: '%rootDir%/../../../../../../..%ShopwareHashedCacheDir%/srcShopware_Development_KernelDevDebugContainer.xml'
+    excludes_analyse:
+        - tests/TestBootstrap.php

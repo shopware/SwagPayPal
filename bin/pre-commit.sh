@@ -30,6 +30,7 @@ then
         php -l -d display_errors=0 "$FILE" 1> /dev/null
     done
 
+    php "`dirname \"$0\"`"/../../bin/phpstan-config-generator.php
     php ../../../dev-ops/analyze/vendor/bin/phpstan analyze --no-progress --configuration phpstan.neon --autoload-file="$AUTOLOAD_FILE" ${PHP_FILES}
 fi
 
