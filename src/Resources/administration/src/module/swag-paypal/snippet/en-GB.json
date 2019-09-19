@@ -60,6 +60,67 @@
                     "tooltipText": "This text is placed before the original order number (e.g MyShop_SW20001). This helps to identify the shop where the payment was made."
                 }
             },
+            "express": {
+                "cardTitle": "PayPal Express Checkout integration",
+                "ecsDetailEnabled": {
+                    "label": "'Pay now' on detail page:",
+                    "helpText": "If this option is active, the Express Checkout button will be shown on each product detail page."
+                },
+                "ecsCartEnabled": {
+                    "label": "'Pay now' on cart:",
+                    "helpText": "If this option is active, the Express Checkout button will be shown on the cart."
+                },
+                "ecsOffCanvasEnabled": {
+                    "label": "'Pay Now' on Off-Canvas cart:",
+                    "helpText": "If this option is active, the Express Checkout button will be shown on the Off-Canvas cart."
+                },
+                "ecsLoginEnabled": {
+                    "label": "'Pay Now' on login page:",
+                    "helpText": "If this option is active, the Express Checkout button will be shown on the login and register page."
+                },
+                "ecsListingEnabled": {
+                    "label": "'Pay now' on listing pages:",
+                    "helpText": "If this option is active, the Express Checkout button will be shown on listing pages."
+                },
+                "ecsButtonColor": {
+                    "label": "Button color:",
+                    "options": {
+                        "blue": "Blue",
+                        "black": "Black",
+                        "gold": "Gold",
+                        "silver": "Silver"
+                    }
+                },
+                "ecsButtonShape": {
+                    "label": "Button shape:",
+                    "options": {
+                        "pill": "Round",
+                        "rect": "Rectangular"
+                    }
+                },
+                "ecsSubmitCart": {
+                    "label": "Submit cart",
+                    "helpText": "If this option is active, the cart will be submitted to PayPal for Express orders."
+                },
+                "ecsButtonLanguageIso": {
+                    "label": "Button locale:",
+                    "helpText": "If not set, the sales channel language will be used."
+                }
+            },
+            "spb": {
+                "cardTitle": "PayPal Checkout with Smart Payment Buttons",
+                "spbCheckoutEnabled": {
+                    "label": "Enable Smart Payment Buttons"
+                },
+                "spbButtonLanguageIso": {
+                    "label": "Button locale:",
+                    "helpText": "If not set, the sales channel language will be used."
+                },
+                "spbAlternativePaymentMethodsEnabled": {
+                    "label": "Enable the alternative payment methods for the Smart Payment Buttons.",
+                    "helpText": "Alternative payment methods are, Creditcards, Invoice and more."
+                }
+            },
             "plus": {
                 "plusOverwritePaymentName": "PayPal, direct debit or credit card",
                 "plusExtendPaymentDescription": "Payment by direct debit or credit card is possible without PayPal account."
