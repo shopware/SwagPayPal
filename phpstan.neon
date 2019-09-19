@@ -1,6 +1,0 @@
-parameters:
-    level: 7
-    reportUnmatchedIgnoredErrors: false
-    inferPrivatePropertyTypeFromConstructor: true
-    excludes_analyse:
-        - tests/TestBootstrap.php

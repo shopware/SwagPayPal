@@ -33,13 +33,11 @@ use Swag\PayPal\Test\Mock\PaymentMethodUtilMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
-use Symfony\Component\Routing\RouterInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SPBCheckoutSubscriberTest extends TestCase
 {
     use IntegrationTestBehaviour;
+
     private const TEST_CLIENT_ID = 'testClientId';
 
     /**
@@ -119,8 +117,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $subscriber->onCheckoutConfirmLoaded($event);
 
         static::assertNull($event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
-        /** @var FlashBagInterface $flashBag */
-        $flashBag = $this->getContainer()->get('session.flash_bag');
+        $flashBag = $this->getContainer()->get('session')->getFlashBag();
         static::assertCount(1, $flashBag->get('success'));
     }
 
@@ -159,29 +156,18 @@ class SPBCheckoutSubscriberTest extends TestCase
             }
         }
 
-        $settingsService = new SettingsServiceMock($settings);
-        /** @var LocaleCodeProvider $localeCodeProvider */
-        $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
-        /** @var RouterInterface $router */
-        $router = $this->getContainer()->get('router');
-
         $spbDataService = new SPBCheckoutDataService(
             $this->paymentMethodUtil,
-            $localeCodeProvider,
-            $router
+            $this->getContainer()->get(LocaleCodeProvider::class),
+            $this->getContainer()->get('router')
         );
 
-        /** @var FlashBagInterface $flashBag */
-        $flashBag = $this->getContainer()->get('session.flash_bag');
-        /** @var TranslatorInterface $translator */
-        $translator = $this->getContainer()->get('translator');
-
         return new SPBCheckoutSubscriber(
-            $settingsService,
+            new SettingsServiceMock($settings),
             $spbDataService,
             new PaymentMethodUtilMock(),
-            $flashBag,
-            $translator
+            $this->getContainer()->get('session'),
+            $this->getContainer()->get('translator')
         );
     }
 
@@ -200,9 +186,7 @@ class SPBCheckoutSubscriberTest extends TestCase
             SalesChannelContextService::CUSTOMER_ID => $this->createCustomer(),
         ];
 
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        $salesChannelContext = $salesChannelContextFactory->create(
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             'token',
             Defaults::SALES_CHANNEL,
             $options

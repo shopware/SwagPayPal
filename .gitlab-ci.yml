@@ -23,8 +23,12 @@ default:
 
 PHP analyze:
     stage: Static analyzes
+    services:
+        -   name: mysql:5.7
+            alias: mysql
     script:
-        - php psh.phar init-composer
+        - ./psh.phar init
+        - php bin/console plugin:install --activate SwagPayPal
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - bin/static-analyze.sh
         - cd $CI_PROJECT_DIR/development
