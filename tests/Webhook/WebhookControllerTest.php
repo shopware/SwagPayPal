@@ -1,10 +1,4 @@
 <?php declare(strict_types=1);
-/**
- * (c) shopware AG <info@shopware.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
 namespace Swag\PayPal\Test\Webhook;
 
@@ -114,7 +108,6 @@ class WebhookControllerTest extends TestCase
 
     public function testExecuteWebhookNoData(): void
     {
-
         $context = Context::createDefaultContext();
         $request = new Request(
             [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN]
