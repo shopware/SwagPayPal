@@ -24,6 +24,16 @@ class Refund extends PayPalStruct
     /**
      * @var string
      */
+    protected $description;
+
+    /**
+     * @var string
+     */
+    protected $reason;
+
+    /**
+     * @var string
+     */
     private $id;
 
     /**
@@ -89,6 +99,16 @@ class Refund extends PayPalStruct
     public function getState(): string
     {
         return $this->state;
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    public function setReason(string $reason): void
+    {
+        $this->reason = $reason;
     }
 
     protected function setId(string $id): void

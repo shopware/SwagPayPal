@@ -41,6 +41,8 @@ class PayPalPaymentController extends AbstractController
     public const REQUEST_PARAMETER_REFUND_INVOICE_NUMBER = 'refundInvoiceNumber';
     public const REQUEST_PARAMETER_CAPTURE_AMOUNT = 'captureAmount';
     public const REQUEST_PARAMETER_CAPTURE_IS_FINAL = 'captureIsFinal';
+    public const REQUEST_PARAMETER_DESCRIPTION = 'description';
+    public const REQUEST_PARAMETER_REASON = 'reason';
 
     /**
      * @var PaymentResource
@@ -257,8 +259,11 @@ class PayPalPaymentController extends AbstractController
         $refundAmount = (string) round((float) $request->request->get(self::REQUEST_PARAMETER_REFUND_AMOUNT), 2);
         $currency = $request->request->getAlpha(self::REQUEST_PARAMETER_CURRENCY);
         $invoiceNumber = (string) $request->request->get(self::REQUEST_PARAMETER_REFUND_INVOICE_NUMBER, '');
+        $description = (string) $request->request->get(self::REQUEST_PARAMETER_DESCRIPTION, '');
+        $reason = (string) $request->request->get(self::REQUEST_PARAMETER_REASON, '');
 
         $refund = new Refund();
+
         if ($invoiceNumber !== '') {
             $refund->setInvoiceNumber($invoiceNumber);
         }
@@ -269,6 +274,13 @@ class PayPalPaymentController extends AbstractController
             $amount->setCurrency($currency);
 
             $refund->setAmount($amount);
+        }
+
+        if ($description !== '') {
+            $refund->setDescription($description);
+        }
+        if ($reason !== '') {
+            $refund->setReason($reason);
         }
 
         return $refund;

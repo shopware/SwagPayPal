@@ -35,14 +35,17 @@ class SwagPayPalPaymentService extends ApiService {
         });
     }
 
-    refundPayment(orderId, resourceType, resourceId, refundAmount, currency) {
+    refundPayment(orderId, resourceType, resourceId, refundAmount, currency, description, reason, invoiceNumber) {
         const apiRoute = `_action/${this.getApiBasePath()}/refund-payment/${resourceType}/${resourceId}/${orderId}`;
 
         return this.httpClient.post(
             apiRoute,
             {
                 refundAmount: refundAmount,
-                currency: currency
+                currency: currency,
+                description: description,
+                reason: reason,
+                refundInvoiceNumber: invoiceNumber
             },
             {
                 headers: this.getBasicHeaders()

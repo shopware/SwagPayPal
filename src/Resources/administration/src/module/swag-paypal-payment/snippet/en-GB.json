@@ -72,7 +72,20 @@
         "label": "Select capture"
       },
       "refundAmount": {
-        "label": "Amount"
+        "label": "Amount",
+        "placeholder": "Enter a amount"
+      },
+      "refundDescription": {
+        "label": "Description",
+        "placeholder": "Enter a description"
+      },
+      "refundReason": {
+        "label": "Reason",
+        "placeholder": "Enter a reason"
+      },
+      "refundInvoiceNumber": {
+        "label": "Invoice number",
+        "placeholder": "Enter an invoice number"
       },
       "confirmButton": {
         "text": "Execute"
