@@ -6,6 +6,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
+use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
 use Swag\PayPal\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -85,6 +86,11 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $confirmPage = $event->getPage();
+        if ($confirmPage->getCart()->getExtension(ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID) !== null) {
+            return;
+        }
+
         $requestQuery = $event->getRequest()->query;
         if ($requestQuery->has(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
             && $requestQuery->has(EcsSpbHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
@@ -99,9 +105,9 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             $settings
         );
 
-        $this->changePaymentMethodDescription($event->getPage()->getPaymentMethods(), $event->getContext());
+        $this->changePaymentMethodDescription($confirmPage->getPaymentMethods(), $event->getContext());
 
-        $event->getPage()->addExtension(self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID, $buttonData);
+        $confirmPage->addExtension(self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID, $buttonData);
     }
 
     private function changePaymentMethodDescription(PaymentMethodCollection $paymentMethods, Context $context): void
