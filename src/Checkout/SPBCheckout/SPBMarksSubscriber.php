@@ -6,6 +6,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
+use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -50,7 +51,18 @@ class SPBMarksSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if ($event instanceof AccountPaymentMethodPageLoadedEvent || $event instanceof CheckoutConfirmPageLoadedEvent) {
+        if ($event instanceof CheckoutConfirmPageLoadedEvent) {
+            $confirmPage = $event->getPage();
+            if ($confirmPage->getCart()->getExtension(ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID) !== null) {
+                return;
+            }
+
+            $confirmPage->addExtension(self::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID, $spbMarksData);
+
+            return;
+        }
+
+        if ($event instanceof AccountPaymentMethodPageLoadedEvent) {
             $event->getPage()->addExtension(self::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID, $spbMarksData);
 
             return;

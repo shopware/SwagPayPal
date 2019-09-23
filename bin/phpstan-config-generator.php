@@ -24,7 +24,7 @@ if ($phpStanConfigDist === false) {
 // because the cache dir is hashed by Shopware, we need to set the PHPStan config dynamically
 $phpStanConfig = str_replace(
     [
-        "\n        # the placeholder \"%ShopwareHashedCacheDir%\" will be replaced on execution by dev-ops/analyze/phpstan-config-generator.php script",
+        "\n        # the placeholder \"%ShopwareHashedCacheDir%\" will be replaced on execution by bin/phpstan-config-generator.php script",
         '%ShopwareHashedCacheDir%',
     ],
     [
