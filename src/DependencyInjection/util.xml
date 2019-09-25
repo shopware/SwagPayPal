@@ -23,5 +23,11 @@
             <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
             <argument type="string">swag_paypal</argument>
         </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\ActivateDeactivate">
+            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="custom_field.repository"/>
+        </service>
     </services>
 </container>

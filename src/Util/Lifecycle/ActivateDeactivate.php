@@ -21,20 +21,20 @@ class ActivateDeactivate
     /**
      * @var EntityRepositoryInterface
      */
-    private $salesChannelRepository;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
     private $customFieldRepository;
 
+    /**
+     * @var PaymentMethodUtil
+     */
+    private $paymentMethodUtil;
+
     public function __construct(
+        PaymentMethodUtil $paymentMethodUtil,
         EntityRepositoryInterface $paymentRepository,
-        EntityRepositoryInterface $salesChannelRepository,
         EntityRepositoryInterface $customFieldRepository
     ) {
+        $this->paymentMethodUtil = $paymentMethodUtil;
         $this->paymentRepository = $paymentRepository;
-        $this->salesChannelRepository = $salesChannelRepository;
         $this->customFieldRepository = $customFieldRepository;
     }
 
@@ -52,8 +52,7 @@ class ActivateDeactivate
 
     private function setPaymentMethodsIsActive(bool $active, Context $context): void
     {
-        $paymentMethodUtil = new PaymentMethodUtil($this->paymentRepository, $this->salesChannelRepository);
-        $payPalPaymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId($context);
+        $payPalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context);
 
         if ($payPalPaymentMethodId === null) {
             return;

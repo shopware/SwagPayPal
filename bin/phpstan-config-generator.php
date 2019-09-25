@@ -1,7 +1,9 @@
 <?php declare(strict_types=1);
 
 use PackageVersions\Versions;
+use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Shopware\Development\Kernel;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Dotenv\Dotenv;
 
 $classLoader = require __DIR__ . '/../../../../vendor/autoload.php';
@@ -9,7 +11,19 @@ $classLoader = require __DIR__ . '/../../../../vendor/autoload.php';
 
 $shopwareVersion = Versions::getVersion('shopware/platform');
 
-$kernel = new Kernel('dev', true, $classLoader, $shopwareVersion);
+$pluginRootPath = realpath(__DIR__ . '/..');
+$composerJson = json_decode((string) file_get_contents($pluginRootPath . '/composer.json'), true);
+
+$swagPayPal = [
+    'autoload' => $composerJson['autoload'],
+    'baseClass' => SwagPayPal::class,
+    'managedByComposer' => false,
+    'active' => true,
+    'path' => 'custom/plugins/SwagPayPal',
+];
+$pluginLoader = new StaticKernelPluginLoader($classLoader, null, [$swagPayPal]);
+
+$kernel = new Kernel('dev', true, $pluginLoader, $shopwareVersion);
 $kernel->boot();
 $projectDir = $kernel->getProjectDir();
 $cacheDir = $kernel->getCacheDir();
