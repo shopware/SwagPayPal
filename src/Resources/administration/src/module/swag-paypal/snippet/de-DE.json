@@ -63,7 +63,7 @@
             "express": {
                 "cardTitle": "PayPal Express Checkout Integration",
                 "ecsDetailEnabled": {
-                    "label": "'Direkt zu PayPal' auf Detailseite:,",
+                    "label": "'Direkt zu PayPal' auf Detailseite:",
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf jeder Produktdetailseite angezeigt."
                 },
                 "ecsCartEnabled": {
@@ -71,7 +71,7 @@
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Warenkorbseite angezeigt."
                 },
                 "ecsOffCanvasEnabled": {
-                    "label": "'Direkt zu PayPal im Off-Canvas Warenkorb:",
+                    "label": "'Direkt zu PayPal' im Off-Canvas Warenkorb:",
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button in dem Off-Canvas-Warenkorb angezeigt."
                 },
                 "ecsLoginEnabled": {
@@ -80,7 +80,7 @@
                 },
                 "ecsListingEnabled": {
                     "label": "'Direkt zu PayPal' auf Listing Seiten:",
-                    "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf Listing-Seiten."
+                    "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf Listing-Seiten angezeigt."
                 },
                 "ecsButtonColor": {
                     "label": "Buttonfarbe:",

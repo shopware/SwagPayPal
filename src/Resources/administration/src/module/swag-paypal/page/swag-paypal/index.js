@@ -13,91 +13,21 @@ export default {
         Mixin.getByName('notification')
     ],
 
-    inject: ['SwagPayPalWebhookRegisterService', 'SwagPayPalApiCredentialsService'],
+    inject: ['SwagPayPalWebhookRegi sterService', 'SwagPayPalApiCredentialsService'],
 
     data() {
         return {
             isLoading: false,
+            isTesting: false,
             isSaveSuccessful: false,
+            isTestSuccessful: false,
             clientIdFilled: false,
             clientSecretFilled: false,
-            intentOptions: [
-                {
-                    id: 'sale',
-                    name: this.$tc('swag-paypal.settingForm.behaviour.intent.sale')
-                },
-                {
-                    id: 'authorize',
-                    name: this.$tc('swag-paypal.settingForm.behaviour.intent.authorize')
-                },
-                {
-                    id: 'order',
-                    name: this.$tc('swag-paypal.settingForm.behaviour.intent.order')
-                }
-            ],
-            landingPageOptions: [
-                {
-                    id: 'Login',
-                    name: this.$tc('swag-paypal.settingForm.behaviour.landingPage.options.Login')
-                },
-                {
-                    id: 'Billing',
-                    name: this.$tc('swag-paypal.settingForm.behaviour.landingPage.options.Billing')
-                }
-            ],
-            buttonColorOptions: [
-                {
-                    id: 'blue',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.blue')
-                },
-                {
-                    id: 'black',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.black')
-                },
-                {
-                    id: 'gold',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.gold')
-                },
-                {
-                    id: 'silver',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.silver')
-                }
-            ],
-            buttonShapeOptions: [
-                {
-                    id: 'pill',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonShape.options.pill')
-                },
-                {
-                    id: 'rect',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonShape.options.rect')
-                }
-            ],
             config: null,
             clientIdErrorState: null,
             clientSecretErrorState: null,
             ...constants
         };
-    },
-
-    computed: {
-        clientIdError: {
-            get() {
-                return this.clientIdErrorState;
-            },
-            set(value) {
-                this.clientIdErrorState = value;
-            }
-        },
-
-        clientSecretError: {
-            get() {
-                return this.clientSecretErrorState;
-            },
-            set(value) {
-                this.clientSecretErrorState = value;
-            }
-        }
     },
 
     metaInfo() {
@@ -125,45 +55,23 @@ export default {
             deep: true
         }
     },
+    computed: {
+        testButtonDisabled() {
+            return this.isLoading || !this.clientSecretFilled || !this.clientIdFilled || this.isTesting;
+        }
+    },
 
     methods: {
-        checkTextFieldInheritance(value) {
-            if (typeof value !== 'string') {
-                return true;
-            }
-
-            return value.length <= 0;
-        },
-
-        checkBoolFieldInheritance(value) {
-            if (typeof value !== 'boolean') {
-                return true;
-            }
-
-            return false;
-        },
-
-        getInheritTextValue(key) {
-            const salesChannelId = this.$refs.configComponent.selectedSalesChannelId;
-            const res = salesChannelId == null ? null : this.$refs.configComponent.allConfigs.null[key];
-
-            if (salesChannelId !== null && (typeof res === 'undefined' || res === null)) {
-                return '';
-            }
-
-            return res;
-        },
-
         onSave() {
             if (!this.clientIdFilled || !this.clientSecretFilled) {
                 this.setErrorStates();
                 return;
             }
 
-            this._save();
+            this.save();
         },
 
-        _save() {
+        save() {
             this.isLoading = true;
 
             this.$refs.configComponent.save().then((res) => {
@@ -173,11 +81,6 @@ export default {
                 if (res) {
                     this.config = res;
                 }
-
-                this.createNotificationSuccess({
-                    title: this.$tc('swag-paypal.settingForm.titleSuccess'),
-                    message: this.$tc('swag-paypal.settingForm.messageSaveSuccess')
-                });
 
                 this.registerWebhook();
             }).catch(() => {
@@ -227,7 +130,7 @@ export default {
         },
 
         onTest() {
-            this.isLoading = true;
+            this.isTesting = true;
             const clientId = this.config['SwagPayPal.settings.clientId'] ||
                 this.$refs.configComponent.allConfigs.null['SwagPayPal.settings.clientId'];
             const clientSecret = this.config['SwagPayPal.settings.clientSecret'] ||
@@ -243,11 +146,8 @@ export default {
                 const credentialsValid = response.credentialsValid;
 
                 if (credentialsValid) {
-                    this.createNotificationSuccess({
-                        title: this.$tc('swag-paypal.settingForm.titleSuccess'),
-                        message: this.$tc('swag-paypal.settingForm.messageTestSuccess')
-                    });
-                    this.isLoading = false;
+                    this.isTesting = false;
+                    this.isTestSuccessful = true;
                 }
             }).catch((errorResponse) => {
                 if (errorResponse.response.data && errorResponse.response.data.errors) {
@@ -260,28 +160,29 @@ export default {
                         title: this.$tc('swag-paypal.settingForm.titleError'),
                         message: message
                     });
-                    this.isLoading = false;
+                    this.isTesting = false;
+                    this.isTestSuccessful = false;
                 }
             });
         },
 
         setErrorStates() {
             if (!this.clientIdFilled) {
-                this.clientIdError = {
+                this.clientIdErrorState = {
                     code: 1,
                     detail: this.$tc('swag-paypal.messageNotBlank')
                 };
             } else {
-                this.clientIdError = null;
+                this.clientIdErrorState = null;
             }
 
             if (!this.clientSecretFilled) {
-                this.clientSecretError = {
+                this.clientSecretErrorState = {
                     code: 1,
                     detail: this.$tc('swag-paypal.messageNotBlank')
                 };
             } else {
-                this.clientSecretError = null;
+                this.clientSecretErrorState = null;
             }
         }
     }
