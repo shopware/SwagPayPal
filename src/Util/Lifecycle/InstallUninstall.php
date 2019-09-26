@@ -208,8 +208,8 @@ class InstallUninstall
                     'children' => [
                         [
                             'type' => (new BillingCountryRule())->getName(),
-                            'operator' => BillingCountryRule::OPERATOR_EQ,
                             'value' => [
+                                'operator' => BillingCountryRule::OPERATOR_EQ,
                                 'countryIds' => [
                                     $germanCountryId,
                                 ],
