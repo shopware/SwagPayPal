@@ -51,7 +51,8 @@ class PaymentResourceTest extends TestCase
         $executedPayment = $this->createPaymentResource()->execute(
             'testPayerId',
             self::TEST_PAYMENT_ID,
-            Defaults::SALES_CHANNEL);
+            Defaults::SALES_CHANNEL
+        );
 
         static::assertInstanceOf(Payment::class, $executedPayment);
         $transaction = $executedPayment->getTransactions()[0];

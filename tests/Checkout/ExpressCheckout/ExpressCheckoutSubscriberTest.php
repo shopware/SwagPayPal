@@ -7,8 +7,8 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -36,7 +36,6 @@ use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\RouterInterface;
 
 class ExpressCheckoutSubscriberTest extends TestCase
 {
@@ -226,7 +225,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
     public function testAddExpressCheckoutDataToPageWithoutCart(): void
     {
         $salesChannelContext = $this->createSalesChannelContext();
-        /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
         $cartService->createNew($salesChannelContext->getToken());
         $event = new OffcanvasCartPageLoadedEvent(
@@ -288,9 +286,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
             $settings->setEcsListingEnabled(!$disableEcsListing);
         }
 
-        /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
-        /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
 
         return new ExpressCheckoutSubscriber(
@@ -309,16 +305,14 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     private function createSalesChannelContext(bool $withItemList = false): SalesChannelContext
     {
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
 
-        $context = $salesChannelContextFactory->create(
+        $salesChannelContext = $salesChannelContextFactory->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL
         );
 
         if ($withItemList) {
-            /** @var CartService $cartService */
             $cartService = $this->getContainer()->get(CartService::class);
             /** @var EntityRepositoryInterface $productRepo */
             $productRepo = $this->getContainer()->get('product.repository');
@@ -343,24 +337,31 @@ class ExpressCheckoutSubscriberTest extends TestCase
                         ],
                     ],
                     'stock' => 0,
+                    'active' => true,
+                    'visibilities' => [
+                        [
+                            'salesChannelId' => Defaults::SALES_CHANNEL,
+                            'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
+                        ],
+                    ],
                 ],
-            ], Context::createDefaultContext());
+            ], $salesChannelContext->getContext());
 
             $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
 
-            $cart = $cartService->getCart($context->getToken(), $context);
-            $cartService->add($cart, $lineItem, $context);
+            $cart = $cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+            $cartService->add($cart, $lineItem, $salesChannelContext);
         }
 
         $paymentMethod = new PaymentMethodEntity();
         $paymentMethod->setId(PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID);
 
-        $salesChannelEntity = $context->getSalesChannel();
+        $salesChannelEntity = $salesChannelContext->getSalesChannel();
         $salesChannelEntity->setPaymentMethods(new PaymentMethodCollection([
             $paymentMethod,
         ]));
         $salesChannelEntity->setId(Defaults::SALES_CHANNEL);
 
-        return $context;
+        return $salesChannelContext;
     }
 }

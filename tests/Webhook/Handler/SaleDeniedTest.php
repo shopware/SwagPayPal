@@ -77,7 +77,8 @@ class SaleDeniedTest extends TestCase
         $this->webhookHandler->invoke($webhook, $context);
 
         $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_CANCELLED, $container,
+            OrderTransactionStates::STATE_CANCELLED,
+            $container,
             $context
         );
 

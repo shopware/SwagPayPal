@@ -77,7 +77,8 @@ class SaleRefundedTest extends TestCase
         $this->webhookHandler->invoke($webhook, $context);
 
         $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_REFUNDED, $container,
+            OrderTransactionStates::STATE_REFUNDED,
+            $container,
             $context
         );
 

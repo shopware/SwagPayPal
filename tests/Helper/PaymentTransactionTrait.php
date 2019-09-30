@@ -58,24 +58,24 @@ trait PaymentTransactionTrait
         $order->setCurrency($currency);
         $order->setOrderNumber(OrderPaymentBuilderTest::TEST_ORDER_NUMBER);
         $order->setPrice(new CartPrice(
-                722.69,
-                860.0,
-                722.69,
-                new CalculatedTaxCollection([
-                    new CalculatedTax(
-                        137.31,
-                        19.0,
-                        722.6890756302521
-                    ),
-                ]),
-                new TaxRuleCollection([
-                    new TaxRule(
-                        19.0,
-                        100.0
-                    ),
-                ]),
-                CartPrice::TAX_STATE_NET
-            ));
+            722.69,
+            860.0,
+            722.69,
+            new CalculatedTaxCollection([
+                new CalculatedTax(
+                    137.31,
+                    19.0,
+                    722.6890756302521
+                ),
+            ]),
+            new TaxRuleCollection([
+                new TaxRule(
+                    19.0,
+                    100.0
+                ),
+            ]),
+            CartPrice::TAX_STATE_NET
+        ));
 
         switch ($orderId) {
             case ConstantsForTesting::VALID_ORDER_ID:

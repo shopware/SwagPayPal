@@ -116,11 +116,11 @@ class PayPalPaymentControllerTest extends TestCase
         ]);
         $context = Context::createDefaultContext();
         $responseContent = $this->createPaymentControllerWithSaleResourceMock()->refundPayment(
-          $request,
-          $context,
-          RelatedResource::SALE,
-          'testPaymentId',
-          'testOrderId'
+            $request,
+            $context,
+            RelatedResource::SALE,
+            'testPaymentId',
+            'testOrderId'
         )->getContent();
         static::assertNotFalse($responseContent);
 
