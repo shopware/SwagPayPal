@@ -77,7 +77,8 @@ class SaleCompleteTest extends TestCase
         $this->webhookHandler->invoke($webhook, $context);
 
         $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_PAID, $container,
+            OrderTransactionStates::STATE_PAID,
+            $container,
             $context
         );
 

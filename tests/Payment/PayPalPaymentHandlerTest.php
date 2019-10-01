@@ -182,7 +182,8 @@ Customer is not logged in.');
         );
 
         $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_PAID, $container,
+            OrderTransactionStates::STATE_PAID,
+            $container,
             $salesChannelContext->getContext()
         );
 
@@ -208,7 +209,8 @@ Customer is not logged in.');
         );
 
         $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_PAID, $container,
+            OrderTransactionStates::STATE_PAID,
+            $container,
             $salesChannelContext->getContext()
         );
 

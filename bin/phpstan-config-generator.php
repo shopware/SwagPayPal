@@ -11,7 +11,7 @@ $classLoader = require __DIR__ . '/../../../../vendor/autoload.php';
 
 $shopwareVersion = Versions::getVersion('shopware/platform');
 
-$pluginRootPath = realpath(__DIR__ . '/..');
+$pluginRootPath = dirname(__DIR__);
 $composerJson = json_decode((string) file_get_contents($pluginRootPath . '/composer.json'), true);
 
 $swagPayPal = [
@@ -19,7 +19,7 @@ $swagPayPal = [
     'baseClass' => SwagPayPal::class,
     'managedByComposer' => false,
     'active' => true,
-    'path' => 'custom/plugins/SwagPayPal',
+    'path' => $pluginRootPath,
 ];
 $pluginLoader = new StaticKernelPluginLoader($classLoader, null, [$swagPayPal]);
 

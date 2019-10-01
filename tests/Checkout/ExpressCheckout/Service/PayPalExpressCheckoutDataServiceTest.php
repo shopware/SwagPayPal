@@ -7,6 +7,7 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -20,7 +21,6 @@ use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataServic
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Symfony\Component\Routing\RouterInterface;
 
 class PayPalExpressCheckoutDataServiceTest extends TestCase
 {
@@ -59,18 +59,12 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         parent::setUp();
         $container = $this->getContainer();
 
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
-        $this->salesChannelContextFactory = $salesChannelContextFactory;
-        /** @var CartService $cartService */
-        $cartService = $container->get(CartService::class);
-        $this->cartService = $cartService;
-        /** @var RouterInterface $router */
-        $router = $container->get('router');
+        $this->salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
+        $this->cartService = $container->get(CartService::class);
         $this->payPalExpressCheckoutDataService = new PayPalExpressCheckoutDataService(
             $this->cartService,
             $this->createLocaleCodeProvider(),
-            $router
+            $container->get('router')
         );
         /** @var EntityRepositoryInterface $productRepo */
         $productRepo = $container->get('product.repository');
@@ -195,6 +189,13 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             'productNumber' => Uuid::randomHex(),
             'stock' => 1,
             'name' => 'test',
+            'active' => true,
+            'visibilities' => [
+                [
+                    'salesChannelId' => Defaults::SALES_CHANNEL,
+                    'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
+                ],
+            ],
             'price' => [['currencyId' => Defaults::CURRENCY, 'gross' => 15, 'net' => 10, 'linked' => false]],
             'manufacturer' => ['name' => 'test'],
             'tax' => ['name' => 'test', 'taxRate' => 15],

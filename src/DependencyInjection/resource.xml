@@ -26,7 +26,7 @@
         </service>
 
         <service id="Swag\PayPal\PayPal\Resource\TokenResource">
-            <argument type="service" id="shopware.cache"/>
+            <argument type="service" id="cache.object"/>
             <argument type="service" id="Swag\PayPal\PayPal\Client\TokenClientFactory"/>
         </service>
 
