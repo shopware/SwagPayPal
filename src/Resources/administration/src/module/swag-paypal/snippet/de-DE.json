@@ -60,6 +60,67 @@
                     "tooltipText": "Dieser Text wird vor die ursprüngliche Bestellnummer gehängt (z.B. MeinShop_SW20001). Das hilft dabei der Identifizierung des Shops, in dem die Zahlung ausgeführt wurde."
                 }
             },
+            "express": {
+                "cardTitle": "PayPal Express Checkout Integration",
+                "ecsDetailEnabled": {
+                    "label": "'Direkt zu PayPal' auf Detailseite:",
+                    "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf jeder Produktdetailseite angezeigt."
+                },
+                "ecsCartEnabled": {
+                    "label": "'Direkt zu PayPal' im Warenkorb:",
+                    "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Warenkorbseite angezeigt."
+                },
+                "ecsOffCanvasEnabled": {
+                    "label": "'Direkt zu PayPal' im Off-Canvas Warenkorb:",
+                    "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button in dem Off-Canvas-Warenkorb angezeigt."
+                },
+                "ecsLoginEnabled": {
+                    "label": "'Direkt zu PayPal' auf Loginseite:",
+                    "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Login- und Registrierungsseite angezeigt."
+                },
+                "ecsListingEnabled": {
+                    "label": "'Direkt zu PayPal' auf Listing Seiten:",
+                    "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf Listing-Seiten angezeigt."
+                },
+                "ecsButtonColor": {
+                    "label": "Buttonfarbe:",
+                    "options": {
+                        "blue": "Blau",
+                        "black": "Schwarz",
+                        "gold": "Gold",
+                        "silver": "Silber"
+                    }
+                },
+                "ecsButtonShape": {
+                    "label": "Buttonform:",
+                    "options": {
+                        "pill": "Rund",
+                        "rect": "Eckig"
+                    }
+                },
+                "ecsSubmitCart": {
+                    "label": "Warenkorb übertragen:",
+                    "helpText": "Wenn diese Option aktiv ist, wird der Warenkorb bei Express-Bestellungen an PayPal übertragen."
+                },
+                "ecsButtonLanguageIso": {
+                    "label": "Buttonsprache:",
+                    "helpText": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet."
+                }
+            },
+            "spb": {
+                "cardTitle": "PayPal Checkout mit Smart Payment Buttons",
+                "spbCheckoutEnabled": {
+                    "label": "Smart Payment Buttons aktivieren"
+                },
+                "spbButtonLanguageIso": {
+                    "label": "Buttonsprache:",
+                    "helpText": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet."
+                },
+                "spbAlternativePaymentMethodsEnabled": {
+                    "label": "Aktiviert die alternativen Zahlungsarten der Smart Payment Buttons.",
+                    "helpText": "Die alternativen Zahlungsarten sind, Kreditkarten, SEPA und mehr."
+                }
+            },
             "plus": {
                 "plusOverwritePaymentName": "PayPal, Lastschrift oder Kreditkarte",
                 "plusExtendPaymentDescription": "Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal-Konto möglich."

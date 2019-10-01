@@ -1,5 +1,10 @@
 import paypalSettings from './page/swag-paypal';
 import './extension/sw-settings-index';
+import './components/sw-paypal-credentials';
+import './components/sw-paypal-express';
+import './components/sw-paypal-behaviour';
+import './components/sw-paypal-spb';
+
 import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';
 

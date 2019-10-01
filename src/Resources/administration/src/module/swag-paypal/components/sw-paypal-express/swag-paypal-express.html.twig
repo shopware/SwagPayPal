@@ -1,0 +1,178 @@
+{% block swag_paypal_content_card_channel_config_express %}
+	<sw-card :title="$tc('swag-paypal.settingForm.express.cardTitle')">
+        {% block swag_paypal_content_card_channel_config_express_settings %}
+            <div class="swag-paypal-settings-express-fields" v-if="actualConfigData">
+                {% block swag_paypal_content_card_channel_config_express_settings_detail_enabled %}
+                    <sw-inherit-wrapper
+                            v-model="actualConfigData['SwagPayPal.settings.ecsDetailEnabled']"
+                            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsDetailEnabled']"
+                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                        <template #content="props">
+                            <sw-field type="switch"
+                                      bordered
+                                      :mapInheritance="props"
+                                      :label="$tc('swag-paypal.settingForm.express.ecsDetailEnabled.label')"
+                                      :helpText="$tc('swag-paypal.settingForm.express.ecsDetailEnabled.helpText')"
+                                      :disabled="props.isInherited"
+                                      :value="props.currentValue"
+                                      @change="props.updateCurrentValue">
+                            </sw-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_express_settings_cart_enabled %}
+                    <sw-inherit-wrapper
+                            v-model="actualConfigData['SwagPayPal.settings.ecsCartEnabled']"
+                            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsCartEnabled']"
+                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                        <template #content="props">
+                            <sw-field type="switch"
+                                      bordered
+                                      :mapInheritance="props"
+                                      :label="$tc('swag-paypal.settingForm.express.ecsCartEnabled.label')"
+                                      :helpText="$tc('swag-paypal.settingForm.express.ecsCartEnabled.helpText')"
+                                      :disabled="props.isInherited"
+                                      :value="props.currentValue"
+                                      @change="props.updateCurrentValue">
+                            </sw-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_express_settings_off_canvas_enabled %}
+                    <sw-inherit-wrapper
+                            v-model="actualConfigData['SwagPayPal.settings.ecsOffCanvasEnabled']"
+                            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsOffCanvasEnabled']"
+                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                        <template #content="props">
+                            <sw-field type="switch"
+                                      bordered
+                                      :mapInheritance="props"
+                                      :label="$tc('swag-paypal.settingForm.express.ecsOffCanvasEnabled.label')"
+                                      :helpText="$tc('swag-paypal.settingForm.express.ecsOffCanvasEnabled.helpText')"
+                                      :disabled="props.isInherited"
+                                      :value="props.currentValue"
+                                      @change="props.updateCurrentValue">
+                            </sw-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+
+                {% block swag_paypal_content_card_channel_config_express_settings_login_enabled %}
+                    <sw-inherit-wrapper
+                            v-model="actualConfigData['SwagPayPal.settings.ecsLoginEnabled']"
+                            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsLoginEnabled']"
+                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                        <template #content="props">
+                            <sw-field type="switch"
+                                      bordered
+                                      :mapInheritance="props"
+                                      :label="$tc('swag-paypal.settingForm.express.ecsLoginEnabled.label')"
+                                      :helpText="$tc('swag-paypal.settingForm.express.ecsLoginEnabled.helpText')"
+                                      :disabled="props.isInherited"
+                                      :value="props.currentValue"
+                                      @change="props.updateCurrentValue">
+                            </sw-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_express_settings_listing_enabled %}
+                    <sw-inherit-wrapper
+                            v-model="actualConfigData['SwagPayPal.settings.ecsListingEnabled']"
+                            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsListingEnabled']"
+                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                        <template #content="props">
+                            <sw-field type="switch"
+                                      bordered
+                                      :mapInheritance="props"
+                                      :label="$tc('swag-paypal.settingForm.express.ecsListingEnabled.label')"
+                                      :helpText="$tc('swag-paypal.settingForm.express.ecsListingEnabled.helpText')"
+                                      :disabled="props.isInherited"
+                                      :value="props.currentValue"
+                                      @change="props.updateCurrentValue">
+                            </sw-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_express_settings_button_color %}
+                    <sw-inherit-wrapper
+                            v-model="actualConfigData['SwagPayPal.settings.ecsButtonColor']"
+                            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsButtonColor']"
+                            :customInheritationCheckFunction="checkTextFieldInheritance"
+                            :label="$tc('swag-paypal.settingForm.express.ecsButtonColor.label')">
+                        <template #content="props">
+                            <sw-single-select :options="buttonColorOptions"
+                                              labelProperty="name"
+                                              valueProperty="id"
+                                              @input="props.updateCurrentValue"
+                                              :isInherited="props.isInherited"
+                                              :disabled="props.isInherited"
+                                              :value="props.currentValue">
+                            </sw-single-select>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_express_settings_button_shape %}
+                    <sw-inherit-wrapper
+                            v-model="actualConfigData['SwagPayPal.settings.ecsButtonShape']"
+                            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsButtonShape']"
+                            :customInheritationCheckFunction="checkTextFieldInheritance"
+                            :label="$tc('swag-paypal.settingForm.express.ecsButtonShape.label')">
+                        <template #content="props">
+                            <sw-single-select :options="buttonShapeOptions"
+                                              labelProperty="name"
+                                              valueProperty="id"
+                                              @input="props.updateCurrentValue"
+                                              :isInherited="props.isInherited"
+                                              :disabled="props.isInherited"
+                                              :value="props.currentValue">
+                            </sw-single-select>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_express_settings_submit_cart %}
+                    <sw-inherit-wrapper
+                            v-model="actualConfigData['SwagPayPal.settings.ecsSubmitCart']"
+                            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsSubmitCart']"
+                            :customInheritationCheckFunction="checkBoolFieldInheritance">
+                        <template #content="props">
+                            <sw-field type="switch"
+                                      bordered
+                                      :mapInheritance="props"
+                                      :label="$tc('swag-paypal.settingForm.express.ecsSubmitCart.label')"
+                                      :helpText="$tc('swag-paypal.settingForm.express.ecsSubmitCart.helpText')"
+                                      :disabled="props.isInherited"
+                                      :value="props.currentValue"
+                                      @change="props.updateCurrentValue">
+                            </sw-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_express_settings_button_locale %}
+                    <sw-inherit-wrapper
+                            v-model="actualConfigData['SwagPayPal.settings.ecsButtonLanguageIso']"
+                            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsButtonLanguageIso']"
+                            :customInheritationCheckFunction="checkTextFieldInheritance">
+                        <template #content="props">
+                            <sw-field type="text"
+                                      :mapInheritance="props"
+                                      :label="$tc('swag-paypal.settingForm.express.ecsButtonLanguageIso.label')"
+                                      :helpText="$tc('swag-paypal.settingForm.express.ecsButtonLanguageIso.helpText')"
+                                      :disabled="props.isInherited"
+                                      :value="props.currentValue"
+                                      @change="props.updateCurrentValue">
+                            </sw-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </sw-card>
+{% endblock %}

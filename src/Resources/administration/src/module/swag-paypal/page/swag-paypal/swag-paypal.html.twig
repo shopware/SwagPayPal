@@ -13,20 +13,22 @@
         {% block swag_paypal_actions %}
             <template #smart-bar-actions>
                 {% block swag_paypal_actions_test %}
-                    <sw-button @click="onTest"
-                               :disabled="isLoading || !clientSecretFilled || !clientIdFilled">
+                    <sw-button-process
+                            @click="onTest"
+                            v-model="isTestSuccessful"
+                            :isLoading="isTesting"
+                            :disabled="testButtonDisabled">
                         {{ $tc('swag-paypal.settingForm.test') }}
-                    </sw-button>
+                    </sw-button-process>
                 {% endblock %}
 
                 {% block swag_paypal_actions_save %}
                     <sw-button-process
                             class="sw-settings-login-registration__save-action"
                             :isLoading="isLoading"
-                            :processSuccess="isSaveSuccessful"
                             :disabled="isLoading"
                             variant="primary"
-                            @process-finish="saveFinish"
+                            v-model="isSaveSuccessful"
                             @click="onSave">
                         {{ $tc('swag-paypal.settingForm.save') }}
                     </sw-button-process>
@@ -36,20 +38,57 @@
 
         {% block swag_paypal_content %}
             <template #content>
-                <sw-card-view>
-                    <sw-system-config
-                            ref="systemConfig"
-                            salesChannelSwitchable
-                            inherit
-                            @config-changed="onConfigChange"
-                            domain="SwagPayPal.settings">
-                        <template #card-element="{ element, config }">
-                            <sw-form-field-renderer v-bind="getBind(element, config)"
-                                                    v-model="config[element.name]">
-                            </sw-form-field-renderer>
-                        </template>
-                    </sw-system-config>
-                </sw-card-view>
+                {% block swag_paypal_content_card %}
+                    <sw-card-view>
+                        {% block swag_paypal_content_card_channel_config %}
+                        <sw-sales-channel-config ref="configComponent"
+                                                 domain="SwagPayPal.settings"
+                                                 v-model="config">
+                                {% block swag_paypal_content_card_channel_config_sales_channel %}
+                                    <template #select="{ onInput, selectedSalesChannelId, salesChannel }">
+                                        {% block swag_paypal_content_card_channel_config_sales_channel_card %}
+                                            <sw-card title="Sales Channel Switch">
+                                                {% block swag_paypal_content_card_channel_config_sales_channel_card_title %}
+                                                    <sw-single-select :options="salesChannel"
+                                                                      v-model="selectedSalesChannelId"
+                                                                      labelProperty="translated.name"
+                                                                      valueProperty="id"
+                                                                      @input="onInput">
+                                                    </sw-single-select>
+                                                {% endblock %}
+                                            </sw-card>
+                                        {% endblock %}
+                                    </template>
+                                {% endblock %}
+
+                                {% block swag_paypal_content_card_channel_config_cards %}
+                                    <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
+                                        {% block swag_paypal_content_card_channel_config_credentials_card %}
+                                            <sw-paypal-credentials :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-credentials>
+                                        {% endblock %}
+
+                                        {% block swag_paypal_content_card_channel_config_behaviour %}
+                                            <sw-paypal-behaviour :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-behaviour>
+                                        {% endblock %}
+
+                                        {% block swag_paypal_content_card_channel_config_express %}
+                                            <sw-paypal-express :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-express>
+                                        {% endblock %}
+
+                                        {% block swag_paypal_content_card_channel_config_sbp %}
+                                            <sw-paypal-spb :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-spb>
+                                        {% endblock %}
+                                    </template>
+                                {% endblock %}
+                            </sw-sales-channel-config>
+                        {% endblock %}
+
+                        {% block swag_paypal_content_card_loading %}
+                            <sw-loader v-if="isLoading">
+                            </sw-loader>
+                        {% endblock %}
+                    </sw-card-view>
+                {% endblock %}
             </template>
         {% endblock %}
     </sw-page>
