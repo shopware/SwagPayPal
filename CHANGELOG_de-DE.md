@@ -1,3 +1,12 @@
+# 0.12.0
+- PT-10287 - Fügt die Möglichkeit hinzu, die Rechnungsnummer, Beschreibung oder den Grund während der Rückerstattung einer Bestellung anzugeben
+- PT-10705 - Die PayPal-Einstellungen befinden sich nun in einem eigenen Administrationsmodul
+- PT-10771 - Verbessert die Anzeige von Smart Payment Buttons
+- PT-10775 - Verbessert das Status-Handling der Bestelltransaktion
+- PT-10809 - Smart Payment Buttons können nun getrennt vom Express Checkout Button gestylt werden
+- PT-10821 - Behebt Fehler bei der Sale-Complete-Webhook-Ausführung
+- NEXT-4282 - Neuinstallation des Plugins dupliziert keine Konfigurationseinträge mehr
+
 # 0.11.2
 - PT-10733 - Problem beim automatischen Holen der API Credentials im First-Run-Wizard behoben
 

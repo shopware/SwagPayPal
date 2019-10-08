@@ -121,7 +121,7 @@ class PlusSubscriberTest extends TestCase
 
         static::assertNotNull($plusExtension);
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $plusExtension->getApprovalUrl());
-        static::assertSame(2, \strlen($plusExtension->getCustomerCountryIso()));
+        static::assertSame(2, \mb_strlen($plusExtension->getCustomerCountryIso()));
         static::assertSame('live', $plusExtension->getMode());
         static::assertSame('de_DE', $plusExtension->getCustomerSelectedLanguage());
         static::assertSame($this->paypalPaymentMethodId, $plusExtension->getPaymentMethodId());
@@ -141,7 +141,7 @@ class PlusSubscriberTest extends TestCase
 
         static::assertNotNull($plusExtension);
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $plusExtension->getApprovalUrl());
-        static::assertSame(2, \strlen($plusExtension->getCustomerCountryIso()));
+        static::assertSame(2, \mb_strlen($plusExtension->getCustomerCountryIso()));
         static::assertSame('live', $plusExtension->getMode());
         static::assertSame('de_DE', $plusExtension->getCustomerSelectedLanguage());
         static::assertSame($this->paypalPaymentMethodId, $plusExtension->getPaymentMethodId());

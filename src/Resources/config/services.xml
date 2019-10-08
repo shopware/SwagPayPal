@@ -5,11 +5,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Swag\PayPal\Resources\snippet\de_DE\SnippetFile_de_DE">
+        <service id="Swag\PayPal\Resources\storefront\snippets\de_DE\SnippetFile_de_DE">
             <tag name="shopware.snippet.file"/>
         </service>
 
-        <service id="Swag\PayPal\Resources\snippet\en_GB\SnippetFile_en_GB">
+        <service id="Swag\PayPal\Resources\storefront\snippets\en_GB\SnippetFile_en_GB">
             <tag name="shopware.snippet.file"/>
         </service>
     </services>

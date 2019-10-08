@@ -47,7 +47,7 @@ class SPBCheckoutDataService
         $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context->getContext());
         $expressCheckoutData = (new SPBCheckoutButtonData())->assign([
             'clientId' => $settings->getClientId(),
-            'languageIso' => $this->getInContextButtonLanguage($settings, $context),
+            'languageIso' => $this->getButtonLanguage($settings, $context),
             'currency' => $context->getCurrency()->getIsoCode(),
             'intent' => $settings->getIntent(),
             'paymentMethodId' => $paymentMethodId,
@@ -64,7 +64,7 @@ class SPBCheckoutDataService
     /**
      * @throws InconsistentCriteriaIdsException
      */
-    private function getInContextButtonLanguage(SwagPayPalSettingStruct $settings, SalesChannelContext $context): string
+    private function getButtonLanguage(SwagPayPalSettingStruct $settings, SalesChannelContext $context): string
     {
         if ($settingsLocale = $settings->getSpbButtonLanguageIso()) {
             return $settingsLocale;

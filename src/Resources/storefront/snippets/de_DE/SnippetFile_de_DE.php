@@ -1,24 +1,24 @@
 <?php declare(strict_types=1);
 
-namespace Swag\PayPal\Resources\snippet\en_GB;
+namespace Swag\PayPal\Resources\storefront\snippets\de_DE;
 
 use Shopware\Core\Framework\Snippet\Files\SnippetFileInterface;
 
-class SnippetFile_en_GB implements SnippetFileInterface
+class SnippetFile_de_DE implements SnippetFileInterface
 {
     public function getName(): string
     {
-        return 'paypal.en-GB';
+        return 'paypal.de-DE';
     }
 
     public function getPath(): string
     {
-        return __DIR__ . '/paypal.en-GB.json';
+        return __DIR__ . '/paypal.de-DE.json';
     }
 
     public function getIso(): string
     {
-        return 'en-GB';
+        return 'de-DE';
     }
 
     public function getAuthor(): string
