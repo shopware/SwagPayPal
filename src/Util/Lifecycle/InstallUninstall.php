@@ -307,7 +307,7 @@ class InstallUninstall
 
         $structData = [];
         foreach ($keyValuePairs as $key => $value) {
-            $identifier = (string) substr($key, \strlen(SettingsService::SYSTEM_CONFIG_DOMAIN));
+            $identifier = (string) mb_substr($key, \mb_strlen(SettingsService::SYSTEM_CONFIG_DOMAIN));
             if ($identifier === '') {
                 continue;
             }

@@ -28,7 +28,7 @@ class SystemConfigServiceMock extends SystemConfigService
 
         if ($inherit && $salesChannelId !== null) {
             foreach ($this->data[''] as $key => $value) {
-                if (strpos($key, $domain) === 0) {
+                if (mb_strpos($key, $domain) === 0) {
                     $values[$key] = $value;
                 }
             }
@@ -39,7 +39,7 @@ class SystemConfigServiceMock extends SystemConfigService
         }
 
         foreach ($this->data[$salesChannelId] as $key => $value) {
-            if (strpos($key, $domain) === 0) {
+            if (mb_strpos($key, $domain) === 0) {
                 $values[$key] = $value;
             }
         }
