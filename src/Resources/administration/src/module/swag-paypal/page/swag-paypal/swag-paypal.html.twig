@@ -63,21 +63,23 @@
 
                                 {% block swag_paypal_content_card_channel_config_cards %}
                                     <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
-                                        {% block swag_paypal_content_card_channel_config_credentials_card %}
-                                            <sw-paypal-credentials :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-credentials>
-                                        {% endblock %}
+                                        <div v-if="actualConfigData">
+                                            {% block swag_paypal_content_card_channel_config_credentials_card %}
+                                                <sw-paypal-credentials :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-credentials>
+                                            {% endblock %}
 
-                                        {% block swag_paypal_content_card_channel_config_behaviour %}
-                                            <sw-paypal-behaviour :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-behaviour>
-                                        {% endblock %}
+                                            {% block swag_paypal_content_card_channel_config_behaviour %}
+                                                <sw-paypal-behaviour :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-behaviour>
+                                            {% endblock %}
 
-                                        {% block swag_paypal_content_card_channel_config_express %}
-                                            <sw-paypal-express :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-express>
-                                        {% endblock %}
+                                            {% block swag_paypal_content_card_channel_config_express %}
+                                                <sw-paypal-express :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-express>
+                                            {% endblock %}
 
-                                        {% block swag_paypal_content_card_channel_config_sbp %}
-                                            <sw-paypal-spb :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-spb>
-                                        {% endblock %}
+                                            {% block swag_paypal_content_card_channel_config_sbp %}
+                                                <sw-paypal-spb :actualConfigData="actualConfigData" :allConfigs="allConfigs" :selectedSalesChannelId="selectedSalesChannelId"></sw-paypal-spb>
+                                            {% endblock %}
+                                        </div>
                                     </template>
                                 {% endblock %}
                             </sw-sales-channel-config>

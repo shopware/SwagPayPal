@@ -16,7 +16,6 @@ Component.register('sw-paypal-express', {
             required: true
         },
         selectedSalesChannelId: {
-            type: String,
             required: true
         }
     },

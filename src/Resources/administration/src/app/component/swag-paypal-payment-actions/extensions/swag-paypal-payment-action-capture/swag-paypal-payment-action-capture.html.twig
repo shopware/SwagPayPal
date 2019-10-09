@@ -9,13 +9,12 @@
             </sw-text-field>
         {% endblock %}
         {% block swag_paypal_payment_action_capture_value %}
-            <sw-field type="number"
-                      v-model="captureValue"
-                      :max="maxCaptureValue"
-                      :min="0"
-                      :label="$tc('swag-paypal-payment.captureAction.currentAmount')"
-                      :suffix="currency">
-            </sw-field>
+            <sw-number-field v-model="captureValue"
+                             :max="maxCaptureValue"
+                             :min="0"
+                             :label="$tc('swag-paypal-payment.captureAction.currentAmount')"
+                             :suffix="currency">
+            </sw-number-field>
         {% endblock %}
         {% block swag_paypal_payment_action_capture_is_final_capture %}
             <sw-checkbox-field :label="$tc('swag-paypal-payment.captureAction.isFinal')"

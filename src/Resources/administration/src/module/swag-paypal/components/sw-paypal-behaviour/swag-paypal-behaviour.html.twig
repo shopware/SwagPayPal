@@ -1,5 +1,5 @@
 {% block swag_paypal_content_card_channel_config_behaviour %}
-	<sw-card :title="$tc('swag-paypal.settingForm.behaviour.cardTitle')">
+    <sw-card :title="$tc('swag-paypal.settingForm.behaviour.cardTitle')">
         {% block swag_paypal_content_card_channel_config_behaviour_settings %}
             <div class="swag-paypal-settings-behaviour-field" v-if="actualConfigData">
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_intent %}
@@ -8,7 +8,8 @@
                                         :customInheritationCheckFunction="checkTextFieldInheritance"
                                         :label="$tc('swag-paypal.settingForm.behaviour.intent.label')">
                         <template #content="props">
-                            <sw-single-select :options="intentOptions"
+                            <sw-single-select name="SwagPayPal.settings.intent"
+                                              :options="intentOptions"
                                               labelProperty="name"
                                               valueProperty="id"
                                               @input="props.updateCurrentValue"
@@ -25,15 +26,15 @@
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.submitCart']"
                                         :customInheritationCheckFunction="checkBoolFieldInheritance">
                         <template #content="props">
-                            <sw-field type="switch"
-                                      bordered
-                                      :mapInheritance="props"
-                                      :label="$tc('swag-paypal.settingForm.behaviour.submitCart.label')"
-                                      :helpText="$tc('swag-paypal.settingForm.behaviour.submitCart.helpText')"
-                                      :disabled="props.isInherited"
-                                      :value="props.currentValue"
-                                      @change="props.updateCurrentValue">
-                            </sw-field>
+                            <sw-switch-field name="SwagPayPal.settings.submitCart"
+                                             bordered
+                                             :mapInheritance="props"
+                                             :label="$tc('swag-paypal.settingForm.behaviour.submitCart.label')"
+                                             :helpText="$tc('swag-paypal.settingForm.behaviour.submitCart.helpText')"
+                                             :disabled="props.isInherited"
+                                             :value="props.currentValue"
+                                             @change="props.updateCurrentValue">
+                            </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
@@ -43,25 +44,26 @@
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.brandName']"
                                         :customInheritationCheckFunction="checkTextFieldInheritance">
                         <template #content="props">
-                            <sw-field type="text"
-                                      :mapInheritance="props"
-                                      :label="$tc('swag-paypal.settingForm.behaviour.brandName.label')"
-                                      :helpText="$tc('swag-paypal.settingForm.behaviour.brandName.tooltipText')"
-                                      :disabled="props.isInherited"
-                                      :value="props.currentValue"
-                                      @change="props.updateCurrentValue">
-                            </sw-field>
+                            <sw-text-field name="SwagPayPal.settings.brandName"
+                                           :mapInheritance="props"
+                                           :label="$tc('swag-paypal.settingForm.behaviour.brandName.label')"
+                                           :helpText="$tc('swag-paypal.settingForm.behaviour.brandName.tooltipText')"
+                                           :disabled="props.isInherited"
+                                           :value="props.currentValue"
+                                           @change="props.updateCurrentValue">
+                            </sw-text-field>
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
 
-                {% block swag_paypal_content_card_channel_config_behaviour_settings_landing_page%}
+                {% block swag_paypal_content_card_channel_config_behaviour_settings_landing_page %}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.landingPage']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.landingPage']"
                                         :customInheritationCheckFunction="checkTextFieldInheritance"
                                         :label="$tc('swag-paypal.settingForm.behaviour.landingPage.label')">
                         <template #content="props">
-                            <sw-single-select :options="landingPageOptions"
+                            <sw-single-select name="SwagPayPal.settings.landingPage"
+                                              :options="landingPageOptions"
                                               labelProperty="name"
                                               valueProperty="id"
                                               @input="props.updateCurrentValue"
@@ -78,15 +80,15 @@
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.sendOrderNumber']"
                                         :customInheritationCheckFunction="checkBoolFieldInheritance">
                         <template #content="props">
-                            <sw-field type="switch"
-                                      bordered
-                                      :mapInheritance="props"
-                                      :label="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.label')"
-                                      :helpText="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.helpText')"
-                                      :disabled="props.isInherited"
-                                      :value="props.currentValue"
-                                      @change="props.updateCurrentValue">
-                            </sw-field>
+                            <sw-switch-field name="SwagPayPal.settings.sendOrderNumber"
+                                             bordered
+                                             :mapInheritance="props"
+                                             :label="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.label')"
+                                             :helpText="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.helpText')"
+                                             :disabled="props.isInherited"
+                                             :value="props.currentValue"
+                                             @change="props.updateCurrentValue">
+                            </sw-switch-field>
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
@@ -95,14 +97,14 @@
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.orderNumberPrefix']"
                                         :customInheritationCheckFunction="checkTextFieldInheritance">
                         <template #content="props">
-                            <sw-field type="text"
-                                      :mapInheritance="props"
-                                      :label="$tc('swag-paypal.settingForm.behaviour.orderNumberPrefix.label')"
-                                      :helpText="$tc('swag-paypal.settingForm.behaviour.orderNumberPrefix.tooltipText')"
-                                      :disabled="props.isInherited"
-                                      :value="props.currentValue"
-                                      @change="props.updateCurrentValue">
-                            </sw-field>
+                            <sw-text-field name="SwagPayPal.settings.orderNumberPrefix"
+                                           :mapInheritance="props"
+                                           :label="$tc('swag-paypal.settingForm.behaviour.orderNumberPrefix.label')"
+                                           :helpText="$tc('swag-paypal.settingForm.behaviour.orderNumberPrefix.tooltipText')"
+                                           :disabled="props.isInherited"
+                                           :value="props.currentValue"
+                                           @change="props.updateCurrentValue">
+                            </sw-text-field>
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
