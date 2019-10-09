@@ -13,34 +13,31 @@
             </sw-select-field>
         {% endblock %}
         {% block swag_paypal_payment_action_refund_invoice_number %}
-            <sw-field type="text"
-                      v-model="refundInvoiceNumber"
-                      :label="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.label')"
-                      :placeholder="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.placeholder')">
-            </sw-field>
+            <sw-text-field v-model="refundInvoiceNumber"
+                           :label="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.label')"
+                           :placeholder="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.placeholder')">
+            </sw-text-field>
         {% endblock %}
         {% block swag_paypal_payment_action_refund_reason %}
-            <sw-field type="text"
-                      v-model="refundReason"
-                      :label="$tc('swag-paypal-payment.refundAction.refundReason.label')"
-                      :placeholder="$tc('swag-paypal-payment.refundAction.refundReason.placeholder')">
-            </sw-field>
+            <sw-text-field v-model="refundReason"
+                           :label="$tc('swag-paypal-payment.refundAction.refundReason.label')"
+                           :placeholder="$tc('swag-paypal-payment.refundAction.refundReason.placeholder')">
+            </sw-text-field>
         {% endblock %}
         {% block swag_paypal_payment_action_refund_amount %}
-            <sw-field type="number"
-                      v-model="refundAmount"
-                      :max="refundableAmount"
-                      :min="0"
-                      :label="$tc('swag-paypal-payment.refundAction.refundAmount.label')"
-                      :suffix="selectedCapture.currency">
-            </sw-field>
+            <sw-number-field v-model="refundAmount"
+                             :max="refundableAmount"
+                             :min="0"
+                             :label="$tc('swag-paypal-payment.refundAction.refundAmount.label')"
+                             :suffix="selectedCapture.currency">
+            </sw-number-field>
         {% endblock %}
         {% block swag_paypal_payment_action_refund_description %}
-            <sw-field type="textarea"
-                      v-model="refundDescription"
-                      :placeholder="$tc('swag-paypal-payment.refundAction.refundDescription.placeholder')"
-                      :label="$tc('swag-paypal-payment.refundAction.refundDescription.label')">
-            </sw-field>
+            <sw-textarea-field
+                v-model="refundDescription"
+                :placeholder="$tc('swag-paypal-payment.refundAction.refundDescription.placeholder')"
+                :label="$tc('swag-paypal-payment.refundAction.refundDescription.label')">
+            </sw-textarea-field>
         {% endblock %}
         {% block swag_paypal_payment_action_refund_confirm_button %}
             <template #modal-footer>

@@ -16,7 +16,6 @@ Component.register('sw-paypal-credentials', {
             required: true
         },
         selectedSalesChannelId: {
-            type: String,
             required: true
         }
     },

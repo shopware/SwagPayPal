@@ -13,7 +13,7 @@ export default {
         Mixin.getByName('notification')
     ],
 
-    inject: ['SwagPayPalWebhookRegi sterService', 'SwagPayPalApiCredentialsService'],
+    inject: ['SwagPayPalWebhookRegisterService', 'SwagPayPalApiCredentialsService'],
 
     data() {
         return {
