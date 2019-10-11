@@ -7,8 +7,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class WebhookException extends ShopwareHttpException
 {
-    protected $code = 'SWAG-PAYPAL-WEBHOOK-EXCEPTION';
-
     /**
      * @see WebhookEventTypes
      *
