@@ -224,10 +224,10 @@ class ExpressCheckoutController extends AbstractController
         $criteria->addFilter(
             new EqualsFilter('iso', $code)
         );
-        /** @var CountryEntity$country */
+        /** @var CountryEntity|null $country */
         $country = $this->countryRepo->search($criteria, $context)->first();
 
-        if (!$country instanceof CountryEntity) {
+        if ($country === null) {
             return null;
         }
 
@@ -241,8 +241,12 @@ class ExpressCheckoutController extends AbstractController
             new EqualsFilter('salutationKey', 'not_specified')
         );
 
-        /** @var SalutationEntity $salutation */
+        /** @var SalutationEntity|null $salutation */
         $salutation = $this->salutationRepo->search($criteria, $context)->first();
+
+        if ($salutation === null) {
+            throw new \RuntimeException('No salutation found in Shopware');
+        }
 
         return $salutation->getId();
     }

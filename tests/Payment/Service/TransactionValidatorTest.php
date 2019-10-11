@@ -51,7 +51,7 @@ class TransactionValidatorTest extends TestCase
         static::assertSame($expectedResult, TransactionValidator::validateItemList([$transaction]));
     }
 
-    public function dataProviderTestValidateItemList()
+    public function dataProviderTestValidateItemList(): array
     {
         return [
             [

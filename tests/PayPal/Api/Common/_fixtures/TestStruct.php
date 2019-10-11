@@ -23,8 +23,14 @@ class TestStruct extends PayPalStruct
      */
     protected $foo;
 
+    /**
+     * @var mixed
+     */
     protected $notExistingClass;
 
+    /**
+     * @var mixed
+     */
     protected $notExistingCollectionClass;
 
     protected function setId(string $id): void

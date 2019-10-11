@@ -27,6 +27,9 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
 
     public const WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION = 'webhookIdWithoutTransaction';
 
+    /**
+     * @var array
+     */
     private $data = [];
 
     public function getDefinition(): EntityDefinition
