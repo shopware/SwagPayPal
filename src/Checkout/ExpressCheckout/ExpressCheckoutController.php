@@ -193,9 +193,7 @@ class ExpressCheckoutController extends AbstractController
 
     private function getCustomerDataBagFromPayment(Payment $payment, Context $context): DataBag
     {
-        /** @var Payment\Payer $payer */
-        $payer = $payment->getPayer();
-        $payerInfo = $payer->getPayerInfo();
+        $payerInfo = $payment->getPayer()->getPayerInfo();
         $billingAddress = $payerInfo->getBillingAddress() ?? $payerInfo->getShippingAddress();
         $firstName = $payerInfo->getFirstName();
         $lastName = $payerInfo->getLastName();

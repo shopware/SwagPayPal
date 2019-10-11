@@ -2,6 +2,7 @@
 <psalm
     autoloader="../../../vendor/autoload.php"
     totallyTyped="false"
+    findUnusedVariablesAndParams="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
@@ -13,7 +14,13 @@
             <directory name="../../../platform"/> <!-- would otherwise inspect Shopware -->
         </ignoreFiles>
     </projectFiles>
+
     <issueHandlers>
+        <UnusedMethodCall>
+            <errorLevel type="suppress">
+                <file name="src/Setting/SwagPayPalSettingStructValidator.php"/>
+            </errorLevel>
+        </UnusedMethodCall>
 
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
 

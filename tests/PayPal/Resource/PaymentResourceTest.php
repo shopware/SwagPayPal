@@ -159,11 +159,11 @@ class PaymentResourceTest extends TestCase
         static::assertNotNull($authorization);
         static::assertSame(PaymentStatus::PAYMENT_CAPTURED, $authorization->getState());
 
-        $capture = $authorization = $transaction->getRelatedResources()[1]->getCapture();
+        $capture = $transaction->getRelatedResources()[1]->getCapture();
         static::assertNotNull($capture);
         static::assertSame(PaymentStatus::PAYMENT_PARTIALLY_REFUNDED, $capture->getState());
 
-        $refund = $authorization = $transaction->getRelatedResources()[2]->getRefund();
+        $refund = $transaction->getRelatedResources()[2]->getRefund();
         static::assertNotNull($refund);
         static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $refund->getState());
     }

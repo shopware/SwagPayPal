@@ -120,10 +120,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
     ): array {
         $items = [];
 
-        /** @var LineItem[] $lineItems */
-        $lineItems = $lineItemCollection->getElements();
-
-        foreach ($lineItems as $id => $lineItem) {
+        foreach ($lineItemCollection->getElements() as $lineItem) {
             $price = $lineItem->getPrice();
 
             if ($price === null) {
