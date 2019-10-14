@@ -4,7 +4,6 @@ namespace Swag\PayPal\Test\PayPal\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Refund;
 use Swag\PayPal\PayPal\PaymentStatus;
 use Swag\PayPal\PayPal\Resource\CaptureResource;
@@ -17,7 +16,6 @@ class CaptureResourceTest extends TestCase
     public function testRefund(): void
     {
         $refund = new Refund();
-        $context = Context::createDefaultContext();
         $refundResponse = $this->createCaptureResource()->refund('refundId', $refund, Defaults::SALES_CHANNEL);
 
         static::assertSame(PaymentStatus::PAYMENT_COMPLETED, $refundResponse->getState());

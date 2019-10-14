@@ -29,6 +29,9 @@ class ItemList extends PayPalStruct
      */
     protected $shippingPhoneNumber;
 
+    /**
+     * @return Item[]
+     */
     public function getItems(): array
     {
         return $this->items;

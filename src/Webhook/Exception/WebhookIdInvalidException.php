@@ -7,8 +7,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class WebhookIdInvalidException extends ShopwareHttpException
 {
-    protected $code = 'SWAG-PAYPAL-WEBHOOK-ID-INVALID-EXCEPTION';
-
     public function __construct(string $webhookId)
     {
         parent::__construct('Webhook with ID "{{ webhookId }}" is invalid', ['webhookId' => $webhookId]);

@@ -4,7 +4,6 @@ namespace Swag\PayPal\Test\PayPal\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Resource\AuthorizationResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -17,7 +16,6 @@ class AuthorizationResourceTest extends TestCase
     public function testCapture(): void
     {
         $capture = new Capture();
-        $context = Context::createDefaultContext();
         $captureResponse = $this->createAuthorizationResource()->capture(
             'captureId',
             $capture,
@@ -34,7 +32,6 @@ class AuthorizationResourceTest extends TestCase
 
     public function testVoid(): void
     {
-        $context = Context::createDefaultContext();
         $voidResponse = $this->createAuthorizationResource()->void('voidId', Defaults::SALES_CHANNEL);
 
         $void = json_encode($voidResponse);

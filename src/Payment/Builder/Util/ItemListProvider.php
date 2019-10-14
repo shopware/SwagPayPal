@@ -34,10 +34,7 @@ class ItemListProvider
             throw new InvalidOrderException($order->getId());
         }
 
-        /** @var OrderLineItemEntity[] $lineItems */
-        $lineItems = $order->getLineItems()->getElements();
-
-        foreach ($lineItems as $id => $lineItem) {
+        foreach ($order->getLineItems()->getElements() as $lineItem) {
             $price = $lineItem->getPrice();
 
             if ($price === null) {

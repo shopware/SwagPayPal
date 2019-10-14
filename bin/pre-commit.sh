@@ -32,6 +32,7 @@ then
 
     php "`dirname \"$0\"`"/../../bin/phpstan-config-generator.php
     php ../../../dev-ops/analyze/vendor/bin/phpstan analyze --no-progress --configuration phpstan.neon --autoload-file="$AUTOLOAD_FILE" ${PHP_FILES}
+    php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.xml --show-info=false ${PHP_FILES}
 fi
 
 UNSTAGED_FILES="$(git diff --name-only -- ${PHP_FILES} ${JS_FILES})"

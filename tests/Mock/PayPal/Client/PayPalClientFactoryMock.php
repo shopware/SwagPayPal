@@ -11,13 +11,14 @@ use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 
 class PayPalClientFactoryMock extends PayPalClientFactory
 {
-    public const THROW_EXCEPTION = 'throwException';
-
     /**
      * @var PayPalClientMock
      */
     private $client;
 
+    /**
+     * @var bool
+     */
     private $throwException = false;
 
     public function enableException(): void

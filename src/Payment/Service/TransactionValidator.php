@@ -3,7 +3,6 @@
 namespace Swag\PayPal\Payment\Service;
 
 use Swag\PayPal\PayPal\Api\Payment\Transaction;
-use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
 
 class TransactionValidator
 {
@@ -17,7 +16,6 @@ class TransactionValidator
     {
         $transactionValid = [];
 
-        /** @var Transaction $transaction */
         foreach ($transactions as $transaction) {
             $itemList = $transaction->getItemList();
 
@@ -31,7 +29,6 @@ class TransactionValidator
 
             $itemPrices = [];
             $itemTaxes = [];
-            /** @var Item $item */
             foreach ($itemList->getItems() as $item) {
                 $quantity = $item->getQuantity();
 

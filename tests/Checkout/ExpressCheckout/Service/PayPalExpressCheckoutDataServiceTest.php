@@ -168,7 +168,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertStringContainsString('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());
     }
 
-    public function dataProviderTestGetExpressCheckoutButtonDataWithCredentials()
+    public function dataProviderTestGetExpressCheckoutButtonDataWithCredentials(): array
     {
         return [
             [

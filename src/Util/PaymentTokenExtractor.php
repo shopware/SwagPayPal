@@ -3,7 +3,6 @@
 namespace Swag\PayPal\Util;
 
 use Swag\PayPal\PayPal\Api\Payment;
-use Swag\PayPal\PayPal\Api\Payment\Link;
 
 class PaymentTokenExtractor
 {
@@ -11,7 +10,6 @@ class PaymentTokenExtractor
     {
         $token = '';
 
-        /** @var Link $link */
         foreach ($payment->getLinks() as $link) {
             if (!($link->getRel() === 'approval_url')) {
                 continue;

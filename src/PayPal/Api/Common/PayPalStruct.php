@@ -37,7 +37,6 @@ abstract class PayPalStruct implements \JsonSerializable
             }
 
             $arrayWithToManyAssociations = [];
-            /** @var array $value */
             foreach ($value as $toManyAssociation) {
                 if ($toManyAssociation === null) {
                     continue;

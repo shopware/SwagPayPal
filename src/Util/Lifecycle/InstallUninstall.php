@@ -256,10 +256,10 @@ class InstallUninstall
             new EqualsFilter('iso3', $germanIso3)
         );
 
-        /** @var CountryEntity $germanCountry */
+        /** @var CountryEntity|null $germanCountry */
         $germanCountry = $this->countryRepository->search($criteria, $context)->first();
 
-        if (!($germanCountry instanceof CountryEntity)) {
+        if ($germanCountry === null) {
             throw new CountryNotFoundException($germanIso3);
         }
 

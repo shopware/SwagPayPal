@@ -37,15 +37,10 @@ class WebhookServiceTest extends TestCase
      */
     private $orderTransactionRepo;
 
-    /**
-     * @var DefinitionInstanceRegistryMock
-     */
-    private $definitionRegistry;
-
     protected function setUp(): void
     {
-        $this->definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
-        $this->orderTransactionRepo = $this->definitionRegistry->getRepository(
+        $definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
+        $this->orderTransactionRepo = $definitionRegistry->getRepository(
             (new OrderTransactionDefinition())->getEntityName()
         );
     }
@@ -151,7 +146,7 @@ class WebhookServiceTest extends TestCase
         static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
     }
 
-    private function createSettingsService(?SwagPayPalSettingStruct $settings = null)
+    private function createSettingsService(?SwagPayPalSettingStruct $settings = null): SettingsServiceMock
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
 

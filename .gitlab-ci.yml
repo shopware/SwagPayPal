@@ -29,10 +29,9 @@ PHP analyze:
     script:
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal
+        - php dev-ops/analyze/vendor/bin/php-cs-fixer fix --config=vendor/shopware/platform/.php_cs.dist --dry-run -vvv --allow-risky=yes --format=junit custom/plugins/SwagPayPal | tee php-cs-fixer.xml
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - bin/static-analyze.sh
-        - cd $CI_PROJECT_DIR/development
-        - php dev-ops/analyze/vendor/bin/php-cs-fixer fix --config=vendor/shopware/platform/.php_cs.dist --dry-run -vvv --allow-risky=yes --format=junit custom/plugins/SwagPayPal | tee php-cs-fixer.xml
     artifacts:
         reports:
             junit: development/php-cs-fixer.xml

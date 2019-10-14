@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<psalm
+    autoloader="../../../vendor/autoload.php"
+    totallyTyped="false"
+    findUnusedVariablesAndParams="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <directory name="src"/>
+        <directory name="tests"/>
+        <ignoreFiles>
+            <directory name="../../../platform"/> <!-- would otherwise inspect Shopware -->
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <UnusedMethodCall>
+            <errorLevel type="suppress">
+                <file name="src/Setting/SwagPayPalSettingStructValidator.php"/>
+            </errorLevel>
+        </UnusedMethodCall>
+
+        <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
+
+        <DeprecatedMethod errorLevel="info"/>
+        <DeprecatedTrait errorLevel="info"/>
+
+        <InternalMethod errorLevel="info"/>
+
+        <PropertyNotSetInConstructor errorLevel="info"/>
+        <MissingConstructor errorLevel="info"/>
+        <MissingParamType errorLevel="info"/>
+
+        <RedundantCondition errorLevel="info"/>
+
+        <RedundantConditionGivenDocblockType errorLevel="info"/>
+
+        <UnresolvableInclude errorLevel="info"/>
+
+        <InvalidStringClass errorLevel="info"/>
+
+        <!-- level 4 issues - points to possible deficiencies in logic, higher false-positives -->
+
+        <TypeCoercion errorLevel="info"/>
+        <PossiblyFalseArgument errorLevel="info"/>
+        <PossiblyFalseOperand errorLevel="info"/>
+        <PossiblyNullArgument errorLevel="info"/>
+        <PossiblyNullArrayAccess errorLevel="info"/>
+        <PossiblyNullReference errorLevel="info"/>
+        <PossiblyUndefinedVariable errorLevel="info"/>
+
+        <!-- level 5 issues - should be avoided at mosts costs... -->
+
+        <TypeDoesNotContainType errorLevel="info"/>
+
+        <!-- level 6 issues - really bad things -->
+
+        <InvalidReturnType errorLevel="info"/>
+
+    </issueHandlers>
+</psalm>

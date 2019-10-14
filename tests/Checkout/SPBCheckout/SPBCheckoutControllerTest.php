@@ -24,7 +24,6 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\RouterInterface;
 
 class SPBCheckoutControllerTest extends TestCase
 {
@@ -134,17 +133,13 @@ class SPBCheckoutControllerTest extends TestCase
         $settings->setClientSecret('testClientSecret');
 
         $settingsService = new SettingsServiceMock($settings);
-        /** @var LocaleCodeProvider $localeCodeProvider */
-        $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
-        /** @var RouterInterface $router */
-        $router = $this->getContainer()->get('router');
         /** @var EntityRepositoryInterface $salesChannelRepo */
         $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
 
         $cartPaymentBuilder = new CartPaymentBuilder(
             $settingsService,
             $salesChannelRepo,
-            $localeCodeProvider
+            $this->getContainer()->get(LocaleCodeProvider::class)
         );
 
         return new SPBCheckoutController(

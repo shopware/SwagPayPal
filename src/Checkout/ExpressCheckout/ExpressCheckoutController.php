@@ -193,9 +193,7 @@ class ExpressCheckoutController extends AbstractController
 
     private function getCustomerDataBagFromPayment(Payment $payment, Context $context): DataBag
     {
-        /** @var Payment\Payer $payer */
-        $payer = $payment->getPayer();
-        $payerInfo = $payer->getPayerInfo();
+        $payerInfo = $payment->getPayer()->getPayerInfo();
         $billingAddress = $payerInfo->getBillingAddress() ?? $payerInfo->getShippingAddress();
         $firstName = $payerInfo->getFirstName();
         $lastName = $payerInfo->getLastName();
@@ -226,10 +224,10 @@ class ExpressCheckoutController extends AbstractController
         $criteria->addFilter(
             new EqualsFilter('iso', $code)
         );
-        /** @var CountryEntity$country */
+        /** @var CountryEntity|null $country */
         $country = $this->countryRepo->search($criteria, $context)->first();
 
-        if (!$country instanceof CountryEntity) {
+        if ($country === null) {
             return null;
         }
 
@@ -243,8 +241,12 @@ class ExpressCheckoutController extends AbstractController
             new EqualsFilter('salutationKey', 'not_specified')
         );
 
-        /** @var SalutationEntity $salutation */
+        /** @var SalutationEntity|null $salutation */
         $salutation = $this->salutationRepo->search($criteria, $context)->first();
+
+        if ($salutation === null) {
+            throw new \RuntimeException('No salutation found in Shopware');
+        }
 
         return $salutation->getId();
     }
