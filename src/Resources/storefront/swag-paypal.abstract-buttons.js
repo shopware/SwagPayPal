@@ -58,6 +58,10 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             config += `&intent=${this.options.intent}`;
         }
 
+        if (this.options.useAlternativePaymentMethods !== undefined && !this.options.useAlternativePaymentMethods) {
+            config += '&disable-funding=credit,card,sepa,bancontact,eps,giropay,ideal,mybank,sofort';
+        }
+
         config += '&components=marks,buttons';
 
         return config;
