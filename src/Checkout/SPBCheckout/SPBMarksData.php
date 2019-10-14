@@ -16,10 +16,16 @@ class SPBMarksData extends Struct
      */
     protected $paymentMethodId;
 
-    public function __construct(string $clientId, string $paymentMethodId)
+    /**
+     * @var bool
+     */
+    protected $useAlternativePaymentMethods;
+
+    public function __construct(string $clientId, string $paymentMethodId, bool $useAlternativePaymentMethods)
     {
         $this->clientId = $clientId;
         $this->paymentMethodId = $paymentMethodId;
+        $this->useAlternativePaymentMethods = $useAlternativePaymentMethods;
     }
 
     public function getClientId(): string
@@ -30,5 +36,10 @@ class SPBMarksData extends Struct
     public function getPaymentMethodId(): string
     {
         return $this->paymentMethodId;
+    }
+
+    public function isUseAlternativePaymentMethods(): bool
+    {
+        return $this->useAlternativePaymentMethods;
     }
 }

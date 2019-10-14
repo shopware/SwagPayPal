@@ -7,7 +7,14 @@ export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
          *
          * @type string
          */
-        clientId: ''
+        clientId: '',
+
+        /**
+         * This option toggles if credit card and ELV should be shown
+         *
+         * @type boolean
+         */
+        useAlternativePaymentMethods: true
     };
 
     init() {
