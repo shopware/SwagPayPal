@@ -140,11 +140,14 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
     ): Item {
         $item = new Item();
         $item->setName((string) $lineItem->getLabel());
-        $item->setSku($lineItem->getPayload()['productNumber']);
         $item->setCurrency($currency);
         $item->setQuantity($lineItem->getQuantity());
         $item->setPrice($this->priceFormatter->formatPrice($price->getTotalPrice() / $lineItem->getQuantity()));
         $item->setTax($this->priceFormatter->formatPrice(0));
+
+        if ($lineItem->hasPayloadValue('productNumber')) {
+            $item->setSku($lineItem->getPayloadValue('productNumber'));
+        }
 
         return $item;
     }
