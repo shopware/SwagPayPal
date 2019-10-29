@@ -5,6 +5,7 @@ namespace Swag\PayPal\PayPal\Client;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Monolog\Logger;
+use Swag\PayPal\Payment\Exception\PayPalApiException;
 use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 use Swag\PayPal\PayPal\Api\OAuthCredentials;
 use Swag\PayPal\PayPal\BaseURL;
@@ -67,6 +68,9 @@ class PayPalClient
         ]);
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function sendPostRequest(string $resourceUri, PayPalStruct $data): array
     {
         $options = [
@@ -76,19 +80,24 @@ class PayPalClient
         try {
             $response = $this->client->post($resourceUri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->logger->error($requestException->getMessage(), [$resourceUri, $data]);
+            $this->handleRequestException($requestException, $resourceUri, $data);
+
             throw $requestException;
         }
 
         return $this->decodeJsonResponse($response);
     }
 
+    /**
+     * @throws PayPalApiException
+     */
     public function sendGetRequest(string $resourceUri): array
     {
         try {
             $response = $this->client->get($resourceUri)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->logger->error($requestException->getMessage(), [$resourceUri]);
+            $this->handleRequestException($requestException, $resourceUri, null);
+
             throw $requestException;
         }
 
@@ -97,6 +106,8 @@ class PayPalClient
 
     /**
      * @param PayPalStruct[] $data
+     *
+     * @throws PayPalApiException
      */
     public function sendPatchRequest(string $resourceUri, array $data): array
     {
@@ -107,7 +118,8 @@ class PayPalClient
         try {
             $response = $this->client->patch($resourceUri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->logger->error($requestException->getMessage(), [$resourceUri, $data]);
+            $this->handleRequestException($requestException, $resourceUri, $data);
+
             throw $requestException;
         }
 
@@ -133,5 +145,22 @@ class PayPalClient
     private function decodeJsonResponse(string $response): array
     {
         return json_decode($response, true);
+    }
+
+    /**
+     * @param PayPalStruct|PayPalStruct[]|null $data
+     *
+     * @throws PayPalApiException
+     */
+    private function handleRequestException(RequestException $requestException, string $resourceUri, $data): void
+    {
+        $this->logger->error($requestException->getMessage(), [$resourceUri, $data]);
+
+        $exceptionResponse = $requestException->getResponse();
+        if ($exceptionResponse) {
+            $error = json_decode($exceptionResponse->getBody()->getContents(), true);
+
+            throw new PayPalApiException($error['name'], $error['message']);
+        }
     }
 }

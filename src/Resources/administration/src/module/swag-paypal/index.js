@@ -1,4 +1,4 @@
-import paypalSettings from './page/swag-paypal';
+import './page/swag-paypal';
 import './extension/sw-settings-index';
 import './components/sw-paypal-credentials';
 import './components/sw-paypal-express';
@@ -27,7 +27,7 @@ Module.register('swag-paypal', {
 
     routes: {
         index: {
-            component: paypalSettings,
+            component: 'swag-paypal',
             path: 'index',
             meta: {
                 parentPath: 'sw.settings.index'

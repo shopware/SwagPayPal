@@ -141,11 +141,12 @@ Component.register('swag-paypal-payment-action-refund', {
                     this.$router.replace(`${this.$route.path}?hash=${utils.createId()}`);
                 });
             }).catch((errorResponse) => {
-                this.createErrorNotification({
+                this.createNotificationError({
                     title: errorResponse.title,
                     message: errorResponse.message,
                     autoClose: false
                 });
+                this.isLoading = false;
             });
         }
     }
