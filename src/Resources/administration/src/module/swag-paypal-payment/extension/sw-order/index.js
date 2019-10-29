@@ -15,18 +15,7 @@ Component.override('sw-order-detail', {
         };
     },
 
-    metaInfo() {
-        return {
-            // ToDo with NEXT-3911: Replace with $createTitle(this.identifier);
-            title: `${this.identifier} | ${this.$tc('swag-paypal-payment.general.title')} | ${this.$tc('global.sw-admin-menu.textShopwareAdmin')}`
-        };
-    },
-
     computed: {
-        identifier() {
-            return this.order !== null ? this.order.orderNumber : '';
-        },
-
         paymentMethodStore() {
             return State.getStore('payment_method');
         },
@@ -39,11 +28,6 @@ Component.override('sw-order-detail', {
         showTabs() {
             return true;
         }
-    },
-
-    created() {
-        // ToDo with NEXT-3911: Remove this Quickfix
-        this.$router.push({ name: 'sw.order.detail', params: { id: this.orderId } });
     },
 
     watch: {

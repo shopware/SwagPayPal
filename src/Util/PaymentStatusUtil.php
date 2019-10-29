@@ -74,7 +74,7 @@ class PaymentStatusUtil
     {
         $transaction = $this->getOrderTransaction($orderId, $context);
         $amountToCapture = round((float) $request->request->get(PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_AMOUNT), 2);
-        $isFinalCapture = $request->request->getBoolean(PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_IS_FINAL, false);
+        $isFinalCapture = $request->request->getBoolean(PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_IS_FINAL);
 
         if ($isFinalCapture || $amountToCapture === $transaction->getAmount()->getTotalPrice()) {
             $this->orderTransactionStateHandler->pay($transaction->getId(), $context);

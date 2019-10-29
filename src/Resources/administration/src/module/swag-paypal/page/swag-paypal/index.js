@@ -4,9 +4,7 @@ import constants from './swag-paypal-consts';
 
 const { Mixin } = Shopware;
 
-export default {
-    name: 'swag-paypal',
-
+Shopware.Component.register('swag-paypal', {
     template,
 
     mixins: [
@@ -186,4 +184,4 @@ export default {
             }
         }
     }
-};
+});
