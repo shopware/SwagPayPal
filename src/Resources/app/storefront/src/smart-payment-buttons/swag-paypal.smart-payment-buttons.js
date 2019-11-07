@@ -1,7 +1,7 @@
 /* eslint-disable import/no-unresolved */
 
-import HttpClient from 'src/script/service/http-client.service';
-import DomAccess from 'src/script/helper/dom-access.helper';
+import HttpClient from 'src/service/http-client.service';
+import DomAccess from 'src/helper/dom-access.helper';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractButtons {

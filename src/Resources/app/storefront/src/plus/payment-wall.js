@@ -1,8 +1,8 @@
 /* eslint-disable import/no-unresolved */
 
-import Plugin from 'src/script/plugin-system/plugin.class';
-import DomAccess from 'src/script/helper/dom-access.helper';
-import HttpClient from 'src/script/service/http-client.service';
+import Plugin from 'src/plugin-system/plugin.class';
+import DomAccess from 'src/helper/dom-access.helper';
+import HttpClient from 'src/service/http-client.service';
 
 export default class SwagPayPalPlusPaymentWall extends Plugin {
     static options = {

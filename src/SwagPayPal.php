@@ -50,19 +50,6 @@ class SwagPayPal extends Plugin
         // $loader->load('plus.xml');
     }
 
-    public function getViewPaths(): array
-    {
-        $viewPaths = parent::getViewPaths();
-        $viewPaths[] = 'Resources/views/storefront';
-
-        return $viewPaths;
-    }
-
-    public function getStorefrontScriptPath(): string
-    {
-        return 'Resources/dist/storefront/js';
-    }
-
     public function install(InstallContext $installContext): void
     {
         /** @var EntityRepositoryInterface $systemConfigRepository */
@@ -84,7 +71,7 @@ class SwagPayPal extends Plugin
             $countryRepository,
             $this->container->get(PluginIdProvider::class),
             $this->container->get(SystemConfigService::class),
-            $this->getClassName()
+            get_class($this)
         ))->install($installContext->getContext());
 
         parent::install($installContext);
@@ -119,7 +106,7 @@ class SwagPayPal extends Plugin
             $countryRepository,
             $this->container->get(PluginIdProvider::class),
             $this->container->get(SystemConfigService::class),
-            $this->getClassName()
+            get_class($this)
         ))->uninstall($context);
 
         parent::uninstall($uninstallContext);
