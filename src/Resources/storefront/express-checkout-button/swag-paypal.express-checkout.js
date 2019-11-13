@@ -1,11 +1,10 @@
 /* eslint-disable import/no-unresolved */
 
 import HttpClient from 'src/script/service/http-client.service';
+import DomAccess from 'src/script/helper/dom-access.helper';
 import ElementLoadingIndicatorUtil from 'src/script/utility/loading-indicator/element-loading-indicator.util';
 import FormSerializeUtil from 'src/script/utility/form/form-serialize.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
-
-const OFF_CANVAS_CART_CLOSE_BUTTON_SELECTOR = '.btn.btn-light.btn-block.offcanvas-close.js-offcanvas-close.sticky-top';
 
 export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractButtons {
     static options = {
@@ -176,6 +175,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
     addProductToCart() {
         const formattedLineItems = this._formatLineItems();
+        formattedLineItems._csrf_token = DomAccess.getDataAttribute(this.el, 'swag-pay-pal-express-button-add-line-item-token');
 
         return new Promise(resolve => {
             this._client.get(this.options.createNewCartUrl, () => {
@@ -217,13 +217,10 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     }
 
     onApprove(data, actions) {
-        const offCanvasCloseButton = document.querySelector(OFF_CANVAS_CART_CLOSE_BUTTON_SELECTOR);
-        const requestPayload = { paymentId: data.paymentID };
-
-        // If the offCanvasCartCloseButton is visible, the offCanvasCart is closed by clicking the element
-        if (offCanvasCloseButton) {
-            offCanvasCloseButton.click();
-        }
+        const requestPayload = {
+            paymentId: data.paymentID,
+            _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-express-button-approve-payment-token')
+        };
 
         // Add a loading indicator to the body to prevent the user breaking the checkout process
         ElementLoadingIndicatorUtil.create(document.body);
