@@ -98,7 +98,7 @@ Component.register('swag-paypal-payment-detail', {
             const orderCriteria = new Criteria(1, 1);
             orderCriteria.addAssociation('transactions');
 
-            orderRepository.get(orderId, Context.Api, orderCriteria).then((order) => {
+            orderRepository.get(orderId, Context.api, orderCriteria).then((order) => {
                 this.order = order;
                 const paypalPaymentId = order.transactions[0].customFields.swag_paypal_transaction_id;
                 this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId).then((payment) => {
