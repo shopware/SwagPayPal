@@ -218,8 +218,10 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
             return;
         }
 
+        const csrfToken = { _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-plus-payment-wall-checkout-order-token') };
+
         this._client = new HttpClient(window.accessKey, window.contextToken);
-        this._client.post(this.options.checkoutOrderUrl, JSON.stringify({}), this.afterCreateOrder.bind(this));
+        this._client.post(this.options.checkoutOrderUrl, JSON.stringify(csrfToken), this.afterCreateOrder.bind(this));
     }
 
     /**

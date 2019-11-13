@@ -17,6 +17,7 @@
     {% elseif spbCheckoutButtonData %}
         <div class="swag-paypal__smart-buttons"
              data-swag-paypal-smart-payment-buttons="true"
+             data-swag-pay-pal-smart-payment-buttons-create-payment-token="{{ sw_csrf('sales-channel-api.action.paypal.spb.create_payment', {"mode": "token"}) }}"
              data-swag-pay-pal-smart-payment-buttons-options="{{ spbCheckoutButtonData|json_encode }}">
         </div>
     {% elseif payPalPayerId and payPalPaymentId %}
