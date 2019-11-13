@@ -39,7 +39,7 @@ Component.override('sw-order-detail', {
                 const orderCriteria = new Criteria(1, 1);
                 orderCriteria.addAssociation('transactions');
 
-                orderRepository.get(this.orderId, Context.Api, orderCriteria).then((order) => {
+                orderRepository.get(this.orderId, Context.api, orderCriteria).then((order) => {
                     if (order.transactions.length <= 0 ||
                         !order.transactions[0].paymentMethodId
                     ) {
@@ -64,7 +64,7 @@ Component.override('sw-order-detail', {
                 return;
             }
             const paymentMethodRepository = this.repositoryFactory.create('payment_method');
-            paymentMethodRepository.get(paymentMethodId, this.apiContext).then(
+            paymentMethodRepository.get(paymentMethodId, Context.api).then(
                 (paymentMethod) => {
                     this.isPayPalPayment = paymentMethod.formattedHandlerIdentifier === paypalFormattedHandlerIdentifier ||
                         paymentMethod.formattedHandlerIdentifier === paypalPuiFormattedHandlerIdentifier;
