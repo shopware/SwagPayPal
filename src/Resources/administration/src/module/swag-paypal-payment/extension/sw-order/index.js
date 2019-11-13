@@ -1,6 +1,6 @@
 import template from './sw-order.html.twig';
 
-const { Component, State } = Shopware;
+const { Component, Context } = Shopware;
 const Criteria = Shopware.Data.Criteria;
 
 const paypalFormattedHandlerIdentifier = 'handler_swag_paypalpaymenthandler';
@@ -16,10 +16,6 @@ Component.override('sw-order-detail', {
     },
 
     computed: {
-        paymentMethodStore() {
-            return State.getStore('payment_method');
-        },
-
         isEditable() {
             return !this.isPayPalPayment || this.$route.name !== 'swag.paypal.payment.detail';
         },
@@ -43,7 +39,7 @@ Component.override('sw-order-detail', {
                 const orderCriteria = new Criteria(1, 1);
                 orderCriteria.addAssociation('transactions');
 
-                orderRepository.get(this.orderId, this.context, orderCriteria).then((order) => {
+                orderRepository.get(this.orderId, Context.Api, orderCriteria).then((order) => {
                     if (order.transactions.length <= 0 ||
                         !order.transactions[0].paymentMethodId
                     ) {
@@ -67,7 +63,8 @@ Component.override('sw-order-detail', {
             if (!paymentMethodId) {
                 return;
             }
-            this.paymentMethodStore.getByIdAsync(paymentMethodId).then(
+            const paymentMethodRepository = this.repositoryFactory.create('payment_method');
+            paymentMethodRepository.get(paymentMethodId, this.apiContext).then(
                 (paymentMethod) => {
                     this.isPayPalPayment = paymentMethod.formattedHandlerIdentifier === paypalFormattedHandlerIdentifier ||
                         paymentMethod.formattedHandlerIdentifier === paypalPuiFormattedHandlerIdentifier;

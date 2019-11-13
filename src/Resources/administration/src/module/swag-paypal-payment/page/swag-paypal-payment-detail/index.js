@@ -2,12 +2,16 @@ import '../../../../app/component/swag-paypal-payment-actions';
 import template from './swag-paypal-payment-detail.html.twig';
 import './swag-paypal-payment-detail.scss';
 
-const { Component, Mixin, Filter, State } = Shopware;
+const { Component, Mixin, Filter, Context } = Shopware;
+const Criteria = Shopware.Data.Criteria;
 
 Component.register('swag-paypal-payment-detail', {
     template,
 
-    inject: ['SwagPayPalPaymentService'],
+    inject: [
+        'SwagPayPalPaymentService',
+        'repositoryFactory'
+    ],
 
     mixins: [
         Mixin.getByName('notification')
@@ -35,10 +39,6 @@ Component.register('swag-paypal-payment-detail', {
     computed: {
         dateFilter() {
             return Filter.getByName('date');
-        },
-
-        orderStore() {
-            return State.getStore('order');
         },
 
         relatedResourceColumns() {
@@ -94,27 +94,28 @@ Component.register('swag-paypal-payment-detail', {
     methods: {
         createdComponent() {
             const orderId = this.$route.params.id;
+            const orderRepository = this.repositoryFactory.create('order');
+            const orderCriteria = new Criteria(1, 1);
+            orderCriteria.addAssociation('transactions');
 
-            this.orderStore.getByIdAsync(orderId).then((order) => {
+            orderRepository.get(orderId, Context.Api, orderCriteria).then((order) => {
                 this.order = order;
-                order.getAssociation('transactions').getList({ page: 1, limit: 1 }).then((orderTransactions) => {
-                    const paypalPaymentId = orderTransactions.items[0].customFields.swag_paypal_transaction_id;
-                    this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId).then((payment) => {
-                        this.paymentResource = payment;
-                        this.setRelatedResources();
-                        this.createDateTime = this.formatDate(this.paymentResource.create_time);
-                        this.updateDateTime = this.formatDate(this.paymentResource.update_time);
-                        this.currency = this.paymentResource.transactions[0].amount.currency;
-                        this.amount = this.paymentResource.transactions[0].amount;
-                        this.isLoading = false;
-                    }).catch((errorResponse) => {
-                        this.createNotificationError({
-                            title: this.$tc('swag-paypal-payment.paymentDetails.error.title'),
-                            message: errorResponse.message,
-                            autoClose: false
-                        });
-                        this.isLoading = false;
+                const paypalPaymentId = order.transactions[0].customFields.swag_paypal_transaction_id;
+                this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId).then((payment) => {
+                    this.paymentResource = payment;
+                    this.setRelatedResources();
+                    this.createDateTime = this.formatDate(this.paymentResource.create_time);
+                    this.updateDateTime = this.formatDate(this.paymentResource.update_time);
+                    this.currency = this.paymentResource.transactions[0].amount.currency;
+                    this.amount = this.paymentResource.transactions[0].amount;
+                    this.isLoading = false;
+                }).catch((errorResponse) => {
+                    this.createNotificationError({
+                        title: this.$tc('swag-paypal-payment.paymentDetails.error.title'),
+                        message: errorResponse.message,
+                        autoClose: false
                     });
+                    this.isLoading = false;
                 });
             });
         },
