@@ -1,9 +1,9 @@
 import SwagPayPalWebhookRegisterService
-    from '../../src/core/service/api/swag-paypal-webhook-register.service';
+    from '../core/service/api/swag-paypal-webhook-register.service';
 import SwagPayPalApiCredentialsService
-    from '../../src/core/service/api/swag-paypal-api-credentials.service';
+    from '../core/service/api/swag-paypal-api-credentials.service';
 import SwagPayPalPaymentService
-    from '../../src/core/service/api/swag-paypal-payment.service';
+    from '../core/service/api/swag-paypal-payment.service';
 
 const { Application } = Shopware;
 

@@ -9,11 +9,13 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\Tax\TaxDefinition;
 use Shopware\Storefront\Page\Account\Login\AccountLoginPage;
 use Shopware\Storefront\Page\Account\Login\AccountLoginPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
@@ -305,6 +307,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     private function createSalesChannelContext(bool $withItemList = false): SalesChannelContext
     {
+        $taxId = $this->createTaxId(Context::createDefaultContext());
         $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
 
         $salesChannelContext = $salesChannelContextFactory->create(
@@ -327,7 +330,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
                         'name' => 'amazing brand',
                     ],
                     'productNumber' => 'P1234',
-                    'tax' => ['id' => Uuid::randomHex(), 'taxRate' => 19, 'name' => 'tax'],
+                    'tax' => ['id' => $taxId],
                     'price' => [
                         [
                             'currencyId' => Defaults::CURRENCY,
@@ -363,5 +366,23 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $salesChannelEntity->setId(Defaults::SALES_CHANNEL);
 
         return $salesChannelContext;
+    }
+
+    private function createTaxId(Context $context): string
+    {
+        /** @var EntityRepositoryInterface $taxRepo */
+        $taxRepo = $this->getContainer()->get(TaxDefinition::ENTITY_NAME . '.repository');
+        $taxId = Uuid::randomHex();
+        $taxData = [
+            [
+                'id' => $taxId,
+                'taxRate' => 19.0,
+                'name' => 'testTaxRate',
+            ],
+        ];
+
+        $taxRepo->create($taxData, $context);
+
+        return $taxId;
     }
 }

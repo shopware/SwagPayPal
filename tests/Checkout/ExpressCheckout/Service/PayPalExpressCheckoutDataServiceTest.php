@@ -16,6 +16,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\Tax\TaxDefinition;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\PayPal\PaymentIntent;
@@ -95,6 +96,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         $activeBillingAddress->setCountry($country);
 
         $customerId = $this->getCustomerId();
+        $taxId = $this->createTaxId(Context::createDefaultContext());
         $salesChannelContext = $this->salesChannelContextFactory->create(
             'token',
             Defaults::SALES_CHANNEL,
@@ -103,7 +105,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             ]
         );
 
-        $productId = $this->getProductId($salesChannelContext->getContext());
+        $productId = $this->getProductId($salesChannelContext->getContext(), $taxId);
         $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
 
         $cart = $this->cartService->createNew($salesChannelContext->getToken());
@@ -123,8 +125,9 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
      */
     public function testGetExpressCheckoutButtonDataWithCredentials(bool $withSettingsLocale): void
     {
+        $taxId = $this->createTaxId(Context::createDefaultContext());
         $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);
-        $productId = $this->getProductId($salesChannelContext->getContext());
+        $productId = $this->getProductId($salesChannelContext->getContext(), $taxId);
         $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
 
         $cart = $this->cartService->createNew($salesChannelContext->getToken());
@@ -180,7 +183,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         ];
     }
 
-    private function getProductId(Context $context): string
+    private function getProductId(Context $context, string $taxId): string
     {
         $id = Uuid::randomHex();
 
@@ -198,7 +201,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             ],
             'price' => [['currencyId' => Defaults::CURRENCY, 'gross' => 15, 'net' => 10, 'linked' => false]],
             'manufacturer' => ['name' => 'test'],
-            'tax' => ['name' => 'test', 'taxRate' => 15],
+            'tax' => ['id' => $taxId],
         ];
 
         $this->productRepository->create([$data], $context);
@@ -243,5 +246,23 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         $this->customerRepository->create([$customer], Context::createDefaultContext());
 
         return $id;
+    }
+
+    private function createTaxId(Context $context): string
+    {
+        /** @var EntityRepositoryInterface $taxRepo */
+        $taxRepo = $this->getContainer()->get(TaxDefinition::ENTITY_NAME . '.repository');
+        $taxId = Uuid::randomHex();
+        $taxData = [
+            [
+                'id' => $taxId,
+                'taxRate' => 19.0,
+                'name' => 'testTaxRate',
+            ],
+        ];
+
+        $taxRepo->create($taxData, $context);
+
+        return $taxId;
     }
 }

@@ -1,9 +1,9 @@
 /* eslint-disable import/no-unresolved */
 
-import HttpClient from 'src/script/service/http-client.service';
-import DomAccess from 'src/script/helper/dom-access.helper';
-import ElementLoadingIndicatorUtil from 'src/script/utility/loading-indicator/element-loading-indicator.util';
-import FormSerializeUtil from 'src/script/utility/form/form-serialize.util';
+import HttpClient from 'src/service/http-client.service';
+import DomAccess from 'src/helper/dom-access.helper';
+import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
+import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractButtons {

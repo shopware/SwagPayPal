@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Swag\PayPal\Resources\storefront\snippets\en_GB;
+namespace Swag\PayPal\Resources\app\storefront\src\snippets\en_GB;
 
 use Shopware\Core\Framework\Snippet\Files\SnippetFileInterface;
 
