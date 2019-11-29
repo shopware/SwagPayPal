@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
+use Shopware\Core\System\SystemConfig\Util\ConfigReader;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -118,7 +119,7 @@ class SettingsServiceTest extends TestCase
 
         /** @var Connection $connection */
         $connection = $this->getContainer()->get(Connection::class);
-        $systemConfigService = new SystemConfigServiceMock($connection, $systemConfigRepo);
+        $systemConfigService = new SystemConfigServiceMock($connection, $systemConfigRepo, new ConfigReader());
         foreach ($settings as $key => $value) {
             $systemConfigService->set($key, $value);
         }
