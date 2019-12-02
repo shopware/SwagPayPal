@@ -1,4 +1,3 @@
-import './app/component/swag-paypal-frw-credentials';
 import './module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials';
 
 import './module/swag-paypal';
