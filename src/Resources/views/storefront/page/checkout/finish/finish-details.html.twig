@@ -14,7 +14,7 @@
 
         {% block page_checkout_finish_data_paypal_pui_instructions %}
             {% if payPalPuiPaymentInstruction %}
-                {% set paymentDueDate = payPalPuiPaymentInstruction.payment_due_date|localizeddate('short', 'none', app.request.locale) %}
+                {% set paymentDueDate = payPalPuiPaymentInstruction.payment_due_date|format_date('short', locale=app.request.locale) %}
                 <div class="border my-5 pt-3">
                     {% block page_checkout_finish_data_paypal_pui_instructions_header %}
                         <div class="row text-center justify-content-center no-gutters align-items-center mt-3 pb-3">

@@ -31,7 +31,7 @@
         <br>
         <div>{{ 'payUponInvoice.document.paymentNote'|trans({"%companyName%": config.companyName}) }}</div>
         <br>
-        <div>{{ "payUponInvoice.instructions.transferRequest"|trans({"%value%": payPalPuiPaymentInstruction.amount.value, "%currency%": payPalPuiPaymentInstruction.amount.currency, "%date%": payPalPuiPaymentInstruction.payment_due_date|localizeddate('short', 'none', app.request.locale)}) }}</div>
+        <div>{{ "payUponInvoice.instructions.transferRequest"|trans({"%value%": payPalPuiPaymentInstruction.amount.value, "%currency%": payPalPuiPaymentInstruction.amount.currency, "%date%": payPalPuiPaymentInstruction.payment_due_date|format_date('short', locale=app.request.locale)}) }}</div>
         <br>
         <div>
             <table>
