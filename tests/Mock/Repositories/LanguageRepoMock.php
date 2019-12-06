@@ -12,8 +12,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\Framework\Language\LanguageDefinition;
-use Shopware\Core\Framework\Language\LanguageEntity;
+use Shopware\Core\System\Language\LanguageDefinition;
+use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\Locale\LocaleEntity;
 
 class LanguageRepoMock implements EntityRepositoryInterface
