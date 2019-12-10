@@ -1,3 +1,6 @@
+# 0.13.0
+- Shopware 6.1 compatibility
+
 # 0.12.0
 - PT-10287 - Adds possibility to add the invoice number, description or reason while refunding an order
 - PT-10705 - The PayPal settings are now in an own administration module

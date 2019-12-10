@@ -52,6 +52,7 @@ if [[ -n "$PHP_FILES" ]]
 then
     # fix code style and update the commit
     php ../../../dev-ops/analyze/vendor/bin/php-cs-fixer fix --config=../../../vendor/shopware/platform/.php_cs.dist --quiet -vv ${PHP_FILES}
+    php ../../../dev-ops/analyze/vendor/bin/php-cs-fixer fix --config=.php_cs.dist --quiet -vv ${PHP_FILES}
 fi
 
 if [[ -n "$JS_FILES" && -x ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint ]]

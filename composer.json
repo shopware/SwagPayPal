@@ -1,7 +1,7 @@
 {
     "name": "swag/paypal",
     "description": "PayPal integration for Shopware 6",
-    "version": "0.12.0",
+    "version": "0.13.0",
     "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [
@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "shopware/core": "*"
+        "shopware/core": "6.1.*"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
@@ -31,11 +31,13 @@
         }
     },
     "suggest": {
-        "shopware/storefront": "Require '*'. Enables special payment features like 'Smart Payment Buttons' or 'Express Checkout'",
-        "shopware/administration": "Require '*'. Allows you to to set up the plugin easily"
+        "shopware/storefront": "Require '6.1.*'. Enables special payment features like 'Smart Payment Buttons' or 'Express Checkout'",
+        "shopware/administration": "Require '6.1.*'. Allows you to to set up the plugin easily"
     },
     "conflict": {
         "shopware/storefront": "<6,>=7",
         "shopware/administration": "<6,>=7"
-    }
+    },
+    "minimum-stability": "RC",
+    "prefer-stable": true
 }
