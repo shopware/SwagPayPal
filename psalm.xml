@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <psalm
     autoloader="../../../vendor/autoload.php"
-    totallyTyped="false"
     findUnusedVariablesAndParams="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
@@ -12,6 +11,7 @@
         <directory name="tests"/>
         <ignoreFiles>
             <directory name="../../../platform"/> <!-- would otherwise inspect Shopware -->
+            <directory name="../../../vendor/shopware/platform"/> <!-- would otherwise inspect Shopware -->
         </ignoreFiles>
     </projectFiles>
 
