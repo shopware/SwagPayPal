@@ -1,3 +1,6 @@
+# 0.13.0
+- Shopware 6.1 Kompatibilität
+
 # 0.12.0
 - PT-10287 - Fügt die Möglichkeit hinzu, die Rechnungsnummer, Beschreibung oder den Grund während der Rückerstattung einer Bestellung anzugeben
 - PT-10705 - Die PayPal-Einstellungen befinden sich nun in einem eigenen Administrationsmodul
