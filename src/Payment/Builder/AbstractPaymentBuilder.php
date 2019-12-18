@@ -75,7 +75,7 @@ abstract class AbstractPaymentBuilder
     protected function createRedirectUrls(string $returnUrl): RedirectUrls
     {
         $redirectUrls = new RedirectUrls();
-        $redirectUrls->setCancelUrl(sprintf('%s?cancel=1', $returnUrl));
+        $redirectUrls->setCancelUrl(sprintf('%s&cancel=1', $returnUrl));
         $redirectUrls->setReturnUrl($returnUrl);
 
         return $redirectUrls;
