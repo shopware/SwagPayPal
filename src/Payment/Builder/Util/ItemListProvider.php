@@ -35,11 +35,12 @@ class ItemListProvider
         string $currency
     ): array {
         $items = [];
-        if ($order->getLineItems() === null) {
+        $lineItems = $order->getLineItems();
+        if ($lineItems === null) {
             throw new InvalidOrderException($order->getId());
         }
 
-        foreach ($order->getLineItems()->getElements() as $lineItem) {
+        foreach ($lineItems->getElements() as $lineItem) {
             $price = $lineItem->getPrice();
 
             if ($price === null) {
@@ -59,7 +60,12 @@ class ItemListProvider
     ): Item {
         $item = new Item();
         $item->setName($lineItem->getLabel());
-        $item->setSku($lineItem->getPayload()['productNumber']);
+
+        $payload = $lineItem->getPayload();
+        if ($payload !== null) {
+            $item->setSku($payload['productNumber']);
+        }
+
         $item->setCurrency($currency);
         $item->setQuantity($lineItem->getQuantity());
         $item->setTax($this->priceFormatter->formatPrice(0));

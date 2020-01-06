@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\PayPal\Api\Common;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
-use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 use Swag\PayPal\Test\PayPal\Api\Common\_fixtures\TestStruct;
 
 class PayPalStructTest extends TestCase
@@ -57,6 +56,16 @@ class PayPalStructTest extends TestCase
 
         $paypalStruct = new TestStruct();
         $paypalStruct->assign($data);
-        static::assertInstanceOf(PayPalStruct::class, $paypalStruct);
+
+        $testJsonString = json_encode($paypalStruct);
+        static::assertNotFalse($testJsonString);
+
+        $paypalStructArray = json_decode($testJsonString, true);
+
+        static::assertNull($paypalStructArray['id']);
+        static::assertNull($paypalStructArray['bar']);
+        static::assertNull($paypalStructArray['foo']);
+        static::assertNull($paypalStructArray['not_existing_class']);
+        static::assertEmpty($paypalStructArray['not_existing_collection_class']);
     }
 }

@@ -31,6 +31,7 @@ abstract class PayPalStruct implements \JsonSerializable
 
             $namespace = $this->getNamespaceOfAssociation();
             if ($this->isAssociativeArray($value)) {
+                /** @var class-string<PayPalStruct> $className */
                 $className = $namespace . $camelCaseKey;
                 if (!class_exists($className)) {
                     continue;
@@ -47,6 +48,7 @@ abstract class PayPalStruct implements \JsonSerializable
                     continue;
                 }
 
+                /** @var class-string<PayPalStruct> $className */
                 $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
                 if (!class_exists($className)) {
                     continue;
@@ -75,6 +77,9 @@ abstract class PayPalStruct implements \JsonSerializable
         return $data;
     }
 
+    /**
+     * @param int|string|bool|array|PayPalStruct|null $value
+     */
     private function isScalar($value): bool
     {
         return !\is_array($value);
@@ -99,9 +104,11 @@ abstract class PayPalStruct implements \JsonSerializable
         return rtrim($camelCaseKey, 's');
     }
 
+    /**
+     * @psalm-param class-string<PayPalStruct> $className
+     */
     private function createNewAssociation(string $className, array $value): self
     {
-        /** @var self $instance */
         $instance = new $className();
         $instance->assign($value);
 

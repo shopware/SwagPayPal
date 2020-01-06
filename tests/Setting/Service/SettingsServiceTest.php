@@ -56,6 +56,8 @@ class SettingsServiceTest extends TestCase
 
     /**
      * @dataProvider getProvider
+     *
+     * @param string|bool $value
      */
     public function testGet(string $key, string $getterName, $value): void
     {
@@ -92,6 +94,8 @@ class SettingsServiceTest extends TestCase
 
     /**
      * @dataProvider updateProvider
+     *
+     * @param string|bool $value
      */
     public function testUpdate(string $key, string $getterName, $value): void
     {

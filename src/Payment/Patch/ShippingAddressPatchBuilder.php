@@ -38,8 +38,9 @@ class ShippingAddressPatchBuilder
             }
         }
         $shippingAddress->setPostalCode($customerShippingAddress->getZipcode());
-        if ($customerShippingAddress->getCountryState() !== null) {
-            $shippingAddress->setState($customerShippingAddress->getCountryState()->getShortCode());
+        $state = $customerShippingAddress->getCountryState();
+        if ($state !== null) {
+            $shippingAddress->setState($state->getShortCode());
         }
         if ($customerShippingAddress->getPhoneNumber() !== null) {
             $shippingAddress->setPhone($customerShippingAddress->getPhoneNumber());

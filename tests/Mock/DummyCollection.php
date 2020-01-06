@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock;
 
+/**
+ * @implements \IteratorAggregate<\Swag\PayPal\Webhook\WebhookHandler>
+ */
 class DummyCollection implements \IteratorAggregate
 {
     /**
@@ -19,6 +22,9 @@ class DummyCollection implements \IteratorAggregate
         $this->data = $data;
     }
 
+    /**
+     * @return \ArrayIterator<array-key, \Swag\PayPal\Webhook\WebhookHandler>
+     */
     public function getIterator(): \ArrayIterator
     {
         return new \ArrayIterator($this->data);

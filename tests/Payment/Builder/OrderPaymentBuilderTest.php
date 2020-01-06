@@ -45,8 +45,6 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
-        static::assertInstanceOf(Payment::class, $payment);
-
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
     }

@@ -17,47 +17,52 @@
 
     <issueHandlers>
         <UnusedMethodCall>
-            <errorLevel type="suppress">
+            <errorLevel type="info">
                 <file name="src/Setting/SwagPayPalSettingStructValidator.php"/>
             </errorLevel>
         </UnusedMethodCall>
 
+        <InvalidReturnType>
+            <errorLevel type="info">
+                <directory name="tests/Mock"/>
+            </errorLevel>
+        </InvalidReturnType>
+
+        <RedundantConditionGivenDocblockType>
+            <errorLevel type="info">
+                <file name="tests/PayPal/Resource/PaymentResourceTest.php"/>
+                <file name="tests/Payment/Builder/OrderPaymentBuilderTest.php"/>
+            </errorLevel>
+        </RedundantConditionGivenDocblockType>
+
+        <InternalMethod>
+            <errorLevel type="info">
+                <directory name="tests"/>
+            </errorLevel>
+        </InternalMethod>
+
+        <DeprecatedTrait>
+            <errorLevel type="info">
+                <directory name="tests"/>
+            </errorLevel>
+        </DeprecatedTrait>
+
+        <DeprecatedMethod>
+            <errorLevel type="info">
+                <directory name="tests"/>
+            </errorLevel>
+        </DeprecatedMethod>
+
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
-
-        <DeprecatedMethod errorLevel="info"/>
-        <DeprecatedTrait errorLevel="info"/>
-
-        <InternalMethod errorLevel="info"/>
 
         <PropertyNotSetInConstructor errorLevel="info"/>
         <MissingConstructor errorLevel="info"/>
-        <MissingParamType errorLevel="info"/>
-
-        <RedundantCondition errorLevel="info"/>
-
-        <RedundantConditionGivenDocblockType errorLevel="info"/>
 
         <UnresolvableInclude errorLevel="info"/>
 
-        <InvalidStringClass errorLevel="info"/>
-
         <!-- level 4 issues - points to possible deficiencies in logic, higher false-positives -->
-
         <TypeCoercion errorLevel="info"/>
-        <PossiblyFalseArgument errorLevel="info"/>
-        <PossiblyFalseOperand errorLevel="info"/>
         <PossiblyNullArgument errorLevel="info"/>
-        <PossiblyNullArrayAccess errorLevel="info"/>
-        <PossiblyNullReference errorLevel="info"/>
-        <PossiblyUndefinedVariable errorLevel="info"/>
-
-        <!-- level 5 issues - should be avoided at mosts costs... -->
-
-        <TypeDoesNotContainType errorLevel="info"/>
-
-        <!-- level 6 issues - really bad things -->
-
-        <InvalidReturnType errorLevel="info"/>
 
     </issueHandlers>
 </psalm>

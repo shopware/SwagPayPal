@@ -352,7 +352,7 @@ class PlusSubscriberTest extends TestCase
     private function createSubscriber(
         bool $withSettings = true,
         bool $plusEnabled = true,
-        $paymentNameOverwrite = false
+        bool $paymentNameOverwrite = false
     ): PlusSubscriber {
         $settings = null;
         if ($withSettings) {

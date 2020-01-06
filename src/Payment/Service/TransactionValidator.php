@@ -19,6 +19,7 @@ class TransactionValidator
      */
     public static function validateItemList(array $transactions): bool
     {
+        /** @var array<array-key, true> $transactionValid */
         $transactionValid = [];
 
         foreach ($transactions as $transaction) {

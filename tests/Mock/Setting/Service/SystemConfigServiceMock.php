@@ -55,6 +55,9 @@ class SystemConfigServiceMock extends SystemConfigService
         return $values;
     }
 
+    /**
+     * @param int|float|string|bool|array|object|null $value
+     */
     public function set(string $key, $value, ?string $salesChannelId = null): void
     {
         $salesChannelId = (string) $salesChannelId;
