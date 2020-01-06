@@ -11,45 +11,56 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DIContainerMock implements ContainerInterface
 {
+    /**
+     * @param string      $id
+     * @param object|null $service
+     */
     public function set($id, $service): void
     {
     }
 
     /**
-     * @return object
+     * @param string $id
+     * @param int    $invalidBehavior
      */
-    public function get($id, $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE)
+    public function get($id, $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE): ?object
     {
     }
 
     /**
-     * @return bool
+     *  @param string $id
      */
-    public function has($id)
+    public function has($id): bool
     {
     }
 
     /**
-     * @return bool
+     *  @param string $id
      */
-    public function initialized($id)
+    public function initialized($id): bool
     {
     }
 
     /**
-     * @return mixed|void
+     * @param string $name
+     *
+     * @return string|mixed
      */
     public function getParameter($name)
     {
     }
 
     /**
-     * @return bool
+     * @param string $name
      */
-    public function hasParameter($name)
+    public function hasParameter($name): bool
     {
     }
 
+    /**
+     * @param string       $name
+     * @param string|mixed $value
+     */
     public function setParameter($name, $value): void
     {
     }

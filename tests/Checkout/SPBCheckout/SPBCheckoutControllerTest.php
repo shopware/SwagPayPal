@@ -59,10 +59,11 @@ class SPBCheckoutControllerTest extends TestCase
         );
 
         $response = $this->createController($cartService)->createPayment($salesChannelContext);
-        static::assertNotFalse($response->getContent());
+        $content = $response->getContent();
+        static::assertNotFalse($content);
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        static::assertStringContainsString('{"token":"EC-', $response->getContent());
+        static::assertStringContainsString('{"token":"EC-', $content);
     }
 
     public function testCreatePaymentWithoutCustomer(): void

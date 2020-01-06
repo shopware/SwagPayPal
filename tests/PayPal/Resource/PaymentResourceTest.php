@@ -42,7 +42,6 @@ class PaymentResourceTest extends TestCase
             PartnerAttributionId::PAYPAL_CLASSIC
         );
 
-        static::assertInstanceOf(Payment::class, $createdPayment);
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $createdPayment->getId());
         $transaction = $createdPayment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
@@ -59,7 +58,6 @@ class PaymentResourceTest extends TestCase
             Defaults::SALES_CHANNEL
         );
 
-        static::assertInstanceOf(Payment::class, $executedPayment);
         $transaction = $executedPayment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
@@ -77,7 +75,6 @@ class PaymentResourceTest extends TestCase
             Defaults::SALES_CHANNEL
         );
 
-        static::assertInstanceOf(Payment::class, $executedPayment);
         $transaction = $executedPayment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
@@ -95,7 +92,6 @@ class PaymentResourceTest extends TestCase
             Defaults::SALES_CHANNEL
         );
 
-        static::assertInstanceOf(Payment::class, $executedPayment);
         $transaction = $executedPayment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
@@ -109,7 +105,6 @@ class PaymentResourceTest extends TestCase
     {
         $payment = $this->createPaymentResource()->get(self::TEST_PAYMENT_ID, Defaults::SALES_CHANNEL);
 
-        static::assertInstanceOf(Payment::class, $payment);
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -123,7 +118,6 @@ class PaymentResourceTest extends TestCase
     {
         $payment = $this->createPaymentResource()->get(self::SALE_WITH_REFUND_PAYMENT_ID, Defaults::SALES_CHANNEL);
 
-        static::assertInstanceOf(Payment::class, $payment);
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -141,7 +135,6 @@ class PaymentResourceTest extends TestCase
     {
         $payment = $this->createPaymentResource()->get(self::ORDER_PAYMENT_ID, Defaults::SALES_CHANNEL);
 
-        static::assertInstanceOf(Payment::class, $payment);
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -155,7 +148,6 @@ class PaymentResourceTest extends TestCase
     {
         $payment = $this->createPaymentResource()->get(self::AUTHORIZE_PAYMENT_ID, Defaults::SALES_CHANNEL);
 
-        static::assertInstanceOf(Payment::class, $payment);
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -177,7 +169,6 @@ class PaymentResourceTest extends TestCase
     {
         $payment = $this->createPaymentResource()->get(self::CAPTURED_ORDER_PAYMENT_ID, Defaults::SALES_CHANNEL);
 
-        static::assertInstanceOf(Payment::class, $payment);
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Transaction::class, $transaction);
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);

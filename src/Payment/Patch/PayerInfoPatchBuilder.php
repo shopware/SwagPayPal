@@ -66,8 +66,9 @@ class PayerInfoPatchBuilder
 
         $billingAddress->setPostalCode($customerBillingAddress->getZipcode());
 
-        if ($customerBillingAddress->getCountryState() !== null) {
-            $billingAddress->setState($customerBillingAddress->getCountryState()->getShortCode());
+        $state = $customerBillingAddress->getCountryState();
+        if ($state !== null) {
+            $billingAddress->setState($state->getShortCode());
         }
 
         if ($customerBillingAddress->getPhoneNumber() !== null) {

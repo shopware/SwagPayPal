@@ -29,12 +29,12 @@ class TestStruct extends PayPalStruct
     protected $foo;
 
     /**
-     * @var mixed
+     * @var object
      */
     protected $notExistingClass;
 
     /**
-     * @var mixed
+     * @var array
      */
     protected $notExistingCollectionClass;
 
@@ -56,6 +56,9 @@ class TestStruct extends PayPalStruct
         $this->foo = $foo;
     }
 
+    /**
+     * @param object $notExistingClass
+     */
     protected function setNotExistingClass($notExistingClass): void
     {
         $this->notExistingClass = $notExistingClass;

@@ -73,14 +73,6 @@ class WebhookResourceTest extends TestCase
         static::assertSame(PayPalClientMock::GET_WEBHOOK_URL, $webhookUrl);
     }
 
-    public function testGetWebhookUrlThrowsExceptionWithoutResponse(): void
-    {
-        static::markTestSkipped('Currently skipped, because Guzzle throws a deprecation message, which causes a failed build on bamboo');
-        $this->expectException(ClientException::class);
-        $this->expectExceptionMessage(PayPalClientMock::CLIENT_EXCEPTION_MESSAGE_WITHOUT_RESPONSE);
-        $this->createWebHookResource()->getWebhookUrl(self::THROW_EXCEPTION_WITHOUT_RESPONSE, Defaults::SALES_CHANNEL);
-    }
-
     public function testGetWebhookUrlThrowsExceptionInvalidId(): void
     {
         $this->expectException(WebhookIdInvalidException::class);

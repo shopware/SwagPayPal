@@ -1,10 +1,16 @@
 parameters:
-    level: 7
-    reportUnmatchedIgnoredErrors: false
+    level: 8
     inferPrivatePropertyTypeFromConstructor: true
+    checkMissingIterableValueType: false
     symfony:
         constant_hassers: false
         # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
         container_xml_path: '%rootDir%/../../../../../../..%ShopwareHashedCacheDir%/srcShopware_Development_KernelDevDebugContainer.xml'
-    excludes_analyse:
-        - tests/TestBootstrap.php
+
+    ignoreErrors:
+        -   # the mock classes do not implement all methods correctly
+            message: '#Method .*Mock::.* but return statement is missing\.#'
+            path: tests
+        -   # PHPStan could not analyse this function
+            message: '#Function getProjectDir not found#'
+            path: tests/TestBootstrap.php

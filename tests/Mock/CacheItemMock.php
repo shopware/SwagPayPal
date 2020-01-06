@@ -11,10 +11,7 @@ use Psr\Cache\CacheItemInterface;
 
 class CacheItemMock implements CacheItemInterface
 {
-    /**
-     * @return string
-     */
-    public function getKey()
+    public function getKey(): string
     {
     }
 
@@ -23,31 +20,29 @@ class CacheItemMock implements CacheItemInterface
         return null;
     }
 
-    /**
-     * @return bool
-     */
-    public function isHit()
+    public function isHit(): bool
     {
     }
 
     /**
-     * @return CacheItemInterface
+     * @param string|mixed $value
      */
-    public function set($value)
+    public function set($value): CacheItemInterface
+    {
+        return $this;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $expiration
+     */
+    public function expiresAt($expiration): CacheItemInterface
     {
     }
 
     /**
-     * @return CacheItemInterface
+     * @param int|\DateInterval|null $time
      */
-    public function expiresAt($expiration)
-    {
-    }
-
-    /**
-     * @return CacheItemInterface
-     */
-    public function expiresAfter($time)
+    public function expiresAfter($time): CacheItemInterface
     {
     }
 }

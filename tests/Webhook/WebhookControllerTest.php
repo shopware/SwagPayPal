@@ -40,9 +40,10 @@ class WebhookControllerTest extends TestCase
     public function testRegisterWebhook(): void
     {
         $jsonResponse = $this->createWebhookController()->registerWebhook(Defaults::SALES_CHANNEL);
-        static::assertNotFalse($jsonResponse->getContent());
+        $content = $jsonResponse->getContent();
+        static::assertNotFalse($content);
 
-        $result = json_decode($jsonResponse->getContent(), true);
+        $result = json_decode($content, true);
 
         $this->silentAssertArraySubset(['result' => WebhookService::WEBHOOK_CREATED], $result);
     }

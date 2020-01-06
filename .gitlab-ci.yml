@@ -12,8 +12,8 @@ default:
     image: shopware/development:latest
     before_script:
         - zip -rq plugin.zip .
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform
+        - git clone --branch 6.1 http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git
+        - git clone --branch 6.1 http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform
         - unzip -q plugin.zip -d development/custom/plugins/SwagPayPal
         - cd development
         - cp -v dev-ops/gitlab/.psh.yaml.override .

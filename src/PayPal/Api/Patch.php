@@ -25,10 +25,13 @@ class Patch extends PayPalStruct
     protected $path;
 
     /**
-     * @var mixed
+     * @var array|string
      */
     protected $value;
 
+    /**
+     * @param array|string $value
+     */
     public function setValue($value): void
     {
         $this->value = $value;

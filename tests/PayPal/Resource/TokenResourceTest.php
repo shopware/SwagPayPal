@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\PayPal\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\PayPal\Api\OAuthCredentials;
-use Swag\PayPal\PayPal\Api\Token;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Test\Mock\CacheItemWithTokenMock;
 use Swag\PayPal\Test\Mock\CacheMock;
@@ -25,7 +24,6 @@ class TokenResourceTest extends TestCase
 
         $dateNow = new \DateTime('now');
 
-        static::assertInstanceOf(Token::class, $token);
         static::assertSame(TokenClientMock::ACCESS_TOKEN, $token->getAccessToken());
         static::assertSame(TokenClientMock::TOKEN_TYPE, $token->getTokenType());
         static::assertInstanceOf(\DateTime::class, $token->getExpireDateTime());
@@ -43,7 +41,6 @@ class TokenResourceTest extends TestCase
     {
         $token = $this->getTokenResource()->getToken(new OAuthCredentials(), 'url');
 
-        static::assertInstanceOf(Token::class, $token);
         static::assertSame(CacheItemWithTokenMock::ACCESS_TOKEN, $token->getAccessToken());
         static::assertSame(TokenClientMock::TOKEN_TYPE, $token->getTokenType());
         static::assertInstanceOf(\DateTime::class, $token->getExpireDateTime());

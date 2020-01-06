@@ -232,6 +232,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
     public function testAddExpressCheckoutDataToPageWithoutCart(): void
     {
         $salesChannelContext = $this->createSalesChannelContext();
+        /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
         $cartService->createNew($salesChannelContext->getToken());
         $event = new OffcanvasCartPageLoadedEvent(
@@ -251,7 +252,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
         ExpressCheckoutButtonData $expectedExpressCheckoutButtonData,
         ExpressCheckoutButtonData $actualExpressCheckoutButtonData
     ): void {
-        static::assertInstanceOf(ExpressCheckoutButtonData::class, $actualExpressCheckoutButtonData);
         static::assertSame($expectedExpressCheckoutButtonData->getProductDetailEnabled(), $actualExpressCheckoutButtonData->getProductDetailEnabled());
         static::assertSame($expectedExpressCheckoutButtonData->getOffCanvasEnabled(), $actualExpressCheckoutButtonData->getOffCanvasEnabled());
         static::assertSame($expectedExpressCheckoutButtonData->getLoginEnabled(), $actualExpressCheckoutButtonData->getLoginEnabled());
@@ -313,6 +313,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
     private function createSalesChannelContext(bool $withItemList = false): SalesChannelContext
     {
         $taxId = $this->createTaxId(Context::createDefaultContext());
+        /** @var SalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
 
         $salesChannelContext = $salesChannelContextFactory->create(
@@ -321,6 +322,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         );
 
         if ($withItemList) {
+            /** @var CartService $cartService */
             $cartService = $this->getContainer()->get(CartService::class);
             /** @var EntityRepositoryInterface $productRepo */
             $productRepo = $this->getContainer()->get('product.repository');

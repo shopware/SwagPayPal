@@ -12,9 +12,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class EventDispatcherMock implements EventDispatcherInterface
 {
     /**
-     * @return object
+     * @param object $event
      */
-    public function dispatch($event)
+    public function dispatch($event): object
     {
     }
 }

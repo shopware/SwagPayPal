@@ -44,8 +44,11 @@ trait OrderTransactionTrait
         );
     }
 
-    public function getTransaction(string $transactionId, ContainerInterface $container, $context): ?OrderTransactionEntity
-    {
+    public function getTransaction(
+        string $transactionId,
+        ContainerInterface $container,
+        Context $context
+    ): ?OrderTransactionEntity {
         /** @var EntityRepositoryInterface $orderTransactionRepo */
         $orderTransactionRepo = $container->get(OrderTransactionDefinition::ENTITY_NAME . '.repository');
 

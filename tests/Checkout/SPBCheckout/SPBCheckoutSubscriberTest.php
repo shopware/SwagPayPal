@@ -38,6 +38,7 @@ use Swag\PayPal\Test\Mock\PaymentMethodUtilMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class SPBCheckoutSubscriberTest extends TestCase
 {
@@ -122,7 +123,9 @@ class SPBCheckoutSubscriberTest extends TestCase
         $subscriber->onCheckoutConfirmLoaded($event);
 
         static::assertNull($event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
-        $flashBag = $this->getContainer()->get('session')->getFlashBag();
+        /** @var Session $session */
+        $session = $this->getContainer()->get('session');
+        $flashBag = $session->getFlashBag();
         static::assertCount(1, $flashBag->get('success'));
     }
 
@@ -191,7 +194,9 @@ class SPBCheckoutSubscriberTest extends TestCase
             SalesChannelContextService::CUSTOMER_ID => $this->createCustomer(),
         ];
 
-        $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
+        /** @var SalesChannelContextFactory $salesChannelContextFactory */
+        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
+        $salesChannelContext = $salesChannelContextFactory->create(
             'token',
             Defaults::SALES_CHANNEL,
             $options

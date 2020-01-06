@@ -63,10 +63,10 @@ class ActivateDeactivate
             return;
         }
 
-        $updateData[] = [
+        $updateData = [[
             'id' => $payPalPaymentMethodId,
             'active' => $active,
-        ];
+        ]];
 
         $this->paymentRepository->update($updateData, $context);
     }

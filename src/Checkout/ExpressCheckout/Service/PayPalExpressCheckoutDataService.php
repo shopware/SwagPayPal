@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
-use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
@@ -54,7 +53,7 @@ class PayPalExpressCheckoutDataService
     ): ?ExpressCheckoutButtonData {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
-        if (!$addProductToCart && (!$cart instanceof Cart || $cart->getLineItems()->count() === 0)) {
+        if (!$addProductToCart && $cart->getLineItems()->count() === 0) {
             return null;
         }
 

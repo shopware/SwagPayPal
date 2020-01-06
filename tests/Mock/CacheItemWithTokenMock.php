@@ -14,10 +14,7 @@ class CacheItemWithTokenMock implements CacheItemInterface
 {
     public const ACCESS_TOKEN = 'A21AAEaQMaSheELTFsynkQLwXBZIr-fObE9PtGjr6_SOVEBXWNaJu1DvwKfLiJdxZ1aNtyYwK0ToZEL1i6TL5Dq9Qm30ZQfkA';
 
-    /**
-     * @return string
-     */
-    public function getKey()
+    public function getKey(): string
     {
     }
 
@@ -37,31 +34,28 @@ class CacheItemWithTokenMock implements CacheItemInterface
             . "\0" . 'Swag\\PayPal\\PayPal\\Api\\Token' . "\0" . 'expireDateTime";O:8:"DateTime":3:{s:4:"date";s:23:"' . $expireDate . '";s:13:"timezone_type";i:3;s:8:"timezone";s:13:"Europe/Berlin";}}';
     }
 
-    /**
-     * @return bool
-     */
-    public function isHit()
+    public function isHit(): bool
     {
     }
 
     /**
-     * @return CacheItemInterface
+     * @param string|mixed $value
      */
-    public function set($value)
+    public function set($value): CacheItemInterface
     {
     }
 
     /**
-     * @return CacheItemInterface
+     * @param \DateTimeInterface|null $expiration
      */
-    public function expiresAt($expiration)
+    public function expiresAt($expiration): CacheItemInterface
     {
     }
 
     /**
-     * @return CacheItemInterface
+     * @param \DateInterval|int|null $time
      */
-    public function expiresAfter($time)
+    public function expiresAfter($time): CacheItemInterface
     {
     }
 }

@@ -158,8 +158,10 @@ class WebhookServiceTest extends TestCase
         return new SettingsServiceMock($settings);
     }
 
-    private function createWebhookService($settingsService, WebhookResource $resource): WebhookServiceInterface
-    {
+    private function createWebhookService(
+        SettingsServiceMock $settingsService,
+        WebhookResource $resource
+    ): WebhookServiceInterface {
         /** @var OrderTransactionRepoMock $orderTransactionRepo */
         $orderTransactionRepo = $this->orderTransactionRepo;
 
@@ -171,8 +173,9 @@ class WebhookServiceTest extends TestCase
         );
     }
 
-    private function createWebhookReturnCreatedResourceMock(SettingsServiceInterface $settingsService): WebhookReturnCreatedResourceMock
-    {
+    private function createWebhookReturnCreatedResourceMock(
+        SettingsServiceInterface $settingsService
+    ): WebhookReturnCreatedResourceMock {
         return new WebhookReturnCreatedResourceMock(
             $this->createPayPalClientFactoryWithService($settingsService)
         );

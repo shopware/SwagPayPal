@@ -22,7 +22,6 @@ use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\Tax\TaxDefinition;
-use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -146,7 +145,6 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $settings->setEcsButtonLanguageIso('zz_ZZ');
         }
 
-        /** @var ExpressCheckoutButtonData $expressCheckoutButtonData */
         $expressCheckoutButtonData = $this->payPalExpressCheckoutDataService->getExpressCheckoutButtonData(
             $salesChannelContext,
             $settings
