@@ -85,7 +85,7 @@ class PayPalClient
         try {
             $response = $this->client->post($resourceUri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->handleRequestException($requestException, $resourceUri, $data);
+            $this->handleRequestException($requestException, $data);
 
             throw $requestException;
         }
@@ -101,7 +101,7 @@ class PayPalClient
         try {
             $response = $this->client->get($resourceUri)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->handleRequestException($requestException, $resourceUri, null);
+            $this->handleRequestException($requestException, null);
 
             throw $requestException;
         }
@@ -123,7 +123,7 @@ class PayPalClient
         try {
             $response = $this->client->patch($resourceUri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->handleRequestException($requestException, $resourceUri, $data);
+            $this->handleRequestException($requestException, $data);
 
             throw $requestException;
         }
@@ -157,15 +157,29 @@ class PayPalClient
      *
      * @throws PayPalApiException
      */
-    private function handleRequestException(RequestException $requestException, string $resourceUri, $data): void
+    private function handleRequestException(RequestException $requestException, $data): void
     {
-        $this->logger->error($requestException->getMessage(), [$resourceUri, $data]);
-
+        $exceptionMessage = $requestException->getMessage();
         $exceptionResponse = $requestException->getResponse();
-        if ($exceptionResponse) {
-            $error = json_decode($exceptionResponse->getBody()->getContents(), true);
 
-            throw new PayPalApiException($error['name'], $error['message']);
+        if ($exceptionResponse === null) {
+            $this->logger->error($exceptionMessage, [$data]);
+
+            return;
         }
+
+        $error = json_decode($exceptionResponse->getBody()->getContents(), true);
+        $message = $error['message'];
+
+        if (isset($error['details'])) {
+            $message .= ': ';
+            foreach ($error['details'] as $detail) {
+                $message .= $detail['issue'] . ' (' . $detail['field'] . ') ';
+            }
+        }
+
+        $this->logger->error($exceptionMessage . ' ' . $message, [$error, $data]);
+
+        throw new PayPalApiException($error['name'], $message);
     }
 }

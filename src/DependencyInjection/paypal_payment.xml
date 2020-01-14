@@ -8,6 +8,7 @@
         <service id="Swag\PayPal\Payment\PayPalPaymentHandler">
             <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Swag\PayPal\Payment\Handler\EcsSpbHandler"/>
             <argument type="service" id="Swag\PayPal\Payment\Handler\PayPalHandler"/>
             <argument type="service" id="Swag\PayPal\Payment\Handler\PlusHandler"/>

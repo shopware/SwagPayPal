@@ -28,12 +28,16 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
+use Swag\PayPal\Payment\Handler\AbstractPaymentHandler;
 use Swag\PayPal\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Payment\Handler\PlusHandler;
 use Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\PayPal\Api\Patch;
+use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -43,6 +47,7 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Symfony\Component\HttpFoundation\Request;
@@ -59,6 +64,8 @@ class PayPalPaymentHandlerTest extends TestCase
 
     public const PAYER_ID_PAYMENT_INCOMPLETE = 'testPayerIdIncomplete';
     public const PAYPAL_RESOURCE_THROWS_EXCEPTION = 'createRequestThrowsException';
+    private const TEST_CUSTOMER_STREET = 'Ebbinghoff 10';
+    private const TEST_CUSTOMER_FIRST_NAME = 'Max';
 
     /**
      * @var EntityRepositoryInterface
@@ -69,6 +76,11 @@ class PayPalPaymentHandlerTest extends TestCase
      * @var StateMachineRegistry
      */
     private $stateMachineRegistry;
+
+    /**
+     * @var PayPalClientFactoryMock
+     */
+    private $clientFactory;
 
     protected function setUp(): void
     {
@@ -111,6 +123,59 @@ class PayPalPaymentHandlerTest extends TestCase
             CreateResponseFixture::CREATE_PAYMENT_ID,
             $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID]
         );
+    }
+
+    public function testPayWithPlus(): void
+    {
+        $handler = $this->createPayPalPaymentHandler();
+
+        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $salesChannelContext = Generator::createSalesChannelContext(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            $this->createCustomer()
+        );
+        $dataBag = new RequestDataBag();
+        $dataBag->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, true);
+        $dataBag->set(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME, CreateResponseFixture::CREATE_PAYMENT_ID);
+        $response = $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
+
+        static::assertSame('plusPatched', $response->getTargetUrl());
+
+        /** @var OrderTransactionRepoMock $orderTransactionRepo */
+        $orderTransactionRepo = $this->orderTransactionRepo;
+        $updatedData = $orderTransactionRepo->getData();
+        static::assertSame(
+            CreateResponseFixture::CREATE_PAYMENT_ID,
+            $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID]
+        );
+
+        $patchData = $this->clientFactory->getClient()->getData();
+        static::assertCount(2, $patchData);
+        foreach ($patchData as $patch) {
+            static::assertInstanceOf(Patch::class, $patch);
+            if ($patch->getPath() === '/transactions/0/item_list/shipping_address') {
+                $patchValue = $patch->getValue();
+                static::assertIsArray($patchValue);
+                static::assertSame(self::TEST_CUSTOMER_STREET, $patchValue['line1']);
+            }
+
+            if ($patch->getPath() === '/payer/payer_info') {
+                $patchValue = $patch->getValue();
+                static::assertIsArray($patchValue);
+                static::assertSame(self::TEST_CUSTOMER_FIRST_NAME, $patchValue['first_name']);
+                static::assertSame(self::TEST_CUSTOMER_STREET, $patchValue['billing_address']['line1']);
+            }
+        }
     }
 
     public function testPayWithExceptionDuringPayPalCommunication(): void
@@ -257,7 +322,7 @@ Customer is not logged in.');
         $handler = $this->createPayPalPaymentHandler();
 
         $request = $this->createRequest();
-        $request->query->set('isPayPalPlus', true);
+        $request->query->set(PlusPaymentFinalizeController::IS_PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, true);
         $salesChannelContext = Generator::createSalesChannelContext();
         $container = $this->getContainer();
         $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
@@ -409,24 +474,31 @@ An error occurred during the communication with PayPal');
     private function createPayPalPaymentHandler(?SwagPayPalSettingStruct $settings = null): PayPalPaymentHandler
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
-        $paymentResource = $this->createPaymentResource($settings);
+        $this->clientFactory = $this->createPayPalClientFactory($settings);
+        $paymentResource = new PaymentResource($this->clientFactory);
         /** @var EcsSpbHandler $ecsSpbHandler */
         $ecsSpbHandler = $this->getContainer()->get(EcsSpbHandler::class);
-        /** @var PlusHandler $plusHandler */
-        $plusHandler = $this->getContainer()->get(PlusHandler::class);
+        $payerInfoPatchBuilder = new PayerInfoPatchBuilder();
+        $shippingAddressPatchBuilder = new ShippingAddressPatchBuilder();
 
         return new PayPalPaymentHandler(
             $paymentResource,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
+            $this->orderTransactionRepo,
             $ecsSpbHandler,
             new PayPalHandler(
                 $paymentResource,
                 $this->orderTransactionRepo,
                 $this->createPaymentBuilder($settings),
-                new PayerInfoPatchBuilder(),
-                new ShippingAddressPatchBuilder()
+                $payerInfoPatchBuilder,
+                $shippingAddressPatchBuilder
             ),
-            $plusHandler
+            new PlusHandler(
+                $paymentResource,
+                $this->orderTransactionRepo,
+                $payerInfoPatchBuilder,
+                $shippingAddressPatchBuilder
+            )
         );
     }
 
@@ -449,7 +521,7 @@ An error occurred during the communication with PayPal');
             'id' => $customerId,
             'number' => '1337',
             'salutationId' => $this->getValidSalutationId(),
-            'firstName' => 'Max',
+            'firstName' => self::TEST_CUSTOMER_FIRST_NAME,
             'lastName' => 'Mustermann',
             'customerNumber' => '1337',
             'email' => Uuid::randomHex() . '@example.com',
@@ -467,7 +539,7 @@ An error occurred during the communication with PayPal');
                     'salutationId' => $this->getValidSalutationId(),
                     'firstName' => 'Max',
                     'lastName' => 'Mustermann',
-                    'street' => 'Ebbinghoff 10',
+                    'street' => self::TEST_CUSTOMER_STREET,
                     'zipcode' => '48624',
                     'city' => 'Schöppingen',
                 ],

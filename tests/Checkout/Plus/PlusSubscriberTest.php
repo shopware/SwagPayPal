@@ -34,6 +34,7 @@ use Swag\PayPal\Checkout\Plus\PlusData;
 use Swag\PayPal\Checkout\Plus\PlusSubscriber;
 use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilder;
+use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
@@ -132,6 +133,7 @@ class PlusSubscriberTest extends TestCase
         static::assertSame($this->paypalPaymentMethodId, $plusExtension->getPaymentMethodId());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $plusExtension->getPaypalPaymentId());
         static::assertSame('/sales-channel-api/v1/checkout/order', $plusExtension->getCheckoutOrderUrl());
+        static::assertSame(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, $plusExtension->getIsEnabledParameterName());
     }
 
     public function testOnCheckoutConfirmLoadedPlusEnabledWithPaymentOverwrite(): void
@@ -359,7 +361,7 @@ class PlusSubscriberTest extends TestCase
             $settings = new SwagPayPalSettingStruct();
             $settings->setClientId('testClientId');
             $settings->setClientSecret('testClientSecret');
-            $settings->setPlusEnabled($plusEnabled);
+            $settings->setPlusCheckoutEnabled($plusEnabled);
             if ($paymentNameOverwrite) {
                 $settings->setPlusOverwritePaymentName(self::NEW_PAYMENT_NAME);
                 $settings->setPlusExtendPaymentDescription(self::PAYMENT_DESCRIPTION_EXTENSION);

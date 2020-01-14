@@ -1,4 +1,5 @@
 import template from './swag-paypal-behaviour.html.twig';
+import constants from './../../page/swag-paypal/swag-paypal-consts';
 
 const { Component } = Shopware;
 
@@ -20,6 +21,12 @@ Component.register('sw-paypal-behaviour', {
         }
     },
 
+    data() {
+        return {
+            ...constants
+        };
+    },
+
     computed: {
         intentOptions() {
             return [
@@ -37,6 +44,18 @@ Component.register('sw-paypal-behaviour', {
                 }
             ];
         },
+        merchantLocationOptions() {
+            return [
+                {
+                    id: this.MERCHANT_LOCATION_GERMANY,
+                    name: this.$tc('swag-paypal.settingForm.behaviour.merchantLocation.germany')
+                },
+                {
+                    id: this.MERCHANT_LOCATION_OTHER,
+                    name: this.$tc('swag-paypal.settingForm.behaviour.merchantLocation.other')
+                }
+            ];
+        },
         landingPageOptions() {
             return [
                 {
@@ -50,6 +69,7 @@ Component.register('sw-paypal-behaviour', {
             ];
         }
     },
+
     methods: {
         checkTextFieldInheritance(value) {
             if (typeof value !== 'string') {
@@ -60,11 +80,7 @@ Component.register('sw-paypal-behaviour', {
         },
 
         checkBoolFieldInheritance(value) {
-            if (typeof value !== 'boolean') {
-                return true;
-            }
-
-            return false;
+            return typeof value !== 'boolean';
         }
     }
 });

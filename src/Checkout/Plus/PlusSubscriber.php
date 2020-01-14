@@ -70,7 +70,9 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$settings->getPlusEnabled()) {
+        if (!$settings->getPlusCheckoutEnabled()
+            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER
+        ) {
             return;
         }
 
@@ -94,7 +96,9 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$settings->getPlusEnabled()) {
+        if (!$settings->getPlusCheckoutEnabled()
+            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER
+        ) {
             return;
         }
 

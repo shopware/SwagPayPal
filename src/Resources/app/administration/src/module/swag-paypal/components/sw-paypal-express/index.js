@@ -20,24 +20,6 @@ Component.register('sw-paypal-express', {
         }
     },
 
-    methods: {
-        checkTextFieldInheritance(value) {
-            if (typeof value !== 'string') {
-                return true;
-            }
-
-            return value.length <= 0;
-        },
-
-        checkBoolFieldInheritance(value) {
-            if (typeof value !== 'boolean') {
-                return true;
-            }
-
-            return false;
-        }
-    },
-
     computed: {
         buttonColorOptions() {
             return [
@@ -70,6 +52,20 @@ Component.register('sw-paypal-express', {
                     name: this.$tc('swag-paypal.settingForm.express.ecsButtonShape.options.rect')
                 }
             ];
+        }
+    },
+
+    methods: {
+        checkTextFieldInheritance(value) {
+            if (typeof value !== 'string') {
+                return true;
+            }
+
+            return value.length <= 0;
+        },
+
+        checkBoolFieldInheritance(value) {
+            return typeof value !== 'boolean';
         }
     }
 });

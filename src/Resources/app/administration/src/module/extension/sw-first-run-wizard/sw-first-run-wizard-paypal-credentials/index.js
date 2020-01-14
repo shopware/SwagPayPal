@@ -22,9 +22,6 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         Mixin.getByName('notification')
     ],
 
-    props: {
-    },
-
     data() {
         return {
             isLoading: false,

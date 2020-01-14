@@ -2,6 +2,25 @@
     <sw-card :title="$tc('swag-paypal.settingForm.behaviour.cardTitle')">
         {% block swag_paypal_content_card_channel_config_behaviour_settings %}
             <div class="swag-paypal-settings-behaviour-field" v-if="actualConfigData">
+                {% block swag_paypal_content_card_channel_config_behaviour_settings_merchant_location %}
+                    <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.merchantLocation']"
+                                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.merchantLocation']"
+                                        :customInheritationCheckFunction="checkTextFieldInheritance"
+                                        :label="$tc('swag-paypal.settingForm.behaviour.merchantLocation.label')">
+                        <template #content="props">
+                            <sw-single-select name="SwagPayPal.settings.merchantLocation"
+                                              :options="merchantLocationOptions"
+                                              labelProperty="name"
+                                              valueProperty="id"
+                                              @input="props.updateCurrentValue"
+                                              :isInherited="props.isInherited"
+                                              :disabled="props.isInherited"
+                                              :value="props.currentValue">
+                            </sw-single-select>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_intent %}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.intent']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.intent']"

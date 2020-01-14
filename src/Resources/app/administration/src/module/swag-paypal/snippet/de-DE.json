@@ -26,6 +26,11 @@
             },
             "behaviour": {
                 "cardTitle": "Verhalten",
+                "merchantLocation": {
+                    "label": "Händlerstandort",
+                    "germany": "Deutschland",
+                    "other": "Anderer Händlerstandort"
+                },
                 "intent": {
                     "label": "Zahlungsabschluss",
                     "sale": "Zahlung sofort abschließen (Sale)",
@@ -122,8 +127,20 @@
                 }
             },
             "plus": {
-                "plusOverwritePaymentName": "PayPal, Lastschrift oder Kreditkarte",
-                "plusExtendPaymentDescription": "Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal-Konto möglich."
+                "cardTitle": "PayPal Plus Integration",
+                "plusCheckoutEnabled": {
+                    "label": "PayPal Plus aktivieren"
+                },
+                "plusOverwritePaymentName": {
+                    "label": "Zahlungsartbezeichnung überschreiben",
+                    "helpText": "Mit dieser Einstellung kannst du die Zahlungsart-Bezeichnung von PayPal überschreiben. Hinweis: Dies betrifft nur die Storefront-Ansicht.",
+                    "defaultText": "PayPal, Lastschrift oder Kreditkarte"
+                },
+                "plusExtendPaymentDescription": {
+                    "label": "Zahlungsartbeschreibung ergänzen",
+                    "helpText": "Mit dieser Einstellung kannst du die Zahlungsart-Beschreibung von PayPal ergänzen. Hinweis: Dies betrifft nur die Storefront-Ansicht.",
+                    "defaultText": "Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal-Konto möglich."
+                }
             },
             "titleSuccess": "Erfolg",
             "titleError": "Fehler",

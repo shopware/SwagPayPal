@@ -16,14 +16,14 @@ use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 class PayPalClientFactory
 {
     /**
+     * @var SettingsServiceInterface
+     */
+    protected $settingsProvider;
+
+    /**
      * @var TokenResource
      */
     private $tokenResource;
-
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsProvider;
 
     /**
      * @var Logger

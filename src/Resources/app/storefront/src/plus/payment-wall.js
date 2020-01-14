@@ -115,7 +115,14 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
          *
          * @type string
          */
-        checkoutOrderUrl: ''
+        checkoutOrderUrl: '',
+
+        /**
+         * Request parameter name which identifies a PLUS checkout
+         *
+         * @type string
+         */
+        isEnabledParameterName: 'isPayPalPlusCheckout'
     };
 
     init() {
@@ -218,7 +225,9 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
             return;
         }
 
-        const csrfToken = { _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-plus-payment-wall-checkout-order-token') };
+        const csrfToken = {
+            _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-plus-payment-wall-checkout-order-token')
+        };
 
         this._client = new HttpClient(window.accessKey, window.contextToken);
         this._client.post(this.options.checkoutOrderUrl, JSON.stringify(csrfToken), this.afterCreateOrder.bind(this));
@@ -231,12 +240,12 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         const order = JSON.parse(response);
         const orderId = order.data.id;
         const params = {
-            isPayPalPlusEnabled: true,
             paypalPaymentId: this.options.paypalPaymentId
         };
+        params[this.options.isEnabledParameterName] = true;
 
         this._client.post(
-            `${this.options.checkoutOrderUrl + orderId}/pay`,
+            `${this.options.checkoutOrderUrl}/${orderId}/pay`,
             JSON.stringify(params),
             this.afterPayOrder.bind(this)
         );

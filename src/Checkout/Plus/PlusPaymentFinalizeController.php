@@ -30,6 +30,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PlusPaymentFinalizeController extends AbstractController
 {
+    public const IS_PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
+
     /**
      * @var EntityRepositoryInterface
      */
@@ -98,7 +100,7 @@ class PlusPaymentFinalizeController extends AbstractController
         }
 
         $paymentTransactionStruct = new AsyncPaymentTransactionStruct($orderTransaction, $order, '');
-        $request->query->set('isPayPalPlus', true);
+        $request->query->set(self::IS_PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, true);
 
         $this->paymentHandler->finalize($paymentTransactionStruct, $request, $salesChannelContext);
 

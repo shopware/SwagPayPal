@@ -13,9 +13,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaI
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
+use Swag\PayPal\Payment\Handler\AbstractPaymentHandler;
 use Swag\PayPal\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -87,7 +89,9 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$settings->getSpbCheckoutEnabled()) {
+        if (!$settings->getSpbCheckoutEnabled()
+            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_GERMANY
+        ) {
             return;
         }
 
@@ -98,7 +102,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
 
         $requestQuery = $event->getRequest()->query;
         if ($requestQuery->has(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
-            && $requestQuery->has(EcsSpbHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
+            && $requestQuery->has(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
         ) {
             $this->session->getFlashBag()->add('success', $this->translator->trans('smartPaymentButtons.confirmPageHint'));
 

@@ -52,7 +52,7 @@ class PlusHandler extends AbstractPaymentHandler
         SalesChannelContext $salesChannelContext,
         CustomerEntity $customer
     ): RedirectResponse {
-        $paypalPaymentId = $dataBag->get('paypalPaymentId');
+        $paypalPaymentId = $dataBag->get(self::PAYPAL_PAYMENT_ID_INPUT_NAME);
         $this->addPayPalTransactionId($transaction, $paypalPaymentId, $salesChannelContext->getContext());
 
         $patches = [

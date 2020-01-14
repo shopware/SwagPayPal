@@ -7,11 +7,11 @@ const { Mixin } = Shopware;
 Shopware.Component.register('swag-paypal', {
     template,
 
+    inject: ['SwagPayPalWebhookRegisterService', 'SwagPayPalApiCredentialsService'],
+
     mixins: [
         Mixin.getByName('notification')
     ],
-
-    inject: ['SwagPayPalWebhookRegisterService', 'SwagPayPalApiCredentialsService'],
 
     data() {
         return {
@@ -49,13 +49,30 @@ Shopware.Component.register('swag-paypal', {
                     this.clientSecretFilled = !!this.config['SwagPayPal.settings.clientSecret']
                         || !!defaultConfig['SwagPayPal.settings.clientSecret'];
                 }
+
+                if (this.showSPBCard) {
+                    this.config['SwagPayPal.settings.plusCheckoutEnabled'] = false;
+                }
+
+                if (this.showPlusCard) {
+                    this.config['SwagPayPal.settings.spbCheckoutEnabled'] = false;
+                }
             },
             deep: true
         }
     },
+
     computed: {
         testButtonDisabled() {
             return this.isLoading || !this.clientSecretFilled || !this.clientIdFilled || this.isTesting;
+        },
+
+        showSPBCard() {
+            return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
+        },
+
+        showPlusCard() {
+            return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY;
         }
     },
 
