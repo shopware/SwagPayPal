@@ -5,6 +5,7 @@ const { Component } = Shopware;
 
 Component.register('sw-paypal-behaviour', {
     template,
+
     name: 'SwagPaypalBehaviour',
 
     props: {

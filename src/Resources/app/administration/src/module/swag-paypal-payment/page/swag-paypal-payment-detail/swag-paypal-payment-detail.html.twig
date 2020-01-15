@@ -3,6 +3,7 @@
         <div v-if="!isLoading">
             <sw-card :title="$tc('swag-paypal-payment.paymentDetails.cardTitle')">
                 <template #grid>
+
                     {% block swag_paypal_payment_actions_section %}
                         <sw-card-section secondary
                                          slim>
@@ -10,15 +11,18 @@
                             </swag-paypal-payment-actions>
                         </sw-card-section>
                     {% endblock %}
+
                     <sw-card-section divider="top">
                         <sw-container columns="1fr"
                                       gap="0px 30px">
+
                             {% block swag_paypal_payment_detail_invoice %}
                                 {% block swag_paypal_payment_detail_invoice_heading %}
                                     <h3>
                                         {{ $tc('swag-paypal-payment.paymentDetails.invoice.heading') }}
                                     </h3>
                                 {% endblock %}
+
                                 {% block swag_paypal_payment_detail_invoice_list %}
                                     <sw-description-list class="swag-paypal-payment-detail__data">
                                         <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.totalAmount') }}</dt>
@@ -31,12 +35,14 @@
                                         <dd> {{ amount.details.shipping }} {{ currency }}</dd>
                                     </sw-description-list>
                                 {% endblock %}
+
                                 {% block swag_paypal_payment_detail_payment %}
                                     {% block swag_paypal_payment_detail_payment_heading %}
                                         <h3 class="swag-paypal-payment-detail__heading">
                                             {{ $tc('swag-paypal-payment.paymentDetails.payment.heading') }}
                                         </h3>
                                     {% endblock %}
+
                                     {% block swag_paypal_payment_detail_payment_list %}
                                         <sw-description-list class="swag-paypal-payment-detail__data">
                                             <dt>{{ $tc('swag-paypal-payment.paymentDetails.payment.intent') }}</dt>
@@ -59,12 +65,14 @@
                                         </sw-description-list>
                                     {% endblock %}
                                 {% endblock %}
+
                                 {% block swag_paypal_payment_detail_customer %}
                                     {% block swag_paypal_payment_detail_customer_heading %}
                                         <h3 class="swag-paypal-payment-detail__heading">
                                             {{ $tc('swag-paypal-payment.paymentDetails.customer.heading') }}
                                         </h3>
                                     {% endblock %}
+
                                     {% block swag_paypal_payment_detail_customer_list %}
                                         <sw-description-list class="swag-paypal-payment-detail__data">
                                             <dt>{{ $tc('swag-paypal-payment.paymentDetails.customer.payerId') }}</dt>
@@ -77,9 +85,11 @@
                     </sw-card-section>
                 </template>
             </sw-card>
+
             {% block swag_paypal_payment_transaction_history_card %}
                 <sw-card :title="$tc('swag-paypal-payment.transactionHistory.cardTitle')">
                     <template #grid>
+
                         {% block swag_paypal_payment_transaction_history_grid %}
                             <sw-data-grid :dataSource="relatedResources"
                                           :columns="relatedResourceColumns"
@@ -90,8 +100,8 @@
                     </template>
                 </sw-card>
             {% endblock %}
+
         </div>
-        <sw-loader v-if="isLoading">
-        </sw-loader>
+        <sw-loader v-if="isLoading"></sw-loader>
     </div>
 {% endblock %}

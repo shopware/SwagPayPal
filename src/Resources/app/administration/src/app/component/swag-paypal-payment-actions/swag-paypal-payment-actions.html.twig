@@ -2,30 +2,33 @@
     <div>
         <div class="swag-paypal-payment-actions__button-container">
             <div class="swag-paypal-payment-actions__authorize-button-group">
+
                 {% block swag_paypal_payment_actions_void %}
                     <sw-button v-if="showVoidButton"
-                               @click="spawnModal('void')"
-                               size="small">
+                               size="small"
+                               @click="spawnModal('void')">
                         {{ $tc('swag-paypal-payment.buttons.label.void') }}
                     </sw-button>
                 {% endblock %}
 
                 {% block swag_paypal_payment_actions_capture %}
                     <sw-button v-if="captureableAmount > 0"
-                               @click="spawnModal('capture')"
-                               size="small">
+                               size="small"
+                               @click="spawnModal('capture')">
                         {{ $tc('swag-paypal-payment.buttons.label.capture') }}
                     </sw-button>
                 {% endblock %}
             </div>
+
             {% block swag_paypal_payment_actions_refund %}
                 <sw-button variant="primary"
-                           @click="spawnModal('refund')"
                            size="small"
-                           :disabled="refundableAmount <= 0">
+                           :disabled="refundableAmount <= 0"
+                           @click="spawnModal('refund')">
                     {{ $tc('swag-paypal-payment.buttons.label.refund') }}
                 </sw-button>
             {% endblock %}
+
         </div>
 
         {% block swag_paypal_payment_actions_modal %}

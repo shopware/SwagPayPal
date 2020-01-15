@@ -66,7 +66,7 @@
                 }
             },
             "express": {
-                "cardTitle": "PayPal Express Checkout integration",
+                "cardTitle": "PayPal Express Checkout",
                 "ecsDetailEnabled": {
                     "label": "'Pay now' on detail page:",
                     "helpText": "If this option is active, the Express Checkout button will be shown on each product detail page."
@@ -127,9 +127,9 @@
                 }
             },
             "plus": {
-                "cardTitle": "PayPal Plus integration",
+                "cardTitle": "PayPal PLUS",
                 "plusCheckoutEnabled": {
-                    "label": "Enable PayPal Plus"
+                    "label": "Enable PayPal PLUS"
                 },
                 "plusOverwritePaymentName": {
                     "label": "Overwrite payment method name",

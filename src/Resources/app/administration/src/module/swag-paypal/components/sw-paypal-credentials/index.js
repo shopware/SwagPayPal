@@ -4,6 +4,7 @@ const { Component } = Shopware;
 
 Component.register('sw-paypal-credentials', {
     template,
+
     name: 'SwagPaypalCredentials',
 
     props: {
@@ -30,11 +31,7 @@ Component.register('sw-paypal-credentials', {
         },
 
         checkBoolFieldInheritance(value) {
-            if (typeof value !== 'boolean') {
-                return true;
-            }
-
-            return false;
+            return typeof value !== 'boolean';
         }
     }
 });

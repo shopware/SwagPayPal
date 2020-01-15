@@ -1,7 +1,9 @@
 {% block swag_paypal_content_card_channel_config_behaviour %}
     <sw-card :title="$tc('swag-paypal.settingForm.behaviour.cardTitle')">
+
         {% block swag_paypal_content_card_channel_config_behaviour_settings %}
-            <div class="swag-paypal-settings-behaviour-field" v-if="actualConfigData">
+            <div v-if="actualConfigData" class="swag-paypal-settings-behaviour-field">
+
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_merchant_location %}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.merchantLocation']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.merchantLocation']"
@@ -9,13 +11,13 @@
                                         :label="$tc('swag-paypal.settingForm.behaviour.merchantLocation.label')">
                         <template #content="props">
                             <sw-single-select name="SwagPayPal.settings.merchantLocation"
-                                              :options="merchantLocationOptions"
                                               labelProperty="name"
                                               valueProperty="id"
-                                              @input="props.updateCurrentValue"
+                                              :options="merchantLocationOptions"
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited"
-                                              :value="props.currentValue">
+                                              :value="props.currentValue"
+                                              @input="props.updateCurrentValue">
                             </sw-single-select>
                         </template>
                     </sw-inherit-wrapper>
@@ -28,13 +30,13 @@
                                         :label="$tc('swag-paypal.settingForm.behaviour.intent.label')">
                         <template #content="props">
                             <sw-single-select name="SwagPayPal.settings.intent"
-                                              :options="intentOptions"
                                               labelProperty="name"
                                               valueProperty="id"
-                                              @input="props.updateCurrentValue"
+                                              :options="intentOptions"
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited"
-                                              :value="props.currentValue">
+                                              :value="props.currentValue"
+                                              @input="props.updateCurrentValue">
                             </sw-single-select>
                         </template>
                     </sw-inherit-wrapper>
@@ -82,13 +84,13 @@
                                         :label="$tc('swag-paypal.settingForm.behaviour.landingPage.label')">
                         <template #content="props">
                             <sw-single-select name="SwagPayPal.settings.landingPage"
-                                              :options="landingPageOptions"
                                               labelProperty="name"
                                               valueProperty="id"
-                                              @input="props.updateCurrentValue"
+                                              :options="landingPageOptions"
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited"
-                                              :value="props.currentValue">
+                                              :value="props.currentValue"
+                                              @input="props.updateCurrentValue">
                             </sw-single-select>
                         </template>
                     </sw-inherit-wrapper>
@@ -111,6 +113,7 @@
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
+
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_order_number_prefix %}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.orderNumberPrefix']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.orderNumberPrefix']"

@@ -4,6 +4,7 @@ const { Component } = Shopware;
 
 Component.register('sw-paypal-plus', {
     template,
+
     name: 'SwagPaypalPlus',
 
     props: {

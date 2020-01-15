@@ -34,6 +34,20 @@ Shopware.Component.register('swag-paypal', {
         };
     },
 
+    computed: {
+        testButtonDisabled() {
+            return this.isLoading || !this.clientSecretFilled || !this.clientIdFilled || this.isTesting;
+        },
+
+        showSPBCard() {
+            return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
+        },
+
+        showPlusCard() {
+            return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY;
+        }
+    },
+
     watch: {
         config: {
             handler() {
@@ -59,20 +73,6 @@ Shopware.Component.register('swag-paypal', {
                 }
             },
             deep: true
-        }
-    },
-
-    computed: {
-        testButtonDisabled() {
-            return this.isLoading || !this.clientSecretFilled || !this.clientIdFilled || this.isTesting;
-        },
-
-        showSPBCard() {
-            return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
-        },
-
-        showPlusCard() {
-            return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY;
         }
     },
 

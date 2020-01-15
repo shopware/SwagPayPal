@@ -30,12 +30,6 @@ Component.register('swag-paypal-payment-action-refund', {
         }
     },
 
-    computed: {
-        dateFilter() {
-            return Filter.getByName('date');
-        }
-    },
-
     data() {
         return {
             captures: [],
@@ -48,6 +42,12 @@ Component.register('swag-paypal-payment-action-refund', {
             isLoading: true,
             selectedCaptureId: ''
         };
+    },
+
+    computed: {
+        dateFilter() {
+            return Filter.getByName('date');
+        }
     },
 
     created() {
