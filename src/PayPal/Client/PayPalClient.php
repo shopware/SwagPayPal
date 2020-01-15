@@ -74,7 +74,7 @@ class PayPalClient
     }
 
     /**
-     * @throws PayPalApiException
+     * @throws RequestException
      */
     public function sendPostRequest(string $resourceUri, PayPalStruct $data): array
     {
@@ -94,7 +94,7 @@ class PayPalClient
     }
 
     /**
-     * @throws PayPalApiException
+     * @throws RequestException
      */
     public function sendGetRequest(string $resourceUri): array
     {
@@ -112,7 +112,7 @@ class PayPalClient
     /**
      * @param PayPalStruct[] $data
      *
-     * @throws PayPalApiException
+     * @throws RequestException
      */
     public function sendPatchRequest(string $resourceUri, array $data): array
     {

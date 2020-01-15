@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Checkout\Plus\Service;
 
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Plus\PlusData;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
@@ -16,7 +15,6 @@ use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -64,10 +62,6 @@ class PlusDataService
         $this->localeCodeProvider = $localeCodeProvider;
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     * @throws PayPalSettingsInvalidException
-     */
     public function getPlusData(
         Cart $cart,
         SalesChannelContext $salesChannelContext,
@@ -115,9 +109,6 @@ class PlusDataService
         return $payPalData;
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     private function getPaymentWallLanguage(SalesChannelContext $salesChannelContext): string
     {
         $languageIso = $this->localeCodeProvider->getLocaleCodeFromContext($salesChannelContext->getContext());

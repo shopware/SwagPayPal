@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Payment\Builder;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -53,9 +52,6 @@ abstract class AbstractPaymentBuilder
         $this->localeCodeProvider = $localeCodeProvider;
     }
 
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
     protected function getIntent(): string
     {
         $intent = $this->settings->getIntent();
@@ -81,9 +77,6 @@ abstract class AbstractPaymentBuilder
         return $redirectUrls;
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     protected function getApplicationContext(SalesChannelContext $salesChannelContext): ApplicationContext
     {
         $applicationContext = new ApplicationContext();
@@ -108,9 +101,6 @@ abstract class AbstractPaymentBuilder
         }
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     private function getBrandName(SalesChannelContext $salesChannelContext): string
     {
         $brandName = $this->settings->getBrandName();
@@ -122,9 +112,6 @@ abstract class AbstractPaymentBuilder
         return $brandName;
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     private function useSalesChannelNameAsBrandName(SalesChannelContext $salesChannelContext): string
     {
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();

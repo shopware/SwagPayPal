@@ -9,7 +9,6 @@ namespace Swag\PayPal\Checkout\SPBCheckout;
 
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
@@ -73,9 +72,6 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();

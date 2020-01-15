@@ -21,8 +21,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\StateMachine\Exception\StateMachineNotFoundException;
-use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
 use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
 use Swag\PayPal\Payment\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Payment\Handler\EcsSpbHandler;
@@ -145,9 +143,6 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     /**
      * @throws AsyncPaymentFinalizeException
      * @throws CustomerCanceledAsyncPaymentException
-     * @throws InconsistentCriteriaIdsException
-     * @throws StateMachineNotFoundException
-     * @throws StateMachineStateNotFoundException
      */
     public function finalize(
         AsyncPaymentTransactionStruct $transaction,

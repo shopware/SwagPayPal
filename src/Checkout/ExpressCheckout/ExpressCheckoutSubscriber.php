@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
@@ -62,8 +61,6 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     /**
      * @param NavigationPageLoadedEvent|ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
-     *
-     * @throws InconsistentCriteriaIdsException
      */
     public function addExpressCheckoutDataToPage($event): void
     {

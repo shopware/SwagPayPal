@@ -13,7 +13,6 @@ use Swag\PayPal\PayPal\Api\Payment\Payer\ExecutePayerInfo;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\RequestUri;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
 class PaymentResource
 {
@@ -27,9 +26,6 @@ class PaymentResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
     public function create(Payment $payment, string $salesChannelId, string $partnerAttributionId): Payment
     {
         $paypalClient = $this->payPalClientFactory->createPaymentClient($salesChannelId, $partnerAttributionId);
@@ -43,9 +39,6 @@ class PaymentResource
         return $payment;
     }
 
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
     public function execute(
         string $payerId,
         string $paymentId,
@@ -66,9 +59,6 @@ class PaymentResource
         return $paymentStruct;
     }
 
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
     public function get(string $paymentId, string $salesChannelId): Payment
     {
         $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
@@ -83,8 +73,6 @@ class PaymentResource
 
     /**
      * @param Patch[] $patches
-     *
-     * @throws PayPalSettingsInvalidException
      */
     public function patch(array $patches, string $paymentId, string $salesChannelId): Payment
     {

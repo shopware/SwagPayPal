@@ -9,7 +9,6 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -43,9 +42,6 @@ class PayPalExpressCheckoutDataService
         $this->router = $router;
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     public function getExpressCheckoutButtonData(
         SalesChannelContext $salesChannelContext,
         SwagPayPalSettingStruct $settings,
@@ -62,7 +58,7 @@ class PayPalExpressCheckoutDataService
             return null;
         }
 
-        $buttonData = (new ExpressCheckoutButtonData())->assign([
+        return (new ExpressCheckoutButtonData())->assign([
             'productDetailEnabled' => $settings->getEcsDetailEnabled(),
             'offCanvasEnabled' => $settings->getEcsOffCanvasEnabled(),
             'loginEnabled' => $settings->getEcsLoginEnabled(),
@@ -81,13 +77,8 @@ class PayPalExpressCheckoutDataService
             'approvePaymentUrl' => $this->router->generate('paypal.approve_payment'),
             'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
         ]);
-
-        return $buttonData;
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     private function getInContextButtonLanguage(SwagPayPalSettingStruct $settings, SalesChannelContext $context): string
     {
         if ($settingsLocale = $settings->getEcsButtonLanguageIso()) {

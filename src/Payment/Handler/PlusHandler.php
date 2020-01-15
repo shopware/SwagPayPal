@@ -8,9 +8,7 @@
 namespace Swag\PayPal\Payment\Handler;
 
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -42,10 +40,6 @@ class PlusHandler extends AbstractPaymentHandler
         $this->shippingAddressPatchBuilder = $shippingAddressPatchBuilder;
     }
 
-    /**
-     * @throws AddressNotFoundException
-     * @throws AsyncPaymentProcessException
-     */
     public function handlePlusPayment(
         AsyncPaymentTransactionStruct $transaction,
         RequestDataBag $dataBag,

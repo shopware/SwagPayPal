@@ -12,7 +12,6 @@ use Swag\PayPal\PayPal\Api\CreateWebhooks;
 use Swag\PayPal\PayPal\Api\Patch;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\RequestUri;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 
@@ -30,7 +29,6 @@ class WebhookResource
 
     /**
      * @throws ClientException
-     * @throws PayPalSettingsInvalidException
      * @throws WebhookAlreadyExistsException
      */
     public function createWebhook(string $webhookUrl, CreateWebhooks $createWebhooks, ?string $salesChannelId): string
@@ -55,7 +53,6 @@ class WebhookResource
 
     /**
      * @throws ClientException
-     * @throws PayPalSettingsInvalidException
      * @throws WebhookIdInvalidException
      */
     public function getWebhookUrl(string $webhookId, ?string $salesChannelId): string
@@ -79,7 +76,6 @@ class WebhookResource
 
     /**
      * @throws ClientException
-     * @throws PayPalSettingsInvalidException
      * @throws WebhookIdInvalidException
      */
     public function updateWebhook(string $webhookUrl, string $webhookId, ?string $salesChannelId): void
