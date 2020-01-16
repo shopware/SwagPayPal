@@ -8,15 +8,11 @@
 namespace Swag\PayPal\Payment\Handler;
 
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Payment\Builder\OrderPaymentBuilderInterface;
-use Swag\PayPal\Payment\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
 use Swag\PayPal\PayPal\Api\Payment;
@@ -24,7 +20,6 @@ use Swag\PayPal\PayPal\Api\Payment\PaymentInstruction;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
 class PayPalHandler extends AbstractPaymentHandler
 {
@@ -57,12 +52,7 @@ class PayPalHandler extends AbstractPaymentHandler
     }
 
     /**
-     * @throws AddressNotFoundException
      * @throws AsyncPaymentProcessException
-     * @throws CurrencyNotFoundException
-     * @throws InconsistentCriteriaIdsException
-     * @throws InvalidOrderException
-     * @throws PayPalSettingsInvalidException
      */
     public function handlePayPalPayment(
         AsyncPaymentTransactionStruct $transaction,

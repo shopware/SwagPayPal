@@ -133,7 +133,9 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
      * @return {Promise}
      */
     createOrder() {
-        const csrfToken = { _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-smart-payment-buttons-create-payment-token') };
+        const csrfToken = {
+            _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-smart-payment-buttons-create-payment-token')
+        };
 
         return new Promise(resolve => {
             this._client.post(

@@ -4,6 +4,7 @@ const { Component } = Shopware;
 
 Component.register('sw-paypal-express', {
     template,
+
     name: 'SwagPaypalExpress',
 
     props: {
@@ -17,24 +18,6 @@ Component.register('sw-paypal-express', {
         },
         selectedSalesChannelId: {
             required: true
-        }
-    },
-
-    methods: {
-        checkTextFieldInheritance(value) {
-            if (typeof value !== 'string') {
-                return true;
-            }
-
-            return value.length <= 0;
-        },
-
-        checkBoolFieldInheritance(value) {
-            if (typeof value !== 'boolean') {
-                return true;
-            }
-
-            return false;
         }
     },
 
@@ -70,6 +53,20 @@ Component.register('sw-paypal-express', {
                     name: this.$tc('swag-paypal.settingForm.express.ecsButtonShape.options.rect')
                 }
             ];
+        }
+    },
+
+    methods: {
+        checkTextFieldInheritance(value) {
+            if (typeof value !== 'string') {
+                return true;
+            }
+
+            return value.length <= 0;
+        },
+
+        checkBoolFieldInheritance(value) {
+            return typeof value !== 'boolean';
         }
     }
 });

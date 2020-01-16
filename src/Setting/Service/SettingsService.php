@@ -7,11 +7,7 @@
 
 namespace Swag\PayPal\Setting\Service;
 
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
-use Shopware\Core\Framework\Uuid\Exception\InvalidUuidException;
-use Shopware\Core\System\SystemConfig\Exception\InvalidDomainException;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Setting\SwagPayPalSettingStructValidator;
 
@@ -29,12 +25,6 @@ class SettingsService implements SettingsServiceInterface
         $this->systemConfigService = $systemConfigService;
     }
 
-    /**
-     * @throws InvalidDomainException
-     * @throws PayPalSettingsInvalidException
-     * @throws InconsistentCriteriaIdsException
-     * @throws InvalidUuidException
-     */
     public function getSettings(?string $salesChannelId = null): SwagPayPalSettingStruct
     {
         $values = $this->systemConfigService->getDomain(

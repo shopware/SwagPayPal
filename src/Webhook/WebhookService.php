@@ -12,10 +12,8 @@ use Shopware\Core\Framework\Util\Random;
 use Swag\PayPal\PayPal\Api\CreateWebhooks;
 use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\PayPal\Resource\WebhookResource;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
-use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -64,9 +62,6 @@ class WebhookService implements WebhookServiceInterface
         $this->settingsService = $settingsService;
     }
 
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
     public function registerWebhook(?string $salesChannelId): string
     {
         $settings = $this->settingsService->getSettings($salesChannelId);
@@ -106,9 +101,6 @@ class WebhookService implements WebhookServiceInterface
         }
     }
 
-    /**
-     * @throws WebhookException
-     */
     public function executeWebhook(Webhook $webhook, Context $context): void
     {
         $webhookHandler = $this->webhookRegistry->getWebhookHandler($webhook->getEventType());

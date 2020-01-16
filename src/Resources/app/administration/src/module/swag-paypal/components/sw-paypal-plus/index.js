@@ -1,11 +1,11 @@
-import template from './swag-paypal-credentials.html.twig';
+import template from './swag-paypal-plus.html.twig';
 
 const { Component } = Shopware;
 
-Component.register('sw-paypal-credentials', {
+Component.register('sw-paypal-plus', {
     template,
 
-    name: 'SwagPaypalCredentials',
+    name: 'SwagPaypalPlus',
 
     props: {
         actualConfigData: {

@@ -1,7 +1,9 @@
 {% block swag_paypal_content_card_channel_config_express %}
     <sw-card :title="$tc('swag-paypal.settingForm.express.cardTitle')">
+
         {% block swag_paypal_content_card_channel_config_express_settings %}
-            <div class="swag-paypal-settings-express-fields" v-if="actualConfigData">
+            <div v-if="actualConfigData" class="swag-paypal-settings-express-fields">
+
                 {% block swag_paypal_content_card_channel_config_express_settings_detail_enabled %}
                     <sw-inherit-wrapper
                         v-model="actualConfigData['SwagPayPal.settings.ecsDetailEnabled']"
@@ -106,13 +108,13 @@
                         :label="$tc('swag-paypal.settingForm.express.ecsButtonColor.label')">
                         <template #content="props">
                             <sw-single-select name="SwagPayPal.settings.ecsButtonColor"
-                                              :options="buttonColorOptions"
                                               labelProperty="name"
                                               valueProperty="id"
-                                              @input="props.updateCurrentValue"
+                                              :options="buttonColorOptions"
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited"
-                                              :value="props.currentValue">
+                                              :value="props.currentValue"
+                                              @input="props.updateCurrentValue">
                             </sw-single-select>
                         </template>
                     </sw-inherit-wrapper>
@@ -126,13 +128,13 @@
                         :label="$tc('swag-paypal.settingForm.express.ecsButtonShape.label')">
                         <template #content="props">
                             <sw-single-select name="SwagPayPal.settings.ecsButtonShape"
-                                              :options="buttonShapeOptions"
                                               labelProperty="name"
                                               valueProperty="id"
-                                              @input="props.updateCurrentValue"
+                                              :options="buttonShapeOptions"
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited"
-                                              :value="props.currentValue">
+                                              :value="props.currentValue"
+                                              @input="props.updateCurrentValue">
                             </sw-single-select>
                         </template>
                     </sw-inherit-wrapper>

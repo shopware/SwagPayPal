@@ -17,6 +17,8 @@ use Swag\PayPal\SwagPayPal;
 
 abstract class AbstractPaymentHandler
 {
+    public const PAYPAL_PAYMENT_ID_INPUT_NAME = 'paypalPaymentId';
+
     /**
      * @var PaymentResource
      */

@@ -65,8 +65,6 @@ class WebhookController extends AbstractController
     /**
      * @RouteScope(scopes={"storefront"})
      * @Route("/paypal/webhook/execute", name="paypal.webhook.execute", methods={"POST"})
-     *
-     * @throws BadRequestHttpException
      */
     public function executeWebhook(Request $request, Context $context): Response
     {

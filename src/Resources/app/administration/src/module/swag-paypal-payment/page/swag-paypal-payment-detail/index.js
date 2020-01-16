@@ -17,13 +17,6 @@ Component.register('swag-paypal-payment-detail', {
         Mixin.getByName('notification')
     ],
 
-    watch: {
-        '$route'() {
-            this.resetDataAttributes();
-            this.createdComponent();
-        }
-    },
-
     data() {
         return {
             paymentResource: {},
@@ -84,6 +77,13 @@ Component.register('swag-paypal-payment-detail', {
                     rawData: true
                 }
             ];
+        }
+    },
+
+    watch: {
+        '$route'() {
+            this.resetDataAttributes();
+            this.createdComponent();
         }
     },
 

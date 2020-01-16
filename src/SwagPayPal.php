@@ -49,10 +49,7 @@ class SwagPayPal extends Plugin
         $loader->load('spb_checkout.xml');
         $loader->load('pui_checkout.xml');
         $loader->load('checkout.xml');
-
-        // PayPal Plus was disabled with PT-10610
-        // Will be removed with 1.0.0
-        // $loader->load('plus.xml');
+        $loader->load('plus.xml');
     }
 
     public function install(InstallContext $installContext): void
@@ -76,7 +73,7 @@ class SwagPayPal extends Plugin
             $countryRepository,
             $this->container->get(PluginIdProvider::class),
             $this->container->get(SystemConfigService::class),
-            get_class($this)
+            \get_class($this)
         ))->install($installContext->getContext());
 
         parent::install($installContext);
@@ -111,7 +108,7 @@ class SwagPayPal extends Plugin
             $countryRepository,
             $this->container->get(PluginIdProvider::class),
             $this->container->get(SystemConfigService::class),
-            get_class($this)
+            \get_class($this)
         ))->uninstall($context);
 
         parent::uninstall($uninstallContext);

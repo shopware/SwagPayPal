@@ -11,7 +11,6 @@ use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Api\DoVoid;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\RequestUri;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
 class AuthorizationResource
 {
@@ -25,9 +24,6 @@ class AuthorizationResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
     public function capture(string $authorizationId, Capture $capture, string $salesChannelId): Capture
     {
         $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
@@ -40,9 +36,6 @@ class AuthorizationResource
         return $capture;
     }
 
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
     public function void(string $authorizationId, string $salesChannelId): DoVoid
     {
         $doVoid = new DoVoid();

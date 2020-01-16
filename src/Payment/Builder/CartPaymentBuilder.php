@@ -13,7 +13,6 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Payment\Builder\Util\AmountProvider;
@@ -23,7 +22,6 @@ use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\Transaction;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList\Item;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Util\LocaleCodeProvider;
 
@@ -43,11 +41,6 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         $this->priceFormatter = new PriceFormatter();
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     * @throws InvalidTransactionException
-     * @throws PayPalSettingsInvalidException
-     */
     public function getPayment(
         Cart $cart,
         SalesChannelContext $salesChannelContext,

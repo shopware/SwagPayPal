@@ -9,7 +9,6 @@ namespace Swag\PayPal\Util;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageCollection;
 
@@ -25,9 +24,6 @@ class LocaleCodeProvider
         $this->languageRepository = $languageRepository;
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     public function getLocaleCodeFromContext(Context $context): string
     {
         $languageId = $context->getLanguageId();

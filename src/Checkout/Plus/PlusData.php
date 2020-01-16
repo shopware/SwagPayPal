@@ -46,6 +46,11 @@ class PlusData extends Struct
      */
     protected $checkoutOrderUrl;
 
+    /**
+     * @var string
+     */
+    protected $isEnabledParameterName;
+
     public function getApprovalUrl(): string
     {
         return $this->approvalUrl;
@@ -79,5 +84,10 @@ class PlusData extends Struct
     public function getCheckoutOrderUrl(): string
     {
         return $this->checkoutOrderUrl;
+    }
+
+    public function getIsEnabledParameterName(): string
+    {
+        return $this->isEnabledParameterName;
     }
 }

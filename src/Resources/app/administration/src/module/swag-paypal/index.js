@@ -4,6 +4,7 @@ import './components/sw-paypal-credentials';
 import './components/sw-paypal-express';
 import './components/sw-paypal-behaviour';
 import './components/sw-paypal-spb';
+import './components/sw-paypal-plus';
 
 import deDE from './snippet/de-DE.json';
 import enGB from './snippet/en-GB.json';

@@ -9,7 +9,6 @@ namespace Swag\PayPal\Checkout\SPBCheckout;
 
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
@@ -18,7 +17,6 @@ use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Util\PaymentTokenExtractor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -69,9 +67,7 @@ class SPBCheckoutController extends AbstractController
      * @RouteScope(scopes={"sales-channel-api"})
      * @Route("/sales-channel-api/v{version}/_action/paypal/spb/create-payment", name="sales-channel-api.action.paypal.spb.create_payment", methods={"POST"})
      *
-     * @throws AddressNotFoundException
      * @throws CustomerNotLoggedInException
-     * @throws PayPalSettingsInvalidException
      */
     public function createPayment(SalesChannelContext $salesChannelContext): JsonResponse
     {

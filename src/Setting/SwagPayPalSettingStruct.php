@@ -13,6 +13,13 @@ use Swag\PayPal\PayPal\PaymentIntent;
 
 class SwagPayPalSettingStruct extends Struct
 {
+    public const MERCHANT_LOCATION_GERMANY = 'germany';
+    public const MERCHANT_LOCATION_OTHER = 'other';
+    private const VALID_MERCHANT_LOCATIONS = [
+        self::MERCHANT_LOCATION_GERMANY,
+        self::MERCHANT_LOCATION_OTHER,
+    ];
+
     /**
      * @var string
      */
@@ -67,6 +74,11 @@ class SwagPayPalSettingStruct extends Struct
      * @var string|null
      */
     protected $orderNumberPrefix;
+
+    /**
+     * @var string
+     */
+    protected $merchantLocation = self::MERCHANT_LOCATION_GERMANY;
 
     /**
      * @var bool
@@ -141,7 +153,7 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var bool
      */
-    protected $plusEnabled = false;
+    protected $plusCheckoutEnabled = false;
 
     /**
      * @var string|null
@@ -261,6 +273,21 @@ class SwagPayPalSettingStruct extends Struct
     public function setOrderNumberPrefix(string $orderNumberPrefix): void
     {
         $this->orderNumberPrefix = $orderNumberPrefix;
+    }
+
+    public function getMerchantLocation(): string
+    {
+        return $this->merchantLocation;
+    }
+
+    public function setMerchantLocation(string $merchantLocation): void
+    {
+        if (!\in_array($merchantLocation, self::VALID_MERCHANT_LOCATIONS, true)) {
+            throw new \LogicException(
+                sprintf('"%s" is not a valid value for the merchant location', $merchantLocation)
+            );
+        }
+        $this->merchantLocation = $merchantLocation;
     }
 
     public function getEcsDetailEnabled(): bool
@@ -403,14 +430,14 @@ class SwagPayPalSettingStruct extends Struct
         $this->spbButtonLanguageIso = $spbButtonLanguageIso;
     }
 
-    public function getPlusEnabled(): bool
+    public function getPlusCheckoutEnabled(): bool
     {
-        return $this->plusEnabled;
+        return $this->plusCheckoutEnabled;
     }
 
-    public function setPlusEnabled(bool $plusEnabled): void
+    public function setPlusCheckoutEnabled(bool $plusCheckoutEnabled): void
     {
-        $this->plusEnabled = $plusEnabled;
+        $this->plusCheckoutEnabled = $plusCheckoutEnabled;
     }
 
     public function getPlusOverwritePaymentName(): ?string

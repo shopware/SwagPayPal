@@ -2,6 +2,7 @@
     <sw-modal variant="small"
               :title="$tc(`swag-paypal-payment.modal.title.refund`)"
               @modal-close="$emit('modal-close')">
+
         {% block swag_paypal_payment_action_refund_invoice_select %}
             <sw-select-field :label="$tc('swag-paypal-payment.refundAction.invoiceSelect.label')"
                              v-model="selectedCaptureId"
@@ -12,18 +13,21 @@
                 </option>
             </sw-select-field>
         {% endblock %}
+
         {% block swag_paypal_payment_action_refund_invoice_number %}
             <sw-text-field v-model="refundInvoiceNumber"
                            :label="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.label')"
                            :placeholder="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.placeholder')">
             </sw-text-field>
         {% endblock %}
+
         {% block swag_paypal_payment_action_refund_reason %}
             <sw-text-field v-model="refundReason"
                            :label="$tc('swag-paypal-payment.refundAction.refundReason.label')"
                            :placeholder="$tc('swag-paypal-payment.refundAction.refundReason.placeholder')">
             </sw-text-field>
         {% endblock %}
+
         {% block swag_paypal_payment_action_refund_amount %}
             <sw-number-field v-model="refundAmount"
                              :max="refundableAmount"
@@ -32,6 +36,7 @@
                              :suffix="selectedCapture.currency">
             </sw-number-field>
         {% endblock %}
+
         {% block swag_paypal_payment_action_refund_description %}
             <sw-textarea-field
                 v-model="refundDescription"
@@ -39,6 +44,7 @@
                 :label="$tc('swag-paypal-payment.refundAction.refundDescription.label')">
             </sw-textarea-field>
         {% endblock %}
+
         {% block swag_paypal_payment_action_refund_confirm_button %}
             <template #modal-footer>
                 <sw-button variant="primary"
@@ -47,6 +53,7 @@
                 </sw-button>
             </template>
         {% endblock %}
+
         <sw-loader v-if="isLoading"></sw-loader>
     </sw-modal>
 {% endblock %}

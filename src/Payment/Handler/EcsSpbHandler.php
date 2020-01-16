@@ -8,13 +8,9 @@
 namespace Swag\PayPal\Payment\Handler;
 
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Currency\CurrencyCollection;
@@ -26,13 +22,11 @@ use Swag\PayPal\Payment\Patch\ItemListPatchBuilder;
 use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class EcsSpbHandler extends AbstractPaymentHandler
 {
-    public const PAYPAL_PAYMENT_ID_INPUT_NAME = 'paypalPaymentId';
     public const PAYPAL_PAYER_ID_INPUT_NAME = 'paypalPayerId';
 
     /**
@@ -77,14 +71,6 @@ class EcsSpbHandler extends AbstractPaymentHandler
         $this->currencyRepository = $currencyRepository;
     }
 
-    /**
-     * @throws AddressNotFoundException
-     * @throws AsyncPaymentProcessException
-     * @throws CurrencyNotFoundException
-     * @throws InconsistentCriteriaIdsException
-     * @throws InvalidOrderException
-     * @throws PayPalSettingsInvalidException
-     */
     public function handleEcsPayment(
         AsyncPaymentTransactionStruct $transaction,
         RequestDataBag $dataBag,
@@ -163,7 +149,6 @@ class EcsSpbHandler extends AbstractPaymentHandler
 
     /**
      * @throws CurrencyNotFoundException
-     * @throws InconsistentCriteriaIdsException
      */
     private function getCurrency(string $currencyId, Context $context): CurrencyEntity
     {

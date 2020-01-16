@@ -8,10 +8,8 @@
 namespace Swag\PayPal\Payment\Builder;
 
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
@@ -23,7 +21,6 @@ use Swag\PayPal\Payment\Service\TransactionValidator;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\Transaction;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\ItemList;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Util\LocaleCodeProvider;
 
@@ -46,11 +43,6 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 
     /**
      * {@inheritdoc}
-     *
-     * @throws CurrencyNotFoundException
-     * @throws InconsistentCriteriaIdsException
-     * @throws InvalidOrderException
-     * @throws PayPalSettingsInvalidException
      */
     public function getPayment(
         AsyncPaymentTransactionStruct $paymentTransaction,
@@ -74,11 +66,6 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         return $requestPayment;
     }
 
-    /**
-     * @throws CurrencyNotFoundException
-     * @throws InconsistentCriteriaIdsException
-     * @throws InvalidOrderException
-     */
     private function createTransaction(
         AsyncPaymentTransactionStruct $paymentTransaction,
         Context $context
@@ -131,7 +118,6 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 
     /**
      * @throws CurrencyNotFoundException
-     * @throws InconsistentCriteriaIdsException
      */
     private function getCurrency(string $currencyId, Context $context): CurrencyEntity
     {

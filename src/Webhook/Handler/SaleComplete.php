@@ -9,7 +9,6 @@ namespace Swag\PayPal\Webhook\Handler;
 
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Webhook;
-use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
 class SaleComplete extends AbstractWebhookHandler
@@ -24,8 +23,6 @@ class SaleComplete extends AbstractWebhookHandler
 
     /**
      * {@inheritdoc}
-     *
-     * @throws WebhookOrderTransactionNotFoundException
      */
     public function invoke(Webhook $webhook, Context $context): void
     {

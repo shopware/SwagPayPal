@@ -8,10 +8,10 @@
 namespace Swag\PayPal\Checkout\Plus\Service;
 
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Plus\PlusData;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
+use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
@@ -62,9 +62,6 @@ class PlusDataService
         $this->localeCodeProvider = $localeCodeProvider;
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     public function getPlusData(
         Cart $cart,
         SalesChannelContext $salesChannelContext,
@@ -99,6 +96,7 @@ class PlusDataService
             'paymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
             'paypalPaymentId' => $response->getId(),
             'checkoutOrderUrl' => $this->router->generate('sales-channel-api.checkout.order.create', ['version' => 1]),
+            'isEnabledParameterName' => PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID,
         ]);
         $billingAddress = $customer->getDefaultBillingAddress();
         if ($billingAddress !== null) {
@@ -111,9 +109,6 @@ class PlusDataService
         return $payPalData;
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     private function getPaymentWallLanguage(SalesChannelContext $salesChannelContext): string
     {
         $languageIso = $this->localeCodeProvider->getLocaleCodeFromContext($salesChannelContext->getContext());

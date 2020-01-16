@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Checkout\Plus;
 
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedEvent;
@@ -54,9 +53,6 @@ class PlusSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
@@ -70,7 +66,9 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$settings->getPlusEnabled()) {
+        if (!$settings->getPlusCheckoutEnabled()
+            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER
+        ) {
             return;
         }
 
@@ -94,7 +92,9 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$settings->getPlusEnabled()) {
+        if (!$settings->getPlusCheckoutEnabled()
+            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER
+        ) {
             return;
         }
 

@@ -26,6 +26,11 @@
             },
             "behaviour": {
                 "cardTitle": "Behaviour",
+                "merchantLocation": {
+                    "label": "Merchant location",
+                    "germany": "Germany",
+                    "other": "Other merchant location"
+                },
                 "intent": {
                     "label": "Payment acquisition",
                     "sale": "Complete payment immediately (Sale)",
@@ -61,7 +66,7 @@
                 }
             },
             "express": {
-                "cardTitle": "PayPal Express Checkout integration",
+                "cardTitle": "PayPal Express Checkout",
                 "ecsDetailEnabled": {
                     "label": "'Pay now' on detail page:",
                     "helpText": "If this option is active, the Express Checkout button will be shown on each product detail page."
@@ -122,8 +127,20 @@
                 }
             },
             "plus": {
-                "plusOverwritePaymentName": "PayPal, direct debit or credit card",
-                "plusExtendPaymentDescription": "Payment by direct debit or credit card is possible without PayPal account."
+                "cardTitle": "PayPal PLUS",
+                "plusCheckoutEnabled": {
+                    "label": "Enable PayPal PLUS"
+                },
+                "plusOverwritePaymentName": {
+                    "label": "Overwrite payment method name",
+                    "helpText": "With this setting you are able to overwrite the payment method name of PayPal. Note: This will only affect the storefront view.",
+                    "defaultText": "PayPal, direct debit or credit card"
+                },
+                "plusExtendPaymentDescription": {
+                    "label": "Extend payment method description",
+                    "helpText": "With this setting you are able to extend the payment method description of PayPal. Note: This will only affect the storefront view.",
+                    "defaultText": "Payment by direct debit or credit card is possible without PayPal account."
+                }
             },
             "titleSuccess": "Success",
             "titleError": "Error",

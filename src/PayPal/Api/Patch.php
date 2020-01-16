@@ -37,6 +37,19 @@ class Patch extends PayPalStruct
         $this->value = $value;
     }
 
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * @return array|string
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
     protected function setOp(string $op): void
     {
         $this->op = $op;

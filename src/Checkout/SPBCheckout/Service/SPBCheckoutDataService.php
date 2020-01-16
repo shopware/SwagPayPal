@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Checkout\SPBCheckout\Service;
 
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -42,15 +41,13 @@ class SPBCheckoutDataService
         $this->router = $router;
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     public function getCheckoutData(
         SalesChannelContext $context,
         SwagPayPalSettingStruct $settings
     ): SPBCheckoutButtonData {
         $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context->getContext());
-        $expressCheckoutData = (new SPBCheckoutButtonData())->assign([
+
+        return (new SPBCheckoutButtonData())->assign([
             'clientId' => $settings->getClientId(),
             'languageIso' => $this->getButtonLanguage($settings, $context),
             'currency' => $context->getCurrency()->getIsoCode(),
@@ -62,13 +59,8 @@ class SPBCheckoutDataService
             'buttonShape' => $settings->getSpbButtonShape(),
             'buttonColor' => $settings->getSpbButtonColor(),
         ]);
-
-        return $expressCheckoutData;
     }
 
-    /**
-     * @throws InconsistentCriteriaIdsException
-     */
     private function getButtonLanguage(SwagPayPalSettingStruct $settings, SalesChannelContext $context): string
     {
         if ($settingsLocale = $settings->getSpbButtonLanguageIso()) {

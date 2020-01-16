@@ -26,6 +26,11 @@
             },
             "behaviour": {
                 "cardTitle": "Verhalten",
+                "merchantLocation": {
+                    "label": "Händlerstandort",
+                    "germany": "Deutschland",
+                    "other": "Anderer Händlerstandort"
+                },
                 "intent": {
                     "label": "Zahlungsabschluss",
                     "sale": "Zahlung sofort abschließen (Sale)",
@@ -61,7 +66,7 @@
                 }
             },
             "express": {
-                "cardTitle": "PayPal Express Checkout Integration",
+                "cardTitle": "PayPal Express Checkout",
                 "ecsDetailEnabled": {
                     "label": "'Direkt zu PayPal' auf Detailseite:",
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf jeder Produktdetailseite angezeigt."
@@ -122,8 +127,20 @@
                 }
             },
             "plus": {
-                "plusOverwritePaymentName": "PayPal, Lastschrift oder Kreditkarte",
-                "plusExtendPaymentDescription": "Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal-Konto möglich."
+                "cardTitle": "PayPal PLUS",
+                "plusCheckoutEnabled": {
+                    "label": "PayPal PLUS aktivieren"
+                },
+                "plusOverwritePaymentName": {
+                    "label": "Zahlungsartbezeichnung überschreiben",
+                    "helpText": "Mit dieser Einstellung kannst du die Zahlungsart-Bezeichnung von PayPal überschreiben. Hinweis: Dies betrifft nur die Storefront-Ansicht.",
+                    "defaultText": "PayPal, Lastschrift oder Kreditkarte"
+                },
+                "plusExtendPaymentDescription": {
+                    "label": "Zahlungsartbeschreibung ergänzen",
+                    "helpText": "Mit dieser Einstellung kannst du die Zahlungsart-Beschreibung von PayPal ergänzen. Hinweis: Dies betrifft nur die Storefront-Ansicht.",
+                    "defaultText": "Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal-Konto möglich."
+                }
             },
             "titleSuccess": "Erfolg",
             "titleError": "Fehler",

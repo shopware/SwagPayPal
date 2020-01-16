@@ -9,15 +9,10 @@ namespace Swag\PayPal\Payment;
 
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
-use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
-use Shopware\Core\System\StateMachine\Exception\StateMachineNotFoundException;
 use Swag\PayPal\Payment\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Api\Capture\Amount as CaptureAmount;
@@ -29,7 +24,6 @@ use Swag\PayPal\PayPal\Resource\CaptureResource;
 use Swag\PayPal\PayPal\Resource\OrdersResource;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\PayPal\Resource\SaleResource;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -104,10 +98,6 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Route("/api/v{version}/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"})
-     *
-     * @throws InconsistentCriteriaIdsException
-     * @throws OrderNotFoundException
-     * @throws PayPalSettingsInvalidException
      */
     public function paymentDetails(string $orderId, string $paymentId, Context $context): JsonResponse
     {
@@ -119,14 +109,7 @@ class PayPalPaymentController extends AbstractController
     /**
      * @Route("/api/v{version}/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"})
      *
-     * @throws IllegalTransitionException
-     * @throws InconsistentCriteriaIdsException
-     * @throws InvalidOrderException
-     * @throws OrderNotFoundException
      * @throws RequiredParameterInvalidException
-     * @throws StateMachineNotFoundException
-     * @throws InvalidTransactionException
-     * @throws PayPalSettingsInvalidException
      */
     public function refundPayment(
         Request $request,
@@ -164,14 +147,7 @@ class PayPalPaymentController extends AbstractController
     /**
      * @Route("/api/v{version}/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"})
      *
-     * @throws IllegalTransitionException
-     * @throws InconsistentCriteriaIdsException
-     * @throws InvalidOrderException
-     * @throws InvalidTransactionException
-     * @throws OrderNotFoundException
-     * @throws PayPalSettingsInvalidException
      * @throws RequiredParameterInvalidException
-     * @throws StateMachineNotFoundException
      */
     public function capturePayment(
         Request $request,
@@ -206,14 +182,7 @@ class PayPalPaymentController extends AbstractController
     /**
      * @Route("/api/v{version}/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"})
      *
-     * @throws IllegalTransitionException
-     * @throws InconsistentCriteriaIdsException
-     * @throws InvalidOrderException
-     * @throws InvalidTransactionException
-     * @throws OrderNotFoundException
-     * @throws PayPalSettingsInvalidException
      * @throws RequiredParameterInvalidException
-     * @throws StateMachineNotFoundException
      */
     public function voidPayment(
         Context $context,
@@ -244,7 +213,6 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @throws InconsistentCriteriaIdsException
      * @throws OrderNotFoundException
      */
     private function getSalesChannelIdByOrderId(string $orderId, Context $context): string

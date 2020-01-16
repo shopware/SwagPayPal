@@ -21,8 +21,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\StateMachine\Exception\StateMachineNotFoundException;
-use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
 use Swag\PayPal\Payment\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Payment\Handler\PayPalHandler;
 use Swag\PayPal\PayPal\Api\Payment;
@@ -98,9 +96,6 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
     /**
      * @throws AsyncPaymentFinalizeException
      * @throws CustomerCanceledAsyncPaymentException
-     * @throws InconsistentCriteriaIdsException
-     * @throws StateMachineNotFoundException
-     * @throws StateMachineStateNotFoundException
      */
     public function finalize(
         AsyncPaymentTransactionStruct $transaction,
@@ -163,12 +158,11 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
             return;
         }
 
-        $data = [
+        $this->orderTransactionRepo->update([[
             'id' => $transactionId,
             'customFields' => [
                 SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION => $paymentInstructions,
             ],
-        ];
-        $this->orderTransactionRepo->update([$data], $context);
+        ]], $context);
     }
 }

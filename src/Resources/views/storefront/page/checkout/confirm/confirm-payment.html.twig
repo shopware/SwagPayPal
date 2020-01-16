@@ -10,7 +10,7 @@
              data-swag-pay-pal-plus-payment-wall-checkout-order-token="{{ sw_csrf('sales-channel-api.checkout.order.create', {"mode": "token"}) }}"
              data-swag-pay-pal-plus-payment-wall-options="{{ payPalPlusData|json_encode }}">
         </div>
-        <div id="ppplus" data-swag-pay-pal-plus-payment-wall-handler-options="{{ payPalPlusData|json_encode }}"></div>
+        <div id="ppplus"></div>
     {% endif %}
 {% endblock %}
 
