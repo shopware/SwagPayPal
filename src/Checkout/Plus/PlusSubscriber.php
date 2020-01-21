@@ -86,6 +86,7 @@ class PlusSubscriber implements EventSubscriberInterface
         }
 
         $this->changePaymentMethod($salesChannelContext->getPaymentMethod());
+
         $payPalPaymentId = $plusData->getPaymentMethodId();
         $payPalPaymentMethodFromCollection = $event->getPage()->getPaymentMethods()->get($payPalPaymentId);
         if ($payPalPaymentMethodFromCollection !== null) {

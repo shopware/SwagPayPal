@@ -66,9 +66,8 @@ class PaymentStatusUtilTest extends TestCase
 
         $this->paymentStatusUtil->applyVoidStateToOrder($orderId, Context::createDefaultContext());
 
-        /** @var mixed $changedOrder */
         $changedOrder = $this->getOrder($orderId);
-        static::assertInstanceOf(OrderEntity::class, $changedOrder);
+        static::assertNotNull($changedOrder);
 
         $orderTransactionCollection = $changedOrder->getTransactions();
         static::assertNotNull($orderTransactionCollection);
@@ -114,9 +113,8 @@ class PaymentStatusUtilTest extends TestCase
         $orderId = $this->createBasicOrder();
         $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $request, Context::createDefaultContext());
 
-        /** @var mixed $changedOrder */
         $changedOrder = $this->getOrder($orderId);
-        static::assertInstanceOf(OrderEntity::class, $changedOrder);
+        static::assertNotNull($changedOrder);
 
         $orderTransactionCollection = $changedOrder->getTransactions();
         static::assertNotNull($orderTransactionCollection);
@@ -160,9 +158,8 @@ class PaymentStatusUtilTest extends TestCase
         $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $captureRequest, Context::createDefaultContext());
         $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $request, Context::createDefaultContext());
 
-        /** @var mixed $changedOrder */
         $changedOrder = $this->getOrder($orderId);
-        static::assertInstanceOf(OrderEntity::class, $changedOrder);
+        static::assertNotNull($changedOrder);
 
         $orderTransactionCollection = $changedOrder->getTransactions();
         static::assertNotNull($orderTransactionCollection);

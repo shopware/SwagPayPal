@@ -8,20 +8,16 @@
 namespace Swag\PayPal\Payment;
 
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
-use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Payment\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Payment\Handler\PlusHandler;
@@ -31,7 +27,6 @@ use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\PaymentStatus;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -110,9 +105,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         if ($dataBag->get(self::PAYPAL_EXPRESS_CHECKOUT_ID)) {
             try {
                 return $this->ecsSpbHandler->handleEcsPayment($transaction, $dataBag, $salesChannelContext, $customer);
-            } catch (AddressNotFoundException | CurrencyNotFoundException | InconsistentCriteriaIdsException
-            | InvalidOrderException | PayPalSettingsInvalidException $e
-            ) {
+            } catch (\Exception $e) {
                 throw new AsyncPaymentProcessException($transaction->getOrderTransaction()->getId(), $e->getMessage());
             }
         }
@@ -124,16 +117,14 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         if ($dataBag->getBoolean(self::PAYPAL_PLUS_CHECKOUT_ID)) {
             try {
                 return $this->plusHandler->handlePlusPayment($transaction, $dataBag, $salesChannelContext, $customer);
-            } catch (AddressNotFoundException $e) {
+            } catch (\Exception $e) {
                 throw new AsyncPaymentProcessException($transaction->getOrderTransaction()->getId(), $e->getMessage());
             }
         }
 
         try {
             $response = $this->payPalHandler->handlePayPalPayment($transaction, $salesChannelContext, $customer);
-        } catch (AddressNotFoundException | CurrencyNotFoundException | InvalidOrderException
-            | InconsistentCriteriaIdsException | PayPalSettingsInvalidException $e
-        ) {
+        } catch (\Exception $e) {
             throw new AsyncPaymentProcessException($transaction->getOrderTransaction()->getId(), $e->getMessage());
         }
 
