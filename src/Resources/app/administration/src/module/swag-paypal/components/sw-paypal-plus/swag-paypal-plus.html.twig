@@ -21,42 +21,6 @@
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
-
-                {% block swag_paypal_content_card_channel_config_plus_settings_overwrite_payment_name %}
-                    <sw-inherit-wrapper
-                        v-model="actualConfigData['SwagPayPal.settings.plusOverwritePaymentName']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.plusOverwritePaymentName']"
-                        :customInheritationCheckFunction="checkTextFieldInheritance">
-                        <template #content="props">
-                            <sw-text-field name="SwagPayPal.settings.plusOverwritePaymentName"
-                                           :mapInheritance="props"
-                                           :label="$tc('swag-paypal.settingForm.plus.plusOverwritePaymentName.label')"
-                                           :helpText="$tc('swag-paypal.settingForm.plus.plusOverwritePaymentName.helpText')"
-                                           :disabled="props.isInherited"
-                                           :value="props.currentValue"
-                                           @change="props.updateCurrentValue">
-                            </sw-text-field>
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
-
-                {% block swag_paypal_content_card_channel_config_plus_settings_extend_payment_description %}
-                    <sw-inherit-wrapper
-                        v-model="actualConfigData['SwagPayPal.settings.plusExtendPaymentDescription']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.plusExtendPaymentDescription']"
-                        :customInheritationCheckFunction="checkTextFieldInheritance">
-                        <template #content="props">
-                            <sw-text-field name="SwagPayPal.settings.plusExtendPaymentDescription"
-                                           :mapInheritance="props"
-                                           :label="$tc('swag-paypal.settingForm.plus.plusExtendPaymentDescription.label')"
-                                           :helpText="$tc('swag-paypal.settingForm.plus.plusExtendPaymentDescription.helpText')"
-                                           :disabled="props.isInherited"
-                                           :value="props.currentValue"
-                                           @change="props.updateCurrentValue">
-                            </sw-text-field>
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
             </div>
         {% endblock %}
     </sw-card>

@@ -130,16 +130,6 @@
                 "cardTitle": "PayPal PLUS",
                 "plusCheckoutEnabled": {
                     "label": "Enable PayPal PLUS"
-                },
-                "plusOverwritePaymentName": {
-                    "label": "Overwrite payment method name",
-                    "helpText": "With this setting you are able to overwrite the payment method name of PayPal. Note: This will only affect the storefront view.",
-                    "defaultText": "PayPal, direct debit or credit card"
-                },
-                "plusExtendPaymentDescription": {
-                    "label": "Extend payment method description",
-                    "helpText": "With this setting you are able to extend the payment method description of PayPal. Note: This will only affect the storefront view.",
-                    "defaultText": "Payment by direct debit or credit card is possible without PayPal account."
                 }
             },
             "titleSuccess": "Success",

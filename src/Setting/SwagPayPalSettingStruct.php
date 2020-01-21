@@ -155,16 +155,6 @@ class SwagPayPalSettingStruct extends Struct
      */
     protected $plusCheckoutEnabled = false;
 
-    /**
-     * @var string|null
-     */
-    protected $plusOverwritePaymentName;
-
-    /**
-     * @var string|null
-     */
-    protected $plusExtendPaymentDescription;
-
     public function getClientId(): string
     {
         return $this->clientId;
@@ -438,25 +428,5 @@ class SwagPayPalSettingStruct extends Struct
     public function setPlusCheckoutEnabled(bool $plusCheckoutEnabled): void
     {
         $this->plusCheckoutEnabled = $plusCheckoutEnabled;
-    }
-
-    public function getPlusOverwritePaymentName(): ?string
-    {
-        return $this->plusOverwritePaymentName;
-    }
-
-    public function setPlusOverwritePaymentName(string $plusOverwritePaymentName): void
-    {
-        $this->plusOverwritePaymentName = $plusOverwritePaymentName;
-    }
-
-    public function getPlusExtendPaymentDescription(): ?string
-    {
-        return $this->plusExtendPaymentDescription;
-    }
-
-    public function setPlusExtendPaymentDescription(string $plusExtendPaymentDescription): void
-    {
-        $this->plusExtendPaymentDescription = $plusExtendPaymentDescription;
     }
 }

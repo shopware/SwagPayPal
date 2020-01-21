@@ -21,7 +21,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InconsistentCriteriaIdsException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
 use Swag\PayPal\Payment\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Payment\Handler\PayPalHandler;
@@ -44,6 +43,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     public const PAYPAL_EXPRESS_CHECKOUT_ID = 'isPayPalExpressCheckout';
     public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
     public const PAYPAL_PLUS_CHECKOUT_ID = 'isPayPalPlusCheckout';
+    public const PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
 
     /**
      * @var PaymentResource
@@ -162,7 +162,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
         $isExpressCheckout = $request->query->getBoolean(self::PAYPAL_EXPRESS_CHECKOUT_ID);
         $isSPBCheckout = $request->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ID);
-        $isPlus = $request->query->getBoolean(PlusPaymentFinalizeController::IS_PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER);
+        $isPlus = $request->query->getBoolean(self::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER);
         $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout, $isPlus);
 
         try {

@@ -28,7 +28,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
 use Swag\PayPal\Payment\Handler\AbstractPaymentHandler;
 use Swag\PayPal\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Payment\Handler\PayPalHandler;
@@ -239,212 +238,67 @@ Customer is not logged in.');
 
     public function testFinalizeSale(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
-
-        $request = $this->createRequest();
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $container = $this->getContainer();
-        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
-        $handler->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
-            $request,
-            $salesChannelContext
-        );
-
-        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_PAID,
-            $container,
-            $salesChannelContext->getContext()
-        );
-
-        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
-        static::assertNotNull($transaction);
-        static::assertNotNull($expectedStateId);
-        static::assertSame($expectedStateId, $transaction->getStateId());
+        $this->assertFinalizeRequest($this->createRequest());
     }
 
     public function testFinalizeEcs(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
-
         $request = $this->createRequest();
         $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, true);
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $container = $this->getContainer();
-        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
-        $handler->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
-            $request,
-            $salesChannelContext
-        );
-
-        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_PAID,
-            $container,
-            $salesChannelContext->getContext()
-        );
-
-        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
-        static::assertNotNull($transaction);
-        static::assertNotNull($expectedStateId);
-        static::assertSame($expectedStateId, $transaction->getStateId());
+        $this->assertFinalizeRequest($request);
     }
 
     public function testFinalizeSpb(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
-
         $request = $this->createRequest();
-        $request->query->set('isPayPalSpbCheckout', true);
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $container = $this->getContainer();
-        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
-        $handler->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
-            $request,
-            $salesChannelContext
-        );
-
-        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_PAID,
-            $container,
-            $salesChannelContext->getContext()
-        );
-
-        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
-        static::assertNotNull($transaction);
-        static::assertNotNull($expectedStateId);
-        static::assertSame($expectedStateId, $transaction->getStateId());
+        $request->query->set(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID, true);
+        $this->assertFinalizeRequest($request);
     }
 
     public function testFinalizePlus(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
-
         $request = $this->createRequest();
-        $request->query->set(PlusPaymentFinalizeController::IS_PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, true);
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $container = $this->getContainer();
-        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
-        $handler->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
-            $request,
-            $salesChannelContext
-        );
-
-        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_PAID,
-            $container,
-            $salesChannelContext->getContext()
-        );
-
-        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
-        static::assertNotNull($transaction);
-        static::assertNotNull($expectedStateId);
-        static::assertSame($expectedStateId, $transaction->getStateId());
+        $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, true);
+        $this->assertFinalizeRequest($request);
     }
 
     public function testFinalizeAuthorization(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
-
         $request = $this->createRequest();
         $request->query->set(
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
             ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE
         );
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $container = $this->getContainer();
-        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
-        $handler->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
-            $request,
-            $salesChannelContext
-        );
-
-        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_OPEN,
-            $container,
-            $salesChannelContext->getContext()
-        );
-        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
-        static::assertNotNull($transaction);
-        static::assertNotNull($expectedStateId);
-        static::assertSame($expectedStateId, $transaction->getStateId());
+        $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_OPEN);
     }
 
     public function testFinalizeOrder(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
-
         $request = $this->createRequest();
         $request->query->set(
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
             ConstantsForTesting::PAYER_ID_PAYMENT_ORDER
         );
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $container = $this->getContainer();
-        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
-        $handler->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
-            $request,
-            $salesChannelContext
-        );
-
-        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_OPEN,
-            $container,
-            $salesChannelContext->getContext()
-        );
-
-        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
-        static::assertNotNull($transaction);
-        static::assertNotNull($expectedStateId);
-        static::assertSame($expectedStateId, $transaction->getStateId());
+        $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_OPEN);
     }
 
     public function testFinalizeWithCancel(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
-
-        $transactionId = 'testTransactionId';
-        $request = new Request(['cancel' => true]);
-        $context = Generator::createSalesChannelContext();
         $this->expectException(CustomerCanceledAsyncPaymentException::class);
         $this->expectExceptionMessage('The customer canceled the external payment process. Additional information:
 Customer canceled the payment on the PayPal page');
-        $handler->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
-            $request,
-            $context
+        $this->createPayPalPaymentHandler()->finalize(
+            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, 'testTransactionId'),
+            new Request(['cancel' => true]),
+            Generator::createSalesChannelContext()
         );
     }
 
     public function testFinalizePaymentNotCompleted(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
-
         $request = $this->createRequest();
         $request->query->set(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID, self::PAYER_ID_PAYMENT_INCOMPLETE);
-        $salesChannelContext = Generator::createSalesChannelContext();
-        $container = $this->getContainer();
-        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
-        $handler->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
-            $request,
-            $salesChannelContext
-        );
-
-        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_OPEN,
-            $container,
-            $salesChannelContext->getContext()
-        );
-
-        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
-        static::assertNotNull($transaction);
-        static::assertNotNull($expectedStateId);
-        static::assertSame($expectedStateId, $transaction->getStateId());
+        $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_OPEN);
     }
 
     public function testFinalizeWithException(): void
@@ -452,22 +306,19 @@ Customer canceled the payment on the PayPal page');
         $settings = $this->createDefaultSettingStruct();
         $settings->addExtension(self::PAYPAL_RESOURCE_THROWS_EXCEPTION, new Entity());
 
-        $handler = $this->createPayPalPaymentHandler($settings);
-
-        $transactionId = 'testTransactionId';
         $request = $this->createRequest();
         $request->query->set(
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
             ConstantsForTesting::PAYER_ID_PAYMENT_ORDER
         );
-        $salesChannelContext = Generator::createSalesChannelContext();
+
         $this->expectException(AsyncPaymentFinalizeException::class);
         $this->expectExceptionMessage('The asynchronous payment finalize was interrupted due to the following error:
 An error occurred during the communication with PayPal');
-        $handler->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
+        $this->createPayPalPaymentHandler($settings)->finalize(
+            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, 'testTransactionId'),
             $request,
-            $salesChannelContext
+            Generator::createSalesChannelContext()
         );
     }
 
@@ -504,12 +355,10 @@ An error occurred during the communication with PayPal');
 
     private function createRequest(): Request
     {
-        $request = new Request([
+        return new Request([
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID => 'testPayerId',
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID => 'testPaymentId',
         ]);
-
-        return $request;
     }
 
     private function createCustomer(): CustomerEntity
@@ -556,5 +405,33 @@ An error occurred during the communication with PayPal');
             ->addAssociation('defaultShippingAddress.country');
 
         return $customerRepo->search($criteria, $context)->first();
+    }
+
+    private function assertFinalizeRequest(
+        Request $request,
+        string $state = OrderTransactionStates::STATE_PAID
+    ): void {
+        $handler = $this->createPayPalPaymentHandler();
+
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $container = $this->getContainer();
+
+        $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
+        $handler->finalize(
+            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
+            $request,
+            $salesChannelContext
+        );
+
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
+            $state,
+            $container,
+            $salesChannelContext->getContext()
+        );
+
+        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
     }
 }
