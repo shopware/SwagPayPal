@@ -28,7 +28,7 @@ class ApiCredentialService implements ApiCredentialServiceInterface
      */
     private $onboardingClient;
 
-    public function __construct(TokenResource $tokenResource, Onboardingclient $onboardingClient)
+    public function __construct(TokenResource $tokenResource, OnboardingClient $onboardingClient)
     {
         $this->tokenResource = $tokenResource;
         $this->onboardingClient = $onboardingClient;

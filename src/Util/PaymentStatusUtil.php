@@ -10,30 +10,20 @@ namespace Swag\PayPal\Util;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Payment\PayPalPaymentController;
 use Symfony\Component\HttpFoundation\Request;
 
 class PaymentStatusUtil
 {
     /**
-     * @var StateMachineRegistry
-     */
-    private $stateMachineRegistry;
-
-    /**
      * @var EntityRepositoryInterface
      */
     private $orderRepository;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderTransactionRepository;
 
     /**
      * @var OrderTransactionStateHandler
@@ -92,6 +82,7 @@ class PaymentStatusUtil
     {
         $criteria = new Criteria([$orderId]);
         $criteria->addAssociation('transactions');
+        /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($criteria, $context)->first();
 
         if ($order === null) {

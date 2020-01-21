@@ -122,11 +122,7 @@ class PayUponInvoiceSubscriberTest extends TestCase
 
     private function getSubscriber(?SwagPayPalSettingStruct $settings = null): PayUponInvoiceSubscriber
     {
-        $payUponInvoiceSubscriber = new PayUponInvoiceSubscriber(
-            new SettingsServiceMock($settings)
-        );
-
-        return $payUponInvoiceSubscriber;
+        return new PayUponInvoiceSubscriber(new SettingsServiceMock($settings));
     }
 
     private function getSettingsStruct(
@@ -156,7 +152,7 @@ class PayUponInvoiceSubscriberTest extends TestCase
             $collection->add($entity);
         }
 
-        $event = new SalesChannelEntitySearchResultLoadedEvent(
+        return new SalesChannelEntitySearchResultLoadedEvent(
             new PaymentMethodDefinition(),
             new EntitySearchResult(
                 $collection->count(),
@@ -167,8 +163,6 @@ class PayUponInvoiceSubscriberTest extends TestCase
             ),
             $this->salesChannelContext
         );
-
-        return $event;
     }
 
     /**

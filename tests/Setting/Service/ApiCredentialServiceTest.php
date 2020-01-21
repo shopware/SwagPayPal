@@ -59,9 +59,7 @@ class ApiCredentialServiceTest extends TestCase
 
     public function testGetApiCredentials(): void
     {
-        $apiService = $this->createApiCredentialService();
-
-        $credentials = $apiService->getApiCredentials('authCode', 'sharedId', 'nonce', true);
+        $credentials = $this->createApiCredentialService()->getApiCredentials('authCode', 'sharedId', 'nonce', true);
 
         static::assertSame(ConstantsForTesting::VALID_CLIENT_ID, $credentials['client_id']);
         static::assertSame(ConstantsForTesting::VALID_CLIENT_SECRET, $credentials['client_secret']);

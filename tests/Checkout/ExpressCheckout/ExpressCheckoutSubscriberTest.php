@@ -53,11 +53,11 @@ class ExpressCheckoutSubscriberTest extends TestCase
     {
         $subscribedEvents = ExpressCheckoutSubscriber::getSubscribedEvents();
         $expectedEvents = [
-            OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
-            CheckoutRegisterPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             CheckoutCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
-            ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            CheckoutRegisterPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             NavigationPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
         ];
 
         static::assertSame($expectedEvents, $subscribedEvents);
@@ -74,7 +74,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
-        /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
         $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         $this->assertExpressCheckoutButtonData(
@@ -94,7 +94,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
-        /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
         $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         $this->assertExpressCheckoutButtonData(
@@ -114,7 +114,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
-        /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
         $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         $this->assertExpressCheckoutButtonData(
@@ -134,7 +134,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
-        /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
         $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         $this->assertExpressCheckoutButtonData(
@@ -154,7 +154,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
-        /** @var ExpressCheckoutButtonData $actualExpressCheckoutButtonData */
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
         $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         $this->assertExpressCheckoutButtonData(
@@ -196,7 +196,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
-    public function testAddExpressCheckoutDataToPageNavigationPageLoadedEventWithEcsListindDisabled(): void
+    public function testAddExpressCheckoutDataToPageNavigationPageLoadedEventWithEcsListingDisabled(): void
     {
         $salesChannelContext = $this->createSalesChannelContext();
         $event = new NavigationPageLoadedEvent(
@@ -215,7 +215,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
     public function testAddExpressCheckoutDataToPageWithUnknownEvent(): void
     {
         $salesChannelContext = $this->createSalesChannelContext();
-        /** @var mixed $event */
         $event = new AccountLoginPageLoadedEvent(
             new AccountLoginPage(),
             $salesChannelContext,
@@ -250,8 +249,9 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     private function assertExpressCheckoutButtonData(
         ExpressCheckoutButtonData $expectedExpressCheckoutButtonData,
-        ExpressCheckoutButtonData $actualExpressCheckoutButtonData
+        ?ExpressCheckoutButtonData $actualExpressCheckoutButtonData
     ): void {
+        static::assertNotNull($actualExpressCheckoutButtonData);
         static::assertSame($expectedExpressCheckoutButtonData->getProductDetailEnabled(), $actualExpressCheckoutButtonData->getProductDetailEnabled());
         static::assertSame($expectedExpressCheckoutButtonData->getOffCanvasEnabled(), $actualExpressCheckoutButtonData->getOffCanvasEnabled());
         static::assertSame($expectedExpressCheckoutButtonData->getLoginEnabled(), $actualExpressCheckoutButtonData->getLoginEnabled());

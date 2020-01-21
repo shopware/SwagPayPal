@@ -92,12 +92,10 @@ class PayPalPuiPaymentHandlerTest extends TestCase
 
     private function createRequest(): Request
     {
-        $request = new Request([
+        return new Request([
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID => ConstantsForTesting::PAYER_ID_PAYMENT_PUI,
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID => 'PAYID-LUWEJRI80B04311G7544303K',
         ]);
-
-        return $request;
     }
 
     private function createPayPalPuiPaymentHandler(?SwagPayPalSettingStruct $settings = null): PayPalPuiPaymentHandler

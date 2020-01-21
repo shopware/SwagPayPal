@@ -11,6 +11,7 @@ use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
+use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -51,21 +52,18 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
-            CheckoutRegisterPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             CheckoutCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
-            ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            CheckoutRegisterPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             NavigationPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
         ];
     }
 
-    /**
-     * @param NavigationPageLoadedEvent|ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
-     */
-    public function addExpressCheckoutDataToPage($event): void
+    public function addExpressCheckoutDataToPage(PageLoadedEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
-        if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
+        if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext) === false) {
             return;
         }
 
@@ -75,7 +73,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!$this->expressOptionForEventEnabled($settings, $event)) {
+        if ($this->expressOptionForEventEnabled($settings, $event) === false) {
             return;
         }
 
@@ -92,7 +90,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             );
         }
 
-        if (!$expressCheckoutButtonData) {
+        if ($expressCheckoutButtonData === null) {
             return;
         }
 
@@ -102,10 +100,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         );
     }
 
-    /**
-     * @param NavigationPageLoadedEvent|ProductPageLoadedEvent|OffcanvasCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|CheckoutCartPageLoadedEvent $event
-     */
-    private function expressOptionForEventEnabled(SwagPayPalSettingStruct $settings, $event): bool
+    private function expressOptionForEventEnabled(SwagPayPalSettingStruct $settings, PageLoadedEvent $event): bool
     {
         switch (\get_class($event)) {
             case ProductPageLoadedEvent::class:
