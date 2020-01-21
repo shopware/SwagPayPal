@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\Plus;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
+use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -27,8 +28,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PlusPaymentFinalizeController extends AbstractController
 {
-    public const IS_PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
-
     /**
      * @var EntityRepositoryInterface
      */
@@ -52,9 +51,17 @@ class PlusPaymentFinalizeController extends AbstractController
      * @Route("/paypal/plus/payment/finalize-transaction", name="paypal.plus.payment.finalize.transaction", methods={"GET"}, defaults={"auth_required"=false})
      *
      * @throws InvalidTransactionException
+     * @throws CustomerCanceledAsyncPaymentException
      */
     public function finalizeTransaction(Request $request, SalesChannelContext $salesChannelContext): RedirectResponse
     {
+        if ($request->query->getBoolean('cancel')) {
+            throw new CustomerCanceledAsyncPaymentException(
+                '',
+                'Customer canceled the payment on the PayPal page'
+            );
+        }
+
         $paymentId = $request->query->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
 
         $criteria = new Criteria();
@@ -94,7 +101,6 @@ class PlusPaymentFinalizeController extends AbstractController
         }
 
         $paymentTransactionStruct = new AsyncPaymentTransactionStruct($orderTransaction, $order, '');
-        $request->query->set(self::IS_PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, true);
 
         $this->paymentHandler->finalize($paymentTransactionStruct, $request, $salesChannelContext);
 

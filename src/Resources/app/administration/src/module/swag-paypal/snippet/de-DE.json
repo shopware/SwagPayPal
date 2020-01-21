@@ -130,16 +130,6 @@
                 "cardTitle": "PayPal PLUS",
                 "plusCheckoutEnabled": {
                     "label": "PayPal PLUS aktivieren"
-                },
-                "plusOverwritePaymentName": {
-                    "label": "Zahlungsartbezeichnung überschreiben",
-                    "helpText": "Mit dieser Einstellung kannst du die Zahlungsart-Bezeichnung von PayPal überschreiben. Hinweis: Dies betrifft nur die Storefront-Ansicht.",
-                    "defaultText": "PayPal, Lastschrift oder Kreditkarte"
-                },
-                "plusExtendPaymentDescription": {
-                    "label": "Zahlungsartbeschreibung ergänzen",
-                    "helpText": "Mit dieser Einstellung kannst du die Zahlungsart-Beschreibung von PayPal ergänzen. Hinweis: Dies betrifft nur die Storefront-Ansicht.",
-                    "defaultText": "Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal-Konto möglich."
                 }
             },
             "titleSuccess": "Erfolg",

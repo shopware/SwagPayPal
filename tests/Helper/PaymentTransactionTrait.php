@@ -38,7 +38,7 @@ trait PaymentTransactionTrait
         );
     }
 
-    private function createOrderTransaction(?string $transactionId): OrderTransactionEntity
+    protected function createOrderTransaction(?string $transactionId): OrderTransactionEntity
     {
         $orderTransaction = new OrderTransactionEntity();
         $orderTransaction->setOrderId(OrderPaymentBuilderTest::TEST_ORDER_ID);
@@ -54,7 +54,7 @@ trait PaymentTransactionTrait
         return $orderTransaction;
     }
 
-    private function createOrderEntity(string $orderId): OrderEntity
+    protected function createOrderEntity(string $orderId): OrderEntity
     {
         $order = new OrderEntity();
         $order->setShippingCosts(new CalculatedPrice(4.99, 4.99, new CalculatedTaxCollection(), new TaxRuleCollection()));

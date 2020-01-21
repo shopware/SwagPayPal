@@ -69,7 +69,7 @@ class PlusDataService
     ): ?PlusData {
         $finishUrl = $this->router->generate(
             'paypal.plus.payment.finalize.transaction',
-            [],
+            [PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER => true],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
         $payment = $this->paymentBuilder->getPayment($cart, $salesChannelContext, $finishUrl, false);

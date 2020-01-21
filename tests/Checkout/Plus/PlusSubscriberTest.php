@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Cart\Transaction\Struct\Transaction;
 use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
@@ -24,6 +25,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\SalesChannelRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -36,6 +38,7 @@ use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilder;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\Repositories\PaymentMethodRepoMock;
@@ -43,15 +46,18 @@ use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PlusSubscriberTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use PaymentTransactionTrait;
     use ServicesTrait;
 
-    private const NEW_PAYMENT_NAME = 'New PayPal Payment Name';
-    private const PAYMENT_DESCRIPTION_EXTENSION = 'Additional text for testing purpose';
+    private const NEW_PAYMENT_NAME = 'PayPal, Lastschrift oder Kreditkarte';
+    private const PAYMENT_DESCRIPTION_EXTENSION = 'Bezahlung per PayPal - einfach, schnell und sicher. Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal-Konto möglich.';
 
     /**
      * @var PaymentMethodUtil
@@ -138,7 +144,7 @@ class PlusSubscriberTest extends TestCase
 
     public function testOnCheckoutConfirmLoadedPlusEnabledWithPaymentOverwrite(): void
     {
-        $subscriber = $this->createSubscriber(true, true, true);
+        $subscriber = $this->createSubscriber();
         $event = $this->createConfirmEvent();
         $this->addPayPalToDefaultsSalesChannel();
         $subscriber->onCheckoutConfirmLoaded($event);
@@ -199,19 +205,54 @@ class PlusSubscriberTest extends TestCase
 
     public function testOnCheckoutFinishLoadedPlusEnabledWithPaymentOverwrite(): void
     {
-        $subscriber = $this->createSubscriber(true, true, true);
+        $subscriber = $this->createSubscriber();
         $event = $this->createFinishEvent();
         $this->addPayPalToDefaultsSalesChannel();
         $subscriber->onCheckoutFinishLoaded($event);
 
-        $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
+        $transactions = $event->getPage()->getOrder()->getTransactions();
+        static::assertNotNull($transactions);
+        $transaction = $transactions->first();
+        static::assertNotNull($transaction);
+        $paymentMethod = $transaction->getPaymentMethod();
+        static::assertNotNull($paymentMethod);
         static::assertSame(self::NEW_PAYMENT_NAME, $paymentMethod->getTranslated()['name']);
         static::assertStringContainsString(self::PAYMENT_DESCRIPTION_EXTENSION, $paymentMethod->getTranslated()['description']);
     }
 
+    public function testOnCheckoutFinishLoadedWithoutTransactions(): void
+    {
+        $subscriber = $this->createSubscriber();
+        $event = $this->createFinishEvent(false);
+        $this->addPayPalToDefaultsSalesChannel();
+        $subscriber->onCheckoutFinishLoaded($event);
+
+        static::assertNull($event->getPage()->getExtension('payPalPlusData'));
+    }
+
+    public function testOnCheckoutFinishLoadedWithoutTransaction(): void
+    {
+        $subscriber = $this->createSubscriber();
+        $event = $this->createFinishEvent(true, false);
+        $this->addPayPalToDefaultsSalesChannel();
+        $subscriber->onCheckoutFinishLoaded($event);
+
+        static::assertNull($event->getPage()->getExtension('payPalPlusData'));
+    }
+
+    public function testOnCheckoutFinishLoadedWithoutPaymentMethod(): void
+    {
+        $subscriber = $this->createSubscriber();
+        $event = $this->createFinishEvent(true, true, false);
+        $this->addPayPalToDefaultsSalesChannel();
+        $subscriber->onCheckoutFinishLoaded($event);
+
+        static::assertNull($event->getPage()->getExtension('payPalPlusData'));
+    }
+
     public function testOnCheckoutFinishLoadedWithoutPayPalInSalesChannel(): void
     {
-        $subscriber = $this->createSubscriber(true, true, true);
+        $subscriber = $this->createSubscriber();
         $event = $this->createConfirmEvent();
         $subscriber->onCheckoutConfirmLoaded($event);
 
@@ -278,8 +319,7 @@ class PlusSubscriberTest extends TestCase
         );
 
         if ($withPayPalPaymentMethod) {
-            $payPalPaymentMethod = new PaymentMethodEntity();
-            $payPalPaymentMethod->setId(PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID);
+            $payPalPaymentMethod = $this->createPayPalPaymentMethod();
             $salesChannelContext->getSalesChannel()->setPaymentMethods(
                 new PaymentMethodCollection([
                     $payPalPaymentMethod,
@@ -289,6 +329,7 @@ class PlusSubscriberTest extends TestCase
 
         $paymentMethod = new PaymentMethodEntity();
         $paymentMethod->setId($this->paypalPaymentMethodId);
+        $paymentMethod->setDescription('Bezahlung per PayPal - einfach, schnell und sicher.');
         $page = new CheckoutConfirmPage(
             new PaymentMethodCollection([$paymentMethod]),
             new ShippingMethodCollection([])
@@ -307,7 +348,9 @@ class PlusSubscriberTest extends TestCase
         $cart->setTransactions(new TransactionCollection([$transaction]));
         $page->setCart($cart);
 
-        return new CheckoutConfirmPageLoadedEvent($page, $salesChannelContext, new Request());
+        $request = $this->createRequest($salesChannelContext->getContext());
+
+        return new CheckoutConfirmPageLoadedEvent($page, $salesChannelContext, $request);
     }
 
     private function createCustomer(): string
@@ -353,8 +396,7 @@ class PlusSubscriberTest extends TestCase
 
     private function createSubscriber(
         bool $withSettings = true,
-        bool $plusEnabled = true,
-        bool $paymentNameOverwrite = false
+        bool $plusEnabled = true
     ): PlusSubscriber {
         $settings = null;
         if ($withSettings) {
@@ -362,10 +404,6 @@ class PlusSubscriberTest extends TestCase
             $settings->setClientId('testClientId');
             $settings->setClientSecret('testClientSecret');
             $settings->setPlusCheckoutEnabled($plusEnabled);
-            if ($paymentNameOverwrite) {
-                $settings->setPlusOverwritePaymentName(self::NEW_PAYMENT_NAME);
-                $settings->setPlusExtendPaymentDescription(self::PAYMENT_DESCRIPTION_EXTENSION);
-            }
         }
 
         $settingsService = new SettingsServiceMock($settings);
@@ -375,6 +413,8 @@ class PlusSubscriberTest extends TestCase
         $router = $this->getContainer()->get('router');
         /** @var EntityRepositoryInterface $salesChannelRepo */
         $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
+        /** @var TranslatorInterface $translator */
+        $translator = $this->getContainer()->get('translator');
 
         $plusDataService = new PlusDataService(
             new CartPaymentBuilder(
@@ -388,11 +428,14 @@ class PlusSubscriberTest extends TestCase
             $localeCodeProvider
         );
 
-        return new PlusSubscriber($settingsService, $plusDataService, $this->paymentMethodUtil);
+        return new PlusSubscriber($settingsService, $plusDataService, $this->paymentMethodUtil, $translator);
     }
 
-    private function createFinishEvent(): CheckoutFinishPageLoadedEvent
-    {
+    private function createFinishEvent(
+        bool $withTransactions = true,
+        bool $withTransaction = true,
+        bool $withPaymentMethod = true
+    ): CheckoutFinishPageLoadedEvent {
         /** @var SalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
         $salesChannelContext = $salesChannelContextFactory->create(
@@ -403,7 +446,30 @@ class PlusSubscriberTest extends TestCase
             ]
         );
 
-        return new CheckoutFinishPageLoadedEvent(new CheckoutFinishPage(), $salesChannelContext, new Request());
+        $order = $this->createOrderEntity('test-id');
+        if ($withTransactions) {
+            if ($withTransaction) {
+                $orderTransaction = $this->createOrderTransaction(null);
+
+                if ($withPaymentMethod) {
+                    $payPalPaymentMethod = $this->createPayPalPaymentMethod();
+                    $orderTransaction->setPaymentMethod($payPalPaymentMethod);
+                }
+
+                $orderTransactionCollection = new OrderTransactionCollection([$orderTransaction]);
+            } else {
+                $orderTransactionCollection = new OrderTransactionCollection();
+            }
+
+            $order->setTransactions($orderTransactionCollection);
+        }
+
+        $page = new CheckoutFinishPage();
+        $page->setOrder($order);
+
+        $request = $this->createRequest($salesChannelContext->getContext());
+
+        return new CheckoutFinishPageLoadedEvent($page, $salesChannelContext, $request);
     }
 
     private function addPayPalToDefaultsSalesChannel(): void
@@ -422,5 +488,33 @@ class PlusSubscriberTest extends TestCase
                 ],
             ],
         ], Context::createDefaultContext());
+    }
+
+    private function createPayPalPaymentMethod(): PaymentMethodEntity
+    {
+        $payPalPaymentMethod = new PaymentMethodEntity();
+        $payPalPaymentMethod->setId(PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID);
+        $payPalPaymentMethod->setDescription('Bezahlung per PayPal - einfach, schnell und sicher.');
+
+        return $payPalPaymentMethod;
+    }
+
+    private function createRequest(Context $context): Request
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('iso', 'de-DE'));
+
+        /** @var EntityRepositoryInterface $snippetSetRepository */
+        $snippetSetRepository = $this->getContainer()->get('snippet_set.repository');
+        $snippetSetId = $snippetSetRepository->search($criteria, $context)->first()->getId();
+
+        $request = new Request();
+        $request->attributes->add([SalesChannelRequest::ATTRIBUTE_DOMAIN_SNIPPET_SET_ID => $snippetSetId]);
+
+        /** @var RequestStack $requestStack */
+        $requestStack = $this->getContainer()->get('request_stack');
+        $requestStack->push($request);
+
+        return $request;
     }
 }

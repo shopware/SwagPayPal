@@ -118,17 +118,15 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     private function changePaymentMethodDescription(PaymentMethodCollection $paymentMethods, Context $context): void
     {
         $payPalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context);
-        if (!$payPalPaymentMethodId) {
+        if ($payPalPaymentMethodId === null) {
             return;
         }
 
         $paypalPaymentMethod = $paymentMethods->get($payPalPaymentMethodId);
-        if (!$paypalPaymentMethod) {
+        if ($paypalPaymentMethod === null) {
             return;
         }
 
-        $paypalPaymentMethod->setTranslated([
-            'description' => $this->translator->trans('smartPaymentButtons.description'),
-        ]);
+        $paypalPaymentMethod->addTranslated('description', $this->translator->trans('smartPaymentButtons.description'));
     }
 }
