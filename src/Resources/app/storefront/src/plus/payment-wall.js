@@ -225,6 +225,9 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
             return;
         }
 
+        const confirmSubmitButton = DomAccess.querySelector(event.target, '#confirmFormSubmit');
+        confirmSubmitButton.disabled = true;
+
         const csrfToken = {
             _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-plus-payment-wall-checkout-order-token')
         };
