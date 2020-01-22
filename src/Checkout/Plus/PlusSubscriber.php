@@ -79,21 +79,26 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $plusData = $this->plusDataService->getPlusData($event->getPage()->getCart(), $salesChannelContext, $settings);
-
+        $page = $event->getPage();
+        $plusData = $this->plusDataService->getPlusData($page->getCart(), $salesChannelContext, $settings);
         if ($plusData === null) {
             return;
         }
 
-        $this->changePaymentMethod($salesChannelContext->getPaymentMethod());
-
         $payPalPaymentId = $plusData->getPaymentMethodId();
-        $payPalPaymentMethodFromCollection = $event->getPage()->getPaymentMethods()->get($payPalPaymentId);
+        $payPalPaymentMethodFromCollection = $page->getPaymentMethods()->get($payPalPaymentId);
         if ($payPalPaymentMethodFromCollection !== null) {
             $this->changePaymentMethod($payPalPaymentMethodFromCollection);
         }
 
-        $event->getPage()->addExtension('payPalPlusData', $plusData);
+        $currentSelectedPaymentMethod = $salesChannelContext->getPaymentMethod();
+        if ($currentSelectedPaymentMethod->getId() !== $payPalPaymentId) {
+            return;
+        }
+
+        $this->changePaymentMethod($currentSelectedPaymentMethod);
+
+        $page->addExtension('payPalPlusData', $plusData);
     }
 
     public function onCheckoutFinishLoaded(CheckoutFinishPageLoadedEvent $event): void
@@ -123,6 +128,11 @@ class PlusSubscriber implements EventSubscriberInterface
 
         $paymentMethod = $transaction->getPaymentMethod();
         if ($paymentMethod === null) {
+            return;
+        }
+
+        $payPalPaymentId = $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext());
+        if ($paymentMethod->getId() !== $payPalPaymentId) {
             return;
         }
 
