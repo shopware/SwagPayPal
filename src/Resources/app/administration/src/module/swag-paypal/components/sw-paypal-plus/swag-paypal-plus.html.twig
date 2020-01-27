@@ -4,6 +4,10 @@
         {% block swag_paypal_content_card_channel_config_plus_settings %}
             <div v-if="actualConfigData" class="swag-paypal-settings-plus-fields">
 
+                {% block swag_paypal_content_card_channel_config_plus_settings_onboarding %}
+                    <p v-html="$tc('swag-paypal.settingForm.plus.introduction')"></p>
+                {% endblock %}
+
                 {% block swag_paypal_content_card_channel_config_plus_settings_checkout_enabled %}
                     <sw-inherit-wrapper
                         v-model="actualConfigData['SwagPayPal.settings.plusCheckoutEnabled']"

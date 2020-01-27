@@ -128,6 +128,7 @@
             },
             "plus": {
                 "cardTitle": "PayPal PLUS",
+                "introduction": "<strong>PayPal PLUS:</strong> Your complete all-in-one payment solution including PayPal, Direct Debit, Credit Card and Pay Upon Invoice. PayPal PLUS offers your customers full flexibility in choosing their preferred payment method. Your advantages as a seller? Easier accounting with only one contracting party, one account and one transaction overview showing all incoming payments. You receive your money directly after customers complete the order process.<br>You can apply for PayPal PLUS <a href='https://www.paypal.com/de/webapps/mpp/paypal-plus' target='_blank'>here</a>. Apply for Payment upon Invoice <a href='https://www.paypal.com/de/webapps/mpp/pui-start' target='_blank'>here</a>.",
                 "plusCheckoutEnabled": {
                     "label": "Enable PayPal PLUS"
                 }
