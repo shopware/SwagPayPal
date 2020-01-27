@@ -63,14 +63,6 @@ Shopware.Component.register('swag-paypal', {
                     this.clientSecretFilled = !!this.config['SwagPayPal.settings.clientSecret']
                         || !!defaultConfig['SwagPayPal.settings.clientSecret'];
                 }
-
-                if (this.showSPBCard) {
-                    this.config['SwagPayPal.settings.plusCheckoutEnabled'] = false;
-                }
-
-                if (this.showPlusCard) {
-                    this.config['SwagPayPal.settings.spbCheckoutEnabled'] = false;
-                }
             },
             deep: true
         }

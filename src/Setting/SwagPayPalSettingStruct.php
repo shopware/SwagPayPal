@@ -153,7 +153,7 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var bool
      */
-    protected $plusCheckoutEnabled = false;
+    protected $plusCheckoutEnabled = true;
 
     public function getClientId(): string
     {
