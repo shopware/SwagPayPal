@@ -11,6 +11,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedEvent;
 use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
+use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -67,6 +68,11 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $isExpressCheckout = $event->getRequest()->query->getBoolean(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID);
+        if ($isExpressCheckout) {
+            return;
+        }
+
         try {
             $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
         } catch (PayPalSettingsInvalidException $e) {
@@ -103,6 +109,11 @@ class PlusSubscriber implements EventSubscriberInterface
 
     public function onCheckoutFinishLoaded(CheckoutFinishPageLoadedEvent $event): void
     {
+        $isPlus = $event->getRequest()->query->getBoolean(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID);
+        if ($isPlus === false) {
+            return;
+        }
+
         $salesChannelContext = $event->getSalesChannelContext();
         try {
             $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());

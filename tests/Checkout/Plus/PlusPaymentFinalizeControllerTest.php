@@ -34,7 +34,7 @@ class PlusPaymentFinalizeControllerTest extends TestCase
         );
 
         static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
-        static::assertSame('/checkout/finish?orderId=testOrderId', $response->getTargetUrl());
+        static::assertSame('/checkout/finish?orderId=testOrderId&isPayPalPlusCheckout=1', $response->getTargetUrl());
     }
 
     public function testFinalizeTransactionWithoutTransaction(): void

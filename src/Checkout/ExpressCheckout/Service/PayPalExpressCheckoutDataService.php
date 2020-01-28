@@ -11,6 +11,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
+use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\Routing\RouterInterface;
@@ -75,7 +76,11 @@ class PayPalExpressCheckoutDataService
             'createNewCartUrl' => $this->router->generate('sales-channel-api.action.paypal.create_new_cart', ['version' => 1]),
             'addLineItemUrl' => $this->router->generate('frontend.checkout.line-item.add'),
             'approvePaymentUrl' => $this->router->generate('paypal.approve_payment'),
-            'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
+            'checkoutConfirmUrl' => $this->router->generate(
+                'frontend.checkout.confirm.page',
+                [PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true],
+                RouterInterface::ABSOLUTE_URL
+            ),
         ]);
     }
 

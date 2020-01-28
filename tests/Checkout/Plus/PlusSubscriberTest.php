@@ -94,6 +94,18 @@ class PlusSubscriberTest extends TestCase
         static::assertSame('onCheckoutFinishLoaded', $events[CheckoutFinishPageLoadedEvent::class]);
     }
 
+    public function testOnCheckoutConfirmLoadedIsExpressCheckout(): void
+    {
+        $subscriber = $this->createSubscriber();
+        $event = $this->createConfirmEvent();
+        $this->addPayPalToDefaultsSalesChannel();
+        $event->getRequest()->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, true);
+
+        $subscriber->onCheckoutConfirmLoaded($event);
+
+        static::assertNull($event->getPage()->getExtension('payPalPlusData'));
+    }
+
     public function testOnCheckoutConfirmLoadedPlusNoSettings(): void
     {
         $subscriber = $this->createSubscriber(false);
@@ -186,6 +198,19 @@ class PlusSubscriberTest extends TestCase
         static::assertNotNull($paymentMethod);
         static::assertSame(self::NEW_PAYMENT_NAME, $paymentMethod->getTranslated()['name']);
         static::assertStringContainsString(self::PAYMENT_DESCRIPTION_EXTENSION, $paymentMethod->getTranslated()['description']);
+    }
+
+    public function testOnCheckoutFinishLoadedIsNotPayPalPlus(): void
+    {
+        $subscriber = $this->createSubscriber();
+        $event = $this->createFinishEvent();
+        $this->addPayPalToDefaultsSalesChannel();
+        $event->getRequest()->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, false);
+
+        $subscriber->onCheckoutFinishLoaded($event);
+
+        $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
+        static::assertNotSame(self::NEW_PAYMENT_NAME, $paymentMethod->getTranslated()['name']);
     }
 
     public function testOnCheckoutFinishLoadedPlusNoSettings(): void
@@ -566,6 +591,7 @@ class PlusSubscriberTest extends TestCase
 
         $request = new Request();
         $request->attributes->add([SalesChannelRequest::ATTRIBUTE_DOMAIN_SNIPPET_SET_ID => $snippetSetId]);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, true);
 
         /** @var RequestStack $requestStack */
         $requestStack = $this->getContainer()->get('request_stack');
