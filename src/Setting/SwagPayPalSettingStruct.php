@@ -43,7 +43,7 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var bool
      */
-    protected $submitCart = false;
+    protected $submitCart = true;
 
     /**
      * @var string|null
@@ -68,7 +68,7 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var bool
      */
-    protected $sendOrderNumber = false;
+    protected $sendOrderNumber = true;
 
     /**
      * @var string|null
@@ -118,7 +118,7 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var bool
      */
-    protected $ecsSubmitCart = false;
+    protected $ecsSubmitCart = true;
 
     /**
      * @var string|null
