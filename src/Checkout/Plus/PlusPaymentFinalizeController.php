@@ -106,6 +106,7 @@ class PlusPaymentFinalizeController extends AbstractController
 
         $finishUrl = $this->generateUrl('frontend.checkout.finish.page', [
             'orderId' => $orderTransaction->getOrderId(),
+            PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID => true,
         ]);
 
         return new RedirectResponse($finishUrl);

@@ -1,3 +1,7 @@
+# 1.0.0
+- PT-11181, PT-11275 - PayPal PLUS Integration hinzugefügt
+- PT-11277 - Die Übermittlung des Warenkorbs und der Bestellnummer ist jetzt standardmäßig aktiv
+
 # 0.13.0
 - Shopware 6.1 Kompatibilität
 
