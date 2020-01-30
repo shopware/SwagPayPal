@@ -25,6 +25,6 @@
     },
     "payPalPlus": {
         "paymentNameOverwrite": "PayPal, Lastschrift oder Kreditkarte",
-        "paymentDescriptionExtension": "Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal-Konto möglich."
+        "paymentDescriptionExtension": "Zahlung per Lastschrift oder Kreditkarte ist auch ohne ein PayPal-Konto möglich."
     }
 }

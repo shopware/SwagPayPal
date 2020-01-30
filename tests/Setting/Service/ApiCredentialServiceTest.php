@@ -8,12 +8,13 @@
 namespace Swag\PayPal\Test\Setting\Service;
 
 use GuzzleHttp\Exception\ClientException;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\CacheMock;
-use Swag\PayPal\Test\Mock\PayPal\Client\OnboardingClientMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 
@@ -67,9 +68,14 @@ class ApiCredentialServiceTest extends TestCase
 
     private function createApiCredentialService(): ApiCredentialService
     {
+        $logger = new Logger('testLogger');
+
         return new ApiCredentialService(
-            new TokenResourceMock(new CacheMock(), new TokenClientFactoryMock()),
-            new OnboardingClientMock()
+            new TokenResourceMock(
+                new CacheMock(),
+                new TokenClientFactoryMock($logger),
+                new CredentialsClientFactoryMock($logger)
+            )
         );
     }
 }

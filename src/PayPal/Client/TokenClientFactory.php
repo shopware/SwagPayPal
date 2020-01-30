@@ -7,12 +7,23 @@
 
 namespace Swag\PayPal\PayPal\Client;
 
+use Psr\Log\LoggerInterface;
 use Swag\PayPal\PayPal\Api\OAuthCredentials;
 
 class TokenClientFactory
 {
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     public function createTokenClient(OAuthCredentials $credentials, string $url): TokenClient
     {
-        return new TokenClient($credentials, $url);
+        return new TokenClient($credentials, $url, $this->logger);
     }
 }

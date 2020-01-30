@@ -28,6 +28,7 @@
         <service id="Swag\PayPal\PayPal\Resource\TokenResource">
             <argument type="service" id="cache.object"/>
             <argument type="service" id="Swag\PayPal\PayPal\Client\TokenClientFactory"/>
+            <argument type="service" id="Swag\PayPal\PayPal\Client\CredentialsClientFactory"/>
         </service>
 
         <service id="Swag\PayPal\PayPal\Resource\WebhookResource">

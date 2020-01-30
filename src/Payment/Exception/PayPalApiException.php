@@ -14,7 +14,7 @@ class PayPalApiException extends ShopwareHttpException
     public function __construct(string $name, string $message)
     {
         parent::__construct(
-            'The error "{{ name }}" with the following message: {{ message }}',
+            'The error "{{ name }}" occurred with the following message: {{ message }}',
             ['name' => $name, 'message' => $message]
         );
     }

@@ -57,7 +57,7 @@ class PlusSubscriberTest extends TestCase
     use ServicesTrait;
 
     private const NEW_PAYMENT_NAME = 'PayPal, Lastschrift oder Kreditkarte';
-    private const PAYMENT_DESCRIPTION_EXTENSION = 'Bezahlung per PayPal - einfach, schnell und sicher. Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal-Konto möglich.';
+    private const PAYMENT_DESCRIPTION_EXTENSION = 'Bezahlung per PayPal - einfach, schnell und sicher. Zahlung per Lastschrift oder Kreditkarte ist auch ohne ein PayPal-Konto möglich.';
 
     /**
      * @var PaymentMethodUtil

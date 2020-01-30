@@ -17,6 +17,8 @@ final class RequestUri
 
     public const TOKEN_RESOURCE = 'oauth2/token';
 
+    public const CREDENTIALS_RESOURCE = 'customer/partners/%s/merchant-integrations/credentials';
+
     public const WEBHOOK_RESOURCE = 'notifications/webhooks';
 
     private function __construct()

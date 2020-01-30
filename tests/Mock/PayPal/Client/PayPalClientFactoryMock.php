@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
+use Psr\Log\LoggerInterface;
 use Swag\PayPal\PayPal\Client\PayPalClient;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\PartnerAttributionId;
+use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 use Swag\PayPal\Test\Payment\PayPalPaymentHandlerTest;
@@ -21,8 +24,24 @@ class PayPalClientFactoryMock extends PayPalClientFactory
      */
     private $client;
 
-    public function createPaymentClient(?string $salesChannelId, string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC): PayPalClient
-    {
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(
+        TokenResource $tokenResource,
+        SettingsServiceInterface $settingsProvider,
+        LoggerInterface $logger
+    ) {
+        $this->logger = $logger;
+        parent::__construct($tokenResource, $settingsProvider, $logger);
+    }
+
+    public function createPaymentClient(
+        ?string $salesChannelId,
+        string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
+    ): PayPalClient {
         $settings = $this->settingsProvider->getSettings($salesChannelId);
 
         if ($settings->hasExtension(PayPalPaymentHandlerTest::PAYPAL_RESOURCE_THROWS_EXCEPTION)) {
@@ -32,7 +51,8 @@ class PayPalClientFactoryMock extends PayPalClientFactory
         $this->client = new PayPalClientMock(
             new TokenResourceMock(
                 new CacheMock(),
-                new TokenClientFactoryMock()
+                new TokenClientFactoryMock($this->logger),
+                new CredentialsClientFactoryMock($this->logger)
             ),
             $settings
         );

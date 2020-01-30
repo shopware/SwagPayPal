@@ -7,12 +7,14 @@
 
 namespace Swag\PayPal\Test\PayPal\Resource;
 
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\PayPal\Api\OAuthCredentials;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Test\Mock\CacheItemWithTokenMock;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\CacheWithTokenMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientMock;
 
@@ -48,10 +50,17 @@ class TokenResourceTest extends TestCase
 
     private function getTokenResource(bool $withToken = true): TokenResource
     {
-        if ($withToken) {
-            return new TokenResource(new CacheWithTokenMock(), new TokenClientFactoryMock());
+        $cacheItemPool = new CacheWithTokenMock();
+        if ($withToken === false) {
+            $cacheItemPool = new CacheMock();
         }
 
-        return new TokenResource(new CacheMock(), new TokenClientFactoryMock());
+        $logger = new Logger('testLogger');
+
+        return new TokenResource(
+            $cacheItemPool,
+            new TokenClientFactoryMock($logger),
+            new CredentialsClientFactoryMock($logger)
+        );
     }
 }

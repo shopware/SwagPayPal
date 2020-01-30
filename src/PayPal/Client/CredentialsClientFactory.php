@@ -5,14 +5,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Mock\PayPal\Client;
+namespace Swag\PayPal\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\PayPal\Api\OAuthCredentials;
-use Swag\PayPal\PayPal\Client\TokenClient;
-use Swag\PayPal\PayPal\Client\TokenClientFactory;
 
-class TokenClientFactoryMock extends TokenClientFactory
+class CredentialsClientFactory
 {
     /**
      * @var LoggerInterface
@@ -24,8 +21,8 @@ class TokenClientFactoryMock extends TokenClientFactory
         $this->logger = $logger;
     }
 
-    public function createTokenClient(OAuthCredentials $credentials, string $url): TokenClient
+    public function createCredentialsClient(string $url): CredentialsClient
     {
-        return new TokenClientMock($credentials, $url, $this->logger);
+        return new CredentialsClient($url, $this->logger);
     }
 }

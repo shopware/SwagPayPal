@@ -18,6 +18,7 @@ use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\DummyCollection;
+use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
@@ -38,25 +39,21 @@ trait ServicesTrait
         $settings = $settings ?? $this->createDefaultSettingStruct();
         $settingsService = new SettingsServiceMock($settings);
 
-        return new PayPalClientFactoryMock(
-            new TokenResource(
-                new CacheMock(),
-                new TokenClientFactoryMock()
-            ),
-            $settingsService,
-            new Logger('testLogger')
-        );
+        return $this->createPayPalClientFactoryWithService($settingsService);
     }
 
     protected function createPayPalClientFactoryWithService(SettingsServiceInterface $settingsService): PayPalClientFactoryMock
     {
+        $logger = new Logger('testLogger');
+
         return new PayPalClientFactoryMock(
             new TokenResource(
                 new CacheMock(),
-                new TokenClientFactoryMock()
+                new TokenClientFactoryMock($logger),
+                new CredentialsClientFactoryMock($logger)
             ),
             $settingsService,
-            new Logger('testLogger')
+            $logger
         );
     }
 
