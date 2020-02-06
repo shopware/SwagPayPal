@@ -1,3 +1,6 @@
+# 1.1.0
+- Add banner for advertising installments
+
 # 1.0.0
 - PT-11181, PT-11275 - Add PayPal PLUS integration
 - PT-11277 - The cart and order number submitting is now active by default

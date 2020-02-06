@@ -112,6 +112,12 @@
                     "helpText": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet."
                 }
             },
+            "installment": {
+                "cardTitle": "Ratenzahlung",
+                "installmentBannerEnabled": {
+                    "label": "Ratenzahlung Banner aktivieren"
+                }
+            },
             "spb": {
                 "cardTitle": "PayPal Checkout mit Smart Payment Buttons",
                 "spbCheckoutEnabled": {

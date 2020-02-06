@@ -76,11 +76,9 @@ class PlusSubscriberTest extends TestCase
 
     protected function setUp(): void
     {
-        /** @var EntityRepositoryInterface $paymentMethodRepo */
-        $paymentMethodRepo = $this->getContainer()->get('payment_method.repository');
-        /** @var EntityRepositoryInterface $salesChannelRepo */
-        $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
-        $this->paymentMethodUtil = new PaymentMethodUtil($paymentMethodRepo, $salesChannelRepo);
+        /** @var PaymentMethodUtil $paymentMethodUtil */
+        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
+        $this->paymentMethodUtil = $paymentMethodUtil;
         $this->context = Context::createDefaultContext();
         $this->paypalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($this->context);
     }

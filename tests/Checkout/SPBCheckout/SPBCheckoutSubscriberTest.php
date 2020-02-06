@@ -190,7 +190,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         return new SPBCheckoutSubscriber(
             new SettingsServiceMock($settings),
             $spbDataService,
-            new PaymentMethodUtilMock(),
+            $this->paymentMethodUtil,
             $this->getContainer()->get('session'),
             $this->getContainer()->get('translator')
         );

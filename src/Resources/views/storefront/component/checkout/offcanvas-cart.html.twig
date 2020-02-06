@@ -1,17 +1,27 @@
 {% sw_extends '@Storefront/storefront/component/checkout/offcanvas-cart.html.twig' %}
 
-{% block component_offcanvas_cart_actions %}
+{% block component_offcanvas_cart_actions_cart %}
     {{ parent() }}
 
     {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData expressSettings #}
     {% set expressSettings = page.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
 
     {% if expressSettings.offCanvasEnabled %}
-        <div class="swag-paypal__offcanvas-express-button"
+        <div class="btn-block"
              data-swag-paypal-express-button="true"
              data-swag-pay-pal-express-button-add-line-item-token="{{ sw_csrf('frontend.checkout.line-item.add', {"mode": "token"}) }}"
              data-swag-pay-pal-express-button-approve-payment-token="{{ sw_csrf('paypal.approve_payment', {"mode": "token"}) }}"
              data-swag-pay-pal-express-button-options="{{ expressSettings|json_encode }}">
+        </div>
+    {% endif %}
+
+    {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
+    {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+
+    {% if installmentBanner is not null %}
+        <div class="btn-block ml-1"
+             data-swag-paypal-installment-banner="true"
+             data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
         </div>
     {% endif %}
 {% endblock %}

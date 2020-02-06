@@ -13,10 +13,12 @@ use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
+use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
+use Swag\PayPal\Util\Lifecycle\Update;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
@@ -30,6 +32,14 @@ class SwagPayPal extends Plugin
      * @var ActivateDeactivate
      */
     private $activateDeactivate;
+
+    /**
+     * @Required
+     */
+    public function setActivateDeactivate(ActivateDeactivate $activateDeactivate): void
+    {
+        $this->activateDeactivate = $activateDeactivate;
+    }
 
     /**
      * {@inheritdoc}
@@ -50,6 +60,7 @@ class SwagPayPal extends Plugin
         $loader->load('pui_checkout.xml');
         $loader->load('checkout.xml');
         $loader->load('plus.xml');
+        $loader->load('installment.xml');
     }
 
     public function install(InstallContext $installContext): void
@@ -114,25 +125,23 @@ class SwagPayPal extends Plugin
         parent::uninstall($uninstallContext);
     }
 
-    /**
-     * @Required
-     */
-    public function setActivateDeactivate(ActivateDeactivate $activateDeactivate): void
+    public function update(UpdateContext $updateContext): void
     {
-        $this->activateDeactivate = $activateDeactivate;
+        (new Update($this->container->get(SystemConfigService::class)))->update($updateContext);
+        parent::update($updateContext);
     }
 
     public function activate(ActivateContext $activateContext): void
     {
-        parent::activate($activateContext);
-
         $this->activateDeactivate->activate($activateContext->getContext());
+
+        parent::activate($activateContext);
     }
 
     public function deactivate(DeactivateContext $deactivateContext): void
     {
-        parent::deactivate($deactivateContext);
-
         $this->activateDeactivate->deactivate($deactivateContext->getContext());
+
+        parent::deactivate($deactivateContext);
     }
 }

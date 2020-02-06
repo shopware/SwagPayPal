@@ -13,12 +13,13 @@ function onExit {
 trap onExit EXIT
 
 PHP_FILES="$(git diff --cached --name-only --diff-filter=ACMR HEAD | grep -E '\.(php)$')"
-JS_FILES="$(git diff --cached --name-only --diff-filter=ACMR HEAD | grep -E '\.(js)$')"
+JS_ADMIN_FILES="$(git diff --cached --name-only --diff-filter=ACMR HEAD | grep -E '^src/Resources/app/administration/.*\.(js)$')"
+JS_STOREFRONT_FILES="$(git diff --cached --name-only --diff-filter=ACMR HEAD | grep -E '^src/Resources/app/storefront/.*\.(js)$')"
 
 # exit on non-zero return code
 set -e
 
-if [[ -z "$PHP_FILES" && -z "$JS_FILES" ]]
+if [[ -z "$PHP_FILES" && -z "$JS_ADMIN_FILES" && -z "$JS_STOREFRONT_FILES" ]]
 then
     exit 0
 fi
@@ -36,7 +37,7 @@ then
     php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.xml --show-info=false ${PHP_FILES}
 fi
 
-UNSTAGED_FILES="$(git diff --name-only -- ${PHP_FILES} ${JS_FILES})"
+UNSTAGED_FILES="$(git diff --name-only -- ${PHP_FILES} ${JS_ADMIN_FILES} ${JS_STOREFRONT_FILES})"
 
 if [[ -n "$UNSTAGED_FILES" ]]
 then
@@ -56,9 +57,14 @@ then
     php ../../../dev-ops/analyze/vendor/bin/php-cs-fixer fix --config=.php_cs.dist --quiet -vv ${PHP_FILES}
 fi
 
-if [[ -n "$JS_FILES" && -x ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint ]]
+if [[ -n "$JS_ADMIN_FILES" && -x ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint ]]
 then
-    ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint --config ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/.eslintrc.js --ext .js,.vue --fix ${JS_FILES}
+    ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint --config ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/.eslintrc.js --ext .js,.vue --fix ${JS_ADMIN_FILES}
 fi
 
-git add ${JS_FILES} ${PHP_FILES}
+if [[ -n "$JS_STOREFRONT_FILES" && -x ../../../vendor/shopware/platform/src/Storefront/Resources/app/storefront/node_modules/.bin/eslint ]]
+then
+    ../../../vendor/shopware/platform/src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../vendor/shopware/platform/src/Storefront/Resources/app/storefront/.eslintrc.js --ext .js,.vue --fix ${JS_STOREFRONT_FILES}
+fi
+
+git add ${JS_ADMIN_FILES} ${JS_STOREFRONT_FILES} ${PHP_FILES}
