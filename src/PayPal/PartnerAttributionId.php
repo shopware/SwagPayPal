@@ -30,7 +30,7 @@ final class PartnerAttributionId
     public const PAYPAL_EXPRESS_CHECKOUT = 'Shopware_Cart_ECS_6native';
 
     /**
-     * Shopware Partner Id for Installments
+     * Shopware Partner Id for Installment
      */
     public const PAYPAL_RATE = 'Shopware_Cart_Rate_6native';
 

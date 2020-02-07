@@ -63,7 +63,7 @@ class PaymentMethodUtil
         }
 
         $paymentMethods = $this->getSalesChannelPaymentMethods($salesChannelContext->getSalesChannel(), $context);
-        if (!$paymentMethods) {
+        if ($paymentMethods === null) {
             return false;
         }
 

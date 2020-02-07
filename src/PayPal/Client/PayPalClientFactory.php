@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\PayPal\Client;
 
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -25,14 +25,14 @@ class PayPalClientFactory
     private $tokenResource;
 
     /**
-     * @var Logger
+     * @var LoggerInterface
      */
     private $logger;
 
     public function __construct(
         TokenResource $tokenResource,
         SettingsServiceInterface $settingsProvider,
-        Logger $logger
+        LoggerInterface $logger
     ) {
         $this->tokenResource = $tokenResource;
         $this->settingsProvider = $settingsProvider;

@@ -15,7 +15,7 @@ class TokenClientMock extends TokenClient
 
     public const TOKEN_TYPE = 'Bearer';
 
-    public function get(): array
+    public function getToken(): array
     {
         return [
             'scope' => 'https://uri.paypal.com/services/subscriptions https://api.paypal.com/v1/payments/.* https://api.paypal.com/v1/vault/credit-card https://uri.paypal.com/services/applications/webhooks openid https://uri.paypal.com/payments/payouts https://api.paypal.com/v1/vault/credit-card/.*',

@@ -5,8 +5,7 @@
     {% set spbCheckoutMarksData = page.footer.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID')] %}
 
     {% if spbCheckoutMarksData %}
-        <div class="swag-paypal__marks"
-             data-swag-paypal-marks="true"
+        <div data-swag-paypal-marks="true"
              data-swag-pay-pal-marks-options="{{ spbCheckoutMarksData|json_encode }}">
         </div>
     {% endif %}

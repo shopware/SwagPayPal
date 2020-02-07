@@ -1,3 +1,6 @@
+# 1.1.0
+- Banner für das Bewerben von Ratenzahlungen hinzugefügt
+
 # 1.0.0
 - PT-11181, PT-11275 - PayPal PLUS Integration hinzugefügt
 - PT-11277 - Die Übermittlung des Warenkorbs und der Bestellnummer ist jetzt standardmäßig aktiv

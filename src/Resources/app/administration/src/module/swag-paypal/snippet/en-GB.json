@@ -112,6 +112,12 @@
                     "helpText": "If not set, the sales channel language will be used."
                 }
             },
+            "installment": {
+                "cardTitle": "Ratenzahlung",
+                "installmentBannerEnabled": {
+                    "label": "Enable installment banner"
+                }
+            },
             "spb": {
                 "cardTitle": "PayPal Checkout with Smart Payment Buttons",
                 "spbCheckoutEnabled": {

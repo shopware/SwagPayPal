@@ -57,7 +57,7 @@ class PlusSubscriberTest extends TestCase
     use ServicesTrait;
 
     private const NEW_PAYMENT_NAME = 'PayPal, Lastschrift oder Kreditkarte';
-    private const PAYMENT_DESCRIPTION_EXTENSION = 'Bezahlung per PayPal - einfach, schnell und sicher. Zahlung per Lastschrift oder Kreditkarte ist auch ohne PayPal-Konto möglich.';
+    private const PAYMENT_DESCRIPTION_EXTENSION = 'Bezahlung per PayPal - einfach, schnell und sicher. Zahlung per Lastschrift oder Kreditkarte ist auch ohne ein PayPal-Konto möglich.';
 
     /**
      * @var PaymentMethodUtil
@@ -76,11 +76,9 @@ class PlusSubscriberTest extends TestCase
 
     protected function setUp(): void
     {
-        /** @var EntityRepositoryInterface $paymentMethodRepo */
-        $paymentMethodRepo = $this->getContainer()->get('payment_method.repository');
-        /** @var EntityRepositoryInterface $salesChannelRepo */
-        $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
-        $this->paymentMethodUtil = new PaymentMethodUtil($paymentMethodRepo, $salesChannelRepo);
+        /** @var PaymentMethodUtil $paymentMethodUtil */
+        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
+        $this->paymentMethodUtil = $paymentMethodUtil;
         $this->context = Context::createDefaultContext();
         $this->paypalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($this->context);
     }

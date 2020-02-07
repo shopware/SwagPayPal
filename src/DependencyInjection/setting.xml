@@ -11,7 +11,6 @@
 
         <service id="Swag\PayPal\Setting\Service\ApiCredentialService">
             <argument type="service" id="Swag\PayPal\PayPal\Resource\TokenResource"/>
-            <argument type="service" id="Swag\PayPal\PayPal\Client\OnboardingClient"/>
         </service>
 
         <service id="Swag\PayPal\Setting\Service\SettingsService">

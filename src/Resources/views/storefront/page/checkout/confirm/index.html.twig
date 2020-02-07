@@ -15,8 +15,7 @@
         <input hidden name="{{ constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.paymentId }}">
         <input hidden name="{{ constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.payerId }}">
     {% elseif spbCheckoutButtonData %}
-        <div class="swag-paypal__smart-buttons"
-             data-swag-paypal-smart-payment-buttons="true"
+        <div data-swag-paypal-smart-payment-buttons="true"
              data-swag-pay-pal-smart-payment-buttons-create-payment-token="{{ sw_csrf('sales-channel-api.action.paypal.spb.create_payment', {"mode": "token"}) }}"
              data-swag-pay-pal-smart-payment-buttons-options="{{ spbCheckoutButtonData|json_encode }}">
         </div>

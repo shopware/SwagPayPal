@@ -7,12 +7,17 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
-use Swag\PayPal\PayPal\Client\OnboardingClient;
+use Swag\PayPal\PayPal\Client\CredentialsClient;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 
-class OnboardingClientMock extends OnboardingClient
+class CredentialsClientMock extends CredentialsClient
 {
-    public function getClientCredentials(string $authCode, string $sharedId, string $nonce, string $url, string $partnerId): array
+    public function getAccessToken(string $authCode, string $sharedId, string $nonce): string
+    {
+        return '';
+    }
+
+    public function getCredentials(string $accessToken, string $partnerId): array
     {
         return [
             'client_id' => ConstantsForTesting::VALID_CLIENT_ID,

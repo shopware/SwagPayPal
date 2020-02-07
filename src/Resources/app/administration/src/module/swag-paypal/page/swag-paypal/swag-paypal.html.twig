@@ -91,6 +91,13 @@
                                                 </sw-paypal-express>
                                             {% endblock %}
 
+                                            {% block swag_paypal_content_card_channel_config_installment %}
+                                                <sw-paypal-installment :actualConfigData="actualConfigData"
+                                                                       :allConfigs="allConfigs"
+                                                                       :selectedSalesChannelId="selectedSalesChannelId">
+                                                </sw-paypal-installment>
+                                            {% endblock %}
+
                                             {% block swag_paypal_content_card_channel_config_spb %}
                                                 <sw-paypal-spb v-if="showSPBCard"
                                                                :actualConfigData="actualConfigData"

@@ -8,12 +8,13 @@
 namespace Swag\PayPal\Test\Setting;
 
 use GuzzleHttp\Exception\ClientException;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Setting\SettingsController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\CacheMock;
-use Swag\PayPal\Test\Mock\PayPal\Client\OnboardingClientMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 use Symfony\Component\HttpFoundation\Request;
@@ -58,13 +59,15 @@ class SettingsControllerTest extends TestCase
 
     private function createApiValidationController(): SettingsController
     {
+        $logger = new Logger('testLogger');
+
         return new SettingsController(
             new ApiCredentialService(
                 new TokenResourceMock(
                     new CacheMock(),
-                    new TokenClientFactoryMock()
-                ),
-                new OnboardingClientMock()
+                    new TokenClientFactoryMock($logger),
+                    new CredentialsClientFactoryMock($logger)
+                )
             )
         );
     }

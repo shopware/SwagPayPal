@@ -16,4 +16,16 @@
             </div>
         </div>
     {% endif %}
+
+    {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
+    {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+
+    {% if installmentBanner is not null %}
+        <div class="row">
+            <div class="col-5 pb-2"
+                 data-swag-paypal-installment-banner="true"
+                 data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

@@ -6,7 +6,7 @@
     {% set payPalPlusData = page.extensions.payPalPlusData %}
     {% if payPalPlusData and payPalPlusData.approvalUrl and payPalPlusData.paymentMethodId is same as(context.paymentMethod.id) %}
         <div class="d-none"
-             data-payPalPaymentWall="true"
+             data-swag-paypal-payment-wall="true"
              data-swag-pay-pal-plus-payment-wall-checkout-order-token="{{ sw_csrf('sales-channel-api.checkout.order.create', {"mode": "token"}) }}"
              data-swag-pay-pal-plus-payment-wall-options="{{ payPalPlusData|json_encode }}">
         </div>
@@ -20,7 +20,7 @@
 
     {% if spbCheckoutButtonData and spbCheckoutButtonData.paymentMethodId is same as(context.paymentMethod.id) %}
         <strong>{{ "checkout.confirmCurrentPaymentShipping"|trans }}</strong>
-        <div class="swag-paypal__marks" data-swag-paypal-marks="true"></div>
+        <div data-swag-paypal-marks="true"></div>
     {% else %}
         {{ parent() }}
     {% endif %}

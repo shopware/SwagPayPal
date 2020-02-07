@@ -1,0 +1,27 @@
+{% block swag_paypal_content_card_channel_config_installment %}
+    <sw-card :title="$tc('swag-paypal.settingForm.installment.cardTitle')">
+
+        {% block swag_paypal_content_card_channel_config_installment_settings %}
+            <div v-if="actualConfigData" class="swag-paypal-settings-installment-fields">
+
+                {% block swag_paypal_content_card_channel_config_installment_settings_checkout_enabled %}
+                    <sw-inherit-wrapper
+                        v-model="actualConfigData['SwagPayPal.settings.installmentBannerEnabled']"
+                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.installmentBannerEnabled']"
+                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                        <template #content="props">
+                            <sw-switch-field name="SwagPayPal.settings.installmentBannerEnabled"
+                                             bordered
+                                             :mapInheritance="props"
+                                             :label="$tc('swag-paypal.settingForm.installment.installmentBannerEnabled.label')"
+                                             :disabled="props.isInherited"
+                                             :value="props.currentValue"
+                                             @change="props.updateCurrentValue">
+                            </sw-switch-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </sw-card>
+{% endblock %}

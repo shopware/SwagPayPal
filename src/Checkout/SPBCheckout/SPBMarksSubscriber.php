@@ -14,6 +14,7 @@ use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -88,7 +89,9 @@ class SPBMarksSubscriber implements EventSubscriberInterface
             return null;
         }
 
-        if (!$settings->getSpbCheckoutEnabled()) {
+        if (!$settings->getSpbCheckoutEnabled()
+            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_GERMANY
+        ) {
             return null;
         }
 

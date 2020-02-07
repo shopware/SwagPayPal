@@ -155,6 +155,11 @@ class SwagPayPalSettingStruct extends Struct
      */
     protected $plusCheckoutEnabled = true;
 
+    /**
+     * @var bool
+     */
+    protected $installmentBannerEnabled = true;
+
     public function getClientId(): string
     {
         return $this->clientId;
@@ -428,5 +433,15 @@ class SwagPayPalSettingStruct extends Struct
     public function setPlusCheckoutEnabled(bool $plusCheckoutEnabled): void
     {
         $this->plusCheckoutEnabled = $plusCheckoutEnabled;
+    }
+
+    public function getInstallmentBannerEnabled(): bool
+    {
+        return $this->installmentBannerEnabled;
+    }
+
+    public function setInstallmentBannerEnabled(bool $installmentBannerEnabled): void
+    {
+        $this->installmentBannerEnabled = $installmentBannerEnabled;
     }
 }

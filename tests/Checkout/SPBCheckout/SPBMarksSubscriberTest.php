@@ -130,6 +130,7 @@ class SPBMarksSubscriberTest extends TestCase
             $settings->setClientId(self::TEST_CLIENT_ID);
             $settings->setClientSecret('testClientSecret');
             $settings->setSpbCheckoutEnabled($spbEnabled);
+            $settings->setMerchantLocation(SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER);
         }
 
         $settingsService = new SettingsServiceMock($settings);

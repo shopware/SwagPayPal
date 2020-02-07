@@ -7,14 +7,25 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
+use Psr\Log\LoggerInterface;
 use Swag\PayPal\PayPal\Api\OAuthCredentials;
 use Swag\PayPal\PayPal\Client\TokenClient;
 use Swag\PayPal\PayPal\Client\TokenClientFactory;
 
 class TokenClientFactoryMock extends TokenClientFactory
 {
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     public function createTokenClient(OAuthCredentials $credentials, string $url): TokenClient
     {
-        return new TokenClientMock($credentials, $url);
+        return new TokenClientMock($credentials, $url, $this->logger);
     }
 }

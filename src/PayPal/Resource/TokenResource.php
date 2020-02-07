@@ -10,6 +10,7 @@ namespace Swag\PayPal\PayPal\Resource;
 use Psr\Cache\CacheItemPoolInterface;
 use Swag\PayPal\PayPal\Api\OAuthCredentials;
 use Swag\PayPal\PayPal\Api\Token;
+use Swag\PayPal\PayPal\Client\CredentialsClientFactory;
 use Swag\PayPal\PayPal\Client\TokenClientFactory;
 
 class TokenResource
@@ -26,10 +27,19 @@ class TokenResource
      */
     private $tokenClientFactory;
 
-    public function __construct(CacheItemPoolInterface $cache, TokenClientFactory $tokenClientFactory)
-    {
+    /**
+     * @var CredentialsClientFactory
+     */
+    private $credentialsClientFactory;
+
+    public function __construct(
+        CacheItemPoolInterface $cache,
+        TokenClientFactory $tokenClientFactory,
+        CredentialsClientFactory $credentialsClientFactory
+    ) {
         $this->cache = $cache;
         $this->tokenClientFactory = $tokenClientFactory;
+        $this->credentialsClientFactory = $credentialsClientFactory;
     }
 
     public function getToken(OAuthCredentials $credentials, string $url): Token
@@ -40,11 +50,24 @@ class TokenResource
             $tokenClient = $this->tokenClientFactory->createTokenClient($credentials, $url);
 
             $token = new Token();
-            $token->assign($tokenClient->get());
+            $token->assign($tokenClient->getToken());
             $this->setToken($token, $cacheId);
         }
 
         return $token;
+    }
+
+    public function getClientCredentials(
+        string $authCode,
+        string $sharedId,
+        string $nonce,
+        string $url,
+        string $partnerId
+    ): array {
+        $credentialsClient = $this->credentialsClientFactory->createCredentialsClient($url);
+        $accessToken = $credentialsClient->getAccessToken($authCode, $sharedId, $nonce);
+
+        return $credentialsClient->getCredentials($accessToken, $partnerId);
     }
 
     public function testApiCredentials(OAuthCredentials $credentials, string $url): bool
@@ -52,7 +75,7 @@ class TokenResource
         $tokenClient = $this->tokenClientFactory->createTokenClient($credentials, $url);
 
         $token = new Token();
-        $token->assign($tokenClient->get());
+        $token->assign($tokenClient->getToken());
 
         return $this->isTokenValid($token);
     }
