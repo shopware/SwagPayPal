@@ -9,5 +9,16 @@
              data-swag-pay-pal-marks-options="{{ spbCheckoutMarksData|json_encode }}">
         </div>
     {% endif %}
+
+    {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
+    {% set installmentBanner = page.footer.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+
+    {% if installmentBanner is not null %}
+        <div class="col-4 mt-2"
+             data-swag-paypal-installment-banner="true"
+             data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
+        </div>
+    {% endif %}
+
     {{ parent() }}
 {% endblock %}

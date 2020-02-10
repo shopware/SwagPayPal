@@ -5,7 +5,7 @@
     {% set spbCheckoutMarksData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID')] %}
 
     {% if spbCheckoutMarksData and spbCheckoutMarksData.paymentMethodId is same as(payment.id) %}
-        <div class="pb-1 ml-n1 mt-n1"
+        <div class="pb-1 ml-n1 mt-n2"
              data-swag-paypal-marks="true"
              data-swag-pay-pal-marks-options="{{ spbCheckoutMarksData|json_encode }}">
         </div>
@@ -20,8 +20,7 @@
     {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
 
     {% if installmentBanner is not null and installmentBanner.paymentMethodId is same as(payment.id) %}
-        <div class="ml-1"
-             data-swag-paypal-installment-banner="true"
+        <div data-swag-paypal-installment-banner="true"
              data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}"
              data-swag-paypal-installment-banner-is-confirm="true">
         </div>

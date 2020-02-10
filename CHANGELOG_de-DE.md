@@ -1,5 +1,5 @@
 # 1.1.0
-- Banner für das Bewerben von Ratenzahlungen hinzugefügt
+- PT-11276 - Banner für das Bewerben von Ratenzahlungen hinzugefügt
 
 # 1.0.0
 - PT-11181, PT-11275 - PayPal PLUS Integration hinzugefügt

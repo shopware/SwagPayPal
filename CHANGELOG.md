@@ -1,5 +1,5 @@
 # 1.1.0
-- Add banner for advertising installments
+- PT-11276 - Add banner for advertising installments
 
 # 1.0.0
 - PT-11181, PT-11275 - Add PayPal PLUS integration
