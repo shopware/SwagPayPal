@@ -18,6 +18,7 @@ use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
+use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -62,6 +63,8 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
             CheckoutRegisterPageLoadedEvent::class => 'addInstallmentBanner',
             OffcanvasCartPageLoadedEvent::class => 'addInstallmentBanner',
             ProductPageLoadedEvent::class => 'addInstallmentBanner',
+
+            FooterPageletLoadedEvent::class => 'addInstallmentBannerFooter',
         ];
     }
 
@@ -106,6 +109,37 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         }
 
         $page->addExtension(
+            self::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID,
+            $bannerData
+        );
+    }
+
+    public function addInstallmentBannerFooter(FooterPageletLoadedEvent $pageletLoadedEvent): void
+    {
+        $salesChannelContext = $pageletLoadedEvent->getSalesChannelContext();
+        if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext) === false) {
+            return;
+        }
+
+        try {
+            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
+        } catch (PayPalSettingsInvalidException $e) {
+            return;
+        }
+
+        if ($settings->getInstallmentBannerEnabled() === false) {
+            return;
+        }
+
+        $pagelet = $pageletLoadedEvent->getPagelet();
+
+        $bannerData = $this->bannerDataService->getInstallmentBannerData(
+            $pagelet,
+            $salesChannelContext,
+            $settings
+        );
+
+        $pagelet->addExtension(
             self::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID,
             $bannerData
         );

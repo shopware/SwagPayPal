@@ -14,6 +14,7 @@ use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPage;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPage;
 use Shopware\Storefront\Page\Page;
 use Shopware\Storefront\Page\Product\ProductPage;
+use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -31,10 +32,10 @@ class BannerDataService
     }
 
     /**
-     * @param CheckoutCartPage|CheckoutConfirmPage|CheckoutRegisterPage|OffcanvasCartPage|ProductPage $page
+     * @param CheckoutCartPage|CheckoutConfirmPage|CheckoutRegisterPage|OffcanvasCartPage|ProductPage|FooterPagelet $page
      */
     public function getInstallmentBannerData(
-        Page $page,
+        $page,
         SalesChannelContext $salesChannelContext,
         SwagPayPalSettingStruct $settings
     ): BannerData {

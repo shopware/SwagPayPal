@@ -20,14 +20,19 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
-use Shopware\Storefront\Page\Page;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
+use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
+use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
@@ -72,18 +77,22 @@ class InstallmentBannerSubscriberTest extends TestCase
     {
         $events = InstallmentBannerSubscriber::getSubscribedEvents();
 
-        static::assertCount(5, $events);
-        foreach ($events as $event) {
-            static::assertSame('addInstallmentBanner', $event);
-        }
+        static::assertCount(6, $events);
+
+        static::assertSame('addInstallmentBanner', $events[CheckoutCartPageLoadedEvent::class]);
+        static::assertSame('addInstallmentBanner', $events[CheckoutConfirmPageLoadedEvent::class]);
+        static::assertSame('addInstallmentBanner', $events[CheckoutRegisterPageLoadedEvent::class]);
+        static::assertSame('addInstallmentBanner', $events[OffcanvasCartPageLoadedEvent::class]);
+        static::assertSame('addInstallmentBanner', $events[ProductPageLoadedEvent::class]);
+
+        static::assertSame('addInstallmentBannerFooter', $events[FooterPageletLoadedEvent::class]);
     }
 
     public function testAddInstallmentBannerPayPalNotInSalesChannel(): void
     {
-        $subscriber = $this->createInstallmentBannerSubscriber();
-
         $event = $this->createCheckoutCartPageLoadedEvent(false);
-        $subscriber->addInstallmentBanner($event);
+
+        $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
         static::assertEmpty($event->getPage()->getExtensions());
     }
@@ -91,10 +100,9 @@ class InstallmentBannerSubscriberTest extends TestCase
     public function testAddInstallmentBannerInvalidSettings(): void
     {
         $settings = new SwagPayPalSettingStruct();
-        $subscriber = $this->createInstallmentBannerSubscriber($settings);
-
         $event = $this->createCheckoutCartPageLoadedEvent();
-        $subscriber->addInstallmentBanner($event);
+
+        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBanner($event);
 
         static::assertEmpty($event->getPage()->getExtensions());
     }
@@ -105,20 +113,18 @@ class InstallmentBannerSubscriberTest extends TestCase
         $settings->setClientId('testClientId');
         $settings->setClientSecret('testClientSecret');
         $settings->setInstallmentBannerEnabled(false);
-        $subscriber = $this->createInstallmentBannerSubscriber($settings);
-
         $event = $this->createCheckoutCartPageLoadedEvent();
-        $subscriber->addInstallmentBanner($event);
+
+        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBanner($event);
 
         static::assertEmpty($event->getPage()->getExtensions());
     }
 
     public function testAddInstallmentBannerCheckoutCart(): void
     {
-        $subscriber = $this->createInstallmentBannerSubscriber();
-
         $event = $this->createCheckoutCartPageLoadedEvent();
-        $subscriber->addInstallmentBanner($event);
+
+        $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
         $page = $event->getPage();
         $extensions = $page->getExtensions();
@@ -138,10 +144,9 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     public function testAddInstallmentBannerProductPage(): void
     {
-        $subscriber = $this->createInstallmentBannerSubscriber();
-
         $event = $this->createProductPageLoadedEvent();
-        $subscriber->addInstallmentBanner($event);
+
+        $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
         $page = $event->getPage();
         $extensions = $page->getExtensions();
@@ -152,10 +157,9 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     public function testAddInstallmentBannerProductPageWithAdvancedPrices(): void
     {
-        $subscriber = $this->createInstallmentBannerSubscriber();
-
         $event = $this->createProductPageLoadedEvent(true);
-        $subscriber->addInstallmentBanner($event);
+
+        $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
 
         $page = $event->getPage();
         $extensions = $page->getExtensions();
@@ -164,7 +168,52 @@ class InstallmentBannerSubscriberTest extends TestCase
         $this->assertBannerData($page, self::ADVANCED_PRODUCT_PRICE);
     }
 
-    private function assertBannerData(Page $page, float $price): void
+    public function testAddInstallmentBannerFooterPayPalNotInSalesChannel(): void
+    {
+        $event = $this->createFooterPageletLoadedEvent(false);
+
+        $this->createInstallmentBannerSubscriber()->addInstallmentBannerFooter($event);
+
+        static::assertEmpty($event->getPagelet()->getExtensions());
+    }
+
+    public function testAddInstallmentBannerFooterInvalidSettings(): void
+    {
+        $settings = new SwagPayPalSettingStruct();
+        $event = $this->createFooterPageletLoadedEvent();
+
+        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBannerFooter($event);
+
+        static::assertEmpty($event->getPagelet()->getExtensions());
+    }
+
+    public function testAddInstallmentBannerFooterDisabled(): void
+    {
+        $settings = new SwagPayPalSettingStruct();
+        $settings->setClientId('testClientId');
+        $settings->setClientSecret('testClientSecret');
+        $settings->setInstallmentBannerEnabled(false);
+        $event = $this->createFooterPageletLoadedEvent();
+
+        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBannerFooter($event);
+
+        static::assertEmpty($event->getPagelet()->getExtensions());
+    }
+
+    public function testAddInstallmentBannerFooterPagelet(): void
+    {
+        $event = $this->createFooterPageletLoadedEvent();
+
+        $this->createInstallmentBannerSubscriber()->addInstallmentBannerFooter($event);
+
+        $pagelet = $event->getPagelet();
+        $extensions = $pagelet->getExtensions();
+        static::assertCount(1, $extensions);
+
+        $this->assertBannerData($pagelet, 0);
+    }
+
+    private function assertBannerData(Struct $page, float $price): void
     {
         /** @var BannerData|null $bannerData */
         $bannerData = $page->getExtension(InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID);
@@ -191,28 +240,6 @@ class InstallmentBannerSubscriberTest extends TestCase
             $this->paymentMethodUtil,
             new BannerDataService($this->paymentMethodUtil)
         );
-    }
-
-    private function createSalesChannelContext(bool $withPayPalInContext = true): SalesChannelContext
-    {
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        $salesChannelContext = $salesChannelContextFactory->create(
-            'token',
-            Defaults::SALES_CHANNEL
-        );
-
-        $paymentMethodsArray = [$salesChannelContext->getPaymentMethod()];
-        if ($withPayPalInContext) {
-            $payPalPaymentMethod = new PaymentMethodEntity();
-            $payPalPaymentMethod->setId($this->payPalPaymentMethodId);
-            $paymentMethodsArray[] = $payPalPaymentMethod;
-            $this->addPayPalToDefaultsSalesChannel();
-        }
-
-        $salesChannelContext->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection($paymentMethodsArray));
-
-        return $salesChannelContext;
     }
 
     private function createCheckoutCartPageLoadedEvent(bool $withPayPalInContext = true): CheckoutCartPageLoadedEvent
@@ -278,6 +305,37 @@ class InstallmentBannerSubscriberTest extends TestCase
         $page->setProduct($product);
 
         return $page;
+    }
+
+    private function createFooterPageletLoadedEvent(bool $withPayPalInContext = true): FooterPageletLoadedEvent
+    {
+        return new FooterPageletLoadedEvent(
+            new FooterPagelet(null),
+            $this->createSalesChannelContext($withPayPalInContext),
+            $this->createRequest()
+        );
+    }
+
+    private function createSalesChannelContext(bool $withPayPalInContext = true): SalesChannelContext
+    {
+        /** @var SalesChannelContextFactory $salesChannelContextFactory */
+        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
+        $salesChannelContext = $salesChannelContextFactory->create(
+            'token',
+            Defaults::SALES_CHANNEL
+        );
+
+        $paymentMethodsArray = [$salesChannelContext->getPaymentMethod()];
+        if ($withPayPalInContext) {
+            $payPalPaymentMethod = new PaymentMethodEntity();
+            $payPalPaymentMethod->setId($this->payPalPaymentMethodId);
+            $paymentMethodsArray[] = $payPalPaymentMethod;
+            $this->addPayPalToDefaultsSalesChannel();
+        }
+
+        $salesChannelContext->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection($paymentMethodsArray));
+
+        return $salesChannelContext;
     }
 
     private function createRequest(): Request
