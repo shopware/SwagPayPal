@@ -1,3 +1,6 @@
+# Next Version
+- PT-11443 - Solves an issue with the error handling with the paypal credentials
+
 # 1.1.0
 - PT-11276 - Add banner for advertising installments
 
