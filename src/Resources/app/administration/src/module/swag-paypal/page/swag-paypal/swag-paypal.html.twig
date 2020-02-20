@@ -73,7 +73,9 @@
                                             {% block swag_paypal_content_card_channel_config_credentials_card %}
                                                 <sw-paypal-credentials :actualConfigData="actualConfigData"
                                                                        :allConfigs="allConfigs"
-                                                                       :selectedSalesChannelId="selectedSalesChannelId">
+                                                                       :selectedSalesChannelId="selectedSalesChannelId"
+                                                                       :clientIdErrorState="clientIdErrorState"
+                                                                       :clientSecretErrorState="clientSecretErrorState">
                                                 </sw-paypal-credentials>
                                             {% endblock %}
 

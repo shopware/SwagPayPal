@@ -18,6 +18,12 @@ Component.register('sw-paypal-credentials', {
         },
         selectedSalesChannelId: {
             required: true
+        },
+        clientIdErrorState: {
+            required: true
+        },
+        clientSecretErrorState: {
+            required: true
         }
     },
 

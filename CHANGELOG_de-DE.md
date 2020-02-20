@@ -1,3 +1,6 @@
+# Nächste Version
+- PT-11443 - Behebt ein Problem mit der Fehlerbehandlung bei den Paypal-Zugangsdaten
+
 # 1.1.0
 - PT-11276 - Banner für das Bewerben von Ratenzahlungen hinzugefügt
 
