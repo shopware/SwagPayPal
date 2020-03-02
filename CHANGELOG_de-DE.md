@@ -1,5 +1,6 @@
-# Nächste Version
+# 1.1.1
 - PT-11443 - Behebt ein Problem mit der Fehlerbehandlung bei den Paypal-Zugangsdaten
+- PT-11475 - Verarbeitung von Gutscheinen während des Checkouts verbessert
 
 # 1.1.0
 - PT-11276 - Banner für das Bewerben von Ratenzahlungen hinzugefügt

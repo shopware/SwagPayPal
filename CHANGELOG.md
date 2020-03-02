@@ -1,5 +1,6 @@
-# Next Version
+# 1.1.1
 - PT-11443 - Solves an issue with the error handling with the paypal credentials
+- PT-11475 - Improved processing of vouchers during checkout
 
 # 1.1.0
 - PT-11276 - Add banner for advertising installments
