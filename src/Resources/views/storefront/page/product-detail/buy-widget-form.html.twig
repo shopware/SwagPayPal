@@ -21,16 +21,16 @@
             </div>
         {% endif %}
 
-        {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
-        {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+    {% endif %}
 
-        {% if installmentBanner is not null %}
-            <div class="form-row mt-3 mb-4 justify-content-end">
-                <div class="col-8" data-swag-paypal-installment-banner="true"
-                     data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
-                </div>
+    {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
+    {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+
+    {% if installmentBanner is not null %}
+        <div class="form-row mt-3 mb-4 justify-content-end">
+            <div class="{{ buyable ? 'col-8' : 'col-12' }}" data-swag-paypal-installment-banner="true"
+                 data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
             </div>
-        {% endif %}
-
+        </div>
     {% endif %}
 {% endblock %}
