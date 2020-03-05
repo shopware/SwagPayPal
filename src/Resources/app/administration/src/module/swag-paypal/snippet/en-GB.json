@@ -8,7 +8,8 @@
         "messageNotBlank": "This value should not be blank.",
         "settingForm": {
             "save": "Save",
-            "test": "Test API credentials",
+            "testLive": "Test API credentials",
+            "testSandbox": "Test sandbox API credentials",
             "credentials": {
                 "cardTitle": "API credentials",
                 "clientId": {
@@ -18,6 +19,14 @@
                 "clientSecret": {
                     "label": "Client secret",
                     "tooltipText": "The REST API client secret is used to authenticate this plugin with the PayPal API."
+                },
+                "clientIdSandbox": {
+                    "label": "Sandbox client ID",
+                    "tooltipText": "The REST API client ID is used while testing to authenticate this plugin with the PayPal API."
+                },
+                "clientSecretSandbox": {
+                    "label": "Sandbox client secret",
+                    "tooltipText": "The REST API client secret is used while testing to authenticate this plugin with the PayPal API."
                 },
                 "sandbox": {
                     "label": "Enable sandbox",

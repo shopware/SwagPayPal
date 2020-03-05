@@ -37,15 +37,15 @@ class PayPalClient extends AbstractClient
 
         $url = $settings->getSandbox() ? BaseURL::SANDBOX : BaseURL::LIVE;
 
-        $clientId = $settings->getClientId();
-        $clientSecret = $settings->getClientSecret();
+        $clientId = $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId();
+        $clientSecret = $settings->getSandbox() ? $settings->getClientSecretSandbox() : $settings->getClientSecret();
 
         if ($clientId === '') {
-            throw new PayPalSettingsInvalidException('clientId');
+            throw new PayPalSettingsInvalidException($settings->getSandbox() ? 'clientIdSandbox' : 'clientId');
         }
 
         if ($clientSecret === '') {
-            throw new PayPalSettingsInvalidException('clientSecret');
+            throw new PayPalSettingsInvalidException($settings->getSandbox() ? 'clientSecretSandbox' : 'clientSecret');
         }
 
         $credentials = $this->createCredentialsObject($clientId, $clientSecret);

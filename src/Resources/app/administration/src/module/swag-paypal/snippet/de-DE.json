@@ -8,16 +8,25 @@
         "messageNotBlank": "Dieser Wert darf nicht leer sein.",
         "settingForm": {
             "save": "Speichern",
-            "test": "API-Zugangsdaten testen",
+            "testLive": "API-Zugangsdaten testen",
+            "testSandbox": "Sandbox-API-Zugangsdaten testen",
             "credentials": {
                 "cardTitle": "API-Zugangsdaten",
                 "clientId": {
                     "label": "Client-ID",
-                    "tooltipText": "Die REST-API Client-ID, die das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren."
+                    "tooltipText": "Die Client-ID der REST-API, die das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren."
                 },
                 "clientSecret": {
                     "label": "Client-Secret",
-                    "tooltipText": "Das REST-API Client-Secret, das das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren."
+                    "tooltipText": "Das Client-Secret der REST-API, das das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren."
+                },
+                "clientIdSandbox": {
+                    "label": "Sandbox-Client-ID",
+                    "tooltipText": "Die Client-ID der REST-API, die das Plugin im Testfall dazu verwendet, sich mit der PayPal-API zu authentifizieren."
+                },
+                "clientSecretSandbox": {
+                    "label": "Sandbox-Client-Secret",
+                    "tooltipText": "Das Client-Secret der REST-API, das das Plugin im Testfall dazu verwendet, sich mit der PayPal-API zu authentifizieren."
                 },
                 "sandbox": {
                     "label": "Sandbox aktivieren",

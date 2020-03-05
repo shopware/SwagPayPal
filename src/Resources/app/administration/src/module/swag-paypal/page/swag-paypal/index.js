@@ -16,14 +16,19 @@ Shopware.Component.register('swag-paypal', {
     data() {
         return {
             isLoading: false,
-            isTesting: false,
             isSaveSuccessful: false,
             isTestSuccessful: false,
+            isTestSandboxSuccessful: false,
             clientIdFilled: false,
             clientSecretFilled: false,
+            clientIdSandboxFilled: false,
+            clientSecretSandboxFilled: false,
+            sandboxChecked: false,
             config: null,
             clientIdErrorState: null,
             clientSecretErrorState: null,
+            clientIdSandboxErrorState: null,
+            clientSecretSandboxErrorState: null,
             ...constants
         };
     },
@@ -35,10 +40,6 @@ Shopware.Component.register('swag-paypal', {
     },
 
     computed: {
-        testButtonDisabled() {
-            return this.isLoading || !this.clientSecretFilled || !this.clientIdFilled || this.isTesting;
-        },
-
         showSPBCard() {
             return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
         },
@@ -57,11 +58,20 @@ Shopware.Component.register('swag-paypal', {
                 if (salesChannelId === null) {
                     this.clientIdFilled = !!this.config['SwagPayPal.settings.clientId'];
                     this.clientSecretFilled = !!this.config['SwagPayPal.settings.clientSecret'];
+                    this.clientIdSandboxFilled = !!this.config['SwagPayPal.settings.clientIdSandbox'];
+                    this.clientSecretSandboxFilled = !!this.config['SwagPayPal.settings.clientSecretSandbox'];
+                    this.sandboxChecked = !!this.config['SwagPayPal.settings.sandbox'];
                 } else {
                     this.clientIdFilled = !!this.config['SwagPayPal.settings.clientId']
                         || !!defaultConfig['SwagPayPal.settings.clientId'];
                     this.clientSecretFilled = !!this.config['SwagPayPal.settings.clientSecret']
                         || !!defaultConfig['SwagPayPal.settings.clientSecret'];
+                    this.clientIdSandboxFilled = !!this.config['SwagPayPal.settings.clientIdSandbox']
+                        || !!defaultConfig['SwagPayPal.settings.clientIdSandbox'];
+                    this.clientSecretSandboxFilled = !!this.config['SwagPayPal.settings.clientSecretSandbox']
+                        || !!defaultConfig['SwagPayPal.settings.clientSecretSandbox'];
+                    this.sandboxChecked = !!this.config['SwagPayPal.settings.sandbox']
+                        || !!defaultConfig['SwagPayPal.settings.sandbox'];
                 }
             },
             deep: true
@@ -70,7 +80,8 @@ Shopware.Component.register('swag-paypal', {
 
     methods: {
         onSave() {
-            if (!this.clientIdFilled || !this.clientSecretFilled) {
+            if ((!this.sandboxChecked && (!this.clientIdFilled || !this.clientSecretFilled)) ||
+                (this.sandboxChecked && (!this.clientIdSandboxFilled || !this.clientSecretSandboxFilled))) {
                 this.setErrorStates();
                 return;
             }
@@ -136,60 +147,34 @@ Shopware.Component.register('swag-paypal', {
                 });
         },
 
-        onTest() {
-            this.isTesting = true;
-            const clientId = this.config['SwagPayPal.settings.clientId'] ||
-                this.$refs.configComponent.allConfigs.null['SwagPayPal.settings.clientId'];
-            const clientSecret = this.config['SwagPayPal.settings.clientSecret'] ||
-                this.$refs.configComponent.allConfigs.null['SwagPayPal.settings.clientSecret'];
-            const sandbox = this.config['SwagPayPal.settings.sandbox'] ||
-                this.$refs.configComponent.allConfigs.null['SwagPayPal.settings.sandbox'];
-
-            this.SwagPayPalApiCredentialsService.validateApiCredentials(
-                clientId,
-                clientSecret,
-                sandbox
-            ).then((response) => {
-                const credentialsValid = response.credentialsValid;
-
-                if (credentialsValid) {
-                    this.isTesting = false;
-                    this.isTestSuccessful = true;
-                }
-            }).catch((errorResponse) => {
-                if (errorResponse.response.data && errorResponse.response.data.errors) {
-                    let message = `${this.$tc('swag-paypal.settingForm.messageTestError')}<br><br><ul>`;
-                    errorResponse.response.data.errors.forEach((error) => {
-                        message = `${message}<li>${error.detail}</li>`;
-                    });
-                    message += '</li>';
-                    this.createNotificationError({
-                        title: this.$tc('swag-paypal.settingForm.titleError'),
-                        message: message
-                    });
-                    this.isTesting = false;
-                    this.isTestSuccessful = false;
-                }
-            });
-        },
-
         setErrorStates() {
-            if (!this.clientIdFilled) {
-                this.clientIdErrorState = {
-                    code: 1,
-                    detail: this.$tc('swag-paypal.messageNotBlank')
-                };
-            } else {
-                this.clientIdErrorState = null;
-            }
+            const messageNotBlankErrorState = {
+                code: 1,
+                detail: this.$tc('swag-paypal.messageNotBlank')
+            };
 
-            if (!this.clientSecretFilled) {
-                this.clientSecretErrorState = {
-                    code: 1,
-                    detail: this.$tc('swag-paypal.messageNotBlank')
-                };
-            } else {
+            if (!this.sandboxChecked) {
+                this.clientIdErrorState = null;
                 this.clientSecretErrorState = null;
+
+                if (!this.clientIdFilled) {
+                    this.clientIdErrorState = messageNotBlankErrorState;
+                }
+
+                if (!this.clientSecretFilled) {
+                    this.clientSecretErrorState = messageNotBlankErrorState;
+                }
+            } else {
+                this.clientIdSandboxErrorState = null;
+                this.clientSecretSandboxErrorState = null;
+
+                if (!this.clientIdSandboxFilled) {
+                    this.clientIdSandboxErrorState = messageNotBlankErrorState;
+                }
+
+                if (!this.clientSecretSandboxFilled) {
+                    this.clientSecretSandboxErrorState = messageNotBlankErrorState;
+                }
             }
         }
     }

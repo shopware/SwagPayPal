@@ -21,6 +21,8 @@ class SwagPayPalSettingStructTest extends TestCase
     private const BUTTON_LANGUAGE_ISO = 'en_GB';
     private const CLIENT_ID = 'SomeClientId';
     private const CLIENT_SECRET = 'SomeClientSecret';
+    private const CLIENT_ID_SANDBOX = 'SomeClientIdForSandboxing';
+    private const CLIENT_SECRET_SANDBOX = 'SomeClientSecretForSandboxing';
     private const WEBHOOK_ID = 'SomeWebhookId';
     private const WEBHOOK_EXECUTE_TOKEN = 'SomeWebhookExecuteToken';
     private const BRAND_NAME = 'SomeBrandName';
@@ -31,6 +33,8 @@ class SwagPayPalSettingStructTest extends TestCase
         $settings->assign([
             'clientId' => self::CLIENT_ID,
             'clientSecret' => self::CLIENT_SECRET,
+            'clientIdSandbox' => self::CLIENT_ID_SANDBOX,
+            'clientSecretSandbox' => self::CLIENT_SECRET_SANDBOX,
             'sandbox' => false,
             'intent' => PaymentIntent::SALE,
             'submitCart' => false,
@@ -61,6 +65,8 @@ class SwagPayPalSettingStructTest extends TestCase
         $settings = new SwagPayPalSettingStruct();
         $settings->setClientId(self::CLIENT_ID);
         $settings->setClientSecret(self::CLIENT_SECRET);
+        $settings->setClientIdSandbox(self::CLIENT_ID_SANDBOX);
+        $settings->setClientSecretSandbox(self::CLIENT_SECRET_SANDBOX);
         $settings->setSandbox(false);
         $settings->setIntent(PaymentIntent::SALE);
         $settings->setSubmitCart(false);
@@ -89,6 +95,8 @@ class SwagPayPalSettingStructTest extends TestCase
     {
         static::assertSame(self::CLIENT_ID, $settings->getClientId());
         static::assertSame(self::CLIENT_SECRET, $settings->getClientSecret());
+        static::assertSame(self::CLIENT_ID_SANDBOX, $settings->getClientIdSandbox());
+        static::assertSame(self::CLIENT_SECRET_SANDBOX, $settings->getClientSecretSandbox());
         static::assertFalse($settings->getSandbox());
         static::assertSame(PaymentIntent::SALE, $settings->getIntent());
         static::assertFalse($settings->getSubmitCart());

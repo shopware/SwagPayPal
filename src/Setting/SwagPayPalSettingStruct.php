@@ -31,6 +31,16 @@ class SwagPayPalSettingStruct extends Struct
     protected $clientSecret;
 
     /**
+     * @var string
+     */
+    protected $clientIdSandbox;
+
+    /**
+     * @var string
+     */
+    protected $clientSecretSandbox;
+
+    /**
      * @var bool
      */
     protected $sandbox = false;
@@ -178,6 +188,26 @@ class SwagPayPalSettingStruct extends Struct
     public function setClientSecret(string $clientSecret): void
     {
         $this->clientSecret = $clientSecret;
+    }
+
+    public function getClientIdSandbox(): string
+    {
+        return $this->clientIdSandbox;
+    }
+
+    public function setClientIdSandbox(string $clientIdSandbox): void
+    {
+        $this->clientIdSandbox = $clientIdSandbox;
+    }
+
+    public function getClientSecretSandbox(): string
+    {
+        return $this->clientSecretSandbox;
+    }
+
+    public function setClientSecretSandbox(string $clientSecretSandbox): void
+    {
+        $this->clientSecretSandbox = $clientSecretSandbox;
     }
 
     public function getSandbox(): bool

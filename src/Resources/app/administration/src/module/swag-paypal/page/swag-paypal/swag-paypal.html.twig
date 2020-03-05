@@ -15,12 +15,7 @@
             <template #smart-bar-actions>
 
                 {% block swag_paypal_actions_test %}
-                    <sw-button-process v-model="isTestSuccessful"
-                                       :isLoading="isTesting"
-                                       :disabled="testButtonDisabled"
-                                       @click="onTest">
-                        {{ $tc('swag-paypal.settingForm.test') }}
-                    </sw-button-process>
+                    {# @deprecated tag:v1.1.2 #}
                 {% endblock %}
 
                 {% block swag_paypal_actions_save %}
@@ -75,7 +70,14 @@
                                                                        :allConfigs="allConfigs"
                                                                        :selectedSalesChannelId="selectedSalesChannelId"
                                                                        :clientIdErrorState="clientIdErrorState"
-                                                                       :clientSecretErrorState="clientSecretErrorState">
+                                                                       :clientSecretErrorState="clientSecretErrorState"
+                                                                       :clientIdSandboxErrorState="clientIdSandboxErrorState"
+                                                                       :clientSecretSandboxErrorState="clientSecretSandboxErrorState"
+                                                                       :clientIdFilled="clientIdFilled"
+                                                                       :clientSecretFilled="clientSecretFilled"
+                                                                       :clientIdSandboxFilled="clientIdSandboxFilled"
+                                                                       :clientSecretSandboxFilled="clientSecretSandboxFilled"
+                                                                       :isLoading="isLoading">
                                                 </sw-paypal-credentials>
                                             {% endblock %}
 
