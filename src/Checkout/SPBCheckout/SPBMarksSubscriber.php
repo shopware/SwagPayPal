@@ -96,7 +96,7 @@ class SPBMarksSubscriber implements EventSubscriberInterface
         }
 
         return new SPBMarksData(
-            $settings->getClientId(),
+            $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
             (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
             $settings->getSpbAlternativePaymentMethodsEnabled()
         );

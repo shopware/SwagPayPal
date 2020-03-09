@@ -48,7 +48,7 @@ class SPBCheckoutDataService
         $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context->getContext());
 
         return (new SPBCheckoutButtonData())->assign([
-            'clientId' => $settings->getClientId(),
+            'clientId' => $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
             'languageIso' => $this->getButtonLanguage($settings, $context),
             'currency' => $context->getCurrency()->getIsoCode(),
             'intent' => $settings->getIntent(),

@@ -16,6 +16,36 @@ class SwagPayPalSettingStructValidator
      */
     public static function validate(SwagPayPalSettingStruct $generalStruct): void
     {
+        if ($generalStruct->getSandbox()) {
+            self::validateSandboxCredentials($generalStruct);
+        } else {
+            self::validateLiveCredentials($generalStruct);
+        }
+    }
+
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
+    protected static function validateSandboxCredentials(SwagPayPalSettingStruct $generalStruct): void
+    {
+        try {
+            $generalStruct->getClientIdSandbox();
+        } catch (\TypeError $error) {
+            throw new PayPalSettingsInvalidException('ClientIdSandbox');
+        }
+
+        try {
+            $generalStruct->getClientSecretSandbox();
+        } catch (\TypeError $error) {
+            throw new PayPalSettingsInvalidException('ClientSecretSandbox');
+        }
+    }
+
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
+    protected static function validateLiveCredentials(SwagPayPalSettingStruct $generalStruct): void
+    {
         try {
             $generalStruct->getClientId();
         } catch (\TypeError $error) {

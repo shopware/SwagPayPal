@@ -67,7 +67,7 @@ class PayPalExpressCheckoutDataService
             'listingEnabled' => $settings->getEcsListingEnabled(),
             'buttonColor' => $settings->getEcsButtonColor(),
             'buttonShape' => $settings->getEcsButtonShape(),
-            'clientId' => $settings->getClientId(),
+            'clientId' => $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
             'languageIso' => $this->getInContextButtonLanguage($settings, $salesChannelContext),
             'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
             'intent' => $settings->getIntent(),

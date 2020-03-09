@@ -41,6 +41,8 @@ class SettingsServiceTest extends TestCase
         return [
             [$prefix . 'clientId', 'getClientId', 'testClientId'],
             [$prefix . 'clientSecret', 'getClientSecret', 'getTestClientId'],
+            [$prefix . 'clientIdSandbox', 'getClientIdSandbox', 'testClientIdSandbox'],
+            [$prefix . 'clientSecretSandbox', 'getClientSecretSandbox', 'getTestClientIdSandbox'],
             [$prefix . 'sandbox', 'getSandbox', true],
             [$prefix . 'intent', 'getIntent', PaymentIntent::SALE],
             [$prefix . 'submitCart', 'getSubmitCart', false],
@@ -79,6 +81,8 @@ class SettingsServiceTest extends TestCase
         return [
             ['clientId', 'getClientId', 'testClientId'],
             ['clientSecret', 'getClientSecret', 'getTestClientId'],
+            ['clientIdSandbox', 'getClientIdSandbox', 'testClientIdSandbox'],
+            ['clientSecretSandbox', 'getClientSecretSandbox', 'getTestClientIdSandbox'],
             ['sandbox', 'getSandbox', true],
             ['intent', 'getIntent', PaymentIntent::SALE],
             ['submitCart', 'getSubmitCart', false],
@@ -141,6 +145,8 @@ class SettingsServiceTest extends TestCase
         return [
             self::PREFIX . 'clientId' => 'testclientid',
             self::PREFIX . 'clientSecret' => 'testclientid',
+            self::PREFIX . 'clientIdSandbox' => 'testclientid',
+            self::PREFIX . 'clientSecretSandbox' => 'testclientid',
         ];
     }
 }

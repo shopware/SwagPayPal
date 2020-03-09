@@ -64,7 +64,7 @@ class BannerDataService
 
         return new BannerData(
             (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
-            $settings->getClientId(),
+            $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
             $amount,
             $currency
         );
