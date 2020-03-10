@@ -1,5 +1,5 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
-- PT-11233 - Behebt ein Problem, bei dem der PayPal Express Button auf der Produkt-Detail-Seite nicht mehr angezeigt wird, wenn der Artikel im Abverkauf ist
+# 1.2.0
+- PT-11233 - Der PayPal Express Button wird auf der Produkt-Detail-Seite nicht mehr angezeigt, wenn der Artikel im Abverkauf ist
 - PT-11292 - Möglichkeit zum Eingeben separater Zugangsdaten für den Sandbox Modus
 
 # 1.1.1

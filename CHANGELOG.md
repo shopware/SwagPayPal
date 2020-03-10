@@ -1,5 +1,5 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
-- PT-11233 - Solves an issue where the PayPal Express Button is not shown on the product detail page anymore, if the product is in clearance
+# 1.2.0
+- PT-11233 - Do not show PayPal Express Button on the product detail page, if the product is in clearance
 - PT-11292 - Add possibility to enter separate credentials for sandbox mode
 
 # 1.1.1
