@@ -34,9 +34,12 @@ define('TEST_PROJECT_DIR', getProjectDir());
 
 $loader = require TEST_PROJECT_DIR . '/vendor/autoload.php';
 KernelLifecycleManager::prepare($loader);
-$pluginVendorDir = __DIR__ . '/../vendor/autoload.php';
+$pluginVendorDir = __DIR__ . '/../vendor';
 if (is_dir($pluginVendorDir)) {
-    require_once $pluginVendorDir;
+    require_once $pluginVendorDir . '/autoload.php';
+} else {
+    echo 'vendor directory not found. Please execute "composer dump-autoload"';
+    exit(1);
 }
 
 if (!class_exists(Dotenv::class)) {
