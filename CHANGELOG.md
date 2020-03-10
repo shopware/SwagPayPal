@@ -1,3 +1,7 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11233 - Solves an issue where the PayPal Express Button is not shown on the product detail page anymore, if the product is in clearance
+- PT-11292 - Add possibility to enter separate credentials for sandbox mode
+
 # 1.1.1
 - PT-11443 - Solves an issue with the error handling with the paypal credentials
 - PT-11475 - Improved processing of vouchers during checkout
