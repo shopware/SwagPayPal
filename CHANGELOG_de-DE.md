@@ -1,3 +1,7 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11233 - Behebt ein Problem, bei dem der PayPal Express Button auf der Produkt-Detail-Seite nicht mehr angezeigt wird, wenn der Artikel im Abverkauf ist
+- PT-11292 - Möglichkeit zum Eingeben separater Zugangsdaten für den Sandbox Modus
+
 # 1.1.1
 - PT-11443 - Behebt ein Problem mit der Fehlerbehandlung bei den Paypal-Zugangsdaten
 - PT-11475 - Verarbeitung von Gutscheinen während des Checkouts verbessert
