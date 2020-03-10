@@ -25,9 +25,10 @@ class DeprecatedTagTest extends TestCase
 
     public function testAllPhpFilesInPlatformForDeprecated(): void
     {
+        $pluginPath = __DIR__ . '/../';
         $return = [];
         $finder = new Finder();
-        $finder->in('./../')
+        $finder->in($pluginPath)
             ->files()
             ->contains('@deprecated');
 
@@ -42,7 +43,7 @@ class DeprecatedTagTest extends TestCase
         }
 
         $finder = new Finder();
-        $finder->in('./../')
+        $finder->in($pluginPath)
             ->files()
             ->name('*.xml')
             ->contains('<deprecated>');
