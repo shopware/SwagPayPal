@@ -33,6 +33,7 @@ use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
+use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
@@ -77,7 +78,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     {
         $events = InstallmentBannerSubscriber::getSubscribedEvents();
 
-        static::assertCount(6, $events);
+        static::assertCount(7, $events);
 
         static::assertSame('addInstallmentBanner', $events[CheckoutCartPageLoadedEvent::class]);
         static::assertSame('addInstallmentBanner', $events[CheckoutConfirmPageLoadedEvent::class]);
@@ -85,7 +86,8 @@ class InstallmentBannerSubscriberTest extends TestCase
         static::assertSame('addInstallmentBanner', $events[OffcanvasCartPageLoadedEvent::class]);
         static::assertSame('addInstallmentBanner', $events[ProductPageLoadedEvent::class]);
 
-        static::assertSame('addInstallmentBannerFooter', $events[FooterPageletLoadedEvent::class]);
+        static::assertSame('addInstallmentBannerPagelet', $events[FooterPageletLoadedEvent::class]);
+        static::assertSame('addInstallmentBannerPagelet', $events[QuickviewPageletLoadedEvent::class]);
     }
 
     public function testAddInstallmentBannerPayPalNotInSalesChannel(): void
@@ -172,7 +174,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     {
         $event = $this->createFooterPageletLoadedEvent(false);
 
-        $this->createInstallmentBannerSubscriber()->addInstallmentBannerFooter($event);
+        $this->createInstallmentBannerSubscriber()->addInstallmentBannerPagelet($event);
 
         static::assertEmpty($event->getPagelet()->getExtensions());
     }
@@ -182,7 +184,7 @@ class InstallmentBannerSubscriberTest extends TestCase
         $settings = new SwagPayPalSettingStruct();
         $event = $this->createFooterPageletLoadedEvent();
 
-        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBannerFooter($event);
+        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBannerPagelet($event);
 
         static::assertEmpty($event->getPagelet()->getExtensions());
     }
@@ -195,7 +197,7 @@ class InstallmentBannerSubscriberTest extends TestCase
         $settings->setInstallmentBannerEnabled(false);
         $event = $this->createFooterPageletLoadedEvent();
 
-        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBannerFooter($event);
+        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBannerPagelet($event);
 
         static::assertEmpty($event->getPagelet()->getExtensions());
     }
@@ -204,7 +206,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     {
         $event = $this->createFooterPageletLoadedEvent();
 
-        $this->createInstallmentBannerSubscriber()->addInstallmentBannerFooter($event);
+        $this->createInstallmentBannerSubscriber()->addInstallmentBannerPagelet($event);
 
         $pagelet = $event->getPagelet();
         $extensions = $pagelet->getExtensions();

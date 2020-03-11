@@ -18,7 +18,11 @@ use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
+use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
+use Shopware\Storefront\Pagelet\PageletLoadedEvent;
+use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
+use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -64,7 +68,8 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
             OffcanvasCartPageLoadedEvent::class => 'addInstallmentBanner',
             ProductPageLoadedEvent::class => 'addInstallmentBanner',
 
-            FooterPageletLoadedEvent::class => 'addInstallmentBannerFooter',
+            FooterPageletLoadedEvent::class => 'addInstallmentBannerPagelet',
+            QuickviewPageletLoadedEvent::class => 'addInstallmentBannerPagelet',
         ];
     }
 
@@ -114,7 +119,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function addInstallmentBannerFooter(FooterPageletLoadedEvent $pageletLoadedEvent): void
+    public function addInstallmentBannerPagelet(PageletLoadedEvent $pageletLoadedEvent): void
     {
         $salesChannelContext = $pageletLoadedEvent->getSalesChannelContext();
         if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext) === false) {
@@ -131,6 +136,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
             return;
         }
 
+        /** @var FooterPagelet|QuickviewPagelet $pagelet */
         $pagelet = $pageletLoadedEvent->getPagelet();
 
         $bannerData = $this->bannerDataService->getInstallmentBannerData(
