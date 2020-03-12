@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11292 - Zeigt nun auch Möglichkeit zum Eingeben separater Zugangsdaten für den Sandbox Modus im First-Run-Wizard
+
 # 1.2.0
 - PT-11233 - Der PayPal Express Button wird auf der Produkt-Detail-Seite nicht mehr angezeigt, wenn der Artikel im Abverkauf ist
 - PT-11292 - Möglichkeit zum Eingeben separater Zugangsdaten für den Sandbox Modus

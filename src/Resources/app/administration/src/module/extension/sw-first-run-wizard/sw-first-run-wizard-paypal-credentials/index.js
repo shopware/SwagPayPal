@@ -119,12 +119,10 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
                 this.nonce,
                 this.config['SwagPayPal.settings.sandbox']
             ).then((response) => {
-                this.$set(this.config, 'SwagPayPal.settings.clientId', response.client_id);
-                this.$set(this.config, 'SwagPayPal.settings.clientSecret', response.client_secret);
+                this.setConfig(response.client_id, response.client_secret);
                 this.fetchedSuccessful = true;
             }).catch(() => {
-                this.$set(this.config, 'SwagPayPal.settings.clientId', '');
-                this.$set(this.config, 'SwagPayPal.settings.clientSecret', '');
+                this.setConfig('', '');
                 this.fetchedSuccessful = false;
                 this.createNotificationError({
                     title: this.$tc('swag-paypal-frw-credentials.titleFetchedError'),
@@ -137,9 +135,20 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
             });
         },
 
+        setConfig(clientId, clientSecret) {
+            if (this.config['SwagPayPal.settings.sandbox']) {
+                this.$set(this.config, 'SwagPayPal.settings.clientIdSandbox', clientId);
+                this.$set(this.config, 'SwagPayPal.settings.clientSecretSandbox', clientSecret);
+            } else {
+                this.$set(this.config, 'SwagPayPal.settings.clientId', clientId);
+                this.$set(this.config, 'SwagPayPal.settings.clientSecret', clientSecret);
+            }
+        },
+
         onClickNext() {
             // Skip if no credentials have been provided
-            if (!this.config['SwagPayPal.settings.clientId'] || !this.config['SwagPayPal.settings.clientSecret']) {
+            if ((!this.config['SwagPayPal.settings.sandbox'] && (!this.config['SwagPayPal.settings.clientId'] || !this.config['SwagPayPal.settings.clientSecret'])) ||
+                (this.config['SwagPayPal.settings.sandbox'] && (!this.config['SwagPayPal.settings.clientIdSandbox'] || !this.config['SwagPayPal.settings.clientSecretSandbox']))) {
                 this.createNotificationError({
                     title: this.$tc('swag-paypal-frw-credentials.titleNoCredentials'),
                     message: this.$tc('swag-paypal-frw-credentials.messageNoCredentials')
@@ -194,9 +203,12 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         testApiCredentials() {
             this.isLoading = true;
 
+            let clientId = this.config['SwagPayPal.settings.sandbox'] ? this.config['SwagPayPal.settings.clientIdSandbox'] : this.config['SwagPayPal.settings.clientId'];
+            let clientSecret = this.config['SwagPayPal.settings.sandbox'] ? this.config['SwagPayPal.settings.clientSecretSandbox'] : this.config['SwagPayPal.settings.clientSecret'];
+
             return this.SwagPayPalApiCredentialsService.validateApiCredentials(
-                this.config['SwagPayPal.settings.clientId'],
-                this.config['SwagPayPal.settings.clientSecret'],
+                clientId,
+                clientSecret,
                 this.config['SwagPayPal.settings.sandbox']
             ).then((response) => {
                 const credentialsValid = response.credentialsValid;
