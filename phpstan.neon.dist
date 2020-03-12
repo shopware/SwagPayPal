@@ -14,3 +14,5 @@ parameters:
         -   # PHPStan could not analyse this function
             message: '#Function getProjectDir not found#'
             path: tests/TestBootstrap.php
+
+    bootstrap: bin/static-analyze-autoloader.php

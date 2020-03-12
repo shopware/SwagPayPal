@@ -16,6 +16,7 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
@@ -33,6 +34,9 @@ use Shopware\Storefront\Page\Navigation\NavigationPage;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
+use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
+use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
+use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoader;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
@@ -58,6 +62,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
             NavigationPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+
+            QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
         ];
 
         static::assertSame($expectedEvents, $subscribedEvents);
@@ -247,6 +253,55 @@ class ExpressCheckoutSubscriberTest extends TestCase
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
+    public function testAddExpressCheckoutDataToPageletQuickviewPageletLoadedEvent(): void
+    {
+        $event = $this->createQuickviewPageletLoadedEvent();
+
+        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPagelet($event);
+
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $event->getPagelet()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+
+        $this->assertExpressCheckoutButtonData(
+            $this->getExpectedExpressCheckoutButtonDataForAddProductEvents(),
+            $actualExpressCheckoutButtonData
+        );
+    }
+
+    public function testAddExpressCheckoutDataToPageletWithoutPayPalInSalesChannel(): void
+    {
+        $event = $this->createQuickviewPageletLoadedEvent();
+        $event->getSalesChannelContext()->getSalesChannel()->setId(Uuid::randomHex());
+
+        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPagelet($event);
+
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $event->getPagelet()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        static::assertNull($actualExpressCheckoutButtonData);
+    }
+
+    public function testAddExpressCheckoutDataToPageletWithInvalidSettings(): void
+    {
+        $event = $this->createQuickviewPageletLoadedEvent();
+
+        $this->getExpressCheckoutSubscriber(false)->addExpressCheckoutDataToPagelet($event);
+
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $event->getPagelet()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        static::assertNull($actualExpressCheckoutButtonData);
+    }
+
+    public function testAddExpressCheckoutDataToPageletQuickviewPageletLoadedEventWithEcsDetailDisabled(): void
+    {
+        $event = $this->createQuickviewPageletLoadedEvent();
+
+        $this->getExpressCheckoutSubscriber(true, false, true)->addExpressCheckoutDataToPagelet($event);
+
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $event->getPagelet()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        static::assertNull($actualExpressCheckoutButtonData);
+    }
+
     private function assertExpressCheckoutButtonData(
         ExpressCheckoutButtonData $expectedExpressCheckoutButtonData,
         ?ExpressCheckoutButtonData $actualExpressCheckoutButtonData
@@ -284,13 +339,14 @@ class ExpressCheckoutSubscriberTest extends TestCase
         ]);
     }
 
-    private function getExpressCheckoutSubscriber(bool $withSettings = true, bool $disableEcsListing = false): ExpressCheckoutSubscriber
+    private function getExpressCheckoutSubscriber(bool $withSettings = true, bool $disableEcsListing = false, bool $disableEcsDetail = false): ExpressCheckoutSubscriber
     {
         if ($withSettings) {
             $settings = new SwagPayPalSettingStruct();
             $settings->setClientId('someClientId');
             $settings->setClientSecret('someClientSecret');
             $settings->setEcsListingEnabled(!$disableEcsListing);
+            $settings->setEcsDetailEnabled(!$disableEcsDetail);
         }
 
         $cartService = $this->getContainer()->get(CartService::class);
@@ -391,5 +447,27 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $taxRepo->create($taxData, $context);
 
         return $taxId;
+    }
+
+    private function createQuickviewPageletLoadedEvent(): QuickviewPageletLoadedEvent
+    {
+        $salesChannelContext = $this->createSalesChannelContext(true);
+
+        /** @var EntityRepositoryInterface $productRepo */
+        $productRepo = $this->getContainer()->get('product.repository');
+        $product = $productRepo->search(new Criteria(), $salesChannelContext->getContext())->first();
+
+        $request = new Request([], [], ['productId' => $product->getId()]);
+
+        /** @var QuickviewPagelet $pagelet */
+        $pagelet = $this->getContainer()->get(QuickviewPageletLoader::class)->load($request, $salesChannelContext);
+
+        $event = new QuickviewPageletLoadedEvent(
+            $pagelet,
+            $salesChannelContext,
+            new Request()
+        );
+
+        return $event;
     }
 }

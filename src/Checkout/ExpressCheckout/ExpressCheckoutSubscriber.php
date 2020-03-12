@@ -7,12 +7,14 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
+use Shopware\Core\Framework\Event\ShopwareEvent;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
+use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -57,6 +59,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             NavigationPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+
+            QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
         ];
     }
 
@@ -100,10 +104,44 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         );
     }
 
-    private function expressOptionForEventEnabled(SwagPayPalSettingStruct $settings, PageLoadedEvent $event): bool
+    public function addExpressCheckoutDataToPagelet(QuickviewPageletLoadedEvent $event): void
+    {
+        $salesChannelContext = $event->getSalesChannelContext();
+        if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext) === false) {
+            return;
+        }
+
+        try {
+            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
+        } catch (PayPalSettingsInvalidException $e) {
+            return;
+        }
+
+        if ($this->expressOptionForEventEnabled($settings, $event) === false) {
+            return;
+        }
+
+        $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData(
+            $salesChannelContext,
+            $settings,
+            true
+        );
+
+        if ($expressCheckoutButtonData === null) {
+            return;
+        }
+
+        $event->getPagelet()->addExtension(
+            self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
+            $expressCheckoutButtonData
+        );
+    }
+
+    private function expressOptionForEventEnabled(SwagPayPalSettingStruct $settings, ShopwareEvent $event): bool
     {
         switch (\get_class($event)) {
             case ProductPageLoadedEvent::class:
+            case QuickviewPageletLoadedEvent::class:
                 return $settings->getEcsDetailEnabled();
             case OffcanvasCartPageLoadedEvent::class:
                 return $settings->getEcsOffCanvasEnabled();
