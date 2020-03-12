@@ -31,6 +31,7 @@ class SwagPayPal extends Plugin
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID = 'swag_paypal_transaction_id';
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TOKEN = 'swag_paypal_token';
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION = 'swag_paypal_pui_payment_instruction';
+    public const SALES_CHANNEL_TYPE_IZETTLE = '1ce0868f406d47d98cfe4b281e62f099';
 
     /**
      * @var ActivateDeactivate
