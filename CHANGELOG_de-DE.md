@@ -1,4 +1,5 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-10448 - API-Zugangsdaten können nun auch im Einstellungsmodul über einen PayPal Login geholt werden
 - PT-11292 - Zeigt nun auch Möglichkeit zum Eingeben separater Zugangsdaten für den Sandbox Modus im First-Run-Wizard
 - PT-11498 - Der PayPal Express Button wird nun in der QuickView des CMS Extensions Plugin angezeigt
 

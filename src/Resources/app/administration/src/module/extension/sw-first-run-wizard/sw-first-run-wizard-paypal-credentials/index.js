@@ -2,66 +2,33 @@ import template from './sw-first-run-wizard-paypal-credentials.html.twig';
 import './sw-first-run-wizard-paypal-credentials.html.scss';
 
 const { Component, Mixin } = Shopware;
-const utils = Shopware.Utils;
-
-const payPalPartnerIdLive = 'W8HDQ6LB42CJW';
-const payPalPartnerClientIdLive = 'AVTKpaE_t1zRCDfiJOP1ZYMAW0S_IvASFOIhhbeszRUFY0vsFIsGrt_FFsgHKU4VJiqub-tI30dpnANJ';
-const payPalPartnerIdSandbox = 'J425NKDMLL4YA';
-const payPalPartnerClientIdSandbox = 'AdRxw_8f4e2MOEduZB6D6ZOkdjnbR3SQJ1dQP3Y6GDLkxK0g4j0km2V2tRjoVDe0T2ZqQX6NlzpKsBwE';
-
-window.onboardedCallback = function onboardedCallback(authCode, sharedId) {
-    Shopware.Application.getApplicationRoot().$emit('paypal-onboarding-finish', { authCode, sharedId });
-};
 
 Component.override('sw-first-run-wizard-paypal-credentials', {
     template,
 
-    inject: ['systemConfigApiService', 'SwagPayPalApiCredentialsService'],
+    inject: ['systemConfigApiService'],
 
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('notification'),
+        Mixin.getByName('swag-paypal-credentials-loader')
     ],
 
     data() {
         return {
-            isLoading: false,
             config: {},
-            authCode: '',
-            sharedId: '',
-            nonce: `${utils.createId()}${utils.createId()}`,
-            fetchedSuccessful: null,
-            lockGetApiCredentials: false
+            isLoading: false
         };
     },
 
     computed: {
-        onBoardingUrl() {
-            const $returnUrl = `${window.location.origin}${window.location.pathname}#${this.$route.path}`;
-
-            const urlParams = new URLSearchParams();
-            urlParams.append('channelId', 'partner');
-            urlParams.append('partnerId', this.payPalPartnerId);
-            urlParams.append('productIntentId', 'addipmt');
-            urlParams.append('integrationType', 'FO');
-            urlParams.append('features', 'PAYMENT,REFUND,READ_SELLER_DISPUTE,UPDATE_SELLER_DISPUTE,ADVANCED_TRANSACTIONS_SEARCH');
-            urlParams.append('partnerClientId', this.payPalPartnerClientId);
-            urlParams.append('returnToPartnerUrl', $returnUrl);
-            urlParams.append('displayMode', 'minibrowser');
-            urlParams.append('sellerNonce', this.nonce);
-
-            return `${this.payPalHost}/US/merchantsignup/partner/onboardingentry?${urlParams.toString()}`;
-        },
-        payPalPartnerId() {
-            return this.sandboxMode ? payPalPartnerIdSandbox : payPalPartnerIdLive;
-        },
-        payPalPartnerClientId() {
-            return this.sandboxMode ? payPalPartnerClientIdSandbox : payPalPartnerClientIdLive;
-        },
-        payPalHost() {
-            return this.sandboxMode ? 'https://www.sandbox.paypal.com' : 'https://www.paypal.com';
-        },
         sandboxMode() {
             return this.config['SwagPayPal.settings.sandbox'] || false;
+        },
+        onboardingUrl() {
+            return this.sandboxMode ? this.onboardingUrlSandbox : this.onboardingUrlLive;
+        },
+        onboardingCallback() {
+            return this.sandboxMode ? 'onboardingCallbackSandbox' : 'onboardingCallbackLive';
         },
         buttonConfig() {
             const prev = this.$super('buttonConfig');
@@ -80,63 +47,27 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         this.createdComponent();
     },
 
-    mounted() {
-        this.mountedComponent();
-    },
-
-    destroyed() {
-        this.destroyedComponent();
-    },
-
     methods: {
         createdComponent() {
             this.$super('createdComponent');
             this.fetchPayPalConfig();
-
-            this.$root.$on('paypal-onboarding-finish', this.getPayPalCredentials);
         },
 
-        mountedComponent() {
-            this.createScript();
+        onPayPalCredentialsLoadSuccess(clientId, clientSecret, sandbox) {
+            this.setConfig(clientId, clientSecret, sandbox);
         },
 
-        destroyedComponent() {
-            this.$root.$off('paypal-onboarding-finish');
-        },
-
-        getPayPalCredentials({ authCode, sharedId }) {
-            if (this.lockGetApiCredentials) {
-                return;
-            }
-
-            this.lockGetApiCredentials = true;
-            this.fetchedSuccessful = null;
-            this.isLoading = true;
-
-            this.SwagPayPalApiCredentialsService.getApiCredentials(
-                authCode,
-                sharedId,
-                this.nonce,
-                this.config['SwagPayPal.settings.sandbox']
-            ).then((response) => {
-                this.setConfig(response.client_id, response.client_secret);
-                this.fetchedSuccessful = true;
-            }).catch(() => {
-                this.setConfig('', '');
-                this.fetchedSuccessful = false;
-                this.createNotificationError({
-                    title: this.$tc('swag-paypal-frw-credentials.titleFetchedError'),
-                    message: this.$tc('swag-paypal-frw-credentials.messageFetchedError'),
-                    duration: 10000
-                });
-            }).finally(() => {
-                this.isLoading = false;
-                this.lockGetApiCredentials = false;
+        onPayPalCredentialsLoadFailed(sandbox) {
+            this.setConfig('', '', sandbox);
+            this.createNotificationError({
+                title: this.$tc('swag-paypal-frw-credentials.titleFetchedError'),
+                message: this.$tc('swag-paypal-frw-credentials.messageFetchedError'),
+                duration: 10000
             });
         },
 
-        setConfig(clientId, clientSecret) {
-            if (this.config['SwagPayPal.settings.sandbox']) {
+        setConfig(clientId, clientSecret, sandbox) {
+            if (sandbox) {
                 this.$set(this.config, 'SwagPayPal.settings.clientIdSandbox', clientId);
                 this.$set(this.config, 'SwagPayPal.settings.clientSecretSandbox', clientSecret);
             } else {
@@ -157,7 +88,7 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
             }
 
             // Do not test the credentials if they have been fetched from the PayPal api
-            if (this.fetchedSuccessful) {
+            if (this.isGetCredentialsSuccessful) {
                 return this.saveConfig().then(() => {
                     this.$emit('frw-redirect', 'sw.first.run.wizard.index.plugins');
 
@@ -203,8 +134,8 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         testApiCredentials() {
             this.isLoading = true;
 
-            let clientId = this.config['SwagPayPal.settings.sandbox'] ? this.config['SwagPayPal.settings.clientIdSandbox'] : this.config['SwagPayPal.settings.clientId'];
-            let clientSecret = this.config['SwagPayPal.settings.sandbox'] ? this.config['SwagPayPal.settings.clientSecretSandbox'] : this.config['SwagPayPal.settings.clientSecret'];
+            const clientId = this.config['SwagPayPal.settings.sandbox'] ? this.config['SwagPayPal.settings.clientIdSandbox'] : this.config['SwagPayPal.settings.clientId'];
+            const clientSecret = this.config['SwagPayPal.settings.sandbox'] ? this.config['SwagPayPal.settings.clientSecretSandbox'] : this.config['SwagPayPal.settings.clientSecret'];
 
             return this.SwagPayPalApiCredentialsService.validateApiCredentials(
                 clientId,
@@ -238,41 +169,7 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         },
 
         onCredentialsChanged() {
-            if (this.fetchedSuccessful !== null) {
-                this.fetchedSuccessful = null;
-            }
-        },
-
-        createScript() {
-            const id = 'paypal-js';
-            if (!document.getElementById(id)) {
-                const payPalScriptUrl = 'https://www.paypal.com/webapps/merchantboarding/js/lib/lightbox/partner.js';
-                const payPalScript = document.createElement('script');
-                payPalScript.id = id;
-                payPalScript.type = 'text/javascript';
-                payPalScript.src = payPalScriptUrl;
-                payPalScript.async = true;
-                payPalScript.addEventListener('load', this.renderPayPalButton.bind(this), false);
-
-                document.head.appendChild(payPalScript);
-            }
-        },
-
-        renderPayPalButton() {
-            // The original render function inside the partner.js is overwritten here.
-            // The function gets overwritten again, as soon as PayPals signup.js is loaded.
-            // A loop is created and the render() function is executed until the real render() function is available.
-            // PayPal does originally nearly the same, but only once and not in a loop.
-            // If the signup.js is loaded to slow the button is not rendered.
-            window.PAYPAL.apps.Signup.render = function proxyPPrender() {
-                if (window.PAYPAL.apps.Signup.timeout) {
-                    clearTimeout(window.PAYPAL.apps.Signup.timeout);
-                }
-
-                window.PAYPAL.apps.Signup.timeout = setTimeout(window.PAYPAL.apps.Signup.render, 300);
-            };
-
-            window.PAYPAL.apps.Signup.render();
+            this.isGetCredentialsSuccessful = null;
         }
     }
 });
