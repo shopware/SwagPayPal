@@ -31,6 +31,12 @@
                 "sandbox": {
                     "label": "Enable sandbox",
                     "tooltipText": "Enable if you want to test the PayPal integration."
+                },
+                "button": {
+                    "title": "Get API credentials",
+                    "titleSandbox": "Get sandbox API credentials",
+                    "messageFetchedError": "Try again or enter your credentials manually.",
+                    "titleFetchedError": "An error occurred"
                 }
             },
             "behaviour": {

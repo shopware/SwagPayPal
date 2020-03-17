@@ -1,3 +1,4 @@
+import './mixin/swag-paypal-credentials-loader.mixin';
 import './module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials';
 
 import './module/swag-paypal';

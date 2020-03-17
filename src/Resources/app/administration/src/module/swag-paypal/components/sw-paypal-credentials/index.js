@@ -7,20 +7,10 @@ Component.register('sw-paypal-credentials', {
 
     name: 'SwagPaypalCredentials',
 
-    inject: ['SwagPayPalWebhookRegisterService', 'SwagPayPalApiCredentialsService'],
-
     mixins: [
-        Mixin.getByName('notification')
+        Mixin.getByName('notification'),
+        Mixin.getByName('swag-paypal-credentials-loader')
     ],
-
-    data() {
-        return {
-            isTestingLive: false,
-            isTestingSandbox: false,
-            isTestLiveSuccessful: false,
-            isTestSandboxSuccessful: false
-        };
-    },
 
     props: {
         actualConfigData: {
@@ -66,6 +56,15 @@ Component.register('sw-paypal-credentials', {
             type: Boolean,
             required: true
         }
+    },
+
+    data() {
+        return {
+            isTestingLive: false,
+            isTestingSandbox: false,
+            isTestLiveSuccessful: false,
+            isTestSandboxSuccessful: false
+        };
     },
 
     computed: {
@@ -150,6 +149,31 @@ Component.register('sw-paypal-credentials', {
                         this.isTestLiveSuccessful = false;
                     }
                 }
+            });
+        },
+
+        onPayPalCredentialsLoadSuccess(clientId, clientSecret, sandbox) {
+            if (sandbox) {
+                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientIdSandbox', clientId);
+                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecretSandbox', clientSecret);
+            } else {
+                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientId', clientId);
+                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecret', clientSecret);
+            }
+        },
+
+        onPayPalCredentialsLoadFailed(sandbox) {
+            if (sandbox) {
+                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientIdSandbox', '');
+                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecretSandbox', '');
+            } else {
+                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientId', '');
+                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecret', '');
+            }
+            this.createNotificationError({
+                title: this.$tc('swag-paypal.settingForm.credentials.button.titleFetchedError'),
+                message: this.$tc('swag-paypal.settingForm.credentials.button.messageFetchedError'),
+                duration: 10000
             });
         }
     }
