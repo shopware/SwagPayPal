@@ -28,10 +28,33 @@ class Update
         if (version_compare($updateContext->getCurrentPluginVersion(), '1.1.0', '<')) {
             $this->updateTo110();
         }
+        if (version_compare($updateContext->getCurrentPluginVersion(), '1.3.0', '<')) {
+            $this->updateTo130();
+        }
     }
 
     private function updateTo110(): void
     {
         $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled', true);
+    }
+
+    private function updateTo130(): void
+    {
+        if (!$this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox')) {
+            return;
+        }
+
+        $previousClientId = $this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId');
+        $previousClientSecret = $this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret');
+        $previousClientIdSandbox = $this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox');
+        $previousClientSecretSandbox = $this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox');
+
+        if ($previousClientId && $previousClientSecret
+            && $previousClientIdSandbox === null && $previousClientSecretSandbox === null) {
+            $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox', $previousClientId);
+            $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox', $previousClientSecret);
+            $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId', '');
+            $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret', '');
+        }
     }
 }
