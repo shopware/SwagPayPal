@@ -1,7 +1,8 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
+# 1.3.0
 - PT-10448 - Adds onboarding to get API credentials with PayPal login in settings module
 - PT-11292 - Adds possibility to enter separate credentials for sandbox mode in first run wizard
 - PT-11498 - Adds PayPal Express Button to QuickView from CMS Extensions plugin
+- PT-11550 - Fix usage of sandbox credentials after an update
 
 # 1.2.0
 - PT-11233 - Do not show PayPal Express Button on the product detail page, if the product is in clearance
