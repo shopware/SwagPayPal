@@ -105,7 +105,7 @@ class PayPalPaymentControllerTest extends TestCase
 
         $refund = json_decode($responseContent, true);
 
-        static::assertSame((string) self::TEST_REFUND_AMOUNT, $refund['amount']['total']);
+        static::assertSame(self::TEST_REFUND_AMOUNT, (float) $refund['amount']['total']);
         static::assertSame(self::TEST_REFUND_CURRENCY, $refund['amount']['currency']);
         static::assertSame(self::TEST_REFUND_INVOICE_NUMBER, $refund['invoice_number']);
     }
@@ -131,7 +131,7 @@ class PayPalPaymentControllerTest extends TestCase
 
         $refund = json_decode($responseContent, true);
 
-        static::assertSame((string) self::TEST_REFUND_AMOUNT, $refund['amount']['total']);
+        static::assertSame(self::TEST_REFUND_AMOUNT, (float) $refund['amount']['total']);
         static::assertSame(self::TEST_REFUND_CURRENCY, $refund['amount']['currency']);
         static::assertSame(self::TEST_REFUND_INVOICE_NUMBER, $refund['invoice_number']);
         static::assertSame(self::TEST_REFUND_REASON, $refund['reason']);

@@ -110,12 +110,21 @@ Component.register('swag-paypal-payment-detail', {
                     this.amount = this.paymentResource.transactions[0].amount;
                     this.isLoading = false;
                 }).catch((errorResponse) => {
-                    this.createNotificationError({
-                        title: this.$tc('swag-paypal-payment.paymentDetails.error.title'),
-                        message: errorResponse.message,
-                        autoClose: false
-                    });
-                    this.isLoading = false;
+                    try {
+                        this.createNotificationError({
+                            title: this.$tc('swag-paypal-payment.paymentDetails.error.title'),
+                            message: errorResponse.response.data.errors[0].detail,
+                            autoClose: false
+                        });
+                    } catch (e) {
+                        this.createNotificationError({
+                            title: this.$tc('swag-paypal-payment.paymentDetails.error.title'),
+                            message: errorResponse.message,
+                            autoClose: false
+                        });
+                    } finally {
+                        this.isLoading = false;
+                    }
                 });
             });
         },

@@ -11,4 +11,8 @@ use Swag\PayPal\PayPal\Api\Common\Value;
 
 class TotalRefundedAmount extends Value
 {
+    public function getValue(): string
+    {
+        return $this->value;
+    }
 }

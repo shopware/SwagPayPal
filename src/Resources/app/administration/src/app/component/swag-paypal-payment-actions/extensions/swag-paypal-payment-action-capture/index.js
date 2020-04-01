@@ -74,22 +74,35 @@ Component.register('swag-paypal-payment-action-capture', {
                 });
             })
                 .catch((errorResponse) => {
-                    this.createNotificationError({
-                        title: errorResponse.title,
-                        message: errorResponse.message
-                    });
-
-                    this.isLoading = false;
+                    try {
+                        this.createNotificationError({
+                            title: errorResponse.response.data.errors[0].title,
+                            message: errorResponse.response.data.errors[0].detail,
+                            autoClose: false
+                        });
+                    } catch (e) {
+                        this.createNotificationError({
+                            title: errorResponse.title,
+                            message: errorResponse.message,
+                            autoClose: false
+                        });
+                    } finally {
+                        this.isLoading = false;
+                    }
                 });
         },
 
         getResourceId(paymentResource) {
-            const firstRelatedResource = paymentResource.transactions[0].related_resources[0];
-            if (firstRelatedResource.authorization) {
-                return firstRelatedResource.authorization.id;
-            }
-
-            return firstRelatedResource.order.id;
+            let relatedResourceId = null;
+            paymentResource.transactions[0].related_resources.forEach((relatedResource) => {
+                if (relatedResource.authorization) {
+                    relatedResourceId = relatedResource.authorization.id;
+                }
+                if (relatedResource.order) {
+                    relatedResourceId = relatedResource.order.id;
+                }
+            });
+            return relatedResourceId;
         }
     }
 });

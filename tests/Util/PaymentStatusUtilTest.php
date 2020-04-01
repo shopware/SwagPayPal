@@ -24,6 +24,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Payment\PayPalPaymentController;
+use Swag\PayPal\PayPal\Api\Capture;
+use Swag\PayPal\PayPal\Api\Refund;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -82,24 +84,32 @@ class PaymentStatusUtilTest extends TestCase
 
     public function dataProviderTestApplyCaptureStateToPayment(): array
     {
+        $finalCaptureResponse = new Capture();
+        $finalCaptureResponse->setIsFinalCapture(true);
+        $notFinalCaptureResponse = new Capture();
+        $notFinalCaptureResponse->setIsFinalCapture(false);
+
         return [
             [
                 new Request([], [
                     PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_AMOUNT => 7.0,
                     PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_IS_FINAL => true,
                 ]),
+                $notFinalCaptureResponse,
                 OrderTransactionStates::STATE_PAID,
             ],
             [
                 new Request([], [
                     PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_AMOUNT => 15.0,
                 ]),
+                $finalCaptureResponse,
                 OrderTransactionStates::STATE_PAID,
             ],
             [
                 new Request([], [
                     PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_AMOUNT => 14.99,
                 ]),
+                $notFinalCaptureResponse,
                 OrderTransactionStates::STATE_PARTIALLY_PAID,
             ],
         ];
@@ -108,10 +118,10 @@ class PaymentStatusUtilTest extends TestCase
     /**
      * @dataProvider dataProviderTestApplyCaptureStateToPayment
      */
-    public function testApplyCaptureStateToPayment(Request $request, string $expectedOrderTransactionState): void
+    public function testApplyCaptureStateToPayment(Request $request, Capture $captureResponse, string $expectedOrderTransactionState): void
     {
         $orderId = $this->createBasicOrder();
-        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $request, Context::createDefaultContext());
+        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $request, $captureResponse, Context::createDefaultContext());
 
         $changedOrder = $this->getOrder($orderId);
         static::assertNotNull($changedOrder);
@@ -129,17 +139,19 @@ class PaymentStatusUtilTest extends TestCase
 
     public function dataProviderTestApplyRefundStateToPayment(): array
     {
+        $completeRefundResponse = new Refund();
+        $completeRefundResponse->assign(['totalRefundedAmount' => (new Refund\TotalRefundedAmount())->assign(['value' => '15'])]);
+
+        $partialRefundResponse = new Refund();
+        $partialRefundResponse->assign(['totalRefundedAmount' => (new Refund\TotalRefundedAmount())->assign(['value' => '14.99'])]);
+
         return [
             [
-                new Request([], [
-                    PayPalPaymentController::REQUEST_PARAMETER_REFUND_AMOUNT => 15.0,
-                ]),
+                $completeRefundResponse,
                 OrderTransactionStates::STATE_REFUNDED,
             ],
             [
-                new Request([], [
-                    PayPalPaymentController::REQUEST_PARAMETER_REFUND_AMOUNT => 14.99,
-                ]),
+                $partialRefundResponse,
                 OrderTransactionStates::STATE_PARTIALLY_REFUNDED,
             ],
         ];
@@ -148,15 +160,18 @@ class PaymentStatusUtilTest extends TestCase
     /**
      * @dataProvider dataProviderTestApplyRefundStateToPayment
      */
-    public function testApplyRefundStateToPayment(Request $request, string $expectedOrderTransactionState): void
+    public function testApplyRefundStateToPayment(Refund $refundResponse, string $expectedOrderTransactionState): void
     {
         $orderId = $this->createBasicOrder();
         $captureRequest = new Request([], [
             PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_AMOUNT => 15.0,
             PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_IS_FINAL => true,
         ]);
-        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $captureRequest, Context::createDefaultContext());
-        $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $request, Context::createDefaultContext());
+        $captureResponse = new Capture();
+        $captureResponse->setIsFinalCapture(true);
+
+        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $captureRequest, $captureResponse, Context::createDefaultContext());
+        $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $refundResponse, Context::createDefaultContext());
 
         $changedOrder = $this->getOrder($orderId);
         static::assertNotNull($changedOrder);

@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Swag\PayPal\Payment\Builder\Util\PriceFormatter;
 use Swag\PayPal\Payment\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Api\Capture\Amount as CaptureAmount;
@@ -78,6 +79,11 @@ class PayPalPaymentController extends AbstractController
      */
     private $orderRepository;
 
+    /**
+     * @var PriceFormatter
+     */
+    private $priceFormatter;
+
     public function __construct(
         PaymentResource $paymentResource,
         SaleResource $saleResource,
@@ -94,6 +100,7 @@ class PayPalPaymentController extends AbstractController
         $this->captureResource = $captureResource;
         $this->paymentStatusUtil = $paymentStatusUtil;
         $this->orderRepository = $orderRepository;
+        $this->priceFormatter = new PriceFormatter();
     }
 
     /**
@@ -139,7 +146,7 @@ class PayPalPaymentController extends AbstractController
                 throw new RequiredParameterInvalidException('resourceType');
         }
 
-        $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $request, $context);
+        $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $refundResponse, $context);
 
         return new JsonResponse($refundResponse);
     }
@@ -174,7 +181,7 @@ class PayPalPaymentController extends AbstractController
                 throw new RequiredParameterInvalidException('resourceType');
         }
 
-        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $request, $context);
+        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $request, $captureResponse, $context);
 
         return new JsonResponse($captureResponse);
     }
@@ -229,7 +236,7 @@ class PayPalPaymentController extends AbstractController
 
     private function createRefund(Request $request): Refund
     {
-        $refundAmount = (string) round((float) $request->request->get(self::REQUEST_PARAMETER_REFUND_AMOUNT), 2);
+        $refundAmount = $this->priceFormatter->formatPrice((float) $request->request->get(self::REQUEST_PARAMETER_REFUND_AMOUNT));
         $currency = $request->request->getAlpha(self::REQUEST_PARAMETER_CURRENCY);
         $invoiceNumber = (string) $request->request->get(self::REQUEST_PARAMETER_REFUND_INVOICE_NUMBER, '');
         $description = (string) $request->request->get(self::REQUEST_PARAMETER_DESCRIPTION, '');
@@ -261,7 +268,7 @@ class PayPalPaymentController extends AbstractController
 
     private function createCapture(Request $request): Capture
     {
-        $amountToCapture = (string) round((float) $request->request->get(self::REQUEST_PARAMETER_CAPTURE_AMOUNT), 2);
+        $amountToCapture = $this->priceFormatter->formatPrice((float) $request->request->get(self::REQUEST_PARAMETER_CAPTURE_AMOUNT));
         $currency = $request->request->getAlpha(self::REQUEST_PARAMETER_CURRENCY);
         $isFinalCapture = $request->request->getBoolean(self::REQUEST_PARAMETER_CAPTURE_IS_FINAL, true);
 

@@ -1,7 +1,6 @@
 import template from './swag-paypal-payment-action-refund.html.twig';
 import {
     REFUNDED_STATE,
-    PARTIALLY_REFUNDED_STATE,
     SALE_RESOURCE_TYPE,
     CAPTURE_RESOURCE_TYPE
 } from '../../swag-paypal-payment-consts';
@@ -78,7 +77,7 @@ Component.register('swag-paypal-payment-action-refund', {
                 if (relatedResource.capture) {
                     const capture = relatedResource.capture;
 
-                    if (capture.state !== REFUNDED_STATE && capture.state !== PARTIALLY_REFUNDED_STATE) {
+                    if (capture.state !== REFUNDED_STATE) {
                         accumulator.push(this.formatCapture(capture, CAPTURE_RESOURCE_TYPE));
                     }
                 }
@@ -141,12 +140,21 @@ Component.register('swag-paypal-payment-action-refund', {
                     this.$router.replace(`${this.$route.path}?hash=${utils.createId()}`);
                 });
             }).catch((errorResponse) => {
-                this.createNotificationError({
-                    title: errorResponse.title,
-                    message: errorResponse.message,
-                    autoClose: false
-                });
-                this.isLoading = false;
+                try {
+                    this.createNotificationError({
+                        title: errorResponse.response.data.errors[0].title,
+                        message: errorResponse.response.data.errors[0].detail,
+                        autoClose: false
+                    });
+                } catch (e) {
+                    this.createNotificationError({
+                        title: errorResponse.title,
+                        message: errorResponse.message,
+                        autoClose: false
+                    });
+                } finally {
+                    this.isLoading = false;
+                }
             });
         }
     }

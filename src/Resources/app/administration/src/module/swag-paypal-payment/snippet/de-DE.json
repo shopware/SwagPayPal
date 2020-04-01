@@ -54,7 +54,7 @@
         "buttons": {
             "label": {
                 "refund": "Rückerstattung",
-                "capture": "Autorisieren",
+                "capture": "Einziehen",
                 "void": "Autorisierung abbrechen"
             }
         },
