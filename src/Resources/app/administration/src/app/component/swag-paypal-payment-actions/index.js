@@ -5,10 +5,11 @@ import './extensions/swag-paypal-payment-action-refund';
 import './extensions/swag-paypal-payment-action-void';
 import {
     REFUNDED_STATE,
-    PARTIALLY_REFUNDED_STATE,
     VOIDED_STATE,
     CAPTURED_STATE,
-    COMPLETED_STATE
+    COMPLETED_STATE,
+    CANCELLED_STATE,
+    FAILED_STATE
 } from './swag-paypal-payment-consts';
 
 const { Component } = Shopware;
@@ -62,26 +63,41 @@ Component.register('swag-paypal-payment-actions', {
 
             relatedResources.forEach((relatedResource) => {
                 if (relatedResource.authorization) {
-                    this.captureableAmount = relatedResource.authorization.amount.total;
+                    if (relatedResource.authorization.state !== COMPLETED_STATE) {
+                        this.captureableAmount += Number(relatedResource.authorization.amount.total);
+                    }
                 }
 
                 if (relatedResource.order) {
-                    this.captureableAmount = relatedResource.order.amount.total;
+                    if (relatedResource.order.state !== COMPLETED_STATE) {
+                        this.captureableAmount += Number(relatedResource.order.amount.total);
+                    }
                 }
 
                 if (relatedResource.sale) {
-                    if (!(relatedResource.sale.state === REFUNDED_STATE)) {
-                        this.refundableAmount = relatedResource.sale.amount.total;
+                    if (relatedResource.sale.state !== REFUNDED_STATE) {
+                        this.refundableAmount += Number(relatedResource.sale.amount.total);
                     }
                 }
 
                 if (relatedResource.capture) {
-                    const captureAmount = relatedResource.capture.amount.total;
+                    const captureAmount = Number(relatedResource.capture.amount.total);
                     this.captureableAmount -= captureAmount;
 
-                    if (relatedResource.capture.state !== REFUNDED_STATE
-                        && relatedResource.capture.state !== PARTIALLY_REFUNDED_STATE) {
+                    if (relatedResource.capture.state !== REFUNDED_STATE) {
                         this.refundableAmount += captureAmount;
+                    }
+                }
+
+                if (relatedResource.refund) {
+                    if (relatedResource.refund.state !== FAILED_STATE
+                        && relatedResource.refund.state !== CANCELLED_STATE
+                    ) {
+                        let refund = Number(relatedResource.refund.amount.total);
+                        if (refund > 0) {
+                            refund *= -1.0;
+                        }
+                        this.refundableAmount += refund;
                     }
                 }
             });

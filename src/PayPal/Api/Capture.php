@@ -69,6 +69,11 @@ class Capture extends PayPalStruct
         $this->amount = $amount;
     }
 
+    public function isFinalCapture(): bool
+    {
+        return $this->isFinalCapture;
+    }
+
     public function setIsFinalCapture(bool $isFinalCapture): void
     {
         $this->isFinalCapture = $isFinalCapture;

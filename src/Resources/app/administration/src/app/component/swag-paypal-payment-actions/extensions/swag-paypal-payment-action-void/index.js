@@ -48,11 +48,21 @@ Component.register('swag-paypal-payment-action-void', {
                     this.$router.replace(`${this.$route.path}?hash=${utils.createId()}`);
                 });
             }).catch((errorResponse) => {
-                this.createNotificationError({
-                    title: errorResponse.title,
-                    message: errorResponse.message
-                });
-                this.isLoading = false;
+                try {
+                    this.createNotificationError({
+                        title: errorResponse.response.data.errors[0].title,
+                        message: errorResponse.response.data.errors[0].detail,
+                        autoClose: false
+                    });
+                } catch (e) {
+                    this.createNotificationError({
+                        title: errorResponse.title,
+                        message: errorResponse.message,
+                        autoClose: false
+                    });
+                } finally {
+                    this.isLoading = false;
+                }
             });
         },
 

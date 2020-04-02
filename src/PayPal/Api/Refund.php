@@ -116,6 +116,11 @@ class Refund extends PayPalStruct
         $this->reason = $reason;
     }
 
+    public function getTotalRefundedAmount(): TotalRefundedAmount
+    {
+        return $this->totalRefundedAmount;
+    }
+
     protected function setId(string $id): void
     {
         $this->id = $id;

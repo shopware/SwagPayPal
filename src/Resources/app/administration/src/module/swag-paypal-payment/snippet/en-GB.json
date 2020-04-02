@@ -54,14 +54,14 @@
         "buttons": {
             "label": {
                 "refund": "Create a new refund",
-                "capture": "Authorize",
+                "capture": "Capture",
                 "void": "Cancel authorization"
             }
         },
         "modal": {
             "title": {
                 "refund": "New refund",
-                "capture": "Authorize",
+                "capture": "Capture",
                 "void": "Cancel authorization"
             }
         },

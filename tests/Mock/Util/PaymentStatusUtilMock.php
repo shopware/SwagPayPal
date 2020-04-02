@@ -10,6 +10,8 @@ namespace Swag\PayPal\Test\Mock\Util;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Swag\PayPal\PayPal\Api\Capture;
+use Swag\PayPal\PayPal\Api\Refund;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
@@ -40,11 +42,11 @@ class PaymentStatusUtilMock extends PaymentStatusUtil
     {
     }
 
-    public function applyCaptureStateToPayment(string $orderId, Request $request, Context $context): void
+    public function applyCaptureStateToPayment(string $orderId, Request $request, Capture $captureResponse, Context $context): void
     {
     }
 
-    public function applyRefundStateToPayment(string $orderId, Request $request, Context $context): void
+    public function applyRefundStateToPayment(string $orderId, Refund $refundResponse, Context $context): void
     {
     }
 }
