@@ -4,7 +4,6 @@ import './extensions/swag-paypal-payment-action-capture';
 import './extensions/swag-paypal-payment-action-refund';
 import './extensions/swag-paypal-payment-action-void';
 import {
-    REFUNDED_STATE,
     VOIDED_STATE,
     CAPTURED_STATE,
     COMPLETED_STATE,
@@ -75,18 +74,13 @@ Component.register('swag-paypal-payment-actions', {
                 }
 
                 if (relatedResource.sale) {
-                    if (relatedResource.sale.state !== REFUNDED_STATE) {
-                        this.refundableAmount += Number(relatedResource.sale.amount.total);
-                    }
+                    this.refundableAmount += Number(relatedResource.sale.amount.total);
                 }
 
                 if (relatedResource.capture) {
                     const captureAmount = Number(relatedResource.capture.amount.total);
                     this.captureableAmount -= captureAmount;
-
-                    if (relatedResource.capture.state !== REFUNDED_STATE) {
-                        this.refundableAmount += captureAmount;
-                    }
+                    this.refundableAmount += captureAmount;
                 }
 
                 if (relatedResource.refund) {

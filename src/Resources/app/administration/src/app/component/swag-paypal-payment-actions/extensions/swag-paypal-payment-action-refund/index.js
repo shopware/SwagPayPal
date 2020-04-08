@@ -33,6 +33,7 @@ Component.register('swag-paypal-payment-action-refund', {
         return {
             captures: [],
             selectedCapture: {},
+            existingRefunds: [],
             refundAmount: 0,
             refundableAmount: 0,
             refundDescription: '',
@@ -56,6 +57,7 @@ Component.register('swag-paypal-payment-action-refund', {
     methods: {
         createdComponent() {
             this.getRefundableCaptures();
+            this.mapRefunds();
             this.selectedCaptureId = this.captures[0].id;
             this.isLoading = false;
             this.preserveCapture();
@@ -82,6 +84,10 @@ Component.register('swag-paypal-payment-action-refund', {
                     }
                 }
 
+                if (relatedResource.refund) {
+                    this.existingRefunds.push(relatedResource.refund);
+                }
+
                 return accumulator;
             }, this.captures);
         },
@@ -97,6 +103,29 @@ Component.register('swag-paypal-payment-action-refund', {
                 currency: resource.amount.currency,
                 type: resourceType
             };
+        },
+
+        mapRefunds() {
+            this.existingRefunds.forEach((refund) => {
+                const capture = this.captures.find((resource) => {
+                    switch (resource.type) {
+                        case CAPTURE_RESOURCE_TYPE:
+                            return (refund.capture_id === resource.id);
+                        case SALE_RESOURCE_TYPE:
+                            return (refund.sale_id === resource.id);
+                        default:
+                            return false;
+                    }
+                });
+
+                if (capture) {
+                    let refundAmount = Number(refund.amount.total);
+                    if (refundAmount < 0) {
+                        refundAmount *= -1.0;
+                    }
+                    capture.refundableAmount -= refundAmount;
+                }
+            });
         },
 
         preserveCapture() {
