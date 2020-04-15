@@ -12,12 +12,12 @@ class Refund extends RelatedResource
     /**
      * @var string
      */
-    private $saleId;
+    protected $saleId;
 
     /**
      * @var string
      */
-    private $captureId;
+    protected $captureId;
 
     protected function setSaleId(string $saleId): void
     {

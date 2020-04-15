@@ -1,4 +1,5 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11540 - Korrigiert übrigen Betrag für mehrfache teilweise Erstattungen
 - PT-11541 - Verhalten von mehrfachen partiellen Erstattungen & Einzügen einer Transaktion verbessert
 
 # 1.3.0

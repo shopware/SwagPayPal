@@ -1,4 +1,5 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11540 - Corrects remaining amount for multiple partial refunds
 - PT-11541 - Improved behaviour of multiple partial refunds & captures
 
 # 1.3.0
