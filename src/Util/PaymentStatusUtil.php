@@ -62,13 +62,18 @@ class PaymentStatusUtil
             || $request->request->getBoolean(PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_IS_FINAL);
 
         if ($isFinalCapture) {
-            $this->orderTransactionStateHandler->pay($transaction->getId(), $context);
+            $this->orderTransactionStateHandler->paid($transaction->getId(), $context);
 
             return;
         }
 
+        $stateMachineState = $transaction->getStateMachineState();
+        if ($stateMachineState === null) {
+            return;
+        }
+
         // TODO after NEXT-7683: Do transition even if transaction is already partially paid.
-        if ($transaction->getStateMachineState()->getTechnicalName() !== OrderTransactionStates::STATE_PARTIALLY_PAID) {
+        if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_PARTIALLY_PAID) {
             $this->orderTransactionStateHandler->payPartially($transaction->getId(), $context);
         }
     }
@@ -86,8 +91,13 @@ class PaymentStatusUtil
             return;
         }
 
+        $stateMachineState = $transaction->getStateMachineState();
+        if ($stateMachineState === null) {
+            return;
+        }
+
         // TODO after NEXT-7683: Do transition even if transaction is already partially refunded.
-        if ($transaction->getStateMachineState()->getTechnicalName() !== OrderTransactionStates::STATE_PARTIALLY_REFUNDED) {
+        if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_PARTIALLY_REFUNDED) {
             $this->orderTransactionStateHandler->refundPartially($transaction->getId(), $context);
         }
     }

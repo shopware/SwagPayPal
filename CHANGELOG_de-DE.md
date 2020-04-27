@@ -1,4 +1,5 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
+# 1.4.0
+- Shopware 6.2 Kompatibilität
 - PT-11540 - Korrigiert übrigen Betrag für mehrfache teilweise Erstattungen
 - PT-11541 - Verhalten von mehrfachen partiellen Erstattungen & Einzügen einer Transaktion verbessert
 

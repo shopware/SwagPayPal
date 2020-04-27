@@ -7,17 +7,28 @@
 
 require_once '../../../vendor/autoload.php';
 
-// find CMS Extensions
-foreach (scandir('../') as $directoryItem) {
-    if (is_dir('../' . $directoryItem) && file_exists('../' . $directoryItem . '/src/SwagCmsExtensions.php')) {
-        $pathToCmsExtensions = '../' . $directoryItem . '/vendor/autoload.php';
-        if (file_exists($pathToCmsExtensions)) {
-            require_once $pathToCmsExtensions;
-        } else {
-            echo "Please execute 'composer dump-autoload' in your CmsExtensions directory\n";
+/**
+ * Please note that we cannot use exit() in this file!
+ * Because this would exit the startup of our analyze tools such as Psalm and Phpstan.
+ */
+$cmsExtensionsFound = false;
+$files = scandir('../');
+if (\is_array($files)) {
+    foreach ($files as $file) {
+        if (is_dir('../' . $file) && file_exists('../' . $file . '/src/SwagCmsExtensions.php')) {
+            $cmsExtensionsFound = true;
+            $pathToCmsExtensions = '../' . $file . '/vendor/autoload.php';
+            if (file_exists($pathToCmsExtensions)) {
+                require_once $pathToCmsExtensions;
+            } else {
+                echo "Please execute 'composer dump-autoload' in your CmsExtensions directory\n";
+            }
         }
-        exit();
     }
-}
 
-echo "You need the CmsExtensions plugin for static analyze to work.\n";
+    if (!$cmsExtensionsFound) {
+        echo "You need the CmsExtensions plugin for static analyze to work.\n";
+    }
+} else {
+    echo 'Could not scandir ../';
+}

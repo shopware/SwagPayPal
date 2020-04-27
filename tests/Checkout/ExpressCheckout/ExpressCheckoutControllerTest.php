@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Customer\SalesChannel\AccountRegistrationService;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -219,10 +220,40 @@ class ExpressCheckoutControllerTest extends TestCase
 
     private function getSalesChannel(): SalesChannelEntity
     {
+        $context = Context::createDefaultContext();
+        $container = $this->getContainer();
         /** @var EntityRepositoryInterface $salesChannelRepo */
-        $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
+        $salesChannelRepo = $container->get('sales_channel.repository');
+        /** @var EntityRepositoryInterface $paymentRepository */
+        $paymentRepository = $container->get('payment_method.repository');
+        $paymentMethodUtil = new PaymentMethodUtil($paymentRepository, $salesChannelRepo);
 
-        return $salesChannelRepo->search(new Criteria(), Context::createDefaultContext())->first();
+        /** @var SalesChannelEntity|null $salesChannel */
+        $salesChannel = $salesChannelRepo->search(new Criteria(), $context)->first();
+        if ($salesChannel === null) {
+            throw new \RuntimeException('No SalesChannelFound');
+        }
+
+        $salesChannelRepo->update([
+            [
+                'id' => $salesChannel->getId(),
+                'domains' => [
+                    [
+                        'url' => 'https://example.com',
+                        'languageId' => Defaults::LANGUAGE_SYSTEM,
+                        'currencyId' => Defaults::CURRENCY,
+                        'snippetSetId' => $this->getSnippetSetIdForLocale('en-GB'),
+                    ],
+                ],
+                'paymentMethods' => [
+                    [
+                        'id' => $paymentMethodUtil->getPayPalPaymentMethodId($context),
+                    ],
+                ],
+            ],
+        ], $context);
+
+        return $salesChannel;
     }
 
     private function getCurrency(): CurrencyEntity

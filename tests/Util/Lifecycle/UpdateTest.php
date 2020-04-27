@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Util\Lifecycle;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Migration\MigrationCollectionLoader;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
@@ -107,11 +108,15 @@ class UpdateTest extends TestCase
 
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext
     {
+        /** @var MigrationCollectionLoader $migrationLoader */
+        $migrationLoader = $this->getContainer()->get(MigrationCollectionLoader::class);
+
         return new UpdateContext(
             new SwagPayPal(true, ''),
             Context::createDefaultContext(),
             '',
             $currentPluginVersion,
+            $migrationLoader->collect('core'),
             $nextPluginVersion
         );
     }

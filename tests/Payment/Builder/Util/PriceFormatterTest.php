@@ -5,13 +5,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Payment\Builder;
+namespace Swag\PayPal\Test\Payment\Builder\Util;
 
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Payment\Builder\Util\PriceFormatter;
 
 class PriceFormatterTest extends TestCase
 {
+    /**
+     * @var PriceFormatter
+     */
     protected $priceFormatter;
 
     public function setUp(): void

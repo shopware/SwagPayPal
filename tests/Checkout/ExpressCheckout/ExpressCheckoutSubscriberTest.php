@@ -34,6 +34,7 @@ use Shopware\Storefront\Page\Navigation\NavigationPage;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
+use Shopware\Storefront\Pagelet\Pagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoader;
@@ -259,8 +260,10 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPagelet($event);
 
+        /** @var Pagelet $quickviewPagelet */
+        $quickviewPagelet = $event->getPagelet();
         /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPagelet()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        $actualExpressCheckoutButtonData = $quickviewPagelet->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         $this->assertExpressCheckoutButtonData(
             $this->getExpectedExpressCheckoutButtonDataForAddProductEvents(),
@@ -275,8 +278,10 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPagelet($event);
 
+        /** @var Pagelet $pagelet */
+        $pagelet = $event->getPagelet();
         /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPagelet()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        $actualExpressCheckoutButtonData = $pagelet->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
@@ -286,8 +291,10 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $this->getExpressCheckoutSubscriber(false)->addExpressCheckoutDataToPagelet($event);
 
+        /** @var Pagelet $pagelet */
+        $pagelet = $event->getPagelet();
         /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPagelet()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        $actualExpressCheckoutButtonData = $pagelet->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
@@ -297,8 +304,10 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $this->getExpressCheckoutSubscriber(true, false, true)->addExpressCheckoutDataToPagelet($event);
 
+        /** @var Pagelet $pagelet */
+        $pagelet = $event->getPagelet();
         /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPagelet()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        $actualExpressCheckoutButtonData = $pagelet->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
@@ -459,8 +468,10 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $request = new Request([], [], ['productId' => $product->getId()]);
 
+        /** @var QuickviewPageletLoader $quickViewLoader */
+        $quickViewLoader = $this->getContainer()->get(QuickviewPageletLoader::class);
         /** @var QuickviewPagelet $pagelet */
-        $pagelet = $this->getContainer()->get(QuickviewPageletLoader::class)->load($request, $salesChannelContext);
+        $pagelet = $quickViewLoader->load($request, $salesChannelContext);
 
         $event = new QuickviewPageletLoadedEvent(
             $pagelet,

@@ -78,7 +78,7 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
          *  - black
          *  - white
          */
-        textColor: 'black',
+        textColor: 'black'
     };
 
     init() {
@@ -91,6 +91,7 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
         }
 
         const body = DomAccess.querySelector(document, 'body');
+        /* eslint-env jquery */
         const $body = $(body);
         $body.on('shown.bs.modal', (event) => {
             if (event.target.classList.contains('confirm-payment-modal')) {
@@ -116,12 +117,12 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
                 color: this.options.color,
                 ratio: this.options.ratio,
                 logo: {
-                    type: this.options.logoType,
+                    type: this.options.logoType
                 },
                 text: {
-                    color: this.options.textColor,
-                },
-            },
+                    color: this.options.textColor
+                }
+            }
         };
     }
 }

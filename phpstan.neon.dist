@@ -14,5 +14,8 @@ parameters:
         -   # PHPStan could not analyse this function
             message: '#Function getProjectDir not found#'
             path: tests/TestBootstrap.php
+        -   # This service gets registered within Cms Extensions
+            message: '#is not registered in the container#'
+            path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
 
     bootstrap: bin/static-analyze-autoloader.php
