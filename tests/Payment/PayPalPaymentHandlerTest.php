@@ -285,8 +285,7 @@ Customer is not logged in.');
     public function testFinalizeWithCancel(): void
     {
         $this->expectException(CustomerCanceledAsyncPaymentException::class);
-        $this->expectExceptionMessage('The customer canceled the external payment process. Additional information:
-Customer canceled the payment on the PayPal page');
+        $this->expectExceptionMessage('The customer canceled the external payment process. Customer canceled the payment on the PayPal page');
         $this->createPayPalPaymentHandler()->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, 'testTransactionId'),
             new Request(['cancel' => true]),

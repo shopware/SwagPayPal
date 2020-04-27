@@ -67,7 +67,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          *
          * @type string
          */
-        checkoutConfirmUrl: '',
+        checkoutConfirmUrl: ''
     };
 
     init() {
@@ -114,7 +114,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
                 size: this.options.buttonSize,
                 shape: this.options.buttonShape,
                 color: this.options.buttonColor,
-                label: 'checkout',
+                label: 'checkout'
             },
 
             /**
@@ -125,7 +125,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
             /**
              * Will be called if the payment process is approved by paypal
              */
-            onApprove: this.onApprove.bind(this),
+            onApprove: this.onApprove.bind(this)
         };
     }
 
@@ -134,7 +134,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
      */
     createOrder() {
         const csrfToken = {
-            _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-smart-payment-buttons-create-payment-token'),
+            _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-smart-payment-buttons-create-payment-token')
         };
 
         return new Promise(resolve => {

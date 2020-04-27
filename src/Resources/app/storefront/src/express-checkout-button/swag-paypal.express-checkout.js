@@ -104,7 +104,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          *
          * @type string
          */
-        checkoutConfirmUrl: '',
+        checkoutConfirmUrl: ''
     };
 
     init() {
@@ -133,7 +133,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                 tagline: this.options.tagline,
                 layout: 'horizontal',
                 label: 'checkout',
-                height: 40,
+                height: 40
             },
 
             /**
@@ -144,7 +144,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
             /**
              * Will be called if the payment process is approved by paypal
              */
-            onApprove: this.onApprove.bind(this),
+            onApprove: this.onApprove.bind(this)
         };
     }
 
@@ -201,7 +201,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
             if (key !== 'redirectTo' && matches && matches.length === 3) {
                 if (!formattedLineItems[matches[1]]) {
                     formattedLineItems[matches[1]] = {
-                        [matches[2]]: formData[matches[0]],
+                        [matches[2]]: formData[matches[0]]
                     };
                 } else {
                     const lineItem = formattedLineItems[matches[1]];
@@ -212,14 +212,14 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         });
 
         return {
-            lineItems: formattedLineItems,
+            lineItems: formattedLineItems
         };
     }
 
     onApprove(data, actions) {
         const requestPayload = {
             paymentId: data.paymentID,
-            _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-express-button-approve-payment-token'),
+            _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-express-button-approve-payment-token')
         };
 
         // Add a loading indicator to the body to prevent the user breaking the checkout process

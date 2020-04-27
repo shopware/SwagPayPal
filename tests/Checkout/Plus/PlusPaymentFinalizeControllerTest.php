@@ -59,8 +59,7 @@ class PlusPaymentFinalizeControllerTest extends TestCase
     {
         $salesChannelContext = Generator::createSalesChannelContext();
         $this->expectException(CustomerCanceledAsyncPaymentException::class);
-        $this->expectExceptionMessage('The customer canceled the external payment process. Additional information:
-Customer canceled the payment on the PayPal page');
+        $this->expectExceptionMessage('The customer canceled the external payment process. Customer canceled the payment on the PayPal page');
         $request = new Request(['cancel' => true]);
         $this->createController()->finalizeTransaction($request, $salesChannelContext);
     }

@@ -40,6 +40,8 @@ class CacheItemWithTokenMock implements CacheItemInterface
 
     /**
      * @param string|mixed $value
+     *
+     * @return static
      */
     public function set($value): CacheItemInterface
     {
@@ -47,6 +49,8 @@ class CacheItemWithTokenMock implements CacheItemInterface
 
     /**
      * @param \DateTimeInterface|null $expiration
+     *
+     * @return static
      */
     public function expiresAt($expiration): CacheItemInterface
     {
@@ -54,6 +58,8 @@ class CacheItemWithTokenMock implements CacheItemInterface
 
     /**
      * @param \DateInterval|int|null $time
+     *
+     * @return static
      */
     public function expiresAfter($time): CacheItemInterface
     {

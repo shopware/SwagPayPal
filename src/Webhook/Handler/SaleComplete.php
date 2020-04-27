@@ -28,6 +28,6 @@ class SaleComplete extends AbstractWebhookHandler
     {
         $orderTransaction = $this->getOrderTransaction($webhook, $context);
 
-        $this->orderTransactionStateHandler->pay($orderTransaction->getId(), $context);
+        $this->orderTransactionStateHandler->paid($orderTransaction->getId(), $context);
     }
 }
