@@ -21,6 +21,8 @@ final class RequestUri
 
     public const WEBHOOK_RESOURCE = 'notifications/webhooks';
 
+    public const IZETTLE_TOKEN_RESOURCE = 'token';
+
     private function __construct()
     {
     }

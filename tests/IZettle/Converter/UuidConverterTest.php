@@ -1,0 +1,35 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\Test\IZettle\Converter;
+
+use PHPUnit\Framework\TestCase;
+use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
+
+class UuidConverterTest extends TestCase
+{
+    public function dataProviderUuidConversion(): array
+    {
+        return [
+            ['1ce0868f406d47d98cfe4b281e62f099', '1ce0868f-406d-17d9-8cfe-4b281e62f099'],
+            ['notAUuid', ''],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProviderUuidConversion
+     */
+    public function testConvert(string $originalUuid, string $expectedUuid): void
+    {
+        static::assertEquals($expectedUuid, $this->createUuidConverter()->convertUuidToV1($originalUuid));
+    }
+
+    private function createUuidConverter(): UuidConverter
+    {
+        return new UuidConverter();
+    }
+}

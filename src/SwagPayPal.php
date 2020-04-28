@@ -53,7 +53,11 @@ class SwagPayPal extends Plugin
     {
         parent::build($container);
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
+        $loader = new XmlFileLoader($container, new FileLocator([
+            __DIR__ . '/DependencyInjection/',
+            __DIR__ . '/IZettle/DependencyInjection/',
+        ]));
+
         $loader->load('client.xml');
         $loader->load('paypal_payment.xml');
         $loader->load('resource.xml');
@@ -66,6 +70,7 @@ class SwagPayPal extends Plugin
         $loader->load('checkout.xml');
         $loader->load('plus.xml');
         $loader->load('installment.xml');
+        $loader->load('izettle.xml');
     }
 
     public function install(InstallContext $installContext): void
