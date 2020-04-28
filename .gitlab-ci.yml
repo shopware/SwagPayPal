@@ -12,10 +12,10 @@ default:
     image: shopware/development:latest
     before_script:
         - zip -rq plugin.zip .
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git
+        - git clone --branch 6.2 http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git
         - rm -rf development/platform
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch 6.2
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git development/custom/plugins/SwagCmsExtensions --branch pt-11604/feature/6.2-compatibility
+        - git clone --branch 6.2 http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git development/custom/plugins/SwagCmsExtensions
         - unzip -q plugin.zip -d development/custom/plugins/SwagPayPal
         - cd development
         - composer dump-autoload -d custom/plugins/SwagCmsExtensions
