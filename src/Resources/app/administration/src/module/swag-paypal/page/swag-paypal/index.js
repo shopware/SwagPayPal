@@ -3,6 +3,7 @@ import './swag-paypal.scss';
 import constants from './swag-paypal-consts';
 
 const { Mixin } = Shopware;
+const { hasOwnProperty } = Shopware.Utils.object;
 
 Shopware.Component.register('swag-paypal', {
     template,
@@ -41,11 +42,27 @@ Shopware.Component.register('swag-paypal', {
 
     computed: {
         showSPBCard() {
-            return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
+            if (hasOwnProperty(this.config, 'SwagPayPal.settings.merchantLocation') &&
+                    this.config['SwagPayPal.settings.merchantLocation'] !== null
+            ) {
+                return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
+            }
+
+            const defaultConfig = this.$refs.configComponent.allConfigs.null;
+
+            return defaultConfig['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
         },
 
         showPlusCard() {
-            return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY;
+            if (hasOwnProperty(this.config, 'SwagPayPal.settings.merchantLocation') &&
+                    this.config['SwagPayPal.settings.merchantLocation'] !== null
+            ) {
+                return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY;
+            }
+
+            const defaultConfig = this.$refs.configComponent.allConfigs.null;
+
+            return defaultConfig['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY;
         }
     },
 

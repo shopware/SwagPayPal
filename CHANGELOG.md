@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11599 - Fixes a bug where PayPal Plus could not be configured individually per Saleschannel
+
 # 1.4.0
 - Shopware 6.2 compatibility
 - PT-11540 - Corrects remaining amount for multiple partial refunds
