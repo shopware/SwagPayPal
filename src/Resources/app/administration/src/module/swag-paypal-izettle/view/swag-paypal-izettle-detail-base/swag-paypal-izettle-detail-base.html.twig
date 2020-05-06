@@ -1,0 +1,53 @@
+<div class="sw-sales-channel-detail-base">
+
+    {% block swag_paypal_izettle_details_options %}
+        <sw-card v-if="!isNewEntity" :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.base.titleOptions')">
+
+            <sw-button-group>
+
+                {% block swag_paypal_izettle_channel_options_delete %}
+                    <div class="sw-sales-channel-detail-_button-delete">
+                        <sw-button size="small"
+                                   variant="danger"
+                                   @click="showDeleteModal = true">
+                            {{ $tc('sw-sales-channel.detail.buttonDelete') }}
+                        </sw-button>
+                    </div>
+
+                    {% block swag_paypal_izettle_channel_options_delete_modal %}
+                        <sw-modal v-if="showDeleteModal"
+                                  class="sw-sales-channel-detail-_delete-modal"
+                                  ref="modal"
+                                  variant="small"
+                                  :title="$tc('sw-sales-channel.detail.deleteModalTitle')"
+                                  @modal-close="onCloseDeleteModal">
+
+                            <p class="sw-sales-channel-detail-_delete-modal-confirm-text">
+                                {{ $tc('sw-sales-channel.detail.textConfirmDelete') }}
+                            </p>
+                            <p class="sw-sales-channel-detail-_delete-modal-name">
+                                    <strong>{{ placeholder(salesChannel, 'name') }}</strong>
+                            </p>
+                            <p>
+                                {{ $tc('sw-sales-channel.detail.textDeleteInfo') }}
+                            </p>
+
+                            <template slot="modal-footer">
+                                <sw-button size="small"
+                                           @click="onCloseDeleteModal">
+                                        {{ $tc('sw-sales-channel.detail.buttonCloseDeleteModal') }}
+                                </sw-button>
+
+                                <sw-button size="small"
+                                           variant="danger"
+                                           @click="onConfirmDelete">
+                                        {{ $tc('sw-sales-channel.detail.buttonConfirmDelete') }}
+                                </sw-button>
+                            </template>
+                        </sw-modal>
+                    {% endblock %}
+                {% endblock %}
+            </sw-button-group>
+        </sw-card>
+    {% endblock %}
+</div>

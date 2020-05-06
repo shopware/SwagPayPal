@@ -1,0 +1,33 @@
+{% block swag_paypal_izettle_wizard_connection %}
+    <div class="swag-paypal-izettle-wizard-connection">
+        <h3>{{ $tc('swag-paypal-izettle.wizard.connection.header') }}</h3>
+
+        {% block swag_paypal_izettle_wizard_connection_username %}
+            <sw-text-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.username"
+                           required
+                           :label="$tc('swag-paypal-izettle.wizard.connection.username')"
+                           @input="forceUpdate">
+            </sw-text-field>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_connection_password %}
+            <sw-password-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.password"
+                               required
+                               :label="$tc('swag-paypal-izettle.wizard.connection.password')"
+                               @input="forceUpdate">
+            </sw-password-field>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_connection_button_test %}
+            <sw-button-process v-model="isTestCredentialsSuccessful"
+                               :disabled="!(this.salesChannel.extensions.paypalIZettleSalesChannel.username) ||
+                                    !(this.salesChannel.extensions.paypalIZettleSalesChannel.password)"
+                               :isLoading="isTestingCredentials"
+                               @click="onTestCredentials">
+                {{ $tc('swag-paypal-izettle.wizard.connection.buttonTest') }}
+            </sw-button-process>
+        {% endblock %}
+
+        <div class="subtitle" v-html="$tc('swag-paypal-izettle.wizard.connection.subtitle')"></div>
+    </div>
+{% endblock %}

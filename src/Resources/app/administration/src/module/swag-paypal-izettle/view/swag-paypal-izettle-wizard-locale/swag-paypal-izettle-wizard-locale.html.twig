@@ -1,0 +1,33 @@
+{% block swag_paypal_izettle_wizard_locale %}
+    <div class="swag-paypal-izettle-wizard-locale">
+        <h3>{{ $tc('swag-paypal-izettle.wizard.locale.header') }}</h3>
+
+        {% block swag_paypal_izettle_wizard_locale_domain %}
+            <sw-entity-single-select v-model="salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId"
+                                     required
+                                     entity="sales_channel_domain"
+                                     labelProperty="url"
+                                     valueProperty="id"
+                                     :criteria="domainCriteria"
+                                     :disabled="!salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId && !storefrontSalesChannelId"
+                                     :label="$tc('swag-paypal-izettle.wizard.locale.labelDomain')"
+                                     @input="forceUpdate">
+            </sw-entity-single-select>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_locale_currency %}
+            <sw-entity-single-select v-model="salesChannel.currencyId"
+                                     required
+                                     entity="currency"
+                                     labelProperty="name"
+                                     valueProperty="id"
+                                     :criteria="currencyCriteria"
+                                     :disabled="!salesChannel.currencyId && !salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId"
+                                     :label="$tc('swag-paypal-izettle.wizard.locale.labelCurrency')"
+                                     @input="forceUpdate">
+            </sw-entity-single-select>
+        {% endblock %}
+
+        <div class="subtitle" v-html="$tc('swag-paypal-izettle.wizard.locale.subtitle')"></div>
+    </div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% block swag_paypal_izettle_wizard_productstream %}
+    <div class="swag-paypal-izettle-wizard-productstream">
+        <h3>{{ $tc('swag-paypal-izettle.wizard.product-stream.header') }}</h3>
+
+        {% block swag_paypal_izettle_wizard_productstream_select %}
+            <sw-entity-single-select v-model="salesChannel.extensions.paypalIZettleSalesChannel.productStreamId"
+                                     required
+                                     entity="product_stream"
+                                     labelProperty="name"
+                                     valueProperty="id"
+                                     :label="$tc('swag-paypal-izettle.wizard.product-stream.label')"
+                                     @input="forceUpdate">
+            </sw-entity-single-select>
+        {% endblock %}
+
+        <div class="subtitle" v-html="$tc('swag-paypal-izettle.wizard.product-stream.subtitle')"></div>
+    </div>
+{% endblock %}

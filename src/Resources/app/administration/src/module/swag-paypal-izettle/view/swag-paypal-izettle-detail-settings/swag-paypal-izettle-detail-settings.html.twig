@@ -1,0 +1,134 @@
+{% block swag_paypal_izettle_detail_settings %}
+    <div class="sw-sales-channel-detail-base">
+
+        {% block swag_paypal_izettle_detail_settings_basic %}
+            <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.settings.titleGeneralSettings')">
+
+                <sw-container columns="1fr 200px" gap="0px 30px">
+
+                    {% block swag_paypal_izettle_detail_settings_input_name %}
+                        <sw-text-field v-model="salesChannel.name"
+                                       required
+                                       type="text"
+                                       validation="required"
+                                       :error="salesChannelNameError"
+                                       :label="$tc('sw-sales-channel.detail.labelInputName')"
+                                       :placeholder="placeholder(salesChannel, 'name', $tc('sw-sales-channel.detail.placeholderName'))">
+                        </sw-text-field>
+                    {% endblock %}
+
+                    {% block swag_paypal_izettle_detail_settings_input_active %}
+                        <sw-switch-field v-model="salesChannel.active"
+                                         bordered
+                                         :label="$tc('sw-sales-channel.detail.labelInputActive')">
+                        </sw-switch-field>
+                    {% endblock %}
+                </sw-container>
+
+                {% block swag_paypal_izettle_detail_settings_input_storefront %}
+                    <sw-entity-single-select v-model="localStorefrontSalesChannelId"
+                                             required
+                                             entity="sales_channel"
+                                             labelProperty="name"
+                                             valueProperty="id"
+                                             :criteria="storefrontSalesChannelCriteria"
+                                             :label="$tc('swag-paypal-izettle.detail.settings.storefront')"
+                                             @input="onStorefrontSelectionChange">
+                    </sw-entity-single-select>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_detail_settings_input_storefront_domain %}
+                    <sw-entity-single-select v-model="salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId"
+                                             required
+                                             entity="sales_channel_domain"
+                                             labelProperty="url"
+                                             valueProperty="id"
+                                             :criteria="storefrontSalesChannelDomainCriteria"
+                                             :disabled="!salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId && !localStorefrontSalesChannelId"
+                                             :label="$tc('swag-paypal-izettle.detail.settings.storefrontDomain')"
+                                             @input="forceUpdate">
+                    </sw-entity-single-select>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_detail_settings_input_storefront_domain_currency %}
+                    <sw-entity-single-select v-model="salesChannel.currencyId"
+                                             required
+                                             entity="currency"
+                                             labelProperty="name"
+                                             valueProperty="id"
+                                             :criteria="storefrontSalesChannelDomainCurrencyCriteria"
+                                             :disabled="!salesChannel.currencyId && !salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId"
+                                             :label="$tc('swag-paypal-izettle.detail.settings.storefrontDomainCurrency')"
+                                             @input="forceUpdate">
+                    </sw-entity-single-select>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_detail_settings_input_product_stream %}
+                    <sw-entity-single-select v-model="salesChannel.extensions.paypalIZettleSalesChannel.productStreamId"
+                                             entity="product_stream"
+                                             labelProperty="name"
+                                             valueProperty="id"
+                                             :label="$tc('swag-paypal-izettle.detail.settings.productStream')"
+                                             @input="forceUpdate">
+                    </sw-entity-single-select>
+                {% endblock %}
+            </sw-card>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_detail_settings_sync %}
+            <div class="sw-sales-channel-detail-sync">
+                <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.settings.titleSync')">
+
+                    {% block swag_paypal_izettle_detail_settings_additional_syncprices %}
+                        <sw-switch-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.syncPrices"
+                                         bordered
+                                         :label="$tc('swag-paypal-izettle.detail.settings.syncPrices')"
+                                         @input="forceUpdate">
+                        </sw-switch-field>
+                    {% endblock %}
+
+                    {% block swag_paypal_izettle_detail_settings_additional_replace %}
+                        <sw-switch-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.replace"
+                                         bordered
+                                         :label="$tc('swag-paypal-izettle.detail.settings.replace')"
+                                         @input="forceUpdate">
+                        </sw-switch-field>
+                    {% endblock %}
+                </sw-card>
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_detail_settings_credentials %}
+            <div class="sw-sales-channel-detail-credentials">
+                <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.settings.titleCredentials')">
+
+                    {% block swag_paypal_izettle_detail_settings_credentials_username %}
+                        <sw-text-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.username"
+                                       required
+                                       :label="$tc('swag-paypal-izettle.detail.settings.username')"
+                                       @input="forceUpdate">
+                        </sw-text-field>
+                    {% endblock %}
+
+                    {% block swag_paypal_izettle_detail_settings_credentials_password %}
+                        <sw-password-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.password"
+                                           required
+                                           :label="$tc('swag-paypal-izettle.detail.settings.password')"
+                                           @input="forceUpdate">
+                        </sw-password-field>
+                    {% endblock %}
+
+                    {% block swag_paypal_izettle_detail_settings_credentials_button_test %}
+                        <sw-button-process v-model="isTestCredentialsSuccessful"
+                                           :isLoading="isTestingCredentials"
+                                           :disabled="!(this.salesChannel.extensions.paypalIZettleSalesChannel.username) ||
+                                                !(this.salesChannel.extensions.paypalIZettleSalesChannel.password)"
+                                           @click="onTestCredentials">
+                            {{ $tc('swag-paypal-izettle.detail.settings.buttonTest') }}
+                        </sw-button-process>
+                    {% endblock %}
+                </sw-card>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

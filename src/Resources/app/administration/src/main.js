@@ -6,3 +6,5 @@ import './module/swag-paypal-payment';
 import './init/api-service.init';
 import './init/translation.init';
 import './init/svg-icons.init';
+
+import './module/swag-paypal-izettle';

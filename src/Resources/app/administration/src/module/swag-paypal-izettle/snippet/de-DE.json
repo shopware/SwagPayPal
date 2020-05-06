@@ -1,0 +1,84 @@
+{
+    "swag-paypal-izettle": {
+        "header": "iZettle-Verkaufskanal",
+        "tabTitle": {
+            "base": "Allgemein",
+            "settings": "Einstellungen",
+            "log": "Protokoll"
+        },
+        "detail": {
+            "base": {
+                "titleOptions": "Optionen"
+            },
+            "settings": {
+                "titleGeneralSettings": "Allgemein",
+                "storefront": "Storefront Verkaufskanal",
+                "storefrontDomain": "Storefront Verkaufskanal-Domain",
+                "storefrontDomainCurrency": "Währung",
+                "productStream": "Dynamische Produktgruppe",
+                "titleCredentials": "Zugangsdaten",
+                "username": "Benutzername",
+                "password": "Passwort",
+                "buttonTest": "Zugangsdaten testen",
+                "titleSync": "Synchronisation",
+                "syncPrices": "Preise übertragen",
+                "replace": "Existierende Produkte in iZettle ersetzen (einmalig)"
+            }
+        },
+        "wizard": {
+            "stepItemTitle": {
+                "connection": "Benutzerkonto-Einrichtung",
+                "saleschannel": "Storefront-Verkaufskanal",
+                "locale": "Lokalisierung",
+                "productgroup": "Dynamische Produktgruppe",
+                "sync": "Produkt-Synchronsiation",
+                "finish": "Abschluss"
+            },
+            "connection": {
+                "modalTitle": "Benutzerkonto-Einrichtung",
+                "header": "Geben Sie hier Ihre iZettle-Benutzerdaten ein und folgenden Sie den nächsten Schritten zur Einrichtung der Synchronisation.",
+                "subtitle": "Änderungen, die Sie an Ihren Shopware-Produkten machen, werden zukünftig automatisch in Ihrem verbundenen iZettle-Benutzerkonto vollzogen.",
+                "username": "Benutzername",
+                "password": "Passwort",
+                "buttonTest": "Zugangsdaten testen"
+            },
+            "sales-channel": {
+                "modalTitle": "Wählen Sie einen bestehenden Verkaufskanal",
+                "label": "Verkaufskanal",
+                "header": "Wählen Sie einen Storefront-Verkaufskanal als Basis",
+                "subtitle": "Der gewählte Storefront-Verkaufskanal wird die Auswahl der Produkte definieren. Sie können diese Auswahl in einem späteren Schritt weiter reduzieren.",
+                "nameDecoration": "{name} (iZettle)"
+            },
+            "locale": {
+                "modalTitle": "Lokalisierung",
+                "labelCurrency": "Währung",
+                "labelDomain": "Domain",
+                "header": "Wählen Sie die Lokalisierungs-Einstellungen für die Synchronisation",
+                "subtitle": "Die gewählte Domain wird die Sprache für Produktnamen und -beschreibungen definieren. Sie müssen auch eine Währung wählen, selbst wenn Sie keine Preise synchronisieren möchten."
+            },
+            "product-stream": {
+                "modalTitle": "Dynamische Produktgruppe",
+                "label": "Dynamische Produktgruppe",
+                "header": "Wählen Sie eine dynamische Produktgruppe",
+                "subtitle": "Sie können eine dynamische Produktgruppe wählen, um die Zahl der Produkte des gewählten Verkaufskanals weiter zu reduzieren.<br>Falls sie noch keine dynamische Produktgruppe erstellt haben oder die Auswahl nicht reduzieren möchten, können Sie diesen Schritt überspringen und im Bedarfsfall später eine Gruppe wählen."
+            },
+            "sync": {
+                "modalTitle": "Product-Synchronisation",
+                "header": "Festlegen von Synchronisations-Einstellungen",
+                "syncPricesLabel": "Preise synchronisieren",
+                "syncPricesSubtitle": "Wenn gewählt werden die Preise mit MwSt. übertragen.<br>Andernfalls werden die Preise auf 0 gesetzt und können in Ihrer iZettle-Produktbibliothek geändert werden.",
+                "replaceLabel": "Bestehende Produkte in iZettle ersetzen",
+                "replaceSubtitle": "Wenn gewählt werden existierende Produkte in Ihrer iZettle-Produktbibliothek entfernt."
+            },
+            "finish": {
+                "modalTitle": "Fertiggestellt",
+                "header": "Einrichtung der Produkt-Synchronisation abgeschlossen!",
+                "firstParagraph": "Ihr iZettle-Konto ist jetzt mit Ihrem Verkaufskanal verknüpft und synchronisiert Produkte mit iZettle.<br>Wenn Sie in Zukunft einen Verkauf tätigen, werden wir Ihren Bestand an iZettle und Shopware aktualisieren.",
+                "secondParagraph": "Wenn Sie Ihre Produkte aktualisieren müssen, empfehlen wir Ihnen, dies in Shopware zu tun, und sie werden automatisch mit Ihrer iZettle-Anwendung synchronisiert."
+            }
+        },
+        "test": {
+            "messageTestError": "Die Zugangsdaten konnten nicht validiert werden."
+        }
+    }
+}

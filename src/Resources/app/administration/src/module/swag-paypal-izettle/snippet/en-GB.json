@@ -1,0 +1,84 @@
+{
+    "swag-paypal-izettle": {
+        "header": "iZettle Sales Channel",
+        "tabTitle": {
+            "base": "General",
+            "settings": "Settings",
+            "log": "Log"
+        },
+        "detail": {
+            "base": {
+                "titleOptions": "Options"
+            },
+            "settings": {
+                "titleGeneralSettings": "General settings",
+                "storefront": "Storefront",
+                "storefrontDomain": "Storefront domain",
+                "storefrontDomainCurrency": "Storefront currency",
+                "productStream": "Dynamic product group",
+                "titleCredentials": "Credentials",
+                "username": "Username",
+                "password": "Password",
+                "buttonTest": "Test credentials",
+                "titleSync": "Synchronization",
+                "syncPrices": "Sync Prices",
+                "replace": "Replace existing products in iZettle (one-time)"
+            }
+        },
+        "wizard": {
+            "stepItemTitle": {
+                "connection": "Account setup",
+                "saleschannel": "Connect Sales Channel",
+                "locale": "Localization",
+                "productgroup": "Dynamic Product Group",
+                "sync": "Product Sync",
+                "finish": "Finish"
+            },
+            "connection": {
+                "modalTitle": "Account setup",
+                "header": "Enter your iZettle credentials and follow the next steps to setup product sync.",
+                "subtitle": "Any changes you make to your Shopware products will now automatically be updated in your connected iZettle account.",
+                "username": "Username",
+                "password": "Password",
+                "buttonTest": "Test credentials"
+            },
+            "sales-channel": {
+                "modalTitle": "Select an existing Sales Channel",
+                "label": "Sales Channel",
+                "header": "Pick a Storefront Sales Channel as base",
+                "subtitle": "The chosen Storefront Sales Channel will provide the selection of products to sync. You may reduce the selection in a later step.",
+                "nameDecoration": "{name} (iZettle)"
+            },
+            "locale": {
+                "modalTitle": "Localization",
+                "labelCurrency": "Currency",
+                "labelDomain": "Domain",
+                "header": "Choose localization settings for the sync",
+                "subtitle": "The chosen domain will set the language of product names and descriptions. You will need to choose a currency even if you don't want to sync prices."
+            },
+            "product-stream": {
+                "modalTitle": "Dynamic Product Group",
+                "label": "Dynamic Product Group",
+                "header": "Pick a Dynamic Product Group",
+                "subtitle": "You can select a Dynamic Product Group to reduce the number of synchronized products of the selected Storefront Sales Channel.<br>If you have not yet created a Dynamic Product Group or do not wish to reduce the number of synchronized products, you can skip this step now or select a product stream later."
+            },
+            "sync": {
+                "modalTitle": "Product Sync",
+                "header": "Set product sync settings",
+                "syncPricesLabel": "Sync Prices",
+                "syncPricesSubtitle": "If checked, prices will be exported with VAT.<br>Otherwise product prices will be set to 0 and can be changed in your iZettle product library.",
+                "replaceLabel": "Replace existing iZettle library",
+                "replaceSubtitle": "If checked, the existing products in your iZettle product library will be removed."
+            },
+            "finish": {
+                "modalTitle": "Finish",
+                "header": "Product sync setup completed!",
+                "firstParagraph": "Your iZettle account is now linked to your Sales Channel and syncs products to iZettle.<br>In the future, when you make a sale, we will update your stock in iZettle and Shopware.",
+                "secondParagraph": "If you need to update your products, we recommend you do this in Shopware and they'll sync to your iZettle app automatically."
+            }
+        },
+        "test": {
+            "messageTestError": "The credentials could not be validated."
+        }
+    }
+}
