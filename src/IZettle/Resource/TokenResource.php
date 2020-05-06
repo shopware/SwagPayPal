@@ -38,16 +38,23 @@ class TokenResource
         $token = $this->getTokenFromCache($cacheId);
         if ($token === null || !$this->isTokenValid($token)) {
             $tokenClient = $this->tokenClientFactory->createTokenClient();
-            $tokenData = $tokenClient->getToken($credentials);
 
             $token = new Token();
-            if ($tokenData !== null) {
-                $token->assign($tokenData);
-            }
+            $token->assign($tokenClient->getToken($credentials));
             $this->setToken($token, $cacheId);
         }
 
         return $token;
+    }
+
+    public function testApiCredentials(OAuthCredentials $credentials): bool
+    {
+        $tokenClient = $this->tokenClientFactory->createTokenClient();
+
+        $token = new Token();
+        $token->assign($tokenClient->getToken($credentials));
+
+        return $this->isTokenValid($token);
     }
 
     private function getTokenFromCache(string $cacheId): ?Token

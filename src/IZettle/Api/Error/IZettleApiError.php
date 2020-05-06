@@ -5,12 +5,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\IZettle\Api;
+namespace Swag\PayPal\IZettle\Api\Error;
 
 use Swag\PayPal\IZettle\Api\Common\IZettleStruct;
-use Swag\PayPal\IZettle\Api\Error\Violation;
+use Swag\PayPal\IZettle\Api\Error\IZettleApiError\Violation;
 
-class Error extends IZettleStruct
+class IZettleApiError extends IZettleStruct
 {
     public const ERROR_TYPE_ITEM_ALREADY_EXISTS = 'ITEM_ALREADY_EXIST';
     public const ERROR_TYPE_ENTITY_NOT_FOUND = 'ENTITY_NOT_FOUND';

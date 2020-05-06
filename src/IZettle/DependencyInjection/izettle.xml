@@ -77,5 +77,13 @@
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
             <argument type="service" id="sales_channel.repository"/>
         </service>
+
+        <service id="Swag\PayPal\IZettle\Setting\SettingsController" public="true">
+            <argument type="service" id="Swag\PayPal\IZettle\Setting\Service\ApiCredentialService"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Setting\Service\ApiCredentialService">
+            <argument type="service" id="Swag\PayPal\IZettle\Resource\TokenResource"/>
+        </service>
     </services>
 </container>

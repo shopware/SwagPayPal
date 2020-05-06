@@ -8,16 +8,16 @@
 namespace Swag\PayPal\IZettle\Api\Exception;
 
 use Shopware\Core\Framework\ShopwareHttpException;
-use Swag\PayPal\IZettle\Api\Error;
+use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 
 class IZettleApiException extends ShopwareHttpException
 {
     /**
-     * @var Error
+     * @var IZettleApiError
      */
     private $apiError;
 
-    public function __construct(Error $apiError)
+    public function __construct(IZettleApiError $apiError)
     {
         $this->apiError = $apiError;
         parent::__construct($apiError->toString());
@@ -28,7 +28,7 @@ class IZettleApiException extends ShopwareHttpException
         return 'SWAG_PAYPAL__IZETTLE_API_EXCEPTION_' . $this->apiError->getErrorType();
     }
 
-    public function getApiError(): Error
+    public function getApiError(): IZettleApiError
     {
         return $this->apiError;
     }

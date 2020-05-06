@@ -10,6 +10,8 @@ namespace Swag\PayPal\IZettle\Client;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\IZettle\Api\Common\IZettleStruct;
+use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
+use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\OAuthCredentials;
 use Swag\PayPal\IZettle\Resource\TokenResource;
 
@@ -55,6 +57,14 @@ class IZettleClient extends AbstractClient
         ];
 
         return $this->put($resourceUri, $options);
+    }
+
+    protected function handleError(array $error): void
+    {
+        $errorStruct = new IZettleApiError();
+        $errorStruct->assign($error);
+
+        throw new IZettleApiException($errorStruct);
     }
 
     private function createAuthorizationHeaderValue(OAuthCredentials $credentials): string

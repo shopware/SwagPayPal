@@ -28,7 +28,7 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\Tax\TaxEntity;
-use Swag\PayPal\IZettle\Api\Error;
+use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\OptionGroupConverter;
@@ -190,10 +190,10 @@ class ProductSyncerTest extends TestCase
         $product = $this->getProduct();
         $this->productRepository->addMockEntity($product);
 
-        $error = new Error();
+        $error = new IZettleApiError();
         $error->assign([
-            'errorType' => Error::ERROR_TYPE_ITEM_ALREADY_EXISTS,
-            'developerMessage' => Error::ERROR_TYPE_ITEM_ALREADY_EXISTS,
+            'errorType' => IZettleApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS,
+            'developerMessage' => IZettleApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS,
             'violations' => [], ]);
         $this->productResource->method('createProduct')->willThrowException(
             new IZettleApiException($error)
@@ -217,10 +217,10 @@ class ProductSyncerTest extends TestCase
         $this->productRepository->addMockEntity($product);
         $this->checksumResource->addOutdatedId($product->getId());
 
-        $error = new Error();
+        $error = new IZettleApiError();
         $error->assign([
-            'errorType' => Error::ERROR_TYPE_ENTITY_NOT_FOUND,
-            'developerMessage' => Error::ERROR_TYPE_ENTITY_NOT_FOUND,
+            'errorType' => IZettleApiError::ERROR_TYPE_ENTITY_NOT_FOUND,
+            'developerMessage' => IZettleApiError::ERROR_TYPE_ENTITY_NOT_FOUND,
             'violations' => [], ]);
         $this->productResource->method('updateProduct')->willThrowException(
             new IZettleApiException($error)
@@ -243,9 +243,9 @@ class ProductSyncerTest extends TestCase
         $product = $this->getProduct();
         $this->productRepository->addMockEntity($product);
 
-        $error = new Error();
+        $error = new IZettleApiError();
         $error->assign([
-            'developerMessage' => Error::ERROR_TYPE_ENTITY_NOT_FOUND,
+            'developerMessage' => IZettleApiError::ERROR_TYPE_ENTITY_NOT_FOUND,
             'violations' => [], ]);
         $this->productResource->method('createProduct')->willThrowException(
             new IZettleApiException($error)
@@ -263,9 +263,9 @@ class ProductSyncerTest extends TestCase
         $this->productRepository->addMockEntity($product);
         $this->checksumResource->addOutdatedId($product->getId());
 
-        $error = new Error();
+        $error = new IZettleApiError();
         $error->assign([
-            'developerMessage' => Error::ERROR_TYPE_ENTITY_NOT_FOUND,
+            'developerMessage' => IZettleApiError::ERROR_TYPE_ENTITY_NOT_FOUND,
             'violations' => [], ]);
         $this->productResource->method('updateProduct')->willThrowException(
             new IZettleApiException($error)
@@ -285,7 +285,7 @@ class ProductSyncerTest extends TestCase
         $salesChannel = $this->getContainer()->get('sales_channel.repository')->search($criteria, $context)->first();
 
         $iZettleSalesChannel = new IZettleSalesChannelEntity();
-        if (rand(0, 1)) {
+        if (random_int(0, 1)) {
             $iZettleSalesChannel->setProductStreamId('someProductStreamId');
         }
         $iZettleSalesChannel->setSyncPrices(true);

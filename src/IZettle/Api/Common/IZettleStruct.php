@@ -12,7 +12,7 @@ abstract class IZettleStruct implements \JsonSerializable
     public function assign(array $arrayData): self
     {
         foreach ($arrayData as $key => $value) {
-            $camelCaseKey = ucfirst($key);
+            $camelCaseKey = $this->toCamelCase($key);
             $setterMethod = 'set' . $camelCaseKey;
             if (!method_exists($this, $setterMethod)) {
                 // There is no setter/property for a given data key from PayPal.
@@ -106,5 +106,15 @@ abstract class IZettleStruct implements \JsonSerializable
         $instance->assign($value);
 
         return $instance;
+    }
+
+    private function toCamelCase(string $string): string
+    {
+        $string = str_replace('-', ' ', $string);
+        $string = str_replace('_', ' ', $string);
+        $string = ucwords($string);
+        $string = str_replace(' ', '', $string);
+
+        return $string;
     }
 }

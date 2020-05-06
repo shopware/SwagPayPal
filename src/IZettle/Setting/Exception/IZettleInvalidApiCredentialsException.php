@@ -5,12 +5,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Setting\Exception;
+namespace Swag\PayPal\IZettle\Setting\Exception;
 
 use Shopware\Core\Framework\ShopwareHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
-class PayPalInvalidApiCredentialsException extends ShopwareHttpException
+class IZettleInvalidApiCredentialsException extends ShopwareHttpException
 {
     public function __construct()
     {
@@ -24,6 +24,6 @@ class PayPalInvalidApiCredentialsException extends ShopwareHttpException
 
     public function getErrorCode(): string
     {
-        return 'SWAG_PAYPAL__INVALID_API_CREDENTIALS';
+        return 'SWAG_PAYPAL_IZETTLE__INVALID_API_CREDENTIALS';
     }
 }

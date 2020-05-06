@@ -10,8 +10,6 @@ namespace Swag\PayPal\IZettle\Client;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\IZettle\Api\Error;
-use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 
 abstract class AbstractClient
 {
@@ -31,7 +29,7 @@ abstract class AbstractClient
         $this->logger = $logger;
     }
 
-    protected function post(string $uri, array $options): ?array
+    protected function post(string $uri, array $options): array
     {
         try {
             $response = $this->client->post($uri, $options)->getBody()->getContents();
@@ -57,7 +55,7 @@ abstract class AbstractClient
         return $this->decodeJsonResponse($response);
     }
 
-    protected function put(string $uri, array $options): ?array
+    protected function put(string $uri, array $options): array
     {
         try {
             $response = $this->client->put($uri, $options)->getBody()->getContents();
@@ -70,12 +68,7 @@ abstract class AbstractClient
         return $this->decodeJsonResponse($response);
     }
 
-    private function decodeJsonResponse(string $response): ?array
-    {
-        return json_decode($response, true);
-    }
-
-    private function handleRequestException(RequestException $requestException, ?array $data): void
+    protected function handleRequestException(RequestException $requestException, ?array $data): void
     {
         $exceptionMessage = $requestException->getMessage();
         $exceptionResponse = $requestException->getResponse();
@@ -92,9 +85,13 @@ abstract class AbstractClient
             throw $requestException;
         }
 
-        $errorStruct = new Error();
-        $errorStruct->assign($error);
+        $this->handleError($error);
+    }
 
-        throw new IZettleApiException($errorStruct);
+    abstract protected function handleError(array $error): void;
+
+    private function decodeJsonResponse(string $response): array
+    {
+        return json_decode($response, true);
     }
 }

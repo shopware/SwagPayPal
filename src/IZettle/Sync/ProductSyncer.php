@@ -17,7 +17,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterfac
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\Api\Error;
+use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\ProductConverter;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
@@ -112,7 +112,7 @@ class ProductSyncer
                     $this->productResource->createProduct($iZettleSalesChannel, $product);
                     $this->checksumResource->addProduct($shopwareProduct, $product, $salesChannel->getId());
                 } catch (IZettleApiException $iZettleApiException) {
-                    if ($iZettleApiException->getApiError()->getErrorType() === Error::ERROR_TYPE_ITEM_ALREADY_EXISTS) {
+                    if ($iZettleApiException->getApiError()->getErrorType() === IZettleApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS) {
                         $updateStatus = ChecksumResource::PRODUCT_OUTDATED;
                     } else {
                         throw $iZettleApiException;
@@ -125,7 +125,7 @@ class ProductSyncer
                     $this->productResource->updateProduct($iZettleSalesChannel, $product);
                     $this->checksumResource->addProduct($shopwareProduct, $product, $salesChannel->getId());
                 } catch (IZettleApiException $iZettleApiException) {
-                    if ($iZettleApiException->getApiError()->getErrorType() === Error::ERROR_TYPE_ENTITY_NOT_FOUND) {
+                    if ($iZettleApiException->getApiError()->getErrorType() === IZettleApiError::ERROR_TYPE_ENTITY_NOT_FOUND) {
                         $this->checksumResource->removeProduct($shopwareProduct, $salesChannel->getId());
                     } else {
                         throw $iZettleApiException;
