@@ -1,8 +1,32 @@
 <div class="sw-sales-channel-detail-base">
 
+    {% block swag_paypal_izettle_details_sync %}
+        <sw-card v-if="!isNewEntity" :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.base.titleSync')">
+
+            {% block swag_paypal_izettle_channel_sync_start %}
+                <sw-button-process v-model="isSyncSuccessful"
+                                   :disabled="!salesChannel || !salesChannel.active"
+                                   :isLoading="isSyncing"
+                                   @click="onStartProductSync">
+                    {{ $tc('swag-paypal-izettle.detail.base.buttonSync') }}
+                </sw-button-process>
+            {% endblock %}
+
+            {% block swag_paypal_izettle_channel_sync_errors %}
+                <sw-alert v-if="syncErrors"
+                          variant="error"
+                          :closable="true"
+                          :title="$tc('swag-paypal-izettle.detail.base.syncErrorTitle')">
+                    <ul>
+                        <li v-for="error in syncErrors">{{ error.detail }} ({{ error.code }})</li>
+                    </ul>
+                </sw-alert>
+            {% endblock %}
+        </sw-card>
+    {% endblock %}
+
     {% block swag_paypal_izettle_details_options %}
         <sw-card v-if="!isNewEntity" :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.base.titleOptions')">
-
             <sw-button-group>
 
                 {% block swag_paypal_izettle_channel_options_delete %}

@@ -8,7 +8,10 @@
         },
         "detail": {
             "base": {
-                "titleOptions": "Options"
+                "titleOptions": "Options",
+                "titleSync": "Synchronization",
+                "buttonSync": "Synchronize Products Now",
+                "syncErrorTitle": "Synchronization Error"
             },
             "settings": {
                 "titleGeneralSettings": "General settings",

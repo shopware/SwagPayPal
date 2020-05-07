@@ -14,6 +14,7 @@ use Swag\PayPal\IZettle\Api\Exception\IZettleTokenException;
 use Swag\PayPal\IZettle\Api\IZettleBaseURL;
 use Swag\PayPal\IZettle\Api\IZettleRequestUri;
 use Swag\PayPal\IZettle\Api\OAuthCredentials;
+use Swag\PayPal\IZettle\Setting\Exception\IZettleInvalidApiCredentialsException;
 
 class TokenClient extends AbstractClient
 {
@@ -38,7 +39,12 @@ class TokenClient extends AbstractClient
             ],
         ];
 
-        return $this->post(IZettleRequestUri::TOKEN_RESOURCE, $data);
+        $tokenResponse = $this->post(IZettleRequestUri::TOKEN_RESOURCE, $data);
+        if ($tokenResponse === null) {
+            throw new IZettleInvalidApiCredentialsException();
+        }
+
+        return $tokenResponse;
     }
 
     protected function handleError(array $error): void

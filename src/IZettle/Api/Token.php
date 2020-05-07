@@ -7,9 +7,9 @@
 
 namespace Swag\PayPal\IZettle\Api;
 
-use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\IZettle\Api\Common\IZettleStruct;
 
-class Token extends PayPalStruct
+class Token extends IZettleStruct
 {
     /**
      * The access token issued by iZettle. After the access token
@@ -38,7 +38,7 @@ class Token extends PayPalStruct
      */
     private $expireDateTime;
 
-    public function assign(array $arrayDataWithSnakeCaseKeys): PayPalStruct
+    public function assign(array $arrayDataWithSnakeCaseKeys): IZettleStruct
     {
         /** @var Token $newToken */
         $newToken = parent::assign($arrayDataWithSnakeCaseKeys);

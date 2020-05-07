@@ -29,7 +29,7 @@ abstract class AbstractClient
         $this->logger = $logger;
     }
 
-    protected function post(string $uri, array $options): array
+    protected function post(string $uri, array $options): ?array
     {
         try {
             $response = $this->client->post($uri, $options)->getBody()->getContents();
@@ -55,7 +55,7 @@ abstract class AbstractClient
         return $this->decodeJsonResponse($response);
     }
 
-    protected function put(string $uri, array $options): array
+    protected function put(string $uri, array $options): ?array
     {
         try {
             $response = $this->client->put($uri, $options)->getBody()->getContents();
@@ -90,7 +90,7 @@ abstract class AbstractClient
 
     abstract protected function handleError(array $error): void;
 
-    private function decodeJsonResponse(string $response): array
+    private function decodeJsonResponse(string $response): ?array
     {
         return json_decode($response, true);
     }

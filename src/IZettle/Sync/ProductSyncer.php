@@ -91,6 +91,7 @@ class ProductSyncer
         } else {
             $criteria = new Criteria();
         }
+        $this->addAssociations($criteria);
 
         $currency = $iZettleSalesChannel->isSyncPrices() ? $salesChannel->getCurrency() : null;
 
@@ -145,8 +146,14 @@ class ProductSyncer
         );
 
         $criteria = new Criteria();
+        $criteria->addFilter(...$filters);
+
+        return $criteria;
+    }
+
+    private function addAssociations(Criteria $criteria): void
+    {
         $criteria
-            ->addFilter(...$filters)
             ->addAssociation('categories')
             ->addAssociation('cover')
             ->addAssociation('prices')
@@ -155,8 +162,6 @@ class ProductSyncer
             ->addAssociation('configuratorSettings.option.group.translation')
             ->addAssociation('options.translation')
             ->addAssociation('options.group.translation');
-
-        return $criteria;
     }
 
     private function getSalesChannelContext(IZettleSalesChannelEntity $iZettleSalesChannel, Context $context): SalesChannelContext

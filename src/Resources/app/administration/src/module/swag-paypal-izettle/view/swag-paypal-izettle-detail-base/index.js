@@ -6,6 +6,7 @@ Component.register('swag-paypal-izettle-detail-base', {
     template,
 
     inject: [
+        'SwagPayPalIZettleApiService',
         'salesChannelService',
         'repositoryFactory'
     ],
@@ -31,6 +32,9 @@ Component.register('swag-paypal-izettle-detail-base', {
 
     data() {
         return {
+            isSyncing: false,
+            isSyncSuccessful: false,
+            syncErrors: null,
             showDeleteModal: false
         };
     },
@@ -63,6 +67,19 @@ Component.register('swag-paypal-izettle-detail-base', {
 
         forceUpdate() {
             this.$forceUpdate();
+        },
+
+        onStartProductSync() {
+            this.syncErrors = null;
+            this.isSyncing = true;
+            this.SwagPayPalIZettleApiService.startProductSync(this.salesChannel.id).then(() => {
+                this.isSyncing = false;
+                this.isSyncSuccessful = true;
+            }).catch((errorResponse) => {
+                this.syncErrors = errorResponse.response.data.errors;
+                this.isSyncing = false;
+                this.isSyncSuccessful = false;
+            });
         }
     }
 });

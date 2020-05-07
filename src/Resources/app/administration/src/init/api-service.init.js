@@ -4,6 +4,8 @@ import SwagPayPalApiCredentialsService
     from '../core/service/api/swag-paypal-api-credentials.service';
 import SwagPayPalIZettleApiCredentialsService
     from '../core/service/api/swag-paypal-izettle-api-credentials.service';
+import SwagPayPalIZettleApiService
+    from '../core/service/api/swag-paypal-izettle.api.service';
 import SwagPayPalPaymentService
     from '../core/service/api/swag-paypal-payment.service';
 import SwagPaypalPaymentMethodServiceService
@@ -27,6 +29,12 @@ Application.addServiceProvider('SwagPayPalIZettleApiCredentialsService', (contai
     const initContainer = Application.getContainer('init');
 
     return new SwagPayPalIZettleApiCredentialsService(initContainer.httpClient, container.loginService);
+});
+
+Application.addServiceProvider('SwagPayPalIZettleApiService', (container) => {
+    const initContainer = Application.getContainer('init');
+
+    return new SwagPayPalIZettleApiService(initContainer.httpClient, container.loginService);
 });
 
 Application.addServiceProvider('SwagPayPalPaymentService', (container) => {
