@@ -137,33 +137,18 @@ Component.register('swag-paypal-izettle', {
         updateStorefrontSalesChannel(storefrontSalesChannelId) {
             this.storefrontSalesChannelId = storefrontSalesChannelId;
             this.salesChannelRepository.get(storefrontSalesChannelId, Shopware.Context.api).then((entity) => {
-                const {
-                    languageId,
-                    currencyId,
-                    paymentMethodId,
-                    shippingMethodId,
-                    countryId,
-                    navigationCategoryId,
-                    navigationCategoryVersionId,
-                    customerGroupId
-                } = entity;
-
-                this.salesChannel = { ...this.salesChannel,
-                    ...{
-                        languageId,
-                        currencyId,
-                        paymentMethodId,
-                        shippingMethodId,
-                        countryId,
-                        navigationCategoryId,
-                        navigationCategoryVersionId,
-                        customerGroupId
-                    } };
-
+                this.salesChannel.languageId = entity.languageId;
                 this.salesChannel.languages.length = 0;
                 this.salesChannel.languages.push({
                     id: entity.languageId
                 });
+                this.salesChannel.currencyId = entity.currencyId;
+                this.salesChannel.paymentMethodId = entity.paymentMethodId;
+                this.salesChannel.shippingMethodId = entity.shippingMethodId;
+                this.salesChannel.countryId = entity.countryId;
+                this.salesChannel.navigationCategoryId = entity.navigationCategoryId;
+                this.salesChannel.navigationCategoryVersionId = entity.navigationCategoryVersionId;
+                this.salesChannel.customerGroupId = entity.customerGroupId;
 
                 this.salesChannel.name =
                     this.$t('swag-paypal-izettle.wizard.sales-channel.nameDecoration', { name: entity.name });
