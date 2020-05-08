@@ -1,5 +1,6 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
 - PT-11599 - Fixes a bug where PayPal Plus could not be configured individually per Saleschannel
+- PT-10654 - Activate and set PayPal as default for the selected Saleschannel in the settings module
 
 # 1.4.0
 - Shopware 6.2 compatibility

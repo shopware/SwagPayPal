@@ -56,6 +56,29 @@
                                                                       @input="onInput">
                                                     </sw-single-select>
                                                 {% endblock %}
+
+                                                {% block swag_paypal_content_card_channel_config_sales_channel_card_footer %}
+                                                    <template #footer>
+
+                                                        {% block swag_paypal_content_card_channel_config_sales_channel_card_footer_container %}
+                                                        <sw-container columns="2fr 1fr"
+                                                                      gap="0px 30px">
+
+                                                            {% block swag_paypal_content_card_channel_config_sales_channel_card_footer_container_text %}
+                                                                <p>{{ $tc('swag-paypal.saleschannelCard.button.description') }}</p>
+                                                            {% endblock %}
+
+                                                            {% block swag_paypal_content_card_channel_config_sales_channel_card_footer_container_button %}
+                                                                <sw-button-process v-model="isSetDefaultPaymentSuccessful"
+                                                                                   :isLoading="isSettingDefaultPaymentMethods"
+                                                                                   @click="onSetPaymentMethodDefault">
+                                                                    {{ $tc('swag-paypal.saleschannelCard.button.label') }}
+                                                                </sw-button-process>
+                                                            {% endblock %}
+                                                        </sw-container>
+                                                        {% endblock %}
+                                                    </template>
+                                                {% endblock %}
                                             </sw-card>
                                         {% endblock %}
                                     </template>

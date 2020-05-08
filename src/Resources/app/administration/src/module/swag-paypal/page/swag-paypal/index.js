@@ -8,7 +8,11 @@ const { hasOwnProperty } = Shopware.Utils.object;
 Shopware.Component.register('swag-paypal', {
     template,
 
-    inject: ['SwagPayPalWebhookRegisterService', 'SwagPayPalApiCredentialsService'],
+    inject: [
+        'SwagPayPalWebhookRegisterService',
+        'SwagPayPalApiCredentialsService',
+        'SwagPaypalPaymentMethodServiceService'
+    ],
 
     mixins: [
         Mixin.getByName('notification')
@@ -30,6 +34,8 @@ Shopware.Component.register('swag-paypal', {
             clientSecretErrorState: null,
             clientIdSandboxErrorState: null,
             clientSecretSandboxErrorState: null,
+            isSetDefaultPaymentSuccessful: false,
+            isSettingDefaultPaymentMethods: false,
             ...constants
         };
     },
@@ -193,6 +199,17 @@ Shopware.Component.register('swag-paypal', {
                     this.clientSecretSandboxErrorState = messageNotBlankErrorState;
                 }
             }
+        },
+
+        onSetPaymentMethodDefault() {
+            this.isSettingDefaultPaymentMethods = true;
+
+            this.SwagPaypalPaymentMethodServiceService.setDefaultPaymentForSalesChannel(
+                this.$refs.configComponent.selectedSalesChannelId
+            ).then(() => {
+                this.isSettingDefaultPaymentMethods = false;
+                this.isSetDefaultPaymentSuccessful = true;
+            });
         }
     }
 });

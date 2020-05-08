@@ -23,10 +23,16 @@ class PaymentMethodUtilTest extends TestCase
      */
     private $paymentMethodUtil;
 
+    /**
+     * @var SalesChannelRepoMock
+     */
+    private $salesChannelRepoMock;
+
     protected function setUp(): void
     {
         parent::setUp();
-        $this->paymentMethodUtil = new PaymentMethodUtil(new PaymentMethodRepoMock(), new SalesChannelRepoMock());
+        $this->salesChannelRepoMock = new SalesChannelRepoMock();
+        $this->paymentMethodUtil = new PaymentMethodUtil(new PaymentMethodRepoMock(), $this->salesChannelRepoMock);
     }
 
     public function testGetPayPalPaymentMethodId(): void
@@ -74,6 +80,13 @@ class PaymentMethodUtilTest extends TestCase
         static::assertFalse($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext));
     }
 
+    public function testSetPayPalAsDefaultPaymentMethodForAllSalesChannels(): void
+    {
+        $context = Context::createDefaultContext();
+        $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod($context, Defaults::SALES_CHANNEL);
+        $this->assertPaymentMethodUpdate($context);
+    }
+
     private function getContextWithoutPaymentId(): Context
     {
         $defaultContext = Context::createDefaultContext();
@@ -89,5 +102,19 @@ class PaymentMethodUtilTest extends TestCase
             $defaultContext->considerInheritance(),
             $defaultContext->getTaxState()
         );
+    }
+
+    private function assertPaymentMethodUpdate(Context $context): void
+    {
+        $updates = $this->salesChannelRepoMock->getUpdateData();
+        static::assertCount(1, $updates);
+        $updateData = $updates[0];
+        static::assertCount(2, $updateData);
+        static::assertArrayHasKey('id', $updateData);
+        static::assertSame(Defaults::SALES_CHANNEL, $updateData['id']);
+        static::assertArrayHasKey('paymentMethodId', $updateData);
+        $payPalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context);
+        static::assertNotNull($payPalPaymentMethodId);
+        static::assertSame($payPalPaymentMethodId, $updateData['paymentMethodId']);
     }
 }

@@ -1,6 +1,12 @@
 {
     "swag-paypal": {
         "header": "PayPal",
+        "saleschannelCard": {
+            "button": {
+                "description": "Click this button to enable PayPal and select it as default in the selected Saleschannel",
+                "label": "Set PayPal as default"
+            }
+        },
         "general": {
             "mainMenuItemGeneral": "PayPal",
             "descriptionTextModule": "PayPal settings"
