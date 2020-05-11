@@ -19,12 +19,18 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\Event\NestedEventCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class SalesChannelRepoMock implements EntityRepositoryInterface
 {
     public const SALES_CHANNEL_NAME = 'SwagPayPal Test SalesChannel';
+
+    /**
+     * @var array
+     */
+    private $updateData = [];
 
     public function getDefinition(): EntityDefinition
     {
@@ -56,6 +62,14 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
     {
+        $this->updateData = $data;
+
+        return new EntityWrittenContainerEvent($context, new NestedEventCollection([]), []);
+    }
+
+    public function getUpdateData(): array
+    {
+        return $this->updateData;
     }
 
     public function upsert(array $data, Context $context): EntityWrittenContainerEvent

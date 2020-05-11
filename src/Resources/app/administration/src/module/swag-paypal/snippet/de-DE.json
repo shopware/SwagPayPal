@@ -1,6 +1,12 @@
 {
     "swag-paypal": {
         "header": "PayPal",
+        "saleschannelCard": {
+            "button": {
+                "description": "Klicken, um PayPal im ausgewählten Saleschannel zu aktivieren und als Standardzahlungsart zu setzen",
+                "label": "Setze PayPal als Standard"
+            }
+        },
         "general": {
             "mainMenuItemGeneral": "PayPal",
             "descriptionTextModule": "Einstellungen für PayPal"

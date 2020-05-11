@@ -10,6 +10,7 @@ namespace Swag\PayPal\Util;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -74,6 +75,35 @@ class PaymentMethodUtil
         return false;
     }
 
+    public function setPayPalAsDefaultPaymentMethod(Context $context, ?string $salesChannelId): void
+    {
+        $payPalPaymentMethodId = $this->getPayPalPaymentMethodId($context);
+        if ($payPalPaymentMethodId === null) {
+            return;
+        }
+
+        $salesChannelsToChange = $this->getSalesChannelsToChange($context, $salesChannelId);
+        $updateData = [];
+
+        foreach ($salesChannelsToChange as $salesChannel) {
+            $salesChannelUpdateData = [
+                'id' => $salesChannel->getId(),
+                'paymentMethodId' => $payPalPaymentMethodId,
+            ];
+
+            $paymentMethodCollection = $salesChannel->getPaymentMethods();
+            if ($paymentMethodCollection === null || $paymentMethodCollection->get($payPalPaymentMethodId) === null) {
+                $salesChannelUpdateData['paymentMethods'] = [
+                    'id' => $payPalPaymentMethodId,
+                ];
+            }
+
+            $updateData[] = $salesChannelUpdateData;
+        }
+
+        $this->salesChannelRepository->update($updateData, $context);
+    }
+
     private function getSalesChannelPaymentMethods(
         SalesChannelEntity $salesChannelEntity,
         Context $context
@@ -89,5 +119,18 @@ class PaymentMethodUtil
         }
 
         return $result->getPaymentMethods();
+    }
+
+    private function getSalesChannelsToChange(Context $context, ?string $salesChannelId): EntityCollection
+    {
+        if ($salesChannelId !== null) {
+            $criteria = new Criteria([$salesChannelId]);
+        } else {
+            $criteria = new Criteria();
+        }
+
+        $criteria->addAssociation('paymentMethods');
+
+        return $this->salesChannelRepository->search($criteria, $context)->getEntities();
     }
 }
