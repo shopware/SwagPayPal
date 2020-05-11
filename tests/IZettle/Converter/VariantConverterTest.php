@@ -50,7 +50,9 @@ class VariantConverterTest extends TestCase
         $converted = $this->createVariantConverter()->convert($productEntity, null);
 
         $variant = $this->createVariant();
-        $variant->setUuid($this->createUuidConverter()->convertUuidToV1($productEntity->getId()));
+
+        $uuid = $this->createUuidConverter()->incrementUuid($productEntity->getId());
+        $variant->setUuid($this->createUuidConverter()->convertUuidToV1($uuid));
 
         static::assertEquals($variant, $converted);
     }
@@ -58,6 +60,7 @@ class VariantConverterTest extends TestCase
     public function testConvertMaximal(): void
     {
         $productEntity = $this->createProductEntity();
+        $productEntity->setParentId(Uuid::randomHex());
         $productEntity->addTranslated('name', self::PRODUCT_NAME . self::TRANSLATION_MARK);
         $productEntity->addTranslated('description', self::PRODUCT_DESCRIPTION . self::TRANSLATION_MARK);
         $productEntity->setEan(self::PRODUCT_EAN);

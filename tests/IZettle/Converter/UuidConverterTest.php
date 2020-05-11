@@ -28,6 +28,23 @@ class UuidConverterTest extends TestCase
         static::assertEquals($expectedUuid, $this->createUuidConverter()->convertUuidToV1($originalUuid));
     }
 
+    public function dataProviderUuidIncrementation(): array
+    {
+        return [
+            ['1ce0868f406d47d98cfe4b281e62f099', '1ce0868f406d47d98cfe4b281e62f09a'],
+            ['1ce0868f406d47d98cfe4b281e62f09f', '1ce0868f406d47d98cfe4b281e62f090'],
+            ['notAUuid', ''],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProviderUuidIncrementation
+     */
+    public function testIncrement(string $originalUuid, string $expectedUuid): void
+    {
+        static::assertEquals($expectedUuid, $this->createUuidConverter()->incrementUuid($originalUuid));
+    }
+
     private function createUuidConverter(): UuidConverter
     {
         return new UuidConverter();

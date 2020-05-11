@@ -7,15 +7,7 @@
 
 namespace Swag\PayPal\IZettle\Sync;
 
-use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
@@ -26,9 +18,9 @@ use Swag\PayPal\IZettle\Resource\ProductResource;
 class ProductSyncer
 {
     /**
-     * @var SalesChannelRepositoryInterface
+     * @var ProductSelection
      */
-    private $productRepository;
+    private $productSelection;
 
     /**
      * @var ProductResource
@@ -41,40 +33,19 @@ class ProductSyncer
     private $productConverter;
 
     /**
-     * @var ProductStreamBuilderInterface
-     */
-    private $productStreamBuilder;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $domainRepository;
-
-    /**
-     * @var SalesChannelContextServiceInterface
-     */
-    private $salesChannelContextService;
-
-    /**
      * @var ChecksumResource
      */
     private $checksumResource;
 
     public function __construct(
-        SalesChannelRepositoryInterface $productRepository,
+        ProductSelection $productSelection,
         ProductResource $productResource,
         ProductConverter $productConverter,
-        ProductStreamBuilderInterface $productStreamBuilder,
-        EntityRepositoryInterface $domainRepository,
-        SalesChannelContextServiceInterface $salesChannelContextService,
         ChecksumResource $checksumResource
     ) {
-        $this->productRepository = $productRepository;
+        $this->productSelection = $productSelection;
         $this->productResource = $productResource;
         $this->productConverter = $productConverter;
-        $this->productStreamBuilder = $productStreamBuilder;
-        $this->domainRepository = $domainRepository;
-        $this->salesChannelContextService = $salesChannelContextService;
         $this->checksumResource = $checksumResource;
     }
 
@@ -82,25 +53,12 @@ class ProductSyncer
     {
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
         $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
-
-        $salesChannelContext = $this->getSalesChannelContext($iZettleSalesChannel, $context);
-
-        $productStreamId = $iZettleSalesChannel->getProductStreamId();
-        if ($productStreamId) {
-            $criteria = $this->getProductStreamCriteria($productStreamId, $context);
-        } else {
-            $criteria = new Criteria();
-        }
-        $this->addAssociations($criteria);
-
         $currency = $iZettleSalesChannel->isSyncPrices() ? $salesChannel->getCurrency() : null;
 
-        /** @var ProductCollection $shopwareProducts */
-        $shopwareProducts = $this->productRepository->search($criteria, $salesChannelContext)->getEntities();
+        $shopwareProducts = $this->productSelection->getProducts($iZettleSalesChannel, $context, true);
+        $productGroupings = $this->productConverter->convertShopwareProducts($shopwareProducts, $currency);
 
         $this->checksumResource->begin($salesChannel->getId(), $context);
-
-        $productGroupings = $this->productConverter->convertShopwareProducts($shopwareProducts, $currency);
 
         foreach ($productGroupings as $productGrouping) {
             $product = $productGrouping->getProduct();
@@ -136,45 +94,5 @@ class ProductSyncer
         }
 
         $this->checksumResource->commit($context);
-    }
-
-    private function getProductStreamCriteria(string $productStreamId, Context $context): Criteria
-    {
-        $filters = $this->productStreamBuilder->buildFilters(
-            $productStreamId,
-            $context
-        );
-
-        $criteria = new Criteria();
-        $criteria->addFilter(...$filters);
-
-        return $criteria;
-    }
-
-    private function addAssociations(Criteria $criteria): void
-    {
-        $criteria
-            ->addAssociation('categories')
-            ->addAssociation('cover')
-            ->addAssociation('prices')
-            ->addAssociation('translation')
-            ->addAssociation('configuratorSettings.option.translation')
-            ->addAssociation('configuratorSettings.option.group.translation')
-            ->addAssociation('options.translation')
-            ->addAssociation('options.group.translation');
-    }
-
-    private function getSalesChannelContext(IZettleSalesChannelEntity $iZettleSalesChannel, Context $context): SalesChannelContext
-    {
-        $criteria = new Criteria();
-        $criteria->setIds([$iZettleSalesChannel->getSalesChannelDomainId()]);
-
-        $domain = $this->domainRepository->search($criteria, $context)->first();
-
-        return $this->salesChannelContextService->get(
-            $domain->getSalesChannelId(),
-            Uuid::randomHex(),
-            null
-        );
     }
 }

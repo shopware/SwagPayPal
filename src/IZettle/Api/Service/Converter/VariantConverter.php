@@ -35,7 +35,13 @@ class VariantConverter
     public function convert(ProductEntity $shopwareVariant, ?CurrencyEntity $currency): Variant
     {
         $variant = new Variant();
-        $variant->setUuid($this->uuidConverter->convertUuidToV1($shopwareVariant->getId()));
+
+        $uuid = $shopwareVariant->getId();
+        if ($shopwareVariant->getParentId() === null) {
+            $uuid = $this->uuidConverter->incrementUuid($uuid);
+        }
+        $variant->setUuid($this->uuidConverter->convertUuidToV1($uuid));
+
         $variant->setName((string) ($shopwareVariant->getTranslation('name') ?? $shopwareVariant->getName()));
         $variant->setDescription((string) ($shopwareVariant->getTranslation('description') ?? $shopwareVariant->getDescription()));
         $variant->setSku($shopwareVariant->getProductNumber());

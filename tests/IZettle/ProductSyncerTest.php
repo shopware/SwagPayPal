@@ -38,6 +38,7 @@ use Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter;
 use Swag\PayPal\IZettle\Api\Service\ProductConverter;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\Resource\ProductResource;
+use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
 use Swag\PayPal\Test\Mock\IZettle\ChecksumResourceMock;
 use Swag\PayPal\Test\Mock\IZettle\ProductRepoMock;
@@ -114,8 +115,15 @@ class ProductSyncerTest extends TestCase
 
         $this->productRepository = new ProductRepoMock();
 
-        $this->pruductSyncer = new ProductSyncer(
+        $productSelection = new ProductSelection(
             $this->productRepository,
+            $productStreamBuilder,
+            $domainRepository,
+            $this->createMock(SalesChannelContextServiceInterface::class)
+        );
+
+        $this->pruductSyncer = new ProductSyncer(
+            $productSelection,
             $this->productResource,
             new ProductConverter(
                 new UuidConverter(),
@@ -123,9 +131,6 @@ class ProductSyncerTest extends TestCase
                 new VariantConverter(new UuidConverter(), new PriceConverter()),
                 new OptionGroupConverter()
             ),
-            $productStreamBuilder,
-            $domainRepository,
-            $this->createMock(SalesChannelContextServiceInterface::class),
             $this->checksumResource
         );
     }
