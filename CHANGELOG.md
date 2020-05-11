@@ -1,11 +1,12 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
-- PT-11599 - Fixes a bug where PayPal Plus could not be configured individually per Saleschannel
+# 1.5.0
+- NEXT-8322 - Shopware 6.2 compatibility
 - PT-10654 - Activate and set PayPal as default for the selected Saleschannel in the settings module
+- PT-11599 - Fixes a bug where PayPal Plus could not be configured individually per Saleschannel
 
 # 1.4.0
-- Shopware 6.2 compatibility
 - PT-11540 - Corrects remaining amount for multiple partial refunds
 - PT-11541 - Improved behaviour of multiple partial refunds & captures
+- PT-11606 - Shopware 6.2 compatibility
 
 # 1.3.0
 - PT-10448 - Adds onboarding to get API credentials with PayPal login in settings module

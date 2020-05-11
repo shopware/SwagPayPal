@@ -1,11 +1,12 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
-- PT-11599 - Behebt ein Problem, bei dem PayPal Plus nicht per Saleschannel konfiguriert werden konnte
+# 1.5.0
+- NEXT-8322 - Shopware 6.2 compatibility
 - PT-10654 - Aktivieren und setzen Sie PayPal als Standard für den ausgewählten Saleschannel im Einstellungsmodul
+- PT-11599 - Behebt ein Problem, bei dem PayPal Plus nicht per Saleschannel konfiguriert werden konnte
 
 # 1.4.0
-- Shopware 6.2 Kompatibilität
 - PT-11540 - Korrigiert übrigen Betrag für mehrfache teilweise Erstattungen
 - PT-11541 - Verhalten von mehrfachen partiellen Erstattungen & Einzügen einer Transaktion verbessert
+- PT-11606 - Shopware 6.2 Kompatibilität
 
 # 1.3.0
 - PT-10448 - API-Zugangsdaten können nun auch im Einstellungsmodul über einen PayPal Login geholt werden
