@@ -73,6 +73,10 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     init() {
         this.paypal = null;
         this._client = new HttpClient(window.accessKey, window.contextToken);
+        this.errorParameter = DomAccess.getDataAttribute(
+            this.el,
+            'swag-pay-pal-smart-payment-buttons-error-parameter'
+        );
         this.createButton();
     }
 
@@ -125,7 +129,12 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
             /**
              * Will be called if the payment process is approved by paypal
              */
-            onApprove: this.onApprove.bind(this)
+            onApprove: this.onApprove.bind(this),
+
+            /**
+             * Will be called if an error occurs during the payment process.
+             */
+            onError: this.onError.bind(this)
         };
     }
 
@@ -157,5 +166,9 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         const redirectUrl = `${this.options.checkoutConfirmUrl}?${params.toString()}`;
 
         actions.redirect(redirectUrl);
+    }
+
+    onError() {
+        window.location.replace(`${this.options.checkoutConfirmUrl}?${this.errorParameter}=1`);
     }
 }

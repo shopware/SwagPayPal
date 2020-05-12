@@ -18,6 +18,8 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 
 class PaymentMethodUtilTest extends TestCase
 {
+    public const SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD = '4ce46b49d1904a5db0b41573e9355b51';
+
     /**
      * @var PaymentMethodUtil
      */
@@ -80,11 +82,18 @@ class PaymentMethodUtilTest extends TestCase
         static::assertFalse($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext));
     }
 
-    public function testSetPayPalAsDefaultPaymentMethodForAllSalesChannels(): void
+    public function testSetPayPalAsDefaultPaymentMethodForASpecificSalesChannel(): void
     {
         $context = Context::createDefaultContext();
         $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod($context, Defaults::SALES_CHANNEL);
         $this->assertPaymentMethodUpdate($context);
+    }
+
+    public function testSetPayPalAsDefaultPaymentWithoutBeingPresentForTheRequestedSalesChannel(): void
+    {
+        $context = Context::createDefaultContext();
+        $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod($context, self::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD);
+        $this->assertPaymentMethodUpdate($context, false);
     }
 
     private function getContextWithoutPaymentId(): Context
@@ -104,14 +113,14 @@ class PaymentMethodUtilTest extends TestCase
         );
     }
 
-    private function assertPaymentMethodUpdate(Context $context): void
+    private function assertPaymentMethodUpdate(Context $context, bool $paypalPaymentMethodPresent = true): void
     {
         $updates = $this->salesChannelRepoMock->getUpdateData();
         static::assertCount(1, $updates);
         $updateData = $updates[0];
-        static::assertCount(2, $updateData);
+        static::assertCount($paypalPaymentMethodPresent ? 2 : 3, $updateData);
         static::assertArrayHasKey('id', $updateData);
-        static::assertSame(Defaults::SALES_CHANNEL, $updateData['id']);
+        static::assertSame($paypalPaymentMethodPresent ? Defaults::SALES_CHANNEL : self::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD, $updateData['id']);
         static::assertArrayHasKey('paymentMethodId', $updateData);
         $payPalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context);
         static::assertNotNull($payPalPaymentMethodId);
