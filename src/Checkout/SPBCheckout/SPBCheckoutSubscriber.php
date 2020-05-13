@@ -25,6 +25,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class SPBCheckoutSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID = 'payPalSpbButtonData';
+    public const PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER = 'payPalSpbError';
 
     /**
      * @var SettingsServiceInterface
@@ -74,6 +75,10 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
 
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
+        if ($event->getRequest()->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER)) {
+            $this->session->getFlashBag()->add('danger', $this->translator->trans('smartPaymentButtons.confirmPageError'));
+        }
+
         $salesChannelContext = $event->getSalesChannelContext();
         if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
             return;

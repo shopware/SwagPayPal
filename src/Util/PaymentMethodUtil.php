@@ -93,7 +93,7 @@ class PaymentMethodUtil
 
             $paymentMethodCollection = $salesChannel->getPaymentMethods();
             if ($paymentMethodCollection === null || $paymentMethodCollection->get($payPalPaymentMethodId) === null) {
-                $salesChannelUpdateData['paymentMethods'] = [
+                $salesChannelUpdateData['paymentMethods'][] = [
                     'id' => $payPalPaymentMethodId,
                 ];
             }

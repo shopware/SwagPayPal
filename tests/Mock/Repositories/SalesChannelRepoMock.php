@@ -22,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Event\NestedEventCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Swag\PayPal\Test\Util\PaymentMethodUtilTest;
 
 class SalesChannelRepoMock implements EntityRepositoryInterface
 {
@@ -47,11 +48,15 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
+        $id = $criteria->getIds()[0];
+        $withPaymentMethods = $id === Defaults::SALES_CHANNEL;
+
         return new EntitySearchResult(
             1,
             new EntityCollection([
-                Defaults::SALES_CHANNEL => $this->createSalesChannelEntity(
-                    $criteria->getIds()[0] === Defaults::SALES_CHANNEL
+                $withPaymentMethods ? $id : PaymentMethodUtilTest::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD => $this->createSalesChannelEntity(
+                    $id ?? Defaults::SALES_CHANNEL,
+                    $withPaymentMethods
                 ),
             ]),
             null,
@@ -96,11 +101,11 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
     {
     }
 
-    private function createSalesChannelEntity(bool $withPaymentMethods = false): SalesChannelEntity
+    private function createSalesChannelEntity(string $id, bool $withPaymentMethods = false): SalesChannelEntity
     {
         $salesChannelEntity = new SalesChannelEntity();
         $salesChannelEntity->setId(
-            $withPaymentMethods ? Defaults::SALES_CHANNEL : 'c3adfab083bf4182b44d880c209caa98'
+            $withPaymentMethods ? $id : PaymentMethodUtilTest::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD
         );
         $salesChannelEntity->setName(self::SALES_CHANNEL_NAME);
 

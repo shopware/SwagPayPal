@@ -29,14 +29,22 @@ class SwagPayPalSettingStructValidator
     protected static function validateSandboxCredentials(SwagPayPalSettingStruct $generalStruct): void
     {
         try {
-            $generalStruct->getClientIdSandbox();
+            $clientIdSandbox = $generalStruct->getClientIdSandbox();
         } catch (\TypeError $error) {
             throw new PayPalSettingsInvalidException('ClientIdSandbox');
         }
 
+        if ($clientIdSandbox === '') {
+            throw new PayPalSettingsInvalidException('ClientIdSandbox');
+        }
+
         try {
-            $generalStruct->getClientSecretSandbox();
+            $clientSecretSandbox = $generalStruct->getClientSecretSandbox();
         } catch (\TypeError $error) {
+            throw new PayPalSettingsInvalidException('ClientSecretSandbox');
+        }
+
+        if ($clientSecretSandbox === '') {
             throw new PayPalSettingsInvalidException('ClientSecretSandbox');
         }
     }
@@ -47,14 +55,22 @@ class SwagPayPalSettingStructValidator
     protected static function validateLiveCredentials(SwagPayPalSettingStruct $generalStruct): void
     {
         try {
-            $generalStruct->getClientId();
+            $clientId = $generalStruct->getClientId();
         } catch (\TypeError $error) {
             throw new PayPalSettingsInvalidException('ClientId');
         }
 
+        if ($clientId === '') {
+            throw new PayPalSettingsInvalidException('ClientId');
+        }
+
         try {
-            $generalStruct->getClientSecret();
+            $clientSecret = $generalStruct->getClientSecret();
         } catch (\TypeError $error) {
+            throw new PayPalSettingsInvalidException('ClientSecret');
+        }
+
+        if ($clientSecret === '') {
             throw new PayPalSettingsInvalidException('ClientSecret');
         }
     }

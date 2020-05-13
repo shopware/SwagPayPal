@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11294 - Implementiert Fehlerbehandlung für Smart Payment Buttons
+
 # 1.5.0
 - NEXT-8322 - Shopware 6.2 compatibility
 - PT-10654 - Aktivieren und setzen Sie PayPal als Standard für den ausgewählten Saleschannel im Einstellungsmodul
