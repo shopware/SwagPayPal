@@ -14,7 +14,6 @@
         "textFetchedSuccessful": "Credentials have been fetched.",
         "titleNoCredentials": "Error",
         "messageNoCredentials": "No credentials provided.",
-        "titleTestSuccess": "Success",
         "messageTestSuccess": "Credentials are valid.",
         "titleTestError": "An error occurred"
     }

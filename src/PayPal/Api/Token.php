@@ -9,7 +9,10 @@ namespace Swag\PayPal\PayPal\Api;
 
 use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
-class Token extends PayPalStruct
+/**
+ * @deprecated tag:v2.0.0 - This class will be final in version 2.0.0. Do not extend from it
+ */
+/*final */class Token extends PayPalStruct
 {
     /**
      * Scopes expressed in the form of resource URL endpoints. The value of the scope parameter
@@ -59,9 +62,8 @@ class Token extends PayPalStruct
      */
     private $expireDateTime;
 
-    public function assign(array $arrayDataWithSnakeCaseKeys): PayPalStruct
+    public function assign(array $arrayDataWithSnakeCaseKeys): Token
     {
-        /** @var Token $newToken */
         $newToken = parent::assign($arrayDataWithSnakeCaseKeys);
 
         //Calculate the expiration date manually

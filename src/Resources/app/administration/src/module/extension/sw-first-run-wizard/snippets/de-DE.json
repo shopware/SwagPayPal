@@ -14,7 +14,6 @@
         "textFetchedSuccessful": "Die Zugangsdaten wurden erfolgreich abgerufen.",
         "titleNoCredentials": "Fehler",
         "messageNoCredentials": "Es wurden keine Zugangsdaten hinterlegt.",
-        "titleTestSuccess": "Erfolgreich",
         "messageTestSuccess": "Die Zugangsdaten sind gültig.",
         "titleTestError": "Fehler"
     }

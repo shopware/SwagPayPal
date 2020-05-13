@@ -140,7 +140,7 @@ Shopware.Component.register('swag-paypal', {
 
                     if (result === this.WEBHOOK_RESULT_CREATED) {
                         this.createNotificationSuccess({
-                            title: this.$tc('swag-paypal.settingForm.titleSuccess'),
+                            title: this.$tc('global.default.success'),
                             message: this.$tc('swag-paypal.settingForm.messageWebhookCreated')
                         });
 
@@ -149,7 +149,7 @@ Shopware.Component.register('swag-paypal', {
 
                     if (result === this.WEBHOOK_RESULT_UPDATED) {
                         this.createNotificationSuccess({
-                            title: this.$tc('swag-paypal.settingForm.titleSuccess'),
+                            title: this.$tc('global.default.success'),
                             message: this.$tc('swag-paypal.settingForm.messageWebhookUpdated')
                         });
                     }

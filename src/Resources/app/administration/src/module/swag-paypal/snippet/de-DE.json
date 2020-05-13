@@ -160,7 +160,6 @@
                     "label": "PayPal PLUS aktivieren"
                 }
             },
-            "titleSuccess": "Erfolg",
             "titleError": "Fehler",
             "messageSaveSuccess": "Die PayPal-Einstellungen wurden gespeichert.",
             "messageTestSuccess": "Die API-Zugangsdaten wurden validiert.",

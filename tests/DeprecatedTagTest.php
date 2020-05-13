@@ -20,10 +20,11 @@ class DeprecatedTagTest extends TestCase
      */
     private $whiteList = [
         'tests/',
+        'coverage/',
         'Resources/public/',
     ];
 
-    public function testAllPhpFilesInPlatformForDeprecated(): void
+    public function testAllFilesForDeprecated(): void
     {
         $pluginPath = __DIR__ . '/../';
         $return = [];
@@ -36,9 +37,9 @@ class DeprecatedTagTest extends TestCase
             $finder->notPath($path);
         }
 
-        foreach ($finder->getIterator() as $phpFile) {
-            if ($this->hasDeprecationFalseOrNoTag('@deprecated', $phpFile->getPathname())) {
-                $return[] = $phpFile->getPathname();
+        foreach ($finder->getIterator() as $file) {
+            if ($this->hasDeprecationFalseOrNoTag('@deprecated', $file->getPathname())) {
+                $return[] = $file->getPathname();
             }
         }
 
@@ -58,7 +59,7 @@ class DeprecatedTagTest extends TestCase
             }
         }
 
-        static::assertSame([], $return, print_r($return, true));
+        static::assertSame([], $return, 'Several files have a wrong deprecation tag: ' . print_r($return, true));
     }
 
     private function hasDeprecationFalseOrNoTag(string $deprecatedPrefix, string $file): bool

@@ -11,7 +11,10 @@ use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter
 
 abstract class PayPalStruct implements \JsonSerializable
 {
-    public function assign(array $arrayDataWithSnakeCaseKeys): self
+    /**
+     * @return static
+     */
+    public function assign(array $arrayDataWithSnakeCaseKeys)
     {
         $nameConverter = new CamelCaseToSnakeCaseNameConverter();
 

@@ -160,7 +160,6 @@
                     "label": "Enable PayPal PLUS"
                 }
             },
-            "titleSuccess": "Success",
             "titleError": "Error",
             "messageSaveSuccess": "The PayPal settings have been saved.",
             "messageTestSuccess": "The API credentials have been validated.",

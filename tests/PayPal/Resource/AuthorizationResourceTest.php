@@ -12,11 +12,27 @@ use Shopware\Core\Defaults;
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Resource\AuthorizationResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetAuthorizeResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
 
 class AuthorizationResourceTest extends TestCase
 {
     use ServicesTrait;
+
+    public function testGet(): void
+    {
+        $authorizationResponse = $this->createAuthorizationResource()->get(
+            'authorizationId',
+            Defaults::SALES_CHANNEL
+        );
+
+        $authorization = json_encode($authorizationResponse);
+        static::assertNotFalse($authorization);
+
+        $authorizationArray = json_decode($authorization, true);
+
+        static::assertSame(GetAuthorizeResponseFixture::ID, $authorizationArray['id']);
+    }
 
     public function testCapture(): void
     {

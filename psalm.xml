@@ -16,6 +16,19 @@
     </projectFiles>
 
     <issueHandlers>
+        <LessSpecificImplementedReturnType>
+            <!-- <deprecated> tag:v2.0.0 - Remove once the Token class is final -->
+            <errorLevel type="info">
+                <file name="src/PayPal/Api/Token.php"/>
+            </errorLevel>
+        </LessSpecificImplementedReturnType>
+        <DeprecatedClass>
+            <!-- <deprecated> tag:v2.0.0 - Remove once the Token class is final -->
+            <errorLevel type="info">
+                <referencedClass name="Swag\PayPal\PayPal\Api\Token"/>
+            </errorLevel>
+        </DeprecatedClass>
+
         <UnusedMethodCall>
             <errorLevel type="info">
                 <file name="src/Setting/SwagPayPalSettingStructValidator.php"/>

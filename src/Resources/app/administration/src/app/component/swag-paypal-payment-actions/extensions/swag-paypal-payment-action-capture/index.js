@@ -38,6 +38,12 @@ Component.register('swag-paypal-payment-action-capture', {
         };
     },
 
+    computed: {
+        showHint() {
+            return this.isFinalCapture && this.captureValue !== this.maxCaptureValue;
+        }
+    },
+
     created() {
         this.createdComponent();
     },
@@ -64,7 +70,7 @@ Component.register('swag-paypal-payment-action-capture', {
                 isFinalCapture
             ).then(() => {
                 this.createNotificationSuccess({
-                    title: this.$tc('swag-paypal-payment.captureAction.successTitle'),
+                    title: this.$tc('global.default.success'),
                     message: this.$tc('swag-paypal-payment.captureAction.successMessage')
                 });
                 this.isLoading = false;

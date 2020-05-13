@@ -66,7 +66,6 @@
             }
         },
         "refundAction": {
-            "successTitle": "Success",
             "successMessage": "Your refund was successful.",
             "invoiceSelect": {
                 "label": "Select capture"
@@ -92,17 +91,16 @@
             }
         },
         "captureAction": {
-            "successTitle": "Success",
             "successMessage": "Your capture was successful.",
             "maxAmount": "Maximum amount",
             "currentAmount": "Amount",
             "isFinal": "This is final capture",
+            "isFinalHint": "Hint: Marked as final capture, although not the entire amount is to be captured.",
             "button": {
                 "text": "Capture payment"
             }
         },
         "voidAction": {
-            "successTitle": "Success",
             "successMessage": "The payment was successfully voided.",
             "confirm": {
                 "message": "Do you really want to cancel this payment?",

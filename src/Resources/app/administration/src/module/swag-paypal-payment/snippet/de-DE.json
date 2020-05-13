@@ -66,7 +66,6 @@
             }
         },
         "refundAction": {
-            "successTitle": "Erfolg",
             "successMessage": "Die Rückerstattung war erfolgreich.",
             "invoiceSelect": {
                 "label": "Einzug wählen"
@@ -92,17 +91,16 @@
             }
         },
         "captureAction": {
-            "successTitle": "Erfolg",
             "successMessage": "Die Autorisierung war erfolgreich.",
             "maxAmount": "Maximalbetrag",
             "currentAmount": "Betrag",
             "isFinal": "Kein erneuter Einzug möglich",
+            "isFinalHint": "Hinweis: Als letzter Einzug markiert, obwohl nicht der ganze Betrag eingezogen werden soll.",
             "button": {
                 "text": "Zahlung einziehen"
             }
         },
         "voidAction": {
-            "successTitle": "Erfolg",
             "successMessage": "Die Autorisierung wurde erfolgreich abgebrochen.",
             "confirm": {
                 "message": "Möchtest du diese Zahlung wirklich abbrechen?",

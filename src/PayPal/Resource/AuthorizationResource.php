@@ -9,6 +9,7 @@ namespace Swag\PayPal\PayPal\Resource;
 
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Api\DoVoid;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource\Authorization;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\RequestUri;
 
@@ -24,10 +25,19 @@ class AuthorizationResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
+    public function get(string $authorizationId, string $salesChannelId): Authorization
+    {
+        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
+            \sprintf('%s/%s', RequestUri::AUTHORIZATION_RESOURCE, $authorizationId)
+        );
+
+        return (new Authorization())->assign($response);
+    }
+
     public function capture(string $authorizationId, Capture $capture, string $salesChannelId): Capture
     {
         $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
-            RequestUri::AUTHORIZATION_RESOURCE . '/' . $authorizationId . '/capture',
+            \sprintf('%s/%s/capture', RequestUri::AUTHORIZATION_RESOURCE, $authorizationId),
             $capture
         );
 
@@ -40,7 +50,7 @@ class AuthorizationResource
     {
         $doVoid = new DoVoid();
         $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
-            RequestUri::AUTHORIZATION_RESOURCE . '/' . $authorizationId . '/void',
+            \sprintf('%s/%s/void', RequestUri::AUTHORIZATION_RESOURCE, $authorizationId),
             $doVoid
         );
 

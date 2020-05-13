@@ -15,6 +15,7 @@ use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 use Swag\PayPal\PayPal\Api\Payment\Payer\PayerInfo;
 use Swag\PayPal\PayPal\Client\PayPalClient;
 use Swag\PayPal\PayPal\PartnerAttributionId;
+use Swag\PayPal\PayPal\RequestUri;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -63,12 +64,28 @@ class PayPalClientMock extends PayPalClient
 
     public function sendGetRequest(string $resourceUri): array
     {
-        if (strncmp($resourceUri, 'notifications/webhooks/', 23) === 0) {
+        if (strncmp($resourceUri, RequestUri::WEBHOOK_RESOURCE, 22) === 0) {
             return $this->handleWebhookGetRequests($resourceUri);
         }
 
-        if (strncmp($resourceUri, 'payments/payment/', 17) === 0) {
+        if (strncmp($resourceUri, RequestUri::PAYMENT_RESOURCE, 16) === 0) {
             return $this->handlePaymentGetRequests($resourceUri);
+        }
+
+        if (strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0) {
+            return GetAuthorizeResponseFixture::get();
+        }
+
+        if (strncmp($resourceUri, RequestUri::CAPTURE_RESOURCE, 16) === 0) {
+            return CaptureAuthorizationResponseFixture::get();
+        }
+
+        if (strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0) {
+            return GetOrderResponseFixture::get();
+        }
+
+        if (strncmp($resourceUri, RequestUri::SALE_RESOURCE, 13) === 0) {
+            return GetSaleResponseFixture::get();
         }
 
         return [];
@@ -80,31 +97,31 @@ class PayPalClientMock extends PayPalClient
             return $this->handlePaymentExecuteRequests($data);
         }
 
-        if (mb_substr($resourceUri, -22) === 'notifications/webhooks') {
+        if (mb_substr($resourceUri, -22) === RequestUri::WEBHOOK_RESOURCE) {
             return $this->handleWebhookCreateRequests($data);
         }
 
-        if (strncmp($resourceUri, 'payments/sale/', 14) === 0 && mb_substr($resourceUri, -7) === '/refund') {
+        if (strncmp($resourceUri, RequestUri::SALE_RESOURCE, 13) === 0 && mb_substr($resourceUri, -7) === '/refund') {
             return RefundSaleResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, 'payments/capture/', 17) === 0 && mb_substr($resourceUri, -7) === '/refund') {
+        if (strncmp($resourceUri, RequestUri::CAPTURE_RESOURCE, 16) === 0 && mb_substr($resourceUri, -7) === '/refund') {
             return RefundCaptureResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, 'payments/authorization/', 23) === 0 && mb_substr($resourceUri, -8) === '/capture') {
+        if (strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0 && mb_substr($resourceUri, -8) === '/capture') {
             return CaptureAuthorizationResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, 'payments/authorization/', 23) === 0 && mb_substr($resourceUri, -5) === '/void') {
+        if (strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0 && mb_substr($resourceUri, -5) === '/void') {
             return VoidAuthorizationResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, 'payments/orders/', 16) === 0 && mb_substr($resourceUri, -8) === '/capture') {
+        if (strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0 && mb_substr($resourceUri, -8) === '/capture') {
             return CaptureOrdersResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, 'payments/orders/', 16) === 0 && mb_substr($resourceUri, -8) === '/do-void') {
+        if (strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0 && mb_substr($resourceUri, -8) === '/do-void') {
             return VoidOrderResponseFixture::get();
         }
 

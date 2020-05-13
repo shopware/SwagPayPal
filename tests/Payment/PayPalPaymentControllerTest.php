@@ -8,7 +8,9 @@
 namespace Swag\PayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Swag\PayPal\Payment\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\Payment\PayPalPaymentController;
 use Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource;
@@ -17,6 +19,8 @@ use Swag\PayPal\PayPal\Resource\CaptureResource;
 use Swag\PayPal\PayPal\Resource\OrdersResource;
 use Swag\PayPal\PayPal\Resource\SaleResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
@@ -36,20 +40,87 @@ class PayPalPaymentControllerTest extends TestCase
     private const TEST_REFUND_CURRENCY = 'EUR';
     private const TEST_REFUND_DESCRIPTION = 'testDescription';
     private const TEST_REFUND_REASON = 'testReason';
-    private const ORDER_ID = '98432def39fc4624b33213a56b8c944d';
+    private const KEY_TO_TEST = 'keyToTest';
+    private const VALUE_TO_TEST = 'valueToTest';
 
     public function testGetPaymentDetails(): void
     {
         $context = Context::createDefaultContext();
-        $responseContent = $this->createPaymentController()->paymentDetails(self::ORDER_ID, 'testPaymentId', $context)->getContent();
+        $responseContent = $this->createPaymentController()->paymentDetails('testOrderId', 'testPaymentId', $context)->getContent();
         static::assertNotFalse($responseContent);
 
-        $paymentDetails = json_decode($responseContent, true);
+        $paymentDetails = \json_decode($responseContent, true);
 
         static::assertSame(
             GetSaleResponseFixture::TRANSACTION_AMOUNT_DETAILS_SUBTOTAL,
             $paymentDetails['transactions'][0]['amount']['details']['subtotal']
         );
+    }
+
+    public function testGetPaymentDetailsWithInvalidOrder(): void
+    {
+        $context = Context::createDefaultContext();
+        $context->addExtension(OrderRepositoryMock::NO_ORDER, new ArrayStruct());
+
+        $this->expectException(OrderNotFoundException::class);
+        $this->expectExceptionMessage('Order with id "testOrderId" not found.');
+        $this->createPaymentController()->paymentDetails('testOrderId', 'testPaymentId', $context)->getContent();
+    }
+
+    public function dataProviderTestResourceDetails(): array
+    {
+        return [
+            [
+                RelatedResource::AUTHORIZE,
+                [
+                    self::KEY_TO_TEST => 'id',
+                    self::VALUE_TO_TEST => GetAuthorizeResponseFixture::ID,
+                ],
+            ],
+            [
+                RelatedResource::CAPTURE,
+                [
+                    self::KEY_TO_TEST => 'is_final_capture',
+                    self::VALUE_TO_TEST => true,
+                ],
+            ],
+            [
+                RelatedResource::ORDER,
+                [
+                    self::KEY_TO_TEST => 'id',
+                    self::VALUE_TO_TEST => GetOrderResponseFixture::ID,
+                ],
+            ],
+            [
+                RelatedResource::SALE,
+                [
+                    self::KEY_TO_TEST => 'id',
+                    self::VALUE_TO_TEST => GetSaleResponseFixture::ID,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProviderTestResourceDetails
+     */
+    public function testResourceDetails(string $resourceType, array $assertions): void
+    {
+        $context = Context::createDefaultContext();
+        $responseContent = $this->createPaymentController()->resourceDetails($context, $resourceType, 'testResourceId', 'testOrderId')->getContent();
+        static::assertNotFalse($responseContent);
+
+        $resource = \json_decode($responseContent, true);
+
+        static::assertSame($assertions[self::VALUE_TO_TEST], $resource[$assertions[self::KEY_TO_TEST]]);
+    }
+
+    public function testResourceDetailsWithInvalidResourceType(): void
+    {
+        $context = Context::createDefaultContext();
+        $this->expectException(RequiredParameterInvalidException::class);
+        $this->expectExceptionMessage('Required parameter "resourceType" is missing or invalid');
+        $this->createPaymentController()->resourceDetails($context, 'unknown', 'testResourceId', 'testOrderId')->getContent();
     }
 
     public function testRefundPayment(): void
@@ -65,7 +136,7 @@ class PayPalPaymentControllerTest extends TestCase
         )->getContent();
         static::assertNotFalse($responseContent);
 
-        $refund = json_decode($responseContent, true);
+        $refund = \json_decode($responseContent, true);
 
         static::assertSame(RefundSaleResponseFixture::REFUND_AMOUNT, $refund['amount']['total']);
     }
@@ -81,7 +152,7 @@ class PayPalPaymentControllerTest extends TestCase
         )->getContent();
         static::assertNotFalse($responseContent);
 
-        $refund = json_decode($responseContent, true);
+        $refund = \json_decode($responseContent, true);
 
         static::assertSame(RefundCaptureResponseFixture::REFUND_AMOUNT, $refund['amount']['total']);
     }
@@ -93,17 +164,7 @@ class PayPalPaymentControllerTest extends TestCase
             PayPalPaymentController::REQUEST_PARAMETER_REFUND_AMOUNT => self::TEST_REFUND_AMOUNT,
             PayPalPaymentController::REQUEST_PARAMETER_CURRENCY => self::TEST_REFUND_CURRENCY,
         ]);
-        $context = Context::createDefaultContext();
-        $responseContent = $this->createPaymentControllerWithSaleResourceMock()->refundPayment(
-            $request,
-            $context,
-            RelatedResource::SALE,
-            'testPaymentId',
-            'testOrderId'
-        )->getContent();
-        static::assertNotFalse($responseContent);
-
-        $refund = json_decode($responseContent, true);
+        $refund = $this->refundPayment($request);
 
         static::assertSame(self::TEST_REFUND_AMOUNT, (float) $refund['amount']['total']);
         static::assertSame(self::TEST_REFUND_CURRENCY, $refund['amount']['currency']);
@@ -119,17 +180,7 @@ class PayPalPaymentControllerTest extends TestCase
             PayPalPaymentController::REQUEST_PARAMETER_DESCRIPTION => self::TEST_REFUND_DESCRIPTION,
             PayPalPaymentController::REQUEST_PARAMETER_REASON => self::TEST_REFUND_REASON,
         ]);
-        $context = Context::createDefaultContext();
-        $responseContent = $this->createPaymentControllerWithSaleResourceMock()->refundPayment(
-            $request,
-            $context,
-            RelatedResource::SALE,
-            'testPaymentId',
-            'testOrderId'
-        )->getContent();
-        static::assertNotFalse($responseContent);
-
-        $refund = json_decode($responseContent, true);
+        $refund = $this->refundPayment($request);
 
         static::assertSame(self::TEST_REFUND_AMOUNT, (float) $refund['amount']['total']);
         static::assertSame(self::TEST_REFUND_CURRENCY, $refund['amount']['currency']);
@@ -168,7 +219,7 @@ class PayPalPaymentControllerTest extends TestCase
         )->getContent();
         static::assertNotFalse($responseContent);
 
-        $capture = json_decode($responseContent, true);
+        $capture = \json_decode($responseContent, true);
 
         static::assertTrue($capture['is_final_capture']);
     }
@@ -187,7 +238,7 @@ class PayPalPaymentControllerTest extends TestCase
         )->getContent();
         static::assertNotFalse($responseContent);
 
-        $capture = json_decode($responseContent, true);
+        $capture = \json_decode($responseContent, true);
 
         static::assertTrue($capture['is_final_capture']);
     }
@@ -219,7 +270,7 @@ class PayPalPaymentControllerTest extends TestCase
         )->getContent();
         static::assertNotFalse($responseContent);
 
-        $void = json_decode($responseContent, true);
+        $void = \json_decode($responseContent, true);
 
         static::assertSame(VoidOrderResponseFixture::VOID_ID, $void['id']);
     }
@@ -235,7 +286,7 @@ class PayPalPaymentControllerTest extends TestCase
         )->getContent();
         static::assertNotFalse($responseContent);
 
-        $void = json_decode($responseContent, true);
+        $void = \json_decode($responseContent, true);
 
         static::assertSame(VoidAuthorizationResponseFixture::VOID_ID, $void['id']);
     }
@@ -264,6 +315,21 @@ class PayPalPaymentControllerTest extends TestCase
             new PaymentStatusUtilMock(),
             new OrderRepositoryMock()
         );
+    }
+
+    private function refundPayment(Request $request): array
+    {
+        $context = Context::createDefaultContext();
+        $responseContent = $this->createPaymentControllerWithSaleResourceMock()->refundPayment(
+            $request,
+            $context,
+            RelatedResource::SALE,
+            'testPaymentId',
+            'testOrderId'
+        )->getContent();
+        static::assertNotFalse($responseContent);
+
+        return \json_decode($responseContent, true);
     }
 
     private function createPaymentControllerWithSaleResourceMock(): PayPalPaymentController

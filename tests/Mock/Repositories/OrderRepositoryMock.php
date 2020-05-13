@@ -22,7 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 
 class OrderRepositoryMock implements EntityRepositoryInterface
 {
-    private const ORDER_ID = '98432def39fc4624b33213a56b8c944d';
+    public const NO_ORDER = 'searchResultWithoutOrder';
 
     public function getDefinition(): EntityDefinition
     {
@@ -39,6 +39,16 @@ class OrderRepositoryMock implements EntityRepositoryInterface
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
+        if ($context->hasExtension(self::NO_ORDER)) {
+            return new EntitySearchResult(
+                0,
+                new EntityCollection([]),
+                null,
+                $criteria,
+                $context
+            );
+        }
+
         return new EntitySearchResult(
             1,
             new EntityCollection([$this->createOrderEntity()]),
@@ -79,7 +89,7 @@ class OrderRepositoryMock implements EntityRepositoryInterface
     private function createOrderEntity(): OrderEntity
     {
         $orderEntity = new OrderEntity();
-        $orderEntity->setId(self::ORDER_ID);
+        $orderEntity->setId('testOrderId');
         $orderEntity->setSalesChannelId(Defaults::SALES_CHANNEL);
 
         return $orderEntity;

@@ -175,10 +175,18 @@ Component.register('swag-paypal-payment-detail', {
                 type: this.$tc(`swag-paypal-payment.transactionHistory.states.${type}`),
                 total: `${relatedResource.amount.total} ${currency}`,
                 create: this.formatDate(relatedResource.create_time),
+                createRaw: relatedResource.create_time,
                 update: this.formatDate(relatedResource.update_time),
                 transactionFee: transactionFee,
                 status: relatedResource.state,
                 paymentMode: relatedResource.payment_mode
+            });
+
+            this.relatedResources.sort((a, b) => {
+                const dateA = new Date(a.createRaw);
+                const dateB = new Date(b.createRaw);
+
+                return dateA - dateB;
             });
         },
 

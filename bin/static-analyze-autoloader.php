@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-require_once '../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../../vendor/autoload.php';
 
 /**
  * Please note that we cannot use exit() in this file!

@@ -29,10 +29,7 @@ class PaymentResource
     public function create(Payment $payment, string $salesChannelId, string $partnerAttributionId): Payment
     {
         $paypalClient = $this->payPalClientFactory->createPaymentClient($salesChannelId, $partnerAttributionId);
-        $response = $paypalClient->sendPostRequest(
-            RequestUri::PAYMENT_RESOURCE,
-            $payment
-        );
+        $response = $paypalClient->sendPostRequest(RequestUri::PAYMENT_RESOURCE, $payment);
 
         $payment->assign($response);
 
@@ -49,26 +46,20 @@ class PaymentResource
         $payerInfo->setPayerId($payerId);
         $paypalClient = $this->payPalClientFactory->createPaymentClient($salesChannelId, $partnerAttributionId);
         $response = $paypalClient->sendPostRequest(
-            RequestUri::PAYMENT_RESOURCE . '/' . $paymentId . '/execute',
+            \sprintf('%s/%s/execute', RequestUri::PAYMENT_RESOURCE, $paymentId),
             $payerInfo
         );
 
-        $paymentStruct = new Payment();
-        $paymentStruct->assign($response);
-
-        return $paymentStruct;
+        return (new Payment())->assign($response);
     }
 
     public function get(string $paymentId, string $salesChannelId): Payment
     {
         $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
-            RequestUri::PAYMENT_RESOURCE . '/' . $paymentId
+            \sprintf('%s/%s', RequestUri::PAYMENT_RESOURCE, $paymentId)
         );
 
-        $paymentStruct = new Payment();
-        $paymentStruct->assign($response);
-
-        return $paymentStruct;
+        return (new Payment())->assign($response);
     }
 
     /**
@@ -77,13 +68,10 @@ class PaymentResource
     public function patch(array $patches, string $paymentId, string $salesChannelId): Payment
     {
         $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPatchRequest(
-            RequestUri::PAYMENT_RESOURCE . '/' . $paymentId,
+            \sprintf('%s/%s', RequestUri::PAYMENT_RESOURCE, $paymentId),
             $patches
         );
 
-        $paymentStruct = new Payment();
-        $paymentStruct->assign($response);
-
-        return $paymentStruct;
+        return (new Payment())->assign($response);
     }
 }
