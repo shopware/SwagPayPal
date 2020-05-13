@@ -67,6 +67,10 @@ Component.register('sw-paypal-express', {
 
         checkBoolFieldInheritance(value) {
             return typeof value !== 'boolean';
+        },
+
+        preventSave(mode) {
+            this.$emit('preventSave', mode);
         }
     }
 });

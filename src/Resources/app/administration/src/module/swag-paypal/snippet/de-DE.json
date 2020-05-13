@@ -160,6 +160,16 @@
                     "label": "PayPal PLUS aktivieren"
                 }
             },
+            "locale-field": {
+                "infobox": {
+                    "text": "Um eine Liste der gültigen Ländercodes zu sehen, klicken Sie ",
+                    "href": "hier"
+                },
+                "error": {
+                    "detail": "Der von Ihnen angegebene Ländercode entspricht nicht dem von PayPal geforderten Format. Ein gültiges Format ist \"en_GB\"."
+                }
+            },
+            "titleSuccess": "Erfolg",
             "titleError": "Fehler",
             "messageSaveSuccess": "Die PayPal-Einstellungen wurden gespeichert.",
             "messageTestSuccess": "Die API-Zugangsdaten wurden validiert.",

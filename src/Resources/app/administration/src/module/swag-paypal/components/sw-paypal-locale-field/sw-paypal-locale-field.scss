@@ -1,0 +1,29 @@
+@import "~scss/variables";
+
+.sw-paypal-locale-field .sw-field {
+    margin-bottom: 0;
+}
+
+.sw-paypal-locale-field__text {
+    color: $color-gray-500;
+    font-size: $font-size-small;
+    line-height: 22px;
+    margin-top: 6px;
+}
+
+.sw-paypal-locale-field__text-href {
+    color: $color-darkgray-200;
+    text-decoration: underline;
+
+    &:visited{
+        color: $color-darkgray-500;
+    }
+
+    &:hover{
+        color: $color-shopware-brand-400;
+    }
+}
+
+.sw-paypal-locale-field__text-icon {
+    margin-left: 4px;
+}

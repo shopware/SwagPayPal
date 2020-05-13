@@ -23,7 +23,7 @@
                                        class="sw-settings-login-registration__save-action"
                                        variant="primary"
                                        :isLoading="isLoading"
-                                       :disabled="isLoading"
+                                       :disabled="isLoading || savingDisabled"
                                        @click="onSave">
                         {{ $tc('swag-paypal.settingForm.save') }}
                     </sw-button-process>
@@ -114,7 +114,8 @@
                                             {% block swag_paypal_content_card_channel_config_express %}
                                                 <sw-paypal-express :actualConfigData="actualConfigData"
                                                                    :allConfigs="allConfigs"
-                                                                   :selectedSalesChannelId="selectedSalesChannelId">
+                                                                   :selectedSalesChannelId="selectedSalesChannelId"
+                                                                   @preventSave="preventSave">
                                                 </sw-paypal-express>
                                             {% endblock %}
 
@@ -129,7 +130,8 @@
                                                 <sw-paypal-spb v-if="showSPBCard"
                                                                :actualConfigData="actualConfigData"
                                                                :allConfigs="allConfigs"
-                                                               :selectedSalesChannelId="selectedSalesChannelId">
+                                                               :selectedSalesChannelId="selectedSalesChannelId"
+                                                               @preventSave="preventSave">
                                                 </sw-paypal-spb>
                                             {% endblock %}
 
