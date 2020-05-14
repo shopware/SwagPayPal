@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\IZettle;
+namespace Swag\PayPal\Test\IZettle\Sync;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Category\CategoryCollection;
@@ -41,7 +41,7 @@ use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
 use Swag\PayPal\Test\Mock\IZettle\ChecksumResourceMock;
-use Swag\PayPal\Test\Mock\IZettle\ProductRepoMock;
+use Swag\PayPal\Test\Mock\IZettle\SalesChannelProductRepoMock;
 
 class ProductSyncerTest extends TestCase
 {
@@ -65,12 +65,12 @@ class ProductSyncerTest extends TestCase
     private $pruductSyncer;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject|ProductResource
+     * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $productResource;
 
     /**
-     * @var ProductRepoMock
+     * @var SalesChannelProductRepoMock
      */
     private $productRepository;
 
@@ -113,7 +113,7 @@ class ProductSyncerTest extends TestCase
             )
         );
 
-        $this->productRepository = new ProductRepoMock();
+        $this->productRepository = new SalesChannelProductRepoMock();
 
         $productSelection = new ProductSelection(
             $this->productRepository,

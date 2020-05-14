@@ -72,7 +72,7 @@ Component.register('swag-paypal-izettle-detail-base', {
         onStartProductSync() {
             this.syncErrors = null;
             this.isSyncing = true;
-            this.SwagPayPalIZettleApiService.startProductSync(this.salesChannel.id).then(() => {
+            this.SwagPayPalIZettleApiService.startSync(this.salesChannel.id).then(() => {
                 this.isSyncing = false;
                 this.isSyncSuccessful = true;
             }).catch((errorResponse) => {

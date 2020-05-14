@@ -54,9 +54,25 @@ class Migration1584005462IZettle extends MigrationStep
                 PRIMARY KEY (`sales_channel_id`, `product_id`, `product_version_id`),
                 KEY `fk.swag_paypal_izettle_sales_channel_products.sales_channel_id` (`sales_channel_id`),
                 KEY `fk.swag_paypal_izettle_sales_channel_products.product_id` (`product_id`),
-                KEY `fk.swag_paypal_izettle_sales_channel_products.product_version_id` (`product_version_id`),
+                KEY `fk.swag_paypal_izettle_sales_channel_products.product_vid` (`product_version_id`),
                 CONSTRAINT `fk.swag_paypal_izettle_sales_channel_products.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT `fk.swag_paypal_izettle_sales_channel_products.product_id_version` FOREIGN KEY (`product_id`, `product_version_id`) REFERENCES `product` (`id`, `version_id`) ON DELETE CASCADE ON UPDATE CASCADE
+                CONSTRAINT `fk.swag_paypal_izettle_sales_channel_products.product` FOREIGN KEY (`product_id`, `product_version_id`) REFERENCES `product` (`id`, `version_id`) ON DELETE CASCADE ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ');
+
+        $connection->executeUpdate('
+            CREATE TABLE IF NOT EXISTS `swag_paypal_izettle_sales_channel_inventory` (
+                `sales_channel_id`   BINARY(16)  NOT NULL,
+                `product_id`         BINARY(16)  NOT NULL,
+                `product_version_id` BINARY(16)  NOT NULL,
+                `stock`              INT         NOT NULL,
+                `updated_at`         DATETIME(3) NULL,
+                PRIMARY KEY (`sales_channel_id`, `product_id`, `product_version_id`),
+                KEY `fk.swag_paypal_izettle_sales_channel_inventory.sales_channel_id` (`sales_channel_id`),
+                KEY `fk.swag_paypal_izettle_sales_channel_inventory.product_id` (`product_id`),
+                KEY `fk.swag_paypal_izettle_sales_channel_inventory.product_vid` (`product_version_id`),
+                CONSTRAINT `fk.swag_paypal_izettle_sales_channel_inventory.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT `fk.swag_paypal_izettle_sales_channel_inventory.product` FOREIGN KEY (`product_id`, `product_version_id`) REFERENCES `product` (`id`, `version_id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
     }

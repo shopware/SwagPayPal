@@ -38,15 +38,19 @@ abstract class IZettleStruct implements \JsonSerializable
                 continue;
             }
 
+            /** @var class-string<IZettleStruct> $className */
+            $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
+            if (!class_exists($className)) {
+                $arrayData = array_filter($value, static function ($var) {
+                    return $var !== null;
+                });
+                $this->$setterMethod($arrayData);
+                continue;
+            }
+
             $arrayWithToManyAssociations = [];
             foreach ($value as $toManyAssociation) {
                 if ($toManyAssociation === null) {
-                    continue;
-                }
-
-                /** @var class-string<IZettleStruct> $className */
-                $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
-                if (!class_exists($className)) {
                     continue;
                 }
 

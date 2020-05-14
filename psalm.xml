@@ -34,6 +34,21 @@
             </errorLevel>
         </DeprecatedClass>
 
+        <MoreSpecificImplementedParamType>
+            <errorLevel type="info">
+                <file name="src/IZettle/Api/Service/Util/ProductGroupingCollection.php"/>
+                <file name="src/IZettle/DataAbstractionLayer/Entity/IZettleSalesChannelCollection.php"/>
+                <file name="src/IZettle/DataAbstractionLayer/Entity/IZettleSalesChannelProductCollection.php"/>
+                <file name="src/IZettle/DataAbstractionLayer/Entity/IZettleSalesChannelInventoryCollection.php"/>
+            </errorLevel>
+        </MoreSpecificImplementedParamType>
+
+        <UnusedMethodCall>
+            <errorLevel type="info">
+                <file name="src/Setting/SwagPayPalSettingStructValidator.php"/>
+            </errorLevel>
+        </UnusedMethodCall>
+
         <InvalidReturnType>
             <errorLevel type="info">
                 <directory name="tests/Mock"/>
@@ -42,6 +57,8 @@
 
         <InternalMethod>
             <errorLevel type="info">
+                <file name="src/IZettle/Command/IZettleProductSyncCommand.php"/>
+                <file name="src/IZettle/Command/IZettleInventorySyncCommand.php"/>
                 <directory name="tests"/>
             </errorLevel>
         </InternalMethod>
@@ -63,6 +80,16 @@
                 <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData::getErrorParameter"/>
             </errorLevel>
         </DeprecatedMethod>
+
+        <PossiblyNullReference>
+            <errorLevel type="info">
+                <file name="tests/IZettle/Converter/CategoryConverterTest.php"/>
+                <file name="tests/IZettle/Converter/VariantConverterTest.php"/>
+                <file name="tests/IZettle/Converter/ProductConverterTest.php"/>
+                <file name="tests/IZettle/Sync/ProductSyncerTest.php"/>
+                <file name="tests/IZettle/Sync/Inventory/InventorySyncerTest.php"/>
+            </errorLevel>
+        </PossiblyNullReference>
 
         <DeprecatedConstant>
             <errorLevel type="info">

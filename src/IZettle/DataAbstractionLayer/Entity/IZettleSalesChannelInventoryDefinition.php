@@ -11,29 +11,29 @@ use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\UpdatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
-class IZettleSalesChannelProductDefinition extends MappingEntityDefinition
+class IZettleSalesChannelInventoryDefinition extends MappingEntityDefinition
 {
     public function getEntityName(): string
     {
-        return 'swag_paypal_izettle_sales_channel_product';
+        return 'swag_paypal_izettle_sales_channel_inventory';
     }
 
     public function getEntityClass(): string
     {
-        return IZettleSalesChannelProductEntity::class;
+        return IZettleSalesChannelInventoryEntity::class;
     }
 
     public function getCollectionClass(): string
     {
-        return IZettleSalesChannelProductCollection::class;
+        return IZettleSalesChannelInventoryCollection::class;
     }
 
     protected function defineFields(): FieldCollection
@@ -45,7 +45,7 @@ class IZettleSalesChannelProductDefinition extends MappingEntityDefinition
 
             new ManyToOneAssociationField('product', 'product_id', ProductDefinition::class),
 
-            (new StringField('checksum', 'checksum', 32))->addFlags(new Required()),
+            (new IntField('stock', 'stock'))->addFlags(new Required()),
             new UpdatedAtField(),
         ]);
     }

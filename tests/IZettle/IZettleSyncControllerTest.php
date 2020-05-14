@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\IZettle\Exception\UnexpectedSalesChannelTypeException;
 use Swag\PayPal\IZettle\IZettleSyncController;
+use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
 use Swag\PayPal\Test\Mock\IZettle\SalesChannelRepoMock;
 
@@ -32,46 +33,92 @@ class IZettleSyncControllerTest extends TestCase
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|ProductSyncer
      */
-    private $productSyncerMock;
+    private $productSyncer;
+
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject|InventorySyncer
+     */
+    private $inventorySyncer;
 
     protected function setUp(): void
     {
         $this->salesChannelRepoMock = new SalesChannelRepoMock();
-        $this->productSyncerMock = $this->createPartialMock(ProductSyncer::class, ['syncProducts']);
+        $this->productSyncer = $this->createPartialMock(ProductSyncer::class, ['syncProducts']);
+        $this->inventorySyncer = $this->createPartialMock(InventorySyncer::class, ['syncInventory']);
         $this->iZettleSyncController = new IZettleSyncController(
-            $this->productSyncerMock,
+            $this->productSyncer,
+            $this->inventorySyncer,
             $this->salesChannelRepoMock
         );
     }
 
-    public function testProductSyncWithInvalidId(): void
+    public function dataProviderSyncFunctions(): array
+    {
+        return [
+            [
+                'syncAll',
+                [
+                    'productSyncer' => 'syncProducts',
+                    'inventorySyncer' => 'syncInventory',
+                ],
+            ],
+            [
+                'syncInventory',
+                [
+                    'inventorySyncer' => 'syncInventory',
+                ],
+            ],
+            [
+                'syncProducts',
+                [
+                    'productSyncer' => 'syncProducts',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProviderSyncFunctions
+     */
+    public function testSyncWithInvalidId(string $syncFunction): void
     {
         $context = Context::createDefaultContext();
         $this->expectException(InvalidSalesChannelIdException::class);
-        $this->iZettleSyncController->syncProducts(self::INVALID_CHANNEL_ID, $context);
+        $this->iZettleSyncController->$syncFunction(self::INVALID_CHANNEL_ID, $context);
     }
 
-    public function testProductSyncWithInvalidTypeId(): void
+    /**
+     * @dataProvider dataProviderSyncFunctions
+     */
+    public function testSyncWithInvalidTypeId(string $syncFunction): void
     {
         $context = Context::createDefaultContext();
         $this->expectException(UnexpectedSalesChannelTypeException::class);
         $salesChannelId = $this->salesChannelRepoMock->getMockEntityWithNoTypeId();
-        $this->iZettleSyncController->syncProducts($salesChannelId->getId(), $context);
+        $this->iZettleSyncController->$syncFunction($salesChannelId->getId(), $context);
     }
 
-    public function testProductSyncWithInactiveSalesChannel(): void
+    /**
+     * @dataProvider dataProviderSyncFunctions
+     */
+    public function testSyncWithInactiveSalesChannel(string $syncFunction): void
     {
         $context = Context::createDefaultContext();
         $this->expectException(InvalidSalesChannelIdException::class);
         $salesChannelId = $this->salesChannelRepoMock->getMockInactiveEntity();
-        $this->iZettleSyncController->syncProducts($salesChannelId->getId(), $context);
+        $this->iZettleSyncController->$syncFunction($salesChannelId->getId(), $context);
     }
 
-    public function testProductSync(): void
+    /**
+     * @dataProvider dataProviderSyncFunctions
+     */
+    public function testSyncNormal(string $syncFunction, array $serviceCalls): void
     {
         $context = Context::createDefaultContext();
-        $this->productSyncerMock->expects(static::once())->method('syncProducts');
+        foreach ($serviceCalls as $serviceName => $serviceCall) {
+            $this->$serviceName->expects(static::once())->method($serviceCall);
+        }
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
-        $this->iZettleSyncController->syncProducts($salesChannelId->getId(), $context);
+        $this->iZettleSyncController->$syncFunction($salesChannelId->getId(), $context);
     }
 }

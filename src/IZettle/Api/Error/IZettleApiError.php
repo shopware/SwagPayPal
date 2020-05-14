@@ -14,6 +14,7 @@ class IZettleApiError extends IZettleStruct
 {
     public const ERROR_TYPE_ITEM_ALREADY_EXISTS = 'ITEM_ALREADY_EXIST';
     public const ERROR_TYPE_ENTITY_NOT_FOUND = 'ENTITY_NOT_FOUND';
+    public const ERROR_TYPE_PRODUCT_NOT_TRACKED = 'PRODUCT_NOT_TRACKED';
 
     /**
      * @var string

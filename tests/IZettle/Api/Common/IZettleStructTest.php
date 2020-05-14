@@ -27,6 +27,7 @@ class IZettleStructTest extends TestCase
                     'foo_baz' => 'fooBazTest',
                     'fooBoo' => 'fooBooTest',
                 ],
+                null,
             ],
         ];
 
@@ -38,6 +39,7 @@ class IZettleStructTest extends TestCase
 
         unset($data['foo'][0]['foo_baz']);
         $data['foo'][0]['fooBaz'] = 'fooBazTest';
+        unset($data['foo'][1]);
 
         $testArray = json_decode($testJsonString, true);
 
@@ -55,6 +57,7 @@ class IZettleStructTest extends TestCase
                 [
                     'test' => 'value',
                 ],
+                null,
             ],
         ];
 
@@ -66,10 +69,13 @@ class IZettleStructTest extends TestCase
 
         $iZettleStructArray = json_decode($testJsonString, true);
 
+        unset($data['not_existing_collection_class'][1]);
+
         static::assertNull($iZettleStructArray['id']);
         static::assertNull($iZettleStructArray['bar']);
         static::assertNull($iZettleStructArray['foo']);
         static::assertNull($iZettleStructArray['notExistingClass']);
-        static::assertEmpty($iZettleStructArray['notExistingCollectionClass']);
+        static::assertEquals($iZettleStructArray['notExistingCollectionClass'], $data['not_existing_collection_class']);
+        static::assertIsArray($iZettleStructArray['notExistingCollectionClass']);
     }
 }

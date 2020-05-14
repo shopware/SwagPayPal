@@ -12,7 +12,7 @@ class SwagPayPalIZettleApiService extends ApiService {
         const headers = this.getBasicHeaders();
 
         return this.httpClient.get(
-            `${this.getApiBasePath()}/product-sync/${salesChannelId}`,
+            `${this.getApiBasePath()}/sync/${salesChannelId}`,
             {
                 ...this.basicConfig,
                 headers

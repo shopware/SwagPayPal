@@ -59,6 +59,19 @@ class IZettleClient extends AbstractClient
         return $this->put($resourceUri, $options);
     }
 
+    public function sendGetRequest(string $resourceUri, ?IZettleStruct $data = null): ?array
+    {
+        if ($data === null) {
+            $this->get($resourceUri);
+        }
+
+        $options = [
+            'json' => $data,
+        ];
+
+        return $this->get($resourceUri, $options);
+    }
+
     protected function handleError(array $error): void
     {
         $errorStruct = new IZettleApiError();

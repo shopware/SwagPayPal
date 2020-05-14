@@ -12,6 +12,9 @@ final class IZettleRequestUri
     public const TOKEN_RESOURCE = 'token/';
     public const PRODUCT_RESOURCE = 'organizations/self/products/';
     public const PRODUCT_RESOURCE_V2 = 'organizations/self/products/v2/';
+    public const INVENTORY_RESOURCE = 'organizations/self/inventory/';
+    public const INVENTORY_RESOURCE_LOCATIONS = 'organizations/self/locations/';
+    public const INVENTORY_RESOURCE_GET = 'organizations/self/inventory/locations/%s/';
 
     private function __construct()
     {
