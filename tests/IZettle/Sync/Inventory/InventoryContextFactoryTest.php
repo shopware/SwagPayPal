@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\IZettle\Sync\Inventory;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -36,7 +37,7 @@ class InventoryContextFactoryTest extends TestCase
     private $inventoryRepository;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var MockObject
      */
     private $inventoryResource;
 
@@ -97,7 +98,7 @@ class InventoryContextFactoryTest extends TestCase
             'balance' => (string) $product->getAvailableStock(),
         ]);
         $status->addVariant($variant);
-        $status->setTrackedProducts([$uuidConverter->convertUuidToV1((string) $product->getParentId())]);
+        $status->assign(['trackedProducts' => [$uuidConverter->convertUuidToV1((string) $product->getParentId())]]);
 
         $this->inventoryResource->method('getInventory')->willReturn($status);
         $this->inventoryResource->expects(static::never())->method('startTracking');
@@ -121,7 +122,7 @@ class InventoryContextFactoryTest extends TestCase
             'balance' => (string) $product->getAvailableStock(),
         ]);
         $status->addVariant($variant);
-        $status->setTrackedProducts([$uuidConverter->convertUuidToV1($product->getId())]);
+        $status->assign(['trackedProducts' => [$uuidConverter->convertUuidToV1($product->getId())]]);
 
         $this->inventoryResource->method('getInventory')->willReturn($status);
         $this->inventoryResource->expects(static::never())->method('startTracking');
@@ -138,7 +139,7 @@ class InventoryContextFactoryTest extends TestCase
         $uuidConverter = new UuidConverter();
         $status = new Status();
         $product = $this->getVariantProduct();
-        $status->setTrackedProducts([]);
+        $status->assign(['trackedProducts' => []]);
 
         $newStatus = new Status();
         $variant = new Variant();
@@ -171,7 +172,7 @@ class InventoryContextFactoryTest extends TestCase
             'balance' => (string) $product->getAvailableStock(),
         ]);
         $status->addVariant($variant);
-        $status->setTrackedProducts([]);
+        $status->assign(['trackedProducts' => []]);
 
         $newStatus = new Status();
         $variant = new Variant();
@@ -196,7 +197,7 @@ class InventoryContextFactoryTest extends TestCase
 
         $status = new Status();
         $product = $this->getVariantProduct();
-        $status->setTrackedProducts([]);
+        $status->assign(['trackedProducts' => []]);
 
         $this->inventoryResource->method('getInventory')->willReturn($status);
         $this->inventoryResource->expects(static::once())->method('startTracking')->willReturn(null);
@@ -212,7 +213,7 @@ class InventoryContextFactoryTest extends TestCase
 
         $status = new Status();
         $product = $this->getVariantProduct();
-        $status->setTrackedProducts([]);
+        $status->assign(['trackedProducts' => []]);
 
         $newStatus = new Status();
 

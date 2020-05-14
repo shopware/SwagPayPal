@@ -15,7 +15,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
-use Swag\PayPal\IZettle\Exception\UnexpectedSalesChannelTypeException;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
 use Swag\PayPal\SwagPayPal;
@@ -73,7 +72,7 @@ class IZettleSyncController extends AbstractController
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
 
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
+        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
 
         $this->inventorySyncer->syncInventory($iZettleSalesChannel, $context);
 
@@ -90,14 +89,14 @@ class IZettleSyncController extends AbstractController
         $this->productSyncer->syncProducts($salesChannel, $context);
 
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
+        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
 
         $this->inventorySyncer->syncInventory($iZettleSalesChannel, $context);
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 
-    protected function getSalesChannel(string $salesChannelId, Context $context): SalesChannelEntity
+    private function getSalesChannel(string $salesChannelId, Context $context): SalesChannelEntity
     {
         $criteria = new Criteria();
         $criteria->setIds([$salesChannelId]);
@@ -108,12 +107,8 @@ class IZettleSyncController extends AbstractController
         /** @var SalesChannelEntity|null $salesChannel */
         $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
 
-        if ($salesChannel === null || !($salesChannel->getActive())) {
+        if ($salesChannel === null) {
             throw new InvalidSalesChannelIdException($salesChannelId);
-        }
-
-        if ($salesChannel->getTypeId() !== SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE) {
-            throw new UnexpectedSalesChannelTypeException($salesChannel->getTypeId());
         }
 
         return $salesChannel;

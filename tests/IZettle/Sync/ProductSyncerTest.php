@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\IZettle\Sync;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
@@ -25,7 +26,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\Tax\TaxEntity;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
@@ -40,6 +41,7 @@ use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
+use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Mock\IZettle\ChecksumResourceMock;
 use Swag\PayPal\Test\Mock\IZettle\SalesChannelProductRepoMock;
 
@@ -65,7 +67,7 @@ class ProductSyncerTest extends TestCase
     private $pruductSyncer;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var MockObject
      */
     private $productResource;
 
@@ -119,7 +121,7 @@ class ProductSyncerTest extends TestCase
             $this->productRepository,
             $productStreamBuilder,
             $domainRepository,
-            $this->createMock(SalesChannelContextServiceInterface::class)
+            $this->createMock(SalesChannelContextFactory::class)
         );
 
         $this->pruductSyncer = new ProductSyncer(
@@ -296,7 +298,7 @@ class ProductSyncerTest extends TestCase
         $iZettleSalesChannel->setSyncPrices(true);
         $iZettleSalesChannel->setSalesChannelDomainId('someSalesChannelDomainId');
 
-        $salesChannel->addExtension('paypalIZettleSalesChannel', $iZettleSalesChannel);
+        $salesChannel->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleSalesChannel);
 
         return $salesChannel;
     }

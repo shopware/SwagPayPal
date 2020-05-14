@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\IZettle\Api\Service\Converter;
 
+use Shopware\Core\Framework\Uuid\Exception\InvalidUuidException;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class UuidConverter
@@ -14,7 +15,7 @@ class UuidConverter
     public function convertUuidToV1(string $uuid): string
     {
         if (!Uuid::isValid($uuid)) {
-            return '';
+            throw new InvalidUuidException($uuid);
         }
 
         $uuid = substr_replace($uuid, '1', 12, 1);
@@ -25,7 +26,7 @@ class UuidConverter
     public function incrementUuid(string $uuid): string
     {
         if (!Uuid::isValid($uuid)) {
-            return '';
+            throw new InvalidUuidException($uuid);
         }
 
         $lastDigit = mb_substr(dechex((int) hexdec(mb_substr($uuid, -1)) + 1), -1);

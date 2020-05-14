@@ -13,7 +13,7 @@ use Swag\PayPal\IZettle\Api\Inventory\Changes\Change;
 class Changes extends IZettleStruct
 {
     /**
-     * @var ?string
+     * @var string|null
      */
     protected $returnBalanceForLocationUuid;
 
@@ -40,18 +40,18 @@ class Changes extends IZettleStruct
         return $this->changes;
     }
 
-    /**
-     * @param Change[] $changes
-     */
-    public function setChanges(array $changes): void
-    {
-        $this->changes = $changes;
-    }
-
     public function addChange(Change ...$changes): void
     {
         foreach ($changes as $change) {
             $this->changes[] = $change;
         }
+    }
+
+    /**
+     * @param Change[] $changes
+     */
+    protected function setChanges(array $changes): void
+    {
+        $this->changes = $changes;
     }
 }

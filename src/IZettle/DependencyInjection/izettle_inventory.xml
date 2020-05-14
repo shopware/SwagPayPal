@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelInventoryDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_izettle_sales_channel_inventory"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Api\Service\Inventory\RemoteCalculator">
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Command\IZettleInventorySyncCommand">
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Resource\InventoryResource">
+            <argument type="service" id="Swag\PayPal\IZettle\Client\IZettleClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory">
+            <argument type="service" id="Swag\PayPal\IZettle\Resource\InventoryResource"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
+            <argument type="service" id="swag_paypal_izettle_sales_channel_inventory.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater">
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater">
+            <argument type="service" id="Swag\PayPal\IZettle\Resource\InventoryResource"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Inventory\RemoteCalculator"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\InventorySyncer">
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater"/>
+            <argument type="service" id="swag_paypal_izettle_sales_channel_inventory.repository"/>
+        </service>
+    </services>
+</container>

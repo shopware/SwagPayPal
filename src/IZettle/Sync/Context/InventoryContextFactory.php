@@ -9,8 +9,10 @@ namespace Swag\PayPal\IZettle\Sync\Context;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityRepositoryNotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Swag\PayPal\IZettle\Api\Inventory\Status;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelInventoryCollection;
@@ -41,11 +43,11 @@ class InventoryContextFactory
     public function __construct(
         InventoryResource $inventoryResource,
         UuidConverter $uuidConverter,
-        EntityRepositoryInterface $inventoryRespository
+        EntityRepositoryInterface $inventoryRepository
     ) {
         $this->inventoryResource = $inventoryResource;
         $this->uuidConverter = $uuidConverter;
-        $this->inventoryRepository = $inventoryRespository;
+        $this->inventoryRepository = $inventoryRepository;
     }
 
     public function getContext(IZettleSalesChannelEntity $iZettleSalesChannel, Context $context): InventoryContext
@@ -54,16 +56,22 @@ class InventoryContextFactory
             return $this->inventoryContexts[$iZettleSalesChannel->getId()];
         }
 
+        $locations = $this->loadLocations($iZettleSalesChannel);
+        $iZettleInventory = $this->loadIZettleInventory($iZettleSalesChannel, $locations['STORE']);
+        $localInventory = $this->loadLocalInventory($iZettleSalesChannel->getSalesChannelId(), $context);
+
         $inventoryContext = new InventoryContext(
             $this->inventoryResource,
             $this->uuidConverter,
             $iZettleSalesChannel,
+            $locations['STORE'],
+            $locations['SUPPLIER'],
+            $locations['BIN'],
+            $locations['SOLD'],
+            $iZettleInventory,
+            $localInventory,
             $context
         );
-
-        $this->loadLocations($inventoryContext);
-        $this->loadIZettleInventory($inventoryContext);
-        $this->loadLocalInventory($inventoryContext);
 
         $this->inventoryContexts[$iZettleSalesChannel->getId()] = $inventoryContext;
 
@@ -72,38 +80,41 @@ class InventoryContextFactory
 
     public function updateContext(InventoryContext $inventoryContext): void
     {
-        $this->loadLocalInventory($inventoryContext);
+        $inventoryContext->updateLocalInventory($this->loadLocalInventory(
+            $inventoryContext->getIZettleSalesChannel()->getSalesChannelId(),
+            $inventoryContext->getContext()
+        ));
     }
 
-    protected function loadLocations(InventoryContext $inventoryContext): void
+    private function loadLocations(IZettleSalesChannelEntity $iZettleSalesChannel): array
     {
-        $locations = $this->inventoryResource->getLocations($inventoryContext->getIZettleSalesChannel());
+        $locations = $this->inventoryResource->getLocations($iZettleSalesChannel);
+
+        $locationData = [];
         foreach ($locations as $location) {
-            switch ($location->getType()) {
-                case 'STORE': $inventoryContext->setStoreUuid($location->getUuid()); break;
-                case 'SUPPLIER': $inventoryContext->setSupplierUuid($location->getUuid()); break;
-                case 'BIN': $inventoryContext->setBinUuid($location->getUuid()); break;
-                case 'SOLD': $inventoryContext->setSoldUuid($location->getUuid()); break;
-            }
+            $locationData[$location->getType()] = $location->getUuid();
         }
+
+        return $locationData;
     }
 
-    protected function loadIZettleInventory(InventoryContext $inventoryContext): void
+    private function loadIZettleInventory(IZettleSalesChannelEntity $iZettleSalesChannel, string $storeUuid): Status
     {
-        $inventory = $this->inventoryResource->getInventory(
-            $inventoryContext->getIZettleSalesChannel(),
-            $inventoryContext->getStoreUuid()
+        return $this->inventoryResource->getInventory(
+            $iZettleSalesChannel,
+            $storeUuid
         );
-        $inventoryContext->setIZettleInventory($inventory);
     }
 
-    protected function loadLocalInventory(InventoryContext $inventoryContext): void
+    private function loadLocalInventory(string $salesChannelId, Context $context): IZettleSalesChannelInventoryCollection
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('salesChannelId', $inventoryContext->getIZettleSalesChannel()->getSalesChannelId()));
-        $inventory = $this->inventoryRepository->search($criteria, $inventoryContext->getContext())->getEntities();
-        if ($inventory instanceof IZettleSalesChannelInventoryCollection) {
-            $inventoryContext->setLocalInventory($inventory);
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
+        $inventory = $this->inventoryRepository->search($criteria, $context)->getEntities();
+        if (!($inventory instanceof IZettleSalesChannelInventoryCollection)) {
+            throw new EntityRepositoryNotFoundException('swag_paypal_izettle_sales_channel_inventory');
         }
+
+        return $inventory;
     }
 }

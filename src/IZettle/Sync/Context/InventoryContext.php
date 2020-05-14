@@ -73,11 +73,23 @@ class InventoryContext
         InventoryResource $inventoryResource,
         UuidConverter $uuidConverter,
         IZettleSalesChannelEntity $iZettleSalesChannel,
+        string $storeUuid,
+        string $supplierUuid,
+        string $binUuid,
+        string $soldUuid,
+        Status $iZettleInventory,
+        IZettleSalesChannelInventoryCollection $localInventory,
         Context $context
     ) {
         $this->inventoryResource = $inventoryResource;
         $this->uuidConverter = $uuidConverter;
         $this->iZettleSalesChannel = $iZettleSalesChannel;
+        $this->storeUuid = $storeUuid;
+        $this->supplierUuid = $supplierUuid;
+        $this->binUuid = $binUuid;
+        $this->soldUuid = $soldUuid;
+        $this->iZettleInventory = $iZettleInventory;
+        $this->localInventory = $localInventory;
         $this->context = $context;
     }
 
@@ -137,19 +149,9 @@ class InventoryContext
         return $this->storeUuid;
     }
 
-    public function setStoreUuid(string $storeUuid): void
-    {
-        $this->storeUuid = $storeUuid;
-    }
-
     public function getSupplierUuid(): string
     {
         return $this->supplierUuid;
-    }
-
-    public function setSupplierUuid(string $supplierUuid): void
-    {
-        $this->supplierUuid = $supplierUuid;
     }
 
     public function getBinUuid(): string
@@ -157,19 +159,9 @@ class InventoryContext
         return $this->binUuid;
     }
 
-    public function setBinUuid(string $binUuid): void
-    {
-        $this->binUuid = $binUuid;
-    }
-
     public function getSoldUuid(): string
     {
         return $this->soldUuid;
-    }
-
-    public function setSoldUuid(string $soldUuid): void
-    {
-        $this->soldUuid = $soldUuid;
     }
 
     public function addIZettleInventory(Variant $newVariant): void
@@ -183,19 +175,16 @@ class InventoryContext
         $this->iZettleInventory->addVariant($newVariant);
     }
 
-    public function setIZettleInventory(Status $iZettleInventory): void
-    {
-        $this->iZettleInventory = $iZettleInventory;
-    }
-
     public function getIZettleSalesChannel(): IZettleSalesChannelEntity
     {
         return $this->iZettleSalesChannel;
     }
 
-    public function setLocalInventory(IZettleSalesChannelInventoryCollection $localInventory): void
+    public function updateLocalInventory(IZettleSalesChannelInventoryCollection $localInventory): void
     {
-        $this->localInventory = $localInventory;
+        foreach ($localInventory->getElements() as $element) {
+            $this->localInventory->add($element);
+        }
     }
 
     public function getContext(): Context
@@ -203,7 +192,7 @@ class InventoryContext
         return $this->context;
     }
 
-    protected function findIZettleInventory(string $productUuid, string $variantUuid): ?Variant
+    private function findIZettleInventory(string $productUuid, string $variantUuid): ?Variant
     {
         foreach ($this->iZettleInventory->getVariants() as $variant) {
             if ($variant->getProductUuid() === $productUuid && $variant->getVariantUuid() === $variantUuid) {

@@ -13,7 +13,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
@@ -36,20 +36,20 @@ class ProductSelection
     private $domainRepository;
 
     /**
-     * @var SalesChannelContextServiceInterface
+     * @var SalesChannelContextFactory
      */
-    private $salesChannelContextService;
+    private $salesChannelContextFactory;
 
     public function __construct(
         SalesChannelRepositoryInterface $productRepository,
         ProductStreamBuilderInterface $productStreamBuilder,
         EntityRepositoryInterface $domainRepository,
-        SalesChannelContextServiceInterface $salesChannelContextService
+        SalesChannelContextFactory $salesChannelContextFactory
     ) {
         $this->productRepository = $productRepository;
         $this->productStreamBuilder = $productStreamBuilder;
         $this->domainRepository = $domainRepository;
-        $this->salesChannelContextService = $salesChannelContextService;
+        $this->salesChannelContextFactory = $salesChannelContextFactory;
     }
 
     public function getProducts(
@@ -109,10 +109,9 @@ class ProductSelection
 
         $domain = $this->domainRepository->search($criteria, $context)->first();
 
-        return $this->salesChannelContextService->get(
-            $domain->getSalesChannelId(),
+        return $this->salesChannelContextFactory->create(
             Uuid::randomHex(),
-            null
+            $domain->getSalesChannelId()
         );
     }
 }

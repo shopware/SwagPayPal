@@ -43,20 +43,20 @@ class Status extends IZettleStruct
         return $this->trackedProducts;
     }
 
-    /**
-     * @param string[] $trackedProducts
-     */
-    public function setTrackedProducts(array $trackedProducts): void
-    {
-        $this->trackedProducts = $trackedProducts;
-    }
-
     public function addVariant(Variant ...$variants): void
     {
         foreach ($variants as $variant) {
             $this->variants[] = $variant;
             $this->trackedProducts[] = $variant->getProductUuid();
         }
+    }
+
+    /**
+     * @param string[] $trackedProducts
+     */
+    protected function setTrackedProducts(array $trackedProducts): void
+    {
+        $this->trackedProducts = $trackedProducts;
     }
 
     protected function setLocationUuid(string $locationUuid): void

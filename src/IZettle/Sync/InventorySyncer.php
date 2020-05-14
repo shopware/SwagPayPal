@@ -13,6 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContext;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory;
+use Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater;
 use Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater;
 
 class InventorySyncer
@@ -28,6 +29,11 @@ class InventorySyncer
     private $inventoryContextFactory;
 
     /**
+     * @var LocalUpdater
+     */
+    private $localUpdater;
+
+    /**
      * @var RemoteUpdater
      */
     private $remoteUpdater;
@@ -40,11 +46,13 @@ class InventorySyncer
     public function __construct(
         ProductSelection $productSelection,
         InventoryContextFactory $inventoryContextFactory,
+        LocalUpdater $localUpdater,
         RemoteUpdater $remoteUpdater,
         EntityRepositoryInterface $inventoryRepository
     ) {
         $this->productSelection = $productSelection;
         $this->inventoryContextFactory = $inventoryContextFactory;
+        $this->localUpdater = $localUpdater;
         $this->remoteUpdater = $remoteUpdater;
         $this->inventoryRepository = $inventoryRepository;
     }
@@ -65,9 +73,15 @@ class InventorySyncer
         if ($changes->count() > 0) {
             $this->updateLocalChanges($changes, $inventoryContext);
         }
+
+        $changes = $this->localUpdater->updateLocal($productCollection, $inventoryContext);
+
+        if ($changes->count() > 0) {
+            $this->updateLocalChanges($changes, $inventoryContext);
+        }
     }
 
-    protected function updateLocalChanges(ProductCollection $productCollection, InventoryContext $inventoryContext): void
+    private function updateLocalChanges(ProductCollection $productCollection, InventoryContext $inventoryContext): void
     {
         $localChanges = [];
         foreach ($productCollection->getElements() as $productEntity) {

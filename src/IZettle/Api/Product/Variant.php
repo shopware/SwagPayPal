@@ -44,7 +44,7 @@ class Variant extends IZettleStruct
     protected $price;
 
     /**
-     * @var ?Option[]
+     * @var Option[]|null
      */
     protected $options;
 

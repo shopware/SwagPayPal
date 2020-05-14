@@ -62,7 +62,7 @@ class IZettleInventorySyncCommand extends Command
         $salesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();
 
         foreach ($salesChannels as $salesChannel) {
-            $this->inventorySyncer->syncInventory($salesChannel->getExtension('paypalIZettleSalesChannel'), $context);
+            $this->inventorySyncer->syncInventory($salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION), $context);
         }
 
         return 0;

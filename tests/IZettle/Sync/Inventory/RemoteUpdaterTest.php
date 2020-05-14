@@ -7,9 +7,9 @@
 
 namespace Swag\PayPal\Test\IZettle\Sync\Inventory;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Framework\Context;
 use Swag\PayPal\IZettle\Api\Inventory\Changes;
 use Swag\PayPal\IZettle\Api\Inventory\Changes\Change;
 use Swag\PayPal\IZettle\Api\Inventory\Status;
@@ -17,16 +17,14 @@ use Swag\PayPal\IZettle\Api\Inventory\Status\Variant;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Api\Service\Inventory\RemoteCalculator;
 use Swag\PayPal\IZettle\Resource\InventoryResource;
-use Swag\PayPal\IZettle\Sync\Context\InventoryContext;
 use Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater;
 
 class RemoteUpdaterTest extends TestCase
 {
-    use InventoryTrait;
     use UpdaterTrait;
 
     /**
-     * @var \PHPUnit\Framework\MockObject\MockObject
+     * @var MockObject
      */
     private $inventoryResource;
 
@@ -35,11 +33,6 @@ class RemoteUpdaterTest extends TestCase
      */
     private $remoteUpdater;
 
-    /**
-     * @var InventoryContext
-     */
-    private $inventoryContext;
-
     public function setUp(): void
     {
         $this->inventoryResource = $this->createMock(InventoryResource::class);
@@ -47,18 +40,6 @@ class RemoteUpdaterTest extends TestCase
         $remoteCalculator = new RemoteCalculator(new UuidConverter());
 
         $this->remoteUpdater = new RemoteUpdater($this->inventoryResource, $remoteCalculator);
-
-        $this->inventoryContext = new InventoryContext(
-            $this->inventoryResource,
-            new UuidConverter(),
-            $this->getIZettleSalesChannel(),
-            Context::createDefaultContext()
-        );
-
-        $this->inventoryContext->setStoreUuid($this->locations['STORE']);
-        $this->inventoryContext->setSupplierUuid($this->locations['SUPPLIER']);
-        $this->inventoryContext->setBinUuid($this->locations['BIN']);
-        $this->inventoryContext->setIZettleInventory(new Status());
     }
 
     /**
@@ -69,7 +50,7 @@ class RemoteUpdaterTest extends TestCase
         $product = $this->getVariantProduct();
         $product->setAvailableStock($newLocalInventory);
 
-        $this->setLocalInventory($product, $localInventory);
+        $inventoryContext = $this->createInventoryContext($product, $localInventory, 0);
 
         $uuidConverter = new UuidConverter();
 
@@ -88,7 +69,7 @@ class RemoteUpdaterTest extends TestCase
                                 ->with(static::anything(), $changes)
                                 ->willReturn($this->createStatus($changeObject->getProductUuid(), $changeObject->getVariantUuid()));
 
-        $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $this->inventoryContext);
+        $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
 
     /**
@@ -99,7 +80,7 @@ class RemoteUpdaterTest extends TestCase
         $product = $this->getSingleProduct();
         $product->setAvailableStock($newLocalInventory);
 
-        $this->setLocalInventory($product, $localInventory);
+        $inventoryContext = $this->createInventoryContext($product, $localInventory, 0);
 
         $uuidConverter = new UuidConverter();
 
@@ -117,18 +98,18 @@ class RemoteUpdaterTest extends TestCase
                                 ->method('changeInventory')
                                 ->with(static::anything(), $changes);
 
-        $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $this->inventoryContext);
+        $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
 
     public function testUpdateRemoteInventoryWithParentProduct(): void
     {
         $product = $this->getParentProduct();
 
-        $this->setLocalInventory($product, 5);
+        $inventoryContext = $this->createInventoryContext($product, 5, 0);
 
         $this->inventoryResource->expects(static::never())->method('changeInventory');
 
-        $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $this->inventoryContext);
+        $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
 
     private function createStatus(string $productUuid, string $variantUuid): Status

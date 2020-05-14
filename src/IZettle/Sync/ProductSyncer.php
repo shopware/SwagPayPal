@@ -14,6 +14,7 @@ use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\ProductConverter;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\Resource\ProductResource;
+use Swag\PayPal\SwagPayPal;
 
 class ProductSyncer
 {
@@ -52,7 +53,7 @@ class ProductSyncer
     public function syncProducts(SalesChannelEntity $salesChannel, Context $context): void
     {
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
+        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
         $currency = $iZettleSalesChannel->isSyncPrices() ? $salesChannel->getCurrency() : null;
 
         $shopwareProducts = $this->productSelection->getProducts($iZettleSalesChannel, $context, true);

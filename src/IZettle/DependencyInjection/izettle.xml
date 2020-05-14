@@ -9,17 +9,17 @@
             <tag name="shopware.entity.definition" entity="swag_paypal_izettle_sales_channel"/>
         </service>
 
-        <service id="Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductDefinition">
-            <tag name="shopware.entity.definition" entity="swag_paypal_izettle_sales_channel_product"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelInventoryDefinition">
-            <tag name="shopware.entity.definition" entity="swag_paypal_izettle_sales_channel_inventory"/>
-        </service>
-
         <service id="Swag\PayPal\IZettle\DataAbstractionLayer\Extension\SalesChannelExtension">
             <tag name="shopware.entity.extension"/>
         </service>
+
+        <service id="Swag\PayPal\IZettle\IZettleSyncController" public="true">
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
+            <argument type="service" id="sales_channel.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
 
         <service id="Swag\PayPal\IZettle\Client\TokenClientFactory">
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
@@ -33,90 +33,6 @@
         <service id="Swag\PayPal\IZettle\Resource\TokenResource">
             <argument type="service" id="cache.object"/>
             <argument type="service" id="Swag\PayPal\IZettle\Client\TokenClientFactory"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Resource\ProductResource">
-            <argument type="service" id="Swag\PayPal\IZettle\Client\IZettleClientFactory"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Resource\InventoryResource">
-            <argument type="service" id="Swag\PayPal\IZettle\Client\IZettleClientFactory"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory">
-            <argument type="service" id="Swag\PayPal\IZettle\Resource\InventoryResource"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
-            <argument type="service" id="swag_paypal_izettle_sales_channel_inventory.repository"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Sync\ChecksumResource">
-            <argument type="service" id="swag_paypal_izettle_sales_channel_product.repository"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Sync\ProductSelection">
-            <argument type="service" id="sales_channel.product.repository"/>
-            <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
-            <argument type="service" id="sales_channel_domain.repository"/>
-            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Sync\ProductSyncer">
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\ProductConverter"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\ChecksumResource"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater">
-            <argument type="service" id="Swag\PayPal\IZettle\Resource\InventoryResource"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Inventory\RemoteCalculator"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Sync\InventorySyncer">
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater"/>
-            <argument type="service" id="swag_paypal_izettle_sales_channel_inventory.repository"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
-        <service id="Swag\PayPal\IZettle\Api\Service\Converter\PriceConverter"/>
-        <service id="Swag\PayPal\IZettle\Api\Service\Converter\OptionGroupConverter"/>
-        <service id="Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter">
-            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
-        </service>
-        <service id="Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter">
-            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\PriceConverter"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Api\Service\ProductConverter">
-            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\OptionGroupConverter"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Api\Service\Inventory\RemoteCalculator">
-            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Command\IZettleProductSyncCommand">
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
-            <argument type="service" id="sales_channel.repository"/>
-            <tag name="console.command"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\Command\IZettleInventorySyncCommand">
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
-            <argument type="service" id="sales_channel.repository"/>
-            <tag name="console.command"/>
-        </service>
-
-        <service id="Swag\PayPal\IZettle\IZettleSyncController" public="true">
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
-            <argument type="service" id="sales_channel.repository"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Setting\SettingsController" public="true">

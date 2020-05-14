@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\IZettle\Converter;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\Uuid\Exception\InvalidUuidException;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 
 class UuidConverterTest extends TestCase
@@ -25,6 +26,9 @@ class UuidConverterTest extends TestCase
      */
     public function testConvert(string $originalUuid, string $expectedUuid): void
     {
+        if ($expectedUuid === '') {
+            $this->expectException(InvalidUuidException::class);
+        }
         static::assertEquals($expectedUuid, $this->createUuidConverter()->convertUuidToV1($originalUuid));
     }
 
@@ -42,6 +46,9 @@ class UuidConverterTest extends TestCase
      */
     public function testIncrement(string $originalUuid, string $expectedUuid): void
     {
+        if ($expectedUuid === '') {
+            $this->expectException(InvalidUuidException::class);
+        }
         static::assertEquals($expectedUuid, $this->createUuidConverter()->incrementUuid($originalUuid));
     }
 

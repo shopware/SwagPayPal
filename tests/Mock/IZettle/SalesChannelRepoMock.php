@@ -159,7 +159,7 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
         $entity->setCurrency($currency);
 
         $iZettleEntity = new IZettleSalesChannelEntity();
-        $entity->addExtension('paypalIZettleSalesChannel', $iZettleEntity);
+        $entity->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleEntity);
 
         return $entity;
     }

@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_izettle_sales_channel_product"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Api\Service\Converter\PriceConverter"/>
+
+        <service id="Swag\PayPal\IZettle\Api\Service\Converter\OptionGroupConverter"/>
+
+        <service id="Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter">
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter">
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\PriceConverter"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Api\Service\ProductConverter">
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\OptionGroupConverter"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Command\IZettleProductSyncCommand">
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Resource\ProductResource">
+            <argument type="service" id="Swag\PayPal\IZettle\Client\IZettleClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\ChecksumResource">
+            <argument type="service" id="swag_paypal_izettle_sales_channel_product.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\ProductSelection">
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
+            <argument type="service" id="sales_channel_domain.repository"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\ProductSyncer">
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\ProductConverter"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ChecksumResource"/>
+        </service>
+    </services>
+</container>

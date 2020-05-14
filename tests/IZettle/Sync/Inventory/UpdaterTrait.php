@@ -9,15 +9,20 @@ namespace Swag\PayPal\Test\IZettle\Sync\Inventory;
 
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\IZettle\Api\Inventory\Status;
 use Swag\PayPal\IZettle\Api\Inventory\Status\Variant;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelInventoryCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelInventoryEntity;
+use Swag\PayPal\IZettle\Resource\InventoryResource;
+use Swag\PayPal\IZettle\Sync\Context\InventoryContext;
 
 trait UpdaterTrait
 {
+    use InventoryTrait;
+
     public function dataProviderInventoryUpdate(): array
     {
         return [
@@ -40,36 +45,41 @@ trait UpdaterTrait
         return $product;
     }
 
-    private function setLocalInventory(ProductEntity $product, int $stock): void
+    private function createInventoryContext(ProductEntity $product, int $localStock, int $iZettleStock): InventoryContext
     {
         $localInventory = new IZettleSalesChannelInventoryEntity();
         $localInventory->setSalesChannelId(Defaults::SALES_CHANNEL);
         $localInventory->setProductId($product->getId());
         $localInventory->setProductVersionId((string) $product->getVersionId());
         $localInventory->setUniqueIdentifier(Uuid::randomHex());
-        $localInventory->setStock($stock);
-        $this->inventoryContext->setLocalInventory(new IZettleSalesChannelInventoryCollection([
-            $localInventory,
-        ]));
-    }
+        $localInventory->setStock($localStock);
 
-    private function setIZettleInventory(ProductEntity $product, int $stock): void
-    {
         $status = new Status();
         $uuidConverter = new UuidConverter();
 
         $status->addVariant();
-        $status->setTrackedProducts([
+        $status->assign(['trackedProducts' => [
             $uuidConverter->convertUuidToV1($product->getParentId() ?? $product->getId()),
-        ]);
+        ]]);
         $variant = new Variant();
         $variant->assign([
-            'productUuid' => $uuidConverter->convertUuidToV1((string) $product->getParentId()),
+            'productUuid' => $product->getParentId() ? $uuidConverter->convertUuidToV1((string) $product->getParentId()) : '',
             'variantUuid' => $uuidConverter->convertUuidToV1($product->getId()),
-            'balance' => (string) $stock,
+            'balance' => (string) $iZettleStock,
         ]);
         $status->addVariant($variant);
 
-        $this->inventoryContext->setIZettleInventory($status);
+        return new InventoryContext(
+            $this->createMock(InventoryResource::class),
+            new UuidConverter(),
+            $this->getIZettleSalesChannel(),
+            $this->locations['STORE'],
+            $this->locations['SUPPLIER'],
+            $this->locations['BIN'],
+            $this->locations['SOLD'],
+            $status,
+            new IZettleSalesChannelInventoryCollection([$localInventory]),
+            Context::createDefaultContext()
+        );
     }
 }

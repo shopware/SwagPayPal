@@ -13,6 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelDefinition;
+use Swag\PayPal\SwagPayPal;
 
 class SalesChannelExtension extends EntityExtension
 {
@@ -20,7 +21,7 @@ class SalesChannelExtension extends EntityExtension
     {
         $collection->add(
             (new OneToOneAssociationField(
-                'paypalIZettleSalesChannel',
+                SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION,
                 'id',
                 'sales_channel_id',
                 IZettleSalesChannelDefinition::class,

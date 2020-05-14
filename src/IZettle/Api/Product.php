@@ -110,16 +110,16 @@ class Product extends IZettleStruct
         $this->vatPercentage = $vatPercentage;
     }
 
-    public function setPresentation(Presentation $presentation): void
-    {
-        $this->presentation = $presentation;
-    }
-
     /**
      * Generates a unique checksum for the converted product to recognize changes on repeated syncs.
      */
     public function generateChecksum(): string
     {
         return \md5(serialize($this));
+    }
+
+    protected function setPresentation(Presentation $presentation): void
+    {
+        $this->presentation = $presentation;
     }
 }
