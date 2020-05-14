@@ -1,5 +1,6 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
 - PT-11294 - Implemented error handling for Smart Payment Buttons
+- PT-11637 - Improve capture and refund workflow
 
 # 1.5.0
 - NEXT-8322 - Shopware 6.2 compatibility
