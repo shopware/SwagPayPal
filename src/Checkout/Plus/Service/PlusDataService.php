@@ -121,7 +121,7 @@ class PlusDataService
         $plusLanguage = 'en_GB';
         // use english as default, use german if the locale is from german speaking country (de_DE, de_AT, etc)
         // by now the PPP iFrame does not support other languages
-        if (strncmp($languageIso, 'de-', 3) === 0) {
+        if (\strncmp($languageIso, 'de-', 3) === 0) {
             $plusLanguage = 'de_DE';
         }
 

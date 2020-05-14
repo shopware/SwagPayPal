@@ -59,7 +59,7 @@ class WebhookResource
     {
         try {
             $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
-                RequestUri::WEBHOOK_RESOURCE . '/' . $webhookId
+                \sprintf('%s/%s', RequestUri::WEBHOOK_RESOURCE, $webhookId)
             );
 
             return $response['url'];
@@ -92,7 +92,7 @@ class WebhookResource
 
         try {
             $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPatchRequest(
-                RequestUri::WEBHOOK_RESOURCE . '/' . $webhookId,
+                \sprintf('%s/%s', RequestUri::WEBHOOK_RESOURCE, $webhookId),
                 $requestData
             );
         } catch (ClientException $e) {
@@ -113,7 +113,7 @@ class WebhookResource
             throw $exception;
         }
 
-        return json_decode($response->getBody()->getContents(), true);
+        return \json_decode($response->getBody()->getContents(), true);
     }
 
     private function checkForErrorName(array $error, string $errorName): bool

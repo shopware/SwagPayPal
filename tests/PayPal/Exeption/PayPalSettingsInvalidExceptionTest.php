@@ -18,7 +18,7 @@ class PayPalSettingsInvalidExceptionTest extends TestCase
         $settingOption = 'intent';
         $exception = new PayPalSettingsInvalidException($settingOption);
 
-        static::assertSame(sprintf('Required setting "%s" is missing or invalid', $settingOption), $exception->getMessage());
+        static::assertSame(\sprintf('Required setting "%s" is missing or invalid', $settingOption), $exception->getMessage());
         static::assertSame(Response::HTTP_NOT_FOUND, $exception->getStatusCode());
     }
 }

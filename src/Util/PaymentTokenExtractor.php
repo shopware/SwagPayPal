@@ -20,7 +20,7 @@ class PaymentTokenExtractor
                 continue;
             }
 
-            preg_match('/EC-\w+/', $link->getHref(), $matches);
+            \preg_match('/EC-\w+/', $link->getHref(), $matches);
 
             if (!empty($matches)) {
                 $token = $matches[0];

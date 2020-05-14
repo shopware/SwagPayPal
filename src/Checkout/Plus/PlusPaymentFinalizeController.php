@@ -71,14 +71,14 @@ class PlusPaymentFinalizeController extends AbstractController
                 MultiFilter::CONNECTION_AND,
                 [
                     new EqualsFilter(
-                        sprintf('customFields.%s', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID),
+                        \sprintf('customFields.%s', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID),
                         $paymentId
                     ),
                     new NotFilter(
                         NotFilter::CONNECTION_AND,
                         [
                             new EqualsFilter(
-                                sprintf('customFields.%s', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID),
+                                \sprintf('customFields.%s', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID),
                                 null
                             ),
                         ]

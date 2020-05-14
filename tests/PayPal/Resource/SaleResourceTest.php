@@ -14,10 +14,26 @@ use Swag\PayPal\PayPal\Api\Refund;
 use Swag\PayPal\PayPal\PaymentStatus;
 use Swag\PayPal\PayPal\Resource\SaleResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
 
 class SaleResourceTest extends TestCase
 {
     use ServicesTrait;
+
+    public function testGet(): void
+    {
+        $saleResponse = $this->createSaleResource()->get(
+            'saleId',
+            Defaults::SALES_CHANNEL
+        );
+
+        $sale = \json_encode($saleResponse);
+        static::assertNotFalse($sale);
+
+        $saleArray = \json_decode($sale, true);
+
+        static::assertSame(GetSaleResponseFixture::ID, $saleArray['id']);
+    }
 
     public function testRefund(): void
     {

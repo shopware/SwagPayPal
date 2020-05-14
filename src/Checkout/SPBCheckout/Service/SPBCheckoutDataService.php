@@ -67,7 +67,7 @@ class SPBCheckoutDataService
             return $settingsLocale;
         }
 
-        return str_replace(
+        return \str_replace(
             '-',
             '_',
             $this->localeCodeProvider->getLocaleCodeFromContext($context->getContext())

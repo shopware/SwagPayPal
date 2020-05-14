@@ -32,11 +32,11 @@ class SystemConfigServiceMock extends SystemConfigService
     public function getDomain(string $domain, ?string $salesChannelId = null, bool $inherit = false): array
     {
         $values = [];
-        $domain = rtrim($domain, '.') . '.';
+        $domain = \rtrim($domain, '.') . '.';
 
         if ($inherit && $salesChannelId !== null) {
             foreach ($this->data[''] as $key => $value) {
-                if (mb_strpos($key, $domain) === 0) {
+                if (\mb_strpos($key, $domain) === 0) {
                     $values[$key] = $value;
                 }
             }
@@ -47,7 +47,7 @@ class SystemConfigServiceMock extends SystemConfigService
         }
 
         foreach ($this->data[$salesChannelId] as $key => $value) {
-            if (mb_strpos($key, $domain) === 0) {
+            if (\mb_strpos($key, $domain) === 0) {
                 $values[$key] = $value;
             }
         }

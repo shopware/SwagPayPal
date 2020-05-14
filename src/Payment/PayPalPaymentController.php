@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Payment;
 
+use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
@@ -104,6 +105,31 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
+     * @OA\Get(
+     *     path="/paypal/payment-details/{orderId}/{paymentId}",
+     *     description="Loads the Payment details of the given PayPal ID",
+     *     operationId="paymentDetails",
+     *     tags={"Admin API", "PayPal"},
+     *     @OA\Parameter(
+     *         parameter="orderId",
+     *         name="orderId",
+     *         in="path",
+     *         description="ID of the order which contains the PayPal payment",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="paymentId",
+     *         name="paymentId",
+     *         in="path",
+     *         description="ID of the PayPal payment",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Details of the PayPal payment",
+     *         @OA\JsonContent(type="array")
+     *     )
+     * )
      * @Route("/api/v{version}/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"})
      */
     public function paymentDetails(string $orderId, string $paymentId, Context $context): JsonResponse
@@ -111,6 +137,64 @@ class PayPalPaymentController extends AbstractController
         $payment = $this->paymentResource->get($paymentId, $this->getSalesChannelIdByOrderId($orderId, $context));
 
         return new JsonResponse($payment);
+    }
+
+    /**
+     * @OA\Get(
+     *     path="/paypal/resource-details/{resourceType}/{resourceId}/{orderId}",
+     *     description="Loads the PayPal resource details of the given resource ID",
+     *     operationId="resourceDetails",
+     *     tags={"Admin API", "PayPal"},
+     *     @OA\Parameter(
+     *         parameter="resourceType",
+     *         name="resourceType",
+     *         in="path",
+     *         description="Type of the resource. Possible values: sale, authorization, order, capture, refund",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="resourceId",
+     *         name="resourceId",
+     *         in="path",
+     *         description="ID of the PayPal resource",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="orderId",
+     *         name="orderId",
+     *         in="path",
+     *         description="ID of the order which contains the PayPal resource",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Details of the PayPal resource",
+     *         @OA\JsonContent(type="array")
+     *     )
+     * )
+     * @Route("/api/v{version}/paypal/resource-details/{resourceType}/{resourceId}/{orderId}", name="api.paypal.resource_details", methods={"GET"})
+     */
+    public function resourceDetails(Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
+    {
+        $salesChannelId = $this->getSalesChannelIdByOrderId($orderId, $context);
+        switch ($resourceType) {
+            case RelatedResource::SALE:
+                $resource = $this->saleResource->get($resourceId, $salesChannelId);
+                break;
+            case RelatedResource::AUTHORIZE:
+                $resource = $this->authorizationResource->get($resourceId, $salesChannelId);
+                break;
+            case RelatedResource::ORDER:
+                $resource = $this->ordersResource->get($resourceId, $salesChannelId);
+                break;
+            case RelatedResource::CAPTURE:
+                $resource = $this->captureResource->get($resourceId, $salesChannelId);
+                break;
+            default:
+                throw new RequiredParameterInvalidException('resourceType');
+        }
+
+        return new JsonResponse($resource);
     }
 
     /**
@@ -126,27 +210,29 @@ class PayPalPaymentController extends AbstractController
         string $orderId
     ): JsonResponse {
         $refund = $this->createRefund($request);
+        $salesChannelId = $this->getSalesChannelIdByOrderId($orderId, $context);
 
         switch ($resourceType) {
             case RelatedResource::SALE:
                 $refundResponse = $this->saleResource->refund(
                     $resourceId,
                     $refund,
-                    $this->getSalesChannelIdByOrderId($orderId, $context)
+                    $salesChannelId
                 );
+                $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $refundResponse, $context);
                 break;
             case RelatedResource::CAPTURE:
                 $refundResponse = $this->captureResource->refund(
                     $resourceId,
                     $refund,
-                    $this->getSalesChannelIdByOrderId($orderId, $context)
+                    $salesChannelId
                 );
+                $paymentResponse = $this->paymentResource->get($refundResponse->getParentPayment(), $salesChannelId);
+                $this->paymentStatusUtil->applyRefundStateToCapture($orderId, $refundResponse, $paymentResponse, $context);
                 break;
             default:
                 throw new RequiredParameterInvalidException('resourceType');
         }
-
-        $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $refundResponse, $context);
 
         return new JsonResponse($refundResponse);
     }
@@ -181,7 +267,7 @@ class PayPalPaymentController extends AbstractController
                 throw new RequiredParameterInvalidException('resourceType');
         }
 
-        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $request, $captureResponse, $context);
+        $this->paymentStatusUtil->applyCaptureState($orderId, $captureResponse, $context);
 
         return new JsonResponse($captureResponse);
     }

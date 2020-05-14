@@ -97,7 +97,7 @@ class ExpressCheckoutControllerTest extends TestCase
         $content = $response->getContent();
         static::assertNotFalse($content);
 
-        $token = json_decode($content, true)['token'];
+        $token = \json_decode($content, true)['token'];
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_TOKEN, $token);
@@ -158,7 +158,7 @@ class ExpressCheckoutControllerTest extends TestCase
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_SHIPPING_ADDRESS_STREET, $address->getStreet());
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_SHIPPING_ADDRESS_CITY, $address->getCity());
 
-        $cartToken = json_decode($content, true)['cart_token'];
+        $cartToken = \json_decode($content, true)['cart_token'];
         /** @var ExpressCheckoutData|null $ecsCartExtension */
         $ecsCartExtension = $cartService->getCart($cartToken, $salesChannelContext)
             ->getExtension(ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID);

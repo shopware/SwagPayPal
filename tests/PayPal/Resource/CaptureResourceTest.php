@@ -18,6 +18,21 @@ class CaptureResourceTest extends TestCase
 {
     use ServicesTrait;
 
+    public function testGet(): void
+    {
+        $captureResponse = $this->createCaptureResource()->get(
+            'captureId',
+            Defaults::SALES_CHANNEL
+        );
+
+        $capture = \json_encode($captureResponse);
+        static::assertNotFalse($capture);
+
+        $captureArray = \json_decode($capture, true);
+
+        static::assertTrue($captureArray['is_final_capture']);
+    }
+
     public function testRefund(): void
     {
         $refund = new Refund();

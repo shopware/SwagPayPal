@@ -71,7 +71,7 @@ abstract class AbstractClient
 
     private function decodeJsonResponse(string $response): array
     {
-        return json_decode($response, true);
+        return \json_decode($response, true);
     }
 
     /**
@@ -88,7 +88,7 @@ abstract class AbstractClient
             return;
         }
 
-        $error = json_decode($exceptionResponse->getBody()->getContents(), true);
+        $error = \json_decode($exceptionResponse->getBody()->getContents(), true);
         if (\array_key_exists('error', $error) && \array_key_exists('error_description', $error)) {
             $this->logger->error($exceptionMessage, [$error, $data]);
 

@@ -62,7 +62,7 @@ class WebhookResourceTest extends TestCase
         $createWebhooks->assign(['url' => self::TEST_URL_ALREADY_EXISTS]);
 
         $this->expectException(WebhookAlreadyExistsException::class);
-        $this->expectExceptionMessage(sprintf('WebhookUrl "%s" already exists', self::TEST_URL_ALREADY_EXISTS));
+        $this->expectExceptionMessage(\sprintf('WebhookUrl "%s" already exists', self::TEST_URL_ALREADY_EXISTS));
         $this->createWebHookResource()->createWebhook(self::TEST_URL_ALREADY_EXISTS, $createWebhooks, Defaults::SALES_CHANNEL);
     }
 
@@ -76,7 +76,7 @@ class WebhookResourceTest extends TestCase
     public function testGetWebhookUrlThrowsExceptionInvalidId(): void
     {
         $this->expectException(WebhookIdInvalidException::class);
-        $this->expectExceptionMessage(sprintf('Webhook with ID "%s" is invalid', self::THROW_EXCEPTION_INVALID_ID));
+        $this->expectExceptionMessage(\sprintf('Webhook with ID "%s" is invalid', self::THROW_EXCEPTION_INVALID_ID));
         $this->createWebHookResource()->getWebhookUrl(self::THROW_EXCEPTION_INVALID_ID, Defaults::SALES_CHANNEL);
     }
 
@@ -92,17 +92,17 @@ class WebhookResourceTest extends TestCase
         $this->createWebHookResource()->updateWebhook(self::TEST_URL, '', Defaults::SALES_CHANNEL);
 
         $data = $this->clientFactory->getClient()->getData();
-        $patchJsonString = json_encode($data[0]);
+        $patchJsonString = \json_encode($data[0]);
         static::assertNotFalse($patchJsonString);
 
-        $patch = json_decode($patchJsonString, true);
+        $patch = \json_decode($patchJsonString, true);
         static::assertSame($patch['value'], self::TEST_URL);
     }
 
     public function testUpdateWebhookWithInvalidResourceId(): void
     {
         $this->expectException(WebhookIdInvalidException::class);
-        $this->expectExceptionMessage(sprintf('Webhook with ID "%s" is invalid', self::THROW_EXCEPTION_INVALID_ID));
+        $this->expectExceptionMessage(\sprintf('Webhook with ID "%s" is invalid', self::THROW_EXCEPTION_INVALID_ID));
         $this->createWebHookResource()->updateWebhook('', self::THROW_EXCEPTION_INVALID_ID, Defaults::SALES_CHANNEL);
     }
 

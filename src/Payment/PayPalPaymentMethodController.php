@@ -44,8 +44,7 @@ class PayPalPaymentMethodController extends AbstractController
      *         @OA\Schema(type="string"),
      *     ),
      *     @OA\Response(
-     *         response="204",
-     *         description=""
+     *         response="204"
      *     )
      * )
      *
@@ -55,7 +54,7 @@ class PayPalPaymentMethodController extends AbstractController
     {
         $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod(
             $context,
-            $request->request->get('salesChannelId', null)
+            $request->request->get('salesChannelId')
         );
 
         return new Response(null, Response::HTTP_NO_CONTENT);

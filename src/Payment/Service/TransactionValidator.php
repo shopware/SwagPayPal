@@ -41,9 +41,9 @@ class TransactionValidator
                 $itemPrices[] = (float) $item->getPrice() * $quantity;
                 $itemTaxes[] = (float) $item->getTax() * $quantity;
             }
-            $transactionValid[] = ((string) array_sum($itemPrices) === (string) $subTotal) && ((string) array_sum($itemTaxes) === (string) $totalTax);
+            $transactionValid[] = ((string) \array_sum($itemPrices) === (string) $subTotal) && ((string) \array_sum($itemTaxes) === (string) $totalTax);
         }
 
-        return $transactionValid === array_filter($transactionValid);
+        return $transactionValid === \array_filter($transactionValid);
     }
 }

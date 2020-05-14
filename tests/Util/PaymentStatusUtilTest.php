@@ -23,11 +23,12 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use Swag\PayPal\Payment\PayPalPaymentController;
 use Swag\PayPal\PayPal\Api\Capture;
+use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\Api\Payment\Transaction;
 use Swag\PayPal\PayPal\Api\Refund;
+use Swag\PayPal\PayPal\Api\Refund\TotalRefundedAmount;
 use Swag\PayPal\Util\PaymentStatusUtil;
-use Symfony\Component\HttpFoundation\Request;
 
 class PaymentStatusUtilTest extends TestCase
 {
@@ -45,19 +46,36 @@ class PaymentStatusUtilTest extends TestCase
      */
     private $stateMachineRegistry;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $orderRepository;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $orderTransactionRepository;
+
     protected function setUp(): void
     {
         $container = $this->getContainer();
         /** @var StateMachineRegistry $stateMachineRegistry */
         $stateMachineRegistry = $container->get(StateMachineRegistry::class);
         $this->stateMachineRegistry = $stateMachineRegistry;
+
         /** @var EntityRepositoryInterface $orderRepository */
         $orderRepository = $container->get('order.repository');
+        $this->orderRepository = $orderRepository;
+
+        /** @var EntityRepositoryInterface $orderTransactionRepository */
+        $orderTransactionRepository = $container->get('order_transaction.repository');
+        $this->orderTransactionRepository = $orderTransactionRepository;
+
         /** @var OrderTransactionStateHandler $orderTransactionStateHandler */
         $orderTransactionStateHandler = $container->get(OrderTransactionStateHandler::class);
 
         $this->paymentStatusUtil = new PaymentStatusUtil(
-            $orderRepository,
+            $this->orderRepository,
             $orderTransactionStateHandler
         );
     }
@@ -65,24 +83,12 @@ class PaymentStatusUtilTest extends TestCase
     public function testApplyVoidStateToOrder(): void
     {
         $orderId = $this->createBasicOrder();
-
         $this->paymentStatusUtil->applyVoidStateToOrder($orderId, Context::createDefaultContext());
 
-        $changedOrder = $this->getOrder($orderId);
-        static::assertNotNull($changedOrder);
-
-        $orderTransactionCollection = $changedOrder->getTransactions();
-        static::assertNotNull($orderTransactionCollection);
-
-        $orderTransactionEntity = $orderTransactionCollection->first();
-        static::assertInstanceOf(OrderTransactionEntity::class, $orderTransactionEntity);
-
-        $stateMachineState = $orderTransactionEntity->getStateMachineState();
-        static::assertInstanceOf(StateMachineStateEntity::class, $stateMachineState);
-        static::assertSame(OrderTransactionStates::STATE_CANCELLED, $stateMachineState->getTechnicalName());
+        $this->assertTransactionState($orderId, OrderTransactionStates::STATE_CANCELLED);
     }
 
-    public function dataProviderTestApplyCaptureStateToPayment(): array
+    public function dataProviderTestApplyCaptureState(): array
     {
         $finalCaptureResponse = new Capture();
         $finalCaptureResponse->setIsFinalCapture(true);
@@ -91,24 +97,10 @@ class PaymentStatusUtilTest extends TestCase
 
         return [
             [
-                new Request([], [
-                    PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_AMOUNT => 7.0,
-                    PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_IS_FINAL => true,
-                ]),
-                $notFinalCaptureResponse,
-                OrderTransactionStates::STATE_PAID,
-            ],
-            [
-                new Request([], [
-                    PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_AMOUNT => 15.0,
-                ]),
                 $finalCaptureResponse,
                 OrderTransactionStates::STATE_PAID,
             ],
             [
-                new Request([], [
-                    PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_AMOUNT => 14.99,
-                ]),
                 $notFinalCaptureResponse,
                 OrderTransactionStates::STATE_PARTIALLY_PAID,
             ],
@@ -116,25 +108,123 @@ class PaymentStatusUtilTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderTestApplyCaptureStateToPayment
+     * @dataProvider dataProviderTestApplyCaptureState
      */
-    public function testApplyCaptureStateToPayment(Request $request, Capture $captureResponse, string $expectedOrderTransactionState): void
+    public function testApplyCaptureState(Capture $captureResponse, string $expectedOrderTransactionState): void
     {
         $orderId = $this->createBasicOrder();
-        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $request, $captureResponse, Context::createDefaultContext());
+        $this->paymentStatusUtil->applyCaptureState(
+            $orderId,
+            $captureResponse,
+            Context::createDefaultContext()
+        );
 
-        $changedOrder = $this->getOrder($orderId);
-        static::assertNotNull($changedOrder);
+        $this->assertTransactionState($orderId, $expectedOrderTransactionState);
+    }
 
-        $orderTransactionCollection = $changedOrder->getTransactions();
-        static::assertNotNull($orderTransactionCollection);
+    public function testMultipleApplyCaptureState(): void
+    {
+        $orderId = $this->createBasicOrder();
+        $context = Context::createDefaultContext();
 
-        $orderTransactionEntity = $orderTransactionCollection->first();
-        static::assertInstanceOf(OrderTransactionEntity::class, $orderTransactionEntity);
+        $firstCapture = new Capture();
+        $firstCapture->setIsFinalCapture(false);
 
-        $stateMachineState = $orderTransactionEntity->getStateMachineState();
-        static::assertInstanceOf(StateMachineStateEntity::class, $stateMachineState);
-        static::assertSame($expectedOrderTransactionState, $stateMachineState->getTechnicalName());
+        $this->paymentStatusUtil->applyCaptureState($orderId, $firstCapture, $context);
+
+        $this->assertTransactionState($orderId, OrderTransactionStates::STATE_PARTIALLY_PAID);
+
+        $secondCapture = new Capture();
+        $secondCapture->setIsFinalCapture(true);
+
+        $this->paymentStatusUtil->applyCaptureState($orderId, $secondCapture, $context);
+
+        $this->assertTransactionState($orderId, OrderTransactionStates::STATE_PAID);
+    }
+
+    public function testSeveralCapturesAndRefundsWorkflow(): void
+    {
+        $orderId = $this->createBasicOrder();
+        $context = Context::createDefaultContext();
+
+        $firstCapture = new Capture();
+        $firstCapture->setIsFinalCapture(false);
+
+        $this->paymentStatusUtil->applyCaptureState($orderId, $firstCapture, $context);
+        $this->assertTransactionState($orderId, OrderTransactionStates::STATE_PARTIALLY_PAID);
+
+        $partialRefundResponse = new Refund();
+        $partialRefundResponse->assign(
+            ['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '2.00'])]
+        );
+
+        $transaction = new Transaction();
+        $transaction->assign([
+            'related_resources' => [
+                ['capture' => ['amount' => ['total' => '10.00']]],
+                ['refund' => ['amount' => ['total' => '2.00']]],
+            ],
+        ]);
+
+        $paymentResponse = new Payment();
+        $paymentResponse->setTransactions([$transaction]);
+        $this->paymentStatusUtil->applyRefundStateToCapture($orderId, $partialRefundResponse, $paymentResponse, $context);
+        $this->assertTransactionState($orderId, OrderTransactionStates::STATE_PARTIALLY_REFUNDED);
+
+        $secondCapture = new Capture();
+        $secondCapture->setIsFinalCapture(false);
+
+        $this->paymentStatusUtil->applyCaptureState($orderId, $secondCapture, $context);
+        $this->assertTransactionState($orderId, OrderTransactionStates::STATE_PARTIALLY_PAID);
+
+        $thirdCapture = new Capture();
+        $thirdCapture->setIsFinalCapture(true);
+
+        $this->paymentStatusUtil->applyCaptureState($orderId, $thirdCapture, $context);
+        $this->assertTransactionState($orderId, OrderTransactionStates::STATE_PAID);
+
+        $secondPartialRefundResponse = new Refund();
+        $secondPartialRefundResponse->assign(
+            ['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '4.00'])]
+        );
+
+        $secondTransaction = new Transaction();
+        $secondTransaction->assign([
+            'related_resources' => [
+                ['capture' => ['amount' => ['total' => '10.00']]],
+                ['refund' => ['amount' => ['total' => '2.00']]],
+                ['capture' => ['amount' => ['total' => '2.00']]],
+                ['refund' => ['amount' => ['total' => '2.00']]],
+                ['capture' => ['amount' => ['total' => '2.00']]],
+            ],
+        ]);
+
+        $secondPaymentResponse = new Payment();
+        $secondPaymentResponse->setTransactions([$secondTransaction]);
+        $this->paymentStatusUtil->applyRefundStateToCapture($orderId, $secondPartialRefundResponse, $secondPaymentResponse, $context);
+        $this->assertTransactionState($orderId, OrderTransactionStates::STATE_PARTIALLY_REFUNDED);
+
+        $thirdPartialRefundResponse = new Refund();
+        $thirdPartialRefundResponse->assign(
+            ['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '14.00'])]
+        );
+
+        $thirdTransaction = new Transaction();
+        $thirdTransaction->assign([
+            'related_resources' => [
+                ['capture' => ['amount' => ['total' => '10.00']]],
+                ['refund' => ['amount' => ['total' => '2.00']]],
+                ['capture' => ['amount' => ['total' => '2.00']]],
+                ['refund' => ['amount' => ['total' => '2.00']]],
+                ['capture' => ['amount' => ['total' => '2.00']]],
+                ['refund' => ['amount' => ['total' => '10.00']]],
+            ],
+        ]);
+
+        $thirdPaymentResponse = new Payment();
+        $thirdPaymentResponse->setTransactions([$thirdTransaction]);
+        $this->paymentStatusUtil->applyRefundStateToCapture($orderId, $thirdPartialRefundResponse, $thirdPaymentResponse, $context);
+        $this->assertTransactionState($orderId, OrderTransactionStates::STATE_REFUNDED);
     }
 
     public function dataProviderTestApplyRefundStateToPayment(): array
@@ -163,28 +253,37 @@ class PaymentStatusUtilTest extends TestCase
     public function testApplyRefundStateToPayment(Refund $refundResponse, string $expectedOrderTransactionState): void
     {
         $orderId = $this->createBasicOrder();
-        $captureRequest = new Request([], [
-            PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_AMOUNT => 15.0,
-            PayPalPaymentController::REQUEST_PARAMETER_CAPTURE_IS_FINAL => true,
-        ]);
         $captureResponse = new Capture();
         $captureResponse->setIsFinalCapture(true);
+        $context = Context::createDefaultContext();
 
-        $this->paymentStatusUtil->applyCaptureStateToPayment($orderId, $captureRequest, $captureResponse, Context::createDefaultContext());
-        $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $refundResponse, Context::createDefaultContext());
+        $this->paymentStatusUtil->applyCaptureState($orderId, $captureResponse, $context);
 
-        $changedOrder = $this->getOrder($orderId);
-        static::assertNotNull($changedOrder);
+        $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $refundResponse, $context);
 
-        $orderTransactionCollection = $changedOrder->getTransactions();
-        static::assertNotNull($orderTransactionCollection);
+        $this->assertTransactionState($orderId, $expectedOrderTransactionState);
+    }
 
-        $orderTransactionEntity = $orderTransactionCollection->first();
-        static::assertInstanceOf(OrderTransactionEntity::class, $orderTransactionEntity);
+    /**
+     * @dataProvider dataProviderTestApplyRefundStateToPayment
+     */
+    public function testApplyRefundStateToCapture(): void
+    {
+        $orderId = $this->createBasicOrder();
+        $captureResponse = new Capture();
+        $captureResponse->setIsFinalCapture(true);
+        $context = Context::createDefaultContext();
 
-        $stateMachineState = $orderTransactionEntity->getStateMachineState();
-        static::assertInstanceOf(StateMachineStateEntity::class, $stateMachineState);
-        static::assertSame($expectedOrderTransactionState, $stateMachineState->getTechnicalName());
+        $this->paymentStatusUtil->applyCaptureState($orderId, $captureResponse, $context);
+
+        $completeRefundResponse = new Refund();
+        $completeRefundResponse->assign(
+            ['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '15'])]
+        );
+
+        $this->paymentStatusUtil->applyRefundStateToCapture($orderId, $completeRefundResponse, new Payment(), $context);
+
+        $this->assertTransactionState($orderId, OrderTransactionStates::STATE_REFUNDED);
     }
 
     public function testApplyVoidStateToOrderWithNoOrder(): void
@@ -202,15 +301,11 @@ class PaymentStatusUtilTest extends TestCase
 
     private function createBasicOrder(bool $withTransaction = true): string
     {
-        /** @var EntityRepositoryInterface $orderRepo */
-        $orderRepo = $this->getContainer()->get('order.repository');
-        /** @var EntityRepositoryInterface $orderTransactionRepo */
-        $orderTransactionRepo = $this->getContainer()->get('order_transaction.repository');
         $orderId = Uuid::randomHex();
         $context = Context::createDefaultContext();
 
         $orderData = $this->getOrderData($orderId, $context);
-        $orderRepo->create($orderData, $context);
+        $this->orderRepository->create($orderData, $context);
 
         if ($withTransaction) {
             $orderTransactionData = [
@@ -231,7 +326,7 @@ class PaymentStatusUtilTest extends TestCase
                     )->getId(),
                 ],
             ];
-            $orderTransactionRepo->create($orderTransactionData, $context);
+            $this->orderTransactionRepository->create($orderTransactionData, $context);
 
             $updateData = [
                 [
@@ -240,20 +335,33 @@ class PaymentStatusUtilTest extends TestCase
                 ],
             ];
 
-            $orderRepo->update($updateData, $context);
+            $this->orderRepository->update($updateData, $context);
         }
 
         return $orderId;
     }
 
+    private function assertTransactionState(string $orderId, string $expectedOrderTransactionState): void
+    {
+        $changedOrder = $this->getOrder($orderId);
+        static::assertNotNull($changedOrder);
+
+        $orderTransactionCollection = $changedOrder->getTransactions();
+        static::assertNotNull($orderTransactionCollection);
+
+        $orderTransactionEntity = $orderTransactionCollection->first();
+        static::assertInstanceOf(OrderTransactionEntity::class, $orderTransactionEntity);
+
+        $stateMachineState = $orderTransactionEntity->getStateMachineState();
+        static::assertInstanceOf(StateMachineStateEntity::class, $stateMachineState);
+        static::assertSame($expectedOrderTransactionState, $stateMachineState->getTechnicalName());
+    }
+
     private function getOrder(string $orderId): ?OrderEntity
     {
-        /** @var EntityRepositoryInterface $orderRepo */
-        $orderRepo = $this->getContainer()->get('order.repository');
-
         $criteria = new Criteria([$orderId]);
         $criteria->addAssociation('transactions');
 
-        return $orderRepo->search($criteria, Context::createDefaultContext())->get($orderId);
+        return $this->orderRepository->search($criteria, Context::createDefaultContext())->get($orderId);
     }
 }

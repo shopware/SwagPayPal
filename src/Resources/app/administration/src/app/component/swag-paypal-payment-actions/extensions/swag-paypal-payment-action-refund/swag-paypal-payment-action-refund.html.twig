@@ -4,8 +4,8 @@
               @modal-close="$emit('modal-close')">
 
         {% block swag_paypal_payment_action_refund_invoice_select %}
-            <sw-select-field :label="$tc('swag-paypal-payment.refundAction.invoiceSelect.label')"
-                             v-model="selectedCaptureId"
+            <sw-select-field v-model="selectedCaptureId"
+                             :label="$tc('swag-paypal-payment.refundAction.invoiceSelect.label')"
                              @change="preserveCapture">
                 <option v-for="capture in captures"
                         :value="capture.id">
@@ -38,10 +38,9 @@
         {% endblock %}
 
         {% block swag_paypal_payment_action_refund_description %}
-            <sw-textarea-field
-                v-model="refundDescription"
-                :placeholder="$tc('swag-paypal-payment.refundAction.refundDescription.placeholder')"
-                :label="$tc('swag-paypal-payment.refundAction.refundDescription.label')">
+            <sw-textarea-field v-model="refundDescription"
+                               :placeholder="$tc('swag-paypal-payment.refundAction.refundDescription.placeholder')"
+                               :label="$tc('swag-paypal-payment.refundAction.refundDescription.label')">
             </sw-textarea-field>
         {% endblock %}
 

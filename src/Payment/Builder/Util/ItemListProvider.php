@@ -62,7 +62,7 @@ class ItemListProvider
         $item->setName($lineItem->getLabel());
 
         $payload = $lineItem->getPayload();
-        if ($payload !== null && array_key_exists('productNumber', $payload)) {
+        if ($payload !== null && \array_key_exists('productNumber', $payload)) {
             $item->setSku($payload['productNumber']);
         }
 

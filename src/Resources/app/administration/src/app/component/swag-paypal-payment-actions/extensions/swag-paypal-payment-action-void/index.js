@@ -39,7 +39,7 @@ Component.register('swag-paypal-payment-action-void', {
 
             this.SwagPayPalPaymentService.voidPayment(this.orderId, resourceType, resourceId, orderId).then(() => {
                 this.createNotificationSuccess({
-                    title: this.$tc('swag-paypal-payment.voidAction.successTitle'),
+                    title: this.$tc('global.default.success'),
                     message: this.$tc('swag-paypal-payment.voidAction.successMessage')
                 });
                 this.isLoading = false;

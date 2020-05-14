@@ -160,7 +160,7 @@ Component.register('swag-paypal-payment-action-refund', {
                 invoiceNumber
             ).then(() => {
                 this.createNotificationSuccess({
-                    title: this.$tc('swag-paypal-payment.refundAction.successTitle'),
+                    title: this.$tc('global.default.success'),
                     message: this.$tc('swag-paypal-payment.refundAction.successMessage')
                 });
                 this.isLoading = false;

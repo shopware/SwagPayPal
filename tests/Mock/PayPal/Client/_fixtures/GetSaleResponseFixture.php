@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures;
 
 class GetSaleResponseFixture
 {
+    public const ID = 'PAY-3NJ117295B240983LLQDISII';
     public const TRANSACTION_AMOUNT_DETAILS_SUBTOTAL = '193.28';
     public const PAYER_PAYER_INFO_EMAIL = 'test@shopware.com';
     public const PAYER_PAYER_INFO_FIRST_NAME = 'Test FirstName';
@@ -20,7 +21,7 @@ class GetSaleResponseFixture
     public static function get(): array
     {
         return [
-            'id' => 'PAY-3NJ117295B240983LLQDISII',
+            'id' => self::ID,
             'intent' => 'sale',
             'state' => 'approved',
             'cart' => '27499824YX3936050',

@@ -73,6 +73,11 @@ abstract class RelatedResource extends PayPalStruct
         return $this->state;
     }
 
+    public function getAmount(): Amount
+    {
+        return $this->amount;
+    }
+
     protected function setId(string $id): void
     {
         $this->id = $id;
@@ -80,7 +85,7 @@ abstract class RelatedResource extends PayPalStruct
 
     protected function setState(string $state): void
     {
-        $this->state = mb_strtolower($state);
+        $this->state = \mb_strtolower($state);
     }
 
     protected function setAmount(Amount $amount): void

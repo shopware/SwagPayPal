@@ -29,6 +29,16 @@ abstract class Amount extends PayPalStruct
         return $this->details;
     }
 
+    public function setDetails(Details $details): void
+    {
+        $this->details = $details;
+    }
+
+    public function getTotal(): string
+    {
+        return $this->total;
+    }
+
     public function setTotal(string $total): void
     {
         $this->total = $total;
@@ -37,10 +47,5 @@ abstract class Amount extends PayPalStruct
     public function setCurrency(string $currency): void
     {
         $this->currency = $currency;
-    }
-
-    public function setDetails(Details $details): void
-    {
-        $this->details = $details;
     }
 }

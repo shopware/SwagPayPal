@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\PayPal\Resource;
 
+use Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource\Sale;
 use Swag\PayPal\PayPal\Api\Refund;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\RequestUri;
@@ -23,10 +24,19 @@ class SaleResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
+    public function get(string $saleId, string $salesChannelId): Sale
+    {
+        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
+            \sprintf('%s/%s', RequestUri::SALE_RESOURCE, $saleId)
+        );
+
+        return (new Sale())->assign($response);
+    }
+
     public function refund(string $saleId, Refund $refund, string $salesChannelId): Refund
     {
         $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
-            RequestUri::SALE_RESOURCE . '/' . $saleId . '/refund',
+            \sprintf('%s/%s/refund', RequestUri::SALE_RESOURCE, $saleId),
             $refund
         );
 

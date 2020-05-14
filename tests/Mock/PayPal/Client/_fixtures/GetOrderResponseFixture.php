@@ -9,10 +9,12 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures;
 
 class GetOrderResponseFixture
 {
+    public const ID = 'PAY-35B10430TC590490WLQDJXTI';
+
     public static function get(): array
     {
         return [
-            'id' => 'PAY-35B10430TC590490WLQDJXTI',
+            'id' => self::ID,
             'intent' => 'order',
             'state' => 'approved',
             'payer' => [

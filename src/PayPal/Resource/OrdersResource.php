@@ -9,6 +9,7 @@ namespace Swag\PayPal\PayPal\Resource;
 
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Api\DoVoid;
+use Swag\PayPal\PayPal\Api\Payment\Transaction\RelatedResource\Order;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\RequestUri;
 
@@ -24,10 +25,19 @@ class OrdersResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
+    public function get(string $orderId, string $salesChannelId): Order
+    {
+        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
+            \sprintf('%s/%s', RequestUri::ORDERS_RESOURCE, $orderId)
+        );
+
+        return (new Order())->assign($response);
+    }
+
     public function capture(string $orderId, Capture $capture, string $salesChannelId): Capture
     {
         $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
-            RequestUri::ORDERS_RESOURCE . '/' . $orderId . '/capture',
+            \sprintf('%s/%s/capture', RequestUri::ORDERS_RESOURCE, $orderId),
             $capture
         );
 
@@ -40,7 +50,7 @@ class OrdersResource
     {
         $doVoid = new DoVoid();
         $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
-            RequestUri::ORDERS_RESOURCE . '/' . $orderId . '/do-void',
+            \sprintf('%s/%s/do-void', RequestUri::ORDERS_RESOURCE, $orderId),
             $doVoid
         );
 

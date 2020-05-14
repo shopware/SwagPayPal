@@ -44,7 +44,7 @@ class TokenResource
 
     public function getToken(OAuthCredentials $credentials, string $url): Token
     {
-        $cacheId = md5((string) $credentials);
+        $cacheId = \md5((string) $credentials);
         $token = $this->getTokenFromCache($cacheId);
         if ($token === null || !$this->isTokenValid($token)) {
             $tokenClient = $this->tokenClientFactory->createTokenClient($credentials, $url);
@@ -82,18 +82,18 @@ class TokenResource
 
     private function getTokenFromCache(string $cacheId): ?Token
     {
-        $token = $this->cache->getItem(self::CACHE_ID . $cacheId)->get();
+        $token = $this->cache->getItem(\sprintf('%s%s', self::CACHE_ID, $cacheId))->get();
         if ($token === null) {
             return null;
         }
 
-        return unserialize($token, ['allowed_classes' => [Token::class, \DateTime::class]]);
+        return \unserialize($token, ['allowed_classes' => [Token::class, \DateTime::class]]);
     }
 
     private function setToken(Token $token, string $cacheId): void
     {
         $item = $this->cache->getItem(self::CACHE_ID . $cacheId);
-        $item->set(serialize($token));
+        $item->set(\serialize($token));
         $this->cache->save($item);
     }
 

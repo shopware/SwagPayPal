@@ -20,7 +20,7 @@ class WebhookOrderTransactionNotFoundExceptionTest extends TestCase
         $exception = new WebhookOrderTransactionNotFoundException($payPalTransactionId, $webhookType);
 
         static::assertSame(
-            sprintf(
+            \sprintf(
                 '[PayPal %s Webhook] Could not find associated order with the PayPal ID "%s"',
                 $webhookType,
                 $payPalTransactionId

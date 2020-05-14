@@ -39,7 +39,7 @@ class CredentialsClient extends AbstractClient
 
     public function getCredentials(string $accessToken, string $partnerId): array
     {
-        $url = sprintf(RequestUri::CREDENTIALS_RESOURCE, $partnerId);
+        $url = \sprintf(RequestUri::CREDENTIALS_RESOURCE, $partnerId);
         $options = [
             'headers' => [
                 'content-type' => 'application/json',

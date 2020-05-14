@@ -9,10 +9,12 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures;
 
 class GetAuthorizeResponseFixture
 {
+    public const ID = 'PAYID-LSAT63Q0NM35123M7232615L';
+
     public static function get(): array
     {
         return [
-            'id' => 'PAYID-LSAT63Q0NM35123M7232615L',
+            'id' => self::ID,
             'intent' => 'authorize',
             'state' => 'approved',
             'cart' => '4H701720RR467622X',

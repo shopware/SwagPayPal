@@ -14,7 +14,6 @@ use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
-use Shopware\Storefront\Pagelet\Pagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -132,7 +131,6 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        /** @var Pagelet $quickviewPagelet */
         $quickviewPagelet = $event->getPagelet();
         $quickviewPagelet->addExtension(
             self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,

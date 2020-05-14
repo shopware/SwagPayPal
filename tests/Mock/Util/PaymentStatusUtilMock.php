@@ -11,13 +11,13 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\PayPal\Api\Capture;
+use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Refund;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\EntityRepositoryMock;
 use Swag\PayPal\Util\PaymentStatusUtil;
-use Symfony\Component\HttpFoundation\Request;
 
 class PaymentStatusUtilMock extends PaymentStatusUtil
 {
@@ -42,11 +42,15 @@ class PaymentStatusUtilMock extends PaymentStatusUtil
     {
     }
 
-    public function applyCaptureStateToPayment(string $orderId, Request $request, Capture $captureResponse, Context $context): void
+    public function applyCaptureState(string $orderId, Capture $captureResponse, Context $context): void
     {
     }
 
     public function applyRefundStateToPayment(string $orderId, Refund $refundResponse, Context $context): void
+    {
+    }
+
+    public function applyRefundStateToCapture(string $orderId, Refund $refundResponse, Payment $paymentResponse, Context $context): void
     {
     }
 }
