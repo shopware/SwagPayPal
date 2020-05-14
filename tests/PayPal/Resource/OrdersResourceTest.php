@@ -26,10 +26,10 @@ class OrdersResourceTest extends TestCase
             Defaults::SALES_CHANNEL
         );
 
-        $orders = json_encode($ordersResponse);
+        $orders = \json_encode($ordersResponse);
         static::assertNotFalse($orders);
 
-        $ordersArray = json_decode($orders, true);
+        $ordersArray = \json_decode($orders, true);
 
         static::assertSame(GetOrderResponseFixture::ID, $ordersArray['id']);
     }
@@ -39,10 +39,10 @@ class OrdersResourceTest extends TestCase
         $capture = new Capture();
         $captureResponse = $this->createOrdersResource()->capture('captureId', $capture, Defaults::SALES_CHANNEL);
 
-        $capture = json_encode($captureResponse);
+        $capture = \json_encode($captureResponse);
         static::assertNotFalse($capture);
 
-        $captureArray = json_decode($capture, true);
+        $captureArray = \json_decode($capture, true);
 
         static::assertTrue($captureArray['is_final_capture']);
     }
@@ -51,10 +51,10 @@ class OrdersResourceTest extends TestCase
     {
         $voidResponse = $this->createOrdersResource()->void('voidId', Defaults::SALES_CHANNEL);
 
-        $void = json_encode($voidResponse);
+        $void = \json_encode($voidResponse);
         static::assertNotFalse($void);
 
-        $voidArray = json_decode($void, true);
+        $voidArray = \json_decode($void, true);
 
         static::assertSame(VoidOrderResponseFixture::VOID_ID, $voidArray['id']);
     }

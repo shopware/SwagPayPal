@@ -25,10 +25,10 @@ class Update
 
     public function update(UpdateContext $updateContext): void
     {
-        if (version_compare($updateContext->getCurrentPluginVersion(), '1.1.0', '<')) {
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.1.0', '<')) {
             $this->updateTo110();
         }
-        if (version_compare($updateContext->getCurrentPluginVersion(), '1.3.0', '<')) {
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.3.0', '<')) {
             $this->updateTo130();
         }
     }

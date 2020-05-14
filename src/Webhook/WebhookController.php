@@ -138,7 +138,7 @@ class WebhookController extends AbstractController
                 '[PayPal Webhook] ' . $webhookException->getMessage(),
                 [
                     'type' => $webhookException->getEventType(),
-                    'webhook' => json_encode($webhook),
+                    'webhook' => \json_encode($webhook),
                 ]
             );
 

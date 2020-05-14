@@ -32,10 +32,10 @@ class PayPalStructTest extends TestCase
         $testStruct = new TestStruct();
         $testStruct->assign($data);
 
-        $testJsonString = json_encode($testStruct);
+        $testJsonString = \json_encode($testStruct);
         static::assertNotFalse($testJsonString);
 
-        $testArray = json_decode($testJsonString, true);
+        $testArray = \json_decode($testJsonString, true);
 
         $this->silentAssertArraySubset($data, $testArray);
     }
@@ -57,10 +57,10 @@ class PayPalStructTest extends TestCase
         $paypalStruct = new TestStruct();
         $paypalStruct->assign($data);
 
-        $testJsonString = json_encode($paypalStruct);
+        $testJsonString = \json_encode($paypalStruct);
         static::assertNotFalse($testJsonString);
 
-        $paypalStructArray = json_decode($testJsonString, true);
+        $paypalStructArray = \json_decode($testJsonString, true);
 
         static::assertNull($paypalStructArray['id']);
         static::assertNull($paypalStructArray['bar']);

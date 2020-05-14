@@ -64,27 +64,27 @@ class PayPalClientMock extends PayPalClient
 
     public function sendGetRequest(string $resourceUri): array
     {
-        if (strncmp($resourceUri, RequestUri::WEBHOOK_RESOURCE, 22) === 0) {
+        if (\strncmp($resourceUri, RequestUri::WEBHOOK_RESOURCE, 22) === 0) {
             return $this->handleWebhookGetRequests($resourceUri);
         }
 
-        if (strncmp($resourceUri, RequestUri::PAYMENT_RESOURCE, 16) === 0) {
+        if (\strncmp($resourceUri, RequestUri::PAYMENT_RESOURCE, 16) === 0) {
             return $this->handlePaymentGetRequests($resourceUri);
         }
 
-        if (strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0) {
+        if (\strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0) {
             return GetAuthorizeResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, RequestUri::CAPTURE_RESOURCE, 16) === 0) {
+        if (\strncmp($resourceUri, RequestUri::CAPTURE_RESOURCE, 16) === 0) {
             return CaptureAuthorizationResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0) {
+        if (\strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0) {
             return GetOrderResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, RequestUri::SALE_RESOURCE, 13) === 0) {
+        if (\strncmp($resourceUri, RequestUri::SALE_RESOURCE, 13) === 0) {
             return GetSaleResponseFixture::get();
         }
 
@@ -93,35 +93,35 @@ class PayPalClientMock extends PayPalClient
 
     public function sendPostRequest(string $resourceUri, PayPalStruct $data): array
     {
-        if (mb_substr($resourceUri, -8) === '/execute') {
+        if (\mb_substr($resourceUri, -8) === '/execute') {
             return $this->handlePaymentExecuteRequests($data);
         }
 
-        if (mb_substr($resourceUri, -22) === RequestUri::WEBHOOK_RESOURCE) {
+        if (\mb_substr($resourceUri, -22) === RequestUri::WEBHOOK_RESOURCE) {
             return $this->handleWebhookCreateRequests($data);
         }
 
-        if (strncmp($resourceUri, RequestUri::SALE_RESOURCE, 13) === 0 && mb_substr($resourceUri, -7) === '/refund') {
+        if (\strncmp($resourceUri, RequestUri::SALE_RESOURCE, 13) === 0 && \mb_substr($resourceUri, -7) === '/refund') {
             return RefundSaleResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, RequestUri::CAPTURE_RESOURCE, 16) === 0 && mb_substr($resourceUri, -7) === '/refund') {
+        if (\strncmp($resourceUri, RequestUri::CAPTURE_RESOURCE, 16) === 0 && \mb_substr($resourceUri, -7) === '/refund') {
             return RefundCaptureResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0 && mb_substr($resourceUri, -8) === '/capture') {
+        if (\strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0 && \mb_substr($resourceUri, -8) === '/capture') {
             return CaptureAuthorizationResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0 && mb_substr($resourceUri, -5) === '/void') {
+        if (\strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0 && \mb_substr($resourceUri, -5) === '/void') {
             return VoidAuthorizationResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0 && mb_substr($resourceUri, -8) === '/capture') {
+        if (\strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0 && \mb_substr($resourceUri, -8) === '/capture') {
             return CaptureOrdersResponseFixture::get();
         }
 
-        if (strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0 && mb_substr($resourceUri, -8) === '/do-void') {
+        if (\strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0 && \mb_substr($resourceUri, -8) === '/do-void') {
             return VoidOrderResponseFixture::get();
         }
 
@@ -130,11 +130,11 @@ class PayPalClientMock extends PayPalClient
 
     public function sendPatchRequest(string $resourceUri, array $data): array
     {
-        if (mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID) !== false) {
+        if (\mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID) !== false) {
             throw $this->createClientExceptionWithInvalidId();
         }
 
-        if (mb_strpos($resourceUri, WebhookResourceTest::WEBHOOK_ID) !== false) {
+        if (\mb_strpos($resourceUri, WebhookResourceTest::WEBHOOK_ID) !== false) {
             throw $this->createClientExceptionWithResponse();
         }
 
@@ -150,15 +150,15 @@ class PayPalClientMock extends PayPalClient
 
     private function handleWebhookGetRequests(string $resourceUri): array
     {
-        if (mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_WITHOUT_RESPONSE) !== false) {
+        if (\mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_WITHOUT_RESPONSE) !== false) {
             throw $this->createClientException();
         }
 
-        if (mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_WITH_RESPONSE) !== false) {
+        if (\mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_WITH_RESPONSE) !== false) {
             throw $this->createClientExceptionWithResponse();
         }
 
-        if (mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID) !== false) {
+        if (\mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID) !== false) {
             throw $this->createClientExceptionWithInvalidId();
         }
 
@@ -167,19 +167,19 @@ class PayPalClientMock extends PayPalClient
 
     private function handlePaymentGetRequests(string $resourceUri): array
     {
-        if (mb_strpos($resourceUri, PaymentResourceTest::ORDER_PAYMENT_ID) !== false) {
+        if (\mb_strpos($resourceUri, PaymentResourceTest::ORDER_PAYMENT_ID) !== false) {
             return GetOrderResponseFixture::get();
         }
 
-        if (mb_strpos($resourceUri, PaymentResourceTest::CAPTURED_ORDER_PAYMENT_ID) !== false) {
+        if (\mb_strpos($resourceUri, PaymentResourceTest::CAPTURED_ORDER_PAYMENT_ID) !== false) {
             return GetCapturedOrderResponseFixture::get();
         }
 
-        if (mb_strpos($resourceUri, PaymentResourceTest::AUTHORIZE_PAYMENT_ID) !== false) {
+        if (\mb_strpos($resourceUri, PaymentResourceTest::AUTHORIZE_PAYMENT_ID) !== false) {
             return GetAuthorizeResponseFixture::get();
         }
 
-        if (mb_strpos($resourceUri, PaymentResourceTest::SALE_WITH_REFUND_PAYMENT_ID) !== false) {
+        if (\mb_strpos($resourceUri, PaymentResourceTest::SALE_WITH_REFUND_PAYMENT_ID) !== false) {
             return GetSaleWithRefundResponseFixture::get();
         }
 
@@ -214,12 +214,12 @@ class PayPalClientMock extends PayPalClient
 
     private function handleWebhookCreateRequests(PayPalStruct $data): array
     {
-        $createWebhookJson = json_encode($data);
-        if ($createWebhookJson && mb_strpos($createWebhookJson, WebhookResourceTest::TEST_URL) !== false) {
+        $createWebhookJson = \json_encode($data);
+        if ($createWebhookJson && \mb_strpos($createWebhookJson, WebhookResourceTest::TEST_URL) !== false) {
             throw $this->createClientExceptionWithResponse();
         }
 
-        if ($createWebhookJson && mb_strpos($createWebhookJson, WebhookResourceTest::TEST_URL_ALREADY_EXISTS) !== false) {
+        if ($createWebhookJson && \mb_strpos($createWebhookJson, WebhookResourceTest::TEST_URL_ALREADY_EXISTS) !== false) {
             throw $this->createClientExceptionWebhookAlreadyExists();
         }
 
@@ -233,21 +233,21 @@ class PayPalClientMock extends PayPalClient
 
     private function createClientExceptionWithResponse(): ClientException
     {
-        $jsonString = (string) json_encode(['foo' => 'bar']);
+        $jsonString = (string) \json_encode(['foo' => 'bar']);
 
         return $this->createClientExceptionFromResponseString($jsonString);
     }
 
     private function createClientExceptionWithInvalidId(): ClientException
     {
-        $jsonString = (string) json_encode(['name' => 'INVALID_RESOURCE_ID']);
+        $jsonString = (string) \json_encode(['name' => 'INVALID_RESOURCE_ID']);
 
         return $this->createClientExceptionFromResponseString($jsonString);
     }
 
     private function createClientExceptionWebhookAlreadyExists(): ClientException
     {
-        $jsonString = (string) json_encode(['name' => 'WEBHOOK_URL_ALREADY_EXISTS']);
+        $jsonString = (string) \json_encode(['name' => 'WEBHOOK_URL_ALREADY_EXISTS']);
 
         return $this->createClientExceptionFromResponseString($jsonString);
     }

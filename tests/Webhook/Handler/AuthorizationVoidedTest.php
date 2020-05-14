@@ -102,7 +102,7 @@ class AuthorizationVoidedTest extends TestCase
 
         $this->expectException(WebhookOrderTransactionNotFoundException::class);
         $this->expectExceptionMessage(
-            sprintf(
+            \sprintf(
                 '[PayPal PAYMENT.AUTHORIZATION.VOIDED Webhook] Could not find associated order with the PayPal ID "%s"',
                 OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION
             )

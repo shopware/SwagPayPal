@@ -309,7 +309,7 @@ class SwagPayPalSettingStruct extends Struct
     {
         if (!\in_array($merchantLocation, self::VALID_MERCHANT_LOCATIONS, true)) {
             throw new \LogicException(
-                sprintf('"%s" is not a valid value for the merchant location', $merchantLocation)
+                \sprintf('"%s" is not a valid value for the merchant location', $merchantLocation)
             );
         }
         $this->merchantLocation = $merchantLocation;

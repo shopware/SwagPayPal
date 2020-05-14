@@ -36,7 +36,7 @@ class SettingsControllerTest extends TestCase
         $content = $controller->validateApiCredentials($request)->getContent();
         static::assertNotFalse($content);
 
-        $result = json_decode($content, true);
+        $result = \json_decode($content, true);
         static::assertSame(['credentialsValid' => true], $result);
     }
 

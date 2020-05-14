@@ -59,34 +59,34 @@ class DeprecatedTagTest extends TestCase
             }
         }
 
-        static::assertSame([], $return, 'Several files have a wrong deprecation tag: ' . print_r($return, true));
+        static::assertSame([], $return, 'Several files have a wrong deprecation tag: ' . \print_r($return, true));
     }
 
     private function hasDeprecationFalseOrNoTag(string $deprecatedPrefix, string $file): bool
     {
-        $content = file_get_contents($file);
-        static::assertNotFalse($content, sprintf('File "%s" not found or not readable', $file));
+        $content = \file_get_contents($file);
+        static::assertNotFalse($content, \sprintf('File "%s" not found or not readable', $file));
         $matches = [];
         $pattern = '/' . $deprecatedPrefix . '(?!\s?tag\:)/';
-        preg_match($pattern, $content, $matches);
+        \preg_match($pattern, $content, $matches);
 
-        if (!empty(array_filter($matches))) {
+        if (!empty(\array_filter($matches))) {
             return true;
         }
 
         $pattern = '/' . $deprecatedPrefix . '\s?tag\:v{1}([0-9,\.]{2,5})/';
-        preg_match_all($pattern, $content, $matches);
+        \preg_match_all($pattern, $content, $matches);
 
         $matches = $matches[1];
 
-        if (empty(array_filter($matches))) {
+        if (empty(\array_filter($matches))) {
             return true;
         }
 
         $currentPluginVersion = $this->getCurrentPluginVersion();
 
         foreach ($matches as $match) {
-            if (version_compare($currentPluginVersion, $match) !== -1) {
+            if (\version_compare($currentPluginVersion, $match) !== -1) {
                 return true;
             }
         }

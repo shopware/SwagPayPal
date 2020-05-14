@@ -74,10 +74,10 @@ class OrderPaymentBuilderTest extends TestCase
         $salesChannelContext = Generator::createSalesChannelContext($context);
         $salesChannelContext->getSalesChannel()->setId(Defaults::SALES_CHANNEL);
 
-        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
+        $payment = \json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
 
-        $payment = json_decode($payment, true);
+        $payment = \json_decode($payment, true);
 
         static::assertSame(SalesChannelRepoMock::SALES_CHANNEL_NAME, $payment['application_context']['brand_name']);
     }
@@ -92,10 +92,10 @@ class OrderPaymentBuilderTest extends TestCase
         $context = $this->createContextWithoutSalesChannel();
         $salesChannelContext = Generator::createSalesChannelContext($context);
 
-        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
+        $payment = \json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
 
-        $payment = json_decode($payment, true);
+        $payment = \json_decode($payment, true);
 
         static::assertSame('', $payment['application_context']['brand_name']);
     }
@@ -113,11 +113,11 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
-        $transaction = json_encode($payment->getTransactions()[0]);
+        $transaction = \json_encode($payment->getTransactions()[0]);
 
         static::assertNotFalse($transaction);
 
-        $transaction = json_decode($transaction, true);
+        $transaction = \json_decode($transaction, true);
         static::assertNotNull(
             $transaction['item_list'],
             'ItemList is null, it probably got removed by the TransactionValidator.'
@@ -144,11 +144,11 @@ class OrderPaymentBuilderTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_PRICE);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-        $transaction = json_encode($payment->getTransactions()[0]);
+        $transaction = \json_encode($payment->getTransactions()[0]);
 
         static::assertNotFalse($transaction);
 
-        $transaction = json_decode($transaction, true)['item_list'];
+        $transaction = \json_decode($transaction, true)['item_list'];
 
         static::assertNull($transaction);
     }
@@ -181,10 +181,10 @@ class OrderPaymentBuilderTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-        $paymentJsonString = json_encode($payment);
+        $paymentJsonString = \json_encode($payment);
         static::assertNotFalse($paymentJsonString);
 
-        $applicationContext = json_decode($paymentJsonString, true)['application_context'];
+        $applicationContext = \json_decode($paymentJsonString, true)['application_context'];
         static::assertSame($expectedResult, $applicationContext['landing_page']);
         static::assertSame('en-GB', $applicationContext['locale']);
         static::assertSame('commit', $applicationContext['user_action']);
@@ -233,10 +233,10 @@ class OrderPaymentBuilderTest extends TestCase
         $context = Context::createDefaultContext();
         $salesChannelContext = Generator::createSalesChannelContext($context);
 
-        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
+        $payment = \json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
 
-        $payment = json_decode($payment, true);
+        $payment = \json_decode($payment, true);
 
         static::assertSame(
             $orderNumberPrefix . self::TEST_ORDER_NUMBER,
@@ -255,10 +255,10 @@ class OrderPaymentBuilderTest extends TestCase
         $context = Context::createDefaultContext();
         $salesChannelContext = Generator::createSalesChannelContext($context);
 
-        $payment = json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
+        $payment = \json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);
 
-        $payment = json_decode($payment, true);
+        $payment = \json_decode($payment, true);
 
         static::assertSame(self::TEST_ORDER_NUMBER, $payment['transactions'][0]['invoice_number']);
     }

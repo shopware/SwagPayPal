@@ -21,7 +21,7 @@ class PaymentTest extends TestCase
 
         static::assertSame(
             '{"id":null,"intent":null,"state":null,"cart":null,"payer":null,"transactions":null,"create_time":null,"update_time":null,"links":null,"redirect_urls":{"return_url":"return","cancel_url":null},"application_context":null}',
-            json_encode($payment)
+            \json_encode($payment)
         );
     }
 }

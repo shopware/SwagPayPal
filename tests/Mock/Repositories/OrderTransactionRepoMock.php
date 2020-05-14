@@ -70,7 +70,7 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
     {
-        $this->data = array_merge($this->data, $data[0]);
+        $this->data = \array_merge($this->data, $data[0]);
 
         return new EntityWrittenContainerEvent($context, new NestedEventCollection([]), []);
     }

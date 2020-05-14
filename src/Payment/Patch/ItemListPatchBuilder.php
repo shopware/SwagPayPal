@@ -16,7 +16,7 @@ class ItemListPatchBuilder
     public function createItemListPatch(OrderEntity $order, string $currency): Patch
     {
         $itemList = (new ItemListProvider())->getItemList($order, $currency);
-        $itemListArray = json_decode((string) json_encode($itemList), true);
+        $itemListArray = \json_decode((string) \json_encode($itemList), true);
 
         $itemListPatch = new Patch();
         $itemListPatch->assign([

@@ -43,7 +43,7 @@ class WebhookControllerTest extends TestCase
         $content = $jsonResponse->getContent();
         static::assertNotFalse($content);
 
-        $result = json_decode($content, true);
+        $result = \json_decode($content, true);
 
         $this->silentAssertArraySubset(['result' => WebhookService::WEBHOOK_CREATED], $result);
     }

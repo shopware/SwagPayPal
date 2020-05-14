@@ -25,10 +25,10 @@ class CaptureResourceTest extends TestCase
             Defaults::SALES_CHANNEL
         );
 
-        $capture = json_encode($captureResponse);
+        $capture = \json_encode($captureResponse);
         static::assertNotFalse($capture);
 
-        $captureArray = json_decode($capture, true);
+        $captureArray = \json_decode($capture, true);
 
         static::assertTrue($captureArray['is_final_capture']);
     }

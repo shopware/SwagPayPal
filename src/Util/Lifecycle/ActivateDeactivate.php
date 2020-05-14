@@ -98,7 +98,7 @@ class ActivateDeactivate
             return;
         }
 
-        $ids = array_map(static function ($id) {
+        $ids = \array_map(static function ($id) {
             return ['id' => $id];
         }, $customFieldIds->getIds());
         $this->customFieldRepository->delete($ids, $context);

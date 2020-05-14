@@ -14,12 +14,14 @@ EOF;
 
 return Config::create()
     ->setUsingCache(false)
+    ->setRiskyAllowed(true)
     ->setRules([
         'header_comment' => [
             'header' => $licenseInformation,
             'separate' => 'bottom',
             'location' => 'after_declare_strict',
             'comment_type' => 'comment'
-        ]
+        ],
+        'native_function_invocation' => true,
     ])
     ->setFinder($finder);

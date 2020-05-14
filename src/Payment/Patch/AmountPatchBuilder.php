@@ -19,7 +19,7 @@ class AmountPatchBuilder
         string $currency
     ): Patch {
         $amount = (new AmountProvider())->createAmount($orderTransactionAmount, $shippingCosts, $currency);
-        $amountArray = json_decode((string) json_encode($amount), true);
+        $amountArray = \json_decode((string) \json_encode($amount), true);
 
         $amountPatch = new Patch();
         $amountPatch->assign([

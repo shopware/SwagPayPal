@@ -11,11 +11,11 @@ class PriceFormatter
 {
     public function formatPrice(float $price): string
     {
-        return number_format($this->roundPrice($price), 2);
+        return \number_format($this->roundPrice($price), 2);
     }
 
     public function roundPrice(float $price): float
     {
-        return round($price, 2);
+        return \round($price, 2);
     }
 }

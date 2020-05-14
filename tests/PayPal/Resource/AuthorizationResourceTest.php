@@ -26,10 +26,10 @@ class AuthorizationResourceTest extends TestCase
             Defaults::SALES_CHANNEL
         );
 
-        $authorization = json_encode($authorizationResponse);
+        $authorization = \json_encode($authorizationResponse);
         static::assertNotFalse($authorization);
 
-        $authorizationArray = json_decode($authorization, true);
+        $authorizationArray = \json_decode($authorization, true);
 
         static::assertSame(GetAuthorizeResponseFixture::ID, $authorizationArray['id']);
     }
@@ -43,10 +43,10 @@ class AuthorizationResourceTest extends TestCase
             Defaults::SALES_CHANNEL
         );
 
-        $capture = json_encode($captureResponse);
+        $capture = \json_encode($captureResponse);
         static::assertNotFalse($capture);
 
-        $captureArray = json_decode($capture, true);
+        $captureArray = \json_decode($capture, true);
 
         static::assertTrue($captureArray['is_final_capture']);
     }
@@ -55,10 +55,10 @@ class AuthorizationResourceTest extends TestCase
     {
         $voidResponse = $this->createAuthorizationResource()->void('voidId', Defaults::SALES_CHANNEL);
 
-        $void = json_encode($voidResponse);
+        $void = \json_encode($voidResponse);
         static::assertNotFalse($void);
 
-        $voidArray = json_decode($void, true);
+        $voidArray = \json_decode($void, true);
 
         static::assertSame(VoidAuthorizationResponseFixture::VOID_ID, $voidArray['id']);
     }

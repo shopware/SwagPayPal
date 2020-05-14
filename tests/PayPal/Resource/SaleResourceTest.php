@@ -27,10 +27,10 @@ class SaleResourceTest extends TestCase
             Defaults::SALES_CHANNEL
         );
 
-        $sale = json_encode($saleResponse);
+        $sale = \json_encode($saleResponse);
         static::assertNotFalse($sale);
 
-        $saleArray = json_decode($sale, true);
+        $saleArray = \json_decode($sale, true);
 
         static::assertSame(GetSaleResponseFixture::ID, $saleArray['id']);
     }

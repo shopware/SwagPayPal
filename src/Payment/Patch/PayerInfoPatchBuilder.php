@@ -32,7 +32,7 @@ class PayerInfoPatchBuilder
         $payerInfo->setLastName($customerBillingAddress->getLastName());
         $payerInfo->setBillingAddress($this->createBillingAddress($customerBillingAddress));
 
-        $payerInfoArray = json_decode((string) json_encode($payerInfo), true);
+        $payerInfoArray = \json_decode((string) \json_encode($payerInfo), true);
 
         $payerInfoPatch = new Patch();
         $payerInfoPatch->assign([

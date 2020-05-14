@@ -19,9 +19,9 @@ abstract class PayPalStruct implements \JsonSerializable
         $nameConverter = new CamelCaseToSnakeCaseNameConverter();
 
         foreach ($arrayDataWithSnakeCaseKeys as $snakeCaseKey => $value) {
-            $camelCaseKey = ucfirst($nameConverter->denormalize($snakeCaseKey));
+            $camelCaseKey = \ucfirst($nameConverter->denormalize($snakeCaseKey));
             $setterMethod = 'set' . $camelCaseKey;
-            if (!method_exists($this, $setterMethod)) {
+            if (!\method_exists($this, $setterMethod)) {
                 // There is no setter/property for a given data key from PayPal.
                 // Continue here to not break the plugin, if the plugin is not up-to-date with the PayPal API
                 continue;
@@ -36,7 +36,7 @@ abstract class PayPalStruct implements \JsonSerializable
             if ($this->isAssociativeArray($value)) {
                 /** @var class-string<PayPalStruct> $className */
                 $className = $namespace . $camelCaseKey;
-                if (!class_exists($className)) {
+                if (!\class_exists($className)) {
                     continue;
                 }
 
@@ -53,7 +53,7 @@ abstract class PayPalStruct implements \JsonSerializable
 
                 /** @var class-string<PayPalStruct> $className */
                 $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
-                if (!class_exists($className)) {
+                if (!\class_exists($className)) {
                     continue;
                 }
 
@@ -71,7 +71,7 @@ abstract class PayPalStruct implements \JsonSerializable
         $data = [];
         $nameConverter = new CamelCaseToSnakeCaseNameConverter();
 
-        foreach (get_object_vars($this) as $property => $value) {
+        foreach (\get_object_vars($this) as $property => $value) {
             $snakeCasePropertyName = $nameConverter->normalize($property);
 
             $data[$snakeCasePropertyName] = $value;
@@ -94,7 +94,7 @@ abstract class PayPalStruct implements \JsonSerializable
             return false;
         }
 
-        return array_keys($value) !== range(0, \count($value) - 1);
+        return \array_keys($value) !== \range(0, \count($value) - 1);
     }
 
     private function getNamespaceOfAssociation(): string
@@ -104,7 +104,7 @@ abstract class PayPalStruct implements \JsonSerializable
 
     private function getClassNameOfOneToManyAssociation(string $camelCaseKey): string
     {
-        return rtrim($camelCaseKey, 's');
+        return \rtrim($camelCaseKey, 's');
     }
 
     /**

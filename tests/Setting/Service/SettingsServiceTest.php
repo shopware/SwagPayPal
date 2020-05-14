@@ -70,7 +70,7 @@ class SettingsServiceTest extends TestCase
         $settings = $settingsService->getSettings();
 
         static::assertTrue(
-            method_exists($settings, $getterName),
+            \method_exists($settings, $getterName),
             'getter ' . $getterName . ' does not exist'
         );
         static::assertSame($value, $settings->$getterName());
@@ -109,7 +109,7 @@ class SettingsServiceTest extends TestCase
         $settings = $settingsService->getSettings();
 
         static::assertTrue(
-            method_exists($settings, $getterName),
+            \method_exists($settings, $getterName),
             'getter ' . $getterName . ' does not exist'
         );
         static::assertSame($value, $settings->$getterName());

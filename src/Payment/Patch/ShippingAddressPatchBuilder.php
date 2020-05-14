@@ -46,7 +46,7 @@ class ShippingAddressPatchBuilder
             $shippingAddress->setPhone($customerShippingAddress->getPhoneNumber());
         }
         $shippingAddress->setRecipientName($customerShippingAddress->getFirstName() . ' ' . $customerShippingAddress->getLastName());
-        $shippingAddressArray = json_decode((string) json_encode($shippingAddress), true);
+        $shippingAddressArray = \json_decode((string) \json_encode($shippingAddress), true);
 
         $shippingAddressPatch = new Patch();
         $shippingAddressPatch->assign([

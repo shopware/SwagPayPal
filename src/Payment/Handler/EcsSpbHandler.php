@@ -138,13 +138,13 @@ class EcsSpbHandler extends AbstractPaymentHandler
         string $payerId,
         string $payPalType
     ): RedirectResponse {
-        $parameters = http_build_query([
+        $parameters = \http_build_query([
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID => $paypalPaymentId,
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID => $payerId,
             $payPalType => true,
         ]);
 
-        return new RedirectResponse(sprintf('%s&%s', $returnUrl, $parameters));
+        return new RedirectResponse(\sprintf('%s&%s', $returnUrl, $parameters));
     }
 
     /**
