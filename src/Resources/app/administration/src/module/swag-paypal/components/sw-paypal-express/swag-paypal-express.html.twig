@@ -165,14 +165,15 @@
                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsButtonLanguageIso']"
                         :customInheritationCheckFunction="checkTextFieldInheritance">
                         <template #content="props">
-                            <sw-text-field name="SwagPayPal.settings.ecsButtonLanguageIso"
-                                           :mapInheritance="props"
-                                           :label="$tc('swag-paypal.settingForm.express.ecsButtonLanguageIso.label')"
-                                           :helpText="$tc('swag-paypal.settingForm.express.ecsButtonLanguageIso.helpText')"
-                                           :disabled="props.isInherited"
-                                           :value="props.currentValue"
-                                           @change="props.updateCurrentValue">
-                            </sw-text-field>
+                            <sw-paypal-locale-field name="SwagPayPal.settings.ecsButtonLanguageIso"
+                                                    :mapInheritance="props"
+                                                    :label="$tc('swag-paypal.settingForm.express.ecsButtonLanguageIso.label')"
+                                                    :helpText="$tc('swag-paypal.settingForm.express.ecsButtonLanguageIso.helpText')"
+                                                    :disabled="props.isInherited"
+                                                    :value="props.currentValue"
+                                                    @change="props.updateCurrentValue"
+                                                    @preventSave="preventSave">
+                            </sw-paypal-locale-field>
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}

@@ -22,24 +22,6 @@
                     </sw-inherit-wrapper>
                 {% endblock %}
 
-                {% block swag_paypal_content_card_channel_config_spb_settings_locale %}
-                    <sw-inherit-wrapper
-                        v-model="actualConfigData['SwagPayPal.settings.spbButtonLanguageIso']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.spbButtonLanguageIso']"
-                        :customInheritationCheckFunction="checkTextFieldInheritance">
-                        <template #content="props">
-                            <sw-text-field name="SwagPayPal.settings.spbButtonLanguageIso"
-                                           :mapInheritance="props"
-                                           :label="$tc('swag-paypal.settingForm.spb.spbButtonLanguageIso.label')"
-                                           :helpText="$tc('swag-paypal.settingForm.spb.spbButtonLanguageIso.helpText')"
-                                           :disabled="props.isInherited"
-                                           :value="props.currentValue"
-                                           @change="props.updateCurrentValue">
-                            </sw-text-field>
-                        </template>
-                    </sw-inherit-wrapper>
-                {% endblock %}
-
                 {% block swag_paypal_content_card_channel_config_spb_settings_alternaitve_payment_methods_enabled %}
                     <sw-inherit-wrapper
                         v-model="actualConfigData['SwagPayPal.settings.spbAlternativePaymentMethodsEnabled']"
@@ -95,6 +77,25 @@
                                               :value="props.currentValue"
                                               @input="props.updateCurrentValue">
                             </sw-single-select>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_spb_settings_locale %}
+                    <sw-inherit-wrapper
+                            v-model="actualConfigData['SwagPayPal.settings.spbButtonLanguageIso']"
+                            :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.spbButtonLanguageIso']"
+                            :customInheritationCheckFunction="checkTextFieldInheritance">
+                        <template #content="props">
+                            <sw-paypal-locale-field name="SwagPayPal.settings.spbButtonLanguageIso"
+                                                    :mapInheritance="props"
+                                                    :label="$tc('swag-paypal.settingForm.spb.spbButtonLanguageIso.label')"
+                                                    :helpText="$tc('swag-paypal.settingForm.spb.spbButtonLanguageIso.helpText')"
+                                                    :disabled="props.isInherited"
+                                                    :value="props.currentValue"
+                                                    @change="props.updateCurrentValue"
+                                                    @preventSave="preventSave">
+                            </sw-paypal-locale-field>
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}

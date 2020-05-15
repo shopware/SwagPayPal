@@ -160,6 +160,16 @@
                     "label": "Enable PayPal PLUS"
                 }
             },
+            "locale-field": {
+                "infobox": {
+                    "text": "To see a list of valid locale codes click ",
+                    "href": "here"
+                },
+                "error": {
+                    "detail": "The locale code you provided doesn't match the format required by PayPal. A valid format is \"en_GB\"."
+                }
+            },
+            "titleSuccess": "Success",
             "titleError": "Error",
             "messageSaveSuccess": "The PayPal settings have been saved.",
             "messageTestSuccess": "The API credentials have been validated.",

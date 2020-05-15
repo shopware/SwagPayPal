@@ -36,6 +36,7 @@ Shopware.Component.register('swag-paypal', {
             clientSecretSandboxErrorState: null,
             isSetDefaultPaymentSuccessful: false,
             isSettingDefaultPaymentMethods: false,
+            savingDisabled: false,
             ...constants
         };
     },
@@ -210,6 +211,15 @@ Shopware.Component.register('swag-paypal', {
                 this.isSettingDefaultPaymentMethods = false;
                 this.isSetDefaultPaymentSuccessful = true;
             });
+        },
+
+        preventSave(mode) {
+            if (!mode) {
+                this.savingDisabled = false;
+                return;
+            }
+
+            this.savingDisabled = true;
         }
     }
 });
