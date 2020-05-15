@@ -7,21 +7,14 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
+use Psr\Log\LoggerInterface;
 use Swag\PayPal\PayPal\Client\CredentialsClient;
-use Swag\PayPal\Test\Helper\ConstantsForTesting;
 
 class CredentialsClientMock extends CredentialsClient
 {
-    public function getAccessToken(string $authCode, string $sharedId, string $nonce): string
+    public function __construct(string $url, LoggerInterface $logger)
     {
-        return '';
-    }
-
-    public function getCredentials(string $accessToken, string $partnerId): array
-    {
-        return [
-            'client_id' => ConstantsForTesting::VALID_CLIENT_ID,
-            'client_secret' => ConstantsForTesting::VALID_CLIENT_SECRET,
-        ];
+        parent::__construct($url, $logger);
+        $this->client = new GuzzleClientMock(['base_uri' => $url]);
     }
 }

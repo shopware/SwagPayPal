@@ -11,7 +11,7 @@
         <directory name="tests"/>
         <ignoreFiles>
             <directory name="../../../platform"/> <!-- would otherwise inspect Shopware -->
-            <directory name="../../../vendor/shopware/platform"/> <!-- would otherwise inspect Shopware -->
+            <directory name="../../../vendor"/> <!-- would otherwise inspect vendor -->
         </ignoreFiles>
     </projectFiles>
 

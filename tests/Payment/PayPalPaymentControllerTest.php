@@ -26,7 +26,6 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Resource\SaleResourceMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
 use Swag\PayPal\Test\Mock\Util\PaymentStatusUtilMock;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,8 +34,6 @@ class PayPalPaymentControllerTest extends TestCase
 {
     use ServicesTrait;
 
-    private const TEST_REFUND_INVOICE_NUMBER = 'testRefundInvoiceNumber';
-    private const TEST_REFUND_AMOUNT = 5.5;
     private const TEST_REFUND_CURRENCY = 'EUR';
     private const TEST_REFUND_DESCRIPTION = 'testDescription';
     private const TEST_REFUND_REASON = 'testReason';
@@ -160,31 +157,31 @@ class PayPalPaymentControllerTest extends TestCase
     public function testRefundPaymentWithInvoiceAndAmount(): void
     {
         $request = new Request([], [
-            PayPalPaymentController::REQUEST_PARAMETER_REFUND_INVOICE_NUMBER => self::TEST_REFUND_INVOICE_NUMBER,
-            PayPalPaymentController::REQUEST_PARAMETER_REFUND_AMOUNT => self::TEST_REFUND_AMOUNT,
+            PayPalPaymentController::REQUEST_PARAMETER_REFUND_INVOICE_NUMBER => RefundSaleResponseFixture::TEST_REFUND_INVOICE_NUMBER,
+            PayPalPaymentController::REQUEST_PARAMETER_REFUND_AMOUNT => RefundSaleResponseFixture::REFUND_AMOUNT,
             PayPalPaymentController::REQUEST_PARAMETER_CURRENCY => self::TEST_REFUND_CURRENCY,
         ]);
         $refund = $this->refundPayment($request);
 
-        static::assertSame(self::TEST_REFUND_AMOUNT, (float) $refund['amount']['total']);
+        static::assertSame(RefundSaleResponseFixture::REFUND_AMOUNT, $refund['amount']['total']);
         static::assertSame(self::TEST_REFUND_CURRENCY, $refund['amount']['currency']);
-        static::assertSame(self::TEST_REFUND_INVOICE_NUMBER, $refund['invoice_number']);
+        static::assertSame(RefundSaleResponseFixture::TEST_REFUND_INVOICE_NUMBER, $refund['invoice_number']);
     }
 
     public function testRefundPaymentWithReasonAndDescription(): void
     {
         $request = new Request([], [
-            PayPalPaymentController::REQUEST_PARAMETER_REFUND_INVOICE_NUMBER => self::TEST_REFUND_INVOICE_NUMBER,
-            PayPalPaymentController::REQUEST_PARAMETER_REFUND_AMOUNT => self::TEST_REFUND_AMOUNT,
+            PayPalPaymentController::REQUEST_PARAMETER_REFUND_INVOICE_NUMBER => RefundSaleResponseFixture::TEST_REFUND_INVOICE_NUMBER,
+            PayPalPaymentController::REQUEST_PARAMETER_REFUND_AMOUNT => RefundSaleResponseFixture::REFUND_AMOUNT,
             PayPalPaymentController::REQUEST_PARAMETER_CURRENCY => self::TEST_REFUND_CURRENCY,
             PayPalPaymentController::REQUEST_PARAMETER_DESCRIPTION => self::TEST_REFUND_DESCRIPTION,
             PayPalPaymentController::REQUEST_PARAMETER_REASON => self::TEST_REFUND_REASON,
         ]);
         $refund = $this->refundPayment($request);
 
-        static::assertSame(self::TEST_REFUND_AMOUNT, (float) $refund['amount']['total']);
+        static::assertSame(RefundSaleResponseFixture::REFUND_AMOUNT, $refund['amount']['total']);
         static::assertSame(self::TEST_REFUND_CURRENCY, $refund['amount']['currency']);
-        static::assertSame(self::TEST_REFUND_INVOICE_NUMBER, $refund['invoice_number']);
+        static::assertSame(RefundSaleResponseFixture::TEST_REFUND_INVOICE_NUMBER, $refund['invoice_number']);
         static::assertSame(self::TEST_REFUND_REASON, $refund['reason']);
         static::assertSame(self::TEST_REFUND_DESCRIPTION, $refund['description']);
     }
@@ -336,7 +333,7 @@ class PayPalPaymentControllerTest extends TestCase
     {
         return new PayPalPaymentController(
             $this->createPaymentResource(),
-            new SaleResourceMock($this->createPayPalClientFactory()),
+            new SaleResource($this->createPayPalClientFactory()),
             new AuthorizationResource($this->createPayPalClientFactory()),
             new OrdersResource($this->createPayPalClientFactory()),
             new CaptureResource($this->createPayPalClientFactory()),

@@ -20,8 +20,8 @@ use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookReturnCreatedResourceMock;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
+use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 
 class OrderPaymentBuilderTest extends TestCase
 {
@@ -193,7 +193,7 @@ class OrderPaymentBuilderTest extends TestCase
     public function dataProviderTestApplicationContext(): array
     {
         $withoutToken = $this->createDefaultSettingStruct();
-        $withoutToken->setWebhookId(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_ID);
+        $withoutToken->setWebhookId(WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_ID);
         $withoutToken->setLandingPage(ApplicationContext::LANDING_PAGE_TYPE_BILLING);
 
         $withoutTokenAndId = $this->createDefaultSettingStruct();

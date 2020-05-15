@@ -17,8 +17,8 @@ use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 
 class WebhookResource
 {
-    public const INVALID_WEBHOOK_ID_ERROR_NAME = 'INVALID_RESOURCE_ID';
-    public const WEBHOOK_URL_EXISTS_ERROR_NAME = 'WEBHOOK_URL_ALREADY_EXISTS';
+    private const INVALID_WEBHOOK_ID_ERROR_NAME = 'INVALID_RESOURCE_ID';
+    private const WEBHOOK_URL_EXISTS_ERROR_NAME = 'WEBHOOK_URL_ALREADY_EXISTS';
 
     /**
      * @var PayPalClientFactory

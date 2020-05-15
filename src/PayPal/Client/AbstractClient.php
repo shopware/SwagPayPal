@@ -35,9 +35,7 @@ abstract class AbstractClient
         try {
             $response = $this->client->post($uri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->handleRequestException($requestException, $options);
-
-            throw $requestException;
+            throw $this->handleRequestException($requestException, $options);
         }
 
         return $this->decodeJsonResponse($response);
@@ -48,9 +46,7 @@ abstract class AbstractClient
         try {
             $response = $this->client->get($uri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->handleRequestException($requestException, null);
-
-            throw $requestException;
+            throw $this->handleRequestException($requestException, null);
         }
 
         return $this->decodeJsonResponse($response);
@@ -61,9 +57,7 @@ abstract class AbstractClient
         try {
             $response = $this->client->patch($uri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->handleRequestException($requestException, $options);
-
-            throw $requestException;
+            throw $this->handleRequestException($requestException, $options);
         }
 
         return $this->decodeJsonResponse($response);
@@ -74,10 +68,7 @@ abstract class AbstractClient
         return \json_decode($response, true);
     }
 
-    /**
-     * @throws PayPalApiException
-     */
-    private function handleRequestException(RequestException $requestException, ?array $data): void
+    private function handleRequestException(RequestException $requestException, ?array $data): PayPalApiException
     {
         $exceptionMessage = $requestException->getMessage();
         $exceptionResponse = $requestException->getResponse();
@@ -85,14 +76,14 @@ abstract class AbstractClient
         if ($exceptionResponse === null) {
             $this->logger->error($exceptionMessage, [$data]);
 
-            return;
+            return new PayPalApiException('General Error', $exceptionMessage);
         }
 
         $error = \json_decode($exceptionResponse->getBody()->getContents(), true);
         if (\array_key_exists('error', $error) && \array_key_exists('error_description', $error)) {
             $this->logger->error($exceptionMessage, [$error, $data]);
 
-            throw new PayPalApiException($error['error'], $error['error_description']);
+            return new PayPalApiException($error['error'], $error['error_description'], (int) $requestException->getCode());
         }
 
         $message = $error['message'];
@@ -106,6 +97,6 @@ abstract class AbstractClient
 
         $this->logger->error($exceptionMessage . ' ' . $message, [$error, $data]);
 
-        throw new PayPalApiException($error['name'], $message);
+        return new PayPalApiException($error['name'], $message, (int) $requestException->getCode());
     }
 }

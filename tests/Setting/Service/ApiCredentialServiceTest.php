@@ -7,21 +7,20 @@
 
 namespace Swag\PayPal\Test\Setting\Service;
 
-use GuzzleHttp\Exception\ClientException;
-use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Swag\PayPal\Payment\Exception\PayPalApiException;
+use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\CacheMock;
+use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 
 class ApiCredentialServiceTest extends TestCase
 {
-    public const INVALID_API_CLIENT_ID = 'invalid-id';
-
     public function testValidApiCredentials(): void
     {
         $apiService = $this->createApiCredentialService();
@@ -38,18 +37,18 @@ class ApiCredentialServiceTest extends TestCase
     {
         $apiService = $this->createApiCredentialService();
         $clientId = ConstantsForTesting::VALID_CLIENT_ID;
-        $clientSecret = 'invalid-secret';
+        $clientSecret = ConstantsForTesting::INVALID_CLIENT_SECRET;
         $sandboxActive = false;
 
-        $this->expectException(ClientException::class);
-        $this->expectExceptionMessage(TokenResourceMock::GENERAL_CLIENT_EXCEPTION_MESSAGE);
+        $this->expectException(PayPalApiException::class);
+        $this->expectExceptionMessage(GuzzleClientMock::GENERAL_CLIENT_EXCEPTION_MESSAGE);
         $apiService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
     }
 
     public function testApiCredentialsThrowsInvalidApiCredentialsException(): void
     {
         $apiService = $this->createApiCredentialService();
-        $clientId = self::INVALID_API_CLIENT_ID;
+        $clientId = ConstantsForTesting::INVALID_CLIENT_ID;
         $clientSecret = ConstantsForTesting::VALID_CLIENT_SECRET;
         $sandboxActive = false;
 
@@ -68,10 +67,10 @@ class ApiCredentialServiceTest extends TestCase
 
     private function createApiCredentialService(): ApiCredentialService
     {
-        $logger = new Logger('testLogger');
+        $logger = new LoggerMock();
 
         return new ApiCredentialService(
-            new TokenResourceMock(
+            new TokenResource(
                 new CacheMock(),
                 new TokenClientFactoryMock($logger),
                 new CredentialsClientFactoryMock($logger)

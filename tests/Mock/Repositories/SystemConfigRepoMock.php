@@ -21,8 +21,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigEntity;
 use Swag\PayPal\Setting\Service\SettingsService;
-use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookReturnCreatedResourceMock;
 use Swag\PayPal\Test\Webhook\WebhookControllerTest;
+use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 use Swag\PayPal\Webhook\WebhookService;
 
 class SystemConfigRepoMock implements EntityRepositoryInterface
@@ -49,7 +49,7 @@ class SystemConfigRepoMock implements EntityRepositoryInterface
         /** @var EqualsFilter $filter */
         $filter = $criteria->getFilters()[0];
         if ($context->hasExtension(WebhookControllerTest::EMPTY_TOKEN)
-            || $filter->getValue() !== WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN
+            || $filter->getValue() !== WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN
         ) {
             return new EntitySearchResult(
                 0,
@@ -100,7 +100,7 @@ class SystemConfigRepoMock implements EntityRepositoryInterface
         $systemConfigEntity = new SystemConfigEntity();
         $systemConfigEntity->setId(Uuid::randomHex());
         $systemConfigEntity->setConfigurationKey(SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_TOKEN_CONFIG_KEY);
-        $systemConfigEntity->setConfigurationValue(WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
+        $systemConfigEntity->setConfigurationValue(WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN);
 
         return $systemConfigEntity;
     }

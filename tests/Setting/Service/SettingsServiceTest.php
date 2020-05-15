@@ -17,6 +17,7 @@ use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Test\Mock\DIContainerMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Webhook\WebhookService;
@@ -46,7 +47,7 @@ class SettingsServiceTest extends TestCase
             [$prefix . 'sandbox', 'getSandbox', true],
             [$prefix . 'intent', 'getIntent', PaymentIntent::SALE],
             [$prefix . 'submitCart', 'getSubmitCart', false],
-            [$prefix . 'webhookId', 'getWebhookId', 'testWebhookId'],
+            [$prefix . 'webhookId', 'getWebhookId', GuzzleClientMock::TEST_WEBHOOK_ID],
             [$prefix . WebhookService::WEBHOOK_TOKEN_CONFIG_KEY, 'getwebhookExecuteToken', 'testWebhookToken'],
             [$prefix . 'brandName', 'getBrandName', 'Awesome brand'],
             [$prefix . 'landingPage', 'getLandingPage', ApplicationContext::LANDING_PAGE_TYPE_LOGIN],
@@ -86,7 +87,7 @@ class SettingsServiceTest extends TestCase
             ['sandbox', 'getSandbox', true],
             ['intent', 'getIntent', PaymentIntent::SALE],
             ['submitCart', 'getSubmitCart', false],
-            ['webhookId', 'getWebhookId', 'testWebhookId'],
+            ['webhookId', 'getWebhookId', GuzzleClientMock::TEST_WEBHOOK_ID],
             [WebhookService::WEBHOOK_TOKEN_CONFIG_KEY, 'getwebhookExecuteToken', 'testWebhookToken'],
             ['brandName', 'getBrandName', 'Awesome brand'],
             ['landingPage', 'getLandingPage', ApplicationContext::LANDING_PAGE_TYPE_LOGIN],

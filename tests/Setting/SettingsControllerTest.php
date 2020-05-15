@@ -7,16 +7,17 @@
 
 namespace Swag\PayPal\Test\Setting;
 
-use GuzzleHttp\Exception\ClientException;
-use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Swag\PayPal\Payment\Exception\PayPalApiException;
+use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Setting\SettingsController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\CacheMock;
+use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class SettingsControllerTest extends TestCase
@@ -46,24 +47,24 @@ class SettingsControllerTest extends TestCase
 
         $request = new Request(
             [
-                'clientId' => 'invalid-id',
-                'clientSecret' => 'invalid-secret',
+                'clientId' => ConstantsForTesting::INVALID_CLIENT_ID,
+                'clientSecret' => ConstantsForTesting::INVALID_CLIENT_SECRET,
                 'sandboxActive' => false,
             ]
         );
 
-        $this->expectException(ClientException::class);
-        $this->expectExceptionMessage(TokenResourceMock::GENERAL_CLIENT_EXCEPTION_MESSAGE);
+        $this->expectException(PayPalApiException::class);
+        $this->expectExceptionMessage(GuzzleClientMock::GENERAL_CLIENT_EXCEPTION_MESSAGE);
         $controller->validateApiCredentials($request);
     }
 
     private function createApiValidationController(): SettingsController
     {
-        $logger = new Logger('testLogger');
+        $logger = new LoggerMock();
 
         return new SettingsController(
             new ApiCredentialService(
-                new TokenResourceMock(
+                new TokenResource(
                     new CacheMock(),
                     new TokenClientFactoryMock($logger),
                     new CredentialsClientFactoryMock($logger)

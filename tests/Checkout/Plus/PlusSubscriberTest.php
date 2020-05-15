@@ -65,11 +65,6 @@ class PlusSubscriberTest extends TestCase
     private $paymentMethodUtil;
 
     /**
-     * @var Context
-     */
-    private $context;
-
-    /**
      * @var string
      */
     private $paypalPaymentMethodId;
@@ -79,8 +74,7 @@ class PlusSubscriberTest extends TestCase
         /** @var PaymentMethodUtil $paymentMethodUtil */
         $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
         $this->paymentMethodUtil = $paymentMethodUtil;
-        $this->context = Context::createDefaultContext();
-        $this->paypalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($this->context);
+        $this->paypalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
     }
 
     public function testGetSubscribedEvents(): void

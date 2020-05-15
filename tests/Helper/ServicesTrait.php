@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Helper;
 
-use Monolog\Logger;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Swag\PayPal\Payment\Builder\OrderPaymentBuilder;
 use Swag\PayPal\PayPal\PaymentIntent;
@@ -18,6 +17,7 @@ use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\DummyCollection;
+use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
@@ -44,7 +44,7 @@ trait ServicesTrait
 
     protected function createPayPalClientFactoryWithService(SettingsServiceInterface $settingsService): PayPalClientFactoryMock
     {
-        $logger = new Logger('testLogger');
+        $logger = new LoggerMock();
 
         return new PayPalClientFactoryMock(
             new TokenResource(
@@ -70,7 +70,7 @@ trait ServicesTrait
         $settingsStruct->setClientSecret('TestClientSecret');
         $settingsStruct->setIntent(PaymentIntent::SALE);
         $settingsStruct->setSubmitCart(false);
-        $settingsStruct->setSendOrderNumber(false);
+        $settingsStruct->setSendOrderNumber(true);
         $settingsStruct->setBrandName('Test Brand');
         $settingsStruct->setLandingPage('Login');
 
