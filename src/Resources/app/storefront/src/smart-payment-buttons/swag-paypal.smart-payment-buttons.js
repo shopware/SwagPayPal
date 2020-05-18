@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 
-import HttpClient from 'src/service/http-client.service';
+import StoreApiClient from 'src/service/store-api-client.service';
 import DomAccess from 'src/helper/dom-access.helper';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
@@ -72,7 +72,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
 
     init() {
         this.paypal = null;
-        this._client = new HttpClient(window.accessKey, window.contextToken);
+        this._client = new StoreApiClient();
         this.errorParameter = DomAccess.getDataAttribute(
             this.el,
             'swag-pay-pal-smart-payment-buttons-error-parameter'

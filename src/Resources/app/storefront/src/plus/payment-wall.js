@@ -2,7 +2,7 @@
 
 import Plugin from 'src/plugin-system/plugin.class';
 import DomAccess from 'src/helper/dom-access.helper';
-import HttpClient from 'src/service/http-client.service';
+import StoreApiClient from 'src/service/store-api-client.service';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
 export default class SwagPayPalPlusPaymentWall extends Plugin {
@@ -232,7 +232,7 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
             _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-plus-payment-wall-checkout-order-token')
         };
 
-        this._client = new HttpClient(window.accessKey, window.contextToken);
+        this._client = new StoreApiClient();
         this._client.post(this.options.checkoutOrderUrl, JSON.stringify(csrfToken), this.afterCreateOrder.bind(this));
     }
 
