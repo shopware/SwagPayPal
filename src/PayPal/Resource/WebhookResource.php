@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\PayPal\Resource;
 
-use GuzzleHttp\Exception\ClientException;
+use Swag\PayPal\Payment\Exception\PayPalApiException;
 use Swag\PayPal\PayPal\Api\CreateWebhooks;
 use Swag\PayPal\PayPal\Api\Patch;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
@@ -17,6 +17,9 @@ use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 
 class WebhookResource
 {
+    private const INVALID_WEBHOOK_ID_ERROR_NAME = 'INVALID_RESOURCE_ID';
+    private const WEBHOOK_URL_EXISTS_ERROR_NAME = 'WEBHOOK_URL_ALREADY_EXISTS';
+
     /**
      * @var PayPalClientFactory
      */
@@ -28,7 +31,7 @@ class WebhookResource
     }
 
     /**
-     * @throws ClientException
+     * @throws PayPalApiException
      * @throws WebhookAlreadyExistsException
      */
     public function createWebhook(string $webhookUrl, CreateWebhooks $createWebhooks, ?string $salesChannelId): string
@@ -40,10 +43,8 @@ class WebhookResource
             );
 
             return $response['id'];
-        } catch (ClientException $e) {
-            $error = $this->getErrorFromResponse($e);
-
-            if ($this->checkForErrorName($error, 'WEBHOOK_URL_ALREADY_EXISTS')) {
+        } catch (PayPalApiException $e) {
+            if ($e->getParameters()['name'] === self::WEBHOOK_URL_EXISTS_ERROR_NAME) {
                 throw new WebhookAlreadyExistsException($webhookUrl);
             }
 
@@ -52,7 +53,7 @@ class WebhookResource
     }
 
     /**
-     * @throws ClientException
+     * @throws PayPalApiException
      * @throws WebhookIdInvalidException
      */
     public function getWebhookUrl(string $webhookId, ?string $salesChannelId): string
@@ -63,10 +64,8 @@ class WebhookResource
             );
 
             return $response['url'];
-        } catch (ClientException $e) {
-            $error = $this->getErrorFromResponse($e);
-
-            if ($this->checkForErrorName($error, 'INVALID_RESOURCE_ID')) {
+        } catch (PayPalApiException $e) {
+            if ($e->getParameters()['name'] === self::INVALID_WEBHOOK_ID_ERROR_NAME) {
                 throw new WebhookIdInvalidException($webhookId);
             }
 
@@ -75,7 +74,7 @@ class WebhookResource
     }
 
     /**
-     * @throws ClientException
+     * @throws PayPalApiException
      * @throws WebhookIdInvalidException
      */
     public function updateWebhook(string $webhookUrl, string $webhookId, ?string $salesChannelId): void
@@ -95,29 +94,12 @@ class WebhookResource
                 \sprintf('%s/%s', RequestUri::WEBHOOK_RESOURCE, $webhookId),
                 $requestData
             );
-        } catch (ClientException $e) {
-            $error = $this->getErrorFromResponse($e);
-
-            if ($this->checkForErrorName($error, 'INVALID_RESOURCE_ID')) {
+        } catch (PayPalApiException $e) {
+            if ($e->getParameters()['name'] === self::INVALID_WEBHOOK_ID_ERROR_NAME) {
                 throw new WebhookIdInvalidException($webhookId);
             }
 
             throw $e;
         }
-    }
-
-    private function getErrorFromResponse(ClientException $exception): array
-    {
-        $response = $exception->getResponse();
-        if ($response === null) {
-            throw $exception;
-        }
-
-        return \json_decode($response->getBody()->getContents(), true);
-    }
-
-    private function checkForErrorName(array $error, string $errorName): bool
-    {
-        return isset($error['name']) && $error['name'] === $errorName;
     }
 }

@@ -9,6 +9,8 @@ namespace Swag\PayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Payment\PayPalPaymentMethodController;
 use Swag\PayPal\Test\Mock\Repositories\PaymentMethodRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
@@ -19,6 +21,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PayPalPaymentMethodControllerTest extends TestCase
 {
+    use KernelTestBehaviour;
+    use DatabaseTransactionBehaviour;
+
     public function testSetPayPalPaymentMethodAsSalesChannelDefault(): void
     {
         $salesChannelRepoMock = new SalesChannelRepoMock();

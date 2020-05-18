@@ -19,7 +19,6 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
@@ -180,11 +179,10 @@ class PayPalPaymentHandlerTest extends TestCase
     public function testPayWithExceptionDuringPayPalCommunication(): void
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->addExtension(self::PAYPAL_RESOURCE_THROWS_EXCEPTION, new Entity());
 
         $handler = $this->createPayPalPaymentHandler($settings);
 
-        $paymentTransaction = $this->createPaymentTransactionStruct();
+        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', null, self::PAYPAL_RESOURCE_THROWS_EXCEPTION);
         $salesChannelContext = Generator::createSalesChannelContext();
 
         $this->expectException(AsyncPaymentProcessException::class);
@@ -303,12 +301,11 @@ Customer is not logged in.');
     public function testFinalizeWithException(): void
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->addExtension(self::PAYPAL_RESOURCE_THROWS_EXCEPTION, new Entity());
 
         $request = $this->createRequest();
         $request->query->set(
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
-            ConstantsForTesting::PAYER_ID_PAYMENT_ORDER
+            self::PAYPAL_RESOURCE_THROWS_EXCEPTION
         );
 
         $this->expectException(AsyncPaymentFinalizeException::class);

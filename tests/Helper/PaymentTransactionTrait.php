@@ -26,10 +26,11 @@ trait PaymentTransactionTrait
 {
     protected function createPaymentTransactionStruct(
         string $orderId = 'some-order-id',
-        ?string $transactionId = null
+        ?string $transactionId = null,
+        ?string $orderNumber = null
     ): AsyncPaymentTransactionStruct {
         $orderTransaction = $this->createOrderTransaction($transactionId);
-        $order = $this->createOrderEntity($orderId);
+        $order = $this->createOrderEntity($orderId, $orderNumber);
 
         return new AsyncPaymentTransactionStruct(
             $orderTransaction,
@@ -54,14 +55,15 @@ trait PaymentTransactionTrait
         return $orderTransaction;
     }
 
-    protected function createOrderEntity(string $orderId): OrderEntity
+    protected function createOrderEntity(string $orderId, ?string $orderNumber = null): OrderEntity
     {
+        $orderNumber = $orderNumber ?? OrderPaymentBuilderTest::TEST_ORDER_NUMBER;
         $order = new OrderEntity();
         $order->setShippingCosts(new CalculatedPrice(4.99, 4.99, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $order->setId($orderId);
         $currency = $this->createCurrencyEntity();
         $order->setCurrency($currency);
-        $order->setOrderNumber(OrderPaymentBuilderTest::TEST_ORDER_NUMBER);
+        $order->setOrderNumber($orderNumber);
         $order->setPrice(new CartPrice(
             722.69,
             860.0,

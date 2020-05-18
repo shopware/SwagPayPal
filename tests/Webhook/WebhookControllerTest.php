@@ -17,7 +17,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
-use Swag\PayPal\Test\Mock\PayPal\Resource\WebhookReturnCreatedResourceMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Webhook\WebhookServiceMock;
 use Swag\PayPal\Test\Webhook\_fixtures\WebhookDataFixture;
@@ -116,7 +115,7 @@ class WebhookControllerTest extends TestCase
     {
         $context = Context::createDefaultContext();
         $request = new Request(
-            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN]
+            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN]
         );
 
         $this->expectException(BadRequestHttpException::class);
@@ -141,7 +140,7 @@ class WebhookControllerTest extends TestCase
     private function createRequestWithWebhookData(): Request
     {
         return new Request(
-            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => WebhookReturnCreatedResourceMock::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN],
+            [WebhookService::PAYPAL_WEBHOOK_TOKEN_NAME => WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN],
             WebhookDataFixture::get()
         );
     }

@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Setting\Service;
 
-use GuzzleHttp\Exception\ClientException;
+use Swag\PayPal\Payment\Exception\PayPalApiException;
 use Swag\PayPal\PayPal\Api\OAuthCredentials;
 use Swag\PayPal\PayPal\BaseURL;
 use Swag\PayPal\PayPal\PartnerId;
@@ -39,12 +39,12 @@ class ApiCredentialService implements ApiCredentialServiceInterface
 
         try {
             return $this->tokenResource->testApiCredentials($credentials, $url);
-        } catch (ClientException $ce) {
-            if ($ce->getCode() === Response::HTTP_UNAUTHORIZED) {
+        } catch (PayPalApiException $payPalApiException) {
+            if ($payPalApiException->getStatusCode() === Response::HTTP_UNAUTHORIZED) {
                 throw new PayPalInvalidApiCredentialsException();
             }
 
-            throw $ce;
+            throw $payPalApiException;
         }
     }
 

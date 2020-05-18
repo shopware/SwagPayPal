@@ -22,6 +22,7 @@ class TokenClientFactoryMock extends TokenClientFactory
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
+        parent::__construct($logger);
     }
 
     public function createTokenClient(OAuthCredentials $credentials, string $url): TokenClient

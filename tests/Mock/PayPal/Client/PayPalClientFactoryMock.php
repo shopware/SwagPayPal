@@ -14,8 +14,6 @@ use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Test\Mock\CacheMock;
-use Swag\PayPal\Test\Mock\PayPal\Resource\TokenResourceMock;
-use Swag\PayPal\Test\Payment\PayPalPaymentHandlerTest;
 
 class PayPalClientFactoryMock extends PayPalClientFactory
 {
@@ -25,36 +23,39 @@ class PayPalClientFactoryMock extends PayPalClientFactory
     private $client;
 
     /**
+     * @var SettingsServiceInterface
+     */
+    private $settingsService;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
 
     public function __construct(
         TokenResource $tokenResource,
-        SettingsServiceInterface $settingsProvider,
+        SettingsServiceInterface $settingsService,
         LoggerInterface $logger
     ) {
+        $this->settingsService = $settingsService;
         $this->logger = $logger;
-        parent::__construct($tokenResource, $settingsProvider, $logger);
+        parent::__construct($tokenResource, $settingsService, $logger);
     }
 
     public function createPaymentClient(
         ?string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ): PayPalClient {
-        $settings = $this->settingsProvider->getSettings($salesChannelId);
-
-        if ($settings->hasExtension(PayPalPaymentHandlerTest::PAYPAL_RESOURCE_THROWS_EXCEPTION)) {
-            throw new \RuntimeException('A PayPal test error occurred.');
-        }
+        $settings = $this->settingsService->getSettings($salesChannelId);
 
         $this->client = new PayPalClientMock(
-            new TokenResourceMock(
+            new TokenResource(
                 new CacheMock(),
                 new TokenClientFactoryMock($this->logger),
                 new CredentialsClientFactoryMock($this->logger)
             ),
-            $settings
+            $settings,
+            $this->logger
         );
 
         return $this->client;

@@ -14,7 +14,6 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
@@ -39,11 +38,6 @@ class SaleCompleteTest extends TestCase
     private $webhookHandler;
 
     /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderTransactionRepo;
-
-    /**
      * @var StateMachineRegistry
      */
     private $stateMachineRegistry;
@@ -58,9 +52,6 @@ class SaleCompleteTest extends TestCase
         /** @var DefinitionInstanceRegistry $definitionInstanceRegistry */
         $definitionInstanceRegistry = $this->getContainer()->get(DefinitionInstanceRegistry::class);
         $this->definitionRegistry = $definitionInstanceRegistry;
-        $this->orderTransactionRepo = $this->definitionRegistry->getRepository(
-            (new OrderTransactionDefinition())->getEntityName()
-        );
         /** @var StateMachineRegistry $stateMachineRegistry */
         $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
         $this->stateMachineRegistry = $stateMachineRegistry;

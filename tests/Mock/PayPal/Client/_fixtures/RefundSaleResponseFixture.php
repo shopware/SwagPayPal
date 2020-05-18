@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures;
 class RefundSaleResponseFixture
 {
     public const REFUND_AMOUNT = '12.35';
+    public const TEST_REFUND_INVOICE_NUMBER = 'testRefundInvoiceNumber';
 
     public static function get(): array
     {
@@ -36,7 +37,7 @@ class RefundSaleResponseFixture
             ],
             'sale_id' => '98N85671E85717541',
             'parent_payment' => 'PAY-0MX009757T271510FLQES2MA',
-            'invoice_number' => 'asdf',
+            'invoice_number' => self::TEST_REFUND_INVOICE_NUMBER,
             'links' => [
                 0 => [
                     'href' => 'https://api.sandbox.paypal.com/v1/payments/refund/9UJ167316W283554V',

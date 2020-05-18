@@ -7,6 +7,8 @@
 
 namespace Swag\PayPal\Test\Mock;
 
+use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
+use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
@@ -27,6 +29,10 @@ class RouterMock implements RouterInterface
 
     public function generate($name, $parameters = [], $referenceType = self::ABSOLUTE_PATH): string
     {
+        if ($parameters['sw-token'] === WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN) {
+            return GuzzleClientMock::GET_WEBHOOK_URL;
+        }
+
         $parameterString = '?';
         foreach ($parameters as $key => $parameter) {
             $parameterString .= $key . '=' . $parameter;

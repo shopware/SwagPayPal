@@ -8,15 +8,30 @@
 namespace Swag\PayPal\Payment\Exception;
 
 use Shopware\Core\Framework\ShopwareHttpException;
+use Symfony\Component\HttpFoundation\Response;
 
 class PayPalApiException extends ShopwareHttpException
 {
-    public function __construct(string $name, string $message)
-    {
+    /**
+     * @var int|null
+     */
+    private $payPalApiStatusCode;
+
+    public function __construct(
+        string $name,
+        string $message,
+        int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR
+    ) {
         parent::__construct(
             'The error "{{ name }}" occurred with the following message: {{ message }}',
             ['name' => $name, 'message' => $message]
         );
+        $this->payPalApiStatusCode = $payPalApiStatusCode;
+    }
+
+    public function getStatusCode(): int
+    {
+        return $this->payPalApiStatusCode ?? parent::getStatusCode();
     }
 
     public function getErrorCode(): string

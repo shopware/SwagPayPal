@@ -21,6 +21,7 @@ class CredentialsClientFactoryMock extends CredentialsClientFactory
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
+        parent::__construct($logger);
     }
 
     public function createCredentialsClient(string $url): CredentialsClient

@@ -7,16 +7,16 @@
 
 namespace Swag\PayPal\Test\PayPal\Resource;
 
-use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\PayPal\Api\OAuthCredentials;
 use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Test\Mock\CacheItemWithTokenMock;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\CacheWithTokenMock;
+use Swag\PayPal\Test\Mock\LoggerMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateTokenResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
-use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientMock;
 
 class TokenResourceTest extends TestCase
 {
@@ -26,9 +26,8 @@ class TokenResourceTest extends TestCase
 
         $dateNow = new \DateTime('now');
 
-        static::assertSame(TokenClientMock::ACCESS_TOKEN, $token->getAccessToken());
-        static::assertSame(TokenClientMock::TOKEN_TYPE, $token->getTokenType());
-        static::assertInstanceOf(\DateTime::class, $token->getExpireDateTime());
+        static::assertSame(CreateTokenResponseFixture::ACCESS_TOKEN, $token->getAccessToken());
+        static::assertSame(CreateTokenResponseFixture::TOKEN_TYPE, $token->getTokenType());
         static::assertTrue($dateNow < $token->getExpireDateTime());
     }
 
@@ -44,8 +43,7 @@ class TokenResourceTest extends TestCase
         $token = $this->getTokenResource()->getToken(new OAuthCredentials(), 'url');
 
         static::assertSame(CacheItemWithTokenMock::ACCESS_TOKEN, $token->getAccessToken());
-        static::assertSame(TokenClientMock::TOKEN_TYPE, $token->getTokenType());
-        static::assertInstanceOf(\DateTime::class, $token->getExpireDateTime());
+        static::assertSame(CreateTokenResponseFixture::TOKEN_TYPE, $token->getTokenType());
     }
 
     private function getTokenResource(bool $withToken = true): TokenResource
@@ -55,7 +53,7 @@ class TokenResourceTest extends TestCase
             $cacheItemPool = new CacheMock();
         }
 
-        $logger = new Logger('testLogger');
+        $logger = new LoggerMock();
 
         return new TokenResource(
             $cacheItemPool,

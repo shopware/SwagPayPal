@@ -15,14 +15,14 @@ use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 class PayPalClientFactory
 {
     /**
-     * @var SettingsServiceInterface
-     */
-    protected $settingsProvider;
-
-    /**
      * @var TokenResource
      */
     private $tokenResource;
+
+    /**
+     * @var SettingsServiceInterface
+     */
+    private $settingsService;
 
     /**
      * @var LoggerInterface
@@ -31,11 +31,11 @@ class PayPalClientFactory
 
     public function __construct(
         TokenResource $tokenResource,
-        SettingsServiceInterface $settingsProvider,
+        SettingsServiceInterface $settingsService,
         LoggerInterface $logger
     ) {
         $this->tokenResource = $tokenResource;
-        $this->settingsProvider = $settingsProvider;
+        $this->settingsService = $settingsService;
         $this->logger = $logger;
     }
 
@@ -43,7 +43,7 @@ class PayPalClientFactory
         ?string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ): PayPalClient {
-        $settings = $this->settingsProvider->getSettings($salesChannelId);
+        $settings = $this->settingsService->getSettings($salesChannelId);
 
         return new PayPalClient($this->tokenResource, $settings, $this->logger, $partnerAttributionId);
     }
