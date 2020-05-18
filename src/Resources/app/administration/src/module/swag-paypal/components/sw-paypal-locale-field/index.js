@@ -15,10 +15,18 @@ Component.extend('sw-paypal-locale-field', 'sw-text-field', {
 
     methods: {
         onInput: debounce(function onInput(event) {
-            const value = event.target.value;
+            this.checkValue(event.target.value);
+        }, 350),
+
+        onBlur(event, removeFocusClass) {
+            removeFocusClass();
+            this.checkValue(event.target.value);
+        },
+
+        checkValue(value) {
             const localeCodeRegex = /^[a-z]{2}_[A-Z]{2}$/;
 
-            this.$emit('change', event.target.value || '');
+            this.$emit('change', value || '');
 
             if (!value || localeCodeRegex.exec(value)) {
                 this.preventSave(false);
@@ -31,7 +39,7 @@ Component.extend('sw-paypal-locale-field', 'sw-text-field', {
                 code: 1,
                 detail: this.$tc('swag-paypal.settingForm.locale-field.error.detail')
             };
-        }, 350),
+        },
 
         preventSave(mode) {
             this.$emit('preventSave', mode);
