@@ -123,7 +123,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbExtension->getPaymentMethodId());
         static::assertSame(PaymentIntent::SALE, $spbExtension->getIntent());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
-        static::assertSame('/sales-channel-api/v1/_action/paypal/spb/create-payment', $spbExtension->getCreatePaymentUrl());
+        static::assertSame('/sales-channel-api/v2/_action/paypal/spb/create-payment', $spbExtension->getCreatePaymentUrl());
         static::assertStringContainsString('/checkout/confirm', $spbExtension->getCheckoutConfirmUrl());
     }
 

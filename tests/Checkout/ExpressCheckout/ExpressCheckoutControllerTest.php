@@ -26,6 +26,7 @@ use Shopware\Core\System\SalesChannel\SalesChannel\SalesChannelContextSwitcher;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
+use Swag\PayPal\Checkout\ExpressCheckout\Route\ExpressApprovePaymentRoute;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilder;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -204,17 +205,24 @@ class ExpressCheckoutControllerTest extends TestCase
         /** @var SalesChannelContextSwitcher $salesChannelContextSwitcher */
         $salesChannelContextSwitcher = $this->getContainer()->get(SalesChannelContextSwitcher::class);
 
-        return new ExpressCheckoutController(
-            $cartPaymentBuilder,
-            $cartService,
+        $paymentResource = $this->createPaymentResource($settings);
+        $route = new ExpressApprovePaymentRoute(
             $accountRegistrationService,
             $countryRepo,
             $salutationRepo,
             $accountService,
             $salesChannelContextFactory,
-            $this->createPaymentResource($settings),
             $paymentMethodUtil,
-            $salesChannelContextSwitcher
+            $salesChannelContextSwitcher,
+            $paymentResource,
+            $cartService
+        );
+
+        return new ExpressCheckoutController(
+            $cartPaymentBuilder,
+            $cartService,
+            $paymentResource,
+            $route
         );
     }
 

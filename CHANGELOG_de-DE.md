@@ -1,6 +1,8 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-10640 - Behebt ein Problem mit den SalesChannel-API Routen
 - PT-10897 - Ländercodevalidierung für Smart Payment Buttons und Express Checkout
 - PT-11294 - Fehlerbehandlung für Smart Payment Buttons
+- PT-11582 - Wehook-Registrierung korrigiert
 - PT-11637 - Einzugs- und Rückerstattungs-Workflow verbessert
 
 # 1.5.0

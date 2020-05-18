@@ -54,7 +54,7 @@ class SPBCheckoutDataService
             'intent' => $settings->getIntent(),
             'paymentMethodId' => $paymentMethodId,
             'useAlternativePaymentMethods' => $settings->getSpbAlternativePaymentMethodsEnabled(),
-            'createPaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.spb.create_payment', ['version' => 1]),
+            'createPaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.spb.create_payment', ['version' => 2]),
             'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
             'buttonShape' => $settings->getSpbButtonShape(),
             'buttonColor' => $settings->getSpbButtonColor(),

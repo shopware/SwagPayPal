@@ -1,6 +1,8 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-10640 - Fix SalesChannel api routes
 - PT-10897 - Locale code validation for Smart Payment Buttons and Express Checkout
 - PT-11294 - Error handling for Smart Payment Buttons
+- PT-11582 - Fix webhook registration
 - PT-11637 - Improve capture and refund workflow
 
 # 1.5.0

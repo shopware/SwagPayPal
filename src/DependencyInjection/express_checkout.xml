@@ -11,17 +11,23 @@
             <argument type="service" id="router"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController" public="true">
-            <argument type="service" id="Swag\PayPal\Payment\Builder\CartPaymentBuilder"/>
-            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+        <service id="Swag\PayPal\Checkout\ExpressCheckout\Route\ExpressApprovePaymentRoute">
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\AccountRegistrationService"/>
             <argument type="service" id="country.repository"/>
             <argument type="service" id="salutation.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\AccountService"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
-            <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\SalesChannelContextSwitcher"/>
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController" public="true">
+            <argument type="service" id="Swag\PayPal\Payment\Builder\CartPaymentBuilder"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
+            <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\Route\ExpressApprovePaymentRoute"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber">

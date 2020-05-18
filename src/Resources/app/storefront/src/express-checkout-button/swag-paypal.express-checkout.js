@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 
-import HttpClient from 'src/service/http-client.service';
+import StoreApiClient from 'src/service/store-api-client.service';
 import DomAccess from 'src/helper/dom-access.helper';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
@@ -108,7 +108,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     };
 
     init() {
-        this._client = new HttpClient(window.accessKey, window.contextToken);
+        this._client = new StoreApiClient();
         this.paypal = null;
         this.createButton();
     }

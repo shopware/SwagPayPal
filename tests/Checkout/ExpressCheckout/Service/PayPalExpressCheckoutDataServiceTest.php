@@ -167,8 +167,8 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame('EUR', $expressCheckoutButtonData->getCurrency());
         static::assertSame(PaymentIntent::SALE, $expressCheckoutButtonData->getIntent());
         static::assertFalse($expressCheckoutButtonData->getAddProductToCart());
-        static::assertSame('/sales-channel-api/v1/_action/paypal/create-payment', $expressCheckoutButtonData->getCreatePaymentUrl());
-        static::assertSame('/sales-channel-api/v1/_action/paypal/create-new-cart', $expressCheckoutButtonData->getCreateNewCartUrl());
+        static::assertSame('/sales-channel-api/v2/_action/paypal/create-payment', $expressCheckoutButtonData->getCreatePaymentUrl());
+        static::assertSame('/sales-channel-api/v2/_action/paypal/create-new-cart', $expressCheckoutButtonData->getCreateNewCartUrl());
         static::assertSame('/checkout/line-item/add', $expressCheckoutButtonData->getAddLineItemUrl());
         static::assertSame('/paypal/approve-payment', $expressCheckoutButtonData->getApprovePaymentUrl());
         static::assertStringContainsString('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());

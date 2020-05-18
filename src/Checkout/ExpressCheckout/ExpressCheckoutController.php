@@ -8,27 +8,13 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Checkout\Customer\SalesChannel\AccountRegistrationService;
-use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\Framework\Validation\DataBag\DataBag;
-use Shopware\Core\System\Country\CountryEntity;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\SalesChannel\SalesChannelContextSwitcher;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\Salutation\SalutationEntity;
+use Swag\PayPal\Checkout\ExpressCheckout\Route\AbstractExpressApprovePaymentRoute;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
-use Swag\PayPal\Payment\PayPalPaymentHandler;
-use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
-use Swag\PayPal\Util\PaymentMethodUtil;
 use Swag\PayPal\Util\PaymentTokenExtractor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -51,67 +37,25 @@ class ExpressCheckoutController extends AbstractController
     private $cartService;
 
     /**
-     * @var AccountRegistrationService
-     */
-    private $accountRegistrationService;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $countryRepo;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salutationRepo;
-
-    /**
-     * @var AccountService
-     */
-    private $accountService;
-
-    /**
-     * @var SalesChannelContextFactory
-     */
-    private $salesChannelContextFactory;
-
-    /**
      * @var PaymentResource
      */
     private $paymentResource;
 
     /**
-     * @var PaymentMethodUtil
+     * @var AbstractExpressApprovePaymentRoute
      */
-    private $paymentMethodUtil;
-
-    /**
-     * @var SalesChannelContextSwitcher
-     */
-    private $salesChannelContextSwitcher;
+    private $approvePaymentRoute;
 
     public function __construct(
         CartPaymentBuilderInterface $cartPaymentBuilder,
         CartService $cartService,
-        AccountRegistrationService $accountRegistrationService,
-        EntityRepositoryInterface $countryRepo,
-        EntityRepositoryInterface $salutationRepo,
-        AccountService $accountService,
-        SalesChannelContextFactory $salesChannelContextFactory,
         PaymentResource $paymentResource,
-        PaymentMethodUtil $paymentMethodUtil,
-        SalesChannelContextSwitcher $salesChannelContextSwitcher
+        AbstractExpressApprovePaymentRoute $route
     ) {
         $this->cartPaymentBuilder = $cartPaymentBuilder;
         $this->cartService = $cartService;
-        $this->accountRegistrationService = $accountRegistrationService;
-        $this->countryRepo = $countryRepo;
-        $this->salutationRepo = $salutationRepo;
-        $this->accountService = $accountService;
-        $this->salesChannelContextFactory = $salesChannelContextFactory;
         $this->paymentResource = $paymentResource;
-        $this->paymentMethodUtil = $paymentMethodUtil;
-        $this->salesChannelContextSwitcher = $salesChannelContextSwitcher;
+        $this->approvePaymentRoute = $route;
     }
 
     /**
@@ -158,96 +102,10 @@ class ExpressCheckoutController extends AbstractController
      */
     public function onApprove(SalesChannelContext $salesChannelContext, Request $request): JsonResponse
     {
-        $paymentId = $request->request->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
-        $payment = $this->paymentResource->get($paymentId, $salesChannelContext->getSalesChannel()->getId());
-        $paypalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext());
-
-        //Create and login a new guest customer
-        $customerDataBag = $this->getCustomerDataBagFromPayment($payment, $salesChannelContext->getContext());
-        $this->accountRegistrationService->register($customerDataBag, true, $salesChannelContext);
-        $newContextToken = $this->accountService->login($customerDataBag->get('email'), $salesChannelContext, true);
-
-        // Since a new customer was logged in, the context changed in the system,
-        // but this doesn't effect the current context given as parameter.
-        // Because of that a new context for the following operations is created
-        $newSalesChannelContext = $this->salesChannelContextFactory->create(
-            $newContextToken,
-            $salesChannelContext->getSalesChannel()->getId()
+        return new JsonResponse(
+            [
+                'cart_token' => $this->approvePaymentRoute->approve($salesChannelContext, $request)->getToken(),
+            ]
         );
-
-        // Set the payment method to PayPal
-        $salesChannelDataBag = new DataBag([
-            SalesChannelContextService::PAYMENT_METHOD_ID => $paypalPaymentMethodId,
-        ]);
-        $this->salesChannelContextSwitcher->update($salesChannelDataBag, $newSalesChannelContext);
-
-        $cart = $this->cartService->getCart($newSalesChannelContext->getToken(), $salesChannelContext);
-        $expressCheckoutData = new ExpressCheckoutData($paymentId, $payment->getPayer()->getPayerInfo()->getPayerId());
-        $cart->addExtension(self::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID, $expressCheckoutData);
-
-        // The cart needs to be saved.
-        $this->cartService->recalculate($cart, $newSalesChannelContext);
-
-        return new JsonResponse(['cart_token' => $cart->getToken()]);
-    }
-
-    private function getCustomerDataBagFromPayment(Payment $payment, Context $context): DataBag
-    {
-        $payerInfo = $payment->getPayer()->getPayerInfo();
-        $billingAddress = $payerInfo->getBillingAddress() ?? $payerInfo->getShippingAddress();
-        $firstName = $payerInfo->getFirstName();
-        $lastName = $payerInfo->getLastName();
-        $salutationId = $this->getSalutationId($context);
-
-        return new DataBag([
-            'salutationId' => $salutationId,
-            'email' => $payerInfo->getEmail(),
-            'firstName' => $firstName,
-            'lastName' => $lastName,
-            'billingAddress' => [
-                'firstName' => $firstName,
-                'lastName' => $lastName,
-                'salutationId' => $salutationId,
-                'street' => $billingAddress->getLine1(),
-                'zipcode' => $billingAddress->getPostalCode(),
-                'countryId' => $this->getCountryIdByCode($billingAddress->getCountryCode(), $context),
-                'phone' => $billingAddress->getPhone(),
-                'city' => $billingAddress->getCity(),
-                'additionalAddressLine1' => $billingAddress->getLine2(),
-            ],
-        ]);
-    }
-
-    private function getCountryIdByCode(string $code, Context $context): ?string
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsFilter('iso', $code)
-        );
-        /** @var CountryEntity|null $country */
-        $country = $this->countryRepo->search($criteria, $context)->first();
-
-        if ($country === null) {
-            return null;
-        }
-
-        return $country->getId();
-    }
-
-    private function getSalutationId(Context $context): string
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsFilter('salutationKey', 'not_specified')
-        );
-
-        /** @var SalutationEntity|null $salutation */
-        $salutation = $this->salutationRepo->search($criteria, $context)->first();
-
-        if ($salutation === null) {
-            throw new \RuntimeException('No salutation found in Shopware');
-        }
-
-        return $salutation->getId();
     }
 }
