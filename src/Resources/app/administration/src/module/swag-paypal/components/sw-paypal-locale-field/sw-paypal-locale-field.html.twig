@@ -20,7 +20,7 @@
                                :placeHolder="placeholder"
                                @input="onInput"
                                @focus="setFocusClass"
-                               @blur="removeFocusClass"
+                               @blur="onBlur($event, removeFocusClass)"
                                v-on="additionalListeners">
                     </template>
                 </sw-contextual-field>
