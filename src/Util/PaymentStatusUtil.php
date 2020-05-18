@@ -58,7 +58,7 @@ class PaymentStatusUtil
     }
 
     /**
-     * @deprecated tag:v2.0.0 - Deprecated since version REPLACE-GLOBAL-WITH-NEXT-VERSION and will be removed in 2.0.0. Use "applyCaptureState" instead
+     * @deprecated tag:v2.0.0 - Deprecated since version 1.5.1 and will be removed in 2.0.0. Use "applyCaptureState" instead
      */
     public function applyCaptureStateToPayment(string $orderId, Request $request, Capture $captureResponse, Context $context): void
     {
