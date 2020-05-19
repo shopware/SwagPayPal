@@ -10,6 +10,7 @@ namespace Swag\PayPal\IZettle\Client;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
+use Swag\PayPal\IZettle\Api\Exception\IZettleException;
 
 abstract class AbstractClient
 {
@@ -34,9 +35,7 @@ abstract class AbstractClient
         try {
             $response = $this->client->post($uri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->handleRequestException($requestException, $options);
-
-            throw $requestException;
+            throw $this->handleRequestException($requestException, $options);
         }
 
         return $this->decodeJsonResponse($response);
@@ -47,9 +46,7 @@ abstract class AbstractClient
         try {
             $response = $this->client->get($uri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->handleRequestException($requestException, null);
-
-            throw $requestException;
+            throw $this->handleRequestException($requestException, $options);
         }
 
         return $this->decodeJsonResponse($response);
@@ -60,15 +57,24 @@ abstract class AbstractClient
         try {
             $response = $this->client->put($uri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            $this->handleRequestException($requestException, $options);
-
-            throw $requestException;
+            throw $this->handleRequestException($requestException, $options);
         }
 
         return $this->decodeJsonResponse($response);
     }
 
-    protected function handleRequestException(RequestException $requestException, ?array $data): void
+    protected function delete(string $uri, array $options = []): ?array
+    {
+        try {
+            $response = $this->client->delete($uri, $options)->getBody()->getContents();
+        } catch (RequestException $requestException) {
+            throw $this->handleRequestException($requestException, $options);
+        }
+
+        return $this->decodeJsonResponse($response);
+    }
+
+    protected function handleRequestException(RequestException $requestException, ?array $data): IZettleException
     {
         $exceptionMessage = $requestException->getMessage();
         $exceptionResponse = $requestException->getResponse();
@@ -76,22 +82,22 @@ abstract class AbstractClient
         if ($exceptionResponse === null) {
             $this->logger->error($exceptionMessage, [$data]);
 
-            return;
+            return new IZettleException('General Error', $exceptionMessage, (int) $requestException->getCode());
         }
 
-        $error = json_decode($exceptionResponse->getBody()->getContents(), true);
+        $error = \json_decode($exceptionResponse->getBody()->getContents(), true);
 
         if ($error === null) {
             throw $requestException;
         }
 
-        $this->handleError($error);
+        return $this->handleError($requestException, $error);
     }
 
-    abstract protected function handleError(array $error): void;
+    abstract protected function handleError(RequestException $requestException, array $error): IZettleException;
 
     private function decodeJsonResponse(string $response): ?array
     {
-        return json_decode($response, true);
+        return \json_decode($response, true);
     }
 }

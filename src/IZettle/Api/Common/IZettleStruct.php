@@ -14,14 +14,16 @@ abstract class IZettleStruct implements \JsonSerializable
         foreach ($arrayData as $key => $value) {
             $camelCaseKey = $this->toCamelCase($key);
             $setterMethod = 'set' . $camelCaseKey;
-            if (!method_exists($this, $setterMethod)) {
+            if (!\method_exists($this, $setterMethod)) {
                 // There is no setter/property for a given data key from PayPal.
                 // Continue here to not break the plugin, if the plugin is not up-to-date with the PayPal API
                 continue;
             }
 
             if ($this->isScalar($value)) {
-                $this->$setterMethod($value);
+                if ($value !== null) {
+                    $this->$setterMethod($value);
+                }
                 continue;
             }
 
@@ -29,7 +31,7 @@ abstract class IZettleStruct implements \JsonSerializable
             if ($this->isAssociativeArray($value)) {
                 /** @var class-string<IZettleStruct> $className */
                 $className = $namespace . $camelCaseKey;
-                if (!class_exists($className)) {
+                if (!\class_exists($className)) {
                     continue;
                 }
 
@@ -40,8 +42,8 @@ abstract class IZettleStruct implements \JsonSerializable
 
             /** @var class-string<IZettleStruct> $className */
             $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
-            if (!class_exists($className)) {
-                $arrayData = array_filter($value, static function ($var) {
+            if (!\class_exists($className)) {
+                $arrayData = \array_filter($value, static function ($var) {
                     return $var !== null;
                 });
                 $this->$setterMethod($arrayData);
@@ -67,7 +69,7 @@ abstract class IZettleStruct implements \JsonSerializable
     {
         $data = [];
 
-        foreach (get_object_vars($this) as $property => $value) {
+        foreach (\get_object_vars($this) as $property => $value) {
             $data[$property] = $value;
         }
 
@@ -88,7 +90,7 @@ abstract class IZettleStruct implements \JsonSerializable
             return false;
         }
 
-        return array_keys($value) !== range(0, \count($value) - 1);
+        return \array_keys($value) !== \range(0, \count($value) - 1);
     }
 
     private function getNamespaceOfAssociation(): string
@@ -98,7 +100,7 @@ abstract class IZettleStruct implements \JsonSerializable
 
     private function getClassNameOfOneToManyAssociation(string $camelCaseKey): string
     {
-        return rtrim($camelCaseKey, 's');
+        return \rtrim($camelCaseKey, 's');
     }
 
     /**
@@ -114,10 +116,10 @@ abstract class IZettleStruct implements \JsonSerializable
 
     private function toCamelCase(string $string): string
     {
-        $string = str_replace('-', ' ', $string);
-        $string = str_replace('_', ' ', $string);
-        $string = ucwords($string);
-        $string = str_replace(' ', '', $string);
+        $string = \str_replace('-', ' ', $string);
+        $string = \str_replace('_', ' ', $string);
+        $string = \ucwords($string);
+        $string = \str_replace(' ', '', $string);
 
         return $string;
     }

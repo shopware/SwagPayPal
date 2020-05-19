@@ -9,12 +9,12 @@ namespace Swag\PayPal\IZettle\Sync;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
-use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\ProductConverter;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
-use Swag\PayPal\IZettle\Resource\ProductResource;
-use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\IZettle\Sync\Context\ProductContextFactory;
+use Swag\PayPal\IZettle\Sync\Product\DeletedUpdater;
+use Swag\PayPal\IZettle\Sync\Product\NewUpdater;
+use Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater;
+use Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker;
 
 class ProductSyncer
 {
@@ -24,76 +24,70 @@ class ProductSyncer
     private $productSelection;
 
     /**
-     * @var ProductResource
-     */
-    private $productResource;
-
-    /**
      * @var ProductConverter
      */
     private $productConverter;
 
     /**
-     * @var ChecksumResource
+     * @var ProductContextFactory
      */
-    private $checksumResource;
+    private $productContextFactory;
+
+    /**
+     * @var NewUpdater
+     */
+    private $newUpdater;
+
+    /**
+     * @var OutdatedUpdater
+     */
+    private $outdatedUpdater;
+
+    /**
+     * @var DeletedUpdater
+     */
+    private $deletedUpdater;
+
+    /**
+     * @var UnsyncedChecker
+     */
+    private $unsyncedChecker;
 
     public function __construct(
         ProductSelection $productSelection,
-        ProductResource $productResource,
         ProductConverter $productConverter,
-        ChecksumResource $checksumResource
+        ProductContextFactory $productContextFactory,
+        NewUpdater $newUpdater,
+        OutdatedUpdater $outdatedUpdater,
+        DeletedUpdater $deletedUpdater,
+        UnsyncedChecker $unsyncedChecker
     ) {
         $this->productSelection = $productSelection;
-        $this->productResource = $productResource;
         $this->productConverter = $productConverter;
-        $this->checksumResource = $checksumResource;
+        $this->productContextFactory = $productContextFactory;
+        $this->newUpdater = $newUpdater;
+        $this->outdatedUpdater = $outdatedUpdater;
+        $this->deletedUpdater = $deletedUpdater;
+        $this->unsyncedChecker = $unsyncedChecker;
     }
 
     public function syncProducts(SalesChannelEntity $salesChannel, Context $context): void
     {
-        /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
-        $currency = $iZettleSalesChannel->isSyncPrices() ? $salesChannel->getCurrency() : null;
+        $productContext = $this->productContextFactory->getContext($salesChannel, $context);
+        $currency = $productContext->getIZettleSalesChannel()->isSyncPrices() ? $salesChannel->getCurrency() : null;
 
-        $shopwareProducts = $this->productSelection->getProducts($iZettleSalesChannel, $context, true);
+        $shopwareProducts = $this->productSelection->getProducts($productContext->getIZettleSalesChannel(), $context, true);
         $productGroupings = $this->productConverter->convertShopwareProducts($shopwareProducts, $currency);
 
-        $this->checksumResource->begin($salesChannel->getId(), $context);
+        $this->unsyncedChecker->checkForUnsynced($productGroupings, $productContext);
 
-        foreach ($productGroupings as $productGrouping) {
-            $product = $productGrouping->getProduct();
-            $shopwareProduct = $productGrouping->getIdentifyingEntity();
+        $this->newUpdater->update($productGroupings, $productContext);
+        $this->productContextFactory->commit($productContext);
 
-            $updateStatus = $this->checksumResource->checkForUpdate($shopwareProduct, $product);
+        $this->outdatedUpdater->update($productGroupings, $productContext);
+        $this->productContextFactory->commit($productContext);
 
-            if ($updateStatus === ChecksumResource::PRODUCT_NEW) {
-                try {
-                    $this->productResource->createProduct($iZettleSalesChannel, $product);
-                    $this->checksumResource->addProduct($shopwareProduct, $product, $salesChannel->getId());
-                } catch (IZettleApiException $iZettleApiException) {
-                    if ($iZettleApiException->getApiError()->getErrorType() === IZettleApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS) {
-                        $updateStatus = ChecksumResource::PRODUCT_OUTDATED;
-                    } else {
-                        throw $iZettleApiException;
-                    }
-                }
-            }
-
-            if ($updateStatus === ChecksumResource::PRODUCT_OUTDATED) {
-                try {
-                    $this->productResource->updateProduct($iZettleSalesChannel, $product);
-                    $this->checksumResource->addProduct($shopwareProduct, $product, $salesChannel->getId());
-                } catch (IZettleApiException $iZettleApiException) {
-                    if ($iZettleApiException->getApiError()->getErrorType() === IZettleApiError::ERROR_TYPE_ENTITY_NOT_FOUND) {
-                        $this->checksumResource->removeProduct($shopwareProduct, $salesChannel->getId());
-                    } else {
-                        throw $iZettleApiException;
-                    }
-                }
-            }
-        }
-
-        $this->checksumResource->commit($context);
+        $this->deletedUpdater->update($productGroupings, $productContext);
+        $this->productContextFactory->commit($productContext);
     }
 }

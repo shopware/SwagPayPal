@@ -8,8 +8,10 @@
 namespace Swag\PayPal\IZettle\Client;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\IZettle\Api\Error\IZettleTokenError;
+use Swag\PayPal\IZettle\Api\Exception\IZettleException;
 use Swag\PayPal\IZettle\Api\Exception\IZettleTokenException;
 use Swag\PayPal\IZettle\Api\IZettleBaseURL;
 use Swag\PayPal\IZettle\Api\IZettleRequestUri;
@@ -47,11 +49,11 @@ class TokenClient extends AbstractClient
         return $tokenResponse;
     }
 
-    protected function handleError(array $error): void
+    protected function handleError(RequestException $requestException, array $error): IZettleException
     {
         $errorStruct = new IZettleTokenError();
         $errorStruct->assign($error);
 
-        throw new IZettleTokenException($errorStruct);
+        return new IZettleTokenException($errorStruct, (int) $requestException->getCode());
     }
 }

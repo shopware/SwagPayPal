@@ -13,7 +13,7 @@ use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 
 class UuidConverterTest extends TestCase
 {
-    public function dataProviderUuidConversion(): array
+    public function dataProviderUuidConversionToV1(): array
     {
         return [
             ['1ce0868f406d47d98cfe4b281e62f099', '1ce0868f-406d-17d9-8cfe-4b281e62f099'],
@@ -22,14 +22,33 @@ class UuidConverterTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderUuidConversion
+     * @dataProvider dataProviderUuidConversionToV1
      */
-    public function testConvert(string $originalUuid, string $expectedUuid): void
+    public function testConvertToV1(string $originalUuid, string $expectedUuid): void
     {
         if ($expectedUuid === '') {
             $this->expectException(InvalidUuidException::class);
         }
         static::assertEquals($expectedUuid, $this->createUuidConverter()->convertUuidToV1($originalUuid));
+    }
+
+    public function dataProviderUuidConversionToV4(): array
+    {
+        return [
+            ['1ce0868f-406d-17d9-8cfe-4b281e62f099', '1ce0868f406d47d98cfe4b281e62f099'],
+            ['notAUuid', ''],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProviderUuidConversionToV4
+     */
+    public function testConvertToV4(string $originalUuid, string $expectedUuid): void
+    {
+        if ($expectedUuid === '') {
+            $this->expectException(InvalidUuidException::class);
+        }
+        static::assertEquals($expectedUuid, $this->createUuidConverter()->convertUuidToV4($originalUuid));
     }
 
     public function dataProviderUuidIncrementation(): array

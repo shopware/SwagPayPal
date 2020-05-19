@@ -20,6 +20,17 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
  */
 class IZettleSalesChannelProductCollection extends EntityCollection
 {
+    public function hasProduct(string $uuid): bool
+    {
+        foreach ($this->getElements() as $element) {
+            if ($element->getProductId() === $uuid) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     protected function getExpectedClass(): string
     {
         return IZettleSalesChannelProductEntity::class;

@@ -60,7 +60,7 @@ class RemoteUpdaterTest extends TestCase
         $changeObject->setVariantUuid($uuidConverter->convertUuidToV1($product->getId()));
         $changeObject->setFromLocationUuid($change > 0 ? $this->locations['SUPPLIER'] : $this->locations['STORE']);
         $changeObject->setToLocationUuid($change < 0 ? $this->locations['BIN'] : $this->locations['STORE']);
-        $changeObject->setChange(abs($change));
+        $changeObject->setChange(\abs($change));
         $changes->addChange($changeObject);
         $changes->setReturnBalanceForLocationUuid($this->locations['STORE']);
 
@@ -90,7 +90,7 @@ class RemoteUpdaterTest extends TestCase
         $changeObject->setVariantUuid($uuidConverter->convertUuidToV1($uuidConverter->incrementUuid($product->getId())));
         $changeObject->setFromLocationUuid($change > 0 ? $this->locations['SUPPLIER'] : $this->locations['STORE']);
         $changeObject->setToLocationUuid($change < 0 ? $this->locations['BIN'] : $this->locations['STORE']);
-        $changeObject->setChange(abs($change));
+        $changeObject->setChange(\abs($change));
         $changes->addChange($changeObject);
         $changes->setReturnBalanceForLocationUuid($this->locations['STORE']);
 

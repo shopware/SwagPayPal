@@ -59,7 +59,7 @@ class LocalUpdater
             ];
         }
 
-        if (count($changedProducts) === 0) {
+        if (\count($changedProducts) === 0) {
             return $changedProducts;
         }
 

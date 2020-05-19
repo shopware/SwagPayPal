@@ -92,7 +92,7 @@ class Product extends IZettleStruct
 
     public function addVariant(Variant ...$variants): void
     {
-        $this->variants = array_merge($this->variants, $variants);
+        $this->variants = \array_merge($this->variants, $variants);
     }
 
     public function getVariantOptionDefinitions(): ?VariantOptionDefinitions
@@ -100,14 +100,17 @@ class Product extends IZettleStruct
         return $this->variantOptionDefinitions;
     }
 
-    public function setVariantOptionDefinitions(VariantOptionDefinitions $variantOptionDefinitions): void
+    public function setVariantOptionDefinitions(?VariantOptionDefinitions $variantOptionDefinitions): void
     {
         $this->variantOptionDefinitions = $variantOptionDefinitions;
     }
 
-    public function setVatPercentage(float $vatPercentage): void
+    /**
+     * @param string|float $vatPercentage
+     */
+    public function setVatPercentage($vatPercentage): void
     {
-        $this->vatPercentage = $vatPercentage;
+        $this->vatPercentage = (float) $vatPercentage;
     }
 
     /**
@@ -115,7 +118,7 @@ class Product extends IZettleStruct
      */
     public function generateChecksum(): string
     {
-        return \md5(serialize($this));
+        return \md5(\serialize($this));
     }
 
     protected function setPresentation(Presentation $presentation): void

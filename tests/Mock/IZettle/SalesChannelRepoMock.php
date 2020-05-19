@@ -64,7 +64,7 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
         if ($criteria->getIds()) {
-            if (in_array($this->mockEntityWithNoTypeId->getId(), $criteria->getIds(), true)) {
+            if (\in_array($this->mockEntityWithNoTypeId->getId(), $criteria->getIds(), true)) {
                 return new EntitySearchResult(
                     1,
                     new SalesChannelCollection([$this->mockEntityWithNoTypeId]),
@@ -74,7 +74,7 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
                 );
             }
 
-            if (in_array($this->mockInactiveEntity->getId(), $criteria->getIds(), true)) {
+            if (\in_array($this->mockInactiveEntity->getId(), $criteria->getIds(), true)) {
                 return new EntitySearchResult(
                     1,
                     new SalesChannelCollection([$this->mockInactiveEntity]),
@@ -84,7 +84,7 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
                 );
             }
 
-            if (!in_array($this->mockEntity->getId(), $criteria->getIds(), true)) {
+            if (!\in_array($this->mockEntity->getId(), $criteria->getIds(), true)) {
                 return new EntitySearchResult(
                     0,
                     new SalesChannelCollection([]),

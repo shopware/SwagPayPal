@@ -25,6 +25,32 @@ class ProductResource
         $this->iZettleClientFactory = $iZettleClientFactory;
     }
 
+    /**
+     * @return Product[]
+     */
+    public function getProducts(IZettleSalesChannelEntity $salesChannelEntity): array
+    {
+        // TODO: Refactor to API key auth
+        $username = $salesChannelEntity->getUsername();
+        $password = $salesChannelEntity->getPassword();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $username, $password);
+
+        $response = $client->sendGetRequest(IZettleRequestUri::PRODUCT_RESOURCE);
+
+        if ($response === null) {
+            return [];
+        }
+
+        $products = [];
+        foreach ($response as $productData) {
+            $product = new Product();
+            $product->assign($productData);
+            $products[] = $product;
+        }
+
+        return $products;
+    }
+
     public function createProduct(IZettleSalesChannelEntity $salesChannelEntity, Product $product): ?array
     {
         // TODO: Refactor to API key auth
@@ -43,5 +69,32 @@ class ProductResource
         $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $username, $password);
 
         return $client->sendPutRequest(IZettleRequestUri::PRODUCT_RESOURCE_V2 . $product->getUuid(), $product);
+    }
+
+    public function deleteProduct(IZettleSalesChannelEntity $salesChannelEntity, string $productUuid): ?array
+    {
+        // TODO: Refactor to API key auth
+        $username = $salesChannelEntity->getUsername();
+        $password = $salesChannelEntity->getPassword();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $username, $password);
+
+        return $client->sendDeleteRequest(IZettleRequestUri::PRODUCT_RESOURCE . $productUuid);
+    }
+
+    /**
+     * @param string[] $productUuids
+     */
+    public function deleteProducts(IZettleSalesChannelEntity $salesChannelEntity, array $productUuids): ?array
+    {
+        // TODO: Refactor to API key auth
+        $username = $salesChannelEntity->getUsername();
+        $password = $salesChannelEntity->getPassword();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $username, $password);
+
+        foreach ($productUuids as &$productUuid) {
+            $productUuid = "uuid=${productUuid}";
+        }
+
+        return $client->sendDeleteRequest(IZettleRequestUri::PRODUCT_RESOURCE, \implode('&', $productUuids));
     }
 }

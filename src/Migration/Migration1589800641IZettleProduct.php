@@ -33,8 +33,7 @@ class Migration1589800641IZettleProduct extends MigrationStep
                 KEY `fk.swag_paypal_izettle_sales_channel_products.sales_channel_id` (`sales_channel_id`),
                 KEY `fk.swag_paypal_izettle_sales_channel_products.product_id` (`product_id`),
                 KEY `fk.swag_paypal_izettle_sales_channel_products.product_vid` (`product_version_id`),
-                CONSTRAINT `fk.swag_paypal_izettle_sales_channel_products.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT `fk.swag_paypal_izettle_sales_channel_products.product` FOREIGN KEY (`product_id`, `product_version_id`) REFERENCES `product` (`id`, `version_id`) ON DELETE CASCADE ON UPDATE CASCADE
+                CONSTRAINT `fk.swag_paypal_izettle_sales_channel_products.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');
     }

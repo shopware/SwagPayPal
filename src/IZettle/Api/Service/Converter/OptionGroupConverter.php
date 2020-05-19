@@ -61,7 +61,7 @@ class OptionGroupConverter
         foreach ($groups as $groupName => $group) {
             $definition = new Definition();
             $definition->setName((string) $groupName);
-            foreach (array_unique($group) as $option) {
+            foreach (\array_unique($group) as $option) {
                 $property = new Property();
                 $property->setValue($option);
                 $definition->addProperty($property);

@@ -39,7 +39,7 @@
             <argument type="service" id="Swag\PayPal\IZettle\Client\IZettleClientFactory"/>
         </service>
 
-        <service id="Swag\PayPal\IZettle\Sync\ChecksumResource">
+        <service id="Swag\PayPal\IZettle\Sync\Context\ProductContextFactory">
             <argument type="service" id="swag_paypal_izettle_sales_channel_product.repository"/>
         </service>
 
@@ -50,11 +50,32 @@
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
         </service>
 
+        <service id="Swag\PayPal\IZettle\Sync\Product\NewUpdater">
+            <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater">
+            <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\Product\DeletedUpdater">
+            <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker">
+            <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
+        </service>
+
         <service id="Swag\PayPal\IZettle\Sync\ProductSyncer">
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
             <argument type="service" id="Swag\PayPal\IZettle\Api\Service\ProductConverter"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\ChecksumResource"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Context\ProductContextFactory"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Product\NewUpdater"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Product\DeletedUpdater"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker"/>
         </service>
     </services>
 </container>

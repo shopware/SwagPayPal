@@ -7,49 +7,47 @@
 
 namespace Swag\PayPal\Test\Mock\IZettle;
 
+use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\PayPal\IZettle\Api\Product;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductCollection;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductDefinition;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductEntity;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
-class IZettleProductRepoMock implements EntityRepositoryInterface
+class ProductRepoMock implements SalesChannelRepositoryInterface
 {
     /**
-     * @var IZettleSalesChannelProductEntity[]
+     * @var ProductEntity[]
      */
     private $mockEntities = [];
 
     public function getDefinition(): EntityDefinition
     {
-        return new IZettleSalesChannelProductDefinition();
+        return new ProductDefinition();
     }
 
-    public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
+    public function aggregate(Criteria $criteria, SalesChannelContext $context): AggregationResultCollection
     {
     }
 
-    public function searchIds(Criteria $criteria, Context $context): IdSearchResult
+    public function searchIds(Criteria $criteria, SalesChannelContext $context): IdSearchResult
     {
     }
 
-    public function search(Criteria $criteria, Context $context): EntitySearchResult
+    public function search(Criteria $criteria, SalesChannelContext $context): EntitySearchResult
     {
         return new EntitySearchResult(
             \count($this->mockEntities),
-            new IZettleSalesChannelProductCollection($this->mockEntities),
+            new ProductCollection($this->mockEntities),
             null,
             $criteria,
-            $context
+            $context->getContext()
         );
     }
 
@@ -81,16 +79,8 @@ class IZettleProductRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function addMockEntity(ProductEntity $productEntity, Product $product, string $salesChannelId): void
+    public function addMockEntity(ProductEntity $productEntity): void
     {
-        $entity = new IZettleSalesChannelProductEntity();
-        $entity->setSalesChannelId($salesChannelId);
-        $entity->setProductId($productEntity->getId());
-        if ($productEntity->getVersionId() !== null) {
-            $entity->setProductVersionId($productEntity->getVersionId());
-        }
-        $entity->setUniqueIdentifier(Uuid::randomHex());
-        $entity->setChecksum($product->generateChecksum());
-        $this->mockEntities[] = $entity;
+        $this->mockEntities[] = $productEntity;
     }
 }

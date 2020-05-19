@@ -21,21 +21,14 @@ class IZettleTokenError extends IZettleStruct
      */
     private $errorDescription;
 
-    public function toString(): string
-    {
-        $message = $this->error;
-
-        if ($this->errorDescription) {
-            $message .= ":\n";
-            $message .= $this->errorDescription;
-        }
-
-        return $message;
-    }
-
     public function getError(): string
     {
         return $this->error;
+    }
+
+    public function getErrorDescription(): string
+    {
+        return $this->errorDescription;
     }
 
     protected function setError(string $error): void

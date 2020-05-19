@@ -99,7 +99,7 @@ class ProductConverter
 
         if ($product->getVariantOptionDefinitions() === null
             && $product->getVariants() !== null
-            && count($product->getVariants()) > 1) {
+            && \count($product->getVariants()) > 1) {
             $product->setVariantOptionDefinitions($this->optionGroupConverter->convertFromVariants(...$product->getVariants()));
         }
 

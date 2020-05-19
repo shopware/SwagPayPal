@@ -31,26 +31,28 @@ class IZettleApiError extends IZettleStruct
      */
     private $violations;
 
-    public function getErrorType(): ?string
+    public function getViolationsAsString(): string
     {
-        return $this->errorType;
-    }
-
-    public function toString(): string
-    {
-        $message = $this->developerMessage;
-
+        $message = '';
         if ($this->violations === []) {
             return $message;
         }
-
-        $message .= ":\n";
 
         foreach ($this->violations as $violation) {
             $message .= $violation->toString();
         }
 
         return $message;
+    }
+
+    public function getDeveloperMessage(): string
+    {
+        return $this->developerMessage;
+    }
+
+    public function getErrorType(): ?string
+    {
+        return $this->errorType;
     }
 
     protected function setDeveloperMessage(string $developerMessage): void

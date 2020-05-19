@@ -52,7 +52,7 @@ class RemoteUpdater
             $changedProducts->add($productEntity);
         }
 
-        if (count($iZettleChanges->getChanges()) === 0) {
+        if (\count($iZettleChanges->getChanges()) === 0) {
             return $changedProducts;
         }
 
@@ -60,7 +60,7 @@ class RemoteUpdater
 
         $status = $this->inventoryResource->changeInventory($inventoryContext->getIZettleSalesChannel(), $iZettleChanges);
 
-        if ($status === null || count($status->getVariants()) === 0) {
+        if ($status === null || \count($status->getVariants()) === 0) {
             return $changedProducts;
         }
 

@@ -8,10 +8,12 @@
 namespace Swag\PayPal\IZettle\Client;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\IZettle\Api\Common\IZettleStruct;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
+use Swag\PayPal\IZettle\Api\Exception\IZettleException;
 use Swag\PayPal\IZettle\Api\OAuthCredentials;
 use Swag\PayPal\IZettle\Resource\TokenResource;
 
@@ -47,6 +49,20 @@ class IZettleClient extends AbstractClient
         return $this->post($resourceUri, $options);
     }
 
+    public function sendDeleteRequest(string $resourceUri, ?string $query = null): ?array
+    {
+        if ($query === null) {
+            $this->delete($resourceUri);
+        }
+
+        $options = [
+            'headers' => ['Content-Type' => 'application/json'],
+            'query' => $query,
+        ];
+
+        return $this->delete($resourceUri, $options);
+    }
+
     public function sendPutRequest(string $resourceUri, IZettleStruct $data): ?array
     {
         $options = [
@@ -72,12 +88,12 @@ class IZettleClient extends AbstractClient
         return $this->get($resourceUri, $options);
     }
 
-    protected function handleError(array $error): void
+    protected function handleError(RequestException $requestException, array $error): IZettleException
     {
         $errorStruct = new IZettleApiError();
         $errorStruct->assign($error);
 
-        throw new IZettleApiException($errorStruct);
+        return new IZettleApiException($errorStruct, (int) $requestException->getCode());
     }
 
     private function createAuthorizationHeaderValue(OAuthCredentials $credentials): string

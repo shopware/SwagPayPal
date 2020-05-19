@@ -7,20 +7,22 @@
 
 namespace Swag\PayPal\IZettle\Api\Exception;
 
-use Shopware\Core\Framework\ShopwareHttpException;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
+use Symfony\Component\HttpFoundation\Response;
 
-class IZettleApiException extends ShopwareHttpException
+class IZettleApiException extends IZettleException
 {
     /**
      * @var IZettleApiError
      */
     private $apiError;
 
-    public function __construct(IZettleApiError $apiError)
-    {
+    public function __construct(
+        IZettleApiError $apiError,
+        int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR
+    ) {
         $this->apiError = $apiError;
-        parent::__construct($apiError->toString());
+        parent::__construct($apiError->getDeveloperMessage(), $apiError->getViolationsAsString(), $statusCode);
     }
 
     public function getErrorCode(): string

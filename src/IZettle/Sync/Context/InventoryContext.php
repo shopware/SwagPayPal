@@ -106,14 +106,14 @@ class InventoryContext
 
         $variant = $this->findIZettleInventory($productUuid, $variantUuid);
 
-        if ($variant === null || !in_array($variant->getProductUuid(), $this->iZettleInventory->getTrackedProducts(), true)) {
+        if ($variant === null || !\in_array($variant->getProductUuid(), $this->iZettleInventory->getTrackedProducts(), true)) {
             $newStatus = $this->inventoryResource->startTracking($this->iZettleSalesChannel, $productUuid);
             if ($newStatus === null) {
                 return 0;
             }
             $variants = $newStatus->getVariants();
 
-            if (count($variants) === 0) {
+            if (\count($variants) === 0) {
                 return 0;
             }
 
@@ -121,7 +121,7 @@ class InventoryContext
                 $this->addIZettleInventory($variant);
             }
 
-            $variant = reset($variants);
+            $variant = \reset($variants);
         }
 
         return $variant->getBalance();

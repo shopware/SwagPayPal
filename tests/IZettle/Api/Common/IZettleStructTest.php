@@ -34,14 +34,14 @@ class IZettleStructTest extends TestCase
         $testStruct = new TestStruct();
         $testStruct->assign($data);
 
-        $testJsonString = json_encode($testStruct);
+        $testJsonString = \json_encode($testStruct);
         static::assertNotFalse($testJsonString);
 
         unset($data['foo'][0]['foo_baz']);
         $data['foo'][0]['fooBaz'] = 'fooBazTest';
         unset($data['foo'][1]);
 
-        $testArray = json_decode($testJsonString, true);
+        $testArray = \json_decode($testJsonString, true);
 
         $this->silentAssertArraySubset($data, $testArray);
     }
@@ -64,10 +64,10 @@ class IZettleStructTest extends TestCase
         $paypalStruct = new TestStruct();
         $paypalStruct->assign($data);
 
-        $testJsonString = json_encode($paypalStruct);
+        $testJsonString = \json_encode($paypalStruct);
         static::assertNotFalse($testJsonString);
 
-        $iZettleStructArray = json_decode($testJsonString, true);
+        $iZettleStructArray = \json_decode($testJsonString, true);
 
         unset($data['not_existing_collection_class'][1]);
 

@@ -7,20 +7,22 @@
 
 namespace Swag\PayPal\IZettle\Api\Exception;
 
-use Shopware\Core\Framework\ShopwareHttpException;
 use Swag\PayPal\IZettle\Api\Error\IZettleTokenError;
+use Symfony\Component\HttpFoundation\Response;
 
-class IZettleTokenException extends ShopwareHttpException
+class IZettleTokenException extends IZettleException
 {
     /**
      * @var IZettleTokenError
      */
     private $tokenError;
 
-    public function __construct(IZettleTokenError $tokenError)
-    {
+    public function __construct(
+        IZettleTokenError $tokenError,
+        int $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR
+    ) {
         $this->tokenError = $tokenError;
-        parent::__construct($tokenError->toString());
+        parent::__construct($tokenError->getError(), $tokenError->getErrorDescription(), $statusCode);
     }
 
     public function getErrorCode(): string

@@ -28,7 +28,7 @@ class Violation extends IZettleStruct
 
     public function toString(): string
     {
-        return sprintf('The property "%s" %s', $this->propertyName, $this->developerMessage);
+        return \sprintf('The property "%s" %s', $this->propertyName, $this->developerMessage);
     }
 
     protected function setPropertyName(string $propertyName): void

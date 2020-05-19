@@ -44,7 +44,7 @@ class IZettleInventoryRepoMock implements EntityRepositoryInterface
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
         return new EntitySearchResult(
-            count($this->mockEntities),
+            \count($this->mockEntities),
             new IZettleSalesChannelInventoryCollection($this->mockEntities),
             null,
             $criteria,

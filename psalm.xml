@@ -55,6 +55,14 @@
             </errorLevel>
         </InvalidReturnType>
 
+        <DocblockTypeContradiction>
+            <errorLevel type="info">
+                <file name="src/IZettle/Api/Service/Util/ProductGrouping.php"/>
+                <file name="src/IZettle/Api/Common/IZettleStruct.php"/>
+                <file name="src/PayPal/Api/Common/PayPalStruct.php"/>
+            </errorLevel>
+        </DocblockTypeContradiction>
+
         <InternalMethod>
             <errorLevel type="info">
                 <file name="src/IZettle/Command/IZettleProductSyncCommand.php"/>
@@ -62,6 +70,12 @@
                 <directory name="tests"/>
             </errorLevel>
         </InternalMethod>
+
+        <DeprecatedInterface>
+            <errorLevel type="info">
+                <file name="src/IZettle/DataAbstractionLayer/Extension/SalesChannelExtension.php"/>
+            </errorLevel>
+        </DeprecatedInterface>
 
         <DeprecatedTrait>
             <errorLevel type="info">
@@ -86,7 +100,7 @@
                 <file name="tests/IZettle/Converter/CategoryConverterTest.php"/>
                 <file name="tests/IZettle/Converter/VariantConverterTest.php"/>
                 <file name="tests/IZettle/Converter/ProductConverterTest.php"/>
-                <file name="tests/IZettle/Sync/ProductSyncerTest.php"/>
+                <file name="tests/IZettle/Sync/Product/ProductSyncerTest.php"/>
                 <file name="tests/IZettle/Sync/Inventory/InventorySyncerTest.php"/>
             </errorLevel>
         </PossiblyNullReference>

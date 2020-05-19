@@ -43,7 +43,7 @@ class SalesChannelProductRepoMock implements SalesChannelRepositoryInterface
     public function search(Criteria $criteria, SalesChannelContext $context): EntitySearchResult
     {
         return new EntitySearchResult(
-            count($this->mockEntities),
+            \count($this->mockEntities),
             new ProductCollection($this->mockEntities),
             null,
             $criteria,
