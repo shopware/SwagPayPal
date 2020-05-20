@@ -147,6 +147,7 @@ class InstallUninstall
             'name' => 'PayPal',
             'position' => -100,
             'pluginId' => $pluginId,
+            'description' => 'Payment via PayPal - easy, fast and secure.',
             'translations' => [
                 'de-DE' => [
                     'description' => 'Bezahlung per PayPal - einfach, schnell und sicher.',
@@ -171,6 +172,8 @@ class InstallUninstall
             'active' => false,
             'pluginId' => $pluginId,
             'availabilityRuleId' => $puiAvailabilityRuleId,
+            'name' => 'Pay upon invoice',
+            'description' => 'Buy comfortably on invoice and pay later.',
             'translations' => [
                 'de-DE' => [
                     'name' => 'Rechnungskauf',
