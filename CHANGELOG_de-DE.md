@@ -1,3 +1,6 @@
+# 1.5.2
+- PT-11710 - Korrigiert die Installation des Plugins in Umgebungen, in denen die Standardsprache nicht de-DE oder en-GB ist
+
 # 1.5.1
 - PT-10640 - Behebt ein Problem mit den SalesChannel-API Routen
 - PT-10897 - Ländercodevalidierung für Smart Payment Buttons und Express Checkout
