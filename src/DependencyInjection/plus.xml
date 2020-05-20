@@ -24,9 +24,6 @@
         <service id="Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController" public="true">
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Swag\PayPal\Payment\PayPalPaymentHandler"/>
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
         </service>
     </services>
 </container>

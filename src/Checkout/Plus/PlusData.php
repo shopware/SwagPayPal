@@ -44,6 +44,11 @@ class PlusData extends Struct
     /**
      * @var string
      */
+    protected $paypalToken;
+
+    /**
+     * @var string
+     */
     protected $checkoutOrderUrl;
 
     /**
@@ -79,6 +84,11 @@ class PlusData extends Struct
     public function getPaypalPaymentId(): string
     {
         return $this->paypalPaymentId;
+    }
+
+    public function getPaypalToken(): string
+    {
+        return $this->paypalToken;
     }
 
     public function getCheckoutOrderUrl(): string

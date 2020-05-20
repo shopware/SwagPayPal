@@ -142,7 +142,8 @@ class PlusSubscriberTest extends TestCase
         static::assertSame('de_DE', $plusExtension->getCustomerSelectedLanguage());
         static::assertSame($this->paypalPaymentMethodId, $plusExtension->getPaymentMethodId());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $plusExtension->getPaypalPaymentId());
-        static::assertSame('/sales-channel-api/v1/checkout/order', $plusExtension->getCheckoutOrderUrl());
+        static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_TOKEN, $plusExtension->getPaypalToken());
+        static::assertSame('/sales-channel-api/v2/checkout/order', $plusExtension->getCheckoutOrderUrl());
         static::assertSame(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, $plusExtension->getIsEnabledParameterName());
     }
 

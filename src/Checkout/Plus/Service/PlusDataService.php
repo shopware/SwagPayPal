@@ -18,6 +18,7 @@ use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Swag\PayPal\Util\PaymentTokenExtractor;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -100,7 +101,8 @@ class PlusDataService
             'customerSelectedLanguage' => $this->getPaymentWallLanguage($salesChannelContext),
             'paymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
             'paypalPaymentId' => $response->getId(),
-            'checkoutOrderUrl' => $this->router->generate('sales-channel-api.checkout.order.create', ['version' => 1]),
+            'paypalToken' => PaymentTokenExtractor::extract($payment),
+            'checkoutOrderUrl' => $this->router->generate('sales-channel-api.checkout.order.create', ['version' => 2]),
             'isEnabledParameterName' => PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID,
         ]);
         $billingAddress = $customer->getDefaultBillingAddress();
