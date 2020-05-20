@@ -1,3 +1,6 @@
+# 1.3.1
+- PT-11710 - Korrigiert die Installation des Plugins in Umgebungen, in denen die Standardsprache nicht de-DE oder en-GB ist
+
 # 1.3.0
 - PT-10448 - API-Zugangsdaten können nun auch im Einstellungsmodul über einen PayPal Login geholt werden
 - PT-11292 - Zeigt nun auch Möglichkeit zum Eingeben separater Zugangsdaten für den Sandbox Modus im First-Run-Wizard

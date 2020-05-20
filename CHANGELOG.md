@@ -1,3 +1,6 @@
+# 1.3.1
+- PT-11710 - Fix installation of plugin in environments where the default language is not de-DE or en-GB
+
 # 1.3.0
 - PT-10448 - Adds onboarding to get API credentials with PayPal login in settings module
 - PT-11292 - Adds possibility to enter separate credentials for sandbox mode in first run wizard
