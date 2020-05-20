@@ -29,6 +29,13 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         paypalPaymentId: '',
 
         /**
+         * The token of the PayPal payment
+         *
+         * @type string
+         */
+        paypalToken: '',
+
+        /**
          * An ISO-3166 country code.
          * Country in which the PayPal PLUS service will be deployed.
          *
@@ -243,7 +250,8 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         const order = JSON.parse(response);
         const orderId = order.data.id;
         const params = {
-            paypalPaymentId: this.options.paypalPaymentId
+            paypalPaymentId: this.options.paypalPaymentId,
+            paypalToken: this.options.paypalToken
         };
         params[this.options.isEnabledParameterName] = true;
 

@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Checkout\Plus;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -51,17 +50,22 @@ class PlusPaymentFinalizeControllerTest extends TestCase
         $salesChannelContext = Generator::createSalesChannelContext();
         $salesChannelContext->getContext()->addExtension(self::WITHOUT_ORDER, new Entity());
         $this->expectException(InvalidTransactionException::class);
-        $this->expectExceptionMessage('The transaction with id  is invalid or could not be found.');
+        $this->expectExceptionMessage(
+            \sprintf(
+                'The transaction with id %s is invalid or could not be found.',
+                OrderTransactionRepoMock::ORDER_TRANSACTION_ID
+            )
+        );
         $this->createController()->finalizeTransaction(new Request(), $salesChannelContext);
     }
 
     public function testFinalizeTransactionCustomerCancel(): void
     {
         $salesChannelContext = Generator::createSalesChannelContext();
-        $this->expectException(CustomerCanceledAsyncPaymentException::class);
-        $this->expectExceptionMessage('The customer canceled the external payment process. Customer canceled the payment on the PayPal page');
         $request = new Request(['cancel' => true]);
-        $this->createController()->finalizeTransaction($request, $salesChannelContext);
+        $response = $this->createController()->finalizeTransaction($request, $salesChannelContext);
+
+        static::assertStringContainsString('/checkout/finish?orderId=testOrderId&isPayPalPlusCheckout=1&changedPayment=0&paymentFailed=1', $response->getTargetUrl());
     }
 
     private function createController(): PlusPaymentFinalizeController

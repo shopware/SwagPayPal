@@ -46,7 +46,7 @@ abstract class AbstractClient
         try {
             $response = $this->client->get($uri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
-            throw $this->handleRequestException($requestException, null);
+            throw $this->handleRequestException($requestException, $options);
         }
 
         return $this->decodeJsonResponse($response);
@@ -68,7 +68,7 @@ abstract class AbstractClient
         return \json_decode($response, true);
     }
 
-    private function handleRequestException(RequestException $requestException, ?array $data): PayPalApiException
+    private function handleRequestException(RequestException $requestException, array $data): PayPalApiException
     {
         $exceptionMessage = $requestException->getMessage();
         $exceptionResponse = $requestException->getResponse();

@@ -45,15 +45,15 @@ abstract class PayPalStruct implements \JsonSerializable
                 continue;
             }
 
+            /** @var class-string<PayPalStruct> $className */
+            $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
+            if (!\class_exists($className)) {
+                continue;
+            }
+
             $arrayWithToManyAssociations = [];
             foreach ($value as $toManyAssociation) {
                 if ($toManyAssociation === null) {
-                    continue;
-                }
-
-                /** @var class-string<PayPalStruct> $className */
-                $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
-                if (!\class_exists($className)) {
                     continue;
                 }
 

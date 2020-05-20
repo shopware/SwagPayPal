@@ -18,6 +18,7 @@ use Swag\PayPal\SwagPayPal;
 abstract class AbstractPaymentHandler
 {
     public const PAYPAL_PAYMENT_ID_INPUT_NAME = 'paypalPaymentId';
+    public const PAYPAL_PAYMENT_TOKEN_INPUT_NAME = 'paypalToken';
 
     /**
      * @var PaymentResource
@@ -59,13 +60,20 @@ abstract class AbstractPaymentHandler
     protected function addPayPalTransactionId(
         AsyncPaymentTransactionStruct $transaction,
         string $paypalPaymentId,
-        Context $context
+        Context $context,
+        ?string $paypalToken = null
     ): void {
+        $customFields = [
+            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID => $paypalPaymentId,
+        ];
+
+        if ($paypalToken !== null) {
+            $customFields[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TOKEN] = $paypalToken;
+        }
+
         $data = [
             'id' => $transaction->getOrderTransaction()->getId(),
-            'customFields' => [
-                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID => $paypalPaymentId,
-            ],
+            'customFields' => $customFields,
         ];
         $this->orderTransactionRepo->update([$data], $context);
     }

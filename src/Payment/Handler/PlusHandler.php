@@ -47,7 +47,8 @@ class PlusHandler extends AbstractPaymentHandler
         CustomerEntity $customer
     ): RedirectResponse {
         $paypalPaymentId = $dataBag->get(self::PAYPAL_PAYMENT_ID_INPUT_NAME);
-        $this->addPayPalTransactionId($transaction, $paypalPaymentId, $salesChannelContext->getContext());
+        $paypalToken = $dataBag->get(self::PAYPAL_PAYMENT_TOKEN_INPUT_NAME);
+        $this->addPayPalTransactionId($transaction, $paypalPaymentId, $salesChannelContext->getContext(), $paypalToken);
 
         $patches = [
             $this->shippingAddressPatchBuilder->createShippingAddressPatch($customer),
