@@ -21,6 +21,7 @@ class RouterMock implements RouterInterface
 
     public function getContext(): RequestContext
     {
+        return new RequestContext();
     }
 
     public function getRouteCollection(): RouteCollection
