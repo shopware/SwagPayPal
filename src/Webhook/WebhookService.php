@@ -71,6 +71,7 @@ class WebhookService implements WebhookServiceInterface
             $webhookExecuteToken = Random::getAlphanumericString(self::PAYPAL_WEBHOOK_TOKEN_LENGTH);
         }
 
+        $this->router->getContext()->setScheme('https');
         $webhookUrl = $this->router->generate(
             self::PAYPAL_WEBHOOK_ROUTE,
             [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken],

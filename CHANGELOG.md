@@ -1,4 +1,5 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11519 - Registers webhooks with https
 - PT-11717 - Adds PayPal cookies to the cookie manager
 
 # 1.5.2
