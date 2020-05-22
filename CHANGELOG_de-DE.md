@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11717 - Fügt PayPal-Cookies zum Cookie-Manager hinzu
+
 # 1.5.2
 - PT-10502 - Abbrüche der Zahlung auf der PayPal-Seite führen nicht mehr zu Fehlern
 - PT-11710 - Korrigiert die Installation des Plugins in Umgebungen, in denen die Standardsprache nicht de-DE oder en-GB ist
