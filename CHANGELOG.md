@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11717 - Adds PayPal cookies to the cookie manager
+
 # 1.5.2
 - PT-10502 - Canceling the payment on the PayPal site no longer leads to errors
 - PT-11710 - Fix installation of plugin in environments where the default language is not de-DE or en-GB

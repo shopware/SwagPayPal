@@ -27,5 +27,10 @@
     "payPalPlus": {
         "paymentNameOverwrite": "PayPal, direct debit or credit card",
         "paymentDescriptionExtension": "Payment by direct debit or credit card is possible without a PayPal account."
+    },
+    "cookie": {
+        "paypal": {
+            "name": "PayPal payments"
+        }
     }
 }
