@@ -38,6 +38,12 @@
                                               :value="props.currentValue"
                                               @input="props.updateCurrentValue">
                             </sw-single-select>
+
+                            {% block swag_paypal_content_card_channel_config_behaviour_settings_intent_hint %}
+                                <p class="sw-paypal-behaviour__intent-hint">
+                                    {{ $tc('swag-paypal.settingForm.behaviour.intent.hint') }}
+                                </p>
+                            {% endblock %}
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}

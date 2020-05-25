@@ -54,6 +54,7 @@
                 },
                 "intent": {
                     "label": "Payment acquisition",
+                    "hint": "Note: PayPal PLUS only works with the payment acquisition \"Sale\". It will be set automatically, regardless of the selected option.",
                     "sale": "Complete payment immediately (Sale)",
                     "authorize": "Delayed payment collection (Auth-Capture)",
                     "order": "Delayed payment collection (Order-Auth-Capture)"
