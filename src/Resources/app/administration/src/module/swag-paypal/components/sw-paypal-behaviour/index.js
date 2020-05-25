@@ -1,5 +1,6 @@
 import template from './swag-paypal-behaviour.html.twig';
 import constants from './../../page/swag-paypal/swag-paypal-consts';
+import './sw-paypal-behaviour.scss';
 
 const { Component } = Shopware;
 

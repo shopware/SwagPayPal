@@ -54,6 +54,7 @@
                 },
                 "intent": {
                     "label": "Zahlungsabschluss",
+                    "hint": "Hinweis: PayPal PLUS funktioniert nur mit dem Zahlungsabschluss \"Sale\". Dieser wird, unabhängig von der gewählten Option, automatisch gesetzt.",
                     "sale": "Zahlung sofort abschließen (Sale)",
                     "authorize": "Zeitverzögerter Zahlungseinzug (Auth-Capture)",
                     "order": "Zeitverzögerter Zahlungseinzug (Order-Auth-Capture)"
