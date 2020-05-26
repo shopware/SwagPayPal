@@ -37,9 +37,7 @@
         <MoreSpecificImplementedParamType>
             <errorLevel type="info">
                 <file name="src/IZettle/Api/Service/Util/ProductGroupingCollection.php"/>
-                <file name="src/IZettle/DataAbstractionLayer/Entity/IZettleSalesChannelCollection.php"/>
-                <file name="src/IZettle/DataAbstractionLayer/Entity/IZettleSalesChannelProductCollection.php"/>
-                <file name="src/IZettle/DataAbstractionLayer/Entity/IZettleSalesChannelInventoryCollection.php"/>
+                <file name="src/IZettle/DataAbstractionLayer/Entity/*Collection.php"/>
             </errorLevel>
         </MoreSpecificImplementedParamType>
 
@@ -65,8 +63,7 @@
 
         <InternalMethod>
             <errorLevel type="info">
-                <file name="src/IZettle/Command/IZettleProductSyncCommand.php"/>
-                <file name="src/IZettle/Command/IZettleInventorySyncCommand.php"/>
+                <file name="src/IZettle/Command/*Command.php"/>
                 <directory name="tests"/>
             </errorLevel>
         </InternalMethod>
@@ -95,15 +92,17 @@
             </errorLevel>
         </DeprecatedMethod>
 
-        <PossiblyNullReference>
+        <PossiblyInvalidArgument>
             <errorLevel type="info">
-                <file name="tests/IZettle/Converter/CategoryConverterTest.php"/>
-                <file name="tests/IZettle/Converter/VariantConverterTest.php"/>
-                <file name="tests/IZettle/Converter/ProductConverterTest.php"/>
-                <file name="tests/IZettle/Sync/Product/ProductSyncerTest.php"/>
-                <file name="tests/IZettle/Sync/Inventory/InventorySyncerTest.php"/>
+                <file name="tests/IZettle/Sync/Product/*Test.php"/>
             </errorLevel>
-        </PossiblyNullReference>
+        </PossiblyInvalidArgument>
+
+        <PossiblyUndefinedMethod>
+            <errorLevel type="info">
+                <file name="tests/IZettle/Sync/Product/*Test.php"/>
+            </errorLevel>
+        </PossiblyUndefinedMethod>
 
         <DeprecatedConstant>
             <errorLevel type="info">

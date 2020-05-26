@@ -32,6 +32,7 @@
         <service id="Swag\PayPal\IZettle\Command\IZettleProductSyncCommand">
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
             <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
             <tag name="console.command"/>
         </service>
 
@@ -52,19 +53,24 @@
 
         <service id="Swag\PayPal\IZettle\Sync\Product\NewUpdater">
             <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater">
             <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Sync\Product\DeletedUpdater">
             <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>
             <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker">
             <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>
             <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
         </service>
 
@@ -76,6 +82,7 @@
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Product\DeletedUpdater"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>
         </service>
     </services>
 </container>

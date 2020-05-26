@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\IZettle\Sync\Inventory;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -29,6 +30,11 @@ class LocalUpdaterTest extends TestCase
     private $stockUpdater;
 
     /**
+     * @var MockObject
+     */
+    private $logger;
+
+    /**
      * @var LocalUpdater
      */
     private $localUpdater;
@@ -39,7 +45,9 @@ class LocalUpdaterTest extends TestCase
 
         $this->stockUpdater = $this->createMock(StockUpdater::class);
 
-        $this->localUpdater = new LocalUpdater($this->productRepository, $this->stockUpdater);
+        $this->logger = $this->createMock(LoggerInterface::class);
+
+        $this->localUpdater = new LocalUpdater($this->productRepository, $this->stockUpdater, $this->logger);
     }
 
     /**
@@ -62,6 +70,9 @@ class LocalUpdaterTest extends TestCase
         $this->stockUpdater->expects($change === 0 ? static::never() : static::once())
                            ->method('update')
                            ->with([$product->getId()]);
+
+        $this->logger->expects($change === 0 ? static::never() : static::once())
+                     ->method('info');
 
         $this->localUpdater->updateLocal(new ProductCollection([$product]), $inventoryContext);
     }

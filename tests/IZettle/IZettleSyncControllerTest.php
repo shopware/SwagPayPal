@@ -12,6 +12,8 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\IZettle\IZettleSyncController;
+use Swag\PayPal\IZettle\Run\LogCleaner;
+use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
 use Swag\PayPal\Test\Mock\IZettle\SalesChannelRepoMock;
@@ -40,15 +42,23 @@ class IZettleSyncControllerTest extends TestCase
      */
     private $inventorySyncer;
 
+    /**
+     * @var MockObject|LogCleaner
+     */
+    private $logCleaner;
+
     protected function setUp(): void
     {
         $this->salesChannelRepoMock = new SalesChannelRepoMock();
         $this->productSyncer = $this->createPartialMock(ProductSyncer::class, ['syncProducts']);
         $this->inventorySyncer = $this->createPartialMock(InventorySyncer::class, ['syncInventory']);
+        $this->logCleaner = $this->createPartialMock(LogCleaner::class, ['cleanUpLog']);
         $this->iZettleSyncController = new IZettleSyncController(
             $this->productSyncer,
             $this->inventorySyncer,
-            $this->salesChannelRepoMock
+            $this->salesChannelRepoMock,
+            $this->createMock(RunService::class),
+            $this->logCleaner
         );
     }
 
@@ -72,6 +82,12 @@ class IZettleSyncControllerTest extends TestCase
                 'syncProducts',
                 [
                     'productSyncer' => 'syncProducts',
+                ],
+            ],
+            [
+                'cleanUpLog',
+                [
+                    'logCleaner' => 'cleanUpLog',
                 ],
             ],
         ];

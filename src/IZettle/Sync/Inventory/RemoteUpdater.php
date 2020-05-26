@@ -7,7 +7,9 @@
 
 namespace Swag\PayPal\IZettle\Sync\Inventory;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
+use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Inventory\Changes;
 use Swag\PayPal\IZettle\Api\Service\Inventory\RemoteCalculator;
 use Swag\PayPal\IZettle\Resource\InventoryResource;
@@ -25,12 +27,19 @@ class RemoteUpdater
      */
     private $remoteCalculator;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         InventoryResource $inventoryResource,
-        RemoteCalculator $remoteCalculator
+        RemoteCalculator $remoteCalculator,
+        LoggerInterface $logger
     ) {
         $this->inventoryResource = $inventoryResource;
         $this->remoteCalculator = $remoteCalculator;
+        $this->logger = $logger;
     }
 
     public function updateRemote(ProductCollection $productCollection, InventoryContext $inventoryContext): ProductCollection
@@ -58,7 +67,22 @@ class RemoteUpdater
 
         $iZettleChanges->setReturnBalanceForLocationUuid($inventoryContext->getStoreUuid());
 
-        $status = $this->inventoryResource->changeInventory($inventoryContext->getIZettleSalesChannel(), $iZettleChanges);
+        try {
+            $status = $this->inventoryResource->changeInventory($inventoryContext->getIZettleSalesChannel(), $iZettleChanges);
+        } catch (IZettleApiException $iZettleApiException) {
+            $this->logger->error('Inventory sync error: ' . $iZettleApiException);
+
+            return $changedProducts;
+        }
+
+        foreach ($changedProducts as $changedProduct) {
+            $changeAmount = $this->remoteCalculator->getChangeAmount($changedProduct, $inventoryContext);
+            $this->logger->info('Changed remote inventory of {productName} by {change}', [
+                'product' => $changedProduct,
+                'productName' => $changedProduct->getName() ?? 'variant',
+                'change' => $changeAmount,
+            ]);
+        }
 
         if ($status === null || \count($status->getVariants()) === 0) {
             return $changedProducts;

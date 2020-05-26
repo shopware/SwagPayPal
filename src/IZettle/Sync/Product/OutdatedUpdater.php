@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\IZettle\Sync\Product;
 
+use Psr\Log\LoggerInterface;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
@@ -20,9 +21,15 @@ class OutdatedUpdater
      */
     private $productResource;
 
-    public function __construct(ProductResource $productResource)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(ProductResource $productResource, LoggerInterface $logger)
     {
         $this->productResource = $productResource;
+        $this->logger = $logger;
     }
 
     public function update(ProductGroupingCollection $productGroupings, ProductContext $productContext): void
@@ -37,11 +44,13 @@ class OutdatedUpdater
                 try {
                     $this->productResource->updateProduct($productContext->getIZettleSalesChannel(), $product);
                     $productContext->changeProduct($shopwareProduct, $product);
+                    $this->logger->info('Product updated', ['product' => $shopwareProduct]);
                 } catch (IZettleApiException $iZettleApiException) {
                     if ($iZettleApiException->getApiError()->getErrorType() === IZettleApiError::ERROR_TYPE_ENTITY_NOT_FOUND) {
                         $productContext->removeProduct($shopwareProduct);
+                        $this->logger->notice('The product was marked as synced, but could not be found at iZettle. It will be recreated with the next sync.', ['product' => $shopwareProduct]);
                     } else {
-                        throw $iZettleApiException;
+                        $this->logger->error('Product update error: ' . $iZettleApiException, ['product' => $shopwareProduct]);
                     }
                 }
             }

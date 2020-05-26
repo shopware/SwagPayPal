@@ -9,7 +9,10 @@ namespace Swag\PayPal\Test\IZettle\Sync\Inventory;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
+use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
+use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Inventory\Changes;
 use Swag\PayPal\IZettle\Api\Inventory\Changes\Change;
 use Swag\PayPal\IZettle\Api\Inventory\Status;
@@ -29,6 +32,11 @@ class RemoteUpdaterTest extends TestCase
     private $inventoryResource;
 
     /**
+     * @var MockObject
+     */
+    private $logger;
+
+    /**
      * @var RemoteUpdater
      */
     private $remoteUpdater;
@@ -39,7 +47,9 @@ class RemoteUpdaterTest extends TestCase
 
         $remoteCalculator = new RemoteCalculator(new UuidConverter());
 
-        $this->remoteUpdater = new RemoteUpdater($this->inventoryResource, $remoteCalculator);
+        $this->logger = $this->createMock(LoggerInterface::class);
+
+        $this->remoteUpdater = new RemoteUpdater($this->inventoryResource, $remoteCalculator, $this->logger);
     }
 
     /**
@@ -68,6 +78,9 @@ class RemoteUpdaterTest extends TestCase
                                 ->method('changeInventory')
                                 ->with(static::anything(), $changes)
                                 ->willReturn($this->createStatus($changeObject->getProductUuid(), $changeObject->getVariantUuid()));
+
+        $this->logger->expects($change === 0 ? static::never() : static::once())
+                     ->method('info');
 
         $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
@@ -109,6 +122,25 @@ class RemoteUpdaterTest extends TestCase
 
         $this->inventoryResource->expects(static::never())->method('changeInventory');
 
+        $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
+    }
+
+    public function testUpdateRemoteInventoryWithError(): void
+    {
+        $product = $this->getSingleProduct();
+        $product->setAvailableStock(2);
+
+        $inventoryContext = $this->createInventoryContext($product, 1, 0);
+
+        $error = new IZettleApiError();
+        $error->assign([
+            'developerMessage' => 'anyError',
+            'violations' => [], ]);
+        $this->inventoryResource->method('changeInventory')->willThrowException(
+            new IZettleApiException($error)
+        );
+
+        $this->logger->expects(static::once())->method('error');
         $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
 

@@ -10,13 +10,20 @@ namespace Swag\PayPal\IZettle\Command;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\IZettle\Run\RunService;
+use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class IZettleProductSyncCommand extends AbstractIZettleCommand
+class IZettleSyncCommand extends AbstractIZettleCommand
 {
-    protected static $defaultName = 'swag:paypal:izettle:sync:product';
+    protected static $defaultName = 'swag:paypal:izettle:sync';
+
+    /**
+     * @var InventorySyncer
+     */
+    private $inventorySyncer;
 
     /**
      * @var ProductSyncer
@@ -30,11 +37,13 @@ class IZettleProductSyncCommand extends AbstractIZettleCommand
 
     public function __construct(
         ProductSyncer $productSyncer,
+        InventorySyncer $inventorySyncer,
         EntityRepositoryInterface $salesChannelRepository,
         RunService $runService
     ) {
         parent::__construct($salesChannelRepository);
         $this->productSyncer = $productSyncer;
+        $this->inventorySyncer = $inventorySyncer;
         $this->runService = $runService;
     }
 
@@ -44,7 +53,7 @@ class IZettleProductSyncCommand extends AbstractIZettleCommand
     protected function configure(): void
     {
         parent::configure();
-        $this->setDescription('Sync only products to iZettle');
+        $this->setDescription('Sync to iZettle');
     }
 
     /**
@@ -64,6 +73,7 @@ class IZettleProductSyncCommand extends AbstractIZettleCommand
         foreach ($salesChannels as $salesChannel) {
             $run = $this->runService->startRun($salesChannel->getId(), $context);
             $this->productSyncer->syncProducts($salesChannel, $context);
+            $this->inventorySyncer->syncInventory($salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION), $context);
             $this->runService->finishRun($run, $context);
         }
 

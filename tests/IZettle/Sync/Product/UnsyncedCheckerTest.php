@@ -7,11 +7,14 @@
 
 namespace Swag\PayPal\Test\IZettle\Sync\Product;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
+use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Product;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
@@ -20,10 +23,8 @@ use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker;
 use Swag\PayPal\Test\Mock\IZettle\ProductContextMock;
 
-class UnsyncedCheckerTest extends TestCase
+class UnsyncedCheckerTest extends AbstractProductSyncTest
 {
-    use ProductTrait;
-
     /**
      * @var ProductContextMock
      */
@@ -44,6 +45,16 @@ class UnsyncedCheckerTest extends TestCase
      */
     private $iZettleProduct;
 
+    /**
+     * @var MockObject|ProductResource
+     */
+    private $productResource;
+
+    /**
+     * @var MockObject|LoggerInterface
+     */
+    private $logger;
+
     public function setUp(): void
     {
         $context = Context::createDefaultContext();
@@ -63,60 +74,78 @@ class UnsyncedCheckerTest extends TestCase
         $this->productContext->getIZettleSalesChannel()->setReplace(true);
 
         $this->productGroupingCollection = new ProductGroupingCollection([]);
+
+        $this->productResource = $this->createMock(ProductResource::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
     }
 
     public function testUnsyncedProduct(): void
     {
-        $productResource = $this->createMock(ProductResource::class);
-        $productResource->method('getProducts')->willReturn([$this->iZettleProduct]);
+        $this->productResource->method('getProducts')->willReturn([$this->iZettleProduct]);
 
-        $updater = new UnsyncedChecker($productResource, new UuidConverter());
+        $updater = new UnsyncedChecker($this->productResource, $this->logger, new UuidConverter());
 
-        $productResource->expects(static::never())->method('deleteProduct');
-        $productResource->expects(static::once())->method('deleteProducts');
+        $this->productResource->expects(static::never())->method('deleteProduct');
+        $this->productResource->expects(static::once())->method('deleteProducts');
+        $this->logger->expects(static::once())->method('info');
         $updater->checkForUnsynced($this->productGroupingCollection, $this->productContext);
     }
 
     public function testSyncedProductInSalesChannel(): void
     {
-        $productResource = $this->createMock(ProductResource::class);
-        $productResource->method('getProducts')->willReturn([$this->iZettleProduct]);
+        $this->productResource->method('getProducts')->willReturn([$this->iZettleProduct]);
 
         $productEntity = new ProductEntity();
         $productEntity->setId($this->iZettleProductEntity->getProductId());
         $productEntity->setVersionId($this->iZettleProductEntity->getProductVersionId());
         $this->productGroupingCollection->addProducts(new ProductCollection([$productEntity]));
 
-        $updater = new UnsyncedChecker($productResource, new UuidConverter());
+        $updater = new UnsyncedChecker($this->productResource, $this->logger, new UuidConverter());
 
-        $productResource->expects(static::never())->method('deleteProduct');
-        $productResource->expects(static::never())->method('deleteProducts');
+        $this->productResource->expects(static::never())->method('deleteProduct');
+        $this->productResource->expects(static::never())->method('deleteProducts');
         $updater->checkForUnsynced($this->productGroupingCollection, $this->productContext);
     }
 
     public function testSyncedProductInLog(): void
     {
-        $productResource = $this->createMock(ProductResource::class);
-        $productResource->method('getProducts')->willReturn([$this->iZettleProduct]);
+        $this->productResource->method('getProducts')->willReturn([$this->iZettleProduct]);
         $this->productContext->getIZettleProductCollection()->add($this->iZettleProductEntity);
 
-        $updater = new UnsyncedChecker($productResource, new UuidConverter());
+        $updater = new UnsyncedChecker($this->productResource, $this->logger, new UuidConverter());
 
-        $productResource->expects(static::never())->method('deleteProduct');
-        $productResource->expects(static::never())->method('deleteProducts');
+        $this->productResource->expects(static::never())->method('deleteProduct');
+        $this->productResource->expects(static::never())->method('deleteProducts');
         $updater->checkForUnsynced($this->productGroupingCollection, $this->productContext);
     }
 
     public function testUnsyncedProductWithReplaceDisabled(): void
     {
-        $productResource = $this->createMock(ProductResource::class);
-        $productResource->method('getProducts')->willReturn([$this->iZettleProduct]);
+        $this->productResource->method('getProducts')->willReturn([$this->iZettleProduct]);
         $this->productContext->getIZettleSalesChannel()->setReplace(false);
 
-        $updater = new UnsyncedChecker($productResource, new UuidConverter());
+        $updater = new UnsyncedChecker($this->productResource, $this->logger, new UuidConverter());
 
-        $productResource->expects(static::never())->method('deleteProduct');
-        $productResource->expects(static::never())->method('deleteProducts');
+        $this->productResource->expects(static::never())->method('deleteProduct');
+        $this->productResource->expects(static::never())->method('deleteProducts');
+        $updater->checkForUnsynced($this->productGroupingCollection, $this->productContext);
+    }
+
+    public function testUnsyncedProductDeletionError(): void
+    {
+        $this->productResource->method('getProducts')->willReturn([$this->iZettleProduct]);
+
+        $updater = new UnsyncedChecker($this->productResource, $this->logger, new UuidConverter());
+
+        $error = new IZettleApiError();
+        $error->assign([
+            'developerMessage' => 'anyError',
+            'violations' => [], ]);
+        $this->productResource->method('deleteProducts')->willThrowException(
+            new IZettleApiException($error)
+        );
+
+        $this->logger->expects(static::once())->method('warning');
         $updater->checkForUnsynced($this->productGroupingCollection, $this->productContext);
     }
 }

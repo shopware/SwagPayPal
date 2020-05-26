@@ -15,6 +15,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
+use Swag\PayPal\IZettle\Run\LogCleaner;
+use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
 use Swag\PayPal\SwagPayPal;
@@ -42,14 +44,28 @@ class IZettleSyncController extends AbstractController
      */
     private $salesChannelRepository;
 
+    /**
+     * @var RunService
+     */
+    private $runService;
+
+    /**
+     * @var LogCleaner
+     */
+    private $logCleaner;
+
     public function __construct(
         ProductSyncer $productSyncer,
         InventorySyncer $inventorySyncer,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepositoryInterface $salesChannelRepository,
+        RunService $runService,
+        LogCleaner $logCleaner
     ) {
         $this->productSyncer = $productSyncer;
         $this->inventorySyncer = $inventorySyncer;
         $this->salesChannelRepository = $salesChannelRepository;
+        $this->runService = $runService;
+        $this->logCleaner = $logCleaner;
     }
 
     /**
@@ -59,7 +75,9 @@ class IZettleSyncController extends AbstractController
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
 
+        $run = $this->runService->startRun($salesChannelId, $context);
         $this->productSyncer->syncProducts($salesChannel, $context);
+        $this->runService->finishRun($run, $context);
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }
@@ -74,7 +92,9 @@ class IZettleSyncController extends AbstractController
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
         $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
 
+        $run = $this->runService->startRun($salesChannelId, $context);
         $this->inventorySyncer->syncInventory($iZettleSalesChannel, $context);
+        $this->runService->finishRun($run, $context);
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }
@@ -86,12 +106,25 @@ class IZettleSyncController extends AbstractController
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
 
-        $this->productSyncer->syncProducts($salesChannel, $context);
-
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
         $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
 
+        $run = $this->runService->startRun($salesChannelId, $context);
+        $this->productSyncer->syncProducts($salesChannel, $context);
         $this->inventorySyncer->syncInventory($iZettleSalesChannel, $context);
+        $this->runService->finishRun($run, $context);
+
+        return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Route("/api/v{version}/paypal/izettle/log/cleanup/{salesChannelId}", name="api.paypal.izettle.log.cleanup", methods={"GET"})
+     */
+    public function cleanUpLog(string $salesChannelId, Context $context): Response
+    {
+        $salesChannel = $this->getSalesChannel($salesChannelId, $context);
+
+        $this->logCleaner->cleanUpLog($salesChannel->getId(), $context);
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }

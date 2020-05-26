@@ -18,6 +18,7 @@ use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOp
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -54,36 +55,40 @@ class ProductConverterTest extends TestCase
             new ProductCollection([$productEntity]),
             $this->getCurrency()
         );
+        $convertedGrouping = $converted->first();
 
         $product = $this->createProduct();
         $product->setUuid($this->createUuidConverter()->convertUuidToV1($productEntity->getId()));
 
-        static::assertNotNull($converted->first());
-        static::assertEquals($product, $converted->first()->getProduct());
+        static::assertNotNull($convertedGrouping);
+        static::assertEquals($product, $convertedGrouping->getProduct());
     }
 
     public function testConvertMaximal(): void
     {
+        $tax = $this->getTax();
+
         $productEntity = $this->createProductEntity();
         $productEntity->addTranslated('name', self::PRODUCT_NAME . self::TRANSLATION_MARK);
         $productEntity->addTranslated('description', self::PRODUCT_DESCRIPTION . self::TRANSLATION_MARK);
         $productEntity->setCategories(new CategoryCollection([$this->getCategory()]));
-        $productEntity->setTax($this->getTax());
+        $productEntity->setTax($tax);
 
         $converted = $this->createProductConverter()->convertShopwareProducts(
             new ProductCollection([$productEntity]),
             $this->getCurrency()
         );
+        $convertedGrouping = $converted->first();
 
         $product = $this->createProduct();
         $product->setUuid($this->createUuidConverter()->convertUuidToV1($productEntity->getId()));
         $product->setName(self::PRODUCT_NAME . self::TRANSLATION_MARK);
         $product->setDescription(self::PRODUCT_DESCRIPTION . self::TRANSLATION_MARK);
         $product->setCategory(new Category());
-        $product->setVatPercentage($this->getTax()->getTaxRate());
+        $product->setVatPercentage($tax->getTaxRate());
 
-        static::assertNotNull($converted->first());
-        static::assertEquals($product, $converted->first()->getProduct());
+        static::assertNotNull($convertedGrouping);
+        static::assertEquals($product, $convertedGrouping->getProduct());
     }
 
     public function testConvertWithConfiguratorSettings(): void
@@ -105,13 +110,14 @@ class ProductConverterTest extends TestCase
             new ProductCollection([$productEntity]),
             $this->getCurrency()
         );
+        $convertedGrouping = $converted->first();
 
         $product = $this->createProduct();
         $product->setUuid($this->createUuidConverter()->convertUuidToV1($productEntity->getId()));
         $product->setVariantOptionDefinitions(new VariantOptionDefinitions());
 
-        static::assertNotNull($converted->first());
-        static::assertEquals($product, $converted->first()->getProduct());
+        static::assertNotNull($convertedGrouping);
+        static::assertEquals($product, $convertedGrouping->getProduct());
     }
 
     public function testConvertWithVariantOptionDefinitions(): void
@@ -126,14 +132,15 @@ class ProductConverterTest extends TestCase
             new ProductCollection([$productEntityParent, $productEntityChild1, $productEntityChild2]),
             $this->getCurrency()
         );
+        $convertedGrouping = $converted->first();
 
         $product = $this->createProduct();
         $product->setUuid($this->createUuidConverter()->convertUuidToV1($productEntityParent->getId()));
         $product->setVariantOptionDefinitions(new VariantOptionDefinitions());
         $product->addVariant(new Variant());
 
-        static::assertNotNull($converted->first());
-        static::assertEquals($product, $converted->first()->getProduct());
+        static::assertNotNull($convertedGrouping);
+        static::assertEquals($product, $convertedGrouping->getProduct());
     }
 
     public function testConvertWithNoCurrency(): void
@@ -144,12 +151,13 @@ class ProductConverterTest extends TestCase
             new ProductCollection([$productEntity]),
             null
         );
+        $convertedGrouping = $converted->first();
 
         $product = $this->createProduct();
         $product->setUuid($this->createUuidConverter()->convertUuidToV1($productEntity->getId()));
 
-        static::assertNotNull($converted->first());
-        static::assertEquals($product, $converted->first()->getProduct());
+        static::assertNotNull($convertedGrouping);
+        static::assertEquals($product, $convertedGrouping->getProduct());
     }
 
     private function createProductEntity(): ProductEntity
@@ -200,26 +208,38 @@ class ProductConverterTest extends TestCase
         return new UuidConverter();
     }
 
-    private function getCurrency(): CurrencyEntity
+    private function getCurrency(): ?CurrencyEntity
     {
         $criteria = new Criteria();
         $criteria->setIds([Defaults::CURRENCY]);
 
-        return $this->getContainer()->get('currency.repository')->search($criteria, Context::createDefaultContext())->first();
+        /** @var EntityRepositoryInterface $currencyRepository */
+        $currencyRepository = $this->getContainer()->get('currency.repository');
+
+        return $currencyRepository->search($criteria, Context::createDefaultContext())->first();
     }
 
     private function getTax(): TaxEntity
     {
         $criteria = new Criteria();
 
-        return $this->getContainer()->get('tax.repository')->search($criteria, Context::createDefaultContext())->first();
+        /** @var EntityRepositoryInterface $taxRepository */
+        $taxRepository = $this->getContainer()->get('tax.repository');
+        $tax = $taxRepository->search($criteria, Context::createDefaultContext())->first();
+
+        static::assertNotNull($tax);
+
+        return $tax;
     }
 
-    private function getCategory(): CategoryEntity
+    private function getCategory(): ?CategoryEntity
     {
         $criteria = new Criteria();
         $criteria->addAssociation('translation');
 
-        return $this->getContainer()->get('category.repository')->search($criteria, Context::createDefaultContext())->first();
+        /** @var EntityRepositoryInterface $categoryRepository */
+        $categoryRepository = $this->getContainer()->get('category.repository');
+
+        return $categoryRepository->search($criteria, Context::createDefaultContext())->first();
     }
 }

@@ -7,7 +7,8 @@
 
 namespace Swag\PayPal\Test\IZettle\Sync\Product;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
@@ -21,10 +22,8 @@ use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 use Swag\PayPal\IZettle\Sync\Product\NewUpdater;
 use Swag\PayPal\Test\Mock\IZettle\ProductContextMock;
 
-class NewUpdaterTest extends TestCase
+class NewUpdaterTest extends AbstractProductSyncTest
 {
-    use ProductTrait;
-
     /**
      * @var ProductContextMock
      */
@@ -34,6 +33,16 @@ class NewUpdaterTest extends TestCase
      * @var ProductGroupingCollection
      */
     private $productGroupingCollection;
+
+    /**
+     * @var MockObject|ProductResource
+     */
+    private $productResource;
+
+    /**
+     * @var MockObject|LoggerInterface
+     */
+    private $logger;
 
     public function setUp(): void
     {
@@ -52,17 +61,20 @@ class NewUpdaterTest extends TestCase
         if ($grouping !== null) {
             $grouping->setProduct(new Product());
         }
+
+        $this->productResource = $this->createMock(ProductResource::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
     }
 
     public function testNewProduct(): void
     {
-        $productResource = $this->createMock(ProductResource::class);
-        $updater = new NewUpdater($productResource);
+        $updater = new NewUpdater($this->productResource, $this->logger);
         $this->productContext->setUpdateStatus(ProductContext::PRODUCT_NEW);
 
-        $productResource->expects(static::once())->method('createProduct');
-        $productResource->expects(static::never())->method('updateProduct');
-        $productResource->expects(static::never())->method('deleteProduct');
+        $this->productResource->expects(static::once())->method('createProduct');
+        $this->productResource->expects(static::never())->method('updateProduct');
+        $this->productResource->expects(static::never())->method('deleteProduct');
+        $this->logger->expects(static::once())->method('info');
 
         $updater->update($this->productGroupingCollection, $this->productContext);
 
@@ -72,8 +84,7 @@ class NewUpdaterTest extends TestCase
 
     public function testNewProductButExistsAtIZettle(): void
     {
-        $productResource = $this->createMock(ProductResource::class);
-        $updater = new NewUpdater($productResource);
+        $updater = new NewUpdater($this->productResource, $this->logger);
         $this->productContext->setUpdateStatus(ProductContext::PRODUCT_NEW);
 
         $error = new IZettleApiError();
@@ -81,13 +92,14 @@ class NewUpdaterTest extends TestCase
             'errorType' => IZettleApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS,
             'developerMessage' => IZettleApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS,
             'violations' => [], ]);
-        $productResource->method('createProduct')->willThrowException(
+        $this->productResource->method('createProduct')->willThrowException(
             new IZettleApiException($error)
         );
 
-        $productResource->expects(static::once())->method('createProduct');
-        $productResource->expects(static::never())->method('updateProduct');
-        $productResource->expects(static::never())->method('deleteProduct');
+        $this->productResource->expects(static::once())->method('createProduct');
+        $this->productResource->expects(static::never())->method('updateProduct');
+        $this->productResource->expects(static::never())->method('deleteProduct');
+        $this->logger->expects(static::once())->method('notice');
 
         $updater->update($this->productGroupingCollection, $this->productContext);
 
@@ -98,19 +110,18 @@ class NewUpdaterTest extends TestCase
 
     public function testNewProductCreationError(): void
     {
-        $productResource = $this->createMock(ProductResource::class);
-        $updater = new NewUpdater($productResource);
+        $updater = new NewUpdater($this->productResource, $this->logger);
         $this->productContext->setUpdateStatus(ProductContext::PRODUCT_NEW);
 
         $error = new IZettleApiError();
         $error->assign([
             'developerMessage' => 'anyError',
             'violations' => [], ]);
-        $productResource->method('createProduct')->willThrowException(
+        $this->productResource->method('createProduct')->willThrowException(
             new IZettleApiException($error)
         );
 
-        $this->expectException(IZettleApiException::class);
+        $this->logger->expects(static::once())->method('error');
         $updater->update($this->productGroupingCollection, $this->productContext);
     }
 
@@ -127,13 +138,12 @@ class NewUpdaterTest extends TestCase
      */
     public function testAnyOtherProduct(int $unwantedStatus): void
     {
-        $productResource = $this->createMock(ProductResource::class);
-        $updater = new NewUpdater($productResource);
+        $updater = new NewUpdater($this->productResource, $this->logger);
         $this->productContext->setUpdateStatus($unwantedStatus);
 
-        $productResource->expects(static::never())->method('createProduct');
-        $productResource->expects(static::never())->method('updateProduct');
-        $productResource->expects(static::never())->method('deleteProduct');
+        $this->productResource->expects(static::never())->method('createProduct');
+        $this->productResource->expects(static::never())->method('updateProduct');
+        $this->productResource->expects(static::never())->method('deleteProduct');
 
         $updater->update($this->productGroupingCollection, $this->productContext);
 

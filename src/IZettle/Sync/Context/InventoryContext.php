@@ -69,6 +69,11 @@ class InventoryContext
      */
     private $soldUuid;
 
+    /**
+     * @var string[]
+     */
+    private $productsUuidsWithStartedTracking = [];
+
     public function __construct(
         InventoryResource $inventoryResource,
         UuidConverter $uuidConverter,
@@ -93,7 +98,7 @@ class InventoryContext
         $this->context = $context;
     }
 
-    public function getIZettleInventory(ProductEntity $productEntity): int
+    public function getIZettleInventory(ProductEntity $productEntity, bool $ignoreTracking = false): ?int
     {
         $productUuid = $productEntity->getParentId();
         $variantUuid = $productEntity->getId();
@@ -106,25 +111,44 @@ class InventoryContext
 
         $variant = $this->findIZettleInventory($productUuid, $variantUuid);
 
-        if ($variant === null || !\in_array($variant->getProductUuid(), $this->iZettleInventory->getTrackedProducts(), true)) {
-            $newStatus = $this->inventoryResource->startTracking($this->iZettleSalesChannel, $productUuid);
-            if ($newStatus === null) {
-                return 0;
-            }
-            $variants = $newStatus->getVariants();
-
-            if (\count($variants) === 0) {
-                return 0;
-            }
-
-            foreach ($variants as $variant) {
-                $this->addIZettleInventory($variant);
-            }
-
-            $variant = \reset($variants);
+        if ($variant === null || !($ignoreTracking || $this->isIZettleTracked($productEntity))) {
+            return null;
         }
 
         return $variant->getBalance();
+    }
+
+    public function isIZettleTracked(ProductEntity $productEntity): bool
+    {
+        $productUuid = $productEntity->getParentId() ?? $productEntity->getId();
+        $productUuid = $this->uuidConverter->convertUuidToV1($productUuid);
+
+        return \in_array($productUuid, $this->iZettleInventory->getTrackedProducts(), true);
+    }
+
+    public function startIZettleTracking(ProductEntity $productEntity): void
+    {
+        $productUuid = $productEntity->getParentId() ?? $productEntity->getId();
+        $productUuid = $this->uuidConverter->convertUuidToV1($productUuid);
+
+        if (\in_array($productUuid, $this->productsUuidsWithStartedTracking, true)) {
+            return;
+        }
+
+        $newStatus = $this->inventoryResource->startTracking($this->iZettleSalesChannel, $productUuid);
+        $this->productsUuidsWithStartedTracking[] = $productUuid;
+        if ($newStatus === null) {
+            return;
+        }
+        $variants = $newStatus->getVariants();
+
+        if (\count($variants) === 0) {
+            return;
+        }
+
+        foreach ($variants as $variant) {
+            $this->addIZettleInventory($variant);
+        }
     }
 
     public function getLocalInventory(ProductEntity $productEntity): int

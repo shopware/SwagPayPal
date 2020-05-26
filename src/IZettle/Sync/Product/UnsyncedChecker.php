@@ -7,6 +7,8 @@
 
 namespace Swag\PayPal\IZettle\Sync\Product;
 
+use Psr\Log\LoggerInterface;
+use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
 use Swag\PayPal\IZettle\Resource\ProductResource;
@@ -20,15 +22,22 @@ class UnsyncedChecker
     private $productResource;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @var UuidConverter
      */
     private $uuidConverter;
 
     public function __construct(
         ProductResource $productResource,
+        LoggerInterface $logger,
         UuidConverter $uuidConverter
     ) {
         $this->productResource = $productResource;
+        $this->logger = $logger;
         $this->uuidConverter = $uuidConverter;
     }
 
@@ -43,10 +52,6 @@ class UnsyncedChecker
 
         foreach ($existingIZettleProducts as $iZettleProduct) {
             $uuid = $this->uuidConverter->convertUuidToV4($iZettleProduct->getUuid());
-
-            if (!$uuid) {
-                continue;
-            }
 
             if ($productGroupings->has($uuid)) {
                 continue;
@@ -63,6 +68,11 @@ class UnsyncedChecker
             return;
         }
 
-        $this->productResource->deleteProducts($productContext->getIZettleSalesChannel(), $deletions);
+        try {
+            $this->productResource->deleteProducts($productContext->getIZettleSalesChannel(), $deletions);
+            $this->logger->info('Unsynced products at iZettle deleted: {productIds}', ['productIds' => $deletions]);
+        } catch (IZettleApiException $iZettleApiException) {
+            $this->logger->warning('Unsynced product deletion error: ' . $iZettleApiException);
+        }
     }
 }

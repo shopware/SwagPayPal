@@ -17,6 +17,8 @@
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
             <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\LogCleaner"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
@@ -41,6 +43,14 @@
 
         <service id="Swag\PayPal\IZettle\Setting\Service\ApiCredentialService">
             <argument type="service" id="Swag\PayPal\IZettle\Resource\TokenResource"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Command\IZettleSyncCommand">
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
+            <tag name="console.command"/>
         </service>
     </services>
 </container>

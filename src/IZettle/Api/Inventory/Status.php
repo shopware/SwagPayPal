@@ -47,7 +47,6 @@ class Status extends IZettleStruct
     {
         foreach ($variants as $variant) {
             $this->variants[] = $variant;
-            $this->trackedProducts[] = $variant->getProductUuid();
         }
     }
 

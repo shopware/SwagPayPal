@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\IZettle\Sync\Product;
 
-use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -19,10 +18,8 @@ use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 use Swag\PayPal\IZettle\Sync\Context\ProductContextFactory;
 use Swag\PayPal\Test\Mock\IZettle\IZettleProductRepoMock;
 
-class ProductContextFactoryTest extends TestCase
+class ProductContextFactoryTest extends AbstractProductSyncTest
 {
-    use ProductTrait;
-
     public function dataProviderCheckForUpdate(): array
     {
         return [

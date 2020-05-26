@@ -20,24 +20,15 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter;
-use Swag\PayPal\IZettle\Api\Service\Converter\OptionGroupConverter;
-use Swag\PayPal\IZettle\Api\Service\Converter\PriceConverter;
-use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
-use Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter;
-use Swag\PayPal\IZettle\Api\Service\ProductConverter;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\Context\ProductContextFactory;
-use Swag\PayPal\IZettle\Sync\Product\DeletedUpdater;
-use Swag\PayPal\IZettle\Sync\Product\NewUpdater;
-use Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater;
-use Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
 use Swag\PayPal\Test\Mock\IZettle\ProductContextMock;
 use Swag\PayPal\Test\Mock\IZettle\SalesChannelProductRepoMock;
 
-class ProductSyncerTest extends AbstractProductSyncTest
+class ProductSelectionTest extends AbstractProductSyncTest
 {
     /**
      * @var MockObject
@@ -89,6 +80,11 @@ class ProductSyncerTest extends AbstractProductSyncTest
      */
     private $unsyncedChecker;
 
+    /**
+     * @var ProductSelection
+     */
+    private $productSelection;
+
     public function setUp(): void
     {
         $context = Context::createDefaultContext();
@@ -127,52 +123,43 @@ class ProductSyncerTest extends AbstractProductSyncTest
 
         $this->productRepository = new SalesChannelProductRepoMock();
 
-        $productSelection = new ProductSelection(
+        $this->productSelection = new ProductSelection(
             $this->productRepository,
             $productStreamBuilder,
             $domainRepository,
             $this->createMock(SalesChannelContextFactory::class)
         );
-
-        $this->newUpdater = $this->createMock(NewUpdater::class);
-        $this->outdatedUpdater = $this->createMock(OutdatedUpdater::class);
-        $this->deletedUpdater = $this->createMock(DeletedUpdater::class);
-        $this->unsyncedChecker = $this->createMock(UnsyncedChecker::class);
-
-        $this->pruductSyncer = new ProductSyncer(
-            $productSelection,
-            new ProductConverter(
-                new UuidConverter(),
-                new CategoryConverter(new UuidConverter()),
-                new VariantConverter(new UuidConverter(), new PriceConverter()),
-                new OptionGroupConverter()
-            ),
-            $this->productContextFactory,
-            $this->newUpdater,
-            $this->outdatedUpdater,
-            $this->deletedUpdater,
-            $this->unsyncedChecker
-        );
     }
 
-    public function testProductSync(): void
+    public function dataProviderProductSelection(): array
+    {
+        return [
+            [false, false],
+            [false, true],
+            [true, false],
+            [true, true],
+        ];
+    }
+
+    /**
+     * @dataProvider dataProviderProductSelection
+     */
+    public function testProductSelection(bool $withProductStream, bool $withAssociations): void
     {
         $context = Context::createDefaultContext();
 
         $product = $this->getProduct();
         $this->productRepository->addMockEntity($product);
 
-        $this->productResource->expects(static::never())->method('updateProduct');
-        $this->productResource->expects(static::never())->method('createProduct');
-        $this->productContextFactory->expects(static::exactly(3))->method('commit');
-        $this->newUpdater->expects(static::once())->method('update');
-        $this->outdatedUpdater->expects(static::once())->method('update');
-        $this->deletedUpdater->expects(static::once())->method('update');
-        $this->unsyncedChecker->expects(static::once())->method('checkForUnsynced');
+        $iZettleSalesChannel = $this->salesChannel->getExtension('paypalIZettleSalesChannel');
+        static::assertNotNull($iZettleSalesChannel);
+        static::assertInstanceOf(IZettleSalesChannelEntity::class, $iZettleSalesChannel);
+        if (!$withProductStream) {
+            $iZettleSalesChannel->setProductStreamId(null);
+        }
 
-        $this->pruductSyncer->syncProducts($this->salesChannel, $context);
+        $products = $this->productSelection->getProducts($iZettleSalesChannel, $context, $withAssociations);
 
-        static::assertCount(0, $this->productContext->getProductChanges());
-        static::assertCount(0, $this->productContext->getProductRemovals());
+        static::assertCount(1, $products);
     }
 }

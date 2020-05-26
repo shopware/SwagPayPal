@@ -14,6 +14,7 @@ use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOp
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -81,9 +82,10 @@ class VariantConverterTest extends TestCase
         $option2->setValue(self::OPTION2_VALUE);
         $variant->setOptions([$option1, $option2]);
 
+        $currency = $this->getCurrency();
         $price = new \Swag\PayPal\IZettle\Api\Product\Price();
         $price->setAmount(self::PRODUCT_PRICE_CONVERTED);
-        $price->setCurrencyId($this->getCurrency()->getIsoCode());
+        $price->setCurrencyId($currency->getIsoCode());
         $variant->setPrice($price);
 
         static::assertEquals($variant, $converted);
@@ -127,7 +129,13 @@ class VariantConverterTest extends TestCase
         $criteria = new Criteria();
         $criteria->setIds([Defaults::CURRENCY]);
 
-        return $this->getContainer()->get('currency.repository')->search($criteria, Context::createDefaultContext())->first();
+        /** @var EntityRepositoryInterface $currencyRepository */
+        $currencyRepository = $this->getContainer()->get('currency.repository');
+        $currency = $currencyRepository->search($criteria, Context::createDefaultContext())->first();
+
+        static::assertNotNull($currency);
+
+        return $currency;
     }
 
     private function createOptions(): PropertyGroupOptionCollection

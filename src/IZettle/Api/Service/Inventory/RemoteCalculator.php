@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\IZettle\Api\Service\Inventory;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductEntity;
 use Swag\PayPal\IZettle\Api\Inventory\Changes\Change;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
@@ -19,6 +20,11 @@ class RemoteCalculator
      */
     private $uuidConverter;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(UuidConverter $uuidConverter)
     {
         $this->uuidConverter = $uuidConverter;
@@ -28,14 +34,12 @@ class RemoteCalculator
         ProductEntity $productEntity,
         InventoryContext $inventoryContext
     ): ?Change {
-        $currentStock = $productEntity->getAvailableStock();
-        $previousStock = $inventoryContext->getLocalInventory($productEntity);
+        $difference = $this->getChangeAmount($productEntity, $inventoryContext);
 
-        if ($currentStock === $previousStock) {
+        if ($difference === 0) {
             return null;
         }
 
-        $difference = $currentStock - $previousStock;
         $change = new Change();
 
         $productUuid = $productEntity->getParentId() ?? $productEntity->getId();
@@ -50,13 +54,29 @@ class RemoteCalculator
         if ($difference > 0) {
             $change->setFromLocationUuid($inventoryContext->getSupplierUuid());
             $change->setToLocationUuid($inventoryContext->getStoreUuid());
-            $change->setChange((int) $difference);
+            $change->setChange($difference);
         } else {
             $change->setFromLocationUuid($inventoryContext->getStoreUuid());
             $change->setToLocationUuid($inventoryContext->getBinUuid());
-            $change->setChange((int) -$difference);
+            $change->setChange(-$difference);
         }
 
         return $change;
+    }
+
+    public function getChangeAmount(
+        ProductEntity $productEntity,
+        InventoryContext $inventoryContext
+    ): int {
+        $currentStock = $productEntity->getAvailableStock();
+
+        if ($inventoryContext->isIZettleTracked($productEntity)) {
+            $previousStock = $inventoryContext->getLocalInventory($productEntity);
+        } else {
+            $inventoryContext->startIZettleTracking($productEntity);
+            $previousStock = $inventoryContext->getIZettleInventory($productEntity, true);
+        }
+
+        return $currentStock - $previousStock;
     }
 }

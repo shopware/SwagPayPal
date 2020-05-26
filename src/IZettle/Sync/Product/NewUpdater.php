@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\IZettle\Sync\Product;
 
+use Psr\Log\LoggerInterface;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
@@ -20,9 +21,15 @@ class NewUpdater
      */
     private $productResource;
 
-    public function __construct(ProductResource $productResource)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(ProductResource $productResource, LoggerInterface $logger)
     {
         $this->productResource = $productResource;
+        $this->logger = $logger;
     }
 
     public function update(ProductGroupingCollection $productGroupings, ProductContext $productContext): void
@@ -37,11 +44,13 @@ class NewUpdater
                 try {
                     $this->productResource->createProduct($productContext->getIZettleSalesChannel(), $product);
                     $productContext->changeProduct($shopwareProduct, $product);
+                    $this->logger->info('Product created', ['product' => $shopwareProduct]);
                 } catch (IZettleApiException $iZettleApiException) {
                     if ($iZettleApiException->getApiError()->getErrorType() === IZettleApiError::ERROR_TYPE_ITEM_ALREADY_EXISTS) {
                         $productContext->changeProduct($shopwareProduct);
+                        $this->logger->notice('The product was not marked as synced, but was found at iZettle. Overwriting.', ['product' => $shopwareProduct]);
                     } else {
-                        throw $iZettleApiException;
+                        $this->logger->error('Product creation error: ' . $iZettleApiException, ['product' => $shopwareProduct]);
                     }
                 }
             }

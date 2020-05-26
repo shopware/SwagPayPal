@@ -69,20 +69,18 @@ class InventorySyncer
         $inventoryContext = $this->inventoryContextFactory->getContext($iZettleSalesChannel, $context);
 
         $changes = $this->remoteUpdater->updateRemote($productCollection, $inventoryContext);
-
-        if ($changes->count() > 0) {
-            $this->updateLocalChanges($changes, $inventoryContext);
-        }
+        $this->updateLocalChanges($changes, $inventoryContext);
 
         $changes = $this->localUpdater->updateLocal($productCollection, $inventoryContext);
-
-        if ($changes->count() > 0) {
-            $this->updateLocalChanges($changes, $inventoryContext);
-        }
+        $this->updateLocalChanges($changes, $inventoryContext);
     }
 
     private function updateLocalChanges(ProductCollection $productCollection, InventoryContext $inventoryContext): void
     {
+        if ($productCollection->count() === 0) {
+            return;
+        }
+
         $localChanges = [];
         foreach ($productCollection->getElements() as $productEntity) {
             $localChanges[] = [

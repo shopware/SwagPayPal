@@ -64,7 +64,7 @@ class ProductContext
             'salesChannelId' => $this->salesChannel->getId(),
             'productId' => $shopwareProduct->getId(),
             'productVersionId' => $shopwareProduct->getVersionId(),
-            'checksum' => $iZettleProduct !== null ? $iZettleProduct->generateChecksum() : '',
+            'checksum' => $iZettleProduct !== null ? $iZettleProduct->generateChecksum() : '0',
         ];
     }
 
