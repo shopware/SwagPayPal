@@ -7,7 +7,9 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
-use Shopware\Core\Framework\Event\ShopwareEvent;
+use Shopware\Core\Content\Cms\CmsPageCollection;
+use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
@@ -60,6 +62,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
 
+            CmsPageLoadedEvent::class => 'addExpressCheckoutDataToCmsPage',
+
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
         ];
     }
@@ -67,32 +71,11 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
     public function addExpressCheckoutDataToPage(PageLoadedEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
-        if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext) === false) {
-            return;
-        }
+        $eventName = \get_class($event);
 
-        try {
-            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
-        } catch (PayPalSettingsInvalidException $e) {
-            return;
-        }
+        $addProductToCart = $event instanceof ProductPageLoadedEvent || $event instanceof NavigationPageLoadedEvent;
 
-        if ($this->expressOptionForEventEnabled($settings, $event) === false) {
-            return;
-        }
-
-        if ($event instanceof ProductPageLoadedEvent || $event instanceof NavigationPageLoadedEvent) {
-            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData(
-                $salesChannelContext,
-                $settings,
-                true
-            );
-        } else {
-            $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData(
-                $salesChannelContext,
-                $settings
-            );
-        }
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, $eventName, $addProductToCart);
 
         if ($expressCheckoutButtonData === null) {
             return;
@@ -104,28 +87,34 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         );
     }
 
+    public function addExpressCheckoutDataToCmsPage(CmsPageLoadedEvent $event): void
+    {
+        $salesChannelContext = $event->getSalesChannelContext();
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, \get_class($event), true);
+
+        if ($expressCheckoutButtonData === null) {
+            return;
+        }
+
+        /** @var CmsPageCollection $pages */
+        $pages = $event->getResult();
+
+        $cmsPage = $pages->first();
+
+        if ($cmsPage === null) {
+            return;
+        }
+
+        $cmsPage->addExtension(
+            self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
+            $expressCheckoutButtonData
+        );
+    }
+
     public function addExpressCheckoutDataToPagelet(QuickviewPageletLoadedEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
-        if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext) === false) {
-            return;
-        }
-
-        try {
-            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
-        } catch (PayPalSettingsInvalidException $e) {
-            return;
-        }
-
-        if ($this->expressOptionForEventEnabled($settings, $event) === false) {
-            return;
-        }
-
-        $expressCheckoutButtonData = $this->expressCheckoutDataService->getExpressCheckoutButtonData(
-            $salesChannelContext,
-            $settings,
-            true
-        );
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, \get_class($event), true);
 
         if ($expressCheckoutButtonData === null) {
             return;
@@ -138,9 +127,45 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         );
     }
 
-    private function expressOptionForEventEnabled(SwagPayPalSettingStruct $settings, ShopwareEvent $event): bool
+    private function getExpressCheckoutButtonData(
+        SalesChannelContext $salesChannelContext,
+        string $eventName,
+        bool $addProductToCart = false
+    ): ?ExpressCheckoutButtonData {
+        $settings = $this->checkSettings($salesChannelContext, $eventName);
+        if ($settings === null) {
+            return null;
+        }
+
+        return $this->expressCheckoutDataService->getExpressCheckoutButtonData(
+            $salesChannelContext,
+            $settings,
+            $addProductToCart
+        );
+    }
+
+    private function checkSettings(SalesChannelContext $context, string $eventName): ?SwagPayPalSettingStruct
     {
-        switch (\get_class($event)) {
+        if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($context) === false) {
+            return null;
+        }
+
+        try {
+            $settings = $this->settingsService->getSettings($context->getSalesChannel()->getId());
+        } catch (PayPalSettingsInvalidException $e) {
+            return null;
+        }
+
+        if ($this->expressOptionForEventEnabled($settings, $eventName) === false) {
+            return null;
+        }
+
+        return $settings;
+    }
+
+    private function expressOptionForEventEnabled(SwagPayPalSettingStruct $settings, string $eventName): bool
+    {
+        switch ($eventName) {
             case ProductPageLoadedEvent::class:
             case QuickviewPageletLoadedEvent::class:
                 return $settings->getEcsDetailEnabled();
@@ -151,6 +176,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             case CheckoutCartPageLoadedEvent::class:
                 return $settings->getEcsCartEnabled();
             case NavigationPageLoadedEvent::class:
+            case CmsPageLoadedEvent::class:
                 return $settings->getEcsListingEnabled();
             default:
                 return false;

@@ -12,6 +12,9 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Content\Cms\CmsPageCollection;
+use Shopware\Core\Content\Cms\CmsPageEntity;
+use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -62,6 +65,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
             NavigationPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+
+            CmsPageLoadedEvent::class => 'addExpressCheckoutDataToCmsPage',
 
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
         ];
@@ -251,6 +256,46 @@ class ExpressCheckoutSubscriberTest extends TestCase
         /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
         $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
         static::assertNull($actualExpressCheckoutButtonData);
+    }
+
+    public function testAddExpressCheckoutDataToCmsPageCmsPageLoadedEvent(): void
+    {
+        $event = $this->createCmsPageLoadedEvent();
+
+        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToCmsPage($event);
+
+        $cmsPage = $event->getResult()->first();
+        static::assertNotNull($cmsPage);
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $cmsPage->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        $this->assertExpressCheckoutButtonData(
+            $this->getExpectedExpressCheckoutButtonDataForAddProductEvents(),
+            $actualExpressCheckoutButtonData
+        );
+    }
+
+    public function testAddExpressCheckoutDataToCmsPageCmsWithoutPayPalInSalesChannel(): void
+    {
+        $event = $this->createCmsPageLoadedEvent();
+        $event->getSalesChannelContext()->getSalesChannel()->setId(Uuid::randomHex());
+
+        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToCmsPage($event);
+
+        $cmsPage = $event->getResult()->first();
+        static::assertNotNull($cmsPage);
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $cmsPage->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        static::assertNull($actualExpressCheckoutButtonData);
+    }
+
+    public function testAddExpressCheckoutDataToCmsPageCmsWithoutCmsPage(): void
+    {
+        $event = $this->createCmsPageLoadedEvent(false);
+
+        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToCmsPage($event);
+
+        $cmsPage = $event->getResult()->first();
+        static::assertNull($cmsPage);
     }
 
     public function testAddExpressCheckoutDataToPageletQuickviewPageletLoadedEvent(): void
@@ -448,6 +493,24 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $taxRepo->create($taxData, $context);
 
         return $taxId;
+    }
+
+    private function createCmsPageLoadedEvent(bool $hasCmsPage = true): CmsPageLoadedEvent
+    {
+        $cmsPages = [];
+        if ($hasCmsPage) {
+            $cmsPage = new CmsPageEntity();
+            $cmsPage->setId('cms-page-test-id');
+            $cmsPages[] = $cmsPage;
+        }
+
+        $result = new CmsPageCollection($cmsPages);
+
+        return new CmsPageLoadedEvent(
+            new Request(),
+            $result,
+            $this->createSalesChannelContext(true)
+        );
     }
 
     private function createQuickviewPageletLoadedEvent(): QuickviewPageletLoadedEvent
