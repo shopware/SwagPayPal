@@ -49,7 +49,7 @@ class PlusPaymentFinalizeController extends AbstractController
 
     /**
      * @RouteScope(scopes={"storefront"})
-     * @Route("/paypal/plus/payment/finalize-transaction", name="paypal.plus.payment.finalize.transaction", methods={"GET"}, defaults={"auth_required"=false})
+     * @Route("/paypal/plus/payment/finalize-transaction", name="payment.paypal.plus.finalize.transaction", methods={"GET"}, defaults={"auth_required"=false})
      *
      * @throws InvalidTransactionException
      * @throws CustomerCanceledAsyncPaymentException
