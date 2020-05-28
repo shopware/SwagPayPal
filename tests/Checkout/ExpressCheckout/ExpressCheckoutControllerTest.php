@@ -23,6 +23,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannel\SalesChannelContextSwitcher;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
@@ -44,24 +45,13 @@ class ExpressCheckoutControllerTest extends TestCase
     use IntegrationTestBehaviour;
     use ServicesTrait;
 
+    public const TEST_PAYMENT_ID_WITHOUT_STATE = 'testPaymentIdWithoutState';
+    public const TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES = 'testPaymentIdWithCountryWithoutStates';
+    public const TEST_PAYMENT_ID_WITH_STATE_NOT_FOUND = 'testPaymentIdWithStateNotFound';
+
     public function testCreateNewCart(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext(
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            $this->getShippingMethod()
-        );
-        $salesChannelContext->assign([
-            'customer' => null,
-        ]);
+        $salesChannelContext = $this->getSalesChannelContext();
 
         /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
@@ -77,22 +67,7 @@ class ExpressCheckoutControllerTest extends TestCase
 
     public function testCreatePayment(): void
     {
-        $salesChannelContext = Generator::createSalesChannelContext(
-            null,
-            null,
-            null,
-            null,
-            $this->getCurrency(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            $this->getShippingMethod()
-        );
-        $salesChannelContext->assign([
-            'customer' => null,
-        ]);
+        $salesChannelContext = $this->getSalesChannelContext();
 
         $response = $this->createController()->createPayment($salesChannelContext);
         $content = $response->getContent();
@@ -106,23 +81,7 @@ class ExpressCheckoutControllerTest extends TestCase
 
     public function testOnApprove(): void
     {
-        $paymentMethod = $this->getAvailablePaymentMethod();
-        $salesChannelContext = Generator::createSalesChannelContext(
-            null,
-            null,
-            null,
-            $this->getSalesChannel(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            $paymentMethod,
-            $this->getShippingMethod()
-        );
-        $salesChannelContext->assign([
-            'customer' => null,
-        ]);
+        $salesChannelContext = $this->getSalesChannelContext();
 
         $testPaymentId = 'testPaymentId';
         $request = new Request([], [
@@ -136,16 +95,7 @@ class ExpressCheckoutControllerTest extends TestCase
         static::assertNotFalse($content);
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
-
-        /** @var EntityRepositoryInterface $customerRepo */
-        $customerRepo = $this->getContainer()->get('customer.repository');
-
-        $criteria = (new Criteria())
-            ->addFilter(new EqualsFilter('email', GetSaleResponseFixture::PAYER_PAYER_INFO_EMAIL))
-            ->addAssociation('addresses');
-        /** @var CustomerEntity|null $customer */
-        $customer = $customerRepo->search($criteria, $salesChannelContext->getContext())->first();
-        static::assertNotNull($customer);
+        $customer = $this->assertCustomer($salesChannelContext->getContext());
 
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_FIRST_NAME, $customer->getFirstName());
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_LAST_NAME, $customer->getLastName());
@@ -158,6 +108,12 @@ class ExpressCheckoutControllerTest extends TestCase
 
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_SHIPPING_ADDRESS_STREET, $address->getStreet());
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_SHIPPING_ADDRESS_CITY, $address->getCity());
+        $country = $address->getCountry();
+        static::assertNotNull($country);
+        static::assertSame('USA', $country->getTranslation('name'));
+        $countryState = $address->getCountryState();
+        static::assertNotNull($countryState);
+        static::assertSame('New York', $countryState->getName());
 
         $cartToken = \json_decode($content, true)['cart_token'];
         /** @var ExpressCheckoutData|null $ecsCartExtension */
@@ -167,6 +123,96 @@ class ExpressCheckoutControllerTest extends TestCase
         static::assertInstanceOf(ExpressCheckoutData::class, $ecsCartExtension);
         static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_PAYER_ID, $ecsCartExtension->getPayerId());
         static::assertSame($testPaymentId, $ecsCartExtension->getPaymentId());
+    }
+
+    public function testOnApproveWithoutStateFromPayPal(): void
+    {
+        $this->assertNoState(self::TEST_PAYMENT_ID_WITHOUT_STATE);
+    }
+
+    public function testOnApproveWithCountryWithoutStates(): void
+    {
+        $this->assertNoState(self::TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES);
+    }
+
+    public function testOnApproveWithStateNotFound(): void
+    {
+        $this->assertNoState(self::TEST_PAYMENT_ID_WITH_STATE_NOT_FOUND);
+    }
+
+    private function getSalesChannelContext(): SalesChannelContext
+    {
+        $paymentMethod = $this->getAvailablePaymentMethod();
+        $salesChannelContext = Generator::createSalesChannelContext(
+            null,
+            null,
+            null,
+            $this->getSalesChannel(),
+            $this->getCurrency(),
+            null,
+            null,
+            null,
+            null,
+            $paymentMethod,
+            $this->getShippingMethod()
+        );
+        $salesChannelContext->assign(['customer' => null]);
+
+        return $salesChannelContext;
+    }
+
+    private function getSalesChannel(): SalesChannelEntity
+    {
+        $context = Context::createDefaultContext();
+        $container = $this->getContainer();
+        /** @var EntityRepositoryInterface $salesChannelRepo */
+        $salesChannelRepo = $container->get('sales_channel.repository');
+        /** @var EntityRepositoryInterface $paymentRepository */
+        $paymentRepository = $container->get('payment_method.repository');
+        $paymentMethodUtil = new PaymentMethodUtil($paymentRepository, $salesChannelRepo);
+
+        /** @var SalesChannelEntity|null $salesChannel */
+        $salesChannel = $salesChannelRepo->search(new Criteria(), $context)->first();
+        if ($salesChannel === null) {
+            throw new \RuntimeException('No SalesChannelFound');
+        }
+
+        $salesChannelRepo->update([
+            [
+                'id' => $salesChannel->getId(),
+                'domains' => [
+                    [
+                        'url' => 'https://example.com',
+                        'languageId' => Defaults::LANGUAGE_SYSTEM,
+                        'currencyId' => Defaults::CURRENCY,
+                        'snippetSetId' => $this->getSnippetSetIdForLocale('en-GB'),
+                    ],
+                ],
+                'paymentMethods' => [
+                    [
+                        'id' => $paymentMethodUtil->getPayPalPaymentMethodId($context),
+                    ],
+                ],
+            ],
+        ], $context);
+
+        return $salesChannel;
+    }
+
+    private function getCurrency(): CurrencyEntity
+    {
+        /** @var EntityRepositoryInterface $currencyRepo */
+        $currencyRepo = $this->getContainer()->get('currency.repository');
+
+        return $currencyRepo->search(new Criteria(), Context::createDefaultContext())->first();
+    }
+
+    private function getShippingMethod(): ShippingMethodEntity
+    {
+        /** @var EntityRepositoryInterface $shippingMethodRepo */
+        $shippingMethodRepo = $this->getContainer()->get('shipping_method.repository');
+
+        return $shippingMethodRepo->search(new Criteria(), Context::createDefaultContext())->first();
     }
 
     private function createController(?CartService $cartService = null): ExpressCheckoutController
@@ -226,57 +272,43 @@ class ExpressCheckoutControllerTest extends TestCase
         );
     }
 
-    private function getSalesChannel(): SalesChannelEntity
+    private function assertCustomer(Context $context): CustomerEntity
     {
-        $context = Context::createDefaultContext();
-        $container = $this->getContainer();
-        /** @var EntityRepositoryInterface $salesChannelRepo */
-        $salesChannelRepo = $container->get('sales_channel.repository');
-        /** @var EntityRepositoryInterface $paymentRepository */
-        $paymentRepository = $container->get('payment_method.repository');
-        $paymentMethodUtil = new PaymentMethodUtil($paymentRepository, $salesChannelRepo);
+        /** @var EntityRepositoryInterface $customerRepo */
+        $customerRepo = $this->getContainer()->get('customer.repository');
 
-        /** @var SalesChannelEntity|null $salesChannel */
-        $salesChannel = $salesChannelRepo->search(new Criteria(), $context)->first();
-        if ($salesChannel === null) {
-            throw new \RuntimeException('No SalesChannelFound');
-        }
+        $criteria = (new Criteria())
+            ->addFilter(new EqualsFilter('email', GetSaleResponseFixture::PAYER_PAYER_INFO_EMAIL))
+            ->addAssociation('addresses.country')
+            ->addAssociation('addresses.countryState');
+        /** @var CustomerEntity|null $customer */
+        $customer = $customerRepo->search($criteria, $context)->first();
+        static::assertNotNull($customer);
 
-        $salesChannelRepo->update([
-            [
-                'id' => $salesChannel->getId(),
-                'domains' => [
-                    [
-                        'url' => 'https://example.com',
-                        'languageId' => Defaults::LANGUAGE_SYSTEM,
-                        'currencyId' => Defaults::CURRENCY,
-                        'snippetSetId' => $this->getSnippetSetIdForLocale('en-GB'),
-                    ],
-                ],
-                'paymentMethods' => [
-                    [
-                        'id' => $paymentMethodUtil->getPayPalPaymentMethodId($context),
-                    ],
-                ],
-            ],
-        ], $context);
-
-        return $salesChannel;
+        return $customer;
     }
 
-    private function getCurrency(): CurrencyEntity
+    private function assertNoState(string $testPaymentId): void
     {
-        /** @var EntityRepositoryInterface $currencyRepo */
-        $currencyRepo = $this->getContainer()->get('currency.repository');
+        $salesChannelContext = $this->getSalesChannelContext();
 
-        return $currencyRepo->search(new Criteria(), Context::createDefaultContext())->first();
-    }
+        $request = new Request([], [
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID => $testPaymentId,
+        ]);
 
-    private function getShippingMethod(): ShippingMethodEntity
-    {
-        /** @var EntityRepositoryInterface $shippingMethodRepo */
-        $shippingMethodRepo = $this->getContainer()->get('shipping_method.repository');
+        $response = $this->createController()->onApprove($salesChannelContext, $request);
+        $content = $response->getContent();
+        static::assertNotFalse($content);
 
-        return $shippingMethodRepo->search(new Criteria(), Context::createDefaultContext())->first();
+        static::assertSame(Response::HTTP_OK, $response->getStatusCode());
+
+        $addresses = $this->assertCustomer($salesChannelContext->getContext())->getAddresses();
+        static::assertNotNull($addresses);
+
+        $address = $addresses->first();
+        static::assertNotNull($address);
+
+        $countryState = $address->getCountryState();
+        static::assertNull($countryState);
     }
 }

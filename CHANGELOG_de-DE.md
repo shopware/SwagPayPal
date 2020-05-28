@@ -2,6 +2,7 @@
 - PT-11519 - Registriert Webhooks mit https
 - PT-11593 - Hinweis an der "Zahlungsabschluss"-Option hinzugefügt, um Verwendung mit PayPal PLUS zu verdeutlichen
 - PT-11704 - Anzeige des Express-Checkout-Buttons auf paginierten Produktlistenseiten korrigiert
+- PT-11706 - Beim Express Checkout wird nun auch das Bundesland gespeichert
 - PT-11717 - Fügt PayPal-Cookies zum Cookie-Manager hinzu
 
 # 1.5.2
