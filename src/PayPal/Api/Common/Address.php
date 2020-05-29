@@ -35,7 +35,7 @@ abstract class Address extends PayPalStruct
     protected $postalCode;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $state;
 
@@ -94,12 +94,12 @@ abstract class Address extends PayPalStruct
         $this->postalCode = $postalCode;
     }
 
-    public function getState(): string
+    public function getState(): ?string
     {
         return $this->state;
     }
 
-    public function setState(string $state): void
+    public function setState(?string $state): void
     {
         $this->state = $state;
     }

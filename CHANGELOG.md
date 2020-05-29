@@ -2,6 +2,7 @@
 - PT-11519 - Registers webhooks with https
 - PT-11593 - Adds hint for "Payment acquisition" option to clarify usage with PayPal PLUS
 - PT-11704 - Fix displaying of Express Checkout Button on paginated product listing pages
+- PT-11706 - Country states are now saved on Express Checkout
 - PT-11717 - Adds PayPal cookies to the cookie manager
 
 # 1.5.2

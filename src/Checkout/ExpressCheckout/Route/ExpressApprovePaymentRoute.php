@@ -18,6 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
+use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateCollection;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -175,6 +176,20 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
         $lastName = $payerInfo->getLastName();
         $salutationId = $this->getSalutationId($context);
 
+        $countryId = null;
+        $countryStateId = null;
+
+        $countryCode = $billingAddress->getCountryCode();
+        $country = $this->getCountryByCode($countryCode, $context);
+        if ($country !== null) {
+            $countryId = $country->getId();
+            $countryStateId = $this->getCountryStateId(
+                $billingAddress->getState(),
+                $country->getStates(),
+                $countryCode
+            );
+        }
+
         return new DataBag([
             'salutationId' => $salutationId,
             'email' => $payerInfo->getEmail(),
@@ -186,28 +201,13 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
                 'salutationId' => $salutationId,
                 'street' => $billingAddress->getLine1(),
                 'zipcode' => $billingAddress->getPostalCode(),
-                'countryId' => $this->getCountryIdByCode($billingAddress->getCountryCode(), $context),
+                'countryId' => $countryId,
+                'countryStateId' => $countryStateId,
                 'phone' => $billingAddress->getPhone(),
                 'city' => $billingAddress->getCity(),
                 'additionalAddressLine1' => $billingAddress->getLine2(),
             ],
         ]);
-    }
-
-    private function getCountryIdByCode(string $code, Context $context): ?string
-    {
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsFilter('iso', $code)
-        );
-        /** @var CountryEntity|null $country */
-        $country = $this->countryRepo->search($criteria, $context)->first();
-
-        if ($country === null) {
-            return null;
-        }
-
-        return $country->getId();
     }
 
     private function getSalutationId(Context $context): string
@@ -225,5 +225,42 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
         }
 
         return $salutation->getId();
+    }
+
+    private function getCountryByCode(string $code, Context $context): ?CountryEntity
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('iso', $code));
+        $criteria->addAssociation('states');
+        /** @var CountryEntity|null $country */
+        $country = $this->countryRepo->search($criteria, $context)->first();
+
+        return $country;
+    }
+
+    private function getCountryStateId(
+        ?string $payPalCountryStateCode,
+        ?CountryStateCollection $countryStates,
+        string $countryCode
+    ): ?string {
+        if ($payPalCountryStateCode === null) {
+            return null;
+        }
+
+        if ($countryStates === null || \count($countryStates) === 0) {
+            return null;
+        }
+
+        /** @var CountryStateCollection $filteredCountryStates */
+        $filteredCountryStates = $countryStates->filterAndReduceByProperty(
+            'shortCode',
+            \sprintf('%s-%s', $countryCode, $payPalCountryStateCode)
+        );
+        $countryState = $filteredCountryStates->first();
+        if ($countryState === null) {
+            return null;
+        }
+
+        return $countryState->getId();
     }
 }
