@@ -10,8 +10,21 @@
             "base": {
                 "titleOptions": "Optionen",
                 "titleSync": "Synchronisation",
-                "buttonSync": "Jetzt Produkte synchronisieren",
-                "syncErrorTitle": "Synchronisations-Fehler"
+                "buttonSync": "Jetzt synchronisieren",
+                "buttonSyncProducts": "Produkt-Details synchronisieren",
+                "buttonSyncInventory": "Bestand synchronisieren",
+                "syncErrorTitle": "Synchronisations-Fehler",
+                "status": {
+                    "message": {
+                        "syncing": "Synchronisation läuft",
+                        "noRunYet": "Noch keine Synchronisation durchgeführt",
+                        "success": "Synchronisation erfolgreich",
+                        "warning": "Die letzte Synchronisation wurde mit Warnmeldungen abgeschlossen",
+                        "error": "Die letzte Synchronisation wurde mit Fehlern abgeschlossen"
+                    },
+                    "lastSynced": "Zuletzt synchronisiert",
+                    "syncingDetail": "Dies könnte einige Minuten dauern ... Dieser Prozess läuft im Hintergrund. Sie können ihren Store wie gewohnt weiterverwenden."
+                }
             },
             "settings": {
                 "titleGeneralSettings": "Allgemein",

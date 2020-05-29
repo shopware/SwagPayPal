@@ -1,0 +1,22 @@
+{% block swag_paypal_izettle_status %}
+    <sw-card :title="title" :class="statusClasses">
+        <div class="swag-paypal-izettle-status__icon-base">
+            <sw-icon class="swag-paypal-izettle-status__icon"
+                     :class="{ 'swag-paypal-izettle-status__icon-animated': iconAnimated }"
+                     :name="icon">
+            </sw-icon>
+        </div>
+
+        <div class="swag-paypal-izettle-status__status">
+            <slot name="status">{{ status }}</slot>
+        </div>
+
+        <div class="swag-paypal-izettle-status__detail">
+            <slot name="detail">{{ detail }}</slot>
+        </div>
+
+        <div class="swag-paypal-izettle-status__actions">
+            <slot name="actions"></slot>
+        </div>
+    </sw-card>
+{% endblock %}

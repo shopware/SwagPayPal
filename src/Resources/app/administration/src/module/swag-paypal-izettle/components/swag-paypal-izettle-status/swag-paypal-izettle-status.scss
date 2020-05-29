@@ -1,0 +1,107 @@
+@import "~scss/variables";
+
+.swag-paypal-izettle-status {
+
+    .sw-card__content {
+        text-align: center;
+    }
+
+    .swag-paypal-izettle-status__icon-base {
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+        border-radius: 40px;
+        background-color: $color-gray-50;
+    }
+
+    .swag-paypal-izettle-status__icon {
+        margin-top: 16px;
+        width: 48px;
+        height: 48px;
+    }
+
+    .swag-paypal-izettle-status__icon-animated {
+        position: relative;
+        top: 24px;
+        left: 24px;
+        animation: spin 2s linear infinite reverse;
+    }
+
+    .swag-paypal-izettle-status__status {
+        margin-top: $font-size-large;
+        font-weight: bold;
+    }
+
+    .swag-paypal-izettle-status__detail {
+        margin-top: $font-size-default;
+        font-size: $font-size-small;
+    }
+
+    .swag-paypal-izettle-status__actions {
+        margin-top: 2*$font-size-default;
+    }
+
+    &.swag-paypal-izettle-status--warning {
+        border-color: $color-pumpkin-spice-500;
+        background-color: $color-pumpkin-spice-50;
+
+        &.swag-paypal-izettle-status--notification {
+            background-color: $color-white;
+            border-color: $color-gray-300;
+            border-left-color: $color-pumpkin-spice-500;
+        }
+
+        .swag-paypal-izettle-status__icon,
+        .swag-paypal-izettle-status__close {
+            color: $color-pumpkin-spice-500;
+        }
+    }
+
+    &.swag-paypal-izettle-status--error {
+        border-color: $color-crimson-500;
+        background-color: $color-crimson-50;
+
+        &.swag-paypal-izettle-status--notification {
+            background-color: $color-white;
+            border-color: $color-gray-300;
+            border-left-color: $color-crimson-500;
+        }
+
+        .swag-paypal-izettle-status__icon,
+        .swag-paypal-izettle-status__close {
+            color: $color-crimson-500;
+        }
+    }
+
+    &.swag-paypal-izettle-status--success {
+        border-color: $color-emerald-500;
+        background-color: $color-emerald-50;
+
+        &.swag-paypal-izettle-status--notification {
+            background-color: $color-white;
+            border-color: $color-gray-300;
+            border-left-color: $color-emerald-500;
+        }
+
+        .swag-paypal-izettle-status__icon,
+        .swag-paypal-izettle-status__close {
+            color: $color-emerald-500;
+        }
+    }
+
+    &.swag-paypal-izettle-status--info {
+        border-color: $color-shopware-brand-500;
+        background-color: $color-shopware-brand-50;
+
+        &.swag-paypal-izettle-status--notification {
+            background-color: $color-white;
+            border-color: $color-gray-300;
+            border-left-color: $color-shopware-brand-500;
+        }
+
+        .swag-paypal-izettle-status__icon,
+        .swag-paypal-izettle-status__close {
+            color: $color-shopware-brand-500;
+        }
+    }
+}

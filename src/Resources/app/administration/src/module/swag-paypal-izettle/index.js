@@ -1,3 +1,4 @@
+import './components/swag-paypal-izettle-status';
 import './components/swag-paypal-izettle-wizard';
 
 import './extension/sw-sales-channel-menu';

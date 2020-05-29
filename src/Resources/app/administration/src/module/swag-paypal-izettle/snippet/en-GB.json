@@ -10,8 +10,21 @@
             "base": {
                 "titleOptions": "Options",
                 "titleSync": "Synchronization",
-                "buttonSync": "Synchronize Products Now",
-                "syncErrorTitle": "Synchronization Error"
+                "buttonSync": "Synchronize Now",
+                "buttonSyncProducts": "Synchronize Product Details",
+                "buttonSyncInventory": "Synchronize Inventory",
+                "syncErrorTitle": "Synchronization Error",
+                "status": {
+                    "message": {
+                        "syncing": "Synchronization in Progress",
+                        "noRunYet": "No recent run found",
+                        "success": "Synchronized successfully",
+                        "warning": "Last synchronization finished with warnings",
+                        "error": "Last synchronization finished with errors"
+                    },
+                    "lastSynced": "Last synchronization",
+                    "syncingDetail": "This could take a few minutes ... This process runs in the background. You can use your store as normal."
+                }
             },
             "settings": {
                 "titleGeneralSettings": "General settings",
