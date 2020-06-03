@@ -29,24 +29,17 @@
             </errorLevel>
         </DeprecatedClass>
 
-        <UnusedMethodCall>
-            <errorLevel type="info">
-                <file name="src/Setting/SwagPayPalSettingStructValidator.php"/>
-            </errorLevel>
-        </UnusedMethodCall>
-
         <InvalidReturnType>
             <errorLevel type="info">
                 <directory name="tests/Mock"/>
             </errorLevel>
         </InvalidReturnType>
 
-        <RedundantConditionGivenDocblockType>
+        <DocblockTypeContradiction>
             <errorLevel type="info">
-                <file name="tests/PayPal/Resource/PaymentResourceTest.php"/>
-                <file name="tests/Payment/Builder/OrderPaymentBuilderTest.php"/>
+                <file name="src/PayPal/Api/Common/PayPalStruct.php"/>
             </errorLevel>
-        </RedundantConditionGivenDocblockType>
+        </DocblockTypeContradiction>
 
         <InternalMethod>
             <errorLevel type="info">

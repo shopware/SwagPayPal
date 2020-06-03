@@ -1,5 +1,5 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
-- PT-11519 - Registers webhooks with https
+# 1.6.0
+- PT-11519 - Registers webhooks with HTTPS
 - PT-11593 - Adds hint for "Payment acquisition" option to clarify usage with PayPal PLUS
 - PT-11704 - Fix displaying of Express Checkout Button on paginated product listing pages
 - PT-11706 - Country states are now saved on Express Checkout

@@ -13,7 +13,6 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
-use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -46,7 +45,13 @@ class OrderPaymentBuilderTest extends TestCase
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
         $transaction = $payment->getTransactions()[0];
-        static::assertInstanceOf(Payment\Transaction::class, $transaction);
+        $transactionJsonString = \json_encode($transaction);
+        static::assertNotFalse($transactionJsonString);
+
+        $transactionArray = \json_decode($transactionJsonString, true);
+
+        static::assertArrayHasKey('invoice_number', $transactionArray);
+        static::assertSame(self::TEST_ORDER_NUMBER, $transactionArray['invoice_number']);
     }
 
     public function testGetPaymentInvalidIntentThrowsException(): void
