@@ -81,7 +81,7 @@ Component.register('swag-paypal-izettle-detail-base', {
         },
 
         noRunYet() {
-            return this.currentRun === null;
+            return this.salesChannel === null || this.salesChannel.id === null || this.currentRun === null;
         }
     },
 
@@ -186,7 +186,6 @@ Component.register('swag-paypal-izettle-detail-base', {
         loadLastFinishedRun() {
             if (this.salesChannel === null || this.salesChannel.id === null) {
                 this.lastFinishedRun = null;
-                this.statusErrorLevel = 0;
                 return Promise.resolve();
             }
 

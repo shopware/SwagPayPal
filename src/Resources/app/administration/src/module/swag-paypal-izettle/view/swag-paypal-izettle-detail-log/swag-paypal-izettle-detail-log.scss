@@ -1,0 +1,36 @@
+@import "~scss/variables";
+
+.sw-sales-channel-detail-log {
+    .sw-card__content > div {
+        margin: -30px;
+    }
+
+    .swag-paypal-izettle-detail-log-entry__icon {
+        margin-right: .5 * $font-size-default;
+
+        &.swag-paypal-izettle-detail-log-entry--warning {
+            border-color: $color-pumpkin-spice-500;
+            color: $color-pumpkin-spice-500;
+        }
+
+        &.swag-paypal-izettle-detail-log-entry--error {
+            border-color: $color-crimson-500;
+            color: $color-crimson-500;
+        }
+
+        &.swag-paypal-izettle-detail-log-entry--success {
+            border-color: $color-emerald-500;
+            color: $color-emerald-500;
+        }
+
+        &.swag-paypal-izettle-detail-log-entry--info {
+            border-color: $color-shopware-brand-500;
+            color: $color-shopware-brand-500;
+        }
+    }
+
+    .sw-empty-state {
+        position: relative;
+        width: auto;
+    }
+}

@@ -9,7 +9,7 @@ namespace Swag\PayPal\IZettle\Command;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Swag\PayPal\IZettle\Run\LogCleaner;
+use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 

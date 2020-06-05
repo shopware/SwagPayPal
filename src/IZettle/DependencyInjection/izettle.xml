@@ -13,12 +13,24 @@
             <tag name="shopware.entity.extension"/>
         </service>
 
+        <service id="Swag\PayPal\IZettle\DataAbstractionLayer\Extension\ProductExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
         <service id="Swag\PayPal\IZettle\IZettleSyncController" public="true">
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Run\LogCleaner"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\Administration\LogCleaner"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\ProductSelection">
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
+            <argument type="service" id="sales_channel_domain.repository"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>

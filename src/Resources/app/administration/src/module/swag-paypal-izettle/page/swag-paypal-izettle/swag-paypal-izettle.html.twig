@@ -12,6 +12,17 @@
         {% block swag_paypal_izettle_actions %}
             <template #smart-bar-actions>
 
+                {% block swag_paypal_izettle_actions_clean_log %}
+                    <sw-button-process v-if="showLogCleanAction"
+                                       v-model="isCleanLogSuccessful"
+                                       class="swag_paypal_izettle__clean-log-action"
+                                       :disabled="isCleaningLog"
+                                       :isLoading="isCleaningLog"
+                                       @click="onCleanLog">
+                        {{ $tc('swag-paypal-izettle.detail.cleanLog') }}
+                    </sw-button-process>
+                {% endblock %}
+
                 {% block swag_paypal_izettle_actions_save %}
                     <sw-button-process v-model="isSaveSuccessful"
                                        class="swag_paypal_izettle__save-action"
@@ -19,65 +30,76 @@
                                        :disabled="isLoading"
                                        :isLoading="isLoading"
                                        @click="onSave">
-                        {{ $tc('swag-paypal.settingForm.save') }}
+                        {{ $tc('swag-paypal-izettle.detail.save') }}
                     </sw-button-process>
                 {% endblock %}
             </template>
         {% endblock %}
 
         {% block swag_paypal_izettle_content %}
-            <sw-card-view slot="content">
+            <template #content>
+                <sw-card-view>
 
-                {% block swag_paypal_izettle_content_tabs %}
-                    <sw-tabs v-if="!isNewEntity" class="swag-paypal-izettle-__tabs">
-                        {%  block swag_paypal_izettle_content_tab_base %}
-                            <sw-tabs-item :route="{ name: 'swag.paypal.izettle.detail', params: { id: $route.params.id } }"
-                                          :title="$tc('swag-paypal-izettle.tabTitle.base')">
-                                {{ $tc('swag-paypal-izettle.tabTitle.base') }}
-                            </sw-tabs-item>
-                        {% endblock %}
+                    {% block swag_paypal_izettle_content_tabs %}
+                        <sw-tabs v-if="!isNewEntity" class="swag-paypal-izettle-__tabs">
 
-                        {%  block swag_paypal_izettle_content_tab_settings %}
-                            <sw-tabs-item :route="{ name: 'swag.paypal.izettle.detail.settings', params: { id: $route.params.id } }"
-                                          :title="$tc('swag-paypal-izettle.tabTitle.settings')">
-                                {{ $tc('swag-paypal-izettle.tabTitle.settings') }}
-                            </sw-tabs-item>
-                        {% endblock %}
-                    </sw-tabs>
-                {% endblock %}
+                            {%  block swag_paypal_izettle_content_tab_base %}
+                                <sw-tabs-item :route="{ name: 'swag.paypal.izettle.detail', params: { id: $route.params.id } }"
+                                              :title="$tc('swag-paypal-izettle.tabTitle.base')">
+                                    {{ $tc('swag-paypal-izettle.tabTitle.base') }}
+                                </sw-tabs-item>
+                            {% endblock %}
 
-                {% block swag_paypal_izettle_content_card %}
-                    <router-view v-if="!isNewEntity"
-                                 :isLoading="isLoading"
-                                 :isNewEntity="isNewEntity"
-                                 :isTestCredentialsSuccessful="isTestCredentialsSuccessful"
-                                 :isTestingCredentials="isTestingCredentials"
-                                 :key="$route.params.id"
-                                 :salesChannel="salesChannel"
-                                 :storefrontSalesChannelId="storefrontSalesChannelId"
-                                 @test-credentials="onTestCredentials"
-                                 @update-storefront-sales-channel="updateStorefrontSalesChannel">
-                    </router-view>
-                    <swag-paypal-izettle-detail-base v-else
-                                                     :isLoading="isLoading"
-                                                     :isNewEntity="isNewEntity"
-                    ></swag-paypal-izettle-detail-base>
-                {% endblock %}
+                            {%  block swag_paypal_izettle_content_tab_settings %}
+                                <sw-tabs-item :route="{ name: 'swag.paypal.izettle.detail.settings', params: { id: $route.params.id } }"
+                                              :title="$tc('swag-paypal-izettle.tabTitle.settings')">
+                                    {{ $tc('swag-paypal-izettle.tabTitle.settings') }}
+                                </sw-tabs-item>
+                            {% endblock %}
 
-                {% block swag_paypal_izettle_wizard %}
-                    <swag-paypal-izettle-wizard v-if="showWizard"
-                                                :isLoading="isLoading"
-                                                :isTestCredentialsSuccessful="isTestCredentialsSuccessful"
-                                                :isTestingCredentials="isTestingCredentials"
-                                                :salesChannel="salesChannel"
-                                                :storefrontSalesChannelId="storefrontSalesChannelId"
-                                                @test-credentials="onTestCredentials"
-                                                @update-storefront-sales-channel="updateStorefrontSalesChannel"
-                                                @wizard-cancel="cancelWizard"
-                                                @wizard-finish="onSave">
-                    </swag-paypal-izettle-wizard>
-                {% endblock %}
-            </sw-card-view>
+                            {%  block swag_paypal_izettle_content_tab_log %}
+                                <sw-tabs-item v-if="!isNewEntity"
+                                              :route="{ name: 'swag.paypal.izettle.detail.log', params: { id: $route.params.id } }"
+                                              :title="$tc('swag-paypal-izettle.tabTitle.log')">
+                                    {{ $tc('swag-paypal-izettle.tabTitle.log') }}
+                                </sw-tabs-item>
+                            {% endblock %}
+                        </sw-tabs>
+                    {% endblock %}
+
+                    {% block swag_paypal_izettle_content_card %}
+                        <router-view v-if="!isNewEntity"
+                                     :isLoading="isLoading"
+                                     :isNewEntity="isNewEntity"
+                                     :isTestCredentialsSuccessful="isTestCredentialsSuccessful"
+                                     :isTestingCredentials="isTestingCredentials"
+                                     :key="$route.params.id"
+                                     :salesChannel="salesChannel"
+                                     :storefrontSalesChannelId="storefrontSalesChannelId"
+                                     @test-credentials="onTestCredentials"
+                                     @update-storefront-sales-channel="updateStorefrontSalesChannel">
+                        </router-view>
+                        <swag-paypal-izettle-detail-base v-else
+                                                         :isLoading="isLoading"
+                                                         :isNewEntity="isNewEntity"
+                        ></swag-paypal-izettle-detail-base>
+                    {% endblock %}
+
+                    {% block swag_paypal_izettle_wizard %}
+                        <swag-paypal-izettle-wizard v-if="showWizard"
+                                                    :isLoading="isLoading"
+                                                    :isTestCredentialsSuccessful="isTestCredentialsSuccessful"
+                                                    :isTestingCredentials="isTestingCredentials"
+                                                    :salesChannel="salesChannel"
+                                                    :storefrontSalesChannelId="storefrontSalesChannelId"
+                                                    @test-credentials="onTestCredentials"
+                                                    @update-storefront-sales-channel="updateStorefrontSalesChannel"
+                                                    @wizard-cancel="cancelWizard"
+                                                    @wizard-finish="onSave">
+                        </swag-paypal-izettle-wizard>
+                    {% endblock %}
+                </sw-card-view>
+            </template>
         {% endblock %}
 
     </sw-page>

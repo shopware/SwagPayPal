@@ -20,6 +20,11 @@ class IZettleSalesChannelRunLogEntity extends Entity
     protected $runId;
 
     /**
+     * @var IZettleSalesChannelRunEntity
+     */
+    protected $run;
+
+    /**
      * @var int
      */
     protected $level;
@@ -47,6 +52,16 @@ class IZettleSalesChannelRunLogEntity extends Entity
     public function setRunId(string $runId): void
     {
         $this->runId = $runId;
+    }
+
+    public function getRun(): IZettleSalesChannelRunEntity
+    {
+        return $this->run;
+    }
+
+    public function setRun(IZettleSalesChannelRunEntity $run): void
+    {
+        $this->run = $run;
     }
 
     public function getLevel(): int

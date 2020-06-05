@@ -18,7 +18,7 @@ use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelRunCollec
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelRunEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelRunLogCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelRunLogEntity;
-use Swag\PayPal\IZettle\Run\LogCleaner;
+use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
 
 class LogCleanerTest extends TestCase
 {

@@ -23,7 +23,7 @@
                         <sw-context-button>
 
                             {% block swag_paypal_izettle_detail_base_status_actions_sync_context_menu_button %}
-                                <template slot="button">
+                                <template #button>
                                     <sw-button square
                                                variant="primary"
                                                :disabled="isSyncing">
@@ -116,7 +116,7 @@
                                 {{ $tc('sw-sales-channel.detail.textDeleteInfo') }}
                             </p>
 
-                            <template slot="modal-footer">
+                            <template #modal-footer>
                                 <sw-button size="small"
                                            @click="onCloseDeleteModal">
                                         {{ $tc('sw-sales-channel.detail.buttonCloseDeleteModal') }}

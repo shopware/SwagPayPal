@@ -50,6 +50,7 @@ abstract class AbstractProductSyncTest extends TestCase
         $iZettleSalesChannel->setProductStreamId('someProductStreamId');
         $iZettleSalesChannel->setSyncPrices(true);
         $iZettleSalesChannel->setSalesChannelDomainId('someSalesChannelDomainId');
+        $iZettleSalesChannel->setSalesChannelId(Defaults::SALES_CHANNEL);
 
         $salesChannel->addExtension('paypalIZettleSalesChannel', $iZettleSalesChannel);
 

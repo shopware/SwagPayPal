@@ -14,7 +14,7 @@ use Swag\PayPal\IZettle\Command\IZettleInventorySyncCommand;
 use Swag\PayPal\IZettle\Command\IZettleLogCleanupCommand;
 use Swag\PayPal\IZettle\Command\IZettleProductSyncCommand;
 use Swag\PayPal\IZettle\Command\IZettleSyncCommand;
-use Swag\PayPal\IZettle\Run\LogCleaner;
+use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
 use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;

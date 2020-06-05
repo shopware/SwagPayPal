@@ -21,10 +21,12 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelRunLogCollection;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelRunLogEntity;
 use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\Context\ProductContextFactory;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
-use Swag\PayPal\IZettle\Sync\ProductSyncer;
+use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Mock\IZettle\ProductContextMock;
 use Swag\PayPal\Test\Mock\IZettle\SalesChannelProductRepoMock;
 
@@ -41,11 +43,6 @@ class ProductSelectionTest extends AbstractProductSyncTest
     private $productContext;
 
     /**
-     * @var ProductSyncer
-     */
-    private $pruductSyncer;
-
-    /**
      * @var MockObject
      */
     private $productResource;
@@ -59,26 +56,6 @@ class ProductSelectionTest extends AbstractProductSyncTest
      * @var SalesChannelEntity
      */
     private $salesChannel;
-
-    /**
-     * @var MockObject
-     */
-    private $newUpdater;
-
-    /**
-     * @var MockObject
-     */
-    private $outdatedUpdater;
-
-    /**
-     * @var MockObject
-     */
-    private $deletedUpdater;
-
-    /**
-     * @var MockObject
-     */
-    private $unsyncedChecker;
 
     /**
      * @var ProductSelection
@@ -151,15 +128,38 @@ class ProductSelectionTest extends AbstractProductSyncTest
         $product = $this->getProduct();
         $this->productRepository->addMockEntity($product);
 
-        $iZettleSalesChannel = $this->salesChannel->getExtension('paypalIZettleSalesChannel');
+        $iZettleSalesChannel = $this->salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
         static::assertNotNull($iZettleSalesChannel);
         static::assertInstanceOf(IZettleSalesChannelEntity::class, $iZettleSalesChannel);
         if (!$withProductStream) {
             $iZettleSalesChannel->setProductStreamId(null);
         }
 
-        $products = $this->productSelection->getProducts($iZettleSalesChannel, $context, $withAssociations);
+        $products = $this->productSelection->getProductCollection($iZettleSalesChannel, $context, $withAssociations);
 
         static::assertCount(1, $products);
+    }
+
+    public function testProductLog(): void
+    {
+        $context = Context::createDefaultContext();
+
+        $product = $this->getProduct();
+        $productLogCollection = new IZettleSalesChannelRunLogCollection();
+        $log = new IZettleSalesChannelRunLogEntity();
+        $log->setId(Uuid::randomHex());
+        $productLogCollection->add($log);
+        $product->addExtension(SwagPayPal::PRODUCT_LOG_IZETTLE_EXTENSION, $productLogCollection);
+        $this->productRepository->addMockEntity($product);
+
+        $iZettleSalesChannel = $this->salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
+        static::assertNotNull($iZettleSalesChannel);
+        static::assertInstanceOf(IZettleSalesChannelEntity::class, $iZettleSalesChannel);
+        $products = $this->productSelection->getProductLogCollection($iZettleSalesChannel, 10, 1, $context);
+
+        $firstProduct = $products->first();
+        static::assertNotNull($firstProduct);
+        static::assertSame($product, $firstProduct);
+        static::assertSame($productLogCollection, $firstProduct->getExtension(SwagPayPal::PRODUCT_LOG_IZETTLE_EXTENSION));
     }
 }

@@ -9,6 +9,7 @@ Component.register('swag-paypal-izettle', {
     template,
 
     inject: [
+        'SwagPayPalIZettleApiService',
         'SwagPayPalIZettleApiCredentialsService',
         'salesChannelService',
         'repositoryFactory'
@@ -23,6 +24,8 @@ Component.register('swag-paypal-izettle', {
         return {
             isLoading: false,
             isSaveSuccessful: false,
+            isCleaningLog: false,
+            isCleanLogSuccessful: false,
             isTestingCredentials: false,
             isTestCredentialsSuccessful: false,
             isNewEntity: false,
@@ -54,6 +57,10 @@ Component.register('swag-paypal-izettle', {
             criteria.addAssociation('languages');
 
             return criteria;
+        },
+
+        showLogCleanAction() {
+            return this.$route.path.indexOf('log') !== -1 && !this.isNewEntity;
         }
     },
 
@@ -194,6 +201,31 @@ Component.register('swag-paypal-izettle', {
                         })
                     });
                 });
+        },
+
+        onCleanLog() {
+            this.isCleaningLog = true;
+            this.isCleanLogSuccessful = false;
+
+            this.SwagPayPalIZettleApiService.startLogCleanup(this.salesChannel.id).then(() => {
+                this.isCleaningLog = false;
+                this.isCleanLogSuccessful = true;
+            }).catch((errorResponse) => {
+                if (errorResponse.response.data && errorResponse.response.data.errors) {
+                    let message = '';
+                    message += errorResponse.response.data.errors.map((error) => {
+                        return error.detail;
+                    }).join(' / ');
+
+                    this.createNotificationError({
+                        title: this.$tc('global.default.error'),
+                        message: message
+                    });
+
+                    this.isCleaningLog = false;
+                    this.isCleanLogSuccessful = false;
+                }
+            });
         },
 
         onTestCredentials() {

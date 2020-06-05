@@ -63,6 +63,21 @@ class SwagPayPalIZettleApiService extends ApiService {
             return ApiService.handleResponse(response);
         });
     }
+
+    getProductLog(salesChannelId, page = 1, limit = 10) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient.get(
+            `${this.getApiBasePath()}/product-log/${salesChannelId}`,
+            {
+                ...this.basicConfig,
+                headers,
+                params: { page, limit }
+            }
+        ).then((response) => {
+            return ApiService.handleResponse(response);
+        });
+    }
 }
 
 export default SwagPayPalIZettleApiService;

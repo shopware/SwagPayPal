@@ -44,13 +44,6 @@
             <argument type="service" id="swag_paypal_izettle_sales_channel_product.repository"/>
         </service>
 
-        <service id="Swag\PayPal\IZettle\Sync\ProductSelection">
-            <argument type="service" id="sales_channel.product.repository"/>
-            <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
-            <argument type="service" id="sales_channel_domain.repository"/>
-            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
-        </service>
-
         <service id="Swag\PayPal\IZettle\Sync\Product\NewUpdater">
             <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>

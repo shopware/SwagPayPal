@@ -76,7 +76,7 @@ class ProductSyncer
         $productContext = $this->productContextFactory->getContext($salesChannel, $context);
         $currency = $productContext->getIZettleSalesChannel()->isSyncPrices() ? $salesChannel->getCurrency() : null;
 
-        $shopwareProducts = $this->productSelection->getProducts($productContext->getIZettleSalesChannel(), $context, true);
+        $shopwareProducts = $this->productSelection->getProductCollection($productContext->getIZettleSalesChannel(), $context, true);
         $productGroupings = $this->productConverter->convertShopwareProducts($shopwareProducts, $currency);
 
         $this->unsyncedChecker->checkForUnsynced($productGroupings, $productContext);

@@ -39,7 +39,21 @@
                 "titleSync": "Synchronization",
                 "syncPrices": "Sync Prices",
                 "replace": "Replace existing products in iZettle (one-time)"
-            }
+            },
+            "log": {
+                "titleProducts": "Synced Products",
+                "titleLogs": "Other log entries",
+                "columnProduct": "Product",
+                "columnDate": "Date",
+                "columnLastSync": "Last Sync",
+                "emptyProductTitle": "No products selected",
+                "emptyProductMessage": "There are no products in your Sales Channel or Dynamic Product Group.",
+                "emptyLogTitle": "No log entries",
+                "emptyLogMessage": "Either no sync has been started or no errors occured.",
+                "noEntry": "Not synced yet"
+            },
+            "save": "Save",
+            "cleanLog": "Clean up log"
         },
         "wizard": {
             "stepItemTitle": {

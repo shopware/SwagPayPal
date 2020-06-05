@@ -15,12 +15,15 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
-use Swag\PayPal\IZettle\Run\LogCleaner;
+use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
 use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
+use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -54,18 +57,25 @@ class IZettleSyncController extends AbstractController
      */
     private $logCleaner;
 
+    /**
+     * @var ProductSelection
+     */
+    private $productSelection;
+
     public function __construct(
         ProductSyncer $productSyncer,
         InventorySyncer $inventorySyncer,
         EntityRepositoryInterface $salesChannelRepository,
         RunService $runService,
-        LogCleaner $logCleaner
+        LogCleaner $logCleaner,
+        ProductSelection $productSelection
     ) {
         $this->productSyncer = $productSyncer;
         $this->inventorySyncer = $inventorySyncer;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->runService = $runService;
         $this->logCleaner = $logCleaner;
+        $this->productSelection = $productSelection;
     }
 
     /**
@@ -127,6 +137,28 @@ class IZettleSyncController extends AbstractController
         $this->logCleaner->cleanUpLog($salesChannel->getId(), $context);
 
         return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Route("/api/v{version}/paypal/izettle/product-log/{salesChannelId}", name="api.paypal.izettle.product-log", methods={"GET"})
+     */
+    public function getProductLog(string $salesChannelId, Request $request, Context $context): Response
+    {
+        $limit = $request->query->getInt('limit', 10);
+        $page = $request->query->getInt('page', 1);
+        $salesChannel = $this->getSalesChannel($salesChannelId, $context);
+
+        /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
+        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
+
+        $productLogSearch = $this->productSelection->getProductLogCollection(
+            $iZettleSalesChannel,
+            $limit * ($page - 1),
+            $limit,
+            $context
+        );
+
+        return new JsonResponse($productLogSearch);
     }
 
     private function getSalesChannel(string $salesChannelId, Context $context): SalesChannelEntity

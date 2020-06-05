@@ -63,7 +63,7 @@ class InventorySyncer
         ?ProductCollection $productCollection = null
     ): void {
         if ($productCollection === null) {
-            $productCollection = $this->productSelection->getProducts($iZettleSalesChannel, $context, false);
+            $productCollection = $this->productSelection->getProductCollection($iZettleSalesChannel, $context, false);
         }
 
         $inventoryContext = $this->inventoryContextFactory->getContext($iZettleSalesChannel, $context);

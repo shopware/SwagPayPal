@@ -70,7 +70,7 @@
 
         <DeprecatedInterface>
             <errorLevel type="info">
-                <file name="src/IZettle/DataAbstractionLayer/Extension/SalesChannelExtension.php"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\EntityExtensionInterface"/>
             </errorLevel>
         </DeprecatedInterface>
 

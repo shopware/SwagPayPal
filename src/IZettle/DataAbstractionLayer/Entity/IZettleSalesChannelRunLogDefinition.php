@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\LongTextField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 
@@ -40,6 +41,8 @@ class IZettleSalesChannelRunLogDefinition extends EntityDefinition
         return new FieldCollection([
             (new IdField('id', 'id'))->setFlags(new PrimaryKey(), new Required()),
             (new FkField('run_id', 'runId', IZettleSalesChannelRunDefinition::class))->addFlags(new Required()),
+
+            (new ManyToOneAssociationField('run', 'run_id', IZettleSalesChannelRunDefinition::class)),
 
             (new IntField('level', 'level'))->addFlags(new Required()),
             (new LongTextField('message', 'message'))->addFlags(new Required()),

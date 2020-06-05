@@ -39,7 +39,21 @@
                 "titleSync": "Synchronisation",
                 "syncPrices": "Preise übertragen",
                 "replace": "Existierende Produkte in iZettle ersetzen (einmalig)"
-            }
+            },
+            "log": {
+                "titleProducts": "Synchronisierte Produkte",
+                "titleLogs": "Weitere Protokol-Einträge",
+                "columnProduct": "Produkt",
+                "columnDate": "Zeitpunkt",
+                "columnLastSync": "Letzte Synchronisation",
+                "emptyProductTitle": "Keine Produkte gewählt",
+                "emptyProductMessage": "Es existieren keine Produkte in Ihrem gewählten Verkaufskanal bzw. dynamischen Produktgruppe.",
+                "emptyLogTitle": "Keine Protokolleinträge",
+                "emptyLogMessage": "Es wurde noch nicht synchronisiert oder es sind noch keine Fehler aufgetreten.",
+                "noEntry": "Noch nicht synchronisiert"
+            },
+            "save": "Speichern",
+            "cleanLog": "Protokoll aufräumen"
         },
         "wizard": {
             "stepItemTitle": {

@@ -8,6 +8,7 @@ import './page/swag-paypal-izettle';
 
 import './view/swag-paypal-izettle-detail-base';
 import './view/swag-paypal-izettle-detail-settings';
+import './view/swag-paypal-izettle-detail-log';
 
 import './view/swag-paypal-izettle-wizard-connection';
 import './view/swag-paypal-izettle-wizard-saleschannel';
@@ -51,6 +52,10 @@ Module.register('swag-paypal-izettle', {
                 settings: {
                     component: 'swag-paypal-izettle-detail-settings',
                     path: 'settings'
+                },
+                log: {
+                    component: 'swag-paypal-izettle-detail-log',
+                    path: 'log'
                 }
             }
         },

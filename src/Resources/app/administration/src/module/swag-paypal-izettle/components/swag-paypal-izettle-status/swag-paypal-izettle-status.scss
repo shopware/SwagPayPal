@@ -45,14 +45,7 @@
         border-color: $color-pumpkin-spice-500;
         background-color: $color-pumpkin-spice-50;
 
-        &.swag-paypal-izettle-status--notification {
-            background-color: $color-white;
-            border-color: $color-gray-300;
-            border-left-color: $color-pumpkin-spice-500;
-        }
-
-        .swag-paypal-izettle-status__icon,
-        .swag-paypal-izettle-status__close {
+        .swag-paypal-izettle-status__icon {
             color: $color-pumpkin-spice-500;
         }
     }
@@ -61,14 +54,7 @@
         border-color: $color-crimson-500;
         background-color: $color-crimson-50;
 
-        &.swag-paypal-izettle-status--notification {
-            background-color: $color-white;
-            border-color: $color-gray-300;
-            border-left-color: $color-crimson-500;
-        }
-
-        .swag-paypal-izettle-status__icon,
-        .swag-paypal-izettle-status__close {
+        .swag-paypal-izettle-status__icon {
             color: $color-crimson-500;
         }
     }
@@ -77,14 +63,7 @@
         border-color: $color-emerald-500;
         background-color: $color-emerald-50;
 
-        &.swag-paypal-izettle-status--notification {
-            background-color: $color-white;
-            border-color: $color-gray-300;
-            border-left-color: $color-emerald-500;
-        }
-
-        .swag-paypal-izettle-status__icon,
-        .swag-paypal-izettle-status__close {
+        .swag-paypal-izettle-status__icon {
             color: $color-emerald-500;
         }
     }
@@ -93,14 +72,7 @@
         border-color: $color-shopware-brand-500;
         background-color: $color-shopware-brand-50;
 
-        &.swag-paypal-izettle-status--notification {
-            background-color: $color-white;
-            border-color: $color-gray-300;
-            border-left-color: $color-shopware-brand-500;
-        }
-
-        .swag-paypal-izettle-status__icon,
-        .swag-paypal-izettle-status__close {
+        .swag-paypal-izettle-status__icon {
             color: $color-shopware-brand-500;
         }
     }
