@@ -19,6 +19,7 @@
 
         <service id="Swag\PayPal\IZettle\IZettleSyncController" public="true">
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ImageSyncer"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
@@ -59,6 +60,7 @@
 
         <service id="Swag\PayPal\IZettle\Command\IZettleSyncCommand">
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ImageSyncer"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>

@@ -7,11 +7,14 @@
 
 namespace Swag\PayPal\IZettle\Sync\Context;
 
+use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Product;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductEntity;
 
@@ -32,6 +35,11 @@ class ProductContext
     protected $iZettleProductCollection;
 
     /**
+     * @var IZettleSalesChannelMediaCollection
+     */
+    protected $iZettleMediaCollection;
+
+    /**
      * @var Context
      */
     protected $context;
@@ -46,16 +54,24 @@ class ProductContext
      */
     protected $productRemovals;
 
+    /**
+     * @var array
+     */
+    protected $mediaRequests;
+
     public function __construct(
         SalesChannelEntity $salesChannel,
         IZettleSalesChannelProductCollection $iZettleProductCollection,
+        IZettleSalesChannelMediaCollection $iZettleMediaCollection,
         Context $context
     ) {
         $this->salesChannel = $salesChannel;
         $this->iZettleProductCollection = $iZettleProductCollection;
+        $this->iZettleMediaCollection = $iZettleMediaCollection;
         $this->context = $context;
         $this->productChanges = [];
         $this->productRemovals = [];
+        $this->mediaRequests = [];
     }
 
     public function changeProduct(ProductEntity $shopwareProduct, ?Product $iZettleProduct = null): void
@@ -104,6 +120,32 @@ class ProductContext
         return $previousChecksum->getChecksum() === $iZettleProduct->generateChecksum() ? self::PRODUCT_CURRENT : self::PRODUCT_OUTDATED;
     }
 
+    public function checkForMediaUrl(MediaEntity $mediaEntity): ?string
+    {
+        if (!$mediaEntity->hasFile()) {
+            return null;
+        }
+
+        $media = $this->iZettleMediaCollection->filter(
+            static function (IZettleSalesChannelMediaEntity $entity) use ($mediaEntity) {
+                return $entity->getMediaId() === $mediaEntity->getId();
+            }
+        );
+
+        $existingMedia = $media->first();
+
+        if ($existingMedia !== null) {
+            return $existingMedia->getUrl();
+        }
+
+        $this->mediaRequests[] = [
+            'salesChannelId' => $this->salesChannel->getId(),
+            'mediaId' => $mediaEntity->getId(),
+        ];
+
+        return null;
+    }
+
     public function getSalesChannel(): SalesChannelEntity
     {
         return $this->salesChannel;
@@ -142,9 +184,15 @@ class ProductContext
         return $this->productRemovals;
     }
 
+    public function getMediaRequests(): array
+    {
+        return $this->mediaRequests;
+    }
+
     public function resetChanges(): void
     {
         $this->productRemovals = [];
         $this->productChanges = [];
+        $this->mediaRequests = [];
     }
 }

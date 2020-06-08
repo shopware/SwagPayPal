@@ -7,19 +7,28 @@
 
 namespace Swag\PayPal\Test\IZettle\Sync\Product;
 
+use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\IZettle\Api\Product;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductEntity;
 use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 use Swag\PayPal\IZettle\Sync\Context\ProductContextFactory;
+use Swag\PayPal\Test\Mock\IZettle\IZettleMediaRepoMock;
 use Swag\PayPal\Test\Mock\IZettle\IZettleProductRepoMock;
 
 class ProductContextFactoryTest extends AbstractProductSyncTest
 {
+    private const IMAGE_MEDIA_ID_EXISTING = 'existingMediaId';
+    private const IMAGE_MEDIA_ID_NEW = 'newMediaId';
+    private const IMAGE_URL = 'https://image.izettle.com/product/BJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ.jpeg';
+    private const IMAGE_LOOKUP_KEY = 'BJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ';
+
     public function dataProviderCheckForUpdate(): array
     {
         return [
@@ -53,11 +62,53 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
             $iZettleProductCollection->add($entity);
         }
 
-        $productContext = new ProductContext($this->createSalesChannel($context), $iZettleProductCollection, $context);
+        $productContext = new ProductContext($this->createSalesChannel($context), $iZettleProductCollection, new IZettleSalesChannelMediaCollection(), $context);
 
         $product = new Product();
         $product->setName($newName);
         static::assertEquals($status, $productContext->checkForUpdate($productEntity, $product));
+    }
+
+    public function testCheckForDefectiveMedia(): void
+    {
+        $productContext = $this->createContextForMedia();
+
+        $defectiveMedia = new MediaEntity();
+        $defectiveMedia->setId(self::IMAGE_MEDIA_ID_EXISTING);
+        static::assertNull($productContext->checkForMediaUrl($defectiveMedia));
+        static::assertEmpty($productContext->getMediaRequests());
+    }
+
+    public function testCheckForUploadedMedia(): void
+    {
+        $productContext = $this->createContextForMedia();
+
+        $existingMedia = new MediaEntity();
+        $existingMedia->setId(self::IMAGE_MEDIA_ID_EXISTING);
+        $existingMedia->setMimeType('image/jpeg');
+        $existingMedia->setFileExtension('jpg');
+        $existingMedia->setFileName('filename');
+        static::assertEquals(self::IMAGE_URL, $productContext->checkForMediaUrl($existingMedia));
+        static::assertEmpty($productContext->getMediaRequests());
+    }
+
+    public function testCheckForNewMedia(): void
+    {
+        $productContext = $this->createContextForMedia();
+
+        $newMedia = new MediaEntity();
+        $newMedia->setId(self::IMAGE_MEDIA_ID_NEW);
+        $newMedia->setMimeType('image/jpeg');
+        $newMedia->setFileExtension('jpg');
+        $newMedia->setFileName('filename');
+        static::assertNull($productContext->checkForMediaUrl($newMedia));
+        static::assertContains(
+            [
+                'salesChannelId' => Defaults::SALES_CHANNEL,
+                'mediaId' => self::IMAGE_MEDIA_ID_NEW,
+            ],
+            $productContext->getMediaRequests()
+        );
     }
 
     public function testCommit(): void
@@ -65,16 +116,24 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         $context = Context::createDefaultContext();
 
         $iZettleProductRepoMock = $this->createPartialMock(IZettleProductRepoMock::class, ['upsert', 'delete']);
-        $productContextFactory = new ProductContextFactory($iZettleProductRepoMock);
+        $iZettleMediaRepoMock = $this->createPartialMock(IZettleMediaRepoMock::class, ['create', 'upsert']);
+        $productContextFactory = new ProductContextFactory($iZettleProductRepoMock, $iZettleMediaRepoMock);
 
-        $productContext = new ProductContext($this->createSalesChannel($context), new IZettleSalesChannelProductCollection(), $context);
+        $productContext = new ProductContext($this->createSalesChannel($context), new IZettleSalesChannelProductCollection(), new IZettleSalesChannelMediaCollection(), $context);
 
         $productEntity = $this->createProductEntity();
         $productContext->changeProduct($productEntity, new Product());
         $productContext->removeProduct($productEntity);
+        $newMedia = new MediaEntity();
+        $newMedia->setId(self::IMAGE_MEDIA_ID_NEW);
+        $newMedia->setMimeType('image/jpeg');
+        $newMedia->setFileExtension('jpg');
+        $newMedia->setFileName('filename');
+        $productContext->checkForMediaUrl($newMedia);
 
         $iZettleProductRepoMock->expects(static::once())->method('upsert');
         $iZettleProductRepoMock->expects(static::once())->method('delete');
+        $iZettleMediaRepoMock->expects(static::once())->method('create');
 
         $productContextFactory->commit($productContext);
     }
@@ -84,7 +143,8 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         $context = Context::createDefaultContext();
 
         $iZettleProductRepoMock = new IZettleProductRepoMock();
-        $productContextFactory = new ProductContextFactory($iZettleProductRepoMock);
+        $iZettleMediaRepoMock = new IZettleMediaRepoMock();
+        $productContextFactory = new ProductContextFactory($iZettleProductRepoMock, $iZettleMediaRepoMock);
         $salesChannel = $this->createSalesChannel($context);
 
         $inventoryContextFirst = $productContextFactory->getContext($salesChannel, $context);
@@ -100,5 +160,20 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         $productEntity->setVersionId(Uuid::randomHex());
 
         return $productEntity;
+    }
+
+    private function createContextForMedia(): ProductContext
+    {
+        $context = Context::createDefaultContext();
+        $iZettleMedia = new IZettleSalesChannelMediaEntity();
+        $iZettleMedia->setUrl(self::IMAGE_URL);
+        $iZettleMedia->setLookupKey(self::IMAGE_LOOKUP_KEY);
+        $iZettleMedia->setMediaId(self::IMAGE_MEDIA_ID_EXISTING);
+        $iZettleMedia->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $iZettleMedia->setUniqueIdentifier(Uuid::randomHex());
+        $iZettleMediaCollection = new IZettleSalesChannelMediaCollection([$iZettleMedia]);
+        $productContext = new ProductContext($this->createSalesChannel($context), new IZettleSalesChannelProductCollection(), $iZettleMediaCollection, $context);
+
+        return $productContext;
     }
 }

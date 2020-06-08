@@ -10,12 +10,14 @@ namespace Swag\PayPal\Test\IZettle;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\IZettle\Command\AbstractIZettleCommand;
+use Swag\PayPal\IZettle\Command\IZettleImageSyncCommand;
 use Swag\PayPal\IZettle\Command\IZettleInventorySyncCommand;
 use Swag\PayPal\IZettle\Command\IZettleLogCleanupCommand;
 use Swag\PayPal\IZettle\Command\IZettleProductSyncCommand;
 use Swag\PayPal\IZettle\Command\IZettleSyncCommand;
 use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
 use Swag\PayPal\IZettle\Run\RunService;
+use Swag\PayPal\IZettle\Sync\ImageSyncer;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
 use Swag\PayPal\Test\Mock\IZettle\SalesChannelRepoMock;
@@ -52,6 +54,11 @@ class IZettleCommandTest extends TestCase
     private $logCleaner;
 
     /**
+     * @var MockObject|ImageSyncer
+     */
+    private $imageSyncer;
+
+    /**
      * @var AbstractIZettleCommand[]
      */
     private $commands;
@@ -61,10 +68,12 @@ class IZettleCommandTest extends TestCase
         $this->salesChannelRepoMock = new SalesChannelRepoMock();
         $this->productSyncer = $this->createPartialMock(ProductSyncer::class, ['syncProducts']);
         $this->inventorySyncer = $this->createPartialMock(InventorySyncer::class, ['syncInventory']);
+        $this->imageSyncer = $this->createPartialMock(ImageSyncer::class, ['syncImages']);
         $this->runService = $this->createMock(RunService::class);
         $this->logCleaner = $this->createMock(LogCleaner::class);
         $this->commands = [
-            IZettleSyncCommand::class => new IZettleSyncCommand($this->productSyncer, $this->inventorySyncer, $this->salesChannelRepoMock, $this->runService),
+            IZettleSyncCommand::class => new IZettleSyncCommand($this->productSyncer, $this->imageSyncer, $this->inventorySyncer, $this->salesChannelRepoMock, $this->runService),
+            IZettleImageSyncCommand::class => new IZettleImageSyncCommand($this->imageSyncer, $this->salesChannelRepoMock, $this->runService),
             IZettleInventorySyncCommand::class => new IZettleInventorySyncCommand($this->inventorySyncer, $this->salesChannelRepoMock, $this->runService),
             IZettleProductSyncCommand::class => new IZettleProductSyncCommand($this->productSyncer, $this->salesChannelRepoMock, $this->runService),
             IZettleLogCleanupCommand::class => new IZettleLogCleanupCommand($this->salesChannelRepoMock, $this->logCleaner),
@@ -78,6 +87,7 @@ class IZettleCommandTest extends TestCase
                 IZettleSyncCommand::class,
                 [
                     'productSyncer' => 'syncProducts',
+                    'imageSyncer' => 'syncImages',
                     'inventorySyncer' => 'syncInventory',
                 ],
             ],
@@ -91,6 +101,12 @@ class IZettleCommandTest extends TestCase
                 IZettleProductSyncCommand::class,
                 [
                     'productSyncer' => 'syncProducts',
+                ],
+            ],
+            [
+                IZettleImageSyncCommand::class,
+                [
+                    'imageSyncer' => 'syncImages',
                 ],
             ],
             [
@@ -126,7 +142,7 @@ class IZettleCommandTest extends TestCase
     public function testSyncNormal(string $commandClassName, array $serviceCalls): void
     {
         foreach ($serviceCalls as $serviceName => $serviceCall) {
-            $this->$serviceName->expects(static::once())->method($serviceCall);
+            $this->$serviceName->expects(static::atLeastOnce())->method($serviceCall);
         }
         $input = new ArrayInput([]);
 

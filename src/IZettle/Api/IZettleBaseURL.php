@@ -12,6 +12,7 @@ final class IZettleBaseURL
     public const OAUTH = 'https://oauth.izettle.com/';
     public const PRODUCTS = 'https://products.izettle.com/';
     public const INVENTORY = 'https://inventory.izettle.com/';
+    public const IMAGE = 'https://image.izettle.com/';
 
     private function __construct()
     {

@@ -7,14 +7,15 @@
 
 namespace Swag\PayPal\IZettle\Api\Service\Converter;
 
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price as ShopwarePrice;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Swag\PayPal\IZettle\Api\Product\Price;
+use Swag\PayPal\IZettle\Api\Product\Price as ConvertedPrice;
 
 class PriceConverter
 {
-    public function convert(\Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price $price, CurrencyEntity $currency): Price
+    public function convert(ShopwarePrice $price, CurrencyEntity $currency): ConvertedPrice
     {
-        $newPrice = new Price();
+        $newPrice = new ConvertedPrice();
 
         $floatPrice = $price->getNet();
         $precision = 10 ** ($currency->getDecimalPrecision());

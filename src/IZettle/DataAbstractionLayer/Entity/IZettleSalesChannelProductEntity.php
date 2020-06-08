@@ -31,11 +31,6 @@ class IZettleSalesChannelProductEntity extends Entity
      */
     protected $checksum;
 
-    /**
-     * @var \DateTimeInterface
-     */
-    protected $updatedAt;
-
     public function getSalesChannelId(): string
     {
         return $this->salesChannelId;
@@ -74,15 +69,5 @@ class IZettleSalesChannelProductEntity extends Entity
     public function setChecksum(string $checksum): void
     {
         $this->checksum = $checksum;
-    }
-
-    public function getUpdatedAt(): \DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): void
-    {
-        $this->updatedAt = $updatedAt;
     }
 }

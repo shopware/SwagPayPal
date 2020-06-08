@@ -32,9 +32,11 @@ use Swag\PayPal\IZettle\Api\Product\Variant;
 use Swag\PayPal\IZettle\Api\Product\VariantOptionDefinitions;
 use Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\OptionGroupConverter;
+use Swag\PayPal\IZettle\Api\Service\Converter\PresentationConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter;
 use Swag\PayPal\IZettle\Api\Service\ProductConverter;
+use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 
 class ProductConverterTest extends TestCase
 {
@@ -53,7 +55,8 @@ class ProductConverterTest extends TestCase
 
         $converted = $this->createProductConverter()->convertShopwareProducts(
             new ProductCollection([$productEntity]),
-            $this->getCurrency()
+            $this->getCurrency(),
+            $this->createMock(ProductContext::class)
         );
         $convertedGrouping = $converted->first();
 
@@ -76,7 +79,8 @@ class ProductConverterTest extends TestCase
 
         $converted = $this->createProductConverter()->convertShopwareProducts(
             new ProductCollection([$productEntity]),
-            $this->getCurrency()
+            $this->getCurrency(),
+            $this->createMock(ProductContext::class)
         );
         $convertedGrouping = $converted->first();
 
@@ -108,7 +112,8 @@ class ProductConverterTest extends TestCase
 
         $converted = $this->createProductConverter()->convertShopwareProducts(
             new ProductCollection([$productEntity]),
-            $this->getCurrency()
+            $this->getCurrency(),
+            $this->createMock(ProductContext::class)
         );
         $convertedGrouping = $converted->first();
 
@@ -130,7 +135,8 @@ class ProductConverterTest extends TestCase
 
         $converted = $this->createProductConverter()->convertShopwareProducts(
             new ProductCollection([$productEntityParent, $productEntityChild1, $productEntityChild2]),
-            $this->getCurrency()
+            $this->getCurrency(),
+            $this->createMock(ProductContext::class)
         );
         $convertedGrouping = $converted->first();
 
@@ -149,7 +155,8 @@ class ProductConverterTest extends TestCase
 
         $converted = $this->createProductConverter()->convertShopwareProducts(
             new ProductCollection([$productEntity]),
-            null
+            null,
+            $this->createMock(ProductContext::class)
         );
         $convertedGrouping = $converted->first();
 
@@ -199,7 +206,8 @@ class ProductConverterTest extends TestCase
             $this->createUuidConverter(),
             $categoryConverter,
             $variantConverter,
-            $optionGroupConverter
+            $optionGroupConverter,
+            new PresentationConverter()
         );
     }
 

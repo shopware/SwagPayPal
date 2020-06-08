@@ -31,11 +31,6 @@ class IZettleSalesChannelInventoryEntity extends Entity
      */
     protected $stock;
 
-    /**
-     * @var \DateTimeInterface
-     */
-    protected $updatedAt;
-
     public function getSalesChannelId(): string
     {
         return $this->salesChannelId;
@@ -74,15 +69,5 @@ class IZettleSalesChannelInventoryEntity extends Entity
     public function setStock(int $stock): void
     {
         $this->stock = $stock;
-    }
-
-    public function getUpdatedAt(): \DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): void
-    {
-        $this->updatedAt = $updatedAt;
     }
 }

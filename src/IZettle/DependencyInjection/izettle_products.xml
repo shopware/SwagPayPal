@@ -20,6 +20,7 @@
         <service id="Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter">
             <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
             <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\PriceConverter"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\PresentationConverter"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Api\Service\ProductConverter">
@@ -27,6 +28,7 @@
             <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter"/>
             <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter"/>
             <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\OptionGroupConverter"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\PresentationConverter"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Command\IZettleProductSyncCommand">
@@ -42,6 +44,7 @@
 
         <service id="Swag\PayPal\IZettle\Sync\Context\ProductContextFactory">
             <argument type="service" id="swag_paypal_izettle_sales_channel_product.repository"/>
+            <argument type="service" id="swag_paypal_izettle_sales_channel_media.repository"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Sync\Product\NewUpdater">
@@ -75,7 +78,6 @@
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Product\DeletedUpdater"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>
         </service>
     </services>
 </container>

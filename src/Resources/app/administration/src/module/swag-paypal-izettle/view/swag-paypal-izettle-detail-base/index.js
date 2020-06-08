@@ -149,6 +149,18 @@ Component.register('swag-paypal-izettle-detail-base', {
             });
         },
 
+        onStartImageSync() {
+            this.syncErrors = null;
+            this.isSyncing = true;
+            this.SwagPayPalIZettleApiService.startImageSync(this.salesChannel.id).catch((errorResponse) => {
+                this.syncErrors = errorResponse.response.data.errors;
+            }).finally(() => {
+                this.loadLastFinishedRun().then(() => {
+                    this.isSyncing = false;
+                });
+            });
+        },
+
         onStartInventorySync() {
             this.syncErrors = null;
             this.isSyncing = true;
@@ -204,10 +216,10 @@ Component.register('swag-paypal-izettle-detail-base', {
 
         getHighestLevel(run) {
             const level = Math.max(...run.logs.map((log) => { return log.level; }));
-            if (level > 400) {
+            if (level >= 400) {
                 return 'error';
             }
-            if (level > 300) {
+            if (level >= 300) {
                 return 'warning';
             }
             return 'success';

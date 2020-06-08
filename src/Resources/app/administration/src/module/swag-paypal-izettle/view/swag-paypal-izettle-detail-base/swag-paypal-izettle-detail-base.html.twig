@@ -38,6 +38,12 @@
                                 </sw-context-menu-item>
                             {% endblock %}
 
+                            {% block swag_paypal_izettle_detail_base_status_actions_sync_context_menu_item_image %}
+                                <sw-context-menu-item @click="onStartImageSync">
+                                    {{ $tc('swag-paypal-izettle.detail.base.buttonSyncImages') }}
+                                </sw-context-menu-item>
+                            {% endblock %}
+
                             {% block swag_paypal_izettle_detail_base_status_actions_sync_context_menu_item_inventory %}
                                 <sw-context-menu-item @click="onStartInventorySync">
                                     {{ $tc('swag-paypal-izettle.detail.base.buttonSyncInventory') }}

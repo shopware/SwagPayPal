@@ -12,6 +12,7 @@
                 "titleSync": "Synchronisation",
                 "buttonSync": "Jetzt synchronisieren",
                 "buttonSyncProducts": "Produkt-Details synchronisieren",
+                "buttonSyncImages": "Bilder hochladen",
                 "buttonSyncInventory": "Bestand synchronisieren",
                 "syncErrorTitle": "Synchronisations-Fehler",
                 "status": {

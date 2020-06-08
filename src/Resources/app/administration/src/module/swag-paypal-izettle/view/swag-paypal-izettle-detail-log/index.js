@@ -135,10 +135,10 @@ Component.register('swag-paypal-izettle-detail-log', {
         },
 
         iconClass(item) {
-            if (item.level > 400) {
+            if (item.level >= 400) {
                 return 'swag-paypal-izettle-detail-log-entry--error';
             }
-            if (item.level > 300) {
+            if (item.level >= 300) {
                 return 'swag-paypal-izettle-detail-log-entry--warning';
             }
             if (item.level > 200) {
@@ -148,10 +148,10 @@ Component.register('swag-paypal-izettle-detail-log', {
         },
 
         icon(item) {
-            if (item.level > 400) {
+            if (item.level >= 400) {
                 return 'default-badge-error';
             }
-            if (item.level > 300) {
+            if (item.level >= 300) {
                 return 'default-badge-warning';
             }
             if (item.level > 200) {

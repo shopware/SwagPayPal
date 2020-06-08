@@ -12,6 +12,7 @@
                 "titleSync": "Synchronization",
                 "buttonSync": "Synchronize Now",
                 "buttonSyncProducts": "Synchronize Product Details",
+                "buttonSyncImages": "Upload images",
                 "buttonSyncInventory": "Synchronize Inventory",
                 "syncErrorTitle": "Synchronization Error",
                 "status": {

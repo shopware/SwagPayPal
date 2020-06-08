@@ -15,6 +15,7 @@ use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\IZettleSyncController;
 use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
 use Swag\PayPal\IZettle\Run\RunService;
+use Swag\PayPal\IZettle\Sync\ImageSyncer;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
@@ -43,6 +44,11 @@ class IZettleSyncControllerTest extends TestCase
     /**
      * @var MockObject
      */
+    private $imageSyncer;
+
+    /**
+     * @var MockObject
+     */
     private $inventorySyncer;
 
     /**
@@ -59,11 +65,13 @@ class IZettleSyncControllerTest extends TestCase
     {
         $this->salesChannelRepoMock = new SalesChannelRepoMock();
         $this->productSyncer = $this->createMock(ProductSyncer::class);
+        $this->imageSyncer = $this->createMock(ImageSyncer::class);
         $this->inventorySyncer = $this->createMock(InventorySyncer::class);
         $this->logCleaner = $this->createMock(LogCleaner::class);
         $this->productSelection = $this->createMock(ProductSelection::class);
         $this->iZettleSyncController = new IZettleSyncController(
             $this->productSyncer,
+            $this->imageSyncer,
             $this->inventorySyncer,
             $this->salesChannelRepoMock,
             $this->createMock(RunService::class),
@@ -79,6 +87,7 @@ class IZettleSyncControllerTest extends TestCase
                 'syncAll',
                 [
                     'productSyncer' => 'syncProducts',
+                    'imageSyncer' => 'syncImages',
                     'inventorySyncer' => 'syncInventory',
                 ],
             ],
@@ -92,6 +101,12 @@ class IZettleSyncControllerTest extends TestCase
                 'syncProducts',
                 [
                     'productSyncer' => 'syncProducts',
+                ],
+            ],
+            [
+                'syncImages',
+                [
+                    'imageSyncer' => 'syncImages',
                 ],
             ],
             [
@@ -120,7 +135,7 @@ class IZettleSyncControllerTest extends TestCase
     {
         $context = Context::createDefaultContext();
         foreach ($serviceCalls as $serviceName => $serviceCall) {
-            $this->$serviceName->expects(static::once())->method($serviceCall);
+            $this->$serviceName->expects(static::atLeastOnce())->method($serviceCall);
         }
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
         $this->iZettleSyncController->$syncFunction($salesChannelId->getId(), $context);

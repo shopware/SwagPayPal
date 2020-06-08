@@ -50,6 +50,20 @@ class SwagPayPalIZettleApiService extends ApiService {
         });
     }
 
+    startImageSync(salesChannelId) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient.get(
+            `${this.getApiBasePath()}/sync/${salesChannelId}/images`,
+            {
+                ...this.basicConfig,
+                headers
+            }
+        ).then((response) => {
+            return ApiService.handleResponse(response);
+        });
+    }
+
     startLogCleanup(salesChannelId) {
         const headers = this.getBasicHeaders();
 

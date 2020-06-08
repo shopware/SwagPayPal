@@ -23,9 +23,11 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\IZettle\Api\Product\Variant;
 use Swag\PayPal\IZettle\Api\Product\Variant\Option;
+use Swag\PayPal\IZettle\Api\Service\Converter\PresentationConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\PriceConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter;
+use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 
 class VariantConverterTest extends TestCase
 {
@@ -48,7 +50,11 @@ class VariantConverterTest extends TestCase
     {
         $productEntity = $this->createProductEntity();
 
-        $converted = $this->createVariantConverter()->convert($productEntity, null);
+        $converted = $this->createVariantConverter()->convert(
+            $productEntity,
+            null,
+            $this->createMock(ProductContext::class)
+        );
 
         $variant = $this->createVariant();
 
@@ -67,7 +73,11 @@ class VariantConverterTest extends TestCase
         $productEntity->setEan(self::PRODUCT_EAN);
         $productEntity->setOptions($this->createOptions());
 
-        $converted = $this->createVariantConverter()->convert($productEntity, $this->getCurrency());
+        $converted = $this->createVariantConverter()->convert(
+            $productEntity,
+            $this->getCurrency(),
+            $this->createMock(ProductContext::class)
+        );
 
         $variant = $this->createVariant();
         $variant->setUuid($this->createUuidConverter()->convertUuidToV1($productEntity->getId()));
@@ -116,7 +126,7 @@ class VariantConverterTest extends TestCase
 
     private function createVariantConverter(): VariantConverter
     {
-        return new VariantConverter($this->createUuidConverter(), new PriceConverter());
+        return new VariantConverter($this->createUuidConverter(), new PriceConverter(), new PresentationConverter());
     }
 
     private function createUuidConverter(): UuidConverter

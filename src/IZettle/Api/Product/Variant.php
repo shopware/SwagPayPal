@@ -9,7 +9,6 @@ namespace Swag\PayPal\IZettle\Api\Product;
 
 use Swag\PayPal\IZettle\Api\Common\IZettleStruct;
 use Swag\PayPal\IZettle\Api\Product\Variant\Option;
-use Swag\PayPal\IZettle\Api\Product\Variant\Presentation as VariantPresentation;
 
 class Variant extends IZettleStruct
 {
@@ -49,7 +48,7 @@ class Variant extends IZettleStruct
     protected $options;
 
     /**
-     * @var VariantPresentation
+     * @var Presentation
      */
     protected $presentation;
 
@@ -101,7 +100,7 @@ class Variant extends IZettleStruct
         $this->options = \array_merge($this->options ?? [], $options);
     }
 
-    public function setPresentation(VariantPresentation $presentation): void
+    public function setPresentation(Presentation $presentation): void
     {
         $this->presentation = $presentation;
     }

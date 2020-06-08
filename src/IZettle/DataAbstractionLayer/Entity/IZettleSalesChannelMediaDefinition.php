@@ -7,44 +7,43 @@
 
 namespace Swag\PayPal\IZettle\DataAbstractionLayer\Entity;
 
-use Shopware\Core\Content\Product\ProductDefinition;
+use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\ReferenceVersionField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\MappingEntityDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
-class IZettleSalesChannelInventoryDefinition extends MappingEntityDefinition
+class IZettleSalesChannelMediaDefinition extends MappingEntityDefinition
 {
     public function getEntityName(): string
     {
-        return 'swag_paypal_izettle_sales_channel_inventory';
+        return 'swag_paypal_izettle_sales_channel_media';
     }
 
     public function getEntityClass(): string
     {
-        return IZettleSalesChannelInventoryEntity::class;
+        return IZettleSalesChannelMediaEntity::class;
     }
 
     public function getCollectionClass(): string
     {
-        return IZettleSalesChannelInventoryCollection::class;
+        return IZettleSalesChannelMediaCollection::class;
     }
 
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
             (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(new PrimaryKey(), new Required()),
-            (new FkField('product_id', 'productId', ProductDefinition::class))->addFlags(new PrimaryKey(), new Required()),
-            (new ReferenceVersionField(ProductDefinition::class))->addFlags(new PrimaryKey(), new Required()),
+            (new FkField('media_id', 'mediaId', MediaDefinition::class))->addFlags(new PrimaryKey(), new Required()),
 
-            new ManyToOneAssociationField('product', 'product_id', ProductDefinition::class),
+            new ManyToOneAssociationField('media', 'media_id', MediaDefinition::class),
 
-            (new IntField('stock', 'stock'))->addFlags(new Required()),
+            (new StringField('lookup_key', 'lookupKey')),
+            (new StringField('url', 'url')),
         ]);
     }
 }

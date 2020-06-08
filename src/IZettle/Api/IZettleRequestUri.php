@@ -15,6 +15,7 @@ final class IZettleRequestUri
     public const INVENTORY_RESOURCE = 'organizations/self/inventory/';
     public const INVENTORY_RESOURCE_LOCATIONS = 'organizations/self/locations/';
     public const INVENTORY_RESOURCE_GET = 'organizations/self/inventory/locations/%s/';
+    public const IMAGE_RESOURCE_BULK = 'v2/images/organizations/self/products/bulk';
 
     private function __construct()
     {

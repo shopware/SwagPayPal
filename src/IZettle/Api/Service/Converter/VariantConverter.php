@@ -11,6 +11,7 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\IZettle\Api\Product\Variant;
 use Swag\PayPal\IZettle\Api\Product\Variant\Option;
+use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 
 class VariantConverter
 {
@@ -24,15 +25,22 @@ class VariantConverter
      */
     private $priceConverter;
 
+    /**
+     * @var PresentationConverter
+     */
+    private $presentationConverter;
+
     public function __construct(
         UuidConverter $uuidConverter,
-        PriceConverter $priceConverter
+        PriceConverter $priceConverter,
+        PresentationConverter $presentationConverter
     ) {
         $this->uuidConverter = $uuidConverter;
         $this->priceConverter = $priceConverter;
+        $this->presentationConverter = $presentationConverter;
     }
 
-    public function convert(ProductEntity $shopwareVariant, ?CurrencyEntity $currency): Variant
+    public function convert(ProductEntity $shopwareVariant, ?CurrencyEntity $currency, ProductContext $productContext): Variant
     {
         $variant = new Variant();
 
@@ -56,6 +64,11 @@ class VariantConverter
             if ($price !== null) {
                 $variant->setPrice($this->priceConverter->convert($price, $currency));
             }
+        }
+
+        $presentation = $this->presentationConverter->convert($shopwareVariant->getCover(), $productContext);
+        if ($presentation !== null) {
+            $variant->setPresentation($presentation);
         }
 
         $shopwareOptions = $shopwareVariant->getOptions();

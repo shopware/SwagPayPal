@@ -12,10 +12,12 @@ use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\IZettle\Api\Product;
 use Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\OptionGroupConverter;
+use Swag\PayPal\IZettle\Api\Service\Converter\PresentationConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter;
 use Swag\PayPal\IZettle\Api\Service\Util\ProductGrouping;
 use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
+use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 
 class ProductConverter
 {
@@ -39,32 +41,39 @@ class ProductConverter
      */
     private $optionGroupConverter;
 
+    /**
+     * @var PresentationConverter
+     */
+    private $presentationConverter;
+
     public function __construct(
         UuidConverter $uuidConverter,
         CategoryConverter $categoryConverter,
         VariantConverter $variantConverter,
-        OptionGroupConverter $optionGroupConverter
+        OptionGroupConverter $optionGroupConverter,
+        PresentationConverter $presentationConverter
     ) {
         $this->uuidConverter = $uuidConverter;
         $this->categoryConverter = $categoryConverter;
         $this->variantConverter = $variantConverter;
         $this->optionGroupConverter = $optionGroupConverter;
+        $this->presentationConverter = $presentationConverter;
     }
 
-    public function convertShopwareProducts(ProductCollection $shopwareProducts, ?CurrencyEntity $currency): ProductGroupingCollection
+    public function convertShopwareProducts(ProductCollection $shopwareProducts, ?CurrencyEntity $currency, ProductContext $productContext): ProductGroupingCollection
     {
         $groupingCollection = new ProductGroupingCollection();
         $groupingCollection->addProducts($shopwareProducts);
 
         foreach ($groupingCollection as $grouping) {
-            $product = $this->convertProductGrouping($grouping, $currency);
+            $product = $this->convertProductGrouping($grouping, $currency, $productContext);
             $grouping->setProduct($product);
         }
 
         return $groupingCollection;
     }
 
-    protected function convertProductGrouping(ProductGrouping $productGrouping, ?CurrencyEntity $currency): Product
+    protected function convertProductGrouping(ProductGrouping $productGrouping, ?CurrencyEntity $currency, ProductContext $productContext): Product
     {
         $shopwareProduct = $productGrouping->getIdentifyingEntity();
 
@@ -88,13 +97,18 @@ class ProductConverter
             }
         }
 
+        $presentation = $this->presentationConverter->convert($shopwareProduct->getCover(), $productContext);
+        if ($presentation !== null) {
+            $product->setPresentation($presentation);
+        }
+
         $configuratorSettings = $shopwareProduct->getConfiguratorSettings();
         if ($configuratorSettings && $configuratorSettings->count()) {
             $product->setVariantOptionDefinitions($this->optionGroupConverter->convert($configuratorSettings->getGroupedOptions()));
         }
 
         foreach ($productGrouping->getVariantEntities() as $shopwareVariant) {
-            $product->addVariant($this->variantConverter->convert($shopwareVariant, $currency));
+            $product->addVariant($this->variantConverter->convert($shopwareVariant, $currency, $productContext));
         }
 
         if ($product->getVariantOptionDefinitions() === null
@@ -104,7 +118,7 @@ class ProductConverter
         }
 
         if (!$product->getVariants()) {
-            $product->addVariant($this->variantConverter->convert($shopwareProduct, $currency));
+            $product->addVariant($this->variantConverter->convert($shopwareProduct, $currency, $productContext));
         }
 
         return $product;

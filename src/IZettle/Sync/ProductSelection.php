@@ -144,7 +144,7 @@ class ProductSelection
     {
         $criteria
             ->addAssociation('categories')
-            ->addAssociation('cover')
+            ->addAssociation('cover.media')
             ->addAssociation('prices')
             ->addAssociation('translation')
             ->addAssociation('configuratorSettings.option.translation')

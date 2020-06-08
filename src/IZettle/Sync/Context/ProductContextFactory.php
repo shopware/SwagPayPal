@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductCollection;
 
 class ProductContextFactory
@@ -22,14 +23,21 @@ class ProductContextFactory
     private $iZettleProductRepository;
 
     /**
+     * @var EntityRepositoryInterface
+     */
+    private $iZettleMediaRepository;
+
+    /**
      * @var ProductContext[]
      */
     private $productContexts = [];
 
     public function __construct(
-        EntityRepositoryInterface $iZettleProductRepository
+        EntityRepositoryInterface $iZettleProductRepository,
+        EntityRepositoryInterface $iZettleMediaRepository
     ) {
         $this->iZettleProductRepository = $iZettleProductRepository;
+        $this->iZettleMediaRepository = $iZettleMediaRepository;
     }
 
     public function getContext(SalesChannelEntity $salesChannel, Context $context): ProductContext
@@ -39,10 +47,12 @@ class ProductContextFactory
         }
 
         $iZettleProductCollection = $this->getIZettleProductCollection($salesChannel->getId(), $context);
+        $iZettleMediaCollection = $this->getIZettleMediaCollection($salesChannel->getId(), $context);
 
         $inventoryContext = new ProductContext(
             $salesChannel,
             $iZettleProductCollection,
+            $iZettleMediaCollection,
             $context
         );
 
@@ -55,6 +65,7 @@ class ProductContextFactory
     {
         $updatedProducts = $productContext->getProductChanges();
         $removedProducts = $productContext->getProductRemovals();
+        $mediaRequests = $productContext->getMediaRequests();
 
         if ($updatedProducts) {
             $this->iZettleProductRepository->upsert($updatedProducts, $productContext->getContext());
@@ -62,6 +73,10 @@ class ProductContextFactory
 
         if ($removedProducts) {
             $this->iZettleProductRepository->delete($removedProducts, $productContext->getContext());
+        }
+
+        if ($mediaRequests) {
+            $this->iZettleMediaRepository->create($mediaRequests, $productContext->getContext());
         }
 
         $productContext->resetChanges();
@@ -80,5 +95,16 @@ class ProductContextFactory
         $iZettleProductCollection = $this->iZettleProductRepository->search($criteria, $context)->getEntities();
 
         return $iZettleProductCollection;
+    }
+
+    private function getIZettleMediaCollection(string $salesChannelId, Context $context): IZettleSalesChannelMediaCollection
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
+
+        /** @var IZettleSalesChannelMediaCollection $iZettleMediaCollection */
+        $iZettleMediaCollection = $this->iZettleMediaRepository->search($criteria, $context)->getEntities();
+
+        return $iZettleMediaCollection;
     }
 }

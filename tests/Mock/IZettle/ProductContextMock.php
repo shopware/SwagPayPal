@@ -11,6 +11,7 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Product;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductEntity;
 use Swag\PayPal\IZettle\Sync\Context\ProductContext;
@@ -35,6 +36,7 @@ class ProductContextMock extends ProductContext
         parent::__construct(
             $salesChannelEntity,
             $iZettleProductCollection,
+            new IZettleSalesChannelMediaCollection(),
             $context
         );
     }

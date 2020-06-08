@@ -22,6 +22,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\OptionGroupConverter;
+use Swag\PayPal\IZettle\Api\Service\Converter\PresentationConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\PriceConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter;
@@ -144,8 +145,9 @@ class ProductSyncerTest extends AbstractProductSyncTest
             new ProductConverter(
                 new UuidConverter(),
                 new CategoryConverter(new UuidConverter()),
-                new VariantConverter(new UuidConverter(), new PriceConverter()),
-                new OptionGroupConverter()
+                new VariantConverter(new UuidConverter(), new PriceConverter(), new PresentationConverter()),
+                new OptionGroupConverter(),
+                new PresentationConverter()
             ),
             $this->productContextFactory,
             $this->newUpdater,
