@@ -9,11 +9,7 @@ namespace Swag\PayPal\IZettle\Command;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Swag\PayPal\IZettle\Run\RunService;
-use Swag\PayPal\IZettle\Sync\ImageSyncer;
-use Swag\PayPal\IZettle\Sync\InventorySyncer;
-use Swag\PayPal\IZettle\Sync\ProductSyncer;
-use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\IZettle\Run\Task\CompleteTask;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -22,37 +18,16 @@ class IZettleSyncCommand extends AbstractIZettleCommand
     protected static $defaultName = 'swag:paypal:izettle:sync';
 
     /**
-     * @var ProductSyncer
+     * @var CompleteTask
      */
-    private $productSyncer;
-
-    /**
-     * @var ImageSyncer
-     */
-    private $imageSyncer;
-
-    /**
-     * @var InventorySyncer
-     */
-    private $inventorySyncer;
-
-    /**
-     * @var RunService
-     */
-    private $runService;
+    private $completeTask;
 
     public function __construct(
-        ProductSyncer $productSyncer,
-        ImageSyncer $imageSyncer,
-        InventorySyncer $inventorySyncer,
         EntityRepositoryInterface $salesChannelRepository,
-        RunService $runService
+        CompleteTask $completeTask
     ) {
         parent::__construct($salesChannelRepository);
-        $this->productSyncer = $productSyncer;
-        $this->imageSyncer = $imageSyncer;
-        $this->inventorySyncer = $inventorySyncer;
-        $this->runService = $runService;
+        $this->completeTask = $completeTask;
     }
 
     /**
@@ -79,12 +54,7 @@ class IZettleSyncCommand extends AbstractIZettleCommand
         }
 
         foreach ($salesChannels as $salesChannel) {
-            $run = $this->runService->startRun($salesChannel->getId(), $context);
-            $this->productSyncer->syncProducts($salesChannel, $context);
-            $this->imageSyncer->syncImages($salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION), $context);
-            $this->productSyncer->syncProducts($salesChannel, $context);
-            $this->inventorySyncer->syncInventory($salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION), $context);
-            $this->runService->finishRun($run, $context);
+            $this->completeTask->execute($salesChannel, $context);
         }
 
         return 0;

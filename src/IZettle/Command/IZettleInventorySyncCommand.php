@@ -10,8 +10,7 @@ namespace Swag\PayPal\IZettle\Command;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\IZettle\Run\RunService;
-use Swag\PayPal\IZettle\Sync\InventorySyncer;
-use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\IZettle\Run\Task\InventoryTask;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -20,9 +19,9 @@ class IZettleInventorySyncCommand extends AbstractIZettleCommand
     protected static $defaultName = 'swag:paypal:izettle:sync:inventory';
 
     /**
-     * @var InventorySyncer
+     * @var InventoryTask
      */
-    private $inventorySyncer;
+    private $inventoryTask;
 
     /**
      * @var RunService
@@ -30,13 +29,11 @@ class IZettleInventorySyncCommand extends AbstractIZettleCommand
     private $runService;
 
     public function __construct(
-        InventorySyncer $inventorySyncer,
         EntityRepositoryInterface $salesChannelRepository,
-        RunService $runService
+        InventoryTask $inventoryTask
     ) {
         parent::__construct($salesChannelRepository);
-        $this->inventorySyncer = $inventorySyncer;
-        $this->runService = $runService;
+        $this->inventoryTask = $inventoryTask;
     }
 
     /**
@@ -63,9 +60,7 @@ class IZettleInventorySyncCommand extends AbstractIZettleCommand
         }
 
         foreach ($salesChannels as $salesChannel) {
-            $run = $this->runService->startRun($salesChannel->getId(), $context);
-            $this->inventorySyncer->syncInventory($salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION), $context);
-            $this->runService->finishRun($run, $context);
+            $this->inventoryTask->execute($salesChannel, $context);
         }
 
         return 0;

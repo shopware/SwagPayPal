@@ -14,9 +14,8 @@
         </service>
 
         <service id="Swag\PayPal\IZettle\Command\IZettleInventorySyncCommand">
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
             <argument type="service" id="sales_channel.repository"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\Task\InventoryTask"/>
             <tag name="console.command"/>
         </service>
 

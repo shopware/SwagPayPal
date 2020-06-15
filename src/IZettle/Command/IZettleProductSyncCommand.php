@@ -9,8 +9,7 @@ namespace Swag\PayPal\IZettle\Command;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Swag\PayPal\IZettle\Run\RunService;
-use Swag\PayPal\IZettle\Sync\ProductSyncer;
+use Swag\PayPal\IZettle\Run\Task\ProductTask;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -19,23 +18,16 @@ class IZettleProductSyncCommand extends AbstractIZettleCommand
     protected static $defaultName = 'swag:paypal:izettle:sync:product';
 
     /**
-     * @var ProductSyncer
+     * @var ProductTask
      */
-    private $productSyncer;
-
-    /**
-     * @var RunService
-     */
-    private $runService;
+    private $productTask;
 
     public function __construct(
-        ProductSyncer $productSyncer,
         EntityRepositoryInterface $salesChannelRepository,
-        RunService $runService
+        ProductTask $productTask
     ) {
         parent::__construct($salesChannelRepository);
-        $this->productSyncer = $productSyncer;
-        $this->runService = $runService;
+        $this->productTask = $productTask;
     }
 
     /**
@@ -62,9 +54,7 @@ class IZettleProductSyncCommand extends AbstractIZettleCommand
         }
 
         foreach ($salesChannels as $salesChannel) {
-            $run = $this->runService->startRun($salesChannel->getId(), $context);
-            $this->productSyncer->syncProducts($salesChannel, $context);
-            $this->runService->finishRun($run, $context);
+            $this->productTask->execute($salesChannel, $context);
         }
 
         return 0;

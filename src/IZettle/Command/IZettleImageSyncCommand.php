@@ -9,9 +9,7 @@ namespace Swag\PayPal\IZettle\Command;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Swag\PayPal\IZettle\Run\RunService;
-use Swag\PayPal\IZettle\Sync\ImageSyncer;
-use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\IZettle\Run\Task\ImageTask;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -20,23 +18,16 @@ class IZettleImageSyncCommand extends AbstractIZettleCommand
     protected static $defaultName = 'swag:paypal:izettle:sync:images';
 
     /**
-     * @var ImageSyncer
+     * @var ImageTask
      */
-    private $imageSyncer;
-
-    /**
-     * @var RunService
-     */
-    private $runService;
+    private $imageTask;
 
     public function __construct(
-        ImageSyncer $imageSyncer,
         EntityRepositoryInterface $salesChannelRepository,
-        RunService $runService
+        ImageTask $imageTask
     ) {
         parent::__construct($salesChannelRepository);
-        $this->imageSyncer = $imageSyncer;
-        $this->runService = $runService;
+        $this->imageTask = $imageTask;
     }
 
     /**
@@ -63,9 +54,7 @@ class IZettleImageSyncCommand extends AbstractIZettleCommand
         }
 
         foreach ($salesChannels as $salesChannel) {
-            $run = $this->runService->startRun($salesChannel->getId(), $context);
-            $this->imageSyncer->syncImages($salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION), $context);
-            $this->runService->finishRun($run, $context);
+            $this->imageTask->execute($salesChannel, $context);
         }
 
         return 0;

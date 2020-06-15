@@ -8,6 +8,7 @@
 namespace Swag\PayPal\IZettle\DataAbstractionLayer\Entity;
 
 use Shopware\Core\Content\Media\MediaDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\CreatedAtField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
@@ -44,6 +45,7 @@ class IZettleSalesChannelMediaDefinition extends MappingEntityDefinition
 
             (new StringField('lookup_key', 'lookupKey')),
             (new StringField('url', 'url')),
+            new CreatedAtField(),
         ]);
     }
 }

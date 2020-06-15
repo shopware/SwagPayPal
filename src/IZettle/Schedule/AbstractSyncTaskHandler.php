@@ -5,50 +5,50 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\IZettle\Command;
+namespace Swag\PayPal\IZettle\Schedule;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\SwagPayPal;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 
-abstract class AbstractIZettleCommand extends Command
+abstract class AbstractSyncTaskHandler extends ScheduledTaskHandler
 {
     /**
      * @var EntityRepositoryInterface
      */
-    protected $salesChannelRepository;
+    private $salesChannelRepository;
 
-    public function __construct(EntityRepositoryInterface $salesChannelRepository)
-    {
-        parent::__construct();
+    public function __construct(
+        EntityRepositoryInterface $scheduledTaskRepository,
+        EntityRepositoryInterface $salesChannelRepository
+    ) {
+        parent::__construct($scheduledTaskRepository);
         $this->salesChannelRepository = $salesChannelRepository;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure(): void
+    public function run(): void
     {
-        $this->setDefinition([new InputArgument('salesChannelId')]);
+        $context = Context::createDefaultContext();
+        $salesChannels = $this->getSalesChannels($context);
+
+        foreach ($salesChannels as $salesChannel) {
+            $this->executeTask($salesChannel, $context);
+        }
     }
 
-    protected function getSalesChannels(InputInterface $input, Context $context): SalesChannelCollection
-    {
-        $salesChannelId = $input->getArgument('salesChannelId');
+    abstract protected function executeTask(SalesChannelEntity $salesChannel, Context $context): void;
 
+    private function getSalesChannels(Context $context): SalesChannelCollection
+    {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE));
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addAssociation('currency');
-        if ($salesChannelId !== null) {
-            $criteria->setIds([$salesChannelId]);
-        }
 
         /** @var SalesChannelCollection $salesChannels */
         $salesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();

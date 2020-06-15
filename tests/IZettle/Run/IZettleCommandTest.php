@@ -5,10 +5,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\IZettle;
+namespace Swag\PayPal\Test\IZettle\Run;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Swag\PayPal\IZettle\Command\AbstractIZettleCommand;
 use Swag\PayPal\IZettle\Command\IZettleImageSyncCommand;
 use Swag\PayPal\IZettle\Command\IZettleInventorySyncCommand;
@@ -17,6 +18,10 @@ use Swag\PayPal\IZettle\Command\IZettleProductSyncCommand;
 use Swag\PayPal\IZettle\Command\IZettleSyncCommand;
 use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
 use Swag\PayPal\IZettle\Run\RunService;
+use Swag\PayPal\IZettle\Run\Task\CompleteTask;
+use Swag\PayPal\IZettle\Run\Task\ImageTask;
+use Swag\PayPal\IZettle\Run\Task\InventoryTask;
+use Swag\PayPal\IZettle\Run\Task\ProductTask;
 use Swag\PayPal\IZettle\Sync\ImageSyncer;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
@@ -70,12 +75,18 @@ class IZettleCommandTest extends TestCase
         $this->inventorySyncer = $this->createPartialMock(InventorySyncer::class, ['syncInventory']);
         $this->imageSyncer = $this->createPartialMock(ImageSyncer::class, ['syncImages']);
         $this->runService = $this->createMock(RunService::class);
+
         $this->logCleaner = $this->createMock(LogCleaner::class);
+        $productTask = new ProductTask($this->runService, new NullLogger(), $this->productSyncer);
+        $imageTask = new ImageTask($this->runService, new NullLogger(), $this->imageSyncer);
+        $inventoryTask = new InventoryTask($this->runService, new NullLogger(), $this->inventorySyncer);
+        $completeTask = new CompleteTask($this->runService, new NullLogger(), $this->productSyncer, $this->imageSyncer, $this->inventorySyncer);
+
         $this->commands = [
-            IZettleSyncCommand::class => new IZettleSyncCommand($this->productSyncer, $this->imageSyncer, $this->inventorySyncer, $this->salesChannelRepoMock, $this->runService),
-            IZettleImageSyncCommand::class => new IZettleImageSyncCommand($this->imageSyncer, $this->salesChannelRepoMock, $this->runService),
-            IZettleInventorySyncCommand::class => new IZettleInventorySyncCommand($this->inventorySyncer, $this->salesChannelRepoMock, $this->runService),
-            IZettleProductSyncCommand::class => new IZettleProductSyncCommand($this->productSyncer, $this->salesChannelRepoMock, $this->runService),
+            IZettleSyncCommand::class => new IZettleSyncCommand($this->salesChannelRepoMock, $completeTask),
+            IZettleImageSyncCommand::class => new IZettleImageSyncCommand($this->salesChannelRepoMock, $imageTask),
+            IZettleInventorySyncCommand::class => new IZettleInventorySyncCommand($this->salesChannelRepoMock, $inventoryTask),
+            IZettleProductSyncCommand::class => new IZettleProductSyncCommand($this->salesChannelRepoMock, $productTask),
             IZettleLogCleanupCommand::class => new IZettleLogCleanupCommand($this->salesChannelRepoMock, $this->logCleaner),
         ];
     }

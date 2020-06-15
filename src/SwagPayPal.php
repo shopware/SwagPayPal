@@ -77,6 +77,7 @@ class SwagPayPal extends Plugin
         $loader->load('izettle_inventory.xml');
         $loader->load('izettle_log.xml');
         $loader->load('izettle_media.xml');
+        $loader->load('izettle_schedule.xml');
     }
 
     public function install(InstallContext $installContext): void

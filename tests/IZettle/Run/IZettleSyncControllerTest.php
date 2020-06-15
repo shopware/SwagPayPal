@@ -5,16 +5,21 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\IZettle;
+namespace Swag\PayPal\Test\IZettle\Run;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\IZettleSyncController;
 use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
 use Swag\PayPal\IZettle\Run\RunService;
+use Swag\PayPal\IZettle\Run\Task\CompleteTask;
+use Swag\PayPal\IZettle\Run\Task\ImageTask;
+use Swag\PayPal\IZettle\Run\Task\InventoryTask;
+use Swag\PayPal\IZettle\Run\Task\ProductTask;
 use Swag\PayPal\IZettle\Sync\ImageSyncer;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
@@ -61,6 +66,11 @@ class IZettleSyncControllerTest extends TestCase
      */
     private $productSelection;
 
+    /**
+     * @var MockObject|RunService
+     */
+    private $runService;
+
     protected function setUp(): void
     {
         $this->salesChannelRepoMock = new SalesChannelRepoMock();
@@ -69,12 +79,19 @@ class IZettleSyncControllerTest extends TestCase
         $this->inventorySyncer = $this->createMock(InventorySyncer::class);
         $this->logCleaner = $this->createMock(LogCleaner::class);
         $this->productSelection = $this->createMock(ProductSelection::class);
+        $this->runService = $this->createMock(RunService::class);
+
+        $productTask = new ProductTask($this->runService, new NullLogger(), $this->productSyncer);
+        $imageTask = new ImageTask($this->runService, new NullLogger(), $this->imageSyncer);
+        $inventoryTask = new InventoryTask($this->runService, new NullLogger(), $this->inventorySyncer);
+        $completeTask = new CompleteTask($this->runService, new NullLogger(), $this->productSyncer, $this->imageSyncer, $this->inventorySyncer);
+
         $this->iZettleSyncController = new IZettleSyncController(
-            $this->productSyncer,
-            $this->imageSyncer,
-            $this->inventorySyncer,
             $this->salesChannelRepoMock,
-            $this->createMock(RunService::class),
+            $completeTask,
+            $productTask,
+            $imageTask,
+            $inventoryTask,
             $this->logCleaner,
             $this->productSelection
         );

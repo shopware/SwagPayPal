@@ -26,9 +26,8 @@
         </service>
 
         <service id="Swag\PayPal\IZettle\Command\IZettleImageSyncCommand">
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\ImageSyncer"/>
             <argument type="service" id="sales_channel.repository"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\Task\ImageTask"/>
             <tag name="console.command"/>
         </service>
     </services>
