@@ -43,7 +43,15 @@ class SPBMarksData extends Struct
         return $this->paymentMethodId;
     }
 
+    /**
+     * @deprecated tag:v2.0.0 - Use getUseAlternativePaymentMethods instead
+     */
     public function isUseAlternativePaymentMethods(): bool
+    {
+        return $this->useAlternativePaymentMethods;
+    }
+
+    public function getUseAlternativePaymentMethods(): bool
     {
         return $this->useAlternativePaymentMethods;
     }

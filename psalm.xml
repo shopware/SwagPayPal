@@ -55,20 +55,20 @@
 
         <DeprecatedMethod>
             <errorLevel type="info">
-                <directory name="tests"/>
+                <referencedMethod name="Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour::silentAssertArraySubset"/>
+                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
+                <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBMarksData::isUseAlternativePaymentMethods"/>
             </errorLevel>
         </DeprecatedMethod>
 
-        <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
+        <UnresolvableInclude>
+            <errorLevel type="info">
+                <file name="tests/TestBootstrap.php"/>
+            </errorLevel>
+        </UnresolvableInclude>
 
+        <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>
         <MissingConstructor errorLevel="info"/>
-
-        <UnresolvableInclude errorLevel="info"/>
-
-        <!-- level 4 issues - points to possible deficiencies in logic, higher false-positives -->
-        <TypeCoercion errorLevel="info"/>
-        <PossiblyNullArgument errorLevel="info"/>
-
     </issueHandlers>
 </psalm>

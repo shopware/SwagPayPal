@@ -15,7 +15,6 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder;
@@ -34,7 +33,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPuiPaymentHandlerTest extends TestCase
 {
-    use KernelTestBehaviour;
     use ServicesTrait;
     use PaymentTransactionTrait;
     use OrderFixture;

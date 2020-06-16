@@ -50,8 +50,9 @@ class PayerInfoPatchBuilder
 
         $billingAddress->setLine1($customerBillingAddress->getStreet());
 
-        if ($customerBillingAddress->getAdditionalAddressLine1() !== null) {
-            $billingAddress->setLine2($customerBillingAddress->getAdditionalAddressLine1());
+        $additionalAddressLine1 = $customerBillingAddress->getAdditionalAddressLine1();
+        if ($additionalAddressLine1 !== null) {
+            $billingAddress->setLine2($additionalAddressLine1);
         }
 
         $billingAddress->setCity($customerBillingAddress->getCity());
@@ -71,8 +72,9 @@ class PayerInfoPatchBuilder
             $billingAddress->setState($state->getShortCode());
         }
 
-        if ($customerBillingAddress->getPhoneNumber() !== null) {
-            $billingAddress->setPhone($customerBillingAddress->getPhoneNumber());
+        $phoneNumber = $customerBillingAddress->getPhoneNumber();
+        if ($phoneNumber !== null) {
+            $billingAddress->setPhone($phoneNumber);
         }
 
         return $billingAddress;

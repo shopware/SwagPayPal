@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\SPBCheckout\Service;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
+use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -43,11 +44,12 @@ class SPBCheckoutDataService
 
     public function getCheckoutData(
         SalesChannelContext $context,
-        SwagPayPalSettingStruct $settings
+        SwagPayPalSettingStruct $settings,
+        ?string $orderId = null
     ): SPBCheckoutButtonData {
         $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context->getContext());
 
-        return (new SPBCheckoutButtonData())->assign([
+        $spbCheckoutButtonData = (new SPBCheckoutButtonData())->assign([
             'clientId' => $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
             'languageIso' => $this->getButtonLanguage($settings, $context),
             'currency' => $context->getCurrency()->getIsoCode(),
@@ -58,7 +60,21 @@ class SPBCheckoutDataService
             'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
             'buttonShape' => $settings->getSpbButtonShape(),
             'buttonColor' => $settings->getSpbButtonColor(),
+            'errorParameter' => SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER,
         ]);
+
+        if ($orderId !== null) {
+            $spbCheckoutButtonData->setOrderId($orderId);
+            $spbCheckoutButtonData->setAccountOrderEditUrl(
+                $this->router->generate(
+                    'frontend.account.edit-order.page',
+                    ['orderId' => $orderId],
+                    RouterInterface::ABSOLUTE_URL
+                )
+            );
+        }
+
+        return $spbCheckoutButtonData;
     }
 
     private function getButtonLanguage(SwagPayPalSettingStruct $settings, SalesChannelContext $context): string

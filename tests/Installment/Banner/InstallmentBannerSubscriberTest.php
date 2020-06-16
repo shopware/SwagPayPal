@@ -19,7 +19,6 @@ use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
@@ -38,6 +37,7 @@ use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,6 +45,7 @@ use Symfony\Component\HttpFoundation\Request;
 class InstallmentBannerSubscriberTest extends TestCase
 {
     use IntegrationTestBehaviour;
+    use PaymentMethodTrait;
 
     private const CART_TOTAL_PRICE = 123.45;
     private const PRODUCT_PRICE = 678.9;
@@ -332,7 +333,7 @@ class InstallmentBannerSubscriberTest extends TestCase
             $payPalPaymentMethod = new PaymentMethodEntity();
             $payPalPaymentMethod->setId($this->payPalPaymentMethodId);
             $paymentMethodsArray[] = $payPalPaymentMethod;
-            $this->addPayPalToDefaultsSalesChannel();
+            $this->addPayPalToDefaultsSalesChannel($this->payPalPaymentMethodId, $this->context);
         }
 
         $salesChannelContext->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection($paymentMethodsArray));
@@ -343,22 +344,5 @@ class InstallmentBannerSubscriberTest extends TestCase
     private function createRequest(): Request
     {
         return new Request();
-    }
-
-    private function addPayPalToDefaultsSalesChannel(): void
-    {
-        /** @var EntityRepositoryInterface $salesChannelRepo */
-        $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
-
-        $salesChannelRepo->update([
-            [
-                'id' => Defaults::SALES_CHANNEL,
-                'paymentMethods' => [
-                    $this->payPalPaymentMethodId => [
-                        'id' => $this->payPalPaymentMethodId,
-                    ],
-                ],
-            ],
-        ], $this->context);
     }
 }

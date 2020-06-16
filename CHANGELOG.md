@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11669 - Add compatibility with the after order payment process
+
 # 1.6.0
 - PT-11519 - Registers webhooks with HTTPS
 - PT-11593 - Adds hint for "Payment acquisition" option to clarify usage with PayPal PLUS

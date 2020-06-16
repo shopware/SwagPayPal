@@ -8,14 +8,18 @@
 namespace Swag\PayPal\Test\Checkout\SPBCheckout;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPage;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
@@ -35,7 +39,8 @@ class SPBMarksSubscriberTest extends TestCase
     {
         $events = SPBMarksSubscriber::getSubscribedEvents();
 
-        static::assertCount(3, $events);
+        static::assertCount(4, $events);
+        static::assertSame('addMarksExtension', $events[AccountEditOrderPageLoadedEvent::class]);
         static::assertSame('addMarksExtension', $events[AccountPaymentMethodPageLoadedEvent::class]);
         static::assertSame('addMarksExtension', $events[FooterPageletLoadedEvent::class]);
         static::assertSame('addMarksExtension', $events[CheckoutConfirmPageLoadedEvent::class]);
@@ -91,6 +96,9 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertNotNull($spbMarksExtension);
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
+        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        /* @deprecated tag:v2.0.0 - Remove with 2.0.0 */
+        static::assertTrue($spbMarksExtension->isUseAlternativePaymentMethods());
     }
 
     public function testOnFooterPageletLoadedSPBNotEnabled(): void
@@ -118,6 +126,25 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertNotNull($spbMarksExtension);
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
+    }
+
+    public function testOnCheckoutConfirmPageLoadedSPBEnabled(): void
+    {
+        $subscriber = $this->createSubscriber();
+        $event = $this->createCheckoutConfirmEvent();
+        $subscriber->addMarksExtension($event);
+
+        /** @var SPBMarksData|null $spbMarksExtension */
+        $spbMarksExtension = $event->getPage()->getExtension(
+            SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID
+        );
+
+        static::assertNotNull($spbMarksExtension);
+        static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
+        static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
+        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        /* @deprecated tag:2.0.0 - Remove with 2.0.0 */
+        static::assertTrue($spbMarksExtension->isUseAlternativePaymentMethods());
     }
 
     private function createSubscriber(
@@ -157,6 +184,20 @@ class SPBMarksSubscriberTest extends TestCase
         $salesChannelContext = $this->createSalesChannelContext();
 
         return new FooterPageletLoadedEvent(new FooterPagelet(null), $salesChannelContext, new Request());
+    }
+
+    private function createCheckoutConfirmEvent(): CheckoutConfirmPageLoadedEvent
+    {
+        $salesChannelContext = $this->createSalesChannelContext();
+        $paymentMethodCollection = $salesChannelContext->getSalesChannel()->getPaymentMethods();
+        static::assertNotNull($paymentMethodCollection);
+        $confirmPage = new CheckoutConfirmPage(
+            $paymentMethodCollection,
+            new ShippingMethodCollection()
+        );
+        $confirmPage->setCart(new Cart('test-cart', 'test-token'));
+
+        return new CheckoutConfirmPageLoadedEvent($confirmPage, $salesChannelContext, new Request());
     }
 
     private function createSalesChannelContext(): SalesChannelContext

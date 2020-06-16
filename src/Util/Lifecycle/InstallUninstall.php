@@ -146,6 +146,7 @@ class InstallUninstall
             'handlerIdentifier' => PayPalPaymentHandler::class,
             'name' => 'PayPal',
             'position' => -100,
+            'afterOrderEnabled' => true,
             'pluginId' => $pluginId,
             'description' => 'Payment via PayPal - easy, fast and secure.',
             'translations' => [

@@ -51,6 +51,21 @@ class SPBCheckoutButtonData extends Struct
      */
     protected $checkoutConfirmUrl;
 
+    /**
+     * @var string
+     */
+    protected $errorParameter;
+
+    /**
+     * @var string|null
+     */
+    protected $orderId;
+
+    /**
+     * @var string|null
+     */
+    protected $accountOrderEditUrl;
+
     public function getClientId(): string
     {
         return $this->clientId;
@@ -89,5 +104,30 @@ class SPBCheckoutButtonData extends Struct
     public function getCheckoutConfirmUrl(): string
     {
         return $this->checkoutConfirmUrl;
+    }
+
+    public function getErrorParameter(): string
+    {
+        return $this->errorParameter;
+    }
+
+    public function getOrderId(): ?string
+    {
+        return $this->orderId;
+    }
+
+    public function setOrderId(?string $orderId): void
+    {
+        $this->orderId = $orderId;
+    }
+
+    public function getAccountOrderEditUrl(): ?string
+    {
+        return $this->accountOrderEditUrl;
+    }
+
+    public function setAccountOrderEditUrl(?string $accountOrderEditUrl): void
+    {
+        $this->accountOrderEditUrl = $accountOrderEditUrl;
     }
 }
