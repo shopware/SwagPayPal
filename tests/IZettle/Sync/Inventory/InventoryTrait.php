@@ -7,13 +7,20 @@
 
 namespace Swag\PayPal\Test\IZettle\Sync\Inventory;
 
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 
 trait InventoryTrait
 {
+    use KernelTestBehaviour;
+
     /**
      * @var string[]
      */
@@ -24,9 +31,9 @@ trait InventoryTrait
         'SOLD' => 'soldUuid',
     ];
 
-    protected function getVariantProduct(): ProductEntity
+    protected function getVariantProduct(): SalesChannelProductEntity
     {
-        $product = new ProductEntity();
+        $product = new SalesChannelProductEntity();
         $product->setId('4191c1b4c6af4f5782a7604aa9ae3222');
         $product->setVersionId('7c1da595-2b4c-4c25-afa7-8dcf5d3adca0');
         $product->setParentId('3f5fa7e700714b2082e6c63ab14206da');
@@ -36,9 +43,9 @@ trait InventoryTrait
         return $product;
     }
 
-    protected function getSingleProduct(): ProductEntity
+    protected function getSingleProduct(): SalesChannelProductEntity
     {
-        $product = new ProductEntity();
+        $product = new SalesChannelProductEntity();
         $product->setId('1846c887e4174fde9009d9d7d6eae238');
         $product->setVersionId('7c1da595-2b4c-4c25-afa7-8dcf5d3adca0');
         $product->setStock(3);
@@ -47,8 +54,18 @@ trait InventoryTrait
         return $product;
     }
 
-    protected function getIZettleSalesChannel(): IZettleSalesChannelEntity
+    protected function createSalesChannel(Context $context): SalesChannelEntity
     {
+        $criteria = new Criteria();
+        $criteria->setIds([Defaults::SALES_CHANNEL]);
+        $criteria->addAssociation('currency');
+
+        /** @var EntityRepositoryInterface $salesChannelRepository */
+        $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
+
+        /** @var SalesChannelEntity $salesChannel */
+        $salesChannel = $salesChannelRepository->search($criteria, $context)->first();
+
         $iZettleSalesChannel = new IZettleSalesChannelEntity();
         $iZettleSalesChannel->setSyncPrices(true);
         $iZettleSalesChannel->setSalesChannelDomainId('someSalesChannelDomainId');
@@ -56,6 +73,8 @@ trait InventoryTrait
         $iZettleSalesChannel->setId(Uuid::randomHex());
         $iZettleSalesChannel->setSalesChannelId(Defaults::SALES_CHANNEL);
 
-        return $iZettleSalesChannel;
+        $salesChannel->addExtension('paypalIZettleSalesChannel', $iZettleSalesChannel);
+
+        return $salesChannel;
     }
 }

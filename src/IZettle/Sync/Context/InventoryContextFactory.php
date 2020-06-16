@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityRepositoryNotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Inventory\Status;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
@@ -50,11 +51,14 @@ class InventoryContextFactory
         $this->inventoryRepository = $inventoryRepository;
     }
 
-    public function getContext(IZettleSalesChannelEntity $iZettleSalesChannel, Context $context): InventoryContext
+    public function getContext(SalesChannelEntity $salesChannel, Context $context): InventoryContext
     {
-        if (isset($this->inventoryContexts[$iZettleSalesChannel->getId()])) {
-            return $this->inventoryContexts[$iZettleSalesChannel->getId()];
+        if (isset($this->inventoryContexts[$salesChannel->getId()])) {
+            return $this->inventoryContexts[$salesChannel->getId()];
         }
+
+        /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
+        $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
 
         $locations = $this->loadLocations($iZettleSalesChannel);
         $iZettleInventory = $this->loadIZettleInventory($iZettleSalesChannel, $locations['STORE']);
@@ -63,7 +67,7 @@ class InventoryContextFactory
         $inventoryContext = new InventoryContext(
             $this->inventoryResource,
             $this->uuidConverter,
-            $iZettleSalesChannel,
+            $salesChannel,
             $locations['STORE'],
             $locations['SUPPLIER'],
             $locations['BIN'],
@@ -73,7 +77,7 @@ class InventoryContextFactory
             $context
         );
 
-        $this->inventoryContexts[$iZettleSalesChannel->getId()] = $inventoryContext;
+        $this->inventoryContexts[$salesChannel->getId()] = $inventoryContext;
 
         return $inventoryContext;
     }
@@ -81,7 +85,7 @@ class InventoryContextFactory
     public function updateContext(InventoryContext $inventoryContext): void
     {
         $inventoryContext->updateLocalInventory($this->loadLocalInventory(
-            $inventoryContext->getIZettleSalesChannel()->getSalesChannelId(),
+            $inventoryContext->getSalesChannel()->getId(),
             $inventoryContext->getContext()
         ));
     }

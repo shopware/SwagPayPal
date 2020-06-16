@@ -7,20 +7,24 @@
 
 namespace Swag\PayPal\IZettle\Api\Service\Converter;
 
-use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price as ShopwarePrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Swag\PayPal\IZettle\Api\Product\Price as ConvertedPrice;
+use Swag\PayPal\IZettle\Api\Product\Price;
 
 class PriceConverter
 {
-    public function convert(ShopwarePrice $price, CurrencyEntity $currency): ConvertedPrice
+    public function convert(CalculatedPrice $price, CurrencyEntity $currency): Price
     {
-        $newPrice = new ConvertedPrice();
+        return $this->convertFloat($price->getTotalPrice(), $currency);
+    }
 
-        $floatPrice = $price->getNet();
+    public function convertFloat(float $price, CurrencyEntity $currency): Price
+    {
+        $newPrice = new Price();
+
         $precision = 10 ** ($currency->getDecimalPrecision());
 
-        $newPrice->setAmount((int) ($floatPrice * $precision));
+        $newPrice->setAmount((int) ($price * $precision));
         $newPrice->setCurrencyId($currency->getIsoCode());
 
         return $newPrice;

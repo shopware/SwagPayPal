@@ -115,6 +115,7 @@ class ProductSyncerTest extends AbstractProductSyncTest
         $domain = new SalesChannelDomainEntity();
         $domain->setId(Uuid::randomHex());
         $domain->setSalesChannelId($this->salesChannel->getId());
+        $domain->setLanguageId(Uuid::randomHex());
         $domainRepository = $this->createStub(EntityRepositoryInterface::class);
         $domainRepository->method('search')->willReturn(
             new EntitySearchResult(

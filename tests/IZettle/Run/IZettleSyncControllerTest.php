@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Context;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\IZettleSyncController;
 use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
 use Swag\PayPal\IZettle\Run\RunService;
@@ -162,7 +162,7 @@ class IZettleSyncControllerTest extends TestCase
     {
         $context = Context::createDefaultContext();
         $this->productSelection->expects(static::once())->method('getProductLogCollection')->with(
-            static::isInstanceOf(IZettleSalesChannelEntity::class),
+            static::isInstanceOf(SalesChannelEntity::class),
             0,
             10
         );
@@ -174,7 +174,7 @@ class IZettleSyncControllerTest extends TestCase
     {
         $context = Context::createDefaultContext();
         $this->productSelection->expects(static::once())->method('getProductLogCollection')->with(
-            static::isInstanceOf(IZettleSalesChannelEntity::class),
+            static::isInstanceOf(SalesChannelEntity::class),
             40,
             20
         );

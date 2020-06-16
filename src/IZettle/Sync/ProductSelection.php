@@ -16,10 +16,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
+use Swag\PayPal\IZettle\Exception\NoDomainAssignedException;
 use Swag\PayPal\SwagPayPal;
 
 class ProductSelection
@@ -57,11 +61,14 @@ class ProductSelection
     }
 
     public function getProductCollection(
-        IZettleSalesChannelEntity $iZettleSalesChannel,
+        SalesChannelEntity $salesChannel,
         Context $context,
         bool $addAssociations
     ): ProductCollection {
-        $salesChannelContext = $this->getSalesChannelContext($iZettleSalesChannel, $context);
+        $salesChannelContext = $this->getSalesChannelContext($salesChannel, $context);
+
+        /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
+        $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
 
         $productStreamId = $iZettleSalesChannel->getProductStreamId();
         $criteria = $this->getProductStreamCriteria($productStreamId, $context);
@@ -77,12 +84,15 @@ class ProductSelection
     }
 
     public function getProductLogCollection(
-        IZettleSalesChannelEntity $iZettleSalesChannel,
+        SalesChannelEntity $salesChannel,
         int $offset,
         int $limit,
         Context $context
     ): EntitySearchResult {
-        $salesChannelContext = $this->getSalesChannelContext($iZettleSalesChannel, $context);
+        $salesChannelContext = $this->getSalesChannelContext($salesChannel, $context);
+
+        /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
+        $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
 
         $productStreamId = $iZettleSalesChannel->getProductStreamId();
         $criteria = $this->getProductStreamCriteria($productStreamId, $context);
@@ -127,16 +137,28 @@ class ProductSelection
         return $criteria;
     }
 
-    private function getSalesChannelContext(IZettleSalesChannelEntity $iZettleSalesChannel, Context $context): SalesChannelContext
+    private function getSalesChannelContext(SalesChannelEntity $salesChannel, Context $context): SalesChannelContext
     {
+        /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
+        $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
+
         $criteria = new Criteria();
         $criteria->setIds([$iZettleSalesChannel->getSalesChannelDomainId()]);
 
+        /** @var SalesChannelDomainEntity|null $domain */
         $domain = $this->domainRepository->search($criteria, $context)->first();
+
+        if ($domain === null) {
+            throw new NoDomainAssignedException($salesChannel->getId());
+        }
 
         return $this->salesChannelContextFactory->create(
             Uuid::randomHex(),
-            $domain->getSalesChannelId()
+            $domain->getSalesChannelId(),
+            [
+                SalesChannelContextService::LANGUAGE_ID => $domain->getLanguageId(),
+                SalesChannelContextService::CURRENCY_ID => $salesChannel->getCurrencyId(),
+            ]
         );
     }
 

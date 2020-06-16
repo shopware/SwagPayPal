@@ -142,6 +142,7 @@ class ImageSyncerTest extends TestCase
         $domain = new SalesChannelDomainEntity();
         $domain->setId(self::SALES_CHANNEL_DOMAIN_ID);
         $domain->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $domain->setLanguageId(Uuid::randomHex());
         $domain->setUrl(self::DOMAIN_URL);
         $domainRepository->method('search')->willReturn(
             new EntitySearchResult(

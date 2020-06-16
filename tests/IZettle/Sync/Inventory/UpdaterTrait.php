@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Test\IZettle\Sync\Inventory;
 
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -33,9 +33,9 @@ trait UpdaterTrait
         ];
     }
 
-    private function getParentProduct(): ProductEntity
+    private function getParentProduct(): SalesChannelProductEntity
     {
-        $product = new ProductEntity();
+        $product = new SalesChannelProductEntity();
         $product->setId('4191c1b4c6af4f5782a7604aa9ae3222');
         $product->setVersionId('7c1da595-2b4c-4c25-afa7-8dcf5d3adca0');
         $product->setChildCount(2);
@@ -45,7 +45,7 @@ trait UpdaterTrait
         return $product;
     }
 
-    private function createInventoryContext(ProductEntity $product, int $localStock, int $iZettleStock): InventoryContext
+    private function createInventoryContext(SalesChannelProductEntity $product, int $localStock, int $iZettleStock): InventoryContext
     {
         $localInventory = new IZettleSalesChannelInventoryEntity();
         $localInventory->setSalesChannelId(Defaults::SALES_CHANNEL);
@@ -69,17 +69,19 @@ trait UpdaterTrait
         ]);
         $status->addVariant($variant);
 
+        $context = Context::createDefaultContext();
+
         return new InventoryContext(
             $this->createMock(InventoryResource::class),
             new UuidConverter(),
-            $this->getIZettleSalesChannel(),
+            $this->createSalesChannel($context),
             $this->locations['STORE'],
             $this->locations['SUPPLIER'],
             $this->locations['BIN'],
             $this->locations['SOLD'],
             $status,
             new IZettleSalesChannelInventoryCollection([$localInventory]),
-            Context::createDefaultContext()
+            $context
         );
     }
 }

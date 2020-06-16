@@ -9,6 +9,7 @@ namespace Swag\PayPal\IZettle\Sync\Context;
 
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Inventory\Status;
 use Swag\PayPal\IZettle\Api\Inventory\Status\Variant;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
@@ -35,9 +36,9 @@ class InventoryContext
     private $uuidConverter;
 
     /**
-     * @var IZettleSalesChannelEntity
+     * @var SalesChannelEntity
      */
-    private $iZettleSalesChannel;
+    private $salesChannel;
 
     /**
      * @var Context
@@ -77,7 +78,7 @@ class InventoryContext
     public function __construct(
         InventoryResource $inventoryResource,
         UuidConverter $uuidConverter,
-        IZettleSalesChannelEntity $iZettleSalesChannel,
+        SalesChannelEntity $salesChannel,
         string $storeUuid,
         string $supplierUuid,
         string $binUuid,
@@ -88,7 +89,7 @@ class InventoryContext
     ) {
         $this->inventoryResource = $inventoryResource;
         $this->uuidConverter = $uuidConverter;
-        $this->iZettleSalesChannel = $iZettleSalesChannel;
+        $this->salesChannel = $salesChannel;
         $this->storeUuid = $storeUuid;
         $this->supplierUuid = $supplierUuid;
         $this->binUuid = $binUuid;
@@ -135,7 +136,7 @@ class InventoryContext
             return;
         }
 
-        $newStatus = $this->inventoryResource->startTracking($this->iZettleSalesChannel, $productUuid);
+        $newStatus = $this->inventoryResource->startTracking($this->getIZettleSalesChannel(), $productUuid);
         $this->productsUuidsWithStartedTracking[] = $productUuid;
         if ($newStatus === null) {
             return;
@@ -199,9 +200,17 @@ class InventoryContext
         $this->iZettleInventory->addVariant($newVariant);
     }
 
+    public function getSalesChannel(): SalesChannelEntity
+    {
+        return $this->salesChannel;
+    }
+
     public function getIZettleSalesChannel(): IZettleSalesChannelEntity
     {
-        return $this->iZettleSalesChannel;
+        /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
+        $iZettleSalesChannel = $this->salesChannel->getExtension('paypalIZettleSalesChannel');
+
+        return $iZettleSalesChannel;
     }
 
     public function updateLocalInventory(IZettleSalesChannelInventoryCollection $localInventory): void

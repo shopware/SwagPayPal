@@ -9,7 +9,7 @@ namespace Swag\PayPal\Test\IZettle\Run;
 
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -63,7 +63,7 @@ class RunServiceTest extends TestCase
         $runRepository->expects(static::once())->method('create');
         $run = $runService->startRun(Defaults::SALES_CHANNEL, $context);
 
-        $product = new ProductEntity();
+        $product = new SalesChannelProductEntity();
         $product->setId(Uuid::randomHex());
         $product->setVersionId(Uuid::randomHex());
         $product->setParentId(Uuid::randomHex());

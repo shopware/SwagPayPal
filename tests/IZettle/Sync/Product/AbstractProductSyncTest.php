@@ -8,14 +8,15 @@
 namespace Swag\PayPal\Test\IZettle\Sync\Product;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
-use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -57,10 +58,10 @@ abstract class AbstractProductSyncTest extends TestCase
         return $salesChannel;
     }
 
-    protected function getProduct(): ProductEntity
+    protected function getProduct(): SalesChannelProductEntity
     {
         $tax = $this->getTax();
-        $productEntity = new ProductEntity();
+        $productEntity = new SalesChannelProductEntity();
         $productEntity->setId(Uuid::randomHex());
         $productEntity->setName(self::PRODUCT_NAME);
         $productEntity->setDescription(self::PRODUCT_DESCRIPTION);
@@ -70,8 +71,8 @@ abstract class AbstractProductSyncTest extends TestCase
         $productEntity->addTranslated('description', self::PRODUCT_DESCRIPTION . self::TRANSLATION_MARK);
         $productEntity->setCategories(new CategoryCollection([$this->getCategory()]));
         $productEntity->setTax($tax);
-        $price = new Price(Defaults::CURRENCY, self::PRODUCT_PRICE, self::PRODUCT_PRICE * 1.19, false);
-        $productEntity->setPrice(new PriceCollection([$price]));
+        $shopwarePrice = new CalculatedPrice(self::PRODUCT_PRICE, self::PRODUCT_PRICE, new CalculatedTaxCollection(), new TaxRuleCollection());
+        $productEntity->setCalculatedPrice($shopwarePrice);
 
         return $productEntity;
     }

@@ -43,6 +43,11 @@ class Variant extends IZettleStruct
     protected $price;
 
     /**
+     * @var Price
+     */
+    protected $costPrice;
+
+    /**
      * @var Option[]|null
      */
     protected $options;
@@ -80,6 +85,11 @@ class Variant extends IZettleStruct
     public function setPrice(Price $price): void
     {
         $this->price = $price;
+    }
+
+    public function setCostPrice(Price $costPrice): void
+    {
+        $this->costPrice = $costPrice;
     }
 
     public function getOptions(): ?array

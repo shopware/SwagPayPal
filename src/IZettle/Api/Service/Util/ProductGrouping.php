@@ -7,18 +7,18 @@
 
 namespace Swag\PayPal\IZettle\Api\Service\Util;
 
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Swag\PayPal\IZettle\Api\Product;
 
 class ProductGrouping
 {
     /**
-     * @var ProductEntity
+     * @var SalesChannelProductEntity
      */
     private $identifyingEntity;
 
     /**
-     * @var ProductEntity[]
+     * @var SalesChannelProductEntity[]
      */
     private $variantEntities = [];
 
@@ -27,7 +27,7 @@ class ProductGrouping
      */
     private $product;
 
-    public function __construct(ProductEntity $product)
+    public function __construct(SalesChannelProductEntity $product)
     {
         $this->identifyingEntity = $product;
         if ($product->getParentId() !== null) {
@@ -35,7 +35,7 @@ class ProductGrouping
         }
     }
 
-    public function addProduct(ProductEntity $product): void
+    public function addProduct(SalesChannelProductEntity $product): void
     {
         if ($product->getParentId() === null) {
             $this->identifyingEntity = $product;
@@ -61,7 +61,7 @@ class ProductGrouping
         $this->product = $product;
     }
 
-    public function getIdentifyingEntity(): ProductEntity
+    public function getIdentifyingEntity(): SalesChannelProductEntity
     {
         return $this->identifyingEntity;
     }

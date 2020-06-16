@@ -18,12 +18,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Resource\InventoryResource;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater;
@@ -35,7 +34,6 @@ use Swag\PayPal\Test\Mock\IZettle\SalesChannelProductRepoMock;
 
 class InventorySyncerTest extends TestCase
 {
-    use KernelTestBehaviour;
     use InventoryTrait;
 
     /**
@@ -49,7 +47,7 @@ class InventorySyncerTest extends TestCase
     private $salesChannelProductRepository;
 
     /**
-     * @var IZettleSalesChannelEntity
+     * @var SalesChannelEntity
      */
     private $salesChannel;
 
@@ -77,7 +75,7 @@ class InventorySyncerTest extends TestCase
     {
         $context = Context::createDefaultContext();
 
-        $this->salesChannel = $this->getIZettleSalesChannel();
+        $this->salesChannel = $this->createSalesChannel($context);
 
         $productStreamBuilder = $this->createStub(ProductStreamBuilderInterface::class);
         $productStreamBuilder->method('buildFilters')->willReturn(
@@ -89,6 +87,7 @@ class InventorySyncerTest extends TestCase
         $domain = new SalesChannelDomainEntity();
         $domain->setId(Uuid::randomHex());
         $domain->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $domain->setLanguageId(Uuid::randomHex());
         $domainRepository = $this->createStub(EntityRepositoryInterface::class);
         $domainRepository->method('search')->willReturn(
             new EntitySearchResult(

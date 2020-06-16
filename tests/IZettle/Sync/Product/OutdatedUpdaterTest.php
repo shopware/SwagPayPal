@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\IZettle\Sync\Product;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
@@ -51,7 +51,7 @@ class OutdatedUpdaterTest extends AbstractProductSyncTest
 
         $this->productContext = new ProductContextMock($salesChannel, $context);
 
-        $productEntity = new ProductEntity();
+        $productEntity = new SalesChannelProductEntity();
         $productEntity->setId(Uuid::randomHex());
         $productEntity->setVersionId(Uuid::randomHex());
 

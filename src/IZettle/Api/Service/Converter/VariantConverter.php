@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\IZettle\Api\Service\Converter;
 
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\IZettle\Api\Product\Variant;
 use Swag\PayPal\IZettle\Api\Product\Variant\Option;
@@ -40,7 +40,7 @@ class VariantConverter
         $this->presentationConverter = $presentationConverter;
     }
 
-    public function convert(ProductEntity $shopwareVariant, ?CurrencyEntity $currency, ProductContext $productContext): Variant
+    public function convert(SalesChannelProductEntity $shopwareVariant, ?CurrencyEntity $currency, ProductContext $productContext): Variant
     {
         $variant = new Variant();
 
@@ -60,9 +60,12 @@ class VariantConverter
         }
 
         if ($currency !== null) {
-            $price = $shopwareVariant->getCurrencyPrice($currency->getId());
-            if ($price !== null) {
-                $variant->setPrice($this->priceConverter->convert($price, $currency));
+            $price = $shopwareVariant->getCalculatedPrice();
+            $variant->setPrice($this->priceConverter->convert($price, $currency));
+
+            $costPrice = $shopwareVariant->getPurchasePrice();
+            if ($costPrice !== null) {
+                $variant->setCostPrice($this->priceConverter->convertFloat($costPrice, $currency));
             }
         }
 

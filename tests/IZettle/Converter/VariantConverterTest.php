@@ -8,19 +8,21 @@
 namespace Swag\PayPal\Test\IZettle\Converter;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionCollection;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
-use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Swag\PayPal\IZettle\Api\Product\Price;
 use Swag\PayPal\IZettle\Api\Product\Variant;
 use Swag\PayPal\IZettle\Api\Product\Variant\Option;
 use Swag\PayPal\IZettle\Api\Service\Converter\PresentationConverter;
@@ -39,6 +41,8 @@ class VariantConverterTest extends TestCase
     private const PRODUCT_EAN = '1234567890';
     private const PRODUCT_PRICE = 11.11;
     private const PRODUCT_PRICE_CONVERTED = 1111;
+    private const PRODUCT_PURCHASE_PRICE = 10.11;
+    private const PRODUCT_PURCHASE_PRICE_CONVERTED = 1011;
     private const TRANSLATION_MARK = '_t';
 
     private const OPTION1_NAME = 'Option Name 1';
@@ -72,6 +76,7 @@ class VariantConverterTest extends TestCase
         $productEntity->addTranslated('description', self::PRODUCT_DESCRIPTION . self::TRANSLATION_MARK);
         $productEntity->setEan(self::PRODUCT_EAN);
         $productEntity->setOptions($this->createOptions());
+        $productEntity->setPurchasePrice(self::PRODUCT_PURCHASE_PRICE);
 
         $converted = $this->createVariantConverter()->convert(
             $productEntity,
@@ -93,23 +98,27 @@ class VariantConverterTest extends TestCase
         $variant->setOptions([$option1, $option2]);
 
         $currency = $this->getCurrency();
-        $price = new \Swag\PayPal\IZettle\Api\Product\Price();
+        $price = new Price();
         $price->setAmount(self::PRODUCT_PRICE_CONVERTED);
         $price->setCurrencyId($currency->getIsoCode());
         $variant->setPrice($price);
+        $costPrice = new Price();
+        $costPrice->setAmount(self::PRODUCT_PURCHASE_PRICE_CONVERTED);
+        $costPrice->setCurrencyId($currency->getIsoCode());
+        $variant->setCostPrice($costPrice);
 
         static::assertEquals($variant, $converted);
     }
 
-    private function createProductEntity(): ProductEntity
+    private function createProductEntity(): SalesChannelProductEntity
     {
-        $productEntity = new ProductEntity();
+        $productEntity = new SalesChannelProductEntity();
         $productEntity->setId(Uuid::randomHex());
         $productEntity->setName(self::PRODUCT_NAME);
         $productEntity->setDescription(self::PRODUCT_DESCRIPTION);
         $productEntity->setProductNumber(self::PRODUCT_NUMBER);
-        $price = new Price(Defaults::CURRENCY, self::PRODUCT_PRICE, self::PRODUCT_PRICE * 1.19, false);
-        $productEntity->setPrice(new PriceCollection([$price]));
+        $shopwarePrice = new CalculatedPrice(self::PRODUCT_PRICE, self::PRODUCT_PRICE, new CalculatedTaxCollection(), new TaxRuleCollection());
+        $productEntity->setCalculatedPrice($shopwarePrice);
 
         return $productEntity;
     }

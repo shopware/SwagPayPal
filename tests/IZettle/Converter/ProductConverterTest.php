@@ -8,19 +8,20 @@
 namespace Swag\PayPal\Test\IZettle\Converter;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductConfiguratorSetting\ProductConfiguratorSettingCollection;
 use Shopware\Core\Content\Product\Aggregate\ProductConfiguratorSetting\ProductConfiguratorSettingEntity;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionEntity;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
-use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -167,15 +168,15 @@ class ProductConverterTest extends TestCase
         static::assertEquals($product, $convertedGrouping->getProduct());
     }
 
-    private function createProductEntity(): ProductEntity
+    private function createProductEntity(): SalesChannelProductEntity
     {
-        $productEntity = new ProductEntity();
+        $productEntity = new SalesChannelProductEntity();
         $productEntity->setId(Uuid::randomHex());
         $productEntity->setName(self::PRODUCT_NAME);
         $productEntity->setDescription(self::PRODUCT_DESCRIPTION);
         $productEntity->setProductNumber(self::PRODUCT_NUMBER);
-        $price = new Price(Defaults::CURRENCY, self::PRODUCT_PRICE, self::PRODUCT_PRICE * 1.19, false);
-        $productEntity->setPrice(new PriceCollection([$price]));
+        $shopwarePrice = new CalculatedPrice(self::PRODUCT_PRICE, self::PRODUCT_PRICE, new CalculatedTaxCollection(), new TaxRuleCollection());
+        $productEntity->setCalculatedPrice($shopwarePrice);
 
         return $productEntity;
     }

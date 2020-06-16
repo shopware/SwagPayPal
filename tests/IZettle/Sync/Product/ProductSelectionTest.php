@@ -87,6 +87,7 @@ class ProductSelectionTest extends AbstractProductSyncTest
         $domain = new SalesChannelDomainEntity();
         $domain->setId(Uuid::randomHex());
         $domain->setSalesChannelId($this->salesChannel->getId());
+        $domain->setLanguageId(Uuid::randomHex());
         $domainRepository = $this->createStub(EntityRepositoryInterface::class);
         $domainRepository->method('search')->willReturn(
             new EntitySearchResult(
@@ -135,7 +136,7 @@ class ProductSelectionTest extends AbstractProductSyncTest
             $iZettleSalesChannel->setProductStreamId(null);
         }
 
-        $products = $this->productSelection->getProductCollection($iZettleSalesChannel, $context, $withAssociations);
+        $products = $this->productSelection->getProductCollection($this->salesChannel, $context, $withAssociations);
 
         static::assertCount(1, $products);
     }
@@ -155,7 +156,7 @@ class ProductSelectionTest extends AbstractProductSyncTest
         $iZettleSalesChannel = $this->salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
         static::assertNotNull($iZettleSalesChannel);
         static::assertInstanceOf(IZettleSalesChannelEntity::class, $iZettleSalesChannel);
-        $products = $this->productSelection->getProductLogCollection($iZettleSalesChannel, 10, 1, $context);
+        $products = $this->productSelection->getProductLogCollection($this->salesChannel, 10, 1, $context);
 
         $firstProduct = $products->first();
         static::assertNotNull($firstProduct);

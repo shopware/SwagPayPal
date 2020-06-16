@@ -57,6 +57,6 @@ class CompleteTask extends AbstractTask
         $this->productSyncer->syncProducts($salesChannel, $context);
         $this->imageSyncer->syncImages($this->getIZettleSalesChannel($salesChannel), $context);
         $this->productSyncer->syncProducts($salesChannel, $context);
-        $this->inventorySyncer->syncInventory($this->getIZettleSalesChannel($salesChannel), $context);
+        $this->inventorySyncer->syncInventory($salesChannel, $context);
     }
 }

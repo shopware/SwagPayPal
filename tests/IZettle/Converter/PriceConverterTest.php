@@ -8,8 +8,9 @@
 namespace Swag\PayPal\Test\IZettle\Converter;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\IZettle\Api\Service\Converter\PriceConverter;
 
@@ -29,11 +30,24 @@ class PriceConverterTest extends TestCase
      */
     public function testConvert(float $floatValue, int $intValue, string $currencyCode, int $decimalPrecision): void
     {
-        $shopwarePrice = new Price(Defaults::CURRENCY, $floatValue, $floatValue * 1.19, false);
+        $shopwarePrice = new CalculatedPrice($floatValue, $floatValue, new CalculatedTaxCollection(), new TaxRuleCollection());
         $currency = new CurrencyEntity();
         $currency->setIsoCode($currencyCode);
         $currency->setDecimalPrecision($decimalPrecision);
         $price = $this->createPriceConverter()->convert($shopwarePrice, $currency);
+        static::assertEquals($intValue, $price->getAmount());
+        static::assertEquals($currency->getIsoCode(), $price->getCurrencyId());
+    }
+
+    /**
+     * @dataProvider dataProviderPriceConversion
+     */
+    public function testConvertFloat(float $floatValue, int $intValue, string $currencyCode, int $decimalPrecision): void
+    {
+        $currency = new CurrencyEntity();
+        $currency->setIsoCode($currencyCode);
+        $currency->setDecimalPrecision($decimalPrecision);
+        $price = $this->createPriceConverter()->convertFloat($floatValue, $currency);
         static::assertEquals($intValue, $price->getAmount());
         static::assertEquals($currency->getIsoCode(), $price->getCurrencyId());
     }

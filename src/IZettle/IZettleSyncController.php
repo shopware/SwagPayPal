@@ -14,7 +14,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
 use Swag\PayPal\IZettle\Run\Task\CompleteTask;
 use Swag\PayPal\IZettle\Run\Task\ImageTask;
@@ -155,11 +154,8 @@ class IZettleSyncController extends AbstractController
         $page = $request->query->getInt('page', 1);
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
 
-        /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
-
         $productLogSearch = $this->productSelection->getProductLogCollection(
-            $iZettleSalesChannel,
+            $salesChannel,
             $limit * ($page - 1),
             $limit,
             $context

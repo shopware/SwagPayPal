@@ -10,7 +10,7 @@ namespace Swag\PayPal\IZettle\Sync;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContext;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater;
@@ -58,15 +58,15 @@ class InventorySyncer
     }
 
     public function syncInventory(
-        IZettleSalesChannelEntity $iZettleSalesChannel,
+        SalesChannelEntity $salesChannel,
         Context $context,
         ?ProductCollection $productCollection = null
     ): void {
         if ($productCollection === null) {
-            $productCollection = $this->productSelection->getProductCollection($iZettleSalesChannel, $context, false);
+            $productCollection = $this->productSelection->getProductCollection($salesChannel, $context, false);
         }
 
-        $inventoryContext = $this->inventoryContextFactory->getContext($iZettleSalesChannel, $context);
+        $inventoryContext = $this->inventoryContextFactory->getContext($salesChannel, $context);
 
         $changes = $this->remoteUpdater->updateRemote($productCollection, $inventoryContext);
         $this->updateLocalChanges($changes, $inventoryContext);
@@ -84,7 +84,7 @@ class InventorySyncer
         $localChanges = [];
         foreach ($productCollection->getElements() as $productEntity) {
             $localChanges[] = [
-                'salesChannelId' => $inventoryContext->getIZettleSalesChannel()->getSalesChannelId(),
+                'salesChannelId' => $inventoryContext->getSalesChannel()->getId(),
                 'productId' => $productEntity->getId(),
                 'productVersionId' => $productEntity->getVersionId(),
                 'stock' => $productEntity->getAvailableStock(),

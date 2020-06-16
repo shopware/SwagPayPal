@@ -11,19 +11,17 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Inventory\Location;
 use Swag\PayPal\IZettle\Api\Inventory\Status;
 use Swag\PayPal\IZettle\Api\Inventory\Status\Variant;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\Resource\InventoryResource;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Test\Mock\IZettle\IZettleInventoryRepoMock;
 
 class InventoryContextFactoryTest extends TestCase
 {
-    use KernelTestBehaviour;
     use InventoryTrait;
 
     /**
@@ -42,13 +40,15 @@ class InventoryContextFactoryTest extends TestCase
     private $inventoryResource;
 
     /**
-     * @var IZettleSalesChannelEntity
+     * @var SalesChannelEntity
      */
     private $salesChannel;
 
     public function setUp(): void
     {
-        $this->salesChannel = $this->getIZettleSalesChannel();
+        $context = Context::createDefaultContext();
+
+        $this->salesChannel = $this->createSalesChannel($context);
 
         $this->inventoryRepository = new IZettleInventoryRepoMock();
 

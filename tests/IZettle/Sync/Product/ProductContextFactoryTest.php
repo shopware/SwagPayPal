@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Test\IZettle\Sync\Product;
 
 use Shopware\Core\Content\Media\MediaEntity;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -153,9 +153,9 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         static::assertSame($inventoryContextFirst, $inventoryContextSecond);
     }
 
-    private function createProductEntity(): ProductEntity
+    private function createProductEntity(): SalesChannelProductEntity
     {
-        $productEntity = new ProductEntity();
+        $productEntity = new SalesChannelProductEntity();
         $productEntity->setId(Uuid::randomHex());
         $productEntity->setVersionId(Uuid::randomHex());
 

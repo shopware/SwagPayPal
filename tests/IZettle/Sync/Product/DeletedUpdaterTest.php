@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\IZettle\Sync\Product;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -99,7 +99,7 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
             new UuidConverter()
         );
 
-        $productEntity = new ProductEntity();
+        $productEntity = new SalesChannelProductEntity();
         $productEntity->setId($this->iZettleProductEntity->getProductId());
         $productEntity->setVersionId($this->iZettleProductEntity->getProductVersionId());
         $this->productGroupingCollection->addProducts(new ProductCollection([$productEntity]));

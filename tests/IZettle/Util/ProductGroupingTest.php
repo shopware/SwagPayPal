@@ -9,7 +9,7 @@ namespace Swag\PayPal\Test\IZettle\Util;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\IZettle\Api\Service\Util\ProductGrouping;
 use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
@@ -63,9 +63,9 @@ class ProductGroupingTest extends TestCase
         );
     }
 
-    protected function createProduct(?string $parentId = null): ProductEntity
+    protected function createProduct(?string $parentId = null): SalesChannelProductEntity
     {
-        $product = new ProductEntity();
+        $product = new SalesChannelProductEntity();
         $product->setId(Uuid::randomHex());
         if ($parentId !== null) {
             $product->setParentId($parentId);

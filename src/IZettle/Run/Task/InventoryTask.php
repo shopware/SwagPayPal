@@ -38,6 +38,6 @@ class InventoryTask extends AbstractTask
 
     protected function run(SalesChannelEntity $salesChannel, Context $context): void
     {
-        $this->inventorySyncer->syncInventory($this->getIZettleSalesChannel($salesChannel), $context);
+        $this->inventorySyncer->syncInventory($salesChannel, $context);
     }
 }

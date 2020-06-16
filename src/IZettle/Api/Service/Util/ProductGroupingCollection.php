@@ -8,7 +8,7 @@
 namespace Swag\PayPal\IZettle\Api\Service\Util;
 
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Struct\Collection;
 
 /**
@@ -39,7 +39,7 @@ class ProductGroupingCollection extends Collection
         return ProductGrouping::class;
     }
 
-    private function findGrouping(ProductEntity $product): ?ProductGrouping
+    private function findGrouping(SalesChannelProductEntity $product): ?ProductGrouping
     {
         if ($product->getParentId() === null) {
             return $this->get($product->getId());
