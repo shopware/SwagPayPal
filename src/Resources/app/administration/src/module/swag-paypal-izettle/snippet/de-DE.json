@@ -39,7 +39,7 @@
                 "buttonTest": "Zugangsdaten testen",
                 "titleSync": "Synchronisation",
                 "syncPrices": "Preise übertragen",
-                "replace": "Existierende Produkte in iZettle ersetzen (einmalig)"
+                "replace": "Existierende Produkte in iZettle ersetzen"
             },
             "log": {
                 "titleProducts": "Synchronisierte Produkte",

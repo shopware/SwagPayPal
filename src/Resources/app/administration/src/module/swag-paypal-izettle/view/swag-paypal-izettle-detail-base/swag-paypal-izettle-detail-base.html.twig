@@ -20,7 +20,7 @@
                     {% endblock %}
 
                     {% block swag_paypal_izettle_detail_base_status_actions_sync_context_menu %}
-                        <sw-context-button>
+                        <sw-context-button :disabled="isSyncing">
 
                             {% block swag_paypal_izettle_detail_base_status_actions_sync_context_menu_button %}
                                 <template #button>

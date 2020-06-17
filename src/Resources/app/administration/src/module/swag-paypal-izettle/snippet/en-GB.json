@@ -39,7 +39,7 @@
                 "buttonTest": "Test credentials",
                 "titleSync": "Synchronization",
                 "syncPrices": "Sync Prices",
-                "replace": "Replace existing products in iZettle (one-time)"
+                "replace": "Replace existing products in iZettle"
             },
             "log": {
                 "titleProducts": "Synced Products",
