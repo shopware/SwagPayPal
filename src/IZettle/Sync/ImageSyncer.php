@@ -13,7 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Swag\PayPal\IZettle\Api\Image\BulkImageUpload;
 use Swag\PayPal\IZettle\Api\Image\BulkImageUploadResponse\Uploaded;
@@ -138,12 +138,17 @@ class ImageSyncer
             new EqualsFilter('salesChannelId', $iZettleSalesChannel->getSalesChannelId()),
             new MultiFilter(MultiFilter::CONNECTION_OR, [
                 new EqualsFilter('url', null),
-                new RangeFilter('createdAt', [RangeFilter::LT => 'media.updatedAt']),
+                new NotFilter(NotFilter::CONNECTION_OR, [new EqualsFilter('media.updatedAt', null)]),
             ])
         );
 
         /** @var IZettleSalesChannelMediaCollection $iZettleMediaCollection */
-        $iZettleMediaCollection = $this->iZettleMediaRepository->search($criteria, $context)->getEntities();
+        $iZettleMediaCollection = $this->iZettleMediaRepository->search($criteria, $context)->getEntities()->filter(
+            static function (IZettleSalesChannelMediaEntity $entity) {
+                return $entity->getUrl() === null
+                    || $entity->getCreatedAt() < $entity->getMedia()->getUpdatedAt();
+            }
+        );
 
         return $iZettleMediaCollection;
     }

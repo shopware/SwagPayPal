@@ -29,7 +29,6 @@ class Migration1591365484IZettleMedia extends MigrationStep
                 `lookup_key`         VARCHAR(255) NULL,
                 `url`                VARCHAR(255) NULL,
                 `created_at`         DATETIME(3)  NOT NULL,
-                `updated_at`         DATETIME(3)  NULL,
                 PRIMARY KEY (`sales_channel_id`, `media_id`),
                 KEY `fk.swag_paypal_izettle_sales_channel_media.sales_channel_id` (`sales_channel_id`),
                 KEY `fk.swag_paypal_izettle_sales_channel_media.media_id` (`media_id`),
