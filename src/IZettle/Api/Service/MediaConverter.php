@@ -8,20 +8,32 @@
 namespace Swag\PayPal\IZettle\Api\Service;
 
 use Shopware\Core\Content\Media\MediaEntity;
+use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Swag\PayPal\IZettle\Api\Image\BulkImageUpload\ImageUpload;
 use Swag\PayPal\IZettle\Exception\InvalidMediaTypeException;
 
 class MediaConverter
 {
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $urlGenerator;
+
+    public function __construct(UrlGeneratorInterface $urlGenerator)
+    {
+        $this->urlGenerator = $urlGenerator;
+    }
+
     public function convert(SalesChannelDomainEntity $domain, MediaEntity $mediaEntity, ?string $lookupKey = null): ImageUpload
     {
         $mime = $mediaEntity->getMimeType();
         $format = $this->matchMimeType($mime);
+        $mediaUrl = $this->urlGenerator->getRelativeMediaUrl($mediaEntity);
 
         $imageUpload = new ImageUpload();
         $imageUpload->setImageFormat($format);
-        $imageUpload->setImageUrl($domain->getUrl() . $mediaEntity->getUrl());
+        $imageUpload->setImageUrl($domain->getUrl() . '/' . $mediaUrl);
 
         if ($lookupKey !== null) {
             $imageUpload->setImageLookupKey($lookupKey);

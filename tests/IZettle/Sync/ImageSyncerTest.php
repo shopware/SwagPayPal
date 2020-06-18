@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\IZettle\Sync;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Media\MediaEntity;
+use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -40,9 +41,9 @@ class ImageSyncerTest extends TestCase
     private const MEDIA_ID_2 = 'mediaId2';
     private const MEDIA_ID_3 = 'mediaId3';
     private const MEDIA_ID_4 = 'mediaId4';
-    private const MEDIA_URL_VALID = '/validUrl.jpg';
-    private const MEDIA_URL_INVALID = '/invalidUrl.jpg';
-    private const MEDIA_URL_EXISTING = '/existingUrl.jpg';
+    private const MEDIA_URL_VALID = 'validUrl.jpg';
+    private const MEDIA_URL_INVALID = 'invalidUrl.jpg';
+    private const MEDIA_URL_EXISTING = 'existingUrl.jpg';
     private const IZETTLE_IMAGE_URL = 'https://image.izettle.com/product/BJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ.jpeg';
     private const IZETTLE_IMAGE_URL_EXISTING = 'https://image.izettle.com/product/CJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ.jpeg';
     private const IZETTLE_IMAGE_URL_INVALID = 'https://image.izettle.com/product/AJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ.jpeg';
@@ -62,12 +63,24 @@ class ImageSyncerTest extends TestCase
         $imageSyncer = new ImageSyncer(
             $mediaRepository,
             $this->createSalesChannelDomainRepository($context),
-            new MediaConverter(),
+            new MediaConverter($this->createUrlGenerator()),
             $imageResource,
             $logger
         );
 
         $imageSyncer->syncImages($this->createSalesChannel(), $context);
+    }
+
+    private function createUrlGenerator(): UrlGeneratorInterface
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator->method('getRelativeMediaUrl')->willReturn(
+            self::MEDIA_URL_VALID,
+            self::MEDIA_URL_INVALID,
+            self::MEDIA_URL_EXISTING
+        );
+
+        return $urlGenerator;
     }
 
     private function createMediaRepository(Context $context): EntityRepositoryInterface
@@ -80,7 +93,7 @@ class ImageSyncerTest extends TestCase
                     $this->createMedia(self::MEDIA_ID_1, self::MEDIA_URL_VALID),
                     $this->createMedia(self::MEDIA_ID_2, self::MEDIA_URL_INVALID),
                     $this->createMedia(self::MEDIA_ID_3, self::MEDIA_URL_VALID, null, false),
-                    $this->createMedia(self::MEDIA_ID_4, self::MEDIA_URL_EXISTING, self::IZETTLE_IMAGE_LOOKUP_KEY_EXISTING),
+                    $this->createMedia(self::MEDIA_ID_4, self::DOMAIN_URL . '/' . self::MEDIA_URL_EXISTING, self::IZETTLE_IMAGE_LOOKUP_KEY_EXISTING),
                 ]),
                 null,
                 new Criteria(),
@@ -195,15 +208,15 @@ class ImageSyncerTest extends TestCase
             (new BulkImageUpload())->assign(['imageUploads' => [
                 [
                     'imageFormat' => 'JPEG',
-                    'imageUrl' => self::DOMAIN_URL . self::MEDIA_URL_VALID,
+                    'imageUrl' => self::DOMAIN_URL . '/' . self::MEDIA_URL_VALID,
                 ],
                 [
                     'imageFormat' => 'JPEG',
-                    'imageUrl' => self::DOMAIN_URL . self::MEDIA_URL_INVALID,
+                    'imageUrl' => self::DOMAIN_URL . '/' . self::MEDIA_URL_INVALID,
                 ],
                 [
                     'imageFormat' => 'JPEG',
-                    'imageUrl' => self::DOMAIN_URL . self::MEDIA_URL_EXISTING,
+                    'imageUrl' => self::DOMAIN_URL . '/' . self::MEDIA_URL_EXISTING,
                     'imageLookupKey' => self::IZETTLE_IMAGE_LOOKUP_KEY_EXISTING,
                 ],
             ]])
@@ -213,7 +226,7 @@ class ImageSyncerTest extends TestCase
                 [
                     'imageLookupKey' => self::IZETTLE_IMAGE_LOOKUP_KEY,
                     'imageUrls' => [self::IZETTLE_IMAGE_URL],
-                    'source' => self::DOMAIN_URL . self::MEDIA_URL_VALID,
+                    'source' => self::DOMAIN_URL . '/' . self::MEDIA_URL_VALID,
                 ],
                 [
                     'imageLookupKey' => self::IZETTLE_IMAGE_LOOKUP_KEY_INVALID,
@@ -223,7 +236,7 @@ class ImageSyncerTest extends TestCase
                 [
                     'imageLookupKey' => self::IZETTLE_IMAGE_LOOKUP_KEY_EXISTING,
                     'imageUrls' => [self::IZETTLE_IMAGE_URL_EXISTING],
-                    'source' => self::DOMAIN_URL . self::MEDIA_URL_EXISTING,
+                    'source' => self::DOMAIN_URL . '/' . self::MEDIA_URL_EXISTING,
                 ],
             ],
         ]);

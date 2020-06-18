@@ -158,11 +158,18 @@ class ImageSyncer
         Uploaded $uploaded,
         string $salesChannelId
     ): ?array {
-        $iZettleMedia = $iZettleMediaCollection->filter(
-            static function (IZettleSalesChannelMediaEntity $entity) use ($uploaded) {
-                return \mb_strpos($uploaded->getSource(), $entity->getMedia()->getUrl()) !== false;
-            }
-        )->first();
+        $urlPath = \parse_url($uploaded->getSource(), PHP_URL_PATH);
+
+        if (\is_string($urlPath)) {
+            $iZettleMedia = $iZettleMediaCollection->filter(
+                static function (IZettleSalesChannelMediaEntity $entity) use ($urlPath) {
+                    return \mb_strpos($urlPath, $entity->getMedia()->getUrl()) !== false
+                        || \mb_strpos($entity->getMedia()->getUrl(), $urlPath) !== false;
+                }
+            )->first();
+        } else {
+            $iZettleMedia = null;
+        }
 
         if ($iZettleMedia === null) {
             $this->logger->warning('Could not match uploaded image to local media: {iZettleUrl}', [

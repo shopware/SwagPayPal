@@ -9,7 +9,9 @@
             <tag name="shopware.entity.definition" entity="swag_paypal_izettle_sales_channel_media"/>
         </service>
 
-        <service id="Swag\PayPal\IZettle\Api\Service\MediaConverter"/>
+        <service id="Swag\PayPal\IZettle\Api\Service\MediaConverter">
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+        </service>
 
         <service id="Swag\PayPal\IZettle\Api\Service\Converter\PresentationConverter"/>
 
