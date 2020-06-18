@@ -34,9 +34,6 @@
                 "storefrontDomainCurrency": "Storefront currency",
                 "productStream": "Dynamic product group",
                 "titleCredentials": "Credentials",
-                "username": "Username",
-                "password": "Password",
-                "buttonTest": "Test credentials",
                 "titleSync": "Synchronization",
                 "syncPrices": "Sync Prices",
                 "replace": "Replace existing products in iZettle"
@@ -67,11 +64,7 @@
             },
             "connection": {
                 "modalTitle": "Account setup",
-                "header": "Enter your iZettle credentials and follow the next steps to setup product sync.",
-                "subtitle": "Any changes you make to your Shopware products will now automatically be updated in your connected iZettle account.",
-                "username": "Username",
-                "password": "Password",
-                "buttonTest": "Test credentials"
+                "header": "Enter your iZettle credentials and follow the next steps to setup product sync."
             },
             "sales-channel": {
                 "modalTitle": "Select an existing Sales Channel",
@@ -104,12 +97,16 @@
             "finish": {
                 "modalTitle": "Finish",
                 "header": "Product sync setup completed!",
-                "firstParagraph": "Your iZettle account is now linked to your Sales Channel and syncs products to iZettle.<br>In the future, when you make a sale, we will update your stock in iZettle and Shopware.",
+                "firstParagraph": "Your iZettle account is now linked to your Sales Channel and your products will be transferred to iZettle.<br>In the future, when you make a sale, we will update your stock in iZettle and Shopware.",
                 "secondParagraph": "If you need to update your products, we recommend you do this in Shopware and they'll sync to your iZettle app automatically."
             }
         },
-        "test": {
-            "messageTestError": "The credentials could not be validated."
+        "authentification": {
+            "messageTestError": "The credentials could not be validated.",
+            "apiKey": "API key",
+            "buttonTest": "Test credentials",
+            "buttonGenerateKey": "Generate API key",
+            "apiKeyDescription": "You need to generate an API key at the iZettle website.<br>The generated key needs to be pasted here to authorize the connection to iZettle."
         }
     }
 }

@@ -33,10 +33,8 @@ class InventoryResource
      */
     public function getLocations(IZettleSalesChannelEntity $salesChannelEntity): array
     {
-        // TODO: Refactor to API key auth
-        $username = $salesChannelEntity->getUsername();
-        $password = $salesChannelEntity->getPassword();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::INVENTORY, $username, $password);
+        $apiKey = $salesChannelEntity->getApiKey();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::INVENTORY, $apiKey);
 
         $response = $client->sendGetRequest(IZettleRequestUri::INVENTORY_RESOURCE_LOCATIONS);
 
@@ -56,10 +54,8 @@ class InventoryResource
 
     public function getInventory(IZettleSalesChannelEntity $salesChannelEntity, string $locationUuid): Status
     {
-        // TODO: Refactor to API key auth
-        $username = $salesChannelEntity->getUsername();
-        $password = $salesChannelEntity->getPassword();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::INVENTORY, $username, $password);
+        $apiKey = $salesChannelEntity->getApiKey();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::INVENTORY, $apiKey);
 
         $url = \sprintf(IZettleRequestUri::INVENTORY_RESOURCE_GET, $locationUuid);
 
@@ -75,10 +71,8 @@ class InventoryResource
 
     public function changeInventory(IZettleSalesChannelEntity $salesChannelEntity, Changes $changes): ?Status
     {
-        // TODO: Refactor to API key auth
-        $username = $salesChannelEntity->getUsername();
-        $password = $salesChannelEntity->getPassword();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::INVENTORY, $username, $password);
+        $apiKey = $salesChannelEntity->getApiKey();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::INVENTORY, $apiKey);
 
         $response = $client->sendPutRequest(IZettleRequestUri::INVENTORY_RESOURCE, $changes);
 
@@ -96,10 +90,8 @@ class InventoryResource
 
     public function startTracking(IZettleSalesChannelEntity $salesChannelEntity, string $productUuid): ?Status
     {
-        // TODO: Refactor to API key auth
-        $username = $salesChannelEntity->getUsername();
-        $password = $salesChannelEntity->getPassword();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::INVENTORY, $username, $password);
+        $apiKey = $salesChannelEntity->getApiKey();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::INVENTORY, $apiKey);
 
         $startTracking = new StartTracking();
         $startTracking->setProductUuid($productUuid);

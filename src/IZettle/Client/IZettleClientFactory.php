@@ -8,7 +8,7 @@
 namespace Swag\PayPal\IZettle\Client;
 
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\IZettle\Api\OAuthCredentials;
+use Swag\PayPal\IZettle\Api\Authentification\OAuthCredentials;
 use Swag\PayPal\IZettle\Resource\TokenResource;
 
 class IZettleClientFactory
@@ -29,11 +29,10 @@ class IZettleClientFactory
         $this->logger = $logger;
     }
 
-    public function createIZettleClient(string $baseUri, string $username, string $password): IZettleClient
+    public function createIZettleClient(string $baseUri, string $apiKey): IZettleClient
     {
         $credentials = new OAuthCredentials();
-        $credentials->setUsername($username);
-        $credentials->setPassword($password);
+        $credentials->setApiKey($apiKey);
 
         return new IZettleClient($baseUri, $this->tokenResource, $credentials, $this->logger);
     }

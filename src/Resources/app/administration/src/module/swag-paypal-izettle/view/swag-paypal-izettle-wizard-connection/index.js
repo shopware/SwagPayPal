@@ -5,6 +5,10 @@ const { Component } = Shopware;
 Component.register('swag-paypal-izettle-wizard-connection', {
     template,
 
+    inject: [
+        'SwagPayPalIZettleApiCredentialsService'
+    ],
+
     props: {
         isLoading: {
             type: Boolean,
@@ -28,14 +32,12 @@ Component.register('swag-paypal-izettle-wizard-connection', {
         }
     },
 
-    data() {
-        return {
-            accountInformation: {
-                name: '',
-                email: ''
-            }
-        };
+    computed: {
+        apiKeyUrl() {
+            return this.SwagPayPalIZettleApiCredentialsService.generateApiUrl();
+        }
     },
+
 
     created() {
         this.createdComponent();
@@ -59,8 +61,7 @@ Component.register('swag-paypal-izettle-wizard-connection', {
                     position: 'right',
                     variant: 'primary',
                     action: 'swag.paypal.izettle.wizard.sales-channel',
-                    disabled: !(this.salesChannel.extensions.paypalIZettleSalesChannel.username) ||
-                        !(this.salesChannel.extensions.paypalIZettleSalesChannel.password)
+                    disabled: !(this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey)
                 }
             ];
 

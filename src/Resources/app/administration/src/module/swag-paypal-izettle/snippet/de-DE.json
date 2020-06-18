@@ -34,9 +34,6 @@
                 "storefrontDomainCurrency": "Währung",
                 "productStream": "Dynamische Produktgruppe",
                 "titleCredentials": "Zugangsdaten",
-                "username": "Benutzername",
-                "password": "Passwort",
-                "buttonTest": "Zugangsdaten testen",
                 "titleSync": "Synchronisation",
                 "syncPrices": "Preise übertragen",
                 "replace": "Existierende Produkte in iZettle ersetzen"
@@ -67,11 +64,7 @@
             },
             "connection": {
                 "modalTitle": "Benutzerkonto-Einrichtung",
-                "header": "Geben Sie hier Ihre iZettle-Benutzerdaten ein und folgenden Sie den nächsten Schritten zur Einrichtung der Synchronisation.",
-                "subtitle": "Änderungen, die Sie an Ihren Shopware-Produkten machen, werden zukünftig automatisch in Ihrem verbundenen iZettle-Benutzerkonto vollzogen.",
-                "username": "Benutzername",
-                "password": "Passwort",
-                "buttonTest": "Zugangsdaten testen"
+                "header": "Geben Sie hier Ihre iZettle-Benutzerdaten ein und folgenden Sie den nächsten Schritten zur Einrichtung der Synchronisation."
             },
             "sales-channel": {
                 "modalTitle": "Wählen Sie einen bestehenden Verkaufskanal",
@@ -104,12 +97,16 @@
             "finish": {
                 "modalTitle": "Fertiggestellt",
                 "header": "Einrichtung der Produkt-Synchronisation abgeschlossen!",
-                "firstParagraph": "Ihr iZettle-Konto ist jetzt mit Ihrem Verkaufskanal verknüpft und synchronisiert Produkte mit iZettle.<br>Wenn Sie in Zukunft einen Verkauf tätigen, werden wir Ihren Bestand an iZettle und Shopware aktualisieren.",
+                "firstParagraph": "Ihr iZettle-Konto ist jetzt mit Ihrem Verkaufskanal verknüpft und überträgt Ihre Produkte zu iZettle.<br>Wenn Sie in Zukunft einen Verkauf tätigen, werden wir Ihren Bestand an iZettle und Shopware aktualisieren.",
                 "secondParagraph": "Wenn Sie Ihre Produkte aktualisieren müssen, empfehlen wir Ihnen, dies in Shopware zu tun, und sie werden automatisch mit Ihrer iZettle-Anwendung synchronisiert."
             }
         },
-        "test": {
-            "messageTestError": "Die Zugangsdaten konnten nicht validiert werden."
+        "authentification": {
+            "messageTestError": "Die Zugangsdaten konnten nicht validiert werden.",
+            "apiKey": "API-Key",
+            "buttonTest": "Zugangsdaten testen",
+            "buttonGenerateKey": "API-Key generieren",
+            "apiKeyDescription": "Zur Verwendung muss auf der iZettle Webseite ein API-Schlüssel erstellt werden.<br>Der generierte Schlüssel muss zur Authentifizierung hier eingefügt werden."
         }
     }
 }

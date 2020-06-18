@@ -8,7 +8,7 @@
 namespace Swag\PayPal\IZettle\Setting\Service;
 
 use GuzzleHttp\Exception\ClientException;
-use Swag\PayPal\IZettle\Api\OAuthCredentials;
+use Swag\PayPal\IZettle\Api\Authentification\OAuthCredentials;
 use Swag\PayPal\IZettle\Resource\TokenResource;
 use Swag\PayPal\IZettle\Setting\Exception\IZettleInvalidApiCredentialsException;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,11 +28,10 @@ class ApiCredentialService
     /**
      * @throws IZettleInvalidApiCredentialsException
      */
-    public function testApiCredentials(string $username, string $password): bool
+    public function testApiCredentials(string $apiKey): bool
     {
         $credentials = new OAuthCredentials();
-        $credentials->setUsername($username);
-        $credentials->setPassword($password);
+        $credentials->setApiKey($apiKey);
 
         try {
             return $this->tokenResource->testApiCredentials($credentials);

@@ -30,14 +30,13 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/izettle/validate-api-credentials", name="api.action.paypal.izettle.validate.api.credentials", methods={"GET"})
+     * @Route("/api/v{version}/_action/paypal/izettle/validate-api-credentials", name="api.action.paypal.izettle.validate.api.credentials", methods={"POST"})
      */
     public function validateApiCredentials(Request $request): JsonResponse
     {
-        $username = $request->query->get('username');
-        $password = $request->query->get('password');
+        $apiKey = $request->request->get('apiKey');
 
-        $credentialsValid = $this->apiCredentialService->testApiCredentials($username, $password);
+        $credentialsValid = $this->apiCredentialService->testApiCredentials($apiKey);
 
         return new JsonResponse(['credentialsValid' => $credentialsValid]);
     }

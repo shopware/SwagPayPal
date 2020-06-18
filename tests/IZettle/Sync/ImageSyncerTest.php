@@ -139,8 +139,7 @@ class ImageSyncerTest extends TestCase
     private function createSalesChannel(): IZettleSalesChannelEntity
     {
         $iZettleSalesChannel = new IZettleSalesChannelEntity();
-        $iZettleSalesChannel->setUsername('username');
-        $iZettleSalesChannel->setPassword('password');
+        $iZettleSalesChannel->setApiKey('apiKey');
         $iZettleSalesChannel->setProductStreamId('someProductStreamId');
         $iZettleSalesChannel->setSyncPrices(true);
         $iZettleSalesChannel->setSalesChannelDomainId(self::SALES_CHANNEL_DOMAIN_ID);

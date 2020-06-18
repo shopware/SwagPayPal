@@ -32,12 +32,7 @@ class IZettleSalesChannelEntity extends Entity
     /**
      * @var string
      */
-    protected $username;
-
-    /**
-     * @var string
-     */
-    protected $password;
+    protected $apiKey;
 
     /**
      * @var bool
@@ -79,24 +74,14 @@ class IZettleSalesChannelEntity extends Entity
         $this->salesChannelDomainId = $salesChannelDomainId;
     }
 
-    public function getUsername(): string
+    public function getApiKey(): string
     {
-        return $this->username;
+        return $this->apiKey;
     }
 
-    public function setUsername(string $username): void
+    public function setApiKey(string $apiKey): void
     {
-        $this->username = $username;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): void
-    {
-        $this->password = $password;
+        $this->apiKey = $apiKey;
     }
 
     public function isSyncPrices(): bool

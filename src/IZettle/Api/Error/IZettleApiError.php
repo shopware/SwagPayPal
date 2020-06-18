@@ -27,14 +27,14 @@ class IZettleApiError extends IZettleStruct
     private $errorType;
 
     /**
-     * @var Violation[]
+     * @var Violation[]|null
      */
     private $violations;
 
     public function getViolationsAsString(): string
     {
         $message = '';
-        if ($this->violations === []) {
+        if ($this->violations === [] || $this->violations === null) {
             return $message;
         }
 

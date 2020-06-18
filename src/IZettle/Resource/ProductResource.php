@@ -30,10 +30,8 @@ class ProductResource
      */
     public function getProducts(IZettleSalesChannelEntity $salesChannelEntity): array
     {
-        // TODO: Refactor to API key auth
-        $username = $salesChannelEntity->getUsername();
-        $password = $salesChannelEntity->getPassword();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $username, $password);
+        $apiKey = $salesChannelEntity->getApiKey();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $apiKey);
 
         $response = $client->sendGetRequest(IZettleRequestUri::PRODUCT_RESOURCE);
 
@@ -53,30 +51,24 @@ class ProductResource
 
     public function createProduct(IZettleSalesChannelEntity $salesChannelEntity, Product $product): ?array
     {
-        // TODO: Refactor to API key auth
-        $username = $salesChannelEntity->getUsername();
-        $password = $salesChannelEntity->getPassword();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $username, $password);
+        $apiKey = $salesChannelEntity->getApiKey();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $apiKey);
 
         return $client->sendPostRequest(IZettleRequestUri::PRODUCT_RESOURCE, $product);
     }
 
     public function updateProduct(IZettleSalesChannelEntity $salesChannelEntity, Product $product): ?array
     {
-        // TODO: Refactor to API key auth
-        $username = $salesChannelEntity->getUsername();
-        $password = $salesChannelEntity->getPassword();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $username, $password);
+        $apiKey = $salesChannelEntity->getApiKey();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $apiKey);
 
         return $client->sendPutRequest(IZettleRequestUri::PRODUCT_RESOURCE_V2 . $product->getUuid(), $product);
     }
 
     public function deleteProduct(IZettleSalesChannelEntity $salesChannelEntity, string $productUuid): ?array
     {
-        // TODO: Refactor to API key auth
-        $username = $salesChannelEntity->getUsername();
-        $password = $salesChannelEntity->getPassword();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $username, $password);
+        $apiKey = $salesChannelEntity->getApiKey();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $apiKey);
 
         return $client->sendDeleteRequest(IZettleRequestUri::PRODUCT_RESOURCE . $productUuid);
     }
@@ -86,10 +78,8 @@ class ProductResource
      */
     public function deleteProducts(IZettleSalesChannelEntity $salesChannelEntity, array $productUuids): ?array
     {
-        // TODO: Refactor to API key auth
-        $username = $salesChannelEntity->getUsername();
-        $password = $salesChannelEntity->getPassword();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $username, $password);
+        $apiKey = $salesChannelEntity->getApiKey();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $apiKey);
 
         foreach ($productUuids as &$productUuid) {
             $productUuid = "uuid=${productUuid}";

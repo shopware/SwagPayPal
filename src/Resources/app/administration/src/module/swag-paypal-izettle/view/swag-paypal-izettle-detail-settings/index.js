@@ -1,4 +1,5 @@
 import template from './swag-paypal-izettle-detail-settings.html.twig';
+import './swag-paypal-izettle-detail-settings.scss';
 
 const { Component, Mixin, Defaults } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -8,6 +9,7 @@ Component.register('swag-paypal-izettle-detail-settings', {
     template,
 
     inject: [
+        'SwagPayPalIZettleApiCredentialsService',
         'salesChannelService',
         'repositoryFactory'
     ],
@@ -85,6 +87,10 @@ Component.register('swag-paypal-izettle-detail-settings', {
             set(storefrontSalesChannelId) {
                 this.$emit('update-storefront-sales-channel', storefrontSalesChannelId);
             }
+        },
+
+        apiKeyUrl() {
+            return this.SwagPayPalIZettleApiCredentialsService.generateApiUrl();
         }
     },
 

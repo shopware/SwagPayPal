@@ -1,5 +1,5 @@
 {% block swag_paypal_izettle_detail_settings %}
-    <div class="sw-sales-channel-detail-base">
+    <div class="swag-paypal-izettle-detail-settings">
 
         {% block swag_paypal_izettle_detail_settings_basic %}
             <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.settings.titleGeneralSettings')">
@@ -102,30 +102,38 @@
             <div class="sw-sales-channel-detail-credentials">
                 <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.settings.titleCredentials')">
 
-                    {% block swag_paypal_izettle_detail_settings_credentials_username %}
-                        <sw-text-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.username"
+                    {% block swag_paypal_izettle_detail_settings_credentials_apikey %}
+                        <sw-text-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.apiKey"
                                        required
-                                       :label="$tc('swag-paypal-izettle.detail.settings.username')"
+                                       :label="$tc('swag-paypal-izettle.authentification.apiKey')"
                                        @input="forceUpdate">
                         </sw-text-field>
                     {% endblock %}
 
-                    {% block swag_paypal_izettle_detail_settings_credentials_password %}
-                        <sw-password-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.password"
-                                           required
-                                           :label="$tc('swag-paypal-izettle.detail.settings.password')"
-                                           @input="forceUpdate">
-                        </sw-password-field>
+                    {% block swag_paypal_izettle_detail_settings_credentials_apikey_description %}
+                        <div v-html="$tc('swag-paypal-izettle.authentification.apiKeyDescription')"
+                             class="swag-paypal-izettle-detail-settings__description-text">
+                        </div>
                     {% endblock %}
 
-                    {% block swag_paypal_izettle_detail_settings_credentials_button_test %}
-                        <sw-button-process v-model="isTestCredentialsSuccessful"
-                                           :isLoading="isTestingCredentials"
-                                           :disabled="!(this.salesChannel.extensions.paypalIZettleSalesChannel.username) ||
-                                                !(this.salesChannel.extensions.paypalIZettleSalesChannel.password)"
-                                           @click="onTestCredentials">
-                            {{ $tc('swag-paypal-izettle.detail.settings.buttonTest') }}
-                        </sw-button-process>
+                    {% block swag_paypal_izettle_detail_settings_credentials_actions %}
+                        <sw-button-group>
+
+                            {% block swag_paypal_izettle_detail_settings_credentials_actions_generate_key %}
+                                <sw-button :link="apiKeyUrl">
+                                    {{ $tc('swag-paypal-izettle.authentification.buttonGenerateKey') }}
+                                </sw-button>
+                            {% endblock %}
+
+                            {% block swag_paypal_izettle_detail_settings_credentials_actions_test %}
+                                <sw-button-process v-model="isTestCredentialsSuccessful"
+                                                   :isLoading="isTestingCredentials"
+                                                   :disabled="!(this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey)"
+                                                   @click="onTestCredentials">
+                                    {{ $tc('swag-paypal-izettle.authentification.buttonTest') }}
+                                </sw-button-process>
+                            {% endblock %}
+                        </sw-button-group>
                     {% endblock %}
                 </sw-card>
             </div>

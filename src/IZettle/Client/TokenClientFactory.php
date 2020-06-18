@@ -8,6 +8,7 @@
 namespace Swag\PayPal\IZettle\Client;
 
 use Psr\Log\LoggerInterface;
+use Swag\PayPal\IZettle\Api\Service\ApiKeyDecoder;
 
 class TokenClientFactory
 {
@@ -16,13 +17,19 @@ class TokenClientFactory
      */
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    /**
+     * @var ApiKeyDecoder
+     */
+    private $apiKeyDecoder;
+
+    public function __construct(LoggerInterface $logger, ApiKeyDecoder $apiKeyDecoder)
     {
         $this->logger = $logger;
+        $this->apiKeyDecoder = $apiKeyDecoder;
     }
 
     public function createTokenClient(): TokenClient
     {
-        return new TokenClient($this->logger);
+        return new TokenClient($this->logger, $this->apiKeyDecoder);
     }
 }

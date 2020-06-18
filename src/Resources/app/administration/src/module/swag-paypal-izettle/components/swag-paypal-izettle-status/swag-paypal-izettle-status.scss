@@ -42,8 +42,9 @@
     }
 
     &.swag-paypal-izettle-status--warning {
-        border-color: $color-pumpkin-spice-500;
-        background-color: $color-pumpkin-spice-50;
+        .sw-card__content {
+            border-color: $color-pumpkin-spice-200;
+        }
 
         .swag-paypal-izettle-status__icon {
             color: $color-pumpkin-spice-500;
@@ -51,8 +52,9 @@
     }
 
     &.swag-paypal-izettle-status--error {
-        border-color: $color-crimson-500;
-        background-color: $color-crimson-50;
+        .sw-card__content {
+            border-color: $color-crimson-200;
+        }
 
         .swag-paypal-izettle-status__icon {
             color: $color-crimson-500;
@@ -60,8 +62,9 @@
     }
 
     &.swag-paypal-izettle-status--success {
-        border-color: $color-emerald-500;
-        background-color: $color-emerald-50;
+        .sw-card__content {
+            border-color: $color-emerald-200;
+        }
 
         .swag-paypal-izettle-status__icon {
             color: $color-emerald-500;
@@ -69,8 +72,9 @@
     }
 
     &.swag-paypal-izettle-status--info {
-        border-color: $color-shopware-brand-500;
-        background-color: $color-shopware-brand-50;
+        .sw-card__content {
+            border-color: $color-shopware-brand-200;
+        }
 
         .swag-paypal-izettle-status__icon {
             color: $color-shopware-brand-500;

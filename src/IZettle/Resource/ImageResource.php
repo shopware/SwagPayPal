@@ -30,10 +30,8 @@ class ImageResource
         IZettleSalesChannelEntity $salesChannelEntity,
         BulkImageUpload $bulkProductImageUpload
     ): ?BulkImageUploadResponse {
-        // TODO: Refactor to API key auth
-        $username = $salesChannelEntity->getUsername();
-        $password = $salesChannelEntity->getPassword();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::IMAGE, $username, $password);
+        $apiKey = $salesChannelEntity->getApiKey();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::IMAGE, $apiKey);
 
         $response = $client->sendPostRequest(IZettleRequestUri::IMAGE_RESOURCE_BULK, $bulkProductImageUpload);
 

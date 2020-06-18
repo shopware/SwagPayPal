@@ -100,7 +100,7 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
     },
 
     mounted() {
-        if (!this.salesChannel.extensions.paypalIZettleSalesChannel.username) {
+        if (!this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey) {
             this.$router.push({ name: 'swag.paypal.izettle.wizard' });
         }
 

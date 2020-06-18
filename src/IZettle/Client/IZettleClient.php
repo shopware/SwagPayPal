@@ -10,11 +10,11 @@ namespace Swag\PayPal\IZettle\Client;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
+use Swag\PayPal\IZettle\Api\Authentification\OAuthCredentials;
 use Swag\PayPal\IZettle\Api\Common\IZettleStruct;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Exception\IZettleException;
-use Swag\PayPal\IZettle\Api\OAuthCredentials;
 use Swag\PayPal\IZettle\Resource\TokenResource;
 
 class IZettleClient extends AbstractClient

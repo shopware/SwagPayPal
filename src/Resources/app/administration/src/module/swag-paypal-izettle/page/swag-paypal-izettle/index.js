@@ -96,8 +96,7 @@ Component.register('swag-paypal-izettle', {
 
             this.salesChannel.extensions.paypalIZettleSalesChannel
                 = this.paypalIZettleSalesChannelRepository.create(Context.api);
-            this.salesChannel.extensions.paypalIZettleSalesChannel.username = '';
-            this.salesChannel.extensions.paypalIZettleSalesChannel.password = '';
+            this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey = '';
             this.salesChannel.extensions.paypalIZettleSalesChannel.storefrontSalesChannelId = null;
             this.salesChannel.extensions.paypalIZettleSalesChannel.productStreamId = null;
             this.salesChannel.extensions.paypalIZettleSalesChannel.syncPrices = true;
@@ -229,18 +228,17 @@ Component.register('swag-paypal-izettle', {
         },
 
         onTestCredentials() {
-            const username = this.salesChannel.extensions.paypalIZettleSalesChannel.username;
-            const password = this.salesChannel.extensions.paypalIZettleSalesChannel.password;
+            const apiKey = this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey;
 
             this.isTestingCredentials = true;
 
-            this.SwagPayPalIZettleApiCredentialsService.validateApiCredentials(username, password).then((response) => {
+            this.SwagPayPalIZettleApiCredentialsService.validateApiCredentials(apiKey).then((response) => {
                 const credentialsValid = response.credentialsValid;
                 this.isTestingCredentials = false;
                 this.isTestCredentialsSuccessful = credentialsValid;
             }).catch((errorResponse) => {
                 if (errorResponse.response.data && errorResponse.response.data.errors) {
-                    let message = `<b>${this.$tc('swag-paypal-izettle.test.messageTestError')}</b> `;
+                    let message = `<b>${this.$tc('swag-paypal-izettle.authentification.messageTestError')}</b> `;
                     message += errorResponse.response.data.errors.map((error) => {
                         return error.detail;
                     }).join(' / ');

@@ -8,8 +8,8 @@
 namespace Swag\PayPal\IZettle\Resource;
 
 use Psr\Cache\CacheItemPoolInterface;
-use Swag\PayPal\IZettle\Api\OAuthCredentials;
-use Swag\PayPal\IZettle\Api\Token;
+use Swag\PayPal\IZettle\Api\Authentification\OAuthCredentials;
+use Swag\PayPal\IZettle\Api\Authentification\Token;
 use Swag\PayPal\IZettle\Client\TokenClientFactory;
 
 class TokenResource

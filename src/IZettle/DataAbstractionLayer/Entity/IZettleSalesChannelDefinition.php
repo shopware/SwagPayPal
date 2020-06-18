@@ -24,6 +24,11 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 class IZettleSalesChannelDefinition extends EntityDefinition
 {
+    /**
+     * limited by max. header size
+     */
+    private const MAX_APIKEY_SIZE = 8192;
+
     public function getEntityName(): string
     {
         return 'swag_paypal_izettle_sales_channel';
@@ -48,8 +53,7 @@ class IZettleSalesChannelDefinition extends EntityDefinition
             (new FkField('sales_channel_domain_id', 'salesChannelDomainId', SalesChannelDomainDefinition::class))->addFlags(new Required()),
             new FkField('product_stream_id', 'productStreamId', ProductStreamDefinition::class),
 
-            (new StringField('username', 'username'))->setFlags(new Required()),
-            (new StringField('password', 'password'))->setFlags(new Required()),
+            (new StringField('api_key', 'apiKey', self::MAX_APIKEY_SIZE))->setFlags(new Required()),
 
             (new BoolField('sync_prices', 'syncPrices')),
             (new BoolField('replace', 'replace')),
