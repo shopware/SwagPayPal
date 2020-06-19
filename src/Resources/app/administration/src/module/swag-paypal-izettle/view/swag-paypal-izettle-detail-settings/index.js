@@ -9,7 +9,7 @@ Component.register('swag-paypal-izettle-detail-settings', {
     template,
 
     inject: [
-        'SwagPayPalIZettleApiCredentialsService',
+        'SwagPayPalIZettleSettingApiService',
         'salesChannelService',
         'repositoryFactory'
     ],
@@ -90,7 +90,7 @@ Component.register('swag-paypal-izettle-detail-settings', {
         },
 
         apiKeyUrl() {
-            return this.SwagPayPalIZettleApiCredentialsService.generateApiUrl();
+            return this.SwagPayPalIZettleSettingApiService.generateApiUrl();
         }
     },
 

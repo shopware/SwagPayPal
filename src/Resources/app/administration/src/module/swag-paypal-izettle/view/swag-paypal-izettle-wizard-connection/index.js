@@ -6,7 +6,7 @@ Component.register('swag-paypal-izettle-wizard-connection', {
     template,
 
     inject: [
-        'SwagPayPalIZettleApiCredentialsService'
+        'SwagPayPalIZettleSettingApiService'
     ],
 
     props: {
@@ -34,7 +34,7 @@ Component.register('swag-paypal-izettle-wizard-connection', {
 
     computed: {
         apiKeyUrl() {
-            return this.SwagPayPalIZettleApiCredentialsService.generateApiUrl();
+            return this.SwagPayPalIZettleSettingApiService.generateApiUrl();
         }
     },
 

@@ -10,7 +10,7 @@ Component.register('swag-paypal-izettle', {
 
     inject: [
         'SwagPayPalIZettleApiService',
-        'SwagPayPalIZettleApiCredentialsService',
+        'SwagPayPalIZettleSettingApiService',
         'salesChannelService',
         'repositoryFactory'
     ],
@@ -29,6 +29,7 @@ Component.register('swag-paypal-izettle', {
             isTestingCredentials: false,
             isTestCredentialsSuccessful: false,
             isNewEntity: false,
+            previousApiKey: null,
             showWizard: false,
             salesChannel: {},
             storefrontSalesChannelId: null
@@ -91,6 +92,7 @@ Component.register('swag-paypal-izettle', {
                 Context.api.languageId = Context.api.systemLanguageId;
             }
 
+            this.previousApiKey = null;
             this.salesChannel = this.salesChannelRepository.create(Context.api);
             this.salesChannel.typeId = IZETTLE_SALES_CHANNEL_TYPE_ID;
 
@@ -126,6 +128,7 @@ Component.register('swag-paypal-izettle', {
                 .get(this.$route.params.id, Shopware.Context.api, this.salesChannelCriteria)
                 .then((entity) => {
                     this.salesChannel = entity;
+                    this.previousApiKey = entity.extensions.paypalIZettleSalesChannel.apiKey;
 
                     if (entity.extensions.paypalIZettleSalesChannel.salesChannelDomainId) {
                         const criteria = new Criteria();
@@ -148,7 +151,6 @@ Component.register('swag-paypal-izettle', {
                 this.salesChannel.languages.push({
                     id: entity.languageId
                 });
-                this.salesChannel.currencyId = entity.currencyId;
                 this.salesChannel.paymentMethodId = entity.paymentMethodId;
                 this.salesChannel.shippingMethodId = entity.shippingMethodId;
                 this.salesChannel.countryId = entity.countryId;
@@ -175,10 +177,24 @@ Component.register('swag-paypal-izettle', {
 
         onSave() {
             this.isLoading = true;
-
             this.isSaveSuccessful = false;
 
-            this.salesChannelRepository
+            if (this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey === this.previousApiKey) {
+                return this.save();
+            }
+
+            return this.SwagPayPalIZettleSettingApiService
+                .fetchInformation(this.salesChannel)
+                .catch((errorResponse) => {
+                    this.catchAuthentificationError((errorResponse));
+                    this.isLoading = false;
+                    throw errorResponse;
+                })
+                .then(this.save);
+        },
+
+        save() {
+            return this.salesChannelRepository
                 .save(this.salesChannel, Context.api)
                 .then(() => {
                     this.isLoading = false;
@@ -218,7 +234,7 @@ Component.register('swag-paypal-izettle', {
 
                     this.createNotificationError({
                         title: this.$tc('global.default.error'),
-                        message: message
+                        message
                     });
 
                     this.isCleaningLog = false;
@@ -231,27 +247,42 @@ Component.register('swag-paypal-izettle', {
             const apiKey = this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey;
 
             this.isTestingCredentials = true;
+            this.isTestCredentialsSuccessful = false;
 
-            this.SwagPayPalIZettleApiCredentialsService.validateApiCredentials(apiKey).then((response) => {
+            this.SwagPayPalIZettleSettingApiService.validateApiCredentials(apiKey).then((response) => {
                 const credentialsValid = response.credentialsValid;
                 this.isTestingCredentials = false;
                 this.isTestCredentialsSuccessful = credentialsValid;
-            }).catch((errorResponse) => {
-                if (errorResponse.response.data && errorResponse.response.data.errors) {
-                    let message = `<b>${this.$tc('swag-paypal-izettle.authentification.messageTestError')}</b> `;
-                    message += errorResponse.response.data.errors.map((error) => {
-                        return error.detail;
-                    }).join(' / ');
-
-                    this.createNotificationError({
-                        title: this.$tc('global.default.error'),
-                        message: message
-                    });
-
-                    this.isTestingCredentials = false;
-                    this.isTestCredentialsSuccessful = false;
-                }
+            }).catch(() => {
+                this.catchAuthentificationError();
+                this.isTestingCredentials = false;
             });
+        },
+
+        catchAuthentificationError(errorResponse) {
+            if (errorResponse.response.data && errorResponse.response.data.errors) {
+                let message = `<b>${this.$tc('swag-paypal-izettle.authentification.messageTestError')}</b> `;
+                message += errorResponse.response.data.errors.map((error) => {
+                    return error.detail;
+                }).join(' / ');
+
+                this.createNotificationError({
+                    title: this.$tc('global.default.error'),
+                    message
+                });
+
+                this.isTestingCredentials = false;
+                this.isTestCredentialsSuccessful = false;
+            }
+        },
+
+        onFetchSalesChannelInformation() {
+            this.isLoading = true;
+
+            return this.SwagPayPalIZettleSettingApiService.fetchInformation(this.salesChannel).then(() => {
+                this.previousApiKey = this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey;
+                this.isLoading = false;
+            }).catch(this.catchAuthentificationError);
         }
     }
 });

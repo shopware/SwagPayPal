@@ -50,19 +50,6 @@
                     </sw-entity-single-select>
                 {% endblock %}
 
-                {% block swag_paypal_izettle_detail_settings_input_storefront_domain_currency %}
-                    <sw-entity-single-select v-model="salesChannel.currencyId"
-                                             required
-                                             entity="currency"
-                                             labelProperty="name"
-                                             valueProperty="id"
-                                             :criteria="storefrontSalesChannelDomainCurrencyCriteria"
-                                             :disabled="!salesChannel.currencyId && !salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId"
-                                             :label="$tc('swag-paypal-izettle.detail.settings.storefrontDomainCurrency')"
-                                             @input="forceUpdate">
-                    </sw-entity-single-select>
-                {% endblock %}
-
                 {% block swag_paypal_izettle_detail_settings_input_product_stream %}
                     <sw-entity-single-select v-model="salesChannel.extensions.paypalIZettleSalesChannel.productStreamId"
                                              entity="product_stream"

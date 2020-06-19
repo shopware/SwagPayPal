@@ -15,19 +15,6 @@
             </sw-entity-single-select>
         {% endblock %}
 
-        {% block swag_paypal_izettle_wizard_locale_currency %}
-            <sw-entity-single-select v-model="salesChannel.currencyId"
-                                     required
-                                     entity="currency"
-                                     labelProperty="name"
-                                     valueProperty="id"
-                                     :criteria="currencyCriteria"
-                                     :disabled="!salesChannel.currencyId && !salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId"
-                                     :label="$tc('swag-paypal-izettle.wizard.locale.labelCurrency')"
-                                     @input="forceUpdate">
-            </sw-entity-single-select>
-        {% endblock %}
-
         <div class="subtitle" v-html="$tc('swag-paypal-izettle.wizard.locale.subtitle')"></div>
     </div>
 {% endblock %}

@@ -31,7 +31,6 @@
                 "titleGeneralSettings": "Allgemein",
                 "storefront": "Storefront Verkaufskanal",
                 "storefrontDomain": "Storefront Verkaufskanal-Domain",
-                "storefrontDomainCurrency": "Währung",
                 "productStream": "Dynamische Produktgruppe",
                 "titleCredentials": "Zugangsdaten",
                 "titleSync": "Synchronisation",
@@ -70,15 +69,14 @@
                 "modalTitle": "Wählen Sie einen bestehenden Verkaufskanal",
                 "label": "Verkaufskanal",
                 "header": "Wählen Sie einen Storefront-Verkaufskanal als Basis",
-                "subtitle": "Der gewählte Storefront-Verkaufskanal wird die Auswahl der Produkte definieren. Sie können diese Auswahl in einem späteren Schritt weiter reduzieren.",
+                "subtitle": "Der gewählte Storefront-Verkaufskanal definiert die Auswahl der Produkte. Sie können diese Auswahl in einem späteren Schritt weiter reduzieren.",
                 "nameDecoration": "{name} (iZettle)"
             },
             "locale": {
                 "modalTitle": "Lokalisierung",
-                "labelCurrency": "Währung",
                 "labelDomain": "Domain",
                 "header": "Wählen Sie die Lokalisierungs-Einstellungen für die Synchronisation",
-                "subtitle": "Die gewählte Domain wird die Sprache für Produktnamen und -beschreibungen definieren. Sie müssen auch eine Währung wählen, selbst wenn Sie keine Preise synchronisieren möchten."
+                "subtitle": "Die gewählte Domain definiert die Sprache für Produktnamen und -beschreibungen."
             },
             "product-stream": {
                 "modalTitle": "Dynamische Produktgruppe",

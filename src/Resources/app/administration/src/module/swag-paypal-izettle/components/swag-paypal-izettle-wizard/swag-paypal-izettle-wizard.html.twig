@@ -67,6 +67,7 @@
                             <sw-button v-for="button in buttons.left"
                                        size="small"
                                        :disabled="button.disabled"
+                                       :isLoading="isLoading"
                                        :key="button.key"
                                        :variant="button.variant"
                                        @click="onButtonClick(button.action)">
@@ -80,6 +81,7 @@
                             <sw-button v-for="button in buttons.right"
                                        size="small"
                                        :disabled="button.disabled"
+                                       :isLoading="isLoading"
                                        :key="button.key"
                                        :variant="button.variant"
                                        @click="onButtonClick(button.action)">

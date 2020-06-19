@@ -52,12 +52,22 @@
             <argument type="service" id="Swag\PayPal\IZettle\Client\TokenClientFactory"/>
         </service>
 
+        <service id="Swag\PayPal\IZettle\Resource\UserResource">
+            <argument type="service" id="Swag\PayPal\IZettle\Client\IZettleClientFactory"/>
+        </service>
+
         <service id="Swag\PayPal\IZettle\Setting\SettingsController" public="true">
             <argument type="service" id="Swag\PayPal\IZettle\Setting\Service\ApiCredentialService"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Setting\Service\InformationFetchService"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Setting\Service\ApiCredentialService">
             <argument type="service" id="Swag\PayPal\IZettle\Resource\TokenResource"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Setting\Service\InformationFetchService">
+            <argument type="service" id="Swag\PayPal\IZettle\Resource\UserResource"/>
+            <argument type="service" id="currency.repository"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Command\IZettleSyncCommand">

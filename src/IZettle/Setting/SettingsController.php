@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\IZettle\Setting;
 
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Swag\PayPal\IZettle\Setting\Service\ApiCredentialService;
+use Swag\PayPal\IZettle\Setting\Service\InformationFetchService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,9 +26,17 @@ class SettingsController extends AbstractController
      */
     private $apiCredentialService;
 
-    public function __construct(ApiCredentialService $apiService)
-    {
+    /**
+     * @var InformationFetchService
+     */
+    private $informationFetchService;
+
+    public function __construct(
+        ApiCredentialService $apiService,
+        InformationFetchService $informationFetchService
+    ) {
         $this->apiCredentialService = $apiService;
+        $this->informationFetchService = $informationFetchService;
     }
 
     /**
@@ -39,5 +49,17 @@ class SettingsController extends AbstractController
         $credentialsValid = $this->apiCredentialService->testApiCredentials($apiKey);
 
         return new JsonResponse(['credentialsValid' => $credentialsValid]);
+    }
+
+    /**
+     * @Route("/api/v{version}/_action/paypal/izettle/fetch-information", name="api.action.paypal.izettle.fetch.information", methods={"POST"})
+     */
+    public function fetchInformation(Request $request, Context $context): JsonResponse
+    {
+        $apiKey = $request->request->get('apiKey');
+
+        $information = $this->informationFetchService->fetchInformation($apiKey, $context);
+
+        return new JsonResponse($information);
     }
 }

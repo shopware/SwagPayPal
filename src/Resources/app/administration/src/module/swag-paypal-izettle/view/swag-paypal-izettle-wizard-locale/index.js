@@ -26,20 +26,13 @@ Component.register('swag-paypal-izettle-wizard-locale', {
     },
 
     computed: {
-        currencyCriteria() {
-            const criteria = new Criteria();
-            criteria.addAssociation('salesChannels');
-            if (!this.storefrontSalesChannelId) {
-                return criteria;
-            }
-            return criteria.addFilter(Criteria.equals('salesChannels.id', this.storefrontSalesChannelId));
-        },
-
         domainCriteria() {
             const criteria = new Criteria();
+
             if (!this.storefrontSalesChannelId) {
                 return criteria;
             }
+
             return criteria.addFilter(Criteria.equals('salesChannelId', this.storefrontSalesChannelId));
         }
     },
@@ -73,8 +66,7 @@ Component.register('swag-paypal-izettle-wizard-locale', {
                     position: 'right',
                     variant: 'primary',
                     action: 'swag.paypal.izettle.wizard.product-stream',
-                    disabled: !(this.salesChannel.currencyId) ||
-                        !(this.salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId)
+                    disabled: !(this.salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId)
                 }
             ];
 

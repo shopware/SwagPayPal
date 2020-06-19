@@ -78,7 +78,7 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
             const { navigationIndex } = this.currentStep;
             const navigationSteps = [];
 
-            for (let i = 1; i < maxNavigationIndex; i += 1) {
+            for (let i = 1; i <= maxNavigationIndex; i += 1) {
                 if (i < navigationIndex) {
                     navigationSteps.push('success');
                 } else if (i === navigationIndex) {
