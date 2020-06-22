@@ -14,6 +14,8 @@ use Swag\PayPal\IZettle\Api\Exception\IZettleException;
 
 abstract class AbstractClient
 {
+    protected const PARTNER_IDENTIFIER = '456dadab-3085-4fa3-bf2b-a2efd01c3593';
+
     /**
      * @var Client
      */

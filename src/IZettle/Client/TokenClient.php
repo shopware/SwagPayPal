@@ -30,6 +30,9 @@ class TokenClient extends AbstractClient
     {
         $client = new Client([
             'base_uri' => IZettleBaseURL::OAUTH,
+            'headers' => [
+                'X-iZettle-Application-Id' => self::PARTNER_IDENTIFIER,
+            ],
         ]);
 
         $this->apiKeyDecoder = $apiKeyDecoder;

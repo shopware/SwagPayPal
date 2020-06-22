@@ -34,6 +34,7 @@ class IZettleClient extends AbstractClient
             'base_uri' => $baseUri,
             'headers' => [
                 'Authorization' => $authorizationHeader,
+                'X-iZettle-Application-Id' => self::PARTNER_IDENTIFIER,
             ],
         ]);
 
