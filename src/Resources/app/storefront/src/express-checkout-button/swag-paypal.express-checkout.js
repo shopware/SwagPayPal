@@ -3,11 +3,25 @@
 import StoreApiClient from 'src/service/store-api-client.service';
 import DomAccess from 'src/helper/dom-access.helper';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
-import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractButtons {
     static options = {
+
+        /**
+         * This option defines the class name which will be added when the button gets disabled.
+         *
+         * @type string
+         */
+        disabledClass: 'is-disabled',
+
+        /**
+         * This option defines the selector for the buy button on the product detail page and listing.
+         *
+         * @type string
+         */
+        buyButtonSelector: '.btn-buy',
+
         /**
          * This option specifies the PayPal button color
          *
@@ -86,13 +100,6 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         createNewCartUrl: '',
 
         /**
-         * URL to add a new LineItem to the cart
-         *
-         * @type string
-         */
-        addLineItemUrl: '',
-
-        /**
          * URL for the payment approval
          *
          * @type string
@@ -124,8 +131,83 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         return this.paypal.Buttons(this.getButtonConfig()).render(this.el);
     }
 
-    getButtonConfig() {
+    getBuyButtonState() {
+        if (!this.options.addProductToCart) {
+            return {
+                element: null,
+                disabled: false
+            };
+        }
+
+        const element = DomAccess.querySelector(document, this.options.buyButtonSelector);
+
         return {
+            element,
+            disabled: element.getAttribute('disabled') === 'disabled'
+        };
+    }
+
+    observeBuyButton(target, enableButton, disableButton, config = { attributes: true }) {
+        const callback = (mutations) => {
+            // eslint-disable-next-line no-restricted-syntax
+            for (const mutation of mutations) {
+                if (mutation.type !== 'attributes' || mutation.attributeName !== 'disabled') {
+                    return;
+                }
+
+                const { disabled: isBuyButtonDisabled } = this.getBuyButtonState();
+
+                if (isBuyButtonDisabled) {
+                    disableButton();
+                    return;
+                }
+                enableButton();
+            }
+        };
+
+        const observer = new MutationObserver(callback);
+        observer.observe(target, config);
+
+        return observer;
+    }
+
+    getButtonConfig() {
+        const renderElement = this.el;
+        const { element: buyButton, disabled: isBuyButtonDisabled } = this.getBuyButtonState();
+
+        return {
+            onInit: (data, actions) => {
+                if (!this.options.addProductToCart) {
+                    return;
+                }
+
+                /**
+                 * Helper method which enables the paypal button
+                 * @returns void
+                 */
+                const enableButton = () => {
+                    actions.enable();
+                    renderElement.classList.remove(this.options.disabledClass);
+                };
+
+                /**
+                 * Helper method which disables the paypal button
+                 * @returns void
+                 */
+                const disableButton = () => {
+                    actions.disable();
+                    renderElement.classList.add(this.options.disabledClass);
+                };
+
+                this.observeBuyButton(buyButton, enableButton, disableButton);
+
+                // Set the initial state of the button
+                if (isBuyButtonDisabled) {
+                    disableButton();
+                    return;
+                }
+                enableButton();
+            },
             style: {
                 size: this.options.buttonSize,
                 shape: this.options.buttonShape,
@@ -174,46 +256,18 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     }
 
     addProductToCart() {
-        const formattedLineItems = this._formatLineItems();
-        formattedLineItems._csrf_token = DomAccess.getDataAttribute(this.el, 'swag-pay-pal-express-button-add-line-item-token');
+        const buyButton = DomAccess.querySelector(this.el.closest('form'), this.options.buyButtonSelector);
+        const plugin = window.PluginManager.getPluginInstanceFromElement(DomAccess.querySelector(document, '[data-add-to-cart]'), 'AddToCart');
 
         return new Promise(resolve => {
             this._client.get(this.options.createNewCartUrl, () => {
-                this._client.post(this.options.addLineItemUrl, JSON.stringify(formattedLineItems), () => {
+                plugin.$emitter.subscribe('openOffCanvasCart', () => {
                     resolve();
                 });
+
+                buyButton.click();
             });
         });
-    }
-
-    /**
-     * Returns the line item data with keys like: lineItems[06e28a73ecd44a0e84e5ddf144dff8d7][quantity],
-     * as a proper Object.
-     * @return {Object}
-     */
-    _formatLineItems() {
-        const formData = FormSerializeUtil.serializeJson(this.el.closest('form'));
-
-        const formattedLineItems = {};
-        Object.keys(formData).forEach(key => {
-            const matches = key.match(/lineItems\[(.+)]\[(.+)]/);
-
-            if (key !== 'redirectTo' && matches && matches.length === 3) {
-                if (!formattedLineItems[matches[1]]) {
-                    formattedLineItems[matches[1]] = {
-                        [matches[2]]: formData[matches[0]]
-                    };
-                } else {
-                    const lineItem = formattedLineItems[matches[1]];
-
-                    lineItem[matches[2]] = formData[matches[0]];
-                }
-            }
-        });
-
-        return {
-            lineItems: formattedLineItems
-        };
     }
 
     onApprove(data, actions) {
