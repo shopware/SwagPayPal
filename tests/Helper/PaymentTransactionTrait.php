@@ -18,6 +18,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Test\Payment\Builder\OrderPaymentBuilderTest;
@@ -39,7 +40,7 @@ trait PaymentTransactionTrait
         );
     }
 
-    protected function createOrderTransaction(?string $transactionId): OrderTransactionEntity
+    protected function createOrderTransaction(?string $transactionId = null): OrderTransactionEntity
     {
         $orderTransaction = new OrderTransactionEntity();
         $orderTransaction->setOrderId(OrderPaymentBuilderTest::TEST_ORDER_ID);
@@ -59,6 +60,7 @@ trait PaymentTransactionTrait
     {
         $orderNumber = $orderNumber ?? OrderPaymentBuilderTest::TEST_ORDER_NUMBER;
         $order = new OrderEntity();
+        $order->setSalesChannelId(Defaults::SALES_CHANNEL);
         $order->setShippingCosts(new CalculatedPrice(4.99, 4.99, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $order->setId($orderId);
         $currency = $this->createCurrencyEntity();

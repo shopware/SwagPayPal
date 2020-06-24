@@ -7,7 +7,11 @@
 
 namespace Swag\PayPal\Test\Helper;
 
+use Doctrine\DBAL\Connection;
+use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
+use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
+use Shopware\Core\System\SystemConfig\Util\ConfigReader;
 use Swag\PayPal\Payment\Builder\OrderPaymentBuilder;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
@@ -26,6 +30,7 @@ use Swag\PayPal\Test\Mock\Repositories\EntityRepositoryMock;
 use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -33,6 +38,8 @@ use Swag\PayPal\Webhook\WebhookRegistry;
 
 trait ServicesTrait
 {
+    use KernelTestBehaviour;
+
     protected function createPayPalClientFactory(
         ?SwagPayPalSettingStruct $settings = null
     ): PayPalClientFactoryMock {
@@ -100,6 +107,23 @@ trait ServicesTrait
     protected function createLocaleCodeProvider(): LocaleCodeProvider
     {
         return new LocaleCodeProvider(new LanguageRepoMock());
+    }
+
+    protected function createSystemConfigServiceMock(array $settings = []): SystemConfigServiceMock
+    {
+        $definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
+        $systemConfigRepo = $definitionRegistry->getRepository(
+            (new SystemConfigDefinition())->getEntityName()
+        );
+
+        /** @var Connection $connection */
+        $connection = $this->getContainer()->get(Connection::class);
+        $systemConfigService = new SystemConfigServiceMock($connection, $systemConfigRepo, new ConfigReader());
+        foreach ($settings as $key => $value) {
+            $systemConfigService->set($key, $value);
+        }
+
+        return $systemConfigService;
     }
 
     private function createDummyWebhook(?OrderTransactionRepoMock $orderTransactionRepo = null): DummyWebhook

@@ -19,7 +19,8 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannel\SalesChannelContextSwitcher;
@@ -42,7 +43,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ExpressCheckoutControllerTest extends TestCase
 {
-    use IntegrationTestBehaviour;
+    use BasicTestDataBehaviour;
+    use DatabaseTransactionBehaviour;
     use ServicesTrait;
 
     public const TEST_PAYMENT_ID_WITHOUT_STATE = 'testPaymentIdWithoutState';

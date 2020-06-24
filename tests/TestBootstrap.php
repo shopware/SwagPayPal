@@ -30,9 +30,9 @@ function getProjectDir(): string
     return $dir;
 }
 
-\define('TEST_PROJECT_DIR', getProjectDir());
+$testProjectDir = getProjectDir();
 
-$loader = require TEST_PROJECT_DIR . '/vendor/autoload.php';
+$loader = require $testProjectDir . '/vendor/autoload.php';
 KernelLifecycleManager::prepare($loader);
 $pluginVendorDir = __DIR__ . '/../vendor';
 if (\is_dir($pluginVendorDir)) {
@@ -45,7 +45,7 @@ if (\is_dir($pluginVendorDir)) {
 if (!\class_exists(Dotenv::class)) {
     throw new RuntimeException('APP_ENV environment variable is not defined. You need to define environment variables for configuration or add "symfony/dotenv" as a Composer dependency to load variables from a .env file.');
 }
-(new Dotenv(true))->load(TEST_PROJECT_DIR . '/.env');
+(new Dotenv(true))->load($testProjectDir . '/.env');
 
 $dbUrl = \getenv('DATABASE_URL');
 if ($dbUrl !== false) {

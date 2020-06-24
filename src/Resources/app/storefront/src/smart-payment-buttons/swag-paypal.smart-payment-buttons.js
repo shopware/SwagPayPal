@@ -67,16 +67,54 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          *
          * @type string
          */
-        checkoutConfirmUrl: ''
+        checkoutConfirmUrl: '',
+
+        /**
+         * Request parameter to indicate that an error occurred
+         *
+         * @type string
+         */
+        errorParameter: '',
+
+        /**
+         * Is set, if the plugin is used on the order edit page
+         *
+         * @type string|null
+         */
+        orderId: null,
+
+        /**
+         * URL to the checkout confirm page
+         *
+         * @type string|null
+         */
+        accountOrderEditUrl: '',
+
+        /**
+         * Selector of the selected payment method
+         *
+         * @type string
+         */
+        checkedPaymentMethodSelector: 'input.payment-method-input[checked=checked]',
+
+        /**
+         * Selector of the order confirm form
+         *
+         * @type string
+         */
+        confirmOrderFormSelector: '#confirmOrderForm',
+
+        /**
+         * Selector of the submit button of the order confirm form
+         *
+         * @type string
+         */
+        confirmOrderButtonSelector: 'button[type="submit"]'
     };
 
     init() {
         this.paypal = null;
-        this._client = new StoreApiClient();
-        this.errorParameter = DomAccess.getDataAttribute(
-            this.el,
-            'swag-pay-pal-smart-payment-buttons-error-parameter'
-        );
+
         this.createButton();
     }
 
@@ -88,26 +126,9 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     }
 
     renderButton() {
-        const toggleButtons = () => {
-            const checked = DomAccess.querySelector(document, 'input.payment-method-input[checked=checked]');
+        const confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
 
-            if (checked.value === this.options.paymentMethodId) {
-                DomAccess.querySelector(document, '#confirmFormSubmit').style.display = 'none';
-                this.el.style.display = 'block';
-            } else {
-                DomAccess.querySelector(document, '#confirmFormSubmit').style.display = 'block';
-                this.el.style.display = 'none';
-            }
-        };
-
-        toggleButtons();
-
-        const targetNode = DomAccess.querySelector(document, '.confirm-payment');
-        const config = { attributes: false, childList: true, subtree: false };
-        const observer = new MutationObserver(() => {
-            toggleButtons();
-        });
-        observer.observe(targetNode, config);
+        DomAccess.querySelector(confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
 
         return this.paypal.Buttons(this.getButtonConfig()).render(this.el);
     }
@@ -142,14 +163,19 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
      * @return {Promise}
      */
     createOrder() {
-        const csrfToken = {
+        const client = new StoreApiClient();
+        const postData = {
             _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-smart-payment-buttons-create-payment-token')
         };
+        const orderId = this.options.orderId;
+        if (orderId !== null) {
+            postData.orderId = orderId;
+        }
 
         return new Promise(resolve => {
-            this._client.post(
+            client.post(
                 this.options.createPaymentUrl,
-                JSON.stringify(csrfToken),
+                JSON.stringify(postData),
                 responseText => {
                     const response = JSON.parse(responseText);
                     resolve(response.token);
@@ -160,15 +186,20 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
 
     onApprove(data, actions) {
         const params = new URLSearchParams();
+        let url = this.options.checkoutConfirmUrl;
         params.append('paypalPayerId', data.payerID);
         params.append('paypalPaymentId', data.paymentID);
 
-        const redirectUrl = `${this.options.checkoutConfirmUrl}?${params.toString()}`;
+        if (this.options.accountOrderEditUrl !== null) {
+            url = this.options.accountOrderEditUrl;
+        }
+
+        const redirectUrl = `${url}?${params.toString()}`;
 
         actions.redirect(redirectUrl);
     }
 
     onError() {
-        window.location.replace(`${this.options.checkoutConfirmUrl}?${this.errorParameter}=1`);
+        window.location.replace(`${this.options.checkoutConfirmUrl}?${this.options.errorParameter}=1`);
     }
 }

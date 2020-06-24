@@ -54,7 +54,17 @@ class PlusData extends Struct
     /**
      * @var string
      */
+    protected $setPaymentRouteUrl;
+
+    /**
+     * @var string
+     */
     protected $isEnabledParameterName;
+
+    /**
+     * @var string|null
+     */
+    protected $orderId;
 
     public function getApprovalUrl(): string
     {
@@ -96,8 +106,23 @@ class PlusData extends Struct
         return $this->checkoutOrderUrl;
     }
 
+    public function getSetPaymentRouteUrl(): string
+    {
+        return $this->setPaymentRouteUrl;
+    }
+
     public function getIsEnabledParameterName(): string
     {
         return $this->isEnabledParameterName;
+    }
+
+    public function getOrderId(): ?string
+    {
+        return $this->orderId;
+    }
+
+    public function setOrderId(?string $orderId): void
+    {
+        $this->orderId = $orderId;
     }
 }

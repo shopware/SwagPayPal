@@ -26,6 +26,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 
 class PlusPaymentFinalizeController extends AbstractController
 {
@@ -39,12 +40,19 @@ class PlusPaymentFinalizeController extends AbstractController
      */
     private $paymentHandler;
 
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepo,
-        AsynchronousPaymentHandlerInterface $paymentHandler
+        AsynchronousPaymentHandlerInterface $paymentHandler,
+        RouterInterface $router
     ) {
         $this->orderTransactionRepo = $orderTransactionRepo;
         $this->paymentHandler = $paymentHandler;
+        $this->router = $router;
     }
 
     /**
@@ -97,18 +105,20 @@ class PlusPaymentFinalizeController extends AbstractController
         $paymentTransactionStruct = new AsyncPaymentTransactionStruct($orderTransaction, $order, '');
 
         $orderId = $order->getId();
-        $finishUrl = $this->generateUrl('frontend.checkout.finish.page', [
+        $changedPayment = $request->query->getBoolean('changedPayment');
+        $finishUrl = $this->router->generate('frontend.checkout.finish.page', [
             'orderId' => $orderId,
             PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID => true,
+            'changedPayment' => $changedPayment,
         ]);
 
         try {
             $this->paymentHandler->finalize($paymentTransactionStruct, $request, $salesChannelContext);
         } catch (PaymentProcessException $paymentProcessException) {
-            $finishUrl = $this->generateUrl('frontend.checkout.finish.page', [
+            $finishUrl = $this->router->generate('frontend.checkout.finish.page', [
                 'orderId' => $orderId,
                 PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID => true,
-                'changedPayment' => false,
+                'changedPayment' => $changedPayment,
                 'paymentFailed' => true,
             ]);
         }

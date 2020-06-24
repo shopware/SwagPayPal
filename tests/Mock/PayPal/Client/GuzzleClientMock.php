@@ -75,7 +75,7 @@ class GuzzleClientMock extends Client
      */
     public function patch(string $uri, array $options = []): ResponseInterface
     {
-        return new Response(200, [], $this->handlePatchRequests($uri, $options['json'] ?? null));
+        return new Response(200, [], $this->handlePatchRequests($uri, $options['json']));
     }
 
     public function getData(): array
@@ -199,12 +199,12 @@ class GuzzleClientMock extends Client
         if (\strncmp($resourceUri, RequestUri::PAYMENT_RESOURCE, 16) === 0) {
             $dataJson = $this->ensureValidJson($data);
             $dataArray = \json_decode($dataJson, true);
-            if (isset($dataArray['transactions'][0]['invoice_number']) && $dataArray['transactions'][0]['invoice_number'] === PayPalPaymentHandlerTest::PAYPAL_RESOURCE_THROWS_EXCEPTION) {
+            if (isset($dataArray['transactions'][0]['invoice_number']) && $dataArray['transactions'][0]['invoice_number'] === ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION) {
                 throw new \RuntimeException('A PayPal test error occurred.');
             }
 
             if (\mb_substr($resourceUri, -8) === '/execute') {
-                if (($data instanceof ExecutePayerInfo) && $data->getPayerId() === PayPalPaymentHandlerTest::PAYPAL_RESOURCE_THROWS_EXCEPTION) {
+                if (($data instanceof ExecutePayerInfo) && $data->getPayerId() === ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION) {
                     throw new \RuntimeException('A PayPal test error occurred.');
                 }
                 if ($data === null) {

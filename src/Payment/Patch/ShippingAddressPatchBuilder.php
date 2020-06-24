@@ -25,11 +25,16 @@ class ShippingAddressPatchBuilder
         }
 
         $shippingAddress = new ShippingAddress();
+
         $shippingAddress->setLine1($customerShippingAddress->getStreet());
-        if ($customerShippingAddress->getAdditionalAddressLine1() !== null) {
-            $shippingAddress->setLine2($customerShippingAddress->getAdditionalAddressLine1());
+
+        $additionalAddressLine1 = $customerShippingAddress->getAdditionalAddressLine1();
+        if ($additionalAddressLine1 !== null) {
+            $shippingAddress->setLine2($additionalAddressLine1);
         }
+
         $shippingAddress->setCity($customerShippingAddress->getCity());
+
         $country = $customerShippingAddress->getCountry();
         if ($country !== null) {
             $countryIso = $country->getIso();
@@ -37,13 +42,17 @@ class ShippingAddressPatchBuilder
                 $shippingAddress->setCountryCode($countryIso);
             }
         }
+
         $shippingAddress->setPostalCode($customerShippingAddress->getZipcode());
+
         $state = $customerShippingAddress->getCountryState();
         if ($state !== null) {
             $shippingAddress->setState($state->getShortCode());
         }
-        if ($customerShippingAddress->getPhoneNumber() !== null) {
-            $shippingAddress->setPhone($customerShippingAddress->getPhoneNumber());
+
+        $phoneNumber = $customerShippingAddress->getPhoneNumber();
+        if ($phoneNumber !== null) {
+            $shippingAddress->setPhone($phoneNumber);
         }
         $shippingAddress->setRecipientName($customerShippingAddress->getFirstName() . ' ' . $customerShippingAddress->getLastName());
         $shippingAddressArray = \json_decode((string) \json_encode($shippingAddress), true);

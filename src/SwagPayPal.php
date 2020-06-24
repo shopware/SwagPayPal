@@ -76,6 +76,10 @@ class SwagPayPal extends Plugin
         $ruleRepository = $this->container->get('rule.repository');
         /** @var EntityRepositoryInterface $countryRepository */
         $countryRepository = $this->container->get('country.repository');
+        /** @var PluginIdProvider $pluginIdProvider */
+        $pluginIdProvider = $this->container->get(PluginIdProvider::class);
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->container->get(SystemConfigService::class);
 
         (new InstallUninstall(
             $systemConfigRepository,
@@ -83,8 +87,8 @@ class SwagPayPal extends Plugin
             $salesChannelRepository,
             $ruleRepository,
             $countryRepository,
-            $this->container->get(PluginIdProvider::class),
-            $this->container->get(SystemConfigService::class),
+            $pluginIdProvider,
+            $systemConfigService,
             \get_class($this)
         ))->install($installContext->getContext());
 
@@ -111,6 +115,10 @@ class SwagPayPal extends Plugin
         $countryRepository = $this->container->get('country.repository');
         /** @var EntityRepositoryInterface $ruleRepository */
         $ruleRepository = $this->container->get('rule.repository');
+        /** @var PluginIdProvider $pluginIdProvider */
+        $pluginIdProvider = $this->container->get(PluginIdProvider::class);
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->container->get(SystemConfigService::class);
 
         (new InstallUninstall(
             $systemConfigRepository,
@@ -118,8 +126,8 @@ class SwagPayPal extends Plugin
             $salesChannelRepository,
             $ruleRepository,
             $countryRepository,
-            $this->container->get(PluginIdProvider::class),
-            $this->container->get(SystemConfigService::class),
+            $pluginIdProvider,
+            $systemConfigService,
             \get_class($this)
         ))->uninstall($context);
 
@@ -128,7 +136,10 @@ class SwagPayPal extends Plugin
 
     public function update(UpdateContext $updateContext): void
     {
-        (new Update($this->container->get(SystemConfigService::class)))->update($updateContext);
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->container->get(SystemConfigService::class);
+
+        (new Update($systemConfigService))->update($updateContext);
         parent::update($updateContext);
     }
 

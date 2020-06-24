@@ -21,8 +21,7 @@ class PayPalCookieProviderTest extends TestCase
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $payPalCookieProvider = new PayPalCookieProvider($cookieProviderMock);
-        $result = $payPalCookieProvider->getCookieGroups();
+        $result = (new PayPalCookieProvider($cookieProviderMock))->getCookieGroups();
         static::assertSame($cookies, $result);
     }
 
@@ -37,8 +36,7 @@ class PayPalCookieProviderTest extends TestCase
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $payPalCookieProvider = new PayPalCookieProvider($cookieProviderMock);
-        $result = $payPalCookieProvider->getCookieGroups();
+        $result = (new PayPalCookieProvider($cookieProviderMock))->getCookieGroups();
         static::assertSame($cookies, $result);
     }
 
@@ -52,8 +50,7 @@ class PayPalCookieProviderTest extends TestCase
             ->method('getCookieGroups')
             ->willReturn($cookies);
 
-        $payPalCookieProvider = new PayPalCookieProvider($cookieProviderMock);
-        $result = $payPalCookieProvider->getCookieGroups();
+        $result = (new PayPalCookieProvider($cookieProviderMock))->getCookieGroups();
         if (!$payPalCookieAdded) {
             static::assertSame($cookies, $result);
 

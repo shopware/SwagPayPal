@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11669 - Kompatibilität mit dem Zahlungsprozess nach einer Bestellung hinzugefügt
+
 # 1.6.0
 - PT-11519 - Registriert Webhooks mit HTTPS
 - PT-11593 - Hinweis an der "Zahlungsabschluss"-Option hinzugefügt, um Verwendung mit PayPal PLUS zu verdeutlichen

@@ -8,10 +8,17 @@
 namespace Swag\PayPal\Checkout\Plus\Service;
 
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Plus\PlusData;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
+use Swag\PayPal\Payment\Builder\OrderPaymentBuilderInterface;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
@@ -32,7 +39,12 @@ class PlusDataService
     /**
      * @var CartPaymentBuilderInterface
      */
-    private $paymentBuilder;
+    private $cartPaymentBuilder;
+
+    /**
+     * @var OrderPaymentBuilderInterface
+     */
+    private $orderPaymentBuilder;
 
     /**
      * @var PaymentResource
@@ -50,13 +62,15 @@ class PlusDataService
     private $localeCodeProvider;
 
     public function __construct(
-        CartPaymentBuilderInterface $paymentBuilder,
+        CartPaymentBuilderInterface $cartPaymentBuilder,
+        OrderPaymentBuilderInterface $orderPaymentBuilder,
         PaymentResource $paymentResource,
         RouterInterface $router,
         PaymentMethodUtil $paymentMethodUtil,
         LocaleCodeProvider $localeCodeProvider
     ) {
-        $this->paymentBuilder = $paymentBuilder;
+        $this->cartPaymentBuilder = $cartPaymentBuilder;
+        $this->orderPaymentBuilder = $orderPaymentBuilder;
         $this->paymentResource = $paymentResource;
         $this->router = $router;
         $this->paymentMethodUtil = $paymentMethodUtil;
@@ -68,15 +82,71 @@ class PlusDataService
         SalesChannelContext $salesChannelContext,
         SwagPayPalSettingStruct $settings
     ): ?PlusData {
-        $finishUrl = $this->router->generate(
+        $customer = $salesChannelContext->getCustomer();
+        if ($customer === null) {
+            return null;
+        }
+
+        $finishUrl = $this->createFinishUrl();
+        $payment = $this->cartPaymentBuilder->getPayment($cart, $salesChannelContext, $finishUrl, false);
+
+        return $this->getPlusDataFromPayment($payment, $salesChannelContext, $customer, $settings->getSandbox());
+    }
+
+    public function getPlusDataFromOrder(
+        OrderEntity $order,
+        SalesChannelContext $salesChannelContext,
+        SwagPayPalSettingStruct $settings
+    ): ?PlusData {
+        $customer = $salesChannelContext->getCustomer();
+        if ($customer === null) {
+            return null;
+        }
+
+        $transactions = $order->getTransactions();
+        if ($transactions === null) {
+            throw new InvalidOrderException($order->getId());
+        }
+
+        $firstTransaction = $transactions->first();
+        if ($firstTransaction === null) {
+            throw new InvalidOrderException($order->getId());
+        }
+
+        $finishUrl = $this->createFinishUrl(true);
+        $paymentTransaction = new AsyncPaymentTransactionStruct($firstTransaction, $order, $finishUrl);
+        $payment = $this->orderPaymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
+
+        $plusData = $this->getPlusDataFromPayment($payment, $salesChannelContext, $customer, $settings->getSandbox());
+        if ($plusData === null) {
+            return null;
+        }
+
+        $plusData->setOrderId($order->getId());
+
+        return $plusData;
+    }
+
+    private function createFinishUrl(bool $orderUpdate = false): string
+    {
+        return $this->router->generate(
             'paypal.plus.payment.finalize.transaction',
-            [PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER => true],
+            [
+                PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER => true,
+                'changedPayment' => $orderUpdate,
+            ],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
-        $payment = $this->paymentBuilder->getPayment($cart, $salesChannelContext, $finishUrl, false);
+    }
+
+    private function getPlusDataFromPayment(
+        Payment $payment,
+        SalesChannelContext $salesChannelContext,
+        CustomerEntity $customer,
+        bool $useSandbox
+    ): ?PlusData {
         $payment->setIntent(PaymentIntent::SALE);
 
-        $context = $salesChannelContext->getContext();
         try {
             $response = $this->paymentResource->create(
                 $payment,
@@ -87,22 +157,17 @@ class PlusDataService
             return null;
         }
 
-        $customer = $salesChannelContext->getCustomer();
-
-        if ($customer === null) {
-            return null;
-        }
-
-        $sandbox = $settings->getSandbox();
+        $context = $salesChannelContext->getContext();
         $payPalData = new PlusData();
         $payPalData->assign([
             'approvalUrl' => $response->getLinks()[1]->getHref(),
-            'mode' => $sandbox ? 'sandbox' : 'live',
-            'customerSelectedLanguage' => $this->getPaymentWallLanguage($salesChannelContext),
+            'mode' => $useSandbox ? 'sandbox' : 'live',
+            'customerSelectedLanguage' => $this->getPaymentWallLanguage($context),
             'paymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
             'paypalPaymentId' => $response->getId(),
-            'paypalToken' => PaymentTokenExtractor::extract($payment),
+            'paypalToken' => PaymentTokenExtractor::extract($response),
             'checkoutOrderUrl' => $this->router->generate('sales-channel-api.checkout.order.create', ['version' => 2]),
+            'setPaymentRouteUrl' => $this->router->generate('store-api.order.set-payment', ['version' => 2]),
             'isEnabledParameterName' => PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID,
         ]);
         $billingAddress = $customer->getDefaultBillingAddress();
@@ -116,9 +181,9 @@ class PlusDataService
         return $payPalData;
     }
 
-    private function getPaymentWallLanguage(SalesChannelContext $salesChannelContext): string
+    private function getPaymentWallLanguage(Context $context): string
     {
-        $languageIso = $this->localeCodeProvider->getLocaleCodeFromContext($salesChannelContext->getContext());
+        $languageIso = $this->localeCodeProvider->getLocaleCodeFromContext($context);
 
         $plusLanguage = 'en_GB';
         // use english as default, use german if the locale is from german speaking country (de_DE, de_AT, etc)

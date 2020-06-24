@@ -7,84 +7,30 @@
 
 namespace Swag\PayPal\Test\Webhook\Handler;
 
-use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
-use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use Swag\PayPal\PayPal\Api\Webhook;
-use Swag\PayPal\Test\Helper\OrderTransactionTrait;
-use Swag\PayPal\Test\Helper\StateMachineStateTrait;
-use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Webhook\Handler\SaleComplete;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
-class SaleCompleteTest extends TestCase
+class SaleCompleteTest extends AbstractWebhookHandlerTestCase
 {
-    use KernelTestBehaviour;
-    use StateMachineStateTrait;
-    use DatabaseTransactionBehaviour;
-    use OrderFixture;
-    use OrderTransactionTrait;
-
-    /**
-     * @var SaleComplete
-     */
-    private $webhookHandler;
-
-    /**
-     * @var StateMachineRegistry
-     */
-    private $stateMachineRegistry;
-
-    /**
-     * @var DefinitionInstanceRegistry
-     */
-    private $definitionRegistry;
-
-    protected function setUp(): void
-    {
-        /** @var DefinitionInstanceRegistry $definitionInstanceRegistry */
-        $definitionInstanceRegistry = $this->getContainer()->get(DefinitionInstanceRegistry::class);
-        $this->definitionRegistry = $definitionInstanceRegistry;
-        /** @var StateMachineRegistry $stateMachineRegistry */
-        $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
-        $this->stateMachineRegistry = $stateMachineRegistry;
-        $this->webhookHandler = $this->createWebhookHandler();
-    }
-
     public function testGetEventType(): void
     {
-        static::assertSame(WebhookEventTypes::PAYMENT_SALE_COMPLETED, $this->webhookHandler->getEventType());
+        $this->assertEventType(WebhookEventTypes::PAYMENT_SALE_COMPLETED);
     }
 
     public function testInvoke(): void
     {
-        $webhook = new Webhook();
-        $webhook->assign(['resource' => ['parent_payment' => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID]]);
-        $context = Context::createDefaultContext();
-        $container = $this->getContainer();
-        $transactionId = $this->getTransactionId($context, $container);
-        $this->webhookHandler->invoke($webhook, $context);
-
-        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_PAID,
-            $container,
-            $context
-        );
-
-        $transaction = $this->getTransaction($transactionId, $container, $context);
-        static::assertNotNull($transaction);
-        static::assertNotNull($expectedStateId);
-        static::assertSame($expectedStateId, $transaction->getStateId());
+        $this->assertInvoke(OrderTransactionStates::STATE_PAID);
     }
 
-    private function createWebhookHandler(): SaleComplete
+    public function testInvokeWithoutTransaction(): void
+    {
+        $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_SALE_COMPLETED);
+    }
+
+    protected function createWebhookHandler(): SaleComplete
     {
         return new SaleComplete(
             $this->definitionRegistry,

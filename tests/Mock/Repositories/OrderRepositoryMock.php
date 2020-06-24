@@ -7,11 +7,11 @@
 
 namespace Swag\PayPal\Test\Mock\Repositories;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
@@ -19,10 +19,16 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 
 class OrderRepositoryMock implements EntityRepositoryInterface
 {
+    use PaymentTransactionTrait;
+
     public const NO_ORDER = 'searchResultWithoutOrder';
+    public const NO_ORDER_TRANSACTIONS = 'searchResultWithoutOrderTransactions';
+    public const NO_ORDER_TRANSACTION = 'searchResultWithoutOrderTransaction';
 
     public function getDefinition(): EntityDefinition
     {
@@ -40,18 +46,22 @@ class OrderRepositoryMock implements EntityRepositoryInterface
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
         if ($context->hasExtension(self::NO_ORDER)) {
-            return new EntitySearchResult(
-                0,
-                new EntityCollection([]),
-                null,
-                $criteria,
-                $context
-            );
+            $orderCollection = new OrderCollection([]);
+        } elseif ($context->hasExtension(self::NO_ORDER_TRANSACTIONS)) {
+            $orderEntity = $this->getOrderEntity();
+            $orderEntity->assign(['transactions' => null]);
+            $orderCollection = new OrderCollection([$orderEntity]);
+        } elseif ($context->hasExtension(self::NO_ORDER_TRANSACTION)) {
+            $orderEntity = $this->getOrderEntity();
+            $orderEntity->setTransactions(new OrderTransactionCollection());
+            $orderCollection = new OrderCollection([$orderEntity]);
+        } else {
+            $orderCollection = new OrderCollection([$this->getOrderEntity()]);
         }
 
         return new EntitySearchResult(
-            1,
-            new EntityCollection([$this->createOrderEntity()]),
+            \count($orderCollection),
+            $orderCollection,
             null,
             $criteria,
             $context
@@ -86,11 +96,14 @@ class OrderRepositoryMock implements EntityRepositoryInterface
     {
     }
 
-    private function createOrderEntity(): OrderEntity
+    private function getOrderEntity(): OrderEntity
     {
-        $orderEntity = new OrderEntity();
-        $orderEntity->setId('testOrderId');
-        $orderEntity->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $orderEntity = $this->createOrderEntity(ConstantsForTesting::VALID_ORDER_ID);
+
+        $orderTransaction = $this->createOrderTransaction();
+        $orderTransaction->setOrderId($orderEntity->getId());
+
+        $orderEntity->setTransactions(new OrderTransactionCollection([$orderTransaction]));
 
         return $orderEntity;
     }

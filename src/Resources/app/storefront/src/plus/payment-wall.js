@@ -126,11 +126,25 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         checkoutOrderUrl: '',
 
         /**
+         * URL for setting the payment method to the order
+         *
+         * @type string
+         */
+        setPaymentRouteUrl: '',
+
+        /**
          * Request parameter name which identifies a PLUS checkout
          *
          * @type string
          */
-        isEnabledParameterName: 'isPayPalPlusCheckout'
+        isEnabledParameterName: 'isPayPalPlusCheckout',
+
+        /**
+         * Is set, if the plugin is used on the order edit page
+         *
+         * @type string|null
+         */
+        orderId: null
     };
 
     init() {
@@ -140,11 +154,9 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
     }
 
     createPaymentWall() {
-        this.loaded = false;
         this.paypal = window.PAYPAL;
-        this.paymentWall = null;
 
-        this.paymentWall = this.paypal.apps.PPP({
+        this.paypal.apps.PPP({
             placeholder: this.options.placeholder,
             approvalUrl: this.options.approvalUrl,
             mode: this.options.mode,
@@ -154,65 +166,8 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
             useraction: this.options.userAction,
             surcharging: this.options.surcharging,
             showLoadingIndicator: this.options.showLoadingIndicator,
-            showPuiOnSandbox: this.options.showPuiOnSandbox,
-            onLoad: this.onLoad.bind(this),
-            enableContinue: this.onEnableContinue.bind(this)
+            showPuiOnSandbox: this.options.showPuiOnSandbox
         });
-    }
-
-    onLoad() {
-        this.loaded = true;
-        const selectedPaymentId = SwagPayPalPlusPaymentWall.getSelectedPaymentMethodId();
-
-        if (selectedPaymentId !== this.options.paymentMethodId) {
-            this.clearPaymentSelection();
-        }
-    }
-
-    /**
-     * Returns the currently selected payment id.
-     *
-     * @returns {String}
-     */
-    static getSelectedPaymentMethodId() {
-        const selectedPaymentMethodRadio = DomAccess.querySelector(
-            document,
-            '*[checked="checked"][name="paymentMethodId"]'
-        );
-
-        return DomAccess.getAttribute(selectedPaymentMethodRadio, 'value');
-    }
-
-    /**
-     * This function deselect any payment method inside the iFrame
-     */
-    clearPaymentSelection() {
-        if (this.loaded) {
-            this.paymentWall.deselectPaymentMethod();
-        }
-    }
-
-    /**
-     * This function will be triggered if the "enableContinue" event was fired inside the iFrame.
-     * In addition to that, this event can be used to determine if the user has clicked on one of the payment
-     * methods inside the iFrame. If so, it has to be checked, if PayPal is selected as payment method or not
-     */
-    onEnableContinue() {
-        if (this.loaded) {
-            const paypalRadio = DomAccess.querySelector(
-                document,
-                `*[name=paymentMethodId][value="${this.options.paymentMethodId}"]`
-            );
-
-            const selectedPaymentId = SwagPayPalPlusPaymentWall.getSelectedPaymentMethodId();
-
-            if (selectedPaymentId !== this.options.paymentMethodId && !DomAccess.hasAttribute(paypalRadio, 'checked')) {
-                paypalRadio.setAttribute('checked', 'checked');
-
-                const paymentForm = DomAccess.querySelector(document, '#confirmPaymentForm');
-                paymentForm.dispatchEvent(new Event('change'));
-            }
-        }
     }
 
     /**
@@ -223,24 +178,29 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
      * @param {Event} event
      */
     onConfirmCheckout(event) {
-        const selectedPaymentId = SwagPayPalPlusPaymentWall.getSelectedPaymentMethodId();
-        if (selectedPaymentId !== this.options.paymentMethodId) {
-            return;
-        }
-
         event.preventDefault();
         if (!event.target.checkValidity()) {
             return;
         }
 
-        ElementLoadingIndicatorUtil.create(document.body);
-
-        const csrfToken = {
+        this._client = new StoreApiClient();
+        const data = {
             _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-plus-payment-wall-checkout-order-token')
         };
 
-        this._client = new StoreApiClient();
-        this._client.post(this.options.checkoutOrderUrl, JSON.stringify(csrfToken), this.afterCreateOrder.bind(this));
+        ElementLoadingIndicatorUtil.create(document.body);
+
+        const orderId = this.options.orderId;
+        if (orderId !== null) {
+            data.orderId = orderId;
+            data.paymentMethodId = this.options.paymentMethodId;
+
+            this._client.post(this.options.setPaymentRouteUrl, JSON.stringify(data), this.afterSetPayment.bind(this));
+
+            return;
+        }
+
+        this._client.post(this.options.checkoutOrderUrl, JSON.stringify(data), this.afterCreateOrder.bind(this));
     }
 
     /**
@@ -260,6 +220,13 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
             JSON.stringify(params),
             this.afterPayOrder.bind(this)
         );
+    }
+
+    afterSetPayment(response) {
+        const responseObject = JSON.parse(response);
+        if (responseObject.success === true) {
+            this.afterCreateOrder(JSON.stringify({data: {id: this.options.orderId}}))
+        }
     }
 
     afterPayOrder(response) {

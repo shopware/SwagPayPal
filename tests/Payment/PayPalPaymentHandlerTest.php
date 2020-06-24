@@ -22,7 +22,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -54,14 +53,12 @@ class PayPalPaymentHandlerTest extends TestCase
 {
     use PaymentTransactionTrait;
     use ServicesTrait;
-    use KernelTestBehaviour;
     use StateMachineStateTrait;
     use OrderFixture;
     use DatabaseTransactionBehaviour;
     use OrderTransactionTrait;
 
     public const PAYER_ID_PAYMENT_INCOMPLETE = 'testPayerIdIncomplete';
-    public const PAYPAL_RESOURCE_THROWS_EXCEPTION = 'createRequestThrowsException';
     private const TEST_CUSTOMER_STREET = 'Ebbinghoff 10';
     private const TEST_CUSTOMER_FIRST_NAME = 'Max';
 
@@ -182,7 +179,11 @@ class PayPalPaymentHandlerTest extends TestCase
 
         $handler = $this->createPayPalPaymentHandler($settings);
 
-        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', null, self::PAYPAL_RESOURCE_THROWS_EXCEPTION);
+        $paymentTransaction = $this->createPaymentTransactionStruct(
+            'some-order-id',
+            null,
+            ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION
+        );
         $salesChannelContext = Generator::createSalesChannelContext();
 
         $this->expectException(AsyncPaymentProcessException::class);
@@ -305,7 +306,7 @@ Customer is not logged in.');
         $request = $this->createRequest();
         $request->query->set(
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID,
-            self::PAYPAL_RESOURCE_THROWS_EXCEPTION
+            ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION
         );
 
         $this->expectException(AsyncPaymentFinalizeException::class);

@@ -16,7 +16,8 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
@@ -26,10 +27,12 @@ use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataServic
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Symfony\Component\Routing\RouterInterface;
 
 class PayPalExpressCheckoutDataServiceTest extends TestCase
 {
-    use IntegrationTestBehaviour;
+    use BasicTestDataBehaviour;
+    use DatabaseTransactionBehaviour;
     use ServicesTrait;
 
     private const CLIENT_ID = 'someClientId';
@@ -63,13 +66,19 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     {
         parent::setUp();
         $container = $this->getContainer();
+        /** @var RouterInterface $router */
+        $router = $container->get('router');
 
-        $this->salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
-        $this->cartService = $container->get(CartService::class);
+        /** @var SalesChannelContextFactory $salesChannelContextFactory */
+        $salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
+        $this->salesChannelContextFactory = $salesChannelContextFactory;
+        /** @var CartService $cartService */
+        $cartService = $container->get(CartService::class);
+        $this->cartService = $cartService;
         $this->payPalExpressCheckoutDataService = new PayPalExpressCheckoutDataService(
             $this->cartService,
             $this->createLocaleCodeProvider(),
-            $container->get('router')
+            $router
         );
         /** @var EntityRepositoryInterface $productRepo */
         $productRepo = $container->get('product.repository');

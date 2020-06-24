@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Checkout\SPBCheckout;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
@@ -41,6 +42,7 @@ class SPBMarksSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
+            AccountEditOrderPageLoadedEvent::class => 'addMarksExtension',
             AccountPaymentMethodPageLoadedEvent::class => 'addMarksExtension',
             FooterPageletLoadedEvent::class => 'addMarksExtension',
             CheckoutConfirmPageLoadedEvent::class => 'addMarksExtension',
@@ -48,7 +50,7 @@ class SPBMarksSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param AccountPaymentMethodPageLoadedEvent|FooterPageletLoadedEvent|CheckoutConfirmPageLoadedEvent $event
+     * @param AccountEditOrderPageLoadedEvent|AccountPaymentMethodPageLoadedEvent|FooterPageletLoadedEvent|CheckoutConfirmPageLoadedEvent $event
      */
     public function addMarksExtension($event): void
     {
@@ -68,7 +70,7 @@ class SPBMarksSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if ($event instanceof AccountPaymentMethodPageLoadedEvent) {
+        if ($event instanceof AccountPaymentMethodPageLoadedEvent || $event instanceof AccountEditOrderPageLoadedEvent) {
             $event->getPage()->addExtension(self::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID, $spbMarksData);
 
             return;

@@ -12,7 +12,6 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefi
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\PayPal\Resource\WebhookResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -32,7 +31,6 @@ use Swag\PayPal\Webhook\WebhookServiceInterface;
 class WebhookServiceTest extends TestCase
 {
     use ServicesTrait;
-    use KernelTestBehaviour;
 
     public const THROW_WEBHOOK_ID_INVALID = 'webhookIdInvalid';
 

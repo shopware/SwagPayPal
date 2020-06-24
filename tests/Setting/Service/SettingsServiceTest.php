@@ -7,24 +7,20 @@
 
 namespace Swag\PayPal\Test\Setting\Service;
 
-use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
-use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
-use Shopware\Core\System\SystemConfig\Util\ConfigReader;
+use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
-use Swag\PayPal\Test\Mock\DIContainerMock;
+use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
-use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
-use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Webhook\WebhookService;
 
 class SettingsServiceTest extends TestCase
 {
-    use KernelTestBehaviour;
+    use DatabaseTransactionBehaviour;
+    use ServicesTrait;
 
     private const PREFIX = 'SwagPayPal.settings.';
 
@@ -70,10 +66,7 @@ class SettingsServiceTest extends TestCase
         $settingsService = new SettingsService($this->createSystemConfigServiceMock($settingValues));
         $settings = $settingsService->getSettings();
 
-        static::assertTrue(
-            \method_exists($settings, $getterName),
-            'getter ' . $getterName . ' does not exist'
-        );
+        static::assertTrue(\method_exists($settings, $getterName), 'getter ' . $getterName . ' does not exist');
         static::assertSame($value, $settings->$getterName());
     }
 
@@ -109,10 +102,7 @@ class SettingsServiceTest extends TestCase
         $settingsService->updateSettings([$key => $value]);
         $settings = $settingsService->getSettings();
 
-        static::assertTrue(
-            \method_exists($settings, $getterName),
-            'getter ' . $getterName . ' does not exist'
-        );
+        static::assertTrue(\method_exists($settings, $getterName), 'getter ' . $getterName . ' does not exist');
         static::assertSame($value, $settings->$getterName());
     }
 
@@ -122,23 +112,6 @@ class SettingsServiceTest extends TestCase
         $settingsService = new SettingsService($this->createSystemConfigServiceMock($values));
         $this->expectException(PayPalSettingsInvalidException::class);
         $settingsService->getSettings();
-    }
-
-    private function createSystemConfigServiceMock(array $settings = []): SystemConfigServiceMock
-    {
-        $definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
-        $systemConfigRepo = $definitionRegistry->getRepository(
-            (new SystemConfigDefinition())->getEntityName()
-        );
-
-        /** @var Connection $connection */
-        $connection = $this->getContainer()->get(Connection::class);
-        $systemConfigService = new SystemConfigServiceMock($connection, $systemConfigRepo, new ConfigReader());
-        foreach ($settings as $key => $value) {
-            $systemConfigService->set($key, $value);
-        }
-
-        return $systemConfigService;
     }
 
     private function getRequiredConfigValues(): array

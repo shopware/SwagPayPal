@@ -131,7 +131,6 @@ class PaymentStatusUtilTest extends TestCase
         $firstCapture->setIsFinalCapture(false);
 
         $this->paymentStatusUtil->applyCaptureState($orderId, $firstCapture, $context);
-
         $this->assertTransactionState($orderId, OrderTransactionStates::STATE_PARTIALLY_PAID);
 
         $secondCapture = new Capture();

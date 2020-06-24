@@ -7,24 +7,20 @@
 
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
-use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Migration\MigrationCollectionLoader;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
-use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
-use Shopware\Core\System\SystemConfig\Util\ConfigReader;
+use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\SwagPayPal;
-use Swag\PayPal\Test\Mock\DIContainerMock;
-use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
-use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
+use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\Lifecycle\Update;
 
 class UpdateTest extends TestCase
 {
-    use KernelTestBehaviour;
+    use DatabaseTransactionBehaviour;
+    use ServicesTrait;
 
     private const CLIENT_ID = 'testClientId';
     private const CLIENT_SECRET = 'testClientSecret';
@@ -87,23 +83,6 @@ class UpdateTest extends TestCase
         $update->update($updateContext);
         static::assertSame(self::OTHER_CLIENT_ID, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox'));
         static::assertSame(self::OTHER_CLIENT_SECRET, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'));
-    }
-
-    private function createSystemConfigServiceMock(array $settings = []): SystemConfigServiceMock
-    {
-        $definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
-        $systemConfigRepo = $definitionRegistry->getRepository(
-            (new SystemConfigDefinition())->getEntityName()
-        );
-
-        /** @var Connection $connection */
-        $connection = $this->getContainer()->get(Connection::class);
-        $systemConfigService = new SystemConfigServiceMock($connection, $systemConfigRepo, new ConfigReader());
-        foreach ($settings as $key => $value) {
-            $systemConfigService->set($key, $value);
-        }
-
-        return $systemConfigService;
     }
 
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext

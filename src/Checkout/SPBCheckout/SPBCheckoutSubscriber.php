@@ -9,16 +9,21 @@ namespace Swag\PayPal\Checkout\SPBCheckout;
 
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
+use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
 use Swag\PayPal\Payment\Handler\AbstractPaymentHandler;
 use Swag\PayPal\Payment\Handler\EcsSpbHandler;
+use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -69,30 +74,44 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
+            AccountEditOrderPageLoadedEvent::class => 'onAccountOrderEditLoaded',
             CheckoutConfirmPageLoadedEvent::class => 'onCheckoutConfirmLoaded',
+
+            HandlePaymentMethodRouteRequestEvent::class => 'addNecessaryRequestParameter',
         ];
+    }
+
+    public function onAccountOrderEditLoaded(AccountEditOrderPageLoadedEvent $event): void
+    {
+        $request = $event->getRequest();
+        $this->addErrorMessage($request);
+        $settings = $this->checkSettings($event->getSalesChannelContext());
+        if ($settings === null) {
+            return;
+        }
+
+        if ($this->addSuccessMessage($request)) {
+            return;
+        }
+
+        $editOrderPage = $event->getPage();
+        $buttonData = $this->spbCheckoutDataService->getCheckoutData(
+            $event->getSalesChannelContext(),
+            $settings,
+            $editOrderPage->getOrder()->getId()
+        );
+
+        $this->changePaymentMethodDescription($editOrderPage->getPaymentMethods(), $event->getContext());
+
+        $editOrderPage->addExtension(self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID, $buttonData);
     }
 
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
-        if ($event->getRequest()->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER)) {
-            $this->session->getFlashBag()->add('danger', $this->translator->trans('smartPaymentButtons.confirmPageError'));
-        }
-
-        $salesChannelContext = $event->getSalesChannelContext();
-        if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
-            return;
-        }
-
-        try {
-            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
-        } catch (PayPalSettingsInvalidException $e) {
-            return;
-        }
-
-        if (!$settings->getSpbCheckoutEnabled()
-            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_GERMANY
-        ) {
+        $request = $event->getRequest();
+        $this->addErrorMessage($request);
+        $settings = $this->checkSettings($event->getSalesChannelContext());
+        if ($settings === null) {
             return;
         }
 
@@ -101,12 +120,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $requestQuery = $event->getRequest()->query;
-        if ($requestQuery->has(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
-            && $requestQuery->has(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
-        ) {
-            $this->session->getFlashBag()->add('success', $this->translator->trans('smartPaymentButtons.confirmPageHint'));
-
+        if ($this->addSuccessMessage($request)) {
             return;
         }
 
@@ -118,6 +132,72 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         $this->changePaymentMethodDescription($confirmPage->getPaymentMethods(), $event->getContext());
 
         $confirmPage->addExtension(self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID, $buttonData);
+    }
+
+    public function addNecessaryRequestParameter(HandlePaymentMethodRouteRequestEvent $event): void
+    {
+        $storefrontRequest = $event->getStorefrontRequest();
+        $storeApiRequest = $event->getStoreApiRequest();
+
+        $originalRoute = $storefrontRequest->attributes->get('_route');
+        if ($originalRoute !== 'frontend.account.edit-order.update-order') {
+            return;
+        }
+
+        $storeApiRequest->request->set(
+            PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID,
+            $storefrontRequest->request->get(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID)
+        );
+        $storeApiRequest->request->set(
+            AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME,
+            $storefrontRequest->request->get(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
+        );
+        $storeApiRequest->request->set(
+            EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME,
+            $storefrontRequest->request->get(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
+        );
+    }
+
+    private function addErrorMessage(Request $request): void
+    {
+        if ($request->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER)) {
+            $this->session->getFlashBag()->add('danger', $this->translator->trans('smartPaymentButtons.confirmPageError'));
+        }
+    }
+
+    private function checkSettings(SalesChannelContext $salesChannelContext): ?SwagPayPalSettingStruct
+    {
+        if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
+            return null;
+        }
+
+        try {
+            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
+        } catch (PayPalSettingsInvalidException $e) {
+            return null;
+        }
+
+        if (!$settings->getSpbCheckoutEnabled()
+            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_GERMANY
+        ) {
+            return null;
+        }
+
+        return $settings;
+    }
+
+    private function addSuccessMessage(Request $request): bool
+    {
+        $requestQuery = $request->query;
+        if ($requestQuery->has(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
+            && $requestQuery->has(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
+        ) {
+            $this->session->getFlashBag()->add('success', $this->translator->trans('smartPaymentButtons.confirmPageHint'));
+
+            return true;
+        }
+
+        return false;
     }
 
     private function changePaymentMethodDescription(PaymentMethodCollection $paymentMethods, Context $context): void

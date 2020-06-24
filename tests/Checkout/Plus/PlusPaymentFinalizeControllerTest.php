@@ -10,13 +10,14 @@ namespace Swag\PayPal\Test\Checkout\Plus;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
-use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
 use Swag\PayPal\Test\Mock\Payment\AsyncPaymentHandlerMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 
 class PlusPaymentFinalizeControllerTest extends TestCase
 {
@@ -33,13 +34,24 @@ class PlusPaymentFinalizeControllerTest extends TestCase
         );
 
         static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
-        static::assertSame('/checkout/finish?orderId=testOrderId&isPayPalPlusCheckout=1', $response->getTargetUrl());
+        static::assertSame('/checkout/finish?orderId=testOrderId&isPayPalPlusCheckout=1&changedPayment=0', $response->getTargetUrl());
+    }
+
+    public function testFinalizeTransactionWithChangedPayment(): void
+    {
+        $response = $this->createController()->finalizeTransaction(
+            new Request(['changedPayment' => true]),
+            Generator::createSalesChannelContext()
+        );
+
+        static::assertSame(Response::HTTP_FOUND, $response->getStatusCode());
+        static::assertSame('/checkout/finish?orderId=testOrderId&isPayPalPlusCheckout=1&changedPayment=1', $response->getTargetUrl());
     }
 
     public function testFinalizeTransactionWithoutTransaction(): void
     {
         $salesChannelContext = Generator::createSalesChannelContext();
-        $salesChannelContext->getContext()->addExtension(self::WITHOUT_TRANSACTION, new Entity());
+        $salesChannelContext->getContext()->addExtension(self::WITHOUT_TRANSACTION, new ArrayStruct());
         $this->expectException(InvalidTransactionException::class);
         $this->expectExceptionMessage('The transaction with id  is invalid or could not be found.');
         $this->createController()->finalizeTransaction(new Request(), $salesChannelContext);
@@ -48,7 +60,7 @@ class PlusPaymentFinalizeControllerTest extends TestCase
     public function testFinalizeTransactionWithoutOrder(): void
     {
         $salesChannelContext = Generator::createSalesChannelContext();
-        $salesChannelContext->getContext()->addExtension(self::WITHOUT_ORDER, new Entity());
+        $salesChannelContext->getContext()->addExtension(self::WITHOUT_ORDER, new ArrayStruct());
         $this->expectException(InvalidTransactionException::class);
         $this->expectExceptionMessage(
             \sprintf(
@@ -70,9 +82,13 @@ class PlusPaymentFinalizeControllerTest extends TestCase
 
     private function createController(): PlusPaymentFinalizeController
     {
-        $controller = new PlusPaymentFinalizeController(new OrderTransactionRepoMock(), new AsyncPaymentHandlerMock());
-        $controller->setContainer($this->getContainer());
+        /** @var RouterInterface $router */
+        $router = $this->getContainer()->get('router');
 
-        return $controller;
+        return new PlusPaymentFinalizeController(
+            new OrderTransactionRepoMock(),
+            new AsyncPaymentHandlerMock(),
+            $router
+        );
     }
 }

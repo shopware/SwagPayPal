@@ -107,22 +107,8 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithItemList(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setSubmitCart(true);
-        $settings->setLandingPage('Foo');
-        $paymentBuilder = $this->createPaymentBuilder($settings);
+        $transaction = $this->assertTransaction(ConstantsForTesting::VALID_ORDER_ID);
 
-        $context = Context::createDefaultContext();
-        $salesChannelContext = Generator::createSalesChannelContext($context);
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-
-        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-
-        $transaction = \json_encode($payment->getTransactions()[0]);
-
-        static::assertNotFalse($transaction);
-
-        $transaction = \json_decode($transaction, true);
         static::assertNotNull(
             $transaction['item_list'],
             'ItemList is null, it probably got removed by the TransactionValidator.'
@@ -139,23 +125,8 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithoutPrice(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setSubmitCart(true);
-        $settings->setLandingPage('Foo');
-        $paymentBuilder = $this->createPaymentBuilder($settings);
-
-        $context = Context::createDefaultContext();
-        $salesChannelContext = Generator::createSalesChannelContext($context);
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_PRICE);
-
-        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-        $transaction = \json_encode($payment->getTransactions()[0]);
-
-        static::assertNotFalse($transaction);
-
-        $transaction = \json_decode($transaction, true)['item_list'];
-
-        static::assertNull($transaction);
+        $transaction = $this->assertTransaction(ConstantsForTesting::ORDER_ID_MISSING_PRICE);
+        static::assertNull($transaction['item_list']);
     }
 
     public function testGetPaymentWithoutLineItems(): void
@@ -281,5 +252,25 @@ class OrderPaymentBuilderTest extends TestCase
             $defaultContext->getVersionId(),
             $defaultContext->getCurrencyFactor()
         );
+    }
+
+    private function assertTransaction(string $orderId): array
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setSubmitCart(true);
+        $settings->setLandingPage('Foo');
+        $paymentBuilder = $this->createPaymentBuilder($settings);
+
+        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext($context);
+        $paymentTransaction = $this->createPaymentTransactionStruct($orderId);
+
+        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
+
+        $transaction = \json_encode($payment->getTransactions()[0]);
+
+        static::assertNotFalse($transaction);
+
+        return \json_decode($transaction, true);
     }
 }
