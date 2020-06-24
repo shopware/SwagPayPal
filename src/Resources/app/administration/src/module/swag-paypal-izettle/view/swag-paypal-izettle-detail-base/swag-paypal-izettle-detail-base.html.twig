@@ -1,12 +1,14 @@
 <div class="sw-sales-channel-detail-base">
 
     {% block swag_paypal_izettle_detail_base_status %}
-        <swag-paypal-izettle-status v-if="!isNewEntity"
-                                    :icon="statusIcon"
-                                    :iconAnimated="isSyncing"
-                                    :status="$tc('swag-paypal-izettle.detail.base.status.message.' + this.status)"
-                                    :title="$tc('swag-paypal-izettle.detail.base.titleSync')"
-                                    :variant="statusVariant">
+        <swag-paypal-izettle-status-view v-if="!isNewEntity"
+                                         :currentRun="currentRun"
+                                         :isLoading="isLoading"
+                                         :isSyncing="isSyncing"
+                                         :lastCompleteRun="lastCompleteRun"
+                                         :lastFinishedRun="lastFinishedRun"
+                                         :salesChannel="salesChannel"
+                                         :syncErrors="syncErrors">
 
             {% block swag_paypal_izettle_detail_base_status_actions %}
                 <template #actions>
@@ -53,91 +55,74 @@
                     {% endblock %}
                 </template>
             {% endblock %}
-
-            {% block swag_paypal_izettle_detail_base_status_detail %}
-                <template #detail v-if="isSyncing">
-
-                    {% block swag_paypal_izettle_detail_base_status_detail_syncing %}
-                        {{ $tc('swag-paypal-izettle.detail.base.status.syncingDetail') }}
-                    {% endblock %}
-                </template>
-                <template #detail v-else-if="lastFinishedRun">
-
-                    {% block swag_paypal_izettle_detail_base_status_detail_static %}
-                        {{ $tc('swag-paypal-izettle.detail.base.status.lastSynced') }}:
-                        {{ lastFinishedRun.updatedAt | date({
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit',
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric'
-                            })
-                        }}
-                    {% endblock %}
-
-                    {% block swag_paypal_izettle_detail_base_status_detail_errors %}
-                        <sw-alert v-if="syncErrors"
-                                  variant="error"
-                                  :closable="true"
-                                  :title="$tc('swag-paypal-izettle.detail.base.syncErrorTitle')">
-                            <ul>
-                                <li v-for="error in syncErrors">{{ error.detail }} ({{ error.code }})</li>
-                            </ul>
-                        </sw-alert>
-                    {% endblock %}
-                </template>
-            {% endblock %}
-        </swag-paypal-izettle-status>
+        </swag-paypal-izettle-status-view>
     {% endblock %}
 
     {% block swag_paypal_izettle_detail_base_options %}
-        <sw-card v-if="!isNewEntity" :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.base.titleOptions')">
-            <sw-button-group>
+        <sw-card v-if="!isNewEntity" :title="$tc('sw-sales-channel.detail.deleteModalTitle')" :isLoading="isLoading">
 
-                {% block swag_paypal_izettle_detail_base_options_delete %}
-                    <div class="sw-sales-channel-detail-_button-delete">
-                        <sw-button size="small"
-                                   variant="danger"
-                                   @click="showDeleteModal = true">
-                            {{ $tc('sw-sales-channel.detail.buttonDelete') }}
-                        </sw-button>
-                    </div>
+            {% block swag_paypal_izettle_detail_base_options_delete %}
+                <sw-container columns="1fr 175px" gap="0px 30px" class="sw-sales-channel-detail-base__delete-sales-channel">
 
-                    {% block swag_paypal_izettle_detail_base_options_delete_modal %}
-                        <sw-modal v-if="showDeleteModal"
-                                  class="sw-sales-channel-detail-_delete-modal"
-                                  ref="modal"
-                                  variant="small"
-                                  :title="$tc('sw-sales-channel.detail.deleteModalTitle')"
-                                  @modal-close="onCloseDeleteModal">
+                    {% block sw_sales_channel_detail_base_options_delete_text %}
+                        <div class="sw-sales-channel-detail-base__description-text">
+                            <strong>{{ $tc('sw-sales-channel.detail.titleDeleteSalesChannelWarning') }}</strong>
+                            {{ $tc('sw-sales-channel.detail.textDeleteSalesChannelWarning') }}
+                        </div>
+                    {% endblock %}
 
-                            <p class="sw-sales-channel-detail-_delete-modal-confirm-text">
-                                {{ $tc('sw-sales-channel.detail.textConfirmDelete') }}
-                            </p>
-                            <p class="sw-sales-channel-detail-_delete-modal-name">
-                                <strong>{{ placeholder(salesChannel, 'name') }}</strong>
-                            </p>
-                            <p>
-                                {{ $tc('sw-sales-channel.detail.textDeleteInfo') }}
-                            </p>
+                    {% block sw_sales_channel_detail_base_options_delete_button %}
+                        <div class="sw-sales-channel-detail-base__button-delete">
+                            <sw-button
+                                variant="danger"
+                                size="small"
+                                @click="showDeleteModal = true">
+                                {{ $tc('sw-sales-channel.detail.buttonDelete') }}
+                            </sw-button>
+                        </div>
+                    {% endblock %}
+                </sw-container>
+            {% endblock %}
 
-                            <template #modal-footer>
-                                <sw-button size="small"
-                                           @click="onCloseDeleteModal">
-                                        {{ $tc('sw-sales-channel.detail.buttonCloseDeleteModal') }}
+
+            {% block swag_paypal_izettle_detail_base_options_delete_modal %}
+                <sw-modal v-if="showDeleteModal"
+                          class="sw-sales-channel-detail-base__delete-modal"
+                          ref="modal"
+                          variant="small"
+                          :title="$tc('sw-sales-channel.detail.deleteModalTitle')"
+                          @modal-close="onCloseDeleteModal">
+
+                    {% block swag_paypal_izettle_detail_base_options_delete_modal_confirmtext %}
+                        <p class="sw-sales-channel-detail-base__delete-modal-confirm-text">
+                            {{ $tc('sw-sales-channel.detail.textConfirmDelete') }}
+                        </p>
+                        <p class="sw-sales-channel-detail-base__delete-modal-name">
+                            <strong>{{ placeholder(salesChannel, 'name') }}</strong>
+                        </p>
+                        <p>{{ $tc('sw-sales-channel.detail.textDeleteInfo') }}</p>
+                    {% endblock %}
+
+                    {% block sw_sales_channel_detail_options_delete_modal_footer %}
+                        <template #modal-footer>
+
+                            {% block swag_paypal_izettle_detail_base_options_delete_modal_abort %}
+                                <sw-button size="small" @click="onCloseDeleteModal">
+                                    {{ $tc('sw-sales-channel.detail.buttonCloseDeleteModal') }}
                                 </sw-button>
+                            {% endblock %}
 
+                            {% block swag_paypal_izettle_detail_base_options_delete_modal_confirm %}
                                 <sw-button size="small"
                                            variant="danger"
                                            @click="onConfirmDelete">
-                                        {{ $tc('sw-sales-channel.detail.buttonConfirmDelete') }}
+                                    {{ $tc('sw-sales-channel.detail.buttonConfirmDelete') }}
                                 </sw-button>
-                            </template>
-                        </sw-modal>
+                            {% endblock %}
+                        </template>
                     {% endblock %}
-                {% endblock %}
-            </sw-button-group>
+                </sw-modal>
+            {% endblock %}
         </sw-card>
     {% endblock %}
 </div>

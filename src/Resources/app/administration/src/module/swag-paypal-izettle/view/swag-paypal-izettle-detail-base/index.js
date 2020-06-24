@@ -38,6 +38,7 @@ Component.register('swag-paypal-izettle-detail-base', {
             showDeleteModal: false,
             currentRun: null,
             lastFinishedRun: null,
+            lastCompleteRun: null,
             statusErrorLevel: null
         };
     },
@@ -49,39 +50,6 @@ Component.register('swag-paypal-izettle-detail-base', {
 
         runRepository() {
             return this.repositoryFactory.create('swag_paypal_izettle_sales_channel_run');
-        },
-
-        status() {
-            if (this.isSyncing) {
-                return 'syncing';
-            }
-            if (this.noRunYet) {
-                return 'noRunYet';
-            }
-            return this.statusErrorLevel;
-        },
-
-        statusVariant() {
-            if (this.isSyncing || this.noRunYet) {
-                return 'info';
-            }
-            return this.statusErrorLevel;
-        },
-
-        statusIcon() {
-            const iconConfig = {
-                syncing: 'default-arrow-360-full',
-                warning: 'default-badge-warning',
-                error: 'default-basic-x-line',
-                success: 'default-basic-checkmark-line',
-                noRunYet: 'default-action-more-horizontal'
-            };
-
-            return iconConfig[this.status] || 'default-badge-info';
-        },
-
-        noRunYet() {
-            return this.salesChannel === null || this.salesChannel.id === null || this.currentRun === null;
         }
     },
 
@@ -209,20 +177,32 @@ Component.register('swag-paypal-izettle-detail-base', {
 
             return this.runRepository.search(criteria, Shopware.Context.api).then((result) => {
                 this.lastFinishedRun = result.first();
-                this.statusErrorLevel = this.getHighestLevel(this.lastFinishedRun);
+                if (this.lastFinishedRun.task !== 'complete') {
+                    this.loadLastCompleteRun();
+                } else {
+                    this.lastCompleteRun = this.lastFinishedRun;
+                }
                 this.$forceUpdate();
             });
         },
 
-        getHighestLevel(run) {
-            const level = Math.max(...run.logs.map((log) => { return log.level; }));
-            if (level >= 400) {
-                return 'error';
+        loadLastCompleteRun() {
+            if (this.salesChannel === null || this.salesChannel.id === null) {
+                this.lastCompleteRun = null;
+                return Promise.resolve();
             }
-            if (level >= 300) {
-                return 'warning';
-            }
-            return 'success';
+
+            const criteria = new Criteria(1, 1);
+            criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
+            criteria.addFilter(Criteria.equals('task', 'complete'));
+            criteria.addFilter(Criteria.not('AND', [Criteria.equals('updatedAt', null)]));
+            criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
+            criteria.addAssociation('logs');
+
+            return this.runRepository.search(criteria, Shopware.Context.api).then((result) => {
+                this.lastCompleteRun = result.first();
+                this.$forceUpdate();
+            });
         }
     }
 });

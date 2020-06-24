@@ -8,7 +8,6 @@
         },
         "detail": {
             "base": {
-                "titleOptions": "Optionen",
                 "titleSync": "Synchronisation",
                 "buttonSync": "Jetzt synchronisieren",
                 "buttonSyncProducts": "Produkt-Details synchronisieren",
@@ -16,6 +15,7 @@
                 "buttonSyncInventory": "Bestand synchronisieren",
                 "syncErrorTitle": "Synchronisations-Fehler",
                 "status": {
+                    "disabled": "Die Synchronisation ist nicht aktiv, da dieser Verkaufskanal deaktiviert ist.",
                     "message": {
                         "syncing": "Synchronisation läuft",
                         "noRunYet": "Noch keine Synchronisation durchgeführt",
@@ -23,7 +23,14 @@
                         "warning": "Die letzte Synchronisation wurde mit Warnmeldungen abgeschlossen",
                         "error": "Die letzte Synchronisation wurde mit Fehlern abgeschlossen"
                     },
+                    "task": {
+                        "complete": "Vollständig",
+                        "product": "Produkte",
+                        "image": "Bilder",
+                        "inventory": "Bestand"
+                    },
                     "lastSynced": "Zuletzt synchronisiert",
+                    "lastSyncedComplete": "Zuletzt vollständig synchronisiert",
                     "syncingDetail": "Dies könnte einige Minuten dauern ... Dieser Prozess läuft im Hintergrund. Sie können ihren Store wie gewohnt weiterverwenden."
                 }
             },

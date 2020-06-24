@@ -32,7 +32,7 @@ class RunServiceTest extends TestCase
         $runService = new RunService($runRepository, $logRepository, $logger);
 
         $runRepository->expects(static::once())->method('create');
-        $run = $runService->startRun(Defaults::SALES_CHANNEL, $context);
+        $run = $runService->startRun(Defaults::SALES_CHANNEL, 'complete', $context);
 
         $logger->info('test');
 
@@ -61,7 +61,7 @@ class RunServiceTest extends TestCase
         $runService = new RunService($runRepository, $logRepository, $logger);
 
         $runRepository->expects(static::once())->method('create');
-        $run = $runService->startRun(Defaults::SALES_CHANNEL, $context);
+        $run = $runService->startRun(Defaults::SALES_CHANNEL, 'complete', $context);
 
         $product = new SalesChannelProductEntity();
         $product->setId(Uuid::randomHex());

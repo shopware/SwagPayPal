@@ -8,7 +8,6 @@
         },
         "detail": {
             "base": {
-                "titleOptions": "Options",
                 "titleSync": "Synchronization",
                 "buttonSync": "Synchronize Now",
                 "buttonSyncProducts": "Synchronize Product Details",
@@ -16,6 +15,7 @@
                 "buttonSyncInventory": "Synchronize Inventory",
                 "syncErrorTitle": "Synchronization Error",
                 "status": {
+                    "disabled": "Sync is not enabled, because your sales channel is disabled.",
                     "message": {
                         "syncing": "Synchronization in Progress",
                         "noRunYet": "No recent run found",
@@ -23,7 +23,14 @@
                         "warning": "Last synchronization finished with warnings",
                         "error": "Last synchronization finished with errors"
                     },
+                    "task": {
+                        "complete": "complete",
+                        "product": "products",
+                        "image": "images",
+                        "inventory": "inventory"
+                    },
                     "lastSynced": "Last synchronization",
+                    "lastSyncedComplete": "Last complete synchronization",
                     "syncingDetail": "This could take a few minutes ... This process runs in the background. You can use your store as normal."
                 }
             },

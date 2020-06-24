@@ -138,7 +138,7 @@ class IZettleSyncController extends AbstractController
      */
     public function cleanUpLog(string $salesChannelId, Context $context): Response
     {
-        $salesChannel = $this->getSalesChannel($salesChannelId, $context);
+        $salesChannel = $this->getSalesChannel($salesChannelId, $context, true);
 
         $this->logCleaner->cleanUpLog($salesChannel->getId(), $context);
 
@@ -152,7 +152,7 @@ class IZettleSyncController extends AbstractController
     {
         $limit = $request->query->getInt('limit', 10);
         $page = $request->query->getInt('page', 1);
-        $salesChannel = $this->getSalesChannel($salesChannelId, $context);
+        $salesChannel = $this->getSalesChannel($salesChannelId, $context, true);
 
         $productLogSearch = $this->productSelection->getProductLogCollection(
             $salesChannel,
@@ -164,12 +164,14 @@ class IZettleSyncController extends AbstractController
         return new JsonResponse($productLogSearch);
     }
 
-    private function getSalesChannel(string $salesChannelId, Context $context): SalesChannelEntity
+    private function getSalesChannel(string $salesChannelId, Context $context, bool $returnDisabled = false): SalesChannelEntity
     {
         $criteria = new Criteria();
         $criteria->setIds([$salesChannelId]);
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE));
-        $criteria->addFilter(new EqualsFilter('active', true));
+        if (!$returnDisabled) {
+            $criteria->addFilter(new EqualsFilter('active', true));
+        }
         $criteria->addAssociation('currency');
 
         /** @var SalesChannelEntity|null $salesChannel */

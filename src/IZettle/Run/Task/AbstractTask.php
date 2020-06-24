@@ -35,7 +35,7 @@ abstract class AbstractTask
 
     public function execute(SalesChannelEntity $salesChannel, Context $context): void
     {
-        $run = $this->runService->startRun($salesChannel->getId(), $context);
+        $run = $this->runService->startRun($salesChannel->getId(), $this->getRunTaskName(), $context);
         try {
             $this->run($salesChannel, $context);
         } catch (\Throwable $e) {

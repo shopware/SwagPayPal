@@ -40,15 +40,17 @@ class RunService
         $this->logger = $logger;
     }
 
-    public function startRun(string $salesChannelId, Context $context): IZettleSalesChannelRunEntity
+    public function startRun(string $salesChannelId, string $taskName, Context $context): IZettleSalesChannelRunEntity
     {
         $run = new IZettleSalesChannelRunEntity();
         $run->setId(Uuid::randomHex());
         $run->setSalesChannelId($salesChannelId);
+        $run->setTask($taskName);
 
         $this->runRepository->create([[
             'id' => $run->getId(),
             'salesChannelId' => $salesChannelId,
+            'task' => $taskName,
         ]], $context);
 
         return $run;

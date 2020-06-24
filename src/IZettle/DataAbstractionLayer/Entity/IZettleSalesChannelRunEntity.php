@@ -20,6 +20,11 @@ class IZettleSalesChannelRunEntity extends Entity
     protected $salesChannelId;
 
     /**
+     * @var string
+     */
+    protected $task;
+
+    /**
      * @var IZettleSalesChannelRunLogCollection
      */
     protected $logs;
@@ -32,6 +37,16 @@ class IZettleSalesChannelRunEntity extends Entity
     public function setSalesChannelId(string $salesChannelId): void
     {
         $this->salesChannelId = $salesChannelId;
+    }
+
+    public function getTask(): string
+    {
+        return $this->task;
+    }
+
+    public function setTask(string $task): void
+    {
+        $this->task = $task;
     }
 
     public function getLogs(): IZettleSalesChannelRunLogCollection
