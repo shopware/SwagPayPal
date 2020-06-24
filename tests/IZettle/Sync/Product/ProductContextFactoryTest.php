@@ -54,8 +54,9 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
             $entity = new IZettleSalesChannelProductEntity();
             $entity->setSalesChannelId(Defaults::SALES_CHANNEL);
             $entity->setProductId($productEntity->getId());
-            if ($productEntity->getVersionId() !== null) {
-                $entity->setProductVersionId($productEntity->getVersionId());
+            $versionId = $productEntity->getVersionId();
+            if ($versionId !== null) {
+                $entity->setProductVersionId($versionId);
             }
             $entity->setUniqueIdentifier(Uuid::randomHex());
             $entity->setChecksum($product->generateChecksum());

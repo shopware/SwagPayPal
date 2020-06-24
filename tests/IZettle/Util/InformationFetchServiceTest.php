@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\IZettle\Util;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\IZettle\Api\IZettleRequestUri;
 use Swag\PayPal\IZettle\Client\IZettleClient;
@@ -31,9 +32,12 @@ class InformationFetchServiceTest extends TestCase
     {
         $context = Context::createDefaultContext();
 
+        /** @var EntityRepositoryInterface $currencyRepository */
+        $currencyRepository = $this->getContainer()->get('currency.repository');
+
         $informationFetchService = new InformationFetchService(
             $this->createUserResource(self::CURRENCY_CODE),
-            $this->getContainer()->get('currency.repository')
+            $currencyRepository
         );
 
         $information = $informationFetchService->fetchInformation(self::TEST_API_KEY, $context);
@@ -50,9 +54,12 @@ class InformationFetchServiceTest extends TestCase
     {
         $context = Context::createDefaultContext();
 
+        /** @var EntityRepositoryInterface $currencyRepository */
+        $currencyRepository = $this->getContainer()->get('currency.repository');
+
         $informationFetchService = new InformationFetchService(
             $this->createUserResource(self::INVALID_CURRENCY_CODE),
-            $this->getContainer()->get('currency.repository')
+            $currencyRepository
         );
 
         $this->expectException(CurrencyNotFoundException::class);

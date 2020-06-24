@@ -26,7 +26,7 @@ class CategoryConverter
     {
         $category = new Category();
         $category->setUuid($this->uuidConverter->convertUuidToV1($shopwareCategory->getId()));
-        $category->setName($shopwareCategory->getTranslation('name') ?? $shopwareCategory->getName());
+        $category->setName($shopwareCategory->getTranslation('name') ?? $shopwareCategory->getName() ?? '');
 
         return $category;
     }

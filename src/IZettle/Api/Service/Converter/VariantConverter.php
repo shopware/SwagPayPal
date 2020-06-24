@@ -80,9 +80,11 @@ class VariantConverter
                 $group = $shopwareOption->getGroup();
                 if ($group !== null) {
                     $option = new Option();
-                    $option->setName($group->getTranslation('name') ?? $group->getName());
-                    $option->setValue($shopwareOption->getTranslation('name') ?? $shopwareOption->getName());
-                    $variant->addOption($option);
+                    $option->setName($group->getTranslation('name') ?? $group->getName() ?? '');
+                    $option->setValue($shopwareOption->getTranslation('name') ?? $shopwareOption->getName() ?? '');
+                    if ($option->getName() !== '' && $option->getValue() !== '') {
+                        $variant->addOption($option);
+                    }
                 }
             }
         }

@@ -18,6 +18,7 @@ use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelInventoryCollection;
 use Swag\PayPal\IZettle\Resource\InventoryResource;
+use Swag\PayPal\SwagPayPal;
 
 class InventoryContextFactory
 {
@@ -58,7 +59,7 @@ class InventoryContextFactory
         }
 
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
+        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
 
         $locations = $this->loadLocations($iZettleSalesChannel);
         $iZettleInventory = $this->loadIZettleInventory($iZettleSalesChannel, $locations['STORE']);

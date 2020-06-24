@@ -60,6 +60,9 @@ class ProductSelection
         $this->salesChannelContextFactory = $salesChannelContextFactory;
     }
 
+    /**
+     * @return ProductCollection containing SalesChannelProductEntity
+     */
     public function getProductCollection(
         SalesChannelEntity $salesChannel,
         Context $context,
@@ -68,7 +71,7 @@ class ProductSelection
         $salesChannelContext = $this->getSalesChannelContext($salesChannel, $context);
 
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
+        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
 
         $productStreamId = $iZettleSalesChannel->getProductStreamId();
         $criteria = $this->getProductStreamCriteria($productStreamId, $context);
@@ -92,7 +95,7 @@ class ProductSelection
         $salesChannelContext = $this->getSalesChannelContext($salesChannel, $context);
 
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
+        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
 
         $productStreamId = $iZettleSalesChannel->getProductStreamId();
         $criteria = $this->getProductStreamCriteria($productStreamId, $context);
@@ -140,7 +143,7 @@ class ProductSelection
     private function getSalesChannelContext(SalesChannelEntity $salesChannel, Context $context): SalesChannelContext
     {
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension('paypalIZettleSalesChannel');
+        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
 
         $criteria = new Criteria();
         $criteria->setIds([$iZettleSalesChannel->getSalesChannelDomainId()]);

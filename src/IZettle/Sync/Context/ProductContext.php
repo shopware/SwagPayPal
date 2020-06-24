@@ -17,6 +17,7 @@ use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaColl
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductEntity;
+use Swag\PayPal\SwagPayPal;
 
 class ProductContext
 {
@@ -154,7 +155,7 @@ class ProductContext
     public function getIZettleSalesChannel(): IZettleSalesChannelEntity
     {
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
-        $iZettleSalesChannel = $this->salesChannel->getExtension('paypalIZettleSalesChannel');
+        $iZettleSalesChannel = $this->salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
 
         return $iZettleSalesChannel;
     }

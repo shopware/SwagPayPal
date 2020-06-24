@@ -23,6 +23,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\Tax\TaxEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
+use Swag\PayPal\SwagPayPal;
 
 abstract class AbstractProductSyncTest extends TestCase
 {
@@ -53,7 +54,7 @@ abstract class AbstractProductSyncTest extends TestCase
         $iZettleSalesChannel->setSalesChannelDomainId('someSalesChannelDomainId');
         $iZettleSalesChannel->setSalesChannelId(Defaults::SALES_CHANNEL);
 
-        $salesChannel->addExtension('paypalIZettleSalesChannel', $iZettleSalesChannel);
+        $salesChannel->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleSalesChannel);
 
         return $salesChannel;
     }

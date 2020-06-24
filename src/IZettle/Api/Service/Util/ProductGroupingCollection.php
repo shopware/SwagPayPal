@@ -21,9 +21,16 @@ use Shopware\Core\Framework\Struct\Collection;
  */
 class ProductGroupingCollection extends Collection
 {
+    /**
+     * @param ProductCollection $products containing SalesChannelProductEntity
+     */
     public function addProducts(ProductCollection $products): void
     {
         foreach ($products as $product) {
+            if (!($product instanceof SalesChannelProductEntity)) {
+                continue;
+            }
+
             $grouping = $this->findGrouping($product);
             if (!$grouping) {
                 $grouping = new ProductGrouping($product);

@@ -60,6 +60,9 @@ class ProductConverter
         $this->presentationConverter = $presentationConverter;
     }
 
+    /**
+     * @param ProductCollection $shopwareProducts containing SalesChannelProductEntity
+     */
     public function convertShopwareProducts(ProductCollection $shopwareProducts, ?CurrencyEntity $currency, ProductContext $productContext): ProductGroupingCollection
     {
         $groupingCollection = new ProductGroupingCollection();
@@ -112,12 +115,11 @@ class ProductConverter
         }
 
         if ($product->getVariantOptionDefinitions() === null
-            && $product->getVariants() !== null
             && \count($product->getVariants()) > 1) {
             $product->setVariantOptionDefinitions($this->optionGroupConverter->convertFromVariants(...$product->getVariants()));
         }
 
-        if (!$product->getVariants()) {
+        if (\count($product->getVariants()) === 0) {
             $product->addVariant($this->variantConverter->convert($shopwareProduct, $currency, $productContext));
         }
 

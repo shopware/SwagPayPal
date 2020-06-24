@@ -16,6 +16,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
+use Swag\PayPal\SwagPayPal;
 
 trait InventoryTrait
 {
@@ -73,7 +74,7 @@ trait InventoryTrait
         $iZettleSalesChannel->setId(Uuid::randomHex());
         $iZettleSalesChannel->setSalesChannelId(Defaults::SALES_CHANNEL);
 
-        $salesChannel->addExtension('paypalIZettleSalesChannel', $iZettleSalesChannel);
+        $salesChannel->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleSalesChannel);
 
         return $salesChannel;
     }

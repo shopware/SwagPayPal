@@ -21,7 +21,7 @@ class OptionGroupConverter
 
         foreach ($propertyGroupCollection as $groupedOption) {
             $variantOption = new Definition();
-            $variantOption->setName($groupedOption->getTranslation('name') ?? $groupedOption->getName());
+            $variantOption->setName($groupedOption->getTranslation('name') ?? $groupedOption->getName() ?? '');
 
             $options = $groupedOption->getOptions();
             if (!$options) {
@@ -30,7 +30,7 @@ class OptionGroupConverter
 
             foreach ($options as $option) {
                 $variantOptionProperty = new Property();
-                $variantOptionProperty->setValue($option->getTranslation('name') ?? $option->getName());
+                $variantOptionProperty->setValue($option->getTranslation('name') ?? $option->getName() ?? '');
                 $variantOption->addProperty($variantOptionProperty);
             }
 

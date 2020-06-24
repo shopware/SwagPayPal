@@ -86,8 +86,9 @@ class IZettleProductRepoMock implements EntityRepositoryInterface
         $entity = new IZettleSalesChannelProductEntity();
         $entity->setSalesChannelId($salesChannelId);
         $entity->setProductId($productEntity->getId());
-        if ($productEntity->getVersionId() !== null) {
-            $entity->setProductVersionId($productEntity->getVersionId());
+        $versionId = $productEntity->getVersionId();
+        if ($versionId !== null) {
+            $entity->setProductVersionId($versionId);
         }
         $entity->setUniqueIdentifier(Uuid::randomHex());
         $entity->setChecksum($product->generateChecksum());

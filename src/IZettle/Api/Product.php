@@ -85,7 +85,7 @@ class Product extends IZettleStruct
         $this->category = $category;
     }
 
-    public function getVariants(): ?array
+    public function getVariants(): array
     {
         return $this->variants;
     }
