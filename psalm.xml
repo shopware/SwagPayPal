@@ -58,6 +58,7 @@
                 <referencedMethod name="Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour::silentAssertArraySubset"/>
                 <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
                 <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBMarksData::isUseAlternativePaymentMethods"/>
+                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData::getAddLineItemUrl"/>
             </errorLevel>
         </DeprecatedMethod>
 

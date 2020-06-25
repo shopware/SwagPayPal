@@ -1,5 +1,6 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
 - PT-11669 - Kompatibilität mit dem Zahlungsprozess nach einer Bestellung hinzugefügt
+- PT-11773 - Kaufen von Custom Products mit PayPal korrigiert
 
 # 1.6.0
 - PT-11519 - Registriert Webhooks mit HTTPS

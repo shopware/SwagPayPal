@@ -25,7 +25,6 @@
     {% if expressSettings.cartEnabled %}
         <div class="checkout-aside-action"
              data-swag-paypal-express-button="true"
-             data-swag-pay-pal-express-button-add-line-item-token="{{ sw_csrf('frontend.checkout.line-item.add', {"mode": "token"}) }}"
              data-swag-pay-pal-express-button-approve-payment-token="{{ sw_csrf('paypal.approve_payment', {"mode": "token"}) }}"
              data-swag-pay-pal-express-button-options="{{ expressSettings|json_encode }}">
         </div>

@@ -225,7 +225,7 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
     afterSetPayment(response) {
         const responseObject = JSON.parse(response);
         if (responseObject.success === true) {
-            this.afterCreateOrder(JSON.stringify({data: {id: this.options.orderId}}))
+            this.afterCreateOrder(JSON.stringify({ data: { id: this.options.orderId } }));
         }
     }
 
