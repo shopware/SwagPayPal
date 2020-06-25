@@ -5,7 +5,6 @@
 
     {% block page_product_detail_buy_container_paypal %}
         {% set buyable = product.available and product.childCount <= 0 and product.calculatedMaxPurchase > 0 %}
-        {% set customizedProductTemplate = product.extensions.swagCustomizedProductsTemplate %}
 
         {% if buyable %}
             {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData expressSettings #}
@@ -16,7 +15,6 @@
                     <div class="col-8"
                          data-swag-paypal-express-button="true"
                          data-swag-pay-pal-express-button-approve-payment-token="{{ sw_csrf('paypal.approve_payment', {"mode": "token"}) }}"
-                         data-swag-pay-pal-express-button-is-customized-product="{% if customizedProductTemplate and customizedProductTemplate.active and customizedProductTemplate.options.count() > 0 %}true{% else %}false{% endif %}"
                          data-swag-pay-pal-express-button-options="{{ expressSettings|json_encode }}">
                     </div>
                 </div>
