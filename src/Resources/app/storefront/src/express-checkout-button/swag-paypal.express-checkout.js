@@ -226,7 +226,12 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
             /**
              * Will be called if the payment process is approved by paypal
              */
-            onApprove: this.onApprove.bind(this)
+            onApprove: this.onApprove.bind(this),
+
+            /**
+             * Will be called if an error occurs during the payment process.
+             */
+            onError: this.onError.bind(this)
         };
     }
 
@@ -286,5 +291,9 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                 actions.redirect(this.options.checkoutConfirmUrl);
             }
         );
+    }
+
+    onError() {
+        this.createError();
     }
 }

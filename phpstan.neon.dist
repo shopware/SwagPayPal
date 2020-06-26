@@ -11,11 +11,9 @@ parameters:
         -   # the mock classes do not implement all methods correctly
             message: '#Method .*Mock::.* but return statement is missing\.#'
             path: tests
-        -   # PHPStan could not analyse this function
-            message: '#Function getProjectDir not found#'
-            path: tests/TestBootstrap.php
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
 
-    bootstrap: bin/static-analyze-autoloader.php
+    bootstrapFiles:
+         - bin/static-analyze-autoloader.php

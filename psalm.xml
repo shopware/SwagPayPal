@@ -58,9 +58,21 @@
                 <referencedMethod name="Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour::silentAssertArraySubset"/>
                 <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
                 <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBMarksData::isUseAlternativePaymentMethods"/>
+                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
                 <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData::getAddLineItemUrl"/>
+                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
+                <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData::getErrorParameter"/>
             </errorLevel>
         </DeprecatedMethod>
+
+        <DeprecatedConstant>
+            <errorLevel type="info">
+                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
+                <file name="src/Checkout/SPBCheckout/SPBCheckoutButtonData.php"/>
+                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
+                <file name="tests/Checkout/SPBCheckout/SPBCheckoutSubscriberTest.php"/>
+            </errorLevel>
+        </DeprecatedConstant>
 
         <UnresolvableInclude>
             <errorLevel type="info">

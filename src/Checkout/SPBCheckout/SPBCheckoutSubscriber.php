@@ -30,6 +30,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class SPBCheckoutSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID = 'payPalSpbButtonData';
+    /**
+     * @deprecated tag:v2.0.0 - Will be removed without replacement
+     */
     public const PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER = 'payPalSpbError';
 
     /**
@@ -84,7 +87,6 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     public function onAccountOrderEditLoaded(AccountEditOrderPageLoadedEvent $event): void
     {
         $request = $event->getRequest();
-        $this->addErrorMessage($request);
         $settings = $this->checkSettings($event->getSalesChannelContext());
         if ($settings === null) {
             return;
@@ -109,7 +111,6 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
         $request = $event->getRequest();
-        $this->addErrorMessage($request);
         $settings = $this->checkSettings($event->getSalesChannelContext());
         if ($settings === null) {
             return;
@@ -156,13 +157,6 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME,
             $storefrontRequest->request->get(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
         );
-    }
-
-    private function addErrorMessage(Request $request): void
-    {
-        if ($request->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER)) {
-            $this->session->getFlashBag()->add('danger', $this->translator->trans('smartPaymentButtons.confirmPageError'));
-        }
     }
 
     private function checkSettings(SalesChannelContext $salesChannelContext): ?SwagPayPalSettingStruct

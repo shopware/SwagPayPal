@@ -53,8 +53,10 @@ class SPBCheckoutButtonData extends Struct
 
     /**
      * @var string
+     *
+     * @deprecated tag:v2.0.0 - Will be removed without replacement
      */
-    protected $errorParameter;
+    protected $errorParameter = SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER;
 
     /**
      * @var string|null
@@ -106,6 +108,9 @@ class SPBCheckoutButtonData extends Struct
         return $this->checkoutConfirmUrl;
     }
 
+    /**
+     * @deprecated tag:v2.0.0 - Will be removed without replacement
+     */
     public function getErrorParameter(): string
     {
         return $this->errorParameter;

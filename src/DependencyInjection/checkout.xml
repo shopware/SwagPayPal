@@ -6,9 +6,14 @@
 
     <services>
         <service id="Swag\PayPal\Checkout\CheckoutSubscriber">
-            <argument id="Swag\PayPal\Setting\Service\SettingsService" type="service"/>
-            <argument id="Swag\PayPal\Util\PaymentMethodUtil" type="service"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\ErrorController" public="true">
+            <argument type="service" id="session"/>
+            <argument type="service" id="translator"/>
         </service>
     </services>
 </container>
