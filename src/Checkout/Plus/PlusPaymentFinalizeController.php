@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Plus;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
@@ -45,19 +46,33 @@ class PlusPaymentFinalizeController extends AbstractController
      */
     private $router;
 
+    /**
+     * @deprecated tag:v2.0.0 - Remove with deprecated method "finalizeTransactionDeprecated"
+     *
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepo,
         AsynchronousPaymentHandlerInterface $paymentHandler,
-        RouterInterface $router
+        RouterInterface $router,
+        LoggerInterface $logger
     ) {
         $this->orderTransactionRepo = $orderTransactionRepo;
         $this->paymentHandler = $paymentHandler;
         $this->router = $router;
+        $this->logger = $logger;
     }
 
     /**
      * @RouteScope(scopes={"storefront"})
-     * @Route("/paypal/plus/payment/finalize-transaction", name="payment.paypal.plus.finalize.transaction", methods={"GET"}, defaults={"auth_required"=false})
+     * @Route(
+     *     "/paypal/plus/payment/finalize-transaction",
+     *     name="payment.paypal.plus.finalize.transaction",
+     *     methods={"GET"},
+     *     defaults={"auth_required"=false}
+     * )
      *
      * @throws InvalidTransactionException
      * @throws CustomerCanceledAsyncPaymentException
@@ -124,5 +139,31 @@ class PlusPaymentFinalizeController extends AbstractController
         }
 
         return new RedirectResponse($finishUrl);
+    }
+
+    /**
+     * @deprecated tag:v2.0.0 - Will be removed. Use PlusPaymentFinalizeController::finalizeTransaction instead
+     * @RouteScope(scopes={"storefront"})
+     * @Route(
+     *     "/paypal/plus/payment/finalize-transaction-deprecated",
+     *     name="paypal.plus.payment.finalize.transaction",
+     *     methods={"GET"},
+     *     defaults={"auth_required"=false}
+     * )
+     *
+     * @throws InvalidTransactionException
+     * @throws CustomerCanceledAsyncPaymentException
+     */
+    public function finalizeTransactionDeprecated(
+        Request $request,
+        SalesChannelContext $salesChannelContext
+    ): RedirectResponse {
+        $this->logger->error(
+            \sprintf(
+                'Route "paypal.plus.payment.finalize.transaction" is deprecated. Use "payment.paypal.plus.finalize.transaction" instead'
+            )
+        );
+
+        return $this->finalizeTransaction($request, $salesChannelContext);
     }
 }
