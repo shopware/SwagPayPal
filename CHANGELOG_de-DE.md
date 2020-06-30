@@ -1,6 +1,6 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
 - PT-11669 - Kompatibilität mit dem Zahlungsprozess nach einer Bestellung hinzugefügt
-- PT-11748 - Weiterleitung bei der Verwendung von PayPal Plus korrigiert. Die Webhook-URL wurde geändert, sodass sie unabhängig von einer Storefront ist
+- PT-11748 - Weiterleitungs-URL für PayPal Plus und Express Checkout korrigiert. Die Webhook-URL wurde geändert, sodass sie unabhängig von einer Storefront ist
 - PT-11773 - Kaufen von Custom Products mit PayPal korrigiert
 
 # 1.6.0

@@ -78,6 +78,8 @@
             <errorLevel type="info">
                 <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
                 <referencedProperty name="Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController::$logger"/>
+                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
+                <referencedProperty name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController::$logger"/>
             </errorLevel>
         </DeprecatedProperty>
 

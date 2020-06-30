@@ -75,7 +75,7 @@ class PayPalExpressCheckoutDataService
             'createPaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.create_payment', ['version' => 2]),
             'createNewCartUrl' => $this->router->generate('sales-channel-api.action.paypal.create_new_cart', ['version' => 2]),
             'addLineItemUrl' => $this->router->generate('frontend.checkout.line-item.add'),
-            'approvePaymentUrl' => $this->router->generate('paypal.approve_payment'),
+            'approvePaymentUrl' => $this->router->generate('payment.paypal.approve_payment'),
             'checkoutConfirmUrl' => $this->router->generate(
                 'frontend.checkout.confirm.page',
                 [PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true],

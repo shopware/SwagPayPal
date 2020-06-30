@@ -28,6 +28,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\Route\ExpressApprovePaymentRoute"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber">
