@@ -70,13 +70,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         checkoutConfirmUrl: '',
 
         /**
-         * Request parameter to indicate that an error occurred
-         *
-         * @type string
-         */
-        errorParameter: '',
-
-        /**
          * Is set, if the plugin is used on the order edit page
          *
          * @type string|null
@@ -114,6 +107,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
 
     init() {
         this.paypal = null;
+        this._client = new StoreApiClient();
 
         this.createButton();
     }
@@ -163,7 +157,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
      * @return {Promise}
      */
     createOrder() {
-        const client = new StoreApiClient();
         const postData = {
             _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-smart-payment-buttons-create-payment-token')
         };
@@ -173,7 +166,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         }
 
         return new Promise(resolve => {
-            client.post(
+            this._client.post(
                 this.options.createPaymentUrl,
                 JSON.stringify(postData),
                 responseText => {
@@ -200,6 +193,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     }
 
     onError() {
-        window.location.replace(`${this.options.checkoutConfirmUrl}?${this.options.errorParameter}=1`);
+        this.createError();
     }
 }

@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 
 import Plugin from 'src/plugin-system/plugin.class';
+import DomAccess from 'src/helper/dom-access.helper';
 
 let loadingScript = false;
 let scriptLoaded = false;
@@ -65,5 +66,23 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         config += '&components=marks,buttons,messages';
 
         return config;
+    }
+
+    createError() {
+        if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && typeof this._client === 'undefined') {
+            console.error('No StoreApiClient defined in child plugin class');
+            return;
+        }
+
+        const requestPayload = {
+            _csrf_token: DomAccess.getDataAttribute(this.el, 'data-swag-pay-pal-add-error-token')
+        };
+
+        this._client.post('/paypal/add-error', JSON.stringify(requestPayload), () => {
+            window.onbeforeunload = function () {
+                window.scrollTo(0, 0);
+            };
+            window.location.reload();
+        });
     }
 }

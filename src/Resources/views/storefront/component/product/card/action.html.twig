@@ -12,10 +12,6 @@
     {% endif %}
 
     {% if expressSettings.listingEnabled %}
-        <div class="pt-3"
-             data-swag-paypal-express-button="true"
-             data-swag-pay-pal-express-button-approve-payment-token="{{ sw_csrf('paypal.approve_payment', {"mode": "token"}) }}"
-             data-swag-pay-pal-express-button-options="{{ expressSettings|json_encode }}">
-        </div>
+        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'pt-3'} %}
     {% endif %}
 {% endblock %}

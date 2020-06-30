@@ -1,4 +1,7 @@
 {
+    "general": {
+        "paymentError": "An error occurred during the payment process. Please try again later or choose another payment method."
+    },
     "payUponInvoice": {
         "instructions": {
             "transferRequest": "Please transfer %value% %currency% until %date% to PayPal.",
@@ -21,7 +24,6 @@
     },
     "smartPaymentButtons": {
         "confirmPageHint": "Your payment has been created. Please complete it, by confirming your order.",
-        "confirmPageError": "An error occurred during the payment process. Please try again later or choose another payment method.",
         "description": "Pay easy, fast and secure - Please choose one of these payment methods on the confirm page."
     },
     "payPalPlus": {

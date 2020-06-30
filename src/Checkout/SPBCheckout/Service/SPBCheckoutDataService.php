@@ -9,7 +9,6 @@ namespace Swag\PayPal\Checkout\SPBCheckout\Service;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
-use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -60,7 +59,6 @@ class SPBCheckoutDataService
             'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
             'buttonShape' => $settings->getSpbButtonShape(),
             'buttonColor' => $settings->getSpbButtonColor(),
-            'errorParameter' => SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER,
         ]);
 
         if ($orderId !== null) {

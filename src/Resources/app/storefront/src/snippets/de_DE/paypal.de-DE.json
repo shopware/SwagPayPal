@@ -1,4 +1,7 @@
 {
+    "general": {
+        "paymentError": "Während des Zahlungsvorgangs ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal oder wählen Sie eine andere Zahlungsmethode aus."
+    },
     "payUponInvoice": {
         "instructions": {
             "transferRequest": "Bitte überweisen Sie %value% %currency% bis zum %date% an PayPal.",
@@ -21,7 +24,6 @@
     },
     "smartPaymentButtons": {
         "confirmPageHint": "Ihre Zahlung wurde erstellt. Bitte schließen Sie sie ab, indem Sie Ihre Bestellung bestätigen.",
-        "confirmPageError": "Während des Zahlungsvorgangs ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal oder wählen Sie eine andere Zahlungsmethode.",
         "description":  "Einfach, schnell und sicher bezahlen - Bitte wählen Sie eine dieser Zahlungsmethoden auf der Bestellabschlussseite."
     },
     "payPalPlus": {

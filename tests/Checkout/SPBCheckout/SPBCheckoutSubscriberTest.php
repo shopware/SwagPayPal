@@ -356,6 +356,9 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
         static::assertSame('/sales-channel-api/v2/_action/paypal/spb/create-payment', $spbExtension->getCreatePaymentUrl());
         static::assertStringContainsString('/checkout/confirm', $spbExtension->getCheckoutConfirmUrl());
+        /**
+         * @deprecated tag:v2.0.0 - Will be removed without replacement
+         */
         static::assertSame(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER, $spbExtension->getErrorParameter());
         if ($event instanceof AccountEditOrderPageLoadedEvent) {
             $accountOrderEditUrl = $spbExtension->getAccountOrderEditUrl();
