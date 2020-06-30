@@ -10,6 +10,7 @@ namespace Swag\PayPal\Util\Lifecycle;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Webhook\WebhookService;
 
 class Update
 {
@@ -18,9 +19,15 @@ class Update
      */
     private $systemConfig;
 
-    public function __construct(SystemConfigService $systemConfig)
+    /**
+     * @var WebhookService|null
+     */
+    private $webhookService;
+
+    public function __construct(SystemConfigService $systemConfig, ?WebhookService $webhookService)
     {
         $this->systemConfig = $systemConfig;
+        $this->webhookService = $webhookService;
     }
 
     public function update(UpdateContext $updateContext): void
@@ -30,6 +37,10 @@ class Update
         }
         if (\version_compare($updateContext->getCurrentPluginVersion(), '1.3.0', '<')) {
             $this->updateTo130();
+        }
+        if (\version_compare($updateContext->getCurrentPluginVersion(), 'REPLACE-GLOBAL-WITH-NEXT-VERSION', '<')) {
+            //TODO rename with correct version REPLACE-GLOBAL-WITH-NEXT-VERSION
+            $this->updateToXXX();
         }
     }
 
@@ -56,5 +67,15 @@ class Update
             $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId', '');
             $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret', '');
         }
+    }
+
+    private function updateToXXX(): void
+    {
+        if ($this->webhookService === null) {
+            // If the WebhookService is `null`, the plugin is deactivated.
+            return;
+        }
+
+        $this->webhookService->registerWebhook(null);
     }
 }

@@ -19,8 +19,10 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Swag\PayPal\Util\Lifecycle\Update;
+use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class SwagPayPal extends Plugin
@@ -139,7 +141,15 @@ class SwagPayPal extends Plugin
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->container->get(SystemConfigService::class);
 
-        (new Update($systemConfigService))->update($updateContext);
+        $webhookService = null;
+        try {
+            /** @var WebhookService|null $webhookService */
+            $webhookService = $this->container->get(WebhookService::class);
+        } catch (ServiceNotFoundException $e) {
+            // Plugin is not activated
+        }
+
+        (new Update($systemConfigService, $webhookService))->update($updateContext);
         parent::update($updateContext);
     }
 

@@ -74,6 +74,13 @@
             </errorLevel>
         </DeprecatedConstant>
 
+        <DeprecatedProperty>
+            <errorLevel type="info">
+                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
+                <referencedProperty name="Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController::$logger"/>
+            </errorLevel>
+        </DeprecatedProperty>
+
         <UnresolvableInclude>
             <errorLevel type="info">
                 <file name="tests/TestBootstrap.php"/>

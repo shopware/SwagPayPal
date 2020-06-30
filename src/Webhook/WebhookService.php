@@ -26,6 +26,9 @@ class WebhookService implements WebhookServiceInterface
     public const WEBHOOK_UPDATED = 'updated';
     public const NO_WEBHOOK_ACTION_REQUIRED = 'nothing';
 
+    /**
+     * @deprecated tag:v2.0.0 - Will be removed without replacement
+     */
     public const PAYPAL_WEBHOOK_ROUTE = 'paypal.webhook.execute';
     public const PAYPAL_WEBHOOK_TOKEN_NAME = 'sw-token';
     public const PAYPAL_WEBHOOK_TOKEN_LENGTH = 32;
@@ -73,8 +76,8 @@ class WebhookService implements WebhookServiceInterface
 
         $this->router->getContext()->setScheme('https');
         $webhookUrl = $this->router->generate(
-            self::PAYPAL_WEBHOOK_ROUTE,
-            [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken],
+            'api.action.paypal.webhook.execute',
+            [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken, 'version' => 1],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 

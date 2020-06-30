@@ -24,6 +24,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @RouteScope(scopes={"api"})
+ */
 class WebhookController extends AbstractController
 {
     /**
@@ -52,8 +55,11 @@ class WebhookController extends AbstractController
     }
 
     /**
-     * @RouteScope(scopes={"api"})
-     * @Route("/api/v{version}/_action/paypal/webhook/register/{salesChannelId}", name="api.action.paypal.webhook.register", methods={"POST"})
+     * @Route(
+     *     "/api/v{version}/_action/paypal/webhook/register/{salesChannelId}",
+     *     name="api.action.paypal.webhook.register",
+     *     methods={"POST"}
+     * )
      */
     public function registerWebhook(string $salesChannelId): JsonResponse
     {
@@ -63,8 +69,12 @@ class WebhookController extends AbstractController
     }
 
     /**
-     * @RouteScope(scopes={"storefront"})
-     * @Route("/paypal/webhook/execute", name="paypal.webhook.execute", methods={"POST"})
+     * @Route(
+     *     "/api/v{version}/_action/paypal/webhook/execute",
+     *     name="api.action.paypal.webhook.execute",
+     *     methods={"POST"},
+     *     defaults={"auth_required"=false}
+     * )
      */
     public function executeWebhook(Request $request, Context $context): Response
     {
@@ -75,6 +85,25 @@ class WebhookController extends AbstractController
         $this->tryToExecuteWebhook($context, $webhook);
 
         return new Response();
+    }
+
+    /**
+     * @deprecated tag:v2.0.0 - Will be removed. Use WebhookController::executeWebhook instead
+     * @RouteScope(scopes={"storefront"})
+     * @Route(
+     *     "/paypal/webhook/execute",
+     *     name="paypal.webhook.execute",
+     *     methods={"POST"},
+     *     defaults={"csrf_protected"=false}
+     * )
+     */
+    public function executeWebhookDeprecated(Request $request, Context $context): Response
+    {
+        $this->logger->error(
+            \sprintf('Route "paypal.webhook.execute" is deprecated. Use "api.action.paypal.webhook.execute" instead. Please save the PayPal settings to prevent this error.')
+        );
+
+        return $this->executeWebhook($request, $context);
     }
 
     /**

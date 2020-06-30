@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\Lifecycle\Update;
 
 class UpdateTest extends TestCase
@@ -31,7 +32,7 @@ class UpdateTest extends TestCase
     {
         $systemConfigService = $this->createSystemConfigServiceMock();
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
-        $update = new Update($systemConfigService);
+        $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
         static::assertNull($systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox'));
         static::assertNull($systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'));
@@ -45,7 +46,7 @@ class UpdateTest extends TestCase
             SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => true,
         ]);
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
-        $update = new Update($systemConfigService);
+        $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
         static::assertSame('', $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId'));
         static::assertSame('', $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret'));
@@ -61,7 +62,7 @@ class UpdateTest extends TestCase
             SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => false,
         ]);
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
-        $update = new Update($systemConfigService);
+        $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
         static::assertSame(self::CLIENT_ID, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId'));
         static::assertSame(self::CLIENT_SECRET, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret'));
@@ -79,7 +80,7 @@ class UpdateTest extends TestCase
             SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => true,
         ]);
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
-        $update = new Update($systemConfigService);
+        $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
         static::assertSame(self::OTHER_CLIENT_ID, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox'));
         static::assertSame(self::OTHER_CLIENT_SECRET, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'));
@@ -98,5 +99,10 @@ class UpdateTest extends TestCase
             $migrationLoader->collect('core'),
             $nextPluginVersion
         );
+    }
+
+    private function createUpdateService(SystemConfigServiceMock $systemConfigService): Update
+    {
+        return new Update($systemConfigService, null);
     }
 }
