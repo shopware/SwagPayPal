@@ -111,7 +111,14 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          *
          * @type string
          */
-        checkoutConfirmUrl: ''
+        checkoutConfirmUrl: '',
+
+        /**
+         * URL for adding flash error message
+         *
+         * @type string
+         */
+        addErrorUrl: ''
     };
 
     init() {

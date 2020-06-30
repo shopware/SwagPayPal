@@ -20,7 +20,7 @@
             <div data-swag-paypal-smart-payment-buttons="true"
                  data-swag-pay-pal-smart-payment-buttons-create-payment-token="{{ sw_csrf('sales-channel-api.action.paypal.spb.create_payment', {"mode": "token"}) }}"
                  data-swag-pay-pal-smart-payment-buttons-options="{{ spbCheckoutButtonData|json_encode }}"
-                 data-swag-pay-pal-add-error-token="{{ sw_csrf('paypal.add_error', {"mode": "token"}) }}">
+                 data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
             </div>
         {% endblock %}
 

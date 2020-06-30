@@ -81,6 +81,7 @@ class PayPalExpressCheckoutDataService
                 [PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true],
                 RouterInterface::ABSOLUTE_URL
             ),
+            'addErrorUrl' => $this->router->generate('payment.paypal.add_error'),
         ]);
     }
 

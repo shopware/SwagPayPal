@@ -189,6 +189,8 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame('en_GB', $spbExtension->getLanguageIso());
         static::assertSame($this->paypalPaymentMethodId, $spbExtension->getPaymentMethodId());
         static::assertSame(PaymentIntent::SALE, $spbExtension->getIntent());
+        static::assertSame('gold', $spbExtension->getButtonColor());
+        static::assertSame('rect', $spbExtension->getButtonShape());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
     }
 
@@ -356,6 +358,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
         static::assertSame('/sales-channel-api/v2/_action/paypal/spb/create-payment', $spbExtension->getCreatePaymentUrl());
         static::assertStringContainsString('/checkout/confirm', $spbExtension->getCheckoutConfirmUrl());
+        static::assertStringContainsString('/paypal/add-error', $spbExtension->getAddErrorUrl());
         /**
          * @deprecated tag:v2.0.0 - Will be removed without replacement
          */

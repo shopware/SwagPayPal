@@ -184,6 +184,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame('/checkout/line-item/add', $expressCheckoutButtonData->getAddLineItemUrl());
         static::assertSame('/paypal/approve-payment', $expressCheckoutButtonData->getApprovePaymentUrl());
         static::assertStringContainsString('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());
+        static::assertStringContainsString('/paypal/add-error', $expressCheckoutButtonData->getAddErrorUrl());
     }
 
     public function dataProviderTestGetExpressCheckoutButtonDataWithCredentials(): array

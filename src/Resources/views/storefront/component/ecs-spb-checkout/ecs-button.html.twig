@@ -3,6 +3,6 @@
          data-swag-paypal-express-button="true"
          data-swag-pay-pal-express-button-approve-payment-token="{{ sw_csrf('paypal.approve_payment', {"mode": "token"}) }}"
          data-swag-pay-pal-express-button-options="{{ expressSettings|json_encode }}"
-         data-swag-pay-pal-add-error-token="{{ sw_csrf('paypal.add_error', {"mode": "token"}) }}">
+         data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
     </div>
 {% endblock %}

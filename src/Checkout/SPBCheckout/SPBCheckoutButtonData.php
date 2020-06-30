@@ -34,6 +34,16 @@ class SPBCheckoutButtonData extends Struct
     /**
      * @var string
      */
+    protected $buttonColor;
+
+    /**
+     * @var string
+     */
+    protected $buttonShape;
+
+    /**
+     * @var string
+     */
     protected $paymentMethodId;
 
     /**
@@ -50,6 +60,11 @@ class SPBCheckoutButtonData extends Struct
      * @var string
      */
     protected $checkoutConfirmUrl;
+
+    /**
+     * @var string
+     */
+    protected $addErrorUrl;
 
     /**
      * @var string
@@ -88,6 +103,16 @@ class SPBCheckoutButtonData extends Struct
         return $this->intent;
     }
 
+    public function getButtonColor(): string
+    {
+        return $this->buttonColor;
+    }
+
+    public function getButtonShape(): string
+    {
+        return $this->buttonShape;
+    }
+
     public function getPaymentMethodId(): string
     {
         return $this->paymentMethodId;
@@ -106,6 +131,11 @@ class SPBCheckoutButtonData extends Struct
     public function getCheckoutConfirmUrl(): string
     {
         return $this->checkoutConfirmUrl;
+    }
+
+    public function getAddErrorUrl(): string
+    {
+        return $this->addErrorUrl;
     }
 
     /**

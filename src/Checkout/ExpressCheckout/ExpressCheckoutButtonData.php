@@ -98,6 +98,11 @@ class ExpressCheckoutButtonData extends Struct
      */
     protected $checkoutConfirmUrl;
 
+    /**
+     * @var string
+     */
+    protected $addErrorUrl;
+
     public function getProductDetailEnabled(): bool
     {
         return $this->productDetailEnabled;
@@ -184,5 +189,10 @@ class ExpressCheckoutButtonData extends Struct
     public function getCheckoutConfirmUrl(): string
     {
         return $this->checkoutConfirmUrl;
+    }
+
+    public function getAddErrorUrl(): string
+    {
+        return $this->addErrorUrl;
     }
 }
