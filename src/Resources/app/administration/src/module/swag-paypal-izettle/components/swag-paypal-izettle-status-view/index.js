@@ -77,7 +77,9 @@ Component.register('swag-paypal-izettle-status-view', {
         },
 
         noRunYet() {
-            return this.salesChannel === null || this.salesChannel.id === null || this.currentRun === null;
+            return this.salesChannel === null
+                || this.salesChannel.id === null
+                || (this.currentRun === null && this.lastFinishedRun === null);
         },
 
         incompleteLastRun() {
@@ -87,9 +89,12 @@ Component.register('swag-paypal-izettle-status-view', {
         },
 
         statusTitle() {
-            const task = this.$tc(`swag-paypal-izettle.detail.base.status.task.${this.lastFinishedRun.task}`);
-            return this.$tc(`swag-paypal-izettle.detail.base.status.message.${this.status}`)
-                + (this.incompleteLastRun ? ` (${task})` : '');
+            let title = this.$tc(`swag-paypal-izettle.detail.base.status.message.${this.status}`);
+            if (this.incompleteLastRun) {
+                const task = this.$tc(`swag-paypal-izettle.detail.base.status.task.${this.lastFinishedRun.task}`);
+                title += ` (${task})`;
+            }
+            return title;
         },
 
         disabled() {

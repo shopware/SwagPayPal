@@ -177,7 +177,7 @@ Component.register('swag-paypal-izettle-detail-base', {
 
             return this.runRepository.search(criteria, Shopware.Context.api).then((result) => {
                 this.lastFinishedRun = result.first();
-                if (this.lastFinishedRun.task !== 'complete') {
+                if (this.lastFinishedRun !== null && this.lastFinishedRun.task !== 'complete') {
                     this.loadLastCompleteRun();
                 } else {
                     this.lastCompleteRun = this.lastFinishedRun;
