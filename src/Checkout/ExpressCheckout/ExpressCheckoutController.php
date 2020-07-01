@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -46,16 +47,25 @@ class ExpressCheckoutController extends AbstractController
      */
     private $approvePaymentRoute;
 
+    /**
+     * @deprecated tag:v2.0.0 - Remove with deprecated method "onApproveDeprecated"
+     *
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         CartPaymentBuilderInterface $cartPaymentBuilder,
         CartService $cartService,
         PaymentResource $paymentResource,
-        AbstractExpressApprovePaymentRoute $route
+        AbstractExpressApprovePaymentRoute $route,
+        LoggerInterface $logger
     ) {
         $this->cartPaymentBuilder = $cartPaymentBuilder;
         $this->cartService = $cartService;
         $this->paymentResource = $paymentResource;
         $this->approvePaymentRoute = $route;
+        $this->logger = $logger;
     }
 
     /**
@@ -98,10 +108,40 @@ class ExpressCheckoutController extends AbstractController
 
     /**
      * @RouteScope(scopes={"storefront"})
-     * @Route("/paypal/approve-payment", name="paypal.approve_payment", methods={"POST"}, defaults={"XmlHttpRequest"=true})
+     * @Route(
+     *     "/paypal/approve-payment",
+     *     name="payment.paypal.approve_payment",
+     *     methods={"POST"},
+     *     defaults={"XmlHttpRequest"=true}
+     * )
      */
     public function onApprove(SalesChannelContext $salesChannelContext, Request $request): JsonResponse
     {
+        return new JsonResponse(
+            [
+                'cart_token' => $this->approvePaymentRoute->approve($salesChannelContext, $request)->getToken(),
+            ]
+        );
+    }
+
+    /**
+     * @deprecated tag:v2.0.0 - Will be removed. Use ExpressCheckoutController::onApprove instead
+     * @RouteScope(scopes={"storefront"})
+     * @Route(
+     *     "/paypal/approve-payment-deprecated",
+     *     name="paypal.approve_payment",
+     *     methods={"POST"},
+     *     defaults={"XmlHttpRequest"=true}
+     * )
+     */
+    public function onApproveDeprecated(SalesChannelContext $salesChannelContext, Request $request): JsonResponse
+    {
+        $this->logger->error(
+            \sprintf(
+                'Route "paypal.approve_payment" is deprecated. Use "payment.paypal.approve_payment" instead'
+            )
+        );
+
         return new JsonResponse(
             [
                 'cart_token' => $this->approvePaymentRoute->approve($salesChannelContext, $request)->getToken(),

@@ -33,6 +33,7 @@ use Swag\PayPal\Payment\Builder\CartPaymentBuilder;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
@@ -270,7 +271,8 @@ class ExpressCheckoutControllerTest extends TestCase
             $cartPaymentBuilder,
             $cartService,
             $paymentResource,
-            $route
+            $route,
+            new LoggerMock()
         );
     }
 

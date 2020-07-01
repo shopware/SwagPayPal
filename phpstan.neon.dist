@@ -16,4 +16,4 @@ parameters:
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
 
     bootstrapFiles:
-         - bin/static-analyze-autoloader.php
+        -   bin/static-analyze-autoloader.php

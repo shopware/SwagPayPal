@@ -9,7 +9,7 @@
             <argument type="service" id="Swag\PayPal\Payment\Builder\CartPaymentBuilder"/>
             <argument type="service" id="Swag\PayPal\Payment\Builder\OrderPaymentBuilder"/>
             <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
-            <argument type="service" id="router.default"/>
+            <argument type="service" id="router"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
         </service>
@@ -26,6 +26,7 @@
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Swag\PayPal\Payment\PayPalPaymentHandler"/>
             <argument type="service" id="router"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
         </service>
     </services>
 </container>

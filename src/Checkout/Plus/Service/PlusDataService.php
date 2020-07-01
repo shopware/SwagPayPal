@@ -130,7 +130,7 @@ class PlusDataService
     private function createFinishUrl(bool $orderUpdate = false): string
     {
         return $this->router->generate(
-            'paypal.plus.payment.finalize.transaction',
+            'payment.paypal.plus.finalize.transaction',
             [
                 PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER => true,
                 'changedPayment' => $orderUpdate,
