@@ -1,7 +1,8 @@
 /* eslint-disable import/no-unresolved */
 
-import StoreApiClient from 'src/service/store-api-client.service';
 import DomAccess from 'src/helper/dom-access.helper';
+import FormSerializeUtil from 'src/utility/form/form-serialize.util';
+import StoreApiClient from 'src/service/store-api-client.service';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractButtons {
@@ -127,9 +128,9 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     }
 
     renderButton() {
-        const confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
+        this.confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
 
-        DomAccess.querySelector(confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
+        DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
 
         return this.paypal.Buttons(this.getButtonConfig()).render(this.el);
     }
@@ -164,18 +165,17 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
      * @return {Promise}
      */
     createOrder() {
-        const postData = {
-            _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-smart-payment-buttons-create-payment-token')
-        };
+        const formData = FormSerializeUtil.serialize(this.confirmOrderForm);
+
         const orderId = this.options.orderId;
         if (orderId !== null) {
-            postData.orderId = orderId;
+            formData.set('orderId', orderId);
         }
 
         return new Promise(resolve => {
             this._client.post(
                 this.options.createPaymentUrl,
-                JSON.stringify(postData),
+                formData,
                 responseText => {
                     const response = JSON.parse(responseText);
                     resolve(response.token);
