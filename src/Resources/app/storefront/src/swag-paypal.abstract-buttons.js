@@ -74,12 +74,18 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             return;
         }
 
+        const addErrorUrl = this.options.addErrorUrl;
+        if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && (typeof addErrorUrl === 'undefined' || addErrorUrl === null)) {
+            console.error('No "addErrorUrl" defined in child plugin class');
+            return;
+        }
+
         const requestPayload = {
             _csrf_token: DomAccess.getDataAttribute(this.el, 'data-swag-pay-pal-add-error-token')
         };
 
-        this._client.post('/paypal/add-error', JSON.stringify(requestPayload), () => {
-            window.onbeforeunload = function () {
+        this._client.post(addErrorUrl, JSON.stringify(requestPayload), () => {
+            window.onbeforeunload = function() {
                 window.scrollTo(0, 0);
             };
             window.location.reload();

@@ -38,7 +38,7 @@ class ErrorController extends AbstractController
     /**
      * @Route(
      *     "/paypal/add-error",
-     *     name="paypal.add_error",
+     *     name="payment.paypal.add_error",
      *     methods={"POST"},
      *     defaults={"XmlHttpRequest"=true}
      * )

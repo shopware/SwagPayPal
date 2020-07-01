@@ -102,7 +102,14 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          *
          * @type string
          */
-        confirmOrderButtonSelector: 'button[type="submit"]'
+        confirmOrderButtonSelector: 'button[type="submit"]',
+
+        /**
+         * URL for adding flash error message
+         *
+         * @type string
+         */
+        addErrorUrl: ''
     };
 
     init() {

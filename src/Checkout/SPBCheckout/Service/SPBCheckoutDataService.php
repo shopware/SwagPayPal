@@ -53,12 +53,13 @@ class SPBCheckoutDataService
             'languageIso' => $this->getButtonLanguage($settings, $context),
             'currency' => $context->getCurrency()->getIsoCode(),
             'intent' => $settings->getIntent(),
+            'buttonShape' => $settings->getSpbButtonShape(),
+            'buttonColor' => $settings->getSpbButtonColor(),
             'paymentMethodId' => $paymentMethodId,
             'useAlternativePaymentMethods' => $settings->getSpbAlternativePaymentMethodsEnabled(),
             'createPaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.spb.create_payment', ['version' => 2]),
             'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
-            'buttonShape' => $settings->getSpbButtonShape(),
-            'buttonColor' => $settings->getSpbButtonColor(),
+            'addErrorUrl' => $this->router->generate('payment.paypal.add_error'),
         ]);
 
         if ($orderId !== null) {

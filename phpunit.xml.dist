@@ -22,16 +22,9 @@
 
     <filter>
         <whitelist>
-            <directory suffix=".php">./</directory>
+            <directory suffix=".php">./src</directory>
             <exclude>
-                <directory suffix=".php">./bin</directory>
-                <directory suffix=".php">./tests</directory>
-                <directory suffix=".php">./vendor</directory>
-                <directory suffix=".php">./src/Migration</directory>
                 <directory suffix=".php">./src/Resources</directory>
-                <directory suffix="Definition.php">./</directory>
-                <directory suffix="Exception.php">./</directory>
-
                 <file>src/SwagPayPal.php</file>
             </exclude>
         </whitelist>
