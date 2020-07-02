@@ -17,6 +17,7 @@ use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Swag\PayPal\Payment\Builder\Util\PriceFormatter;
 use Swag\PayPal\PayPal\Api\Capture;
@@ -181,6 +182,7 @@ class PaymentStatusUtil
     {
         $criteria = new Criteria([$orderId]);
         $criteria->addAssociation('transactions');
+        $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($criteria, $context)->first();
 
@@ -194,7 +196,7 @@ class PaymentStatusUtil
             throw new InvalidOrderException($orderId);
         }
 
-        $transaction = $transactionCollection->first();
+        $transaction = $transactionCollection->last();
 
         if ($transaction === null) {
             throw new InvalidOrderException($orderId);

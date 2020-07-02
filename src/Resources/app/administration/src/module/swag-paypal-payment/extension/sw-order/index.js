@@ -39,16 +39,19 @@ Component.override('sw-order-detail', {
                 const orderRepository = this.repositoryFactory.create('order');
                 const orderCriteria = new Criteria(1, 1);
                 orderCriteria.addAssociation('transactions');
+                orderCriteria.getAssociation('transactions').addSorting(Criteria.sort('createdAt'));
 
                 orderRepository.get(this.orderId, Context.api, orderCriteria).then((order) => {
-                    if (order.transactions.length <= 0 ||
-                        !order.transactions[0].paymentMethodId
+                    const transactionsQuantity = order.transactions.length;
+                    const lastTransactionIndex = transactionsQuantity - 1;
+                    if (transactionsQuantity <= 0 ||
+                        !order.transactions[lastTransactionIndex].paymentMethodId
                     ) {
                         this.setIsPayPalPayment(null);
                         return;
                     }
 
-                    const paymentMethodId = order.transactions[0].paymentMethodId;
+                    const paymentMethodId = order.transactions[lastTransactionIndex].paymentMethodId;
 
                     if (paymentMethodId !== undefined && paymentMethodId !== null) {
                         this.setIsPayPalPayment(paymentMethodId);
