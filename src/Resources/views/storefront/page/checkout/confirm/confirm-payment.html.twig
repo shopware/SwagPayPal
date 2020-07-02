@@ -8,7 +8,6 @@
     {% if payPalPlusData and payPalPlusData.approvalUrl and payPalPlusData.paymentMethodId is same as(context.paymentMethod.id) %}
         <div class="d-none"
              data-swag-paypal-payment-wall="true"
-             data-swag-pay-pal-plus-payment-wall-checkout-order-token="{{ sw_csrf('sales-channel-api.checkout.order.create', {"mode": "token"}) }}"
              data-swag-pay-pal-plus-payment-wall-options="{{ payPalPlusData|json_encode }}">
         </div>
         <div id="ppplus"></div>

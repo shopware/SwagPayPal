@@ -2,6 +2,7 @@
 
 import Plugin from 'src/plugin-system/plugin.class';
 import DomAccess from 'src/helper/dom-access.helper';
+import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import StoreApiClient from 'src/service/store-api-client.service';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
@@ -179,28 +180,26 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
      */
     onConfirmCheckout(event) {
         event.preventDefault();
-        if (!event.target.checkValidity()) {
+        const form = event.target;
+        if (!form.checkValidity()) {
             return;
         }
 
         this._client = new StoreApiClient();
-        const data = {
-            _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-plus-payment-wall-checkout-order-token')
-        };
+        const formData = FormSerializeUtil.serialize(form);
 
         ElementLoadingIndicatorUtil.create(document.body);
 
         const orderId = this.options.orderId;
         if (orderId !== null) {
-            data.orderId = orderId;
-            data.paymentMethodId = this.options.paymentMethodId;
+            formData.set('orderId', orderId);
 
-            this._client.post(this.options.setPaymentRouteUrl, JSON.stringify(data), this.afterSetPayment.bind(this));
+            this._client.post(this.options.setPaymentRouteUrl, formData, this.afterSetPayment.bind(this));
 
             return;
         }
 
-        this._client.post(this.options.checkoutOrderUrl, JSON.stringify(data), this.afterCreateOrder.bind(this));
+        this._client.post(this.options.checkoutOrderUrl, formData, this.afterCreateOrder.bind(this));
     }
 
     /**
