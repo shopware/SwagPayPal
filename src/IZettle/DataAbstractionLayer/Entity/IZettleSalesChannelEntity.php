@@ -9,6 +9,7 @@ namespace Swag\PayPal\IZettle\DataAbstractionLayer\Entity;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 
 class IZettleSalesChannelEntity extends Entity
 {
@@ -28,6 +29,11 @@ class IZettleSalesChannelEntity extends Entity
      * @var string
      */
     protected $salesChannelDomainId;
+
+    /**
+     * @var SalesChannelDomainEntity|null
+     */
+    protected $salesChannelDomain;
 
     /**
      * @var string
@@ -72,6 +78,16 @@ class IZettleSalesChannelEntity extends Entity
     public function setSalesChannelDomainId(string $salesChannelDomainId): void
     {
         $this->salesChannelDomainId = $salesChannelDomainId;
+    }
+
+    public function getSalesChannelDomain(): ?SalesChannelDomainEntity
+    {
+        return $this->salesChannelDomain;
+    }
+
+    public function setSalesChannelDomain(SalesChannelDomainEntity $salesChannelDomain): void
+    {
+        $this->salesChannelDomain = $salesChannelDomain;
     }
 
     public function getApiKey(): string

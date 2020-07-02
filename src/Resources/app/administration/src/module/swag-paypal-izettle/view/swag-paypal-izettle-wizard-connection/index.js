@@ -18,7 +18,7 @@ Component.register('swag-paypal-izettle-wizard-connection', {
             type: Object,
             required: true
         },
-        storefrontSalesChannelId: {
+        cloneSalesChannelId: {
             type: String,
             required: false
         },
@@ -30,6 +30,12 @@ Component.register('swag-paypal-izettle-wizard-connection', {
             type: Boolean,
             required: false
         }
+    },
+
+    data() {
+        return {
+            isFetchingInformation: false
+        };
     },
 
     computed: {
@@ -60,7 +66,7 @@ Component.register('swag-paypal-izettle-wizard-connection', {
                     label: this.$tc('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
-                    action: 'swag.paypal.izettle.wizard.sales-channel',
+                    action: 'swag.paypal.izettle.wizard.customization',
                     disabled: !(this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey)
                 }
             ];

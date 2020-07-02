@@ -166,8 +166,8 @@ class IZettleSyncController extends AbstractController
 
     private function getSalesChannel(string $salesChannelId, Context $context, bool $returnDisabled = false): SalesChannelEntity
     {
-        $criteria = new Criteria();
-        $criteria->setIds([$salesChannelId]);
+        $criteria = new Criteria([$salesChannelId]);
+        $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION . '.salesChannelDomain');
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE));
         if (!$returnDisabled) {
             $criteria->addFilter(new EqualsFilter('active', true));

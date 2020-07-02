@@ -25,27 +25,12 @@
                     {% endblock %}
                 </sw-container>
 
-                {% block swag_paypal_izettle_detail_settings_input_storefront %}
-                    <sw-entity-single-select v-model="localStorefrontSalesChannelId"
-                                             required
-                                             entity="sales_channel"
-                                             labelProperty="name"
-                                             valueProperty="id"
-                                             :criteria="storefrontSalesChannelCriteria"
-                                             :label="$tc('swag-paypal-izettle.detail.settings.storefront')"
-                                             @input="onStorefrontSelectionChange">
-                    </sw-entity-single-select>
-                {% endblock %}
-
                 {% block swag_paypal_izettle_detail_settings_input_storefront_domain %}
                     <sw-entity-single-select v-model="salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId"
                                              required
                                              entity="sales_channel_domain"
                                              labelProperty="url"
-                                             valueProperty="id"
-                                             :criteria="storefrontSalesChannelDomainCriteria"
-                                             :disabled="!salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId && !localStorefrontSalesChannelId"
-                                             :label="$tc('swag-paypal-izettle.detail.settings.storefrontDomain')"
+                                             :label="$tc('swag-paypal-izettle.detail.settings.domain')"
                                              @input="forceUpdate">
                     </sw-entity-single-select>
                 {% endblock %}
@@ -53,8 +38,6 @@
                 {% block swag_paypal_izettle_detail_settings_input_product_stream %}
                     <sw-entity-single-select v-model="salesChannel.extensions.paypalIZettleSalesChannel.productStreamId"
                                              entity="product_stream"
-                                             labelProperty="name"
-                                             valueProperty="id"
                                              :label="$tc('swag-paypal-izettle.detail.settings.productStream')"
                                              @input="forceUpdate">
                     </sw-entity-single-select>

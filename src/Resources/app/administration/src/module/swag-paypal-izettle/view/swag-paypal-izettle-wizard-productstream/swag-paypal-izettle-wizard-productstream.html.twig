@@ -4,10 +4,7 @@
 
         {% block swag_paypal_izettle_wizard_productstream_select %}
             <sw-entity-single-select v-model="salesChannel.extensions.paypalIZettleSalesChannel.productStreamId"
-                                     required
                                      entity="product_stream"
-                                     labelProperty="name"
-                                     valueProperty="id"
                                      :label="$tc('swag-paypal-izettle.wizard.product-stream.label')"
                                      @input="forceUpdate">
             </sw-entity-single-select>

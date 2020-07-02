@@ -11,16 +11,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
-use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Resource\InventoryResource;
@@ -84,21 +77,6 @@ class InventorySyncerTest extends TestCase
             ])]
         );
 
-        $domain = new SalesChannelDomainEntity();
-        $domain->setId(Uuid::randomHex());
-        $domain->setSalesChannelId(Defaults::SALES_CHANNEL);
-        $domain->setLanguageId(Uuid::randomHex());
-        $domainRepository = $this->createStub(EntityRepositoryInterface::class);
-        $domainRepository->method('search')->willReturn(
-            new EntitySearchResult(
-                1,
-                new SalesChannelDomainCollection([$domain]),
-                null,
-                new Criteria(),
-                $context
-            )
-        );
-
         $this->salesChannelProductRepository = new SalesChannelProductRepoMock();
         $this->inventoryRepository = $this->createPartialMock(IZettleInventoryRepoMock::class, ['upsert']);
         $this->localUpdater = $this->createMock(LocalUpdater::class);
@@ -107,7 +85,6 @@ class InventorySyncerTest extends TestCase
         $productSelection = new ProductSelection(
             $this->salesChannelProductRepository,
             $productStreamBuilder,
-            $domainRepository,
             $this->createMock(SalesChannelContextFactory::class)
         );
 

@@ -1,9 +1,8 @@
-import template from './swag-paypal-izettle-wizard-locale.html.twig';
+import template from './swag-paypal-izettle-wizard-productselection.html.twig';
 
 const { Component } = Shopware;
-const { Criteria } = Shopware.Data;
 
-Component.register('swag-paypal-izettle-wizard-locale', {
+Component.register('swag-paypal-izettle-wizard-productselection', {
     template,
 
     inject: [
@@ -19,21 +18,32 @@ Component.register('swag-paypal-izettle-wizard-locale', {
             type: Object,
             required: true
         },
-        storefrontSalesChannelId: {
+        cloneSalesChannelId: {
             type: String,
             required: false
         }
     },
 
+    data() {
+        return {
+            manualSalesChannel: false,
+            hasClone: false
+        };
+    },
+
     computed: {
-        domainCriteria() {
-            const criteria = new Criteria();
+        salesChannelRepository() {
+            return this.repositoryFactory.create('sales_channel');
+        },
 
-            if (!this.storefrontSalesChannelId) {
-                return criteria;
+        localCloneSalesChannelId: {
+            get() {
+                this.updateButtons();
+                return this.cloneSalesChannelId;
+            },
+            set(cloneSalesChannelId) {
+                this.$emit('update-clone-sales-channel', cloneSalesChannelId);
             }
-
-            return criteria.addFilter(Criteria.equals('salesChannelId', this.storefrontSalesChannelId));
         }
     },
 
@@ -48,7 +58,7 @@ Component.register('swag-paypal-izettle-wizard-locale', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.locale.modalTitle'));
+            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.product-selection.modalTitle'));
         },
 
         updateButtons() {
@@ -57,7 +67,7 @@ Component.register('swag-paypal-izettle-wizard-locale', {
                     key: 'back',
                     label: this.$tc('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
-                    action: 'swag.paypal.izettle.wizard.sales-channel',
+                    action: 'swag.paypal.izettle.wizard.customization',
                     disabled: false
                 },
                 {
@@ -66,7 +76,7 @@ Component.register('swag-paypal-izettle-wizard-locale', {
                     position: 'right',
                     variant: 'primary',
                     action: 'swag.paypal.izettle.wizard.product-stream',
-                    disabled: !(this.salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId)
+                    disabled: false
                 }
             ];
 
@@ -75,9 +85,12 @@ Component.register('swag-paypal-izettle-wizard-locale', {
 
         forceUpdate() {
             this.$forceUpdate();
-            this.$nextTick().then(() => {
-                this.updateButtons();
-            });
+            this.updateButtons();
+        },
+
+        updateClone() {
+            this.$emit('update-clone-sales-channel', null);
+            this.forceUpdate();
         }
     }
 });

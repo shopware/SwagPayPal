@@ -75,9 +75,9 @@
                                      :isTestingCredentials="isTestingCredentials"
                                      :key="$route.params.id"
                                      :salesChannel="salesChannel"
-                                     :storefrontSalesChannelId="storefrontSalesChannelId"
+                                     :cloneSalesChannelId="cloneSalesChannelId"
                                      @test-credentials="onTestCredentials"
-                                     @update-storefront-sales-channel="updateStorefrontSalesChannel">
+                                     @update-clone-sales-channel="updateCloneSalesChannel">
                         </router-view>
                         <swag-paypal-izettle-detail-base v-else
                                                          :isLoading="isLoading"
@@ -91,9 +91,9 @@
                                                     :isTestCredentialsSuccessful="isTestCredentialsSuccessful"
                                                     :isTestingCredentials="isTestingCredentials"
                                                     :salesChannel="salesChannel"
-                                                    :storefrontSalesChannelId="storefrontSalesChannelId"
+                                                    :cloneSalesChannelId="cloneSalesChannelId"
                                                     @test-credentials="onTestCredentials"
-                                                    @update-storefront-sales-channel="updateStorefrontSalesChannel"
+                                                    @update-clone-sales-channel="updateCloneSalesChannel"
                                                     @wizard-cancel="cancelWizard"
                                                     @wizard-finish="onSave">
                         </swag-paypal-izettle-wizard>

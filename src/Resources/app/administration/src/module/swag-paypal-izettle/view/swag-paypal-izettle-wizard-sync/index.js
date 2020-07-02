@@ -15,7 +15,7 @@ Component.register('swag-paypal-izettle-wizard-sync', {
             type: Object,
             required: true
         },
-        storefrontSalesChannelId: {
+        cloneSalesChannelId: {
             type: String,
             required: false
         }

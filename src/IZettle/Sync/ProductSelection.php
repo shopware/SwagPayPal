@@ -10,20 +10,16 @@ namespace Swag\PayPal\IZettle\Sync;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
-use Swag\PayPal\IZettle\Exception\NoDomainAssignedException;
 use Swag\PayPal\SwagPayPal;
 
 class ProductSelection
@@ -39,11 +35,6 @@ class ProductSelection
     private $productStreamBuilder;
 
     /**
-     * @var EntityRepositoryInterface
-     */
-    private $domainRepository;
-
-    /**
      * @var SalesChannelContextFactory
      */
     private $salesChannelContextFactory;
@@ -51,12 +42,10 @@ class ProductSelection
     public function __construct(
         SalesChannelRepositoryInterface $productRepository,
         ProductStreamBuilderInterface $productStreamBuilder,
-        EntityRepositoryInterface $domainRepository,
         SalesChannelContextFactory $salesChannelContextFactory
     ) {
         $this->productRepository = $productRepository;
         $this->productStreamBuilder = $productStreamBuilder;
-        $this->domainRepository = $domainRepository;
         $this->salesChannelContextFactory = $salesChannelContextFactory;
     }
 
@@ -68,7 +57,7 @@ class ProductSelection
         Context $context,
         bool $addAssociations
     ): ProductCollection {
-        $salesChannelContext = $this->getSalesChannelContext($salesChannel, $context);
+        $salesChannelContext = $this->getSalesChannelContext($salesChannel);
 
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
         $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
@@ -92,7 +81,7 @@ class ProductSelection
         int $limit,
         Context $context
     ): EntitySearchResult {
-        $salesChannelContext = $this->getSalesChannelContext($salesChannel, $context);
+        $salesChannelContext = $this->getSalesChannelContext($salesChannel);
 
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
         $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
@@ -140,28 +129,11 @@ class ProductSelection
         return $criteria;
     }
 
-    private function getSalesChannelContext(SalesChannelEntity $salesChannel, Context $context): SalesChannelContext
+    private function getSalesChannelContext(SalesChannelEntity $salesChannel): SalesChannelContext
     {
-        /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
-
-        $criteria = new Criteria();
-        $criteria->setIds([$iZettleSalesChannel->getSalesChannelDomainId()]);
-
-        /** @var SalesChannelDomainEntity|null $domain */
-        $domain = $this->domainRepository->search($criteria, $context)->first();
-
-        if ($domain === null) {
-            throw new NoDomainAssignedException($salesChannel->getId());
-        }
-
         return $this->salesChannelContextFactory->create(
             Uuid::randomHex(),
-            $domain->getSalesChannelId(),
-            [
-                SalesChannelContextService::LANGUAGE_ID => $domain->getLanguageId(),
-                SalesChannelContextService::CURRENCY_ID => $salesChannel->getCurrencyId(),
-            ]
+            $salesChannel->getId()
         );
     }
 

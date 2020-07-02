@@ -21,7 +21,7 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
             type: Object,
             required: true
         },
-        storefrontSalesChannelId: {
+        cloneSalesChannelId: {
             type: String,
             required: false
         },
@@ -43,13 +43,13 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
                     variant: 'large',
                     navigationIndex: 1
                 },
-                'sales-channel': {
-                    name: 'swag.paypal.izettle.wizard.sales-channel',
+                customization: {
+                    name: 'swag.paypal.izettle.wizard.customization',
                     variant: 'large',
                     navigationIndex: 2
                 },
-                locale: {
-                    name: 'swag.paypal.izettle.wizard.locale',
+                'product-selection': {
+                    name: 'swag.paypal.izettle.wizard.product-selection',
                     variant: 'large',
                     navigationIndex: 3
                 },
@@ -114,8 +114,8 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
             this.$emit('wizard-finish');
         },
 
-        updateStorefrontSalesChannel(storefrontSalesChannelId) {
-            this.$emit('update-storefront-sales-channel', storefrontSalesChannelId);
+        updateCloneSalesChannel(cloneSalesChannelId) {
+            this.$emit('update-clone-sales-channel', cloneSalesChannelId);
         },
 
         cancelWizard() {

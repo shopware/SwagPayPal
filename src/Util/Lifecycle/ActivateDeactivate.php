@@ -14,6 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Exception\ExistingIZettleSalesChannelsException;
+use Swag\PayPal\IZettle\Setting\Service\InformationDefaultService;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
@@ -39,16 +40,23 @@ class ActivateDeactivate
      */
     private $salesChannelTypeRepository;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $shippingRepository;
+
     public function __construct(
         PaymentMethodUtil $paymentMethodUtil,
         EntityRepositoryInterface $paymentRepository,
         EntityRepositoryInterface $salesChannelRepository,
-        EntityRepositoryInterface $salesChannelTypeRepository
+        EntityRepositoryInterface $salesChannelTypeRepository,
+        EntityRepositoryInterface $shippingRepository
     ) {
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->paymentRepository = $paymentRepository;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->salesChannelTypeRepository = $salesChannelTypeRepository;
+        $this->shippingRepository = $shippingRepository;
     }
 
     public function activate(Context $context): void
@@ -62,6 +70,7 @@ class ActivateDeactivate
         $this->setPaymentMethodsIsActive(false, $context);
         $this->checkIZettleSalesChannels($context);
         $this->removeIZettleSalesChannelType($context);
+        $this->removeIZettleDefaultEntities($context);
     }
 
     private function setPaymentMethodsIsActive(bool $active, Context $context): void
@@ -129,5 +138,11 @@ class ActivateDeactivate
             });
             throw new ExistingIZettleSalesChannelsException($result->getTotal(), $names);
         }
+    }
+
+    private function removeIZettleDefaultEntities(Context $context): void
+    {
+        $this->paymentRepository->delete([InformationDefaultService::IZETTLE_PAYMENT_METHOD_ID], $context);
+        $this->shippingRepository->delete([InformationDefaultService::IZETTLE_SHIPPING_METHOD_ID], $context);
     }
 }

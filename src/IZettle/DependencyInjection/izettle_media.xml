@@ -21,7 +21,6 @@
 
         <service id="Swag\PayPal\IZettle\Sync\ImageSyncer">
             <argument type="service" id="swag_paypal_izettle_sales_channel_media.repository"/>
-            <argument type="service" id="sales_channel_domain.repository"/>
             <argument type="service" id="Swag\PayPal\IZettle\Api\Service\MediaConverter"/>
             <argument type="service" id="Swag\PayPal\IZettle\Resource\ImageResource"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>

@@ -27,7 +27,7 @@ Component.register('swag-paypal-izettle-detail-settings', {
             type: Boolean,
             default: false
         },
-        storefrontSalesChannelId: {
+        cloneSalesChannelId: {
             type: String,
             required: false
         },

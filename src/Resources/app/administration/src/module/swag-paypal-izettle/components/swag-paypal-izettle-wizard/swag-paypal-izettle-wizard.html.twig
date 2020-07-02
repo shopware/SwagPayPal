@@ -20,10 +20,10 @@
                                     {{ $tc('swag-paypal-izettle.wizard.stepItemTitle.connection') }}
                                 </sw-step-item>
                                 <sw-step-item>
-                                    {{ $tc('swag-paypal-izettle.wizard.stepItemTitle.saleschannel') }}
+                                    {{ $tc('swag-paypal-izettle.wizard.stepItemTitle.customization') }}
                                 </sw-step-item>
                                 <sw-step-item>
-                                    {{ $tc('swag-paypal-izettle.wizard.stepItemTitle.locale') }}
+                                    {{ $tc('swag-paypal-izettle.wizard.stepItemTitle.productselection') }}
                                 </sw-step-item>
                                 <sw-step-item>
                                     {{ $tc('swag-paypal-izettle.wizard.stepItemTitle.productgroup') }}
@@ -44,13 +44,13 @@
                                          :isLoading="isLoading"
                                          :isTestingCredentials="isTestingCredentials"
                                          :salesChannel="salesChannel"
-                                         :storefrontSalesChannelId="storefrontSalesChannelId"
+                                         :cloneSalesChannelId="cloneSalesChannelId"
                                          @buttons-update="updateButtons"
                                          @frw-redirect="redirect"
                                          @frw-set-title="setTitle"
                                          @frw-finish="finishWizard"
                                          @test-credentials="testCredentials"
-                                         @update-storefront-sales-channel="updateStorefrontSalesChannel">
+                                         @update-clone-sales-channel="updateCloneSalesChannel">
                             </router-view>
                         </div>
                     {% endblock %}

@@ -10,14 +10,8 @@ namespace Swag\PayPal\Test\IZettle\Sync\Product;
 use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
-use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter;
@@ -112,27 +106,11 @@ class ProductSyncerTest extends AbstractProductSyncTest
             ['createProduct', 'updateProduct', 'deleteProduct']
         );
 
-        $domain = new SalesChannelDomainEntity();
-        $domain->setId(Uuid::randomHex());
-        $domain->setSalesChannelId($this->salesChannel->getId());
-        $domain->setLanguageId(Uuid::randomHex());
-        $domainRepository = $this->createStub(EntityRepositoryInterface::class);
-        $domainRepository->method('search')->willReturn(
-            new EntitySearchResult(
-                1,
-                new SalesChannelDomainCollection([$domain]),
-                null,
-                new Criteria(),
-                $context
-            )
-        );
-
         $this->productRepository = new SalesChannelProductRepoMock();
 
         $productSelection = new ProductSelection(
             $this->productRepository,
             $productStreamBuilder,
-            $domainRepository,
             $this->createMock(SalesChannelContextFactory::class)
         );
 

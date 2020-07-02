@@ -32,7 +32,7 @@ Component.register('swag-paypal-izettle', {
             previousApiKey: null,
             showWizard: false,
             salesChannel: {},
-            storefrontSalesChannelId: null
+            cloneSalesChannelId: null
         };
     },
 
@@ -99,7 +99,7 @@ Component.register('swag-paypal-izettle', {
             this.salesChannel.extensions.paypalIZettleSalesChannel
                 = this.paypalIZettleSalesChannelRepository.create(Context.api);
             this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey = '';
-            this.salesChannel.extensions.paypalIZettleSalesChannel.storefrontSalesChannelId = null;
+            this.salesChannel.extensions.paypalIZettleSalesChannel.imageDomain = '';
             this.salesChannel.extensions.paypalIZettleSalesChannel.productStreamId = null;
             this.salesChannel.extensions.paypalIZettleSalesChannel.syncPrices = true;
             this.salesChannel.extensions.paypalIZettleSalesChannel.replace = false;
@@ -129,42 +129,12 @@ Component.register('swag-paypal-izettle', {
                 .then((entity) => {
                     this.salesChannel = entity;
                     this.previousApiKey = entity.extensions.paypalIZettleSalesChannel.apiKey;
-
-                    if (entity.extensions.paypalIZettleSalesChannel.salesChannelDomainId) {
-                        const criteria = new Criteria();
-                        criteria.setIds([entity.extensions.paypalIZettleSalesChannel.salesChannelDomainId]);
-
-                        this.globalDomainRepository.search(criteria, Shopware.Context.api).then((result) => {
-                            this.storefrontSalesChannelId = result.first().salesChannelId;
-                        });
-                    }
-
                     this.isLoading = false;
                 });
         },
 
-        updateStorefrontSalesChannel(storefrontSalesChannelId) {
-            this.storefrontSalesChannelId = storefrontSalesChannelId;
-            this.salesChannelRepository.get(storefrontSalesChannelId, Shopware.Context.api).then((entity) => {
-                this.salesChannel.languageId = entity.languageId;
-                this.salesChannel.languages.length = 0;
-                this.salesChannel.languages.push({
-                    id: entity.languageId
-                });
-                this.salesChannel.paymentMethodId = entity.paymentMethodId;
-                this.salesChannel.shippingMethodId = entity.shippingMethodId;
-                this.salesChannel.countryId = entity.countryId;
-                this.salesChannel.navigationCategoryId = entity.navigationCategoryId;
-                this.salesChannel.navigationCategoryVersionId = entity.navigationCategoryVersionId;
-                this.salesChannel.customerGroupId = entity.customerGroupId;
-
-                this.salesChannel.name =
-                    this.$t('swag-paypal-izettle.wizard.sales-channel.nameDecoration', { name: entity.name });
-
-                this.salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId = null;
-
-                this.$forceUpdate();
-            });
+        updateCloneSalesChannel(cloneSalesChannelId) {
+            this.cloneSalesChannelId = cloneSalesChannelId;
         },
 
         cancelWizard() {
@@ -204,6 +174,20 @@ Component.register('swag-paypal-izettle', {
 
                     this.$root.$emit('sales-channel-change');
                     this.loadSalesChannel();
+
+                    if (this.cloneSalesChannelId !== null) {
+                        this.SwagPayPalIZettleSettingApiService.cloneProductVisibility(
+                            this.cloneSalesChannelId,
+                            this.salesChannel.id
+                        ).catch((errorResponse) => {
+                            if (errorResponse.response.data && errorResponse.response.data.errors) {
+                                this.createNotificationError({
+                                    title: this.$tc('global.default.error'),
+                                    message: this.$tc('swag-paypal-izettle.messageCloneError')
+                                });
+                            }
+                        });
+                    }
 
                     this.$router.push({ name: 'swag.paypal.izettle.detail.base', params: { id: this.salesChannel.id } });
                 }).catch(() => {
@@ -274,15 +258,6 @@ Component.register('swag-paypal-izettle', {
                 this.isTestingCredentials = false;
                 this.isTestCredentialsSuccessful = false;
             }
-        },
-
-        onFetchSalesChannelInformation() {
-            this.isLoading = true;
-
-            return this.SwagPayPalIZettleSettingApiService.fetchInformation(this.salesChannel).then(() => {
-                this.previousApiKey = this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey;
-                this.isLoading = false;
-            }).catch(this.catchAuthentificationError);
         }
     }
 });

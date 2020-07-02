@@ -26,7 +26,7 @@ class Migration1584005462IZettleSalesChannel extends MigrationStep
             CREATE TABLE IF NOT EXISTS `swag_paypal_izettle_sales_channel` (
                 `id`                        BINARY(16)              NOT NULL,
                 `sales_channel_id`          BINARY(16)              NOT NULL,
-                `sales_channel_domain_id`   BINARY(16)              NULL,
+                `sales_channel_domain_id`   BINARY(16)              NOT NULL,
                 `product_stream_id`         BINARY(16)              NULL,
                 `api_key`                   VARCHAR(8192)           NOT NULL,
                 `sync_prices`               TINYINT(1)  DEFAULT 1   NOT NULL,

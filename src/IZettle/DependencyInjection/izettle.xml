@@ -30,7 +30,6 @@
         <service id="Swag\PayPal\IZettle\Sync\ProductSelection">
             <argument type="service" id="sales_channel.product.repository"/>
             <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
-            <argument type="service" id="sales_channel_domain.repository"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
         </service>
 
@@ -59,6 +58,8 @@
         <service id="Swag\PayPal\IZettle\Setting\SettingsController" public="true">
             <argument type="service" id="Swag\PayPal\IZettle\Setting\Service\ApiCredentialService"/>
             <argument type="service" id="Swag\PayPal\IZettle\Setting\Service\InformationFetchService"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Setting\Service\InformationDefaultService"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Setting\Service\ProductVisibilityCloneService"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Setting\Service\ApiCredentialService">
@@ -67,7 +68,23 @@
 
         <service id="Swag\PayPal\IZettle\Setting\Service\InformationFetchService">
             <argument type="service" id="Swag\PayPal\IZettle\Resource\UserResource"/>
+            <argument type="service" id="country.repository"/>
             <argument type="service" id="currency.repository"/>
+            <argument type="service" id="language.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Setting\Service\InformationDefaultService">
+            <argument type="service" id="customer_group.repository"/>
+            <argument type="service" id="category.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="rule.repository"/>
+            <argument type="service" id="delivery_time.repository"/>
+            <argument type="service" id="shipping_method.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Setting\Service\ProductVisibilityCloneService">
+            <argument type="service" id="product_visibility.repository"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Command\IZettleSyncCommand">

@@ -17,7 +17,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Swag\PayPal\IZettle\Api\Image\BulkImageUpload;
 use Swag\PayPal\IZettle\Api\IZettleRequestUri;
@@ -62,7 +61,6 @@ class ImageSyncerTest extends TestCase
 
         $imageSyncer = new ImageSyncer(
             $mediaRepository,
-            $this->createSalesChannelDomainRepository($context),
             new MediaConverter($this->createUrlGenerator()),
             $imageResource,
             $logger
@@ -142,33 +140,16 @@ class ImageSyncerTest extends TestCase
         $iZettleSalesChannel->setApiKey('apiKey');
         $iZettleSalesChannel->setProductStreamId('someProductStreamId');
         $iZettleSalesChannel->setSyncPrices(true);
-        $iZettleSalesChannel->setSalesChannelDomainId(self::SALES_CHANNEL_DOMAIN_ID);
         $iZettleSalesChannel->setSalesChannelId(Defaults::SALES_CHANNEL);
-
-        return $iZettleSalesChannel;
-    }
-
-    private function createSalesChannelDomainRepository(Context $context): EntityRepositoryInterface
-    {
-        $domainRepository = $this->createMock(EntityRepositoryInterface::class);
         $domain = new SalesChannelDomainEntity();
         $domain->setId(self::SALES_CHANNEL_DOMAIN_ID);
         $domain->setSalesChannelId(Defaults::SALES_CHANNEL);
         $domain->setLanguageId(Uuid::randomHex());
         $domain->setUrl(self::DOMAIN_URL);
-        $domainRepository->method('search')->willReturn(
-            new EntitySearchResult(
-                1,
-                new SalesChannelDomainCollection([
-                    $domain,
-                ]),
-                null,
-                new Criteria(),
-                $context
-            )
-        );
+        $iZettleSalesChannel->setSalesChannelDomain($domain);
+        $iZettleSalesChannel->setSalesChannelDomainId(self::SALES_CHANNEL_DOMAIN_ID);
 
-        return $domainRepository;
+        return $iZettleSalesChannel;
     }
 
     private function createLogger(): LoggerInterface

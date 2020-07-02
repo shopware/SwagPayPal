@@ -36,8 +36,7 @@
             },
             "settings": {
                 "titleGeneralSettings": "Allgemein",
-                "storefront": "Storefront Verkaufskanal",
-                "storefrontDomain": "Storefront Verkaufskanal-Domain",
+                "domain": "Domain für Medien-Download",
                 "productStream": "Dynamische Produktgruppe",
                 "titleCredentials": "Zugangsdaten",
                 "titleSync": "Synchronisation",
@@ -46,7 +45,7 @@
             },
             "log": {
                 "titleProducts": "Synchronisierte Produkte",
-                "titleLogs": "Weitere Protokol-Einträge",
+                "titleLogs": "Weitere Protokoll-Einträge",
                 "columnProduct": "Produkt",
                 "columnDate": "Zeitpunkt",
                 "columnLastSync": "Letzte Synchronisation",
@@ -62,8 +61,8 @@
         "wizard": {
             "stepItemTitle": {
                 "connection": "Benutzerkonto-Einrichtung",
-                "saleschannel": "Storefront-Verkaufskanal",
-                "locale": "Lokalisierung",
+                "customization": "Anpassung",
+                "productselection": "Produktauswahl",
                 "productgroup": "Dynamische Produktgruppe",
                 "sync": "Produkt-Synchronsiation",
                 "finish": "Abschluss"
@@ -72,24 +71,24 @@
                 "modalTitle": "Benutzerkonto-Einrichtung",
                 "header": "Geben Sie hier Ihre iZettle-Benutzerdaten ein und folgenden Sie den nächsten Schritten zur Einrichtung der Synchronisation."
             },
-            "sales-channel": {
-                "modalTitle": "Wählen Sie einen bestehenden Verkaufskanal",
-                "label": "Verkaufskanal",
-                "header": "Wählen Sie einen Storefront-Verkaufskanal als Basis",
-                "subtitle": "Der gewählte Storefront-Verkaufskanal definiert die Auswahl der Produkte. Sie können diese Auswahl in einem späteren Schritt weiter reduzieren.",
-                "nameDecoration": "{name} (iZettle)"
-            },
-            "locale": {
-                "modalTitle": "Lokalisierung",
+            "customization": {
+                "modalTitle": "Benutzerdefinierte Einstellungen",
                 "labelDomain": "Domain",
-                "header": "Wählen Sie die Lokalisierungs-Einstellungen für die Synchronisation",
-                "subtitle": "Die gewählte Domain definiert die Sprache für Produktnamen und -beschreibungen."
+                "header": "Passen Sie Ihren neuen Verkaufskanal an",
+                "subtitle": "Die Domain wird benötigt, damit iZettle Medien darüber herunterladen kann. Sie muss deshalb öffentlich verfügbar sein."
+            },
+            "product-selection": {
+                "modalTitle": "Produktauswahl",
+                "labelSelect": "Verkaufskanal",
+                "labelToggle": "Produktauswahl klonen",
+                "header": "Wählen Sie einen Verkaufskanal für die Produktauswahl",
+                "subtitle": "Sie können einen existierenden Verkaufskanal wählen, um die aktuelle Produktauswahl zu übernehmen. Sie können nach der Einrichtung der Synchronisiation Produkte dem Verkaufskanal hinzufügen oder entfernen."
             },
             "product-stream": {
                 "modalTitle": "Dynamische Produktgruppe",
                 "label": "Dynamische Produktgruppe",
                 "header": "Wählen Sie eine dynamische Produktgruppe",
-                "subtitle": "Sie können eine dynamische Produktgruppe wählen, um die Zahl der Produkte des gewählten Verkaufskanals weiter zu reduzieren.<br>Falls sie noch keine dynamische Produktgruppe erstellt haben oder die Auswahl nicht reduzieren möchten, können Sie diesen Schritt überspringen und im Bedarfsfall später eine Gruppe wählen."
+                "subtitle": "Sie können eine dynamische Produktgruppe wählen, um die synchronisierten Produkte weiter zu filtern.<br>Falls sie noch keine dynamische Produktgruppe erstellt haben oder die Auswahl nicht reduzieren möchten, können Sie diesen Schritt überspringen und im Bedarfsfall später eine Gruppe wählen."
             },
             "sync": {
                 "modalTitle": "Product-Synchronisation",

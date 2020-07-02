@@ -12,8 +12,8 @@ import './view/swag-paypal-izettle-detail-settings';
 import './view/swag-paypal-izettle-detail-log';
 
 import './view/swag-paypal-izettle-wizard-connection';
-import './view/swag-paypal-izettle-wizard-saleschannel';
-import './view/swag-paypal-izettle-wizard-locale';
+import './view/swag-paypal-izettle-wizard-customization';
+import './view/swag-paypal-izettle-wizard-productselection';
 import './view/swag-paypal-izettle-wizard-productstream';
 import './view/swag-paypal-izettle-wizard-sync';
 import './view/swag-paypal-izettle-wizard-finish';
@@ -71,13 +71,13 @@ Module.register('swag-paypal-izettle', {
                     component: 'swag-paypal-izettle-wizard-connection',
                     path: 'connection'
                 },
-                'sales-channel': {
-                    component: 'swag-paypal-izettle-wizard-saleschannel',
-                    path: 'sales-channel'
+                customization: {
+                    component: 'swag-paypal-izettle-wizard-customization',
+                    path: 'customization'
                 },
-                locale: {
-                    component: 'swag-paypal-izettle-wizard-locale',
-                    path: 'locale'
+                'product-selection': {
+                    component: 'swag-paypal-izettle-wizard-productselection',
+                    path: 'product-selection'
                 },
                 'product-stream': {
                     component: 'swag-paypal-izettle-wizard-productstream',

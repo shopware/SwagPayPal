@@ -151,9 +151,19 @@ class MerchantInformation extends IZettleStruct
      */
     private $timeZone;
 
+    public function getCountry(): string
+    {
+        return $this->country;
+    }
+
     public function getCurrency(): string
     {
         return $this->currency;
+    }
+
+    public function getLanguage(): string
+    {
+        return $this->language;
     }
 
     protected function setUuid(string $uuid): void

@@ -36,8 +36,7 @@
             },
             "settings": {
                 "titleGeneralSettings": "General settings",
-                "storefront": "Storefront",
-                "storefrontDomain": "Storefront domain",
+                "domain": "Domain for media download",
                 "productStream": "Dynamic product group",
                 "titleCredentials": "Credentials",
                 "titleSync": "Synchronization",
@@ -62,8 +61,8 @@
         "wizard": {
             "stepItemTitle": {
                 "connection": "Account setup",
-                "saleschannel": "Connect Sales Channel",
-                "locale": "Localization",
+                "customization": "Customization",
+                "productselection": "Product Selection",
                 "productgroup": "Dynamic Product Group",
                 "sync": "Product Sync",
                 "finish": "Finish"
@@ -72,24 +71,24 @@
                 "modalTitle": "Account setup",
                 "header": "Enter your iZettle credentials and follow the next steps to setup product sync."
             },
-            "sales-channel": {
-                "modalTitle": "Select an existing Sales Channel",
-                "label": "Sales Channel",
-                "header": "Pick a Storefront Sales Channel as base",
-                "subtitle": "The chosen Storefront Sales Channel provides the selection of products to sync. You may reduce the selection in a later step.",
-                "nameDecoration": "{name} (iZettle)"
-            },
-            "locale": {
-                "modalTitle": "Localization",
+            "customization": {
+                "modalTitle": "Customization",
                 "labelDomain": "Domain",
-                "header": "Choose localization settings for the sync",
-                "subtitle": "The chosen domain sets the language of product names and descriptions."
+                "header": "Customize your new Sales Channel",
+                "subtitle": "The domain is needed as download URL for media. It needs to be publicly available."
+            },
+            "product-selection": {
+                "modalTitle": "Product selection",
+                "labelSelect": "Sales Channel",
+                "labelToggle": "Clone Product Selection",
+                "header": "Pick a Sales Channel for Product Selection",
+                "subtitle": "You may choose an existing Sales Channel to clone the current selection of products to sync. You can add or remove products of your Sales Channel after the setup wizard."
             },
             "product-stream": {
                 "modalTitle": "Dynamic Product Group",
                 "label": "Dynamic Product Group",
                 "header": "Pick a Dynamic Product Group",
-                "subtitle": "You can select a Dynamic Product Group to reduce the number of synchronized products of the selected Storefront Sales Channel.<br>If you have not yet created a Dynamic Product Group or do not wish to reduce the number of synchronized products, you can skip this step now or select a product stream later."
+                "subtitle": "You can select a Dynamic Product Group to filter the synchronized products additionally.<br>If you have not yet created a Dynamic Product Group or do not wish to reduce the number of synchronized products, you can skip this step now or select a group later."
             },
             "sync": {
                 "modalTitle": "Product Sync",
@@ -112,6 +111,7 @@
             "buttonTest": "Test credentials",
             "buttonGenerateKey": "Generate API key",
             "apiKeyDescription": "You need to generate an API key at the iZettle website.<br>The generated key needs to be pasted here to authorize the connection to iZettle."
-        }
+        },
+        "messageCloneError": "Could not clone product visibility from another Sales Channel."
     }
 }

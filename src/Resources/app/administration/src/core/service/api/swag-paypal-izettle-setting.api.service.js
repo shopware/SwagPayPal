@@ -36,14 +36,46 @@ class SwagPayPalIZettleSettingApiService extends ApiService {
             .post(`_action/${this.getApiBasePath()}/fetch-information`, { apiKey }, { headers })
             .then((response) => {
                 const data = ApiService.handleResponse(response);
+                delete data.extensions;
 
-                salesChannel.currencyId = data.currencyId;
+                Object.assign(salesChannel, data);
+
                 salesChannel.currencies.length = 0;
                 salesChannel.currencies.push({
                     id: data.currencyId
                 });
 
+                salesChannel.languages.length = 0;
+                salesChannel.languages.push({
+                    id: data.languageId
+                });
+
+                salesChannel.countries.length = 0;
+                salesChannel.countries.push({
+                    id: data.countryId
+                });
+
                 return data;
+            });
+    }
+
+    /**
+     * Clone product visibilility from one sales channel to another
+     *
+     * @param {String} toSalesChannelId
+     * @param {String} fromSalesChannelId
+     * @returns {Promise|Object}
+     */
+    cloneProductVisibility(fromSalesChannelId, toSalesChannelId) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .post(
+                `_action/${this.getApiBasePath()}/clone-product-visibility`,
+                { fromSalesChannelId, toSalesChannelId },
+                { headers }
+            ).then((response) => {
+                return ApiService.handleResponse(response);
             });
     }
 

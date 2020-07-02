@@ -14,7 +14,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Swag\PayPal\IZettle\Api\Image\BulkImageUpload;
 use Swag\PayPal\IZettle\Api\Image\BulkImageUploadResponse\Uploaded;
 use Swag\PayPal\IZettle\Api\Service\MediaConverter;
@@ -22,6 +21,7 @@ use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaEntity;
 use Swag\PayPal\IZettle\Exception\InvalidMediaTypeException;
+use Swag\PayPal\IZettle\Exception\NoDomainAssignedException;
 use Swag\PayPal\IZettle\Resource\ImageResource;
 
 class ImageSyncer
@@ -53,13 +53,11 @@ class ImageSyncer
 
     public function __construct(
         EntityRepositoryInterface $iZettleMediaRepository,
-        EntityRepositoryInterface $salesChannelDomainRepository,
         MediaConverter $mediaConverter,
         ImageResource $imageResource,
         LoggerInterface $logger
     ) {
         $this->iZettleMediaRepository = $iZettleMediaRepository;
-        $this->salesChannelDomainRepository = $salesChannelDomainRepository;
         $this->mediaConverter = $mediaConverter;
         $this->imageResource = $imageResource;
         $this->logger = $logger;
@@ -71,9 +69,9 @@ class ImageSyncer
     ): void {
         $iZettleMediaCollection = $this->getIZettleMediaCollection($iZettleSalesChannel, $context);
 
-        $domain = $this->getDomain($iZettleSalesChannel, $context);
+        $domain = $iZettleSalesChannel->getSalesChannelDomain();
         if ($domain === null) {
-            return;
+            throw new NoDomainAssignedException($iZettleSalesChannel->getSalesChannelId());
         }
 
         $bulkUpload = new BulkImageUpload();
@@ -120,14 +118,6 @@ class ImageSyncer
                 'invalid' => $invalid,
             ]);
         }
-    }
-
-    private function getDomain(IZettleSalesChannelEntity $IZettleSalesChannelEntity, Context $context): ?SalesChannelDomainEntity
-    {
-        $criteria = new Criteria();
-        $criteria->setIds([$IZettleSalesChannelEntity->getSalesChannelDomainId()]);
-
-        return $this->salesChannelDomainRepository->search($criteria, $context)->first();
     }
 
     private function getIZettleMediaCollection(IZettleSalesChannelEntity $iZettleSalesChannel, Context $context): IZettleSalesChannelMediaCollection

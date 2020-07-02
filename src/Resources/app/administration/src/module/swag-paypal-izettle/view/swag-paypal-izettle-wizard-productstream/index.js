@@ -18,7 +18,7 @@ Component.register('swag-paypal-izettle-wizard-productstream', {
             type: Object,
             required: true
         },
-        storefrontSalesChannelId: {
+        cloneSalesChannelId: {
             type: String,
             required: false
         }
@@ -50,7 +50,7 @@ Component.register('swag-paypal-izettle-wizard-productstream', {
                     key: 'back',
                     label: this.$tc('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
-                    action: 'swag.paypal.izettle.wizard.locale',
+                    action: 'swag.paypal.izettle.wizard.product-selection',
                     disabled: false
                 },
                 {

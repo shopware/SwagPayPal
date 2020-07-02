@@ -1,10 +1,13 @@
-import template from './swag-paypal-izettle-wizard-saleschannel.html.twig';
+import template from './swag-paypal-izettle-wizard-customization.html.twig';
 
-const { Component, Defaults } = Shopware;
-const { Criteria } = Shopware.Data;
+const { Component, Mixin } = Shopware;
 
-Component.register('swag-paypal-izettle-wizard-saleschannel', {
+Component.register('swag-paypal-izettle-wizard-customization', {
     template,
+
+    mixins: [
+        Mixin.getByName('placeholder')
+    ],
 
     inject: [
         'repositoryFactory'
@@ -19,32 +22,13 @@ Component.register('swag-paypal-izettle-wizard-saleschannel', {
             type: Object,
             required: true
         },
-        storefrontSalesChannelId: {
+        cloneSalesChannelId: {
             type: String,
             required: false
         }
     },
 
     computed: {
-        storefrontSalesChannelCriteria() {
-            const criteria = new Criteria();
-
-            return criteria.addFilter(Criteria.equals('typeId', Defaults.storefrontSalesChannelTypeId));
-        },
-
-        salesChannelRepository() {
-            return this.repositoryFactory.create('sales_channel');
-        },
-
-        localStorefrontSalesChannelId: {
-            get() {
-                this.updateButtons();
-                return this.storefrontSalesChannelId;
-            },
-            set(storefrontSalesChannelId) {
-                this.$emit('update-storefront-sales-channel', storefrontSalesChannelId);
-            }
-        }
     },
 
     created() {
@@ -58,7 +42,7 @@ Component.register('swag-paypal-izettle-wizard-saleschannel', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.sales-channel.modalTitle'));
+            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.customization.modalTitle'));
         },
 
         updateButtons() {
@@ -75,8 +59,9 @@ Component.register('swag-paypal-izettle-wizard-saleschannel', {
                     label: this.$tc('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
-                    action: 'swag.paypal.izettle.wizard.locale',
-                    disabled: !(this.storefrontSalesChannelId)
+                    action: 'swag.paypal.izettle.wizard.product-selection',
+                    disabled: !(this.salesChannel.name)
+                           || !(this.salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId)
                 }
             ];
 
@@ -85,7 +70,9 @@ Component.register('swag-paypal-izettle-wizard-saleschannel', {
 
         forceUpdate() {
             this.$forceUpdate();
-            this.updateButtons();
+            this.$nextTick().then(() => {
+                this.updateButtons();
+            });
         }
     }
 });
