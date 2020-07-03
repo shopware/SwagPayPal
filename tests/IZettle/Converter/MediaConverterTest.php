@@ -10,9 +10,7 @@ namespace Swag\PayPal\Test\IZettle\Converter;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Swag\PayPal\IZettle\Api\Service\MediaConverter;
 use Swag\PayPal\IZettle\Exception\InvalidMediaTypeException;
 
@@ -26,9 +24,8 @@ class MediaConverterTest extends TestCase
     public function testConvert(): void
     {
         $shopwareMedia = $this->getMedia();
-        $domain = $this->getSalesChannelDomain();
 
-        $image = $this->createMediaConverter()->convert($domain, $shopwareMedia);
+        $image = $this->createMediaConverter()->convert(self::DOMAIN_URL, $shopwareMedia);
 
         static::assertEquals(self::MEDIA_URL, $image->getImageUrl());
         static::assertEquals('JPEG', $image->getImageFormat());
@@ -39,18 +36,16 @@ class MediaConverterTest extends TestCase
     {
         $shopwareMedia = $this->getMedia();
         $shopwareMedia->setMimeType('video/mp4');
-        $domain = $this->getSalesChannelDomain();
 
         $this->expectException(InvalidMediaTypeException::class);
-        $this->createMediaConverter()->convert($domain, $shopwareMedia);
+        $this->createMediaConverter()->convert(self::DOMAIN_URL, $shopwareMedia);
     }
 
     public function testConvertExisting(): void
     {
         $shopwareMedia = $this->getMedia();
-        $domain = $this->getSalesChannelDomain();
 
-        $image = $this->createMediaConverter()->convert($domain, $shopwareMedia, self::LOOKUP_KEY);
+        $image = $this->createMediaConverter()->convert(self::DOMAIN_URL, $shopwareMedia, self::LOOKUP_KEY);
 
         static::assertEquals(self::MEDIA_URL, $image->getImageUrl());
         static::assertEquals('JPEG', $image->getImageFormat());
@@ -72,15 +67,5 @@ class MediaConverterTest extends TestCase
         $media->setMimeType('image/jpeg');
 
         return $media;
-    }
-
-    private function getSalesChannelDomain(): SalesChannelDomainEntity
-    {
-        $domain = new SalesChannelDomainEntity();
-        $domain->setId(Uuid::randomHex());
-        $domain->setSalesChannelId(Defaults::SALES_CHANNEL);
-        $domain->setUrl(self::DOMAIN_URL);
-
-        return $domain;
     }
 }

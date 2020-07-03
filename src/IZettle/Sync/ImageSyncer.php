@@ -21,7 +21,6 @@ use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaEntity;
 use Swag\PayPal\IZettle\Exception\InvalidMediaTypeException;
-use Swag\PayPal\IZettle\Exception\NoDomainAssignedException;
 use Swag\PayPal\IZettle\Resource\ImageResource;
 
 class ImageSyncer
@@ -30,11 +29,6 @@ class ImageSyncer
      * @var EntityRepositoryInterface
      */
     private $iZettleMediaRepository;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelDomainRepository;
 
     /**
      * @var MediaConverter
@@ -69,10 +63,7 @@ class ImageSyncer
     ): void {
         $iZettleMediaCollection = $this->getIZettleMediaCollection($iZettleSalesChannel, $context);
 
-        $domain = $iZettleSalesChannel->getSalesChannelDomain();
-        if ($domain === null) {
-            throw new NoDomainAssignedException($iZettleSalesChannel->getSalesChannelId());
-        }
+        $domain = $iZettleSalesChannel->getMediaDomain();
 
         $bulkUpload = new BulkImageUpload();
 

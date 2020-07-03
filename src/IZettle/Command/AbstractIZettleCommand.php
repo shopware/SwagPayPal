@@ -46,7 +46,6 @@ abstract class AbstractIZettleCommand extends Command
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE));
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addAssociation('currency');
-        $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION . '.salesChannelDomain');
         if ($salesChannelId !== null) {
             $criteria->setIds([$salesChannelId]);
         }

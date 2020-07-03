@@ -13,14 +13,12 @@
             </sw-field>
         {% endblock %}
 
-        {% block swag_paypal_izettle_wizard_customization_image_domain %}
-            <sw-entity-single-select v-model="salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId"
-                                     required
-                                     entity="sales_channel_domain"
-                                     labelProperty="url"
-                                     :label="$tc('swag-paypal-izettle.wizard.customization.labelDomain')"
-                                     @input="forceUpdate">
-            </sw-entity-single-select>
+        {% block swag_paypal_izettle_wizard_customization_media_domain %}
+            <sw-url-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain"
+                          required
+                          :label="$tc('swag-paypal-izettle.wizard.customization.labelDomain')"
+                          @input="forceUpdate">
+            </sw-url-field>
         {% endblock %}
 
         <div class="subtitle" v-html="$tc('swag-paypal-izettle.wizard.customization.subtitle')"></div>

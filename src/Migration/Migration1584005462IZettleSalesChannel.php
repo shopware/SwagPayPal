@@ -26,19 +26,17 @@ class Migration1584005462IZettleSalesChannel extends MigrationStep
             CREATE TABLE IF NOT EXISTS `swag_paypal_izettle_sales_channel` (
                 `id`                        BINARY(16)              NOT NULL,
                 `sales_channel_id`          BINARY(16)              NOT NULL,
-                `sales_channel_domain_id`   BINARY(16)              NOT NULL,
                 `product_stream_id`         BINARY(16)              NULL,
                 `api_key`                   VARCHAR(8192)           NOT NULL,
+                `media_domain`              VARCHAR(255)            NOT NULL,
                 `sync_prices`               TINYINT(1)  DEFAULT 1   NOT NULL,
                 `replace`                   TINYINT(1)  DEFAULT 0   NOT NULL,
                 `created_at`                DATETIME(3)             NOT NULL,
                 `updated_at`                DATETIME(3)             NULL,
                 PRIMARY KEY (`id`),
                 KEY `fk.swag_paypal_izettle_sales_channel.sales_channel_id` (`sales_channel_id`),
-                KEY `fk.swag_paypal_izettle_sales_channel.sales_channel_domain_id` (`sales_channel_domain_id`),
                 KEY `fk.swag_paypal_izettle_sales_channel.product_stream_id` (`product_stream_id`),
                 CONSTRAINT `fk.swag_paypal_izettle_sales_channel.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT `fk.swag_paypal_izettle_sales_channel.sales_channel_domain_id` FOREIGN KEY (`sales_channel_domain_id`) REFERENCES `sales_channel_domain` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
                 CONSTRAINT `fk.swag_paypal_izettle_sales_channel.product_stream_id` FOREIGN KEY (`product_stream_id`) REFERENCES `product_stream` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ');

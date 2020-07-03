@@ -25,14 +25,12 @@
                     {% endblock %}
                 </sw-container>
 
-                {% block swag_paypal_izettle_detail_settings_input_storefront_domain %}
-                    <sw-entity-single-select v-model="salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId"
-                                             required
-                                             entity="sales_channel_domain"
-                                             labelProperty="url"
-                                             :label="$tc('swag-paypal-izettle.detail.settings.domain')"
-                                             @input="forceUpdate">
-                    </sw-entity-single-select>
+                {% block swag_paypal_izettle_detail_settings_input_media_domain %}
+                    <sw-url-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain"
+                                  required
+                                  :label="$tc('swag-paypal-izettle.detail.settings.domain')"
+                                  @input="forceUpdate">
+                    </sw-url-field>
                 {% endblock %}
 
                 {% block swag_paypal_izettle_detail_settings_input_product_stream %}

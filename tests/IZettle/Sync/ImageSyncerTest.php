@@ -17,7 +17,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Swag\PayPal\IZettle\Api\Image\BulkImageUpload;
 use Swag\PayPal\IZettle\Api\IZettleRequestUri;
 use Swag\PayPal\IZettle\Api\Service\MediaConverter;
@@ -31,7 +30,6 @@ use Swag\PayPal\IZettle\Sync\ImageSyncer;
 
 class ImageSyncerTest extends TestCase
 {
-    private const SALES_CHANNEL_DOMAIN_ID = 'someSalesChannelDomainId';
     private const DOMAIN_URL = 'https://some.shopware.domain';
     private const INVALID_MIME_TYPE = 'video/mp4';
     private const LOCAL_FILE_NAME = 'file';
@@ -141,13 +139,7 @@ class ImageSyncerTest extends TestCase
         $iZettleSalesChannel->setProductStreamId('someProductStreamId');
         $iZettleSalesChannel->setSyncPrices(true);
         $iZettleSalesChannel->setSalesChannelId(Defaults::SALES_CHANNEL);
-        $domain = new SalesChannelDomainEntity();
-        $domain->setId(self::SALES_CHANNEL_DOMAIN_ID);
-        $domain->setSalesChannelId(Defaults::SALES_CHANNEL);
-        $domain->setLanguageId(Uuid::randomHex());
-        $domain->setUrl(self::DOMAIN_URL);
-        $iZettleSalesChannel->setSalesChannelDomain($domain);
-        $iZettleSalesChannel->setSalesChannelDomainId(self::SALES_CHANNEL_DOMAIN_ID);
+        $iZettleSalesChannel->setMediaDomain(self::DOMAIN_URL);
 
         return $iZettleSalesChannel;
     }

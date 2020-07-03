@@ -20,7 +20,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\Tax\TaxEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
@@ -53,13 +52,6 @@ abstract class AbstractProductSyncTest extends TestCase
         $iZettleSalesChannel->setProductStreamId('someProductStreamId');
         $iZettleSalesChannel->setSyncPrices(true);
         $iZettleSalesChannel->setSalesChannelId(Defaults::SALES_CHANNEL);
-
-        $domain = new SalesChannelDomainEntity();
-        $domain->setId(Uuid::randomHex());
-        $domain->setSalesChannelId(Defaults::SALES_CHANNEL);
-        $domain->setLanguageId(Uuid::randomHex());
-        $iZettleSalesChannel->setSalesChannelDomain($domain);
-        $iZettleSalesChannel->setSalesChannelDomainId($domain->getId());
 
         $salesChannel->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleSalesChannel);
 

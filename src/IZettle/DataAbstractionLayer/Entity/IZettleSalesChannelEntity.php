@@ -9,7 +9,6 @@ namespace Swag\PayPal\IZettle\DataAbstractionLayer\Entity;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
 
 class IZettleSalesChannelEntity extends Entity
 {
@@ -28,17 +27,12 @@ class IZettleSalesChannelEntity extends Entity
     /**
      * @var string
      */
-    protected $salesChannelDomainId;
-
-    /**
-     * @var SalesChannelDomainEntity|null
-     */
-    protected $salesChannelDomain;
+    protected $apiKey;
 
     /**
      * @var string
      */
-    protected $apiKey;
+    protected $mediaDomain;
 
     /**
      * @var bool
@@ -70,26 +64,6 @@ class IZettleSalesChannelEntity extends Entity
         $this->productStreamId = $productStreamId;
     }
 
-    public function getSalesChannelDomainId(): string
-    {
-        return $this->salesChannelDomainId;
-    }
-
-    public function setSalesChannelDomainId(string $salesChannelDomainId): void
-    {
-        $this->salesChannelDomainId = $salesChannelDomainId;
-    }
-
-    public function getSalesChannelDomain(): ?SalesChannelDomainEntity
-    {
-        return $this->salesChannelDomain;
-    }
-
-    public function setSalesChannelDomain(SalesChannelDomainEntity $salesChannelDomain): void
-    {
-        $this->salesChannelDomain = $salesChannelDomain;
-    }
-
     public function getApiKey(): string
     {
         return $this->apiKey;
@@ -98,6 +72,16 @@ class IZettleSalesChannelEntity extends Entity
     public function setApiKey(string $apiKey): void
     {
         $this->apiKey = $apiKey;
+    }
+
+    public function getMediaDomain(): string
+    {
+        return $this->mediaDomain;
+    }
+
+    public function setMediaDomain(string $mediaDomain): void
+    {
+        $this->mediaDomain = $mediaDomain;
     }
 
     public function isSyncPrices(): bool

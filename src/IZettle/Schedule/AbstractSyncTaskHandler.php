@@ -49,7 +49,6 @@ abstract class AbstractSyncTaskHandler extends ScheduledTaskHandler
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE));
         $criteria->addFilter(new EqualsFilter('active', true));
         $criteria->addAssociation('currency');
-        $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION . '.salesChannelDomain');
 
         /** @var SalesChannelCollection $salesChannels */
         $salesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();

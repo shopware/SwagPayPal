@@ -19,7 +19,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
-use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 class IZettleSalesChannelDefinition extends EntityDefinition
@@ -50,16 +49,15 @@ class IZettleSalesChannelDefinition extends EntityDefinition
             (new IdField('id', 'id'))->setFlags(new PrimaryKey(), new Required()),
 
             (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(new Required()),
-            (new FkField('sales_channel_domain_id', 'salesChannelDomainId', SalesChannelDomainDefinition::class))->addFlags(new Required()),
             new FkField('product_stream_id', 'productStreamId', ProductStreamDefinition::class),
 
             (new StringField('api_key', 'apiKey', self::MAX_APIKEY_SIZE))->setFlags(new Required()),
+            (new StringField('media_domain', 'mediaDomain'))->setFlags(new Required()),
 
             (new BoolField('sync_prices', 'syncPrices')),
             (new BoolField('replace', 'replace')),
 
             (new OneToOneAssociationField('salesChannel', 'sales_channel_id', 'id', SalesChannelDefinition::class, false))->addFlags(new RestrictDelete()),
-            new ManyToOneAssociationField('salesChannelDomain', 'sales_channel_domain_id', SalesChannelDomainDefinition::class),
             new ManyToOneAssociationField('productStream', 'product_stream_id', ProductStreamDefinition::class),
         ]);
     }
