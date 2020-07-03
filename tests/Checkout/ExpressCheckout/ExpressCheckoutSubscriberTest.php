@@ -49,6 +49,7 @@ use Swag\PayPal\Test\Mock\Repositories\PaymentMethodRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -525,8 +526,17 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $request = new Request([], [], ['productId' => $product->getId()]);
 
-        /** @var QuickviewPageletLoader $quickViewLoader */
-        $quickViewLoader = $this->getContainer()->get(QuickviewPageletLoader::class);
+        $quickViewLoader = null;
+        try {
+            /** @var QuickviewPageletLoader $quickViewLoader */
+            $quickViewLoader = $this->getContainer()->get(QuickviewPageletLoader::class);
+        } catch (ServiceNotFoundException $e) {
+        }
+
+        if ($quickViewLoader === null) {
+            static::markTestSkipped('SwagCmsExtensions plugin is not installed');
+        }
+
         /** @var QuickviewPagelet $pagelet */
         $pagelet = $quickViewLoader->load($request, $salesChannelContext);
 

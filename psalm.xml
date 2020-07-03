@@ -89,6 +89,13 @@
             </errorLevel>
         </UnresolvableInclude>
 
+        <PossiblyNullReference>
+            <errorLevel type="info">
+                <!-- Psalm does not recognize the markTestSkipped method call as terminating -->
+                <file name="tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php"/>
+            </errorLevel>
+        </PossiblyNullReference>
+
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>
         <MissingConstructor errorLevel="info"/>

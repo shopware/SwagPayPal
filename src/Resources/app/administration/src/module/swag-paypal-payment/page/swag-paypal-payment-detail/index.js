@@ -25,8 +25,10 @@ Component.register('swag-paypal-payment-detail', {
             createDateTime: '',
             updateDateTime: '',
             currency: '',
-            amount: {},
-            payerId: ''
+            amount: { details: { subtotal: 0 } },
+            payerId: '',
+            orderTransactionState: null,
+            showPaymentDetails: true
         };
     },
 
@@ -78,6 +80,16 @@ Component.register('swag-paypal-payment-detail', {
                     rawData: true
                 }
             ];
+        },
+        showCanceledPaymentError() {
+            return this.isLoading === false
+                && this.showPaymentDetails === false
+                && this.orderTransactionState === 'failed';
+        },
+        showSandboxLiveError() {
+            return this.isLoading === false
+                && this.showPaymentDetails === false
+                && this.orderTransactionState !== 'failed';
         }
     },
 
@@ -97,12 +109,14 @@ Component.register('swag-paypal-payment-detail', {
             const orderId = this.$route.params.id;
             const orderRepository = this.repositoryFactory.create('order');
             const orderCriteria = new Criteria(1, 1);
-            orderCriteria.addAssociation('transactions');
+            orderCriteria.addAssociation('transactions.stateMachineState');
             orderCriteria.getAssociation('transactions').addSorting(Criteria.sort('createdAt'));
 
             orderRepository.get(orderId, Context.api, orderCriteria).then((order) => {
                 this.order = order;
                 const lastTransactionIndex = order.transactions.length - 1;
+                this.orderTransactionState = order.transactions[lastTransactionIndex].stateMachineState.technicalName;
+
                 const paypalPaymentId = order.transactions[lastTransactionIndex].customFields.swag_paypal_transaction_id;
                 this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId).then((payment) => {
                     this.paymentResource = payment;
@@ -116,6 +130,15 @@ Component.register('swag-paypal-payment-detail', {
                     }
                     this.isLoading = false;
                 }).catch((errorResponse) => {
+                    if (errorResponse.response.data.errors[0].meta.parameters.name
+                        && errorResponse.response.data.errors[0].meta.parameters.name === 'INVALID_RESOURCE_ID'
+                    ) {
+                        this.isLoading = false;
+                        this.showPaymentDetails = false;
+
+                        return;
+                    }
+
                     try {
                         this.createNotificationError({
                             title: this.$tc('swag-paypal-payment.paymentDetails.error.title'),
