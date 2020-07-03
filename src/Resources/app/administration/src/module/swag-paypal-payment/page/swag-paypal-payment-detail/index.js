@@ -25,7 +25,8 @@ Component.register('swag-paypal-payment-detail', {
             createDateTime: '',
             updateDateTime: '',
             currency: '',
-            amount: {}
+            amount: {},
+            payerId: ''
         };
     },
 
@@ -97,10 +98,12 @@ Component.register('swag-paypal-payment-detail', {
             const orderRepository = this.repositoryFactory.create('order');
             const orderCriteria = new Criteria(1, 1);
             orderCriteria.addAssociation('transactions');
+            orderCriteria.getAssociation('transactions').addSorting(Criteria.sort('createdAt'));
 
             orderRepository.get(orderId, Context.api, orderCriteria).then((order) => {
                 this.order = order;
-                const paypalPaymentId = order.transactions[0].customFields.swag_paypal_transaction_id;
+                const lastTransactionIndex = order.transactions.length - 1;
+                const paypalPaymentId = order.transactions[lastTransactionIndex].customFields.swag_paypal_transaction_id;
                 this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId).then((payment) => {
                     this.paymentResource = payment;
                     this.setRelatedResources();
@@ -108,6 +111,9 @@ Component.register('swag-paypal-payment-detail', {
                     this.updateDateTime = this.formatDate(this.paymentResource.update_time);
                     this.currency = this.paymentResource.transactions[0].amount.currency;
                     this.amount = this.paymentResource.transactions[0].amount;
+                    if (this.paymentResource.payer && this.paymentResource.payer.payer_info) {
+                        this.payerId = this.paymentResource.payer.payer_info.payer_id;
+                    }
                     this.isLoading = false;
                 }).catch((errorResponse) => {
                     try {

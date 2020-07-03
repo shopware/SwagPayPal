@@ -3,6 +3,7 @@
 - PT-11707 - Custom form parameter of the order confirm page are no longer ignored
 - PT-11748 - Fix redirect URL for PayPal Plus and Express Checkout. Changed webhook URL to be independent of a storefront
 - PT-11773 - Fix buying of Custom Products with PayPal
+- PT-11858 - Improved handling of multiple transactions per order
 
 # 1.6.0
 - PT-11519 - Registers webhooks with HTTPS

@@ -37,6 +37,9 @@ Shopware.Component.register('swag-paypal', {
             isSetDefaultPaymentSuccessful: false,
             isSettingDefaultPaymentMethods: false,
             savingDisabled: false,
+            initialConfigValueSandbox: false,
+            initialConfigValueWebhookId: null,
+            initialConfigValueWebhookExecuteToken: null,
             ...constants
         };
     },
@@ -97,6 +100,16 @@ Shopware.Component.register('swag-paypal', {
                     this.sandboxChecked = !!this.config['SwagPayPal.settings.sandbox']
                         || !!defaultConfig['SwagPayPal.settings.sandbox'];
                 }
+
+                if (this.initialConfigValueSandbox !== this.config['SwagPayPal.settings.sandbox']) {
+                    // Reset webhook settings if the sandbox mode is switched,
+                    // so it will not try to register the webhook with the wrong scoped webhookId (INVALID_RESOURCE_ID)
+                    this.config['SwagPayPal.settings.webhookId'] = null;
+                    this.config['SwagPayPal.settings.webhookExecuteToken'] = null;
+                } else {
+                    this.config['SwagPayPal.settings.webhookId'] = this.initialConfigValueWebhookId;
+                    this.config['SwagPayPal.settings.webhookExecuteToken'] = this.initialConfigValueWebhookExecuteToken;
+                }
             },
             deep: true
         }
@@ -111,6 +124,12 @@ Shopware.Component.register('swag-paypal', {
             }
 
             this.save();
+        },
+
+        onInitialInput(config) {
+            this.initialConfigValueSandbox = config['SwagPayPal.settings.sandbox'];
+            this.initialConfigValueWebhookId = config['SwagPayPal.settings.webhookId'];
+            this.initialConfigValueWebhookExecuteToken = config['SwagPayPal.settings.webhookExecuteToken'];
         },
 
         save() {

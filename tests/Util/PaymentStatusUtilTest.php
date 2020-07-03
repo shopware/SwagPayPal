@@ -36,6 +36,9 @@ class PaymentStatusUtilTest extends TestCase
     use DatabaseTransactionBehaviour;
     use OrderFixture;
 
+    private const FIRST_TRANSACTION_ID = '9535b385fc7544f08e21b8b74b52ff4a';
+    private const SECOND_TRANSACTION_ID = '8535b385fc7544f08e21b8b74b52ff4a';
+
     /**
      * @var PaymentStatusUtil
      */
@@ -307,9 +310,9 @@ class PaymentStatusUtilTest extends TestCase
         $this->orderRepository->create($orderData, $context);
 
         if ($withTransaction) {
-            $orderTransactionData = [
+            $firstTransactionData = [
                 [
-                    'id' => Uuid::randomHex(),
+                    'id' => self::FIRST_TRANSACTION_ID,
                     'orderId' => $orderId,
                     'paymentMethodId' => $this->getValidPaymentMethodId(),
                     'amount' => [
@@ -325,12 +328,35 @@ class PaymentStatusUtilTest extends TestCase
                     )->getId(),
                 ],
             ];
-            $this->orderTransactionRepository->create($orderTransactionData, $context);
+            $secondTransactionData = [
+                [
+                    'id' => self::SECOND_TRANSACTION_ID,
+                    'orderId' => $orderId,
+                    'paymentMethodId' => $this->getValidPaymentMethodId(),
+                    'amount' => [
+                        'unitPrice' => 5.0,
+                        'totalPrice' => 15.0,
+                        'quantity' => 3,
+                        'calculatedTaxes' => [],
+                        'taxRules' => [],
+                    ],
+                    'stateId' => $this->stateMachineRegistry->getInitialState(
+                        OrderTransactionStates::STATE_MACHINE,
+                        $context
+                    )->getId(),
+                ],
+            ];
+            // Do not create simultaneously, so they have slightly different created dates
+            $this->orderTransactionRepository->create($firstTransactionData, $context);
+            $this->orderTransactionRepository->create($secondTransactionData, $context);
 
             $updateData = [
                 [
                     'id' => $orderId,
-                    'transactions' => $orderTransactionData,
+                    'transactions' => [
+                        ['id' => self::FIRST_TRANSACTION_ID],
+                        ['id' => self::SECOND_TRANSACTION_ID],
+                    ],
                 ],
             ];
 
@@ -348,7 +374,7 @@ class PaymentStatusUtilTest extends TestCase
         $orderTransactionCollection = $changedOrder->getTransactions();
         static::assertNotNull($orderTransactionCollection);
 
-        $orderTransactionEntity = $orderTransactionCollection->first();
+        $orderTransactionEntity = $orderTransactionCollection->get(self::SECOND_TRANSACTION_ID);
         static::assertInstanceOf(OrderTransactionEntity::class, $orderTransactionEntity);
 
         $stateMachineState = $orderTransactionEntity->getStateMachineState();
