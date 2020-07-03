@@ -40,7 +40,8 @@
                         {% block swag_paypal_content_card_channel_config %}
                             <sw-sales-channel-config v-model="config"
                                                      ref="configComponent"
-                                                     domain="SwagPayPal.settings">
+                                                     domain="SwagPayPal.settings"
+                                                     @input.once="onInitialInput">
 
                                 {% block swag_paypal_content_card_channel_config_sales_channel %}
                                     <template #select="{ onInput, selectedSalesChannelId, salesChannel }">
