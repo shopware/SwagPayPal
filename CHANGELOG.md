@@ -1,4 +1,4 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
+# 1.7.0
 - PT-11669 - Add compatibility with the after order payment process
 - PT-11707 - Custom form parameter of the order confirm page are no longer ignored
 - PT-11748 - Fix redirect URL for PayPal Plus and Express Checkout. Changed webhook URL to be independent of a storefront

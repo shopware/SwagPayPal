@@ -1,4 +1,4 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
+# 1.7.0
 - PT-11669 - Kompatibilität mit dem Zahlungsprozess nach einer Bestellung hinzugefügt
 - PT-11707 - Individuelle Formular-Parameter der Bestellseite werden nicht mehr ignoriert
 - PT-11748 - Weiterleitungs-URL für PayPal Plus und Express Checkout korrigiert. Die Webhook-URL wurde geändert, sodass sie unabhängig von einer Storefront ist

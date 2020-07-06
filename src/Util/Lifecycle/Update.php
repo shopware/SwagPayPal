@@ -35,12 +35,13 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '1.1.0', '<')) {
             $this->updateTo110();
         }
+
         if (\version_compare($updateContext->getCurrentPluginVersion(), '1.3.0', '<')) {
             $this->updateTo130();
         }
-        if (\version_compare($updateContext->getCurrentPluginVersion(), 'REPLACE-GLOBAL-WITH-NEXT-VERSION', '<')) {
-            //TODO rename with correct version REPLACE-GLOBAL-WITH-NEXT-VERSION
-            $this->updateToXXX();
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.7.0', '<')) {
+            $this->updateTo170();
         }
     }
 
@@ -69,7 +70,7 @@ class Update
         }
     }
 
-    private function updateToXXX(): void
+    private function updateTo170(): void
     {
         if ($this->webhookService === null) {
             // If the WebhookService is `null`, the plugin is deactivated.
