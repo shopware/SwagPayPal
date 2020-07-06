@@ -1,6 +1,6 @@
 {% block swag_paypal_payment_detail %}
     <div class="swag-paypal-payment-detail">
-        <div v-if="!isLoading">
+        <div v-if="!isLoading && showPaymentDetails">
             <sw-card :title="$tc('swag-paypal-payment.paymentDetails.cardTitle')">
                 <template #grid>
 
@@ -100,8 +100,32 @@
                     </template>
                 </sw-card>
             {% endblock %}
-
         </div>
+
+        {% block swag_paypal_payment_detail_error_page %}
+            {% block swag_paypal_payment_detail_error_page_canceled %}
+                <div v-if="showCanceledPaymentError">
+                    <sw-empty-state
+                        :title="$tc('swag-paypal-payment.errorPage.title')"
+                        :subline="$tc('swag-paypal-payment.errorPage.canceledPaymentContent')"
+                        icon="default-shopping-paper-bag"
+                        color="#A092F0">
+                    </sw-empty-state>
+                </div>
+            {% endblock %}
+
+            {% block swag_paypal_payment_detail_error_page_other %}
+                <div v-if="showSandboxLiveError">
+                    <sw-empty-state
+                        :title="$tc('swag-paypal-payment.errorPage.title')"
+                        :subline="$tc('swag-paypal-payment.errorPage.sandboxLiveContent')"
+                        icon="default-shopping-paper-bag"
+                        color="#A092F0">
+                    </sw-empty-state>
+                </div>
+            {% endblock %}
+        {% endblock %}
+
         <sw-loader v-if="isLoading"></sw-loader>
     </div>
 {% endblock %}

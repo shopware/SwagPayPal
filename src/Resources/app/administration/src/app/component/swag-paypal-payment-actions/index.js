@@ -58,7 +58,12 @@ Component.register('swag-paypal-payment-actions', {
         },
 
         setPaymentActionAmounts() {
-            const relatedResources = this.paymentResource.transactions[0].related_resources;
+            const transactions = this.paymentResource.transactions;
+            if (!transactions) {
+                return;
+            }
+
+            const relatedResources = transactions[0].related_resources;
 
             relatedResources.forEach((relatedResource) => {
                 if (relatedResource.authorization) {
@@ -98,7 +103,12 @@ Component.register('swag-paypal-payment-actions', {
         },
 
         setShowVoidButton() {
-            const firstRelatedResource = this.paymentResource.transactions[0].related_resources[0];
+            const transactions = this.paymentResource.transactions;
+            if (!transactions) {
+                return;
+            }
+
+            const firstRelatedResource = transactions[0].related_resources[0];
 
             if (!firstRelatedResource) {
                 return;

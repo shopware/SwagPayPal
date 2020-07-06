@@ -109,6 +109,11 @@
                     "cancel": "No"
                 }
             }
+        },
+        "errorPage": {
+            "title": "Payment details no longer available",
+            "canceledPaymentContent": "An error occurred (INVALID_RESOURCE_ID) while retrieving payment details from PayPal. If you see this message, it was probably a payment that was cancelled by the customer. Cancelled payments will be deleted by PayPal after a while and are then no longer available.",
+            "sandboxLiveContent": "An error occurred (INVALID_RESOURCE_ID) while retrieving payment details from PayPal. If you see this message, it was probably a payment that was created with sandbox enabled and has now been requested with live data, or vice versa. Correct your PayPal settings or delete test orders from the system."
         }
     }
 }
