@@ -9,8 +9,8 @@ namespace Swag\PayPal\PayPal;
 
 final class BaseURL
 {
-    public const SANDBOX = 'https://api.sandbox.paypal.com/v1/';
-    public const LIVE = 'https://api.paypal.com/v1/';
+    public const SANDBOX = 'https://api.sandbox.paypal.com/';
+    public const LIVE = 'https://api.paypal.com/';
 
     private function __construct()
     {

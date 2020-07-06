@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\PayPal\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\ApiV1\Api\OAuthCredentials;
 use Swag\PayPal\PayPal\Client\TokenClient;
 
 class TokenClientMock extends TokenClient

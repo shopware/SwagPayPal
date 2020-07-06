@@ -8,8 +8,8 @@
 namespace Swag\PayPal\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
+use Swag\PayPal\PayPal\ApiV1\Resource\TokenResource;
 use Swag\PayPal\PayPal\PartnerAttributionId;
-use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 
 class PayPalClientFactory

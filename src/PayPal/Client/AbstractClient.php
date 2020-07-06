@@ -10,7 +10,7 @@ namespace Swag\PayPal\PayPal\Client;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\Payment\Exception\PayPalApiException;
+use Swag\PayPal\PayPal\Exception\PayPalApiException;
 
 abstract class AbstractClient
 {

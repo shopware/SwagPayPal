@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\PaymentsApi\Administration\PayPalPaymentController" public="true">
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource"/>
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\SaleResource"/>
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\AuthorizationResource"/>
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\OrdersResource"/>
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\CaptureResource"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentStatusUtil"/>
+            <argument type="service" id="order.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder">
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
+            <argument type="service" id="currency.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder">
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
+        </service>
+
+        <service id="Swag\PayPal\PaymentsApi\Patch\AmountPatchBuilder"/>
+        <service id="Swag\PayPal\PaymentsApi\Patch\ItemListPatchBuilder"/>
+        <service id="Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder"/>
+        <service id="Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder"/>
+        <service id="Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder"/>
+    </services>
+</container>

@@ -29,13 +29,13 @@ use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
+use Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler;
+use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber;
-use Swag\PayPal\Payment\Handler\AbstractPaymentHandler;
-use Swag\PayPal\Payment\Handler\EcsSpbHandler;
-use Swag\PayPal\Payment\PayPalPaymentHandler;
-use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\PayPal\ApiV1\PaymentIntentV1;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
@@ -192,7 +192,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('en_GB', $spbExtension->getLanguageIso());
         static::assertSame($this->paypalPaymentMethodId, $spbExtension->getPaymentMethodId());
-        static::assertSame(PaymentIntent::SALE, $spbExtension->getIntent());
+        static::assertSame(PaymentIntentV1::SALE, $spbExtension->getIntent());
         static::assertSame('gold', $spbExtension->getButtonColor());
         static::assertSame('rect', $spbExtension->getButtonShape());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
@@ -394,7 +394,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('de_DE', $spbExtension->getLanguageIso());
         static::assertSame($this->paypalPaymentMethodId, $spbExtension->getPaymentMethodId());
-        static::assertSame(PaymentIntent::SALE, $spbExtension->getIntent());
+        static::assertSame(PaymentIntentV1::SALE, $spbExtension->getIntent());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
         static::assertSame(
             \sprintf('/sales-channel-api/v%s/_action/paypal/spb/create-payment', PlatformRequest::API_VERSION),

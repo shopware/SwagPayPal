@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Test\Setting;
 
 use PHPUnit\Framework\TestCase;
-use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
-use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\PayPal\ApiV1\Api\Payment\ApplicationContext;
+use Swag\PayPal\PayPal\ApiV1\PaymentIntentV1;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Webhook\WebhookService;
 
@@ -36,7 +36,7 @@ class SwagPayPalSettingStructTest extends TestCase
             'clientIdSandbox' => self::CLIENT_ID_SANDBOX,
             'clientSecretSandbox' => self::CLIENT_SECRET_SANDBOX,
             'sandbox' => false,
-            'intent' => PaymentIntent::SALE,
+            'intent' => PaymentIntentV1::SALE,
             'submitCart' => false,
             'webhookId' => self::WEBHOOK_ID,
             WebhookService::WEBHOOK_TOKEN_CONFIG_KEY => self::WEBHOOK_EXECUTE_TOKEN,
@@ -68,7 +68,7 @@ class SwagPayPalSettingStructTest extends TestCase
         $settings->setClientIdSandbox(self::CLIENT_ID_SANDBOX);
         $settings->setClientSecretSandbox(self::CLIENT_SECRET_SANDBOX);
         $settings->setSandbox(false);
-        $settings->setIntent(PaymentIntent::SALE);
+        $settings->setIntent(PaymentIntentV1::SALE);
         $settings->setSubmitCart(false);
         $settings->setWebhookId(self::WEBHOOK_ID);
         $settings->setWebhookExecuteToken(self::WEBHOOK_EXECUTE_TOKEN);
@@ -98,7 +98,7 @@ class SwagPayPalSettingStructTest extends TestCase
         static::assertSame(self::CLIENT_ID_SANDBOX, $settings->getClientIdSandbox());
         static::assertSame(self::CLIENT_SECRET_SANDBOX, $settings->getClientSecretSandbox());
         static::assertFalse($settings->getSandbox());
-        static::assertSame(PaymentIntent::SALE, $settings->getIntent());
+        static::assertSame(PaymentIntentV1::SALE, $settings->getIntent());
         static::assertFalse($settings->getSubmitCart());
         static::assertSame(self::WEBHOOK_ID, $settings->getWebhookId());
         static::assertSame(self::WEBHOOK_EXECUTE_TOKEN, $settings->getWebhookExecuteToken());

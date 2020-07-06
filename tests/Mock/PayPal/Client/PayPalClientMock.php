@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
+use Swag\PayPal\PayPal\ApiV1\Resource\TokenResource;
 use Swag\PayPal\PayPal\Client\PayPalClient;
-use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 
 class PayPalClientMock extends PayPalClient

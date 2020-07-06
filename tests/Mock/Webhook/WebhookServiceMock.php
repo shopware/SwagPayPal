@@ -8,19 +8,15 @@
 namespace Swag\PayPal\Test\Mock\Webhook;
 
 use Shopware\Core\Framework\Context;
-use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\PayPal\ApiV1\Api\Webhook;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\Webhook\WebhookControllerTest;
 use Swag\PayPal\Webhook\Exception\WebhookException;
-use Swag\PayPal\Webhook\WebhookDeregistrationServiceInterface;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
-/**
- * @deprecated tag:v2.0.0 - will not extend WebhookSerivce but implement WebhookServiceInterface and WebhookDeregistrationServiceInterface
- */
-class WebhookServiceMock extends WebhookService
+class WebhookServiceMock implements WebhookServiceInterface
 {
     /**
      * @var string[]

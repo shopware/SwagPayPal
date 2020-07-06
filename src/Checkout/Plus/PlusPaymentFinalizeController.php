@@ -21,7 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;

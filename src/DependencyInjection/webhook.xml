@@ -12,7 +12,7 @@
         </service>
 
         <service id="Swag\PayPal\Webhook\WebhookService" public="true">
-            <argument type="service" id="Swag\PayPal\PayPal\Resource\WebhookResource"/>
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\WebhookResource"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookRegistry"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="router"/>

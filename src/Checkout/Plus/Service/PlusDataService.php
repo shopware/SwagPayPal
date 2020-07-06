@@ -15,14 +15,14 @@ use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Plus\PlusData;
-use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
-use Swag\PayPal\Payment\Builder\OrderPaymentBuilderInterface;
-use Swag\PayPal\Payment\PayPalPaymentHandler;
-use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilderInterface;
+use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilderInterface;
+use Swag\PayPal\PayPal\ApiV1\Api\Payment;
+use Swag\PayPal\PayPal\ApiV1\PaymentIntentV1;
+use Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource;
 use Swag\PayPal\PayPal\PartnerAttributionId;
-use Swag\PayPal\PayPal\PaymentIntent;
-use Swag\PayPal\PayPal\Resource\PaymentResource;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -146,7 +146,7 @@ class PlusDataService
         CustomerEntity $customer,
         bool $useSandbox
     ): ?PlusData {
-        $payment->setIntent(PaymentIntent::SALE);
+        $payment->setIntent(PaymentIntentV1::SALE);
 
         try {
             $response = $this->paymentResource->create(

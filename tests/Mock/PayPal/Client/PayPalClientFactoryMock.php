@@ -8,10 +8,10 @@
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
+use Swag\PayPal\PayPal\ApiV1\Resource\TokenResource;
 use Swag\PayPal\PayPal\Client\PayPalClient;
 use Swag\PayPal\PayPal\Client\PayPalClientFactory;
 use Swag\PayPal\PayPal\PartnerAttributionId;
-use Swag\PayPal\PayPal\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Test\Mock\CacheMock;
 

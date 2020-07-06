@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Util;
 
-use Swag\PayPal\PayPal\Api\Payment;
+use Swag\PayPal\PayPal\ApiV1\Api\Payment;
 
 class PaymentTokenExtractor
 {

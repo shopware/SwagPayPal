@@ -12,8 +12,8 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefi
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Swag\PayPal\PayPal\Api\Webhook;
-use Swag\PayPal\PayPal\Resource\WebhookResource;
+use Swag\PayPal\PayPal\ApiV1\Api\Webhook;
+use Swag\PayPal\PayPal\ApiV1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -24,7 +24,7 @@ use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\RouterMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
-use Swag\PayPal\Test\PayPal\Resource\WebhookResourceTest;
+use Swag\PayPal\Test\PayPal\ApiV1\Resource\WebhookResourceTest;
 use Swag\PayPal\Webhook\WebhookService;
 
 class WebhookServiceTest extends TestCase

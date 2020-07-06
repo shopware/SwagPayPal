@@ -17,7 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Swag\PayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 
 class PaymentMethodRepoMock implements EntityRepositoryInterface
 {
@@ -44,6 +44,8 @@ class PaymentMethodRepoMock implements EntityRepositoryInterface
         if ($firstFilter->getValue() === PayPalPaymentHandler::class) {
             return $this->getIdSearchResult(true, $criteria, $context);
         }
+
+        return $this->getIdSearchResult(false, $criteria, $context);
     }
 
     public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent

@@ -25,7 +25,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\Tax\TaxDefinition;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
-use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\PayPal\ApiV1\PaymentIntentV1;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Symfony\Component\Routing\RouterInterface;
@@ -177,7 +177,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         }
         static::assertSame(self::CLIENT_ID, $expressCheckoutButtonData->getClientId());
         static::assertSame('EUR', $expressCheckoutButtonData->getCurrency());
-        static::assertSame(PaymentIntent::SALE, $expressCheckoutButtonData->getIntent());
+        static::assertSame(PaymentIntentV1::SALE, $expressCheckoutButtonData->getIntent());
         static::assertFalse($expressCheckoutButtonData->getAddProductToCart());
         static::assertSame(
             \sprintf('/sales-channel-api/v%s/_action/paypal/create-payment', PlatformRequest::API_VERSION),

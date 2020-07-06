@@ -9,8 +9,8 @@ namespace Swag\PayPal\Test\Setting\Service;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
-use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
-use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\PayPal\ApiV1\Api\Payment\ApplicationContext;
+use Swag\PayPal\PayPal\ApiV1\PaymentIntentV1;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -41,7 +41,7 @@ class SettingsServiceTest extends TestCase
             [$prefix . 'clientIdSandbox', 'getClientIdSandbox', 'testClientIdSandbox'],
             [$prefix . 'clientSecretSandbox', 'getClientSecretSandbox', 'getTestClientIdSandbox'],
             [$prefix . 'sandbox', 'getSandbox', true],
-            [$prefix . 'intent', 'getIntent', PaymentIntent::SALE],
+            [$prefix . 'intent', 'getIntent', PaymentIntentV1::SALE],
             [$prefix . 'submitCart', 'getSubmitCart', false],
             [$prefix . 'webhookId', 'getWebhookId', GuzzleClientMock::TEST_WEBHOOK_ID],
             [$prefix . WebhookService::WEBHOOK_TOKEN_CONFIG_KEY, 'getwebhookExecuteToken', 'testWebhookToken'],
@@ -78,7 +78,7 @@ class SettingsServiceTest extends TestCase
             ['clientIdSandbox', 'getClientIdSandbox', 'testClientIdSandbox'],
             ['clientSecretSandbox', 'getClientSecretSandbox', 'getTestClientIdSandbox'],
             ['sandbox', 'getSandbox', true],
-            ['intent', 'getIntent', PaymentIntent::SALE],
+            ['intent', 'getIntent', PaymentIntentV1::SALE],
             ['submitCart', 'getSubmitCart', false],
             ['webhookId', 'getWebhookId', GuzzleClientMock::TEST_WEBHOOK_ID],
             [WebhookService::WEBHOOK_TOKEN_CONFIG_KEY, 'getwebhookExecuteToken', 'testWebhookToken'],

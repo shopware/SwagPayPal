@@ -12,11 +12,12 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
-use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
-use Swag\PayPal\PayPal\Api\OAuthCredentials;
-use Swag\PayPal\PayPal\Api\Payment\Payer\ExecutePayerInfo;
-use Swag\PayPal\PayPal\RequestUri;
+use Swag\PayPal\PayPal\ApiV1\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\ApiV1\Api\Payment\Payer\ExecutePayerInfo;
+use Swag\PayPal\PayPal\ApiV1\RequestUriV1;
+use Swag\PayPal\PayPal\PayPalApiStruct;
 use Swag\PayPal\Test\Checkout\ExpressCheckout\ExpressCheckoutControllerTest;
+use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CaptureAuthorizationResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CaptureOrdersResponseFixture;
@@ -38,9 +39,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
-use Swag\PayPal\Test\Payment\PayPalPaymentHandlerTest;
-use Swag\PayPal\Test\PayPal\Resource\PaymentResourceTest;
-use Swag\PayPal\Test\PayPal\Resource\WebhookResourceTest;
+use Swag\PayPal\Test\PayPal\ApiV1\Resource\PaymentResourceTest;
+use Swag\PayPal\Test\PayPal\ApiV1\Resource\WebhookResourceTest;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class GuzzleClientMock extends Client
@@ -102,11 +102,11 @@ class GuzzleClientMock extends Client
     private function handleGetRequests(string $resourceUri): string
     {
         $response = [];
-        if (\strncmp($resourceUri, RequestUri::WEBHOOK_RESOURCE, 22) === 0) {
+        if (\strpos($resourceUri, RequestUriV1::WEBHOOK_RESOURCE) !== false) {
             $response = $this->handleWebhookGetRequests($resourceUri);
         }
 
-        if (\strncmp($resourceUri, RequestUri::PAYMENT_RESOURCE, 16) === 0) {
+        if (\strpos($resourceUri, RequestUriV1::PAYMENT_RESOURCE) !== false) {
             $response = $this->handlePaymentGetRequests($resourceUri);
             if (\mb_strpos($resourceUri, ExpressCheckoutControllerTest::TEST_PAYMENT_ID_WITHOUT_STATE) !== false) {
                 $response['payer']['payer_info']['shipping_address']['state'] = null;
@@ -121,23 +121,23 @@ class GuzzleClientMock extends Client
             }
         }
 
-        if (\strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0) {
+        if (\strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false) {
             $response = GetResourceAuthorizeResponseFixture::get();
         }
 
-        if (\strncmp($resourceUri, RequestUri::CAPTURE_RESOURCE, 16) === 0) {
+        if (\strpos($resourceUri, RequestUriV1::CAPTURE_RESOURCE) !== false) {
             $response = CaptureAuthorizationResponseFixture::get();
         }
 
-        if (\strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0) {
+        if (\strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false) {
             $response = GetResourceOrderResponseFixture::get();
         }
 
-        if (\strncmp($resourceUri, RequestUri::SALE_RESOURCE, 13) === 0) {
+        if (\strpos($resourceUri, RequestUriV1::SALE_RESOURCE) !== false) {
             $response = GetResourceSaleResponseFixture::get();
         }
 
-        if (\strncmp($resourceUri, 'customer/partners/', 18) === 0) {
+        if (\strpos($resourceUri, 'customer/partners/') !== false) {
             $response = [
                 'client_id' => ConstantsForTesting::VALID_CLIENT_ID,
                 'client_secret' => ConstantsForTesting::VALID_CLIENT_SECRET,
@@ -188,10 +188,10 @@ class GuzzleClientMock extends Client
      * @throws ClientException
      * @throws \RuntimeException
      */
-    private function handlePostRequests(string $resourceUri, ?PayPalStruct $data): string
+    private function handlePostRequests(string $resourceUri, ?PayPalApiStruct $data): string
     {
         $response = [];
-        if ($resourceUri === RequestUri::TOKEN_RESOURCE) {
+        if ($resourceUri === RequestUriV1::TOKEN_RESOURCE) {
             $headers = $this->getConfig()['headers'];
             if (isset($headers['Authorization'])) {
                 $authHeader = $headers['Authorization'];
@@ -209,7 +209,7 @@ class GuzzleClientMock extends Client
             $response = CreateTokenResponseFixture::get();
         }
 
-        if (\strncmp($resourceUri, RequestUri::PAYMENT_RESOURCE, 16) === 0) {
+        if (\strpos($resourceUri, RequestUriV1::PAYMENT_RESOURCE) !== false) {
             $dataJson = $this->ensureValidJson($data);
             $dataArray = \json_decode($dataJson, true);
             if (isset($dataArray['transactions'][0]['invoice_number']) && $dataArray['transactions'][0]['invoice_number'] === ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION_WITH_PREFIX) {
@@ -229,41 +229,41 @@ class GuzzleClientMock extends Client
             }
         }
 
-        if (\mb_substr($resourceUri, -22) === RequestUri::WEBHOOK_RESOURCE) {
+        if (\strpos($resourceUri, RequestUriV1::WEBHOOK_RESOURCE) !== false) {
             if ($data === null) {
                 throw new \RuntimeException('Create webhook request needs valid Webhook struct');
             }
             $response = $this->handleWebhookCreateRequests($data);
         }
 
-        if (\strncmp($resourceUri, RequestUri::SALE_RESOURCE, 13) === 0 && \mb_substr($resourceUri, -7) === '/refund') {
+        if (\strpos($resourceUri, RequestUriV1::SALE_RESOURCE) !== false && \mb_substr($resourceUri, -7) === '/refund') {
             $response = RefundSaleResponseFixture::get();
         }
 
-        if (\strncmp($resourceUri, RequestUri::CAPTURE_RESOURCE, 16) === 0 && \mb_substr($resourceUri, -7) === '/refund') {
+        if (\strpos($resourceUri, RequestUriV1::CAPTURE_RESOURCE) !== false && \mb_substr($resourceUri, -7) === '/refund') {
             $response = RefundCaptureResponseFixture::get();
         }
 
-        if (\strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0 && \mb_substr($resourceUri, -8) === '/capture') {
+        if (\strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/capture') {
             $response = CaptureAuthorizationResponseFixture::get();
         }
 
-        if (\strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0 && \mb_substr($resourceUri, -5) === '/void') {
+        if (\strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false && \mb_substr($resourceUri, -5) === '/void') {
             $response = VoidAuthorizationResponseFixture::get();
         }
 
-        if (\strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0 && \mb_substr($resourceUri, -8) === '/capture') {
+        if (\strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/capture') {
             $response = CaptureOrdersResponseFixture::get();
         }
 
-        if (\strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0 && \mb_substr($resourceUri, -8) === '/do-void') {
+        if (\strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/do-void') {
             $response = VoidOrderResponseFixture::get();
         }
 
         return $this->ensureValidJson($response);
     }
 
-    private function handlePaymentExecuteRequests(PayPalStruct $data): array
+    private function handlePaymentExecuteRequests(PayPalApiStruct $data): array
     {
         /** @var ExecutePayerInfo $payerInfo */
         $payerInfo = $data;
@@ -298,7 +298,7 @@ class GuzzleClientMock extends Client
     /**
      * @throws ClientException
      */
-    private function handleWebhookCreateRequests(PayPalStruct $data): array
+    private function handleWebhookCreateRequests(PayPalApiStruct $data): array
     {
         $createWebhookJson = \json_encode($data);
         if ($createWebhookJson && \mb_strpos($createWebhookJson, WebhookResourceTest::TEST_URL) !== false) {
@@ -388,7 +388,7 @@ class GuzzleClientMock extends Client
     }
 
     /**
-     * @param array|PayPalStruct|null $data
+     * @param array|PayPalApiStruct|null $data
      *
      * @throws \RuntimeException
      */

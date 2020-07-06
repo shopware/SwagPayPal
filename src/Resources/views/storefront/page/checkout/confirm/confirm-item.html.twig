@@ -7,7 +7,7 @@
     {% set expressCheckoutData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
 
     {% if expressCheckoutData %}
-        <input type="hidden" name="redirectParameters[{{ constant('Swag\\PayPal\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}]" value="1">
+        <input type="hidden" name="redirectParameters[{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}]" value="1">
     {% endif %}
 {% endblock %}
 
@@ -18,6 +18,6 @@
     {% set expressCheckoutData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
 
     {% if expressCheckoutData %}
-        <input type="hidden" name="redirectParameters[{{ constant('Swag\\PayPal\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}]" value="1">
+        <input type="hidden" name="redirectParameters[{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}]" value="1">
     {% endif %}
 {% endblock %}

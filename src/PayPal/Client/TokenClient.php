@@ -9,9 +9,9 @@ namespace Swag\PayPal\PayPal\Client;
 
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\PayPal\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\ApiV1\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\ApiV1\RequestUriV1;
 use Swag\PayPal\PayPal\PartnerAttributionId;
-use Swag\PayPal\PayPal\RequestUri;
 
 class TokenClient extends AbstractClient
 {
@@ -36,6 +36,6 @@ class TokenClient extends AbstractClient
             ],
         ];
 
-        return $this->post(RequestUri::TOKEN_RESOURCE, $data);
+        return $this->post(RequestUriV1::TOKEN_RESOURCE, $data);
     }
 }

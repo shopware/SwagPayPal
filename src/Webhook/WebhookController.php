@@ -15,7 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
-use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\PayPal\ApiV1\Api\Webhook;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

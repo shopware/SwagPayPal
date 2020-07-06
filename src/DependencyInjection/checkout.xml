@@ -15,5 +15,51 @@
             <argument type="service" id="session"/>
             <argument type="service" id="translator"/>
         </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\PayPalPaymentHandler">
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Handler\PayPalHandler"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Handler\PlusHandler"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler">
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Handler\PayPalHandler"/>
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler">
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\AmountPatchBuilder"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\ItemListPatchBuilder"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder"/>
+            <argument type="service" id="currency.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Handler\PayPalHandler">
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Handler\PlusHandler">
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder"/>
+        </service>
     </services>
 </container>

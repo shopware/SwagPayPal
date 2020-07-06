@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
-use Swag\PayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\Routing\RouterInterface;

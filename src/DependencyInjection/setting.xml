@@ -10,7 +10,7 @@
         </service>
 
         <service id="Swag\PayPal\Setting\Service\ApiCredentialService">
-            <argument type="service" id="Swag\PayPal\PayPal\Resource\TokenResource"/>
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\TokenResource"/>
         </service>
 
         <service id="Swag\PayPal\Setting\Service\SettingsService">

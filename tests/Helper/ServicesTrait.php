@@ -11,10 +11,10 @@ use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\System\SystemConfig\Util\ConfigReader;
-use Swag\PayPal\Payment\Builder\OrderPaymentBuilder;
-use Swag\PayPal\PayPal\PaymentIntent;
-use Swag\PayPal\PayPal\Resource\PaymentResource;
-use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
+use Swag\PayPal\PayPal\ApiV1\PaymentIntentV1;
+use Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource;
+use Swag\PayPal\PayPal\ApiV1\Resource\TokenResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\CacheMock;
@@ -75,7 +75,7 @@ trait ServicesTrait
 
         $settingsStruct->setClientId('TestClientId');
         $settingsStruct->setClientSecret('TestClientSecret');
-        $settingsStruct->setIntent(PaymentIntent::SALE);
+        $settingsStruct->setIntent(PaymentIntentV1::SALE);
         $settingsStruct->setSubmitCart(false);
         $settingsStruct->setSendOrderNumber(true);
         $settingsStruct->setOrderNumberPrefix(OrderPaymentBuilderTest::TEST_ORDER_NUMBER_PREFIX);

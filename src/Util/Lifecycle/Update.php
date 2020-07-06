@@ -13,10 +13,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\SwagPayPal;
-use Swag\PayPal\Webhook\WebhookService;
+use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 class Update
 {
@@ -31,18 +33,25 @@ class Update
     private $customFieldRepository;
 
     /**
-     * @var WebhookService|null
+     * @var WebhookServiceInterface|null
      */
     private $webhookService;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $paymentRepository;
+
     public function __construct(
         SystemConfigService $systemConfig,
+        EntityRepositoryInterface $paymentRepository,
         EntityRepositoryInterface $customFieldRepository,
-        ?WebhookService $webhookService
+        ?WebhookServiceInterface $webhookService
     ) {
         $this->systemConfig = $systemConfig;
         $this->customFieldRepository = $customFieldRepository;
         $this->webhookService = $webhookService;
+        $this->paymentRepository = $paymentRepository;
     }
 
     public function update(UpdateContext $updateContext): void
@@ -61,6 +70,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '1.7.2', '<')) {
             $this->updateTo172($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '2.0.0', '<')) {
+            $this->updateTo200($updateContext->getContext());
         }
     }
 
@@ -118,5 +131,47 @@ class Update
             return ['id' => $id];
         }, $customFieldIds->getIds());
         $this->customFieldRepository->delete($data, $context);
+    }
+
+    private function updateTo200(Context $context): void
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('handlerIdentifier', 'Swag\PayPal\Payment\PayPalPaymentHandler'));
+
+        $payPalPaymentMethodId = $this->paymentRepository->searchIds($criteria, $context)->firstId();
+        $payPalData = null;
+        if ($payPalPaymentMethodId !== null) {
+            $payPalData = [
+                'id' => $payPalPaymentMethodId,
+                'handlerIdentifier' => PayPalPaymentHandler::class,
+            ];
+        }
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('handlerIdentifier', 'Swag\PayPal\Payment\PayPalPaymentHandler'));
+
+        $payPalPuiPaymentMethodId = $this->paymentRepository->searchIds($criteria, $context)->firstId();
+        $payPalPuiData = null;
+        if ($payPalPuiPaymentMethodId !== null) {
+            $payPalPuiData = [
+                'id' => $payPalPuiPaymentMethodId,
+                'handlerIdentifier' => PayPalPuiPaymentHandler::class,
+            ];
+        }
+
+        $data = [];
+        if ($payPalData !== null) {
+            $data[] = $payPalData;
+        }
+
+        if ($payPalPuiData !== null) {
+            $data[] = $payPalPuiData;
+        }
+
+        if ($data === []) {
+            return;
+        }
+
+        $this->paymentRepository->upsert($data, $context);
     }
 }

@@ -134,7 +134,7 @@
         <RedundantCondition>
             <errorLevel type="info">
                 <!-- Needs to be ignored, because \Shopware\Core\Checkout\Order\OrderEntity::getOrderNumber returns `null` with Shopware 6.3.2.0. Could be removed once this is the minimum version -->
-                <file name="src/Payment/PayPalPaymentHandler.php"/>
+                <file name="src/Checkout/Payment/PayPalPaymentHandler.php"/>
             </errorLevel>
         </RedundantCondition>
 

@@ -6,9 +6,9 @@
 
     <services>
         <service id="Swag\PayPal\Checkout\Plus\Service\PlusDataService">
-            <argument type="service" id="Swag\PayPal\Payment\Builder\CartPaymentBuilder"/>
-            <argument type="service" id="Swag\PayPal\Payment\Builder\OrderPaymentBuilder"/>
-            <argument type="service" id="Swag\PayPal\PayPal\Resource\PaymentResource"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder"/>
+            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource"/>
             <argument type="service" id="router"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
@@ -24,7 +24,7 @@
 
         <service id="Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController" public="true">
             <argument type="service" id="order_transaction.repository"/>
-            <argument type="service" id="Swag\PayPal\Payment\PayPalPaymentHandler"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\PayPalPaymentHandler"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="router"/>
         </service>

@@ -9,11 +9,11 @@ namespace Swag\PayPal\PayPal\Client;
 
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
-use Swag\PayPal\PayPal\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\ApiV1\Api\OAuthCredentials;
+use Swag\PayPal\PayPal\ApiV1\Resource\TokenResource;
 use Swag\PayPal\PayPal\BaseURL;
 use Swag\PayPal\PayPal\PartnerAttributionId;
-use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\PayPal\PayPalApiStruct;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 
@@ -62,7 +62,7 @@ class PayPalClient extends AbstractClient
         parent::__construct($client, $logger);
     }
 
-    public function sendPostRequest(string $resourceUri, PayPalStruct $data): array
+    public function sendPostRequest(string $resourceUri, PayPalApiStruct $data): array
     {
         $options = [
             'headers' => ['content-type' => 'application/json'],
@@ -78,7 +78,7 @@ class PayPalClient extends AbstractClient
     }
 
     /**
-     * @param PayPalStruct[] $data
+     * @param PayPalApiStruct[] $data
      */
     public function sendPatchRequest(string $resourceUri, array $data): array
     {

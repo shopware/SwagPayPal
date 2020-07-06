@@ -82,8 +82,9 @@ class SwagPayPal extends Plugin
         parent::build($container);
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
+        $loader->load('administration.xml');
         $loader->load('client.xml');
-        $loader->load('paypal_payment.xml');
+        $loader->load('payments_api.xml');
         $loader->load('resource.xml');
         $loader->load('setting.xml');
         $loader->load('util.xml');
@@ -178,13 +179,16 @@ class SwagPayPal extends Plugin
         $systemConfigService = $this->container->get(SystemConfigService::class);
         /** @var EntityRepositoryInterface $customFieldRepository */
         $customFieldRepository = $this->container->get((new CustomFieldDefinition())->getEntityName() . '.repository');
+        /** @var EntityRepositoryInterface $paymentRepository */
+        $paymentRepository = $this->container->get('payment_method.repository');
 
         /** @var WebhookService|null $webhookService */
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
 
-        (new Update($systemConfigService, $customFieldRepository, $webhookService))->update($updateContext);
+        (new Update($systemConfigService, $paymentRepository, $customFieldRepository, $webhookService))->update($updateContext);
 
         $this->addCustomPrivileges();
+
         parent::update($updateContext);
     }
 

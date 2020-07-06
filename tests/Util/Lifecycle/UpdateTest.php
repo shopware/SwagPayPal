@@ -23,6 +23,7 @@ use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Test\Mock\Repositories\PaymentMethodRepoMock;
 use Swag\PayPal\Test\Mock\RouterMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\Lifecycle\Update;
@@ -174,7 +175,7 @@ class UpdateTest extends TestCase
         /** @var EntityRepositoryInterface $customFieldRepository */
         $customFieldRepository = $this->getContainer()->get((new CustomFieldDefinition())->getEntityName() . '.repository');
 
-        return new Update($systemConfigService, $customFieldRepository, $webhookService);
+        return new Update($systemConfigService, new PaymentMethodRepoMock(), $customFieldRepository, $webhookService);
     }
 
     private function createWebhookService(SystemConfigServiceMock $systemConfigService): WebhookService

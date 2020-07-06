@@ -19,10 +19,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
-use Swag\PayPal\Payment\Builder\Util\PriceFormatter;
-use Swag\PayPal\PayPal\Api\Capture;
-use Swag\PayPal\PayPal\Api\Payment;
-use Swag\PayPal\PayPal\Api\Refund;
+use Swag\PayPal\PayPal\ApiV1\Api\Capture;
+use Swag\PayPal\PayPal\ApiV1\Api\Payment;
+use Swag\PayPal\PayPal\ApiV1\Api\Refund;
 
 class PaymentStatusUtil
 {

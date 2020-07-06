@@ -9,7 +9,7 @@ namespace Swag\PayPal\PayPal\Client;
 
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\PayPal\RequestUri;
+use Swag\PayPal\PayPal\ApiV1\RequestUriV1;
 
 class CredentialsClient extends AbstractClient
 {
@@ -32,14 +32,14 @@ class CredentialsClient extends AbstractClient
             'auth' => [$sharedId, ''],
         ];
 
-        $response = $this->post(RequestUri::TOKEN_RESOURCE, $options);
+        $response = $this->post(RequestUriV1::TOKEN_RESOURCE, $options);
 
         return $response['access_token'];
     }
 
     public function getCredentials(string $accessToken, string $partnerId): array
     {
-        $url = \sprintf(RequestUri::CREDENTIALS_RESOURCE, $partnerId);
+        $url = \sprintf(RequestUriV1::CREDENTIALS_RESOURCE, $partnerId);
         $options = [
             'headers' => [
                 'content-type' => 'application/json',
