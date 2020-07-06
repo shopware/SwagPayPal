@@ -5,7 +5,7 @@
 - PT-11773 - Kaufen von Custom Products mit PayPal korrigiert
 - PT-11813 - Fehlerbehandlung für Express Checkout Buttons
 - PT-11858 - Verarbeitung von mehreren Transaktionen pro Bestellung verbessert
-- PT-11869 - Handhabung von Zahlungen verbessert, die von Kunden storniert wurden
+- PT-11869 - Handhabung von Zahlungen verbessert, die von Kunden abgebrochen wurden
 
 # 1.6.0
 - PT-11519 - Registriert Webhooks mit HTTPS
