@@ -73,16 +73,16 @@ class DeletedUpdater
 
             try {
                 $this->productResource->deleteProduct($productContext->getIZettleSalesChannel(), $productUuid);
+                $productContext->removeProductReference($salesChannelProductEntity);
                 $this->logger->info('Product deleted: {productId}', ['product' => $productEntity, 'productId' => $productUuid]);
             } catch (IZettleApiException $iZettleApiException) {
                 if ($iZettleApiException->getApiError()->getErrorType() === IZettleApiError::ERROR_TYPE_ENTITY_NOT_FOUND) {
+                    $productContext->removeProductReference($salesChannelProductEntity);
                     $this->logger->notice('Not found product to delete at iZettle: {productId}', ['product' => $productEntity, 'productId' => $productUuid]);
                 } else {
                     $this->logger->error('Product deletion error: ' . $iZettleApiException);
                 }
             }
-
-            $productContext->removeProductReference($salesChannelProductEntity);
         }
     }
 }

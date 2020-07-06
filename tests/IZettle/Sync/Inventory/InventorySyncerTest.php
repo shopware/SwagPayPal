@@ -22,8 +22,8 @@ use Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater;
 use Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
-use Swag\PayPal\Test\Mock\IZettle\IZettleInventoryRepoMock;
-use Swag\PayPal\Test\Mock\IZettle\SalesChannelProductRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleInventoryRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelProductRepoMock;
 
 class InventorySyncerTest extends TestCase
 {

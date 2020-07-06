@@ -20,7 +20,7 @@ use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
 use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 use Swag\PayPal\IZettle\Sync\Product\NewUpdater;
-use Swag\PayPal\Test\Mock\IZettle\ProductContextMock;
+use Swag\PayPal\Test\IZettle\Mock\ProductContextMock;
 
 class NewUpdaterTest extends AbstractProductSyncTest
 {

@@ -29,8 +29,8 @@ use Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater;
 use Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
-use Swag\PayPal\Test\Mock\IZettle\ProductContextMock;
-use Swag\PayPal\Test\Mock\IZettle\SalesChannelProductRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\ProductContextMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelProductRepoMock;
 
 class ProductSyncerTest extends AbstractProductSyncTest
 {

@@ -8,7 +8,9 @@
 namespace Swag\PayPal\IZettle\Api\Product;
 
 use Swag\PayPal\IZettle\Api\Common\IZettleStruct;
+use Swag\PayPal\IZettle\Api\Product\Variant\CostPrice;
 use Swag\PayPal\IZettle\Api\Product\Variant\Option;
+use Swag\PayPal\IZettle\Api\Product\Variant\Price;
 
 class Variant extends IZettleStruct
 {
@@ -43,7 +45,7 @@ class Variant extends IZettleStruct
     protected $price;
 
     /**
-     * @var Price
+     * @var CostPrice
      */
     protected $costPrice;
 
@@ -87,7 +89,7 @@ class Variant extends IZettleStruct
         $this->price = $price;
     }
 
-    public function setCostPrice(Price $costPrice): void
+    public function setCostPrice(CostPrice $costPrice): void
     {
         $this->costPrice = $costPrice;
     }

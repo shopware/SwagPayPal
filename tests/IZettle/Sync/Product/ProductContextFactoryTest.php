@@ -19,8 +19,8 @@ use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductCo
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductEntity;
 use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 use Swag\PayPal\IZettle\Sync\Context\ProductContextFactory;
-use Swag\PayPal\Test\Mock\IZettle\IZettleMediaRepoMock;
-use Swag\PayPal\Test\Mock\IZettle\IZettleProductRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleMediaRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleProductRepoMock;
 
 class ProductContextFactoryTest extends AbstractProductSyncTest
 {
@@ -116,15 +116,19 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
     {
         $context = Context::createDefaultContext();
 
-        $iZettleProductRepoMock = $this->createPartialMock(IZettleProductRepoMock::class, ['upsert', 'delete']);
-        $iZettleMediaRepoMock = $this->createPartialMock(IZettleMediaRepoMock::class, ['create', 'upsert']);
+        $iZettleProductRepoMock = new IZettleProductRepoMock();
+        $iZettleMediaRepoMock = new IZettleMediaRepoMock();
         $productContextFactory = new ProductContextFactory($iZettleProductRepoMock, $iZettleMediaRepoMock);
 
         $productContext = new ProductContext($this->createSalesChannel($context), new IZettleSalesChannelProductCollection(), new IZettleSalesChannelMediaCollection(), $context);
 
         $productEntity = $this->createProductEntity();
-        $productContext->changeProduct($productEntity, new Product());
-        $productContext->removeProduct($productEntity);
+        $convertedProductOriginal = new Product();
+        $convertedProductOriginal->setName('test');
+        $convertedProductChanged = new Product();
+        $originalState = clone $iZettleProductRepoMock->createMockEntity($productEntity, $convertedProductOriginal, Defaults::SALES_CHANNEL);
+        $productContext->changeProduct($productEntity, $convertedProductChanged);
+
         $newMedia = new MediaEntity();
         $newMedia->setId(self::IMAGE_MEDIA_ID_NEW);
         $newMedia->setMimeType('image/jpeg');
@@ -132,11 +136,15 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         $newMedia->setFileName('filename');
         $productContext->checkForMediaUrl($newMedia);
 
-        $iZettleProductRepoMock->expects(static::once())->method('upsert');
-        $iZettleProductRepoMock->expects(static::once())->method('delete');
-        $iZettleMediaRepoMock->expects(static::once())->method('create');
-
         $productContextFactory->commit($productContext);
+
+        static::assertCount(1, $iZettleMediaRepoMock->getCollection());
+        static::assertCount(1, $iZettleProductRepoMock->getCollection());
+        static::assertNotEquals($originalState, $iZettleProductRepoMock->getCollection()->first());
+
+        $productContext->removeProduct($productEntity);
+        $productContextFactory->commit($productContext);
+        static::assertEmpty($iZettleProductRepoMock->getCollection());
     }
 
     public function testIdentical(): void

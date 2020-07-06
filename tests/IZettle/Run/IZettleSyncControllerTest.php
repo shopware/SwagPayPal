@@ -24,7 +24,7 @@ use Swag\PayPal\IZettle\Sync\ImageSyncer;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
-use Swag\PayPal\Test\Mock\IZettle\SalesChannelRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelRepoMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class IZettleSyncControllerTest extends TestCase

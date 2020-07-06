@@ -21,7 +21,7 @@ use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductEntity;
 use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker;
-use Swag\PayPal\Test\Mock\IZettle\ProductContextMock;
+use Swag\PayPal\Test\IZettle\Mock\ProductContextMock;
 
 class UnsyncedCheckerTest extends AbstractProductSyncTest
 {

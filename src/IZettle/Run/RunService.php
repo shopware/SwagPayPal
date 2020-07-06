@@ -21,22 +21,15 @@ class RunService
     private $runRepository;
 
     /**
-     * @var EntityRepositoryInterface
-     */
-    private $logRepository;
-
-    /**
      * @var Logger
      */
     private $logger;
 
     public function __construct(
         EntityRepositoryInterface $runRepository,
-        EntityRepositoryInterface $logRepository,
         Logger $logger
     ) {
         $this->runRepository = $runRepository;
-        $this->logRepository = $logRepository;
         $this->logger = $logger;
     }
 
@@ -64,17 +57,9 @@ class RunService
         }
         $logs = $logHandler->getLogs();
 
-        if (\count($logs) > 0) {
-            foreach ($logs as &$log) {
-                $log['runId'] = $run->getId();
-            }
-            unset($log);
-
-            $this->logRepository->create($logs, $context);
-        }
-
         $this->runRepository->update([[
             'id' => $run->getId(),
+            'logs' => $logs,
         ]], $context);
 
         $logHandler->flush();

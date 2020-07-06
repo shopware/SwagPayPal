@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\IZettle\Api\Product;
+namespace Swag\PayPal\IZettle\Api\Product\Variant;
 
 use Swag\PayPal\IZettle\Api\Common\IZettleStruct;
 

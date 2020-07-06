@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Mock\IZettle;
+namespace Swag\PayPal\Test\IZettle\Mock\Repositories;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -23,7 +23,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\SwagPayPal;
 
-class SalesChannelRepoMock implements EntityRepositoryInterface
+class SalesChannelRepoMock extends AbstractRepoMock implements EntityRepositoryInterface
 {
     /**
      * @var SalesChannelEntity
@@ -42,6 +42,7 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
 
     public function __construct()
     {
+        parent::__construct();
         $this->mockEntity = $this->createMockEntity();
         $this->mockEntityWithNoTypeId = $this->createMockEntity(true, false);
         $this->mockInactiveEntity = $this->createMockEntity(false);
@@ -58,66 +59,32 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
 
     public function searchIds(Criteria $criteria, Context $context): IdSearchResult
     {
-        return new IdSearchResult(1, [], $criteria, $context);
+        return $this->searchCollectionIds($this->getFilteredCollection($criteria), $criteria, $context);
     }
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-        if ($criteria->getIds()) {
-            if (\in_array($this->mockEntityWithNoTypeId->getId(), $criteria->getIds(), true)) {
-                return new EntitySearchResult(
-                    1,
-                    new SalesChannelCollection([$this->mockEntityWithNoTypeId]),
-                    null,
-                    $criteria,
-                    $context
-                );
-            }
-
-            if (\in_array($this->mockInactiveEntity->getId(), $criteria->getIds(), true)) {
-                return new EntitySearchResult(
-                    1,
-                    new SalesChannelCollection([$this->mockInactiveEntity]),
-                    null,
-                    $criteria,
-                    $context
-                );
-            }
-
-            if (!\in_array($this->mockEntity->getId(), $criteria->getIds(), true)) {
-                return new EntitySearchResult(
-                    0,
-                    new SalesChannelCollection([]),
-                    null,
-                    $criteria,
-                    $context
-                );
-            }
-        }
-
-        return new EntitySearchResult(
-            1,
-            new SalesChannelCollection([$this->mockEntity]),
-            null,
-            $criteria,
-            $context
-        );
+        return $this->searchCollection($this->getFilteredCollection($criteria), $criteria, $context);
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
     {
+        return $this->updateCollection($data, $context);
     }
 
     public function upsert(array $data, Context $context): EntityWrittenContainerEvent
     {
+        return $this->updateCollection($data, $context);
     }
 
     public function create(array $data, Context $context): EntityWrittenContainerEvent
     {
+        return $this->updateCollection($data, $context);
     }
 
     public function delete(array $data, Context $context): EntityWrittenContainerEvent
     {
+        return $this->removeFromCollection($data, $context);
     }
 
     public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
@@ -160,7 +127,27 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
 
         $iZettleEntity = new IZettleSalesChannelEntity();
         $entity->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleEntity);
+        $this->addMockEntity($entity);
 
         return $entity;
+    }
+
+    private function getFilteredCollection(Criteria $criteria): SalesChannelCollection
+    {
+        if ($criteria->getIds()) {
+            if (\in_array($this->mockEntityWithNoTypeId->getId(), $criteria->getIds(), true)) {
+                return new SalesChannelCollection([$this->mockEntityWithNoTypeId]);
+            }
+
+            if (\in_array($this->mockInactiveEntity->getId(), $criteria->getIds(), true)) {
+                return new SalesChannelCollection([$this->mockInactiveEntity]);
+            }
+
+            if (!\in_array($this->mockEntity->getId(), $criteria->getIds(), true)) {
+                return new SalesChannelCollection([]);
+            }
+        }
+
+        return new SalesChannelCollection([$this->mockEntity]);
     }
 }

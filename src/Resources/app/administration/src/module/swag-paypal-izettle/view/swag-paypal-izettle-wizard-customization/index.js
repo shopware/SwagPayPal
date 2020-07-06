@@ -61,7 +61,7 @@ Component.register('swag-paypal-izettle-wizard-customization', {
                     variant: 'primary',
                     action: 'swag.paypal.izettle.wizard.product-selection',
                     disabled: !(this.salesChannel.name)
-                           || !(this.salesChannel.extensions.paypalIZettleSalesChannel.salesChannelDomainId)
+                           || !(this.salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain)
                 }
             ];
 

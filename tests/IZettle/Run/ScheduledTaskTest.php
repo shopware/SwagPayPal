@@ -20,7 +20,7 @@ use Swag\PayPal\IZettle\Schedule\InventorySyncTaskHandler;
 use Swag\PayPal\IZettle\Sync\ImageSyncer;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
-use Swag\PayPal\Test\Mock\IZettle\SalesChannelRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelRepoMock;
 
 class ScheduledTaskTest extends TestCase
 {

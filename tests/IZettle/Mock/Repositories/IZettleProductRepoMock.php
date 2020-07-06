@@ -5,10 +5,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Mock\IZettle;
+namespace Swag\PayPal\Test\IZettle\Mock\Repositories;
 
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
@@ -16,19 +17,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\IZettle\Api\Product;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductDefinition;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductEntity;
 
-class IZettleProductRepoMock implements EntityRepositoryInterface
+class IZettleProductRepoMock extends AbstractRepoMock implements EntityRepositoryInterface
 {
-    /**
-     * @var IZettleSalesChannelProductEntity[]
-     */
-    private $mockEntities = [];
-
     public function getDefinition(): EntityDefinition
     {
         return new IZettleSalesChannelProductDefinition();
@@ -40,33 +34,32 @@ class IZettleProductRepoMock implements EntityRepositoryInterface
 
     public function searchIds(Criteria $criteria, Context $context): IdSearchResult
     {
+        return $this->searchCollectionIds($this->entityCollection, $criteria, $context);
     }
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-        return new EntitySearchResult(
-            \count($this->mockEntities),
-            new IZettleSalesChannelProductCollection($this->mockEntities),
-            null,
-            $criteria,
-            $context
-        );
+        return $this->searchCollection($this->entityCollection, $criteria, $context);
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
     {
+        return $this->updateCollection($data, $context);
     }
 
     public function upsert(array $data, Context $context): EntityWrittenContainerEvent
     {
+        return $this->updateCollection($data, $context);
     }
 
     public function create(array $data, Context $context): EntityWrittenContainerEvent
     {
+        return $this->updateCollection($data, $context);
     }
 
     public function delete(array $data, Context $context): EntityWrittenContainerEvent
     {
+        return $this->removeFromCollection($data, $context);
     }
 
     public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
@@ -81,7 +74,7 @@ class IZettleProductRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function addMockEntity(ProductEntity $productEntity, Product $product, string $salesChannelId): void
+    public function createMockEntity(ProductEntity $productEntity, Product $product, string $salesChannelId): IZettleSalesChannelProductEntity
     {
         $entity = new IZettleSalesChannelProductEntity();
         $entity->setSalesChannelId($salesChannelId);
@@ -90,8 +83,18 @@ class IZettleProductRepoMock implements EntityRepositoryInterface
         if ($versionId !== null) {
             $entity->setProductVersionId($versionId);
         }
-        $entity->setUniqueIdentifier(Uuid::randomHex());
         $entity->setChecksum($product->generateChecksum());
-        $this->mockEntities[] = $entity;
+        $entity->setUniqueIdentifier($this->getUniqueIdentifier($entity));
+        $this->addMockEntity($entity);
+
+        return $entity;
+    }
+
+    protected function getUniqueIdentifier(Entity $entity): string
+    {
+        return \implode('-', [
+            $entity->get('salesChannelId'),
+            $entity->get('productId'),
+        ]);
     }
 }

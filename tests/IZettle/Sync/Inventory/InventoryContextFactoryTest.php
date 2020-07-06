@@ -18,7 +18,7 @@ use Swag\PayPal\IZettle\Api\Inventory\Status\Variant;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Resource\InventoryResource;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory;
-use Swag\PayPal\Test\Mock\IZettle\IZettleInventoryRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleInventoryRepoMock;
 
 class InventoryContextFactoryTest extends TestCase
 {
@@ -279,9 +279,9 @@ class InventoryContextFactoryTest extends TestCase
         $context = Context::createDefaultContext();
 
         $singleProduct = $this->getSingleProduct();
-        $this->inventoryRepository->addMockEntity($singleProduct, Defaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
+        $this->inventoryRepository->createMockEntity($singleProduct, Defaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
         $variantProduct = $this->getVariantProduct();
-        $this->inventoryRepository->addMockEntity($variantProduct, Defaults::SALES_CHANNEL, $variantProduct->getAvailableStock() + 2);
+        $this->inventoryRepository->createMockEntity($variantProduct, Defaults::SALES_CHANNEL, $variantProduct->getAvailableStock() + 2);
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
 
@@ -308,7 +308,7 @@ class InventoryContextFactoryTest extends TestCase
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
         static::assertEquals(0, $inventoryContext->getLocalInventory($singleProduct));
 
-        $this->inventoryRepository->addMockEntity($singleProduct, Defaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
+        $this->inventoryRepository->createMockEntity($singleProduct, Defaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
         $this->inventoryContextFactory->updateContext($inventoryContext);
         static::assertEquals($singleProduct->getAvailableStock(), $inventoryContext->getLocalInventory($singleProduct));
     }

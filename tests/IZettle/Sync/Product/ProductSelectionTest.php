@@ -22,8 +22,8 @@ use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\Context\ProductContextFactory;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\SwagPayPal;
-use Swag\PayPal\Test\Mock\IZettle\ProductContextMock;
-use Swag\PayPal\Test\Mock\IZettle\SalesChannelProductRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\ProductContextMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelProductRepoMock;
 
 class ProductSelectionTest extends AbstractProductSyncTest
 {

@@ -24,7 +24,7 @@ class TokenClient extends AbstractClient
     /**
      * @var ApiKeyDecoder
      */
-    private $apiKeyDecoder;
+    protected $apiKeyDecoder;
 
     public function __construct(LoggerInterface $logger, ApiKeyDecoder $apiKeyDecoder)
     {

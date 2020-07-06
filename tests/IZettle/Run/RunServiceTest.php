@@ -25,11 +25,10 @@ class RunServiceTest extends TestCase
     public function testLogProcessAddLogWithoutProduct(): void
     {
         $runRepository = $this->createMock(EntityRepositoryInterface::class);
-        $logRepository = $this->createMock(EntityRepositoryInterface::class);
         $context = Context::createDefaultContext();
 
         $logger = (new LoggerFactory())->createLogger();
-        $runService = new RunService($runRepository, $logRepository, $logger);
+        $runService = new RunService($runRepository, $logger);
 
         $runRepository->expects(static::once())->method('create');
         $run = $runService->startRun(Defaults::SALES_CHANNEL, 'complete', $context);
@@ -43,10 +42,14 @@ class RunServiceTest extends TestCase
             new Criteria(),
             $context
         ));
-        $logRepository->expects(static::once())->method('create')->with([[
-            'level' => Logger::INFO,
-            'message' => 'test',
-            'runId' => $run->getId(),
+        $runRepository->expects(static::once())->method('update')->with([[
+            'id' => $run->getId(),
+            'logs' => [
+                [
+                    'level' => Logger::INFO,
+                    'message' => 'test',
+                ],
+            ],
         ]]);
         $runService->finishRun($run, $context);
     }
@@ -54,11 +57,10 @@ class RunServiceTest extends TestCase
     public function testLogProcessAddLogWithProduct(): void
     {
         $runRepository = $this->createMock(EntityRepositoryInterface::class);
-        $logRepository = $this->createMock(EntityRepositoryInterface::class);
         $context = Context::createDefaultContext();
 
         $logger = (new LoggerFactory())->createLogger();
-        $runService = new RunService($runRepository, $logRepository, $logger);
+        $runService = new RunService($runRepository, $logger);
 
         $runRepository->expects(static::once())->method('create');
         $run = $runService->startRun(Defaults::SALES_CHANNEL, 'complete', $context);
@@ -77,12 +79,16 @@ class RunServiceTest extends TestCase
             new Criteria(),
             $context
         ));
-        $logRepository->expects(static::once())->method('create')->with([[
-            'level' => Logger::INFO,
-            'message' => 'test',
-            'runId' => $run->getId(),
-            'productId' => $product->getParentId(),
-            'productVersionId' => $product->getVersionId(),
+        $runRepository->expects(static::once())->method('update')->with([[
+            'id' => $run->getId(),
+            'logs' => [
+                [
+                    'level' => Logger::INFO,
+                    'message' => 'test',
+                    'productId' => $product->getParentId(),
+                    'productVersionId' => $product->getVersionId(),
+                ],
+            ],
         ]]);
         $runService->finishRun($run, $context);
     }

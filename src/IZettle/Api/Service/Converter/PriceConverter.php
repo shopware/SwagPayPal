@@ -9,7 +9,7 @@ namespace Swag\PayPal\IZettle\Api\Service\Converter;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Swag\PayPal\IZettle\Api\Product\Price;
+use Swag\PayPal\IZettle\Api\Product\Variant\Price;
 
 class PriceConverter
 {

@@ -33,7 +33,6 @@
             <argument type="service" id="product.repository"/>
             <argument type="service" id="Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>
-
         </service>
 
         <service id="Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater">

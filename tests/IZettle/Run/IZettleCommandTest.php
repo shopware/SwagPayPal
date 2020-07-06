@@ -25,7 +25,7 @@ use Swag\PayPal\IZettle\Run\Task\ProductTask;
 use Swag\PayPal\IZettle\Sync\ImageSyncer;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
-use Swag\PayPal\Test\Mock\IZettle\SalesChannelRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelRepoMock;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 

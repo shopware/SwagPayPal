@@ -50,6 +50,7 @@
         <InvalidReturnType>
             <errorLevel type="info">
                 <directory name="tests/Mock"/>
+                <directory name="tests/IZettle/Mock"/>
             </errorLevel>
         </InvalidReturnType>
 
