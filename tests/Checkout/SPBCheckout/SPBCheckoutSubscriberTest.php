@@ -115,7 +115,7 @@ class SPBCheckoutSubscriberTest extends TestCase
     public function testOnCheckoutConfirmSPBPayPalNotInActiveSalesChannel(): void
     {
         $subscriber = $this->createSubscriber();
-        $event = $this->createConfirmPageLoadedEvent();
+        $event = $this->createConfirmPageLoadedEvent(false);
         $event->getSalesChannelContext()->getSalesChannel()->setPaymentMethods(
             new PaymentMethodCollection([])
         );
@@ -282,11 +282,16 @@ class SPBCheckoutSubscriberTest extends TestCase
         );
     }
 
-    private function createConfirmPageLoadedEvent(): CheckoutConfirmPageLoadedEvent
+    private function createConfirmPageLoadedEvent(bool $withPayPalPaymentMethod = true): CheckoutConfirmPageLoadedEvent
     {
-        $paypalPaymentMethod = new PaymentMethodEntity();
-        $paypalPaymentMethod->setId($this->paypalPaymentMethodId);
-        $paymentCollection = new PaymentMethodCollection([$paypalPaymentMethod]);
+        $paymentCollection = new PaymentMethodCollection();
+        if ($withPayPalPaymentMethod) {
+            $paypalPaymentMethod = new PaymentMethodEntity();
+            $paypalPaymentMethod->setId($this->paypalPaymentMethodId);
+
+            $paymentCollection->add($paypalPaymentMethod);
+        }
+
         $salesChannelContext = $this->createSalesChannelContext(
             $this->getContainer(),
             $paymentCollection,

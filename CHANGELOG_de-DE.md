@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11884 - PayPal wird jetzt nur geladen, wenn die Zahlungsmethode auf der aktuellen Seite aktiv ist
+
 # 1.7.0
 - PT-11669 - Kompatibilität mit dem Zahlungsprozess nach einer Bestellung hinzugefügt
 - PT-11707 - Individuelle Formular-Parameter der Bestellseite werden nicht mehr ignoriert

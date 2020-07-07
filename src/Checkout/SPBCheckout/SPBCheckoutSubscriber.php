@@ -87,7 +87,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     public function onAccountOrderEditLoaded(AccountEditOrderPageLoadedEvent $event): void
     {
         $request = $event->getRequest();
-        $settings = $this->checkSettings($event->getSalesChannelContext());
+        $settings = $this->checkSettings($event->getSalesChannelContext(), $event->getPage()->getPaymentMethods());
         if ($settings === null) {
             return;
         }
@@ -111,7 +111,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
         $request = $event->getRequest();
-        $settings = $this->checkSettings($event->getSalesChannelContext());
+        $settings = $this->checkSettings($event->getSalesChannelContext(), $event->getPage()->getPaymentMethods());
         if ($settings === null) {
             return;
         }
@@ -159,9 +159,9 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         );
     }
 
-    private function checkSettings(SalesChannelContext $salesChannelContext): ?SwagPayPalSettingStruct
+    private function checkSettings(SalesChannelContext $salesChannelContext, PaymentMethodCollection $paymentMethods): ?SwagPayPalSettingStruct
     {
-        if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
+        if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext, $paymentMethods)) {
             return null;
         }
 

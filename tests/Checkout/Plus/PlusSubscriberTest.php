@@ -350,7 +350,7 @@ class PlusSubscriberTest extends TestCase
     public function testOnCheckoutConfirmLoadedWithoutPayPalInSalesChannel(): void
     {
         $subscriber = $this->createSubscriber();
-        $event = $this->createConfirmEvent();
+        $event = $this->createConfirmEvent(false, false, false);
         $subscriber->onCheckoutConfirmLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -395,10 +395,14 @@ class PlusSubscriberTest extends TestCase
 
     private function createConfirmEvent(
         bool $withCustomer = true,
-        bool $withOtherDefaultPayment = false
+        bool $withOtherDefaultPayment = false,
+        bool $withPayPalPaymentMethod = true
     ): CheckoutConfirmPageLoadedEvent {
-        $payPalPaymentMethod = $this->createPayPalPaymentMethod();
-        $paymentCollection = new PaymentMethodCollection([$payPalPaymentMethod]);
+        $paymentCollection = new PaymentMethodCollection();
+        if ($withPayPalPaymentMethod) {
+            $paymentCollection->add($this->createPayPalPaymentMethod());
+        }
+
         $salesChannelContext = $this->createSalesChannelContext(
             $this->getContainer(),
             $paymentCollection,
