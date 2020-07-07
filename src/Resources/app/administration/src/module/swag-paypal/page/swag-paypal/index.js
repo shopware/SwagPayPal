@@ -248,12 +248,6 @@ Component.register('swag-paypal', {
                 });
         },
 
-        /**
-         * @deprecated tag:v2.0.0 - will be removed
-         */
-        setErrorStates() {
-        },
-
         onSetPaymentMethodDefault() {
             this.isSettingDefaultPaymentMethods = true;
 

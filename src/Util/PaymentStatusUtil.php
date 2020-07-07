@@ -23,7 +23,6 @@ use Swag\PayPal\Payment\Builder\Util\PriceFormatter;
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Refund;
-use Symfony\Component\HttpFoundation\Request;
 
 class PaymentStatusUtil
 {
@@ -56,14 +55,6 @@ class PaymentStatusUtil
         $transaction = $this->getOrderTransaction($orderId, $context);
 
         $this->orderTransactionStateHandler->cancel($transaction->getId(), $context);
-    }
-
-    /**
-     * @deprecated tag:v2.0.0 - Deprecated since version 1.5.1 and will be removed in 2.0.0. Use "applyCaptureState" instead
-     */
-    public function applyCaptureStateToPayment(string $orderId, Request $request, Capture $captureResponse, Context $context): void
-    {
-        $this->applyCaptureState($orderId, $captureResponse, $context);
     }
 
     public function applyCaptureState(string $orderId, Capture $captureResponse, Context $context): void

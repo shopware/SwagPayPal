@@ -61,23 +61,4 @@ class PayPalClientFactory
 
         return $this->payPalClient;
     }
-
-    /**
-     * @deprecated tag:v2.0.0 - Will be removed. Use PayPalClientFactory::getPayPalClient instead
-     */
-    public function createPaymentClient(
-        ?string $salesChannelId,
-        string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
-    ): PayPalClient {
-        $this->logger->error(
-            \sprintf(
-                '%s::%s is deprecated. Use %s::getPayPalClient instead',
-                static::class,
-                __METHOD__,
-                static::class
-            )
-        );
-
-        return $this->getPayPalClient($salesChannelId, $partnerAttributionId);
-    }
 }

@@ -123,8 +123,6 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     };
 
     init() {
-        /* @deprecated tag:v2.0.0 - Will be removed. Use _storeApiClient instead */
-        this._client = new StoreApiClient();
         this._storeApiClient = new StoreApiClient();
         this._httpClient = new HttpClient();
         this.createButton();

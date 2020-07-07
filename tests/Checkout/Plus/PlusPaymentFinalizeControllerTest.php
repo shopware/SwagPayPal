@@ -15,7 +15,6 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
-use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\Payment\AsyncPaymentHandlerMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Symfony\Component\HttpFoundation\Request;
@@ -102,8 +101,7 @@ class PlusPaymentFinalizeControllerTest extends TestCase
             new OrderTransactionRepoMock(),
             new AsyncPaymentHandlerMock(),
             $this->orderTransactionStateHandler,
-            $router,
-            new LoggerMock()
+            $router
         );
     }
 }

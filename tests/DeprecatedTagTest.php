@@ -19,7 +19,7 @@ class DeprecatedTagTest extends TestCase
      * @var array
      */
     private $whiteList = [
-        'tests/',
+        'tests/DeprecatedTagTest.php',
         'coverage/',
         'Resources/public/',
     ];

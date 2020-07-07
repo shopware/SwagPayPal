@@ -72,13 +72,6 @@ class SPBCheckoutButtonData extends Struct
     protected $addErrorUrl;
 
     /**
-     * @var string
-     *
-     * @deprecated tag:v2.0.0 - Will be removed without replacement
-     */
-    protected $errorParameter = SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER;
-
-    /**
      * @var string|null
      */
     protected $orderId;
@@ -157,14 +150,6 @@ class SPBCheckoutButtonData extends Struct
     public function getAddErrorUrl(): string
     {
         return $this->addErrorUrl;
-    }
-
-    /**
-     * @deprecated tag:v2.0.0 - Will be removed without replacement
-     */
-    public function getErrorParameter(): string
-    {
-        return $this->errorParameter;
     }
 
     public function getOrderId(): ?string

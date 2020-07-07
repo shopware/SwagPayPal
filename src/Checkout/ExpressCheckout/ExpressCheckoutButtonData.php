@@ -82,13 +82,6 @@ class ExpressCheckoutButtonData extends Struct
     protected $createNewCartUrl;
 
     /**
-     * @deprecated tag:v2.0.0 - PayPal uses the core add to cart button
-     *
-     * @var string
-     */
-    protected $addLineItemUrl;
-
-    /**
      * @var string
      */
     protected $approvePaymentUrl;
@@ -171,14 +164,6 @@ class ExpressCheckoutButtonData extends Struct
     public function getCreateNewCartUrl(): string
     {
         return $this->createNewCartUrl;
-    }
-
-    /**
-     * @deprecated tag:v2.0.0 - PayPal uses the core add to cart button
-     */
-    public function getAddLineItemUrl(): string
-    {
-        return $this->addLineItemUrl;
     }
 
     public function getApprovePaymentUrl(): string

@@ -17,19 +17,8 @@
     </projectFiles>
 
     <issueHandlers>
-        <LessSpecificImplementedReturnType>
-            <errorLevel type="info">
-                <!-- <deprecated> tag:v2.0.0 - Remove once the Token class is final -->
-                <file name="src/PayPal/Api/Token.php"/>
-            </errorLevel>
-        </LessSpecificImplementedReturnType>
-
         <DeprecatedClass>
             <errorLevel type="info">
-                <!-- <deprecated> tag:v2.0.0 - Remove once the Token class is final -->
-                <referencedClass name="Swag\PayPal\PayPal\Api\Token"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove once the BaseURL class is final -->
-                <referencedClass name="Swag\PayPal\PayPal\BaseURL"/>
                 <!-- <deprecated> tag:v2.0.0 - Remove once the interface has been extended -->
                 <referencedClass name="Swag\PayPal\Webhook\WebhookServiceInterface"/>
                 <!-- <deprecated> tag:v2.0.0 - Remove once the WebhookDeregistrationServiceInterface is merged with WebhookServiceInterface -->
@@ -91,15 +80,6 @@
                 <referencedMethod name="Shopware\Core\Content\Product\ProductEntity::getPurchasePrice"/>
                 <referencedMethod name="Shopware\Core\Content\Product\ProductEntity::setPurchasePrice"/>
                 <referencedMethod name="Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour::silentAssertArraySubset"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
-                <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBMarksData::isUseAlternativePaymentMethods"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
-                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData::getAddLineItemUrl"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
-                <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData::getErrorParameter"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove once the constructor is final -->
-                <referencedMethod name="Swag\PayPal\Pos\Api\Common\PosStruct::__construct"/>
-                <referencedMethod name="Swag\PayPal\PayPal\Api\Common\PayPalStruct::__construct"/>
                 <!-- <deprecated> tag:v2.0.0 - Remove once the interface has been extended -->
                 <referencedMethod name="Swag\PayPal\Setting\Service\SettingsServiceInterface::getSettings"/>
                 <referencedMethod name="Swag\PayPal\Webhook\WebhookController::deleteableWebhook"/>
@@ -125,23 +105,8 @@
             </errorLevel>
         </PossiblyUndefinedMethod>
 
-        <DeprecatedConstant>
-            <errorLevel type="info">
-                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
-                <file name="src/Checkout/SPBCheckout/SPBCheckoutButtonData.php"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
-                <file name="tests/Checkout/SPBCheckout/SPBCheckoutSubscriberTest.php"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
-                <file name="src/PayPal/Resource/TokenResource.php"/>
-            </errorLevel>
-        </DeprecatedConstant>
-
         <DeprecatedProperty>
             <errorLevel type="info">
-                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
-                <referencedProperty name="Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController::$logger"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
-                <referencedProperty name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController::$logger"/>
                 <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
                 <referencedProperty name="Swag\PayPal\Webhook\Registration\WebhookSubscriber::$webhookService"/>
             </errorLevel>
@@ -163,10 +128,6 @@
         <UnsafeInstantiation>
             <errorLevel type="info">
                 <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove once the constructor is final -->
-                <file name="src/PayPal/Api/Common/PayPalStruct.php"/>
-                <file name="src/Pos/Api/Common/PosStruct.php"/>
-                <file name="src/Pos/Webhook/Handler/AbstractWebhookHandler.php"/>
             </errorLevel>
         </UnsafeInstantiation>
 

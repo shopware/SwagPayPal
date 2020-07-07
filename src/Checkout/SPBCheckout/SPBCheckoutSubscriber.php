@@ -30,10 +30,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class SPBCheckoutSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID = 'payPalSpbButtonData';
-    /**
-     * @deprecated tag:v2.0.0 - Will be removed without replacement
-     */
-    public const PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER = 'payPalSpbError';
 
     /**
      * @var SettingsServiceInterface

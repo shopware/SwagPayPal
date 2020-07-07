@@ -98,8 +98,6 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
         static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
-        /* @deprecated tag:v2.0.0 - Remove with 2.0.0 */
-        static::assertTrue($spbMarksExtension->isUseAlternativePaymentMethods());
     }
 
     public function testOnFooterPageletLoadedSPBNotEnabled(): void
@@ -144,8 +142,6 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
         static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
-        /* @deprecated tag:2.0.0 - Remove with 2.0.0 */
-        static::assertTrue($spbMarksExtension->isUseAlternativePaymentMethods());
     }
 
     private function createSubscriber(

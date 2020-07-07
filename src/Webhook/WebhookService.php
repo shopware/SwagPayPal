@@ -30,10 +30,6 @@ class WebhookService implements WebhookServiceInterface, WebhookDeregistrationSe
     public const WEBHOOK_DELETED = 'deleted';
     public const NO_WEBHOOK_ACTION_REQUIRED = 'nothing';
 
-    /**
-     * @deprecated tag:v2.0.0 - Will be removed without replacement
-     */
-    public const PAYPAL_WEBHOOK_ROUTE = 'paypal.webhook.execute';
     public const PAYPAL_WEBHOOK_TOKEN_NAME = 'sw-token';
     public const PAYPAL_WEBHOOK_TOKEN_LENGTH = 32;
 

@@ -7,10 +7,7 @@
 
 namespace Swag\PayPal\PayPal;
 
-/**
- * @deprecated tag:v2.0.0 - This class will be final in version 2.0.0
- */
-/*final */class BaseURL
+final class BaseURL
 {
     public const SANDBOX = 'https://api.sandbox.paypal.com/v1/';
     public const LIVE = 'https://api.paypal.com/v1/';

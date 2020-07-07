@@ -402,10 +402,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         );
         static::assertStringContainsString('/checkout/confirm', $spbExtension->getCheckoutConfirmUrl());
         static::assertStringContainsString('/paypal/add-error', $spbExtension->getAddErrorUrl());
-        /**
-         * @deprecated tag:v2.0.0 - Will be removed without replacement
-         */
-        static::assertSame(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER, $spbExtension->getErrorParameter());
+
         if ($event instanceof AccountEditOrderPageLoadedEvent) {
             $accountOrderEditUrl = $spbExtension->getAccountOrderEditUrl();
             static::assertNotNull($accountOrderEditUrl);
