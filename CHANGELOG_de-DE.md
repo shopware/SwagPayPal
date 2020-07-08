@@ -1,5 +1,5 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
-- PT-11884 - PayPal wird jetzt nur geladen, wenn die Zahlungsmethode auf der aktuellen Seite aktiv ist
+# 1.7.1
+- PT-11884 - Wenn PayPal nicht verfügbar ist, werden Plus und Smart Payment Buttons nicht mehr geladen
 
 # 1.7.0
 - PT-11669 - Kompatibilität mit dem Zahlungsprozess nach einer Bestellung hinzugefügt
