@@ -85,7 +85,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         };
 
         this._client.post(addErrorUrl, JSON.stringify(requestPayload), () => {
-            window.onbeforeunload = function() {
+            window.onbeforeunload = function () {
                 window.scrollTo(0, 0);
             };
             window.location.reload();

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Mock;
 
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Test\Mock\Repositories\PaymentMethodRepoMock;
@@ -27,8 +28,10 @@ class PaymentMethodUtilMock extends PaymentMethodUtil
         return self::PAYMENT_METHOD_ID;
     }
 
-    public function isPaypalPaymentMethodInSalesChannel(SalesChannelContext $salesChannelContext): bool
-    {
+    public function isPaypalPaymentMethodInSalesChannel(
+        SalesChannelContext $salesChannelContext,
+        ?PaymentMethodCollection $paymentMethods = null
+    ): bool {
         $paymentMethodCollection = $salesChannelContext->getSalesChannel()->getPaymentMethods();
         if (!$paymentMethodCollection) {
             return false;

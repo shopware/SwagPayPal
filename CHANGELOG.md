@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PT-11884 - PayPal now only gets loaded if the payment method is active on the current page
+
 # 1.7.0
 - PT-11669 - Add compatibility with the after order payment process
 - PT-11707 - Custom form parameter of the order confirm page are no longer ignored

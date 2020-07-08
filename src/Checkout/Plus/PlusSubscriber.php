@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Plus;
 
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
@@ -72,7 +73,7 @@ class PlusSubscriber implements EventSubscriberInterface
     public function onAccountEditOrderLoaded(AccountEditOrderPageLoadedEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
-        $settings = $this->checkSettings($salesChannelContext);
+        $settings = $this->checkSettings($salesChannelContext, $event->getPage()->getPaymentMethods());
         if ($settings === null) {
             return;
         }
@@ -90,7 +91,7 @@ class PlusSubscriber implements EventSubscriberInterface
         }
 
         $salesChannelContext = $event->getSalesChannelContext();
-        $settings = $this->checkSettings($salesChannelContext);
+        $settings = $this->checkSettings($salesChannelContext, $event->getPage()->getPaymentMethods());
         if ($settings === null) {
             return;
         }
@@ -143,9 +144,9 @@ class PlusSubscriber implements EventSubscriberInterface
         $this->changePaymentMethod($paymentMethod);
     }
 
-    private function checkSettings(SalesChannelContext $salesChannelContext): ?SwagPayPalSettingStruct
+    private function checkSettings(SalesChannelContext $salesChannelContext, PaymentMethodCollection $paymentMethods): ?SwagPayPalSettingStruct
     {
-        if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext)) {
+        if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext, $paymentMethods)) {
             return null;
         }
 

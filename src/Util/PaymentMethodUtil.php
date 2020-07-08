@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Util;
 
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
-use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -55,24 +54,24 @@ class PaymentMethodUtil
         return $this->paymentRepository->searchIds($criteria, $context)->firstId();
     }
 
-    public function isPaypalPaymentMethodInSalesChannel(SalesChannelContext $salesChannelContext): bool
-    {
+    public function isPaypalPaymentMethodInSalesChannel(
+        SalesChannelContext $salesChannelContext,
+        ?PaymentMethodCollection $paymentMethods = null
+    ): bool {
         $context = $salesChannelContext->getContext();
         $paypalPaymentMethodId = $this->getPayPalPaymentMethodId($context);
         if (!$paypalPaymentMethodId) {
             return false;
         }
 
-        $paymentMethods = $this->getSalesChannelPaymentMethods($salesChannelContext->getSalesChannel(), $context);
         if ($paymentMethods === null) {
-            return false;
+            $paymentMethods = $this->getSalesChannelPaymentMethods($salesChannelContext->getSalesChannel(), $context);
+            if ($paymentMethods === null) {
+                return false;
+            }
         }
 
-        if ($paymentMethods->get($paypalPaymentMethodId) instanceof PaymentMethodEntity) {
-            return true;
-        }
-
-        return false;
+        return $paymentMethods->has($paypalPaymentMethodId);
     }
 
     public function setPayPalAsDefaultPaymentMethod(Context $context, ?string $salesChannelId): void
