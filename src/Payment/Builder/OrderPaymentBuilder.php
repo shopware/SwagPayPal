@@ -33,11 +33,10 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 
     public function __construct(
         SettingsServiceInterface $settingsService,
-        EntityRepositoryInterface $salesChannelRepo,
         LocaleCodeProvider $localeCodeProvider,
         EntityRepositoryInterface $currencyRepository
     ) {
-        parent::__construct($settingsService, $salesChannelRepo, $localeCodeProvider);
+        parent::__construct($settingsService, $localeCodeProvider);
         $this->currencyRepository = $currencyRepository;
     }
 

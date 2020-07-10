@@ -452,8 +452,6 @@ class PlusSubscriberTest extends TestCase
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
         /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
-        /** @var EntityRepositoryInterface $salesChannelRepo */
-        $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
         /** @var TranslatorInterface $translator */
         $translator = $this->getContainer()->get('translator');
         /** @var EntityRepositoryInterface $currencyRepo */
@@ -462,12 +460,10 @@ class PlusSubscriberTest extends TestCase
         $plusDataService = new PlusDataService(
             new CartPaymentBuilder(
                 $settingsService,
-                $salesChannelRepo,
                 $localeCodeProvider
             ),
             new OrderPaymentBuilder(
                 $settingsService,
-                $salesChannelRepo,
                 $localeCodeProvider,
                 $currencyRepo
             ),

@@ -225,14 +225,11 @@ class ExpressCheckoutControllerTest extends TestCase
         $settings->setClientSecret('testClientSecret');
 
         $settingsService = new SettingsServiceMock($settings);
-        /** @var EntityRepositoryInterface $salesChannelRepo */
-        $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
         /** @var LocaleCodeProvider $localeCodeProvider */
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
 
         $cartPaymentBuilder = new CartPaymentBuilder(
             $settingsService,
-            $salesChannelRepo,
             $localeCodeProvider
         );
         if ($cartService === null) {

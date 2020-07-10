@@ -7,9 +7,6 @@
 
 namespace Swag\PayPal\Payment\Builder;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
 use Swag\PayPal\PayPal\Api\Payment\Payer;
@@ -33,22 +30,15 @@ abstract class AbstractPaymentBuilder
     protected $settings;
 
     /**
-     * @var EntityRepositoryInterface
-     */
-    protected $salesChannelRepo;
-
-    /**
      * @var LocaleCodeProvider
      */
     protected $localeCodeProvider;
 
     public function __construct(
         SettingsServiceInterface $settingsService,
-        EntityRepositoryInterface $salesChannelRepo,
         LocaleCodeProvider $localeCodeProvider
     ) {
         $this->settingsService = $settingsService;
-        $this->salesChannelRepo = $salesChannelRepo;
         $this->localeCodeProvider = $localeCodeProvider;
     }
 
@@ -106,28 +96,7 @@ abstract class AbstractPaymentBuilder
         $brandName = $this->settings->getBrandName();
 
         if ($brandName === null || $brandName === '') {
-            $brandName = $this->useSalesChannelNameAsBrandName($salesChannelContext);
-        }
-
-        return $brandName;
-    }
-
-    private function useSalesChannelNameAsBrandName(SalesChannelContext $salesChannelContext): string
-    {
-        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-        /** @var SalesChannelCollection $salesChannelCollection */
-        $salesChannelCollection = $this->salesChannelRepo->search(
-            new Criteria([$salesChannelId]),
-            $salesChannelContext->getContext()
-        );
-        $salesChannel = $salesChannelCollection->get($salesChannelId);
-
-        $brandName = '';
-        if ($salesChannel !== null) {
-            $salesChannelName = $salesChannel->getName();
-            if ($salesChannelName !== null) {
-                $brandName = $salesChannelName;
-            }
+            $brandName = $salesChannelContext->getSalesChannel()->getName() ?? '';
         }
 
         return $brandName;

@@ -77,7 +77,7 @@ class OrderPaymentBuilderTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct();
         $context = Context::createDefaultContext();
         $salesChannelContext = Generator::createSalesChannelContext($context);
-        $salesChannelContext->getSalesChannel()->setId(Defaults::SALES_CHANNEL);
+        $salesChannelContext->getSalesChannel()->setName(SalesChannelRepoMock::SALES_CHANNEL_NAME);
 
         $payment = \json_encode($paymentBuilder->getPayment($paymentTransaction, $salesChannelContext));
         static::assertNotFalse($payment);

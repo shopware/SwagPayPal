@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Helper;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
-use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\System\SystemConfig\Util\ConfigReader;
 use Swag\PayPal\Payment\Builder\OrderPaymentBuilder;
@@ -87,13 +86,11 @@ trait ServicesTrait
     protected function createPaymentBuilder(?SwagPayPalSettingStruct $settings = null): OrderPaymentBuilder
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
-        $definitionInstanceRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
 
         $settingsService = new SettingsServiceMock($settings);
 
         return new OrderPaymentBuilder(
             $settingsService,
-            $definitionInstanceRegistry->getRepository((new SalesChannelDefinition())->getEntityName()),
             new LocaleCodeProviderMock(new EntityRepositoryMock()),
             new EntityRepositoryMock()
         );
