@@ -19,6 +19,7 @@ Component.register('swag-paypal-payment-detail', {
 
     data() {
         return {
+            order: {},
             paymentResource: {},
             relatedResources: [],
             isLoading: true,
@@ -97,6 +98,10 @@ Component.register('swag-paypal-payment-detail', {
         '$route'() {
             this.resetDataAttributes();
             this.createdComponent();
+        },
+
+        'order.orderNumber'() {
+            this.emitIdentifier();
         }
     },
 
@@ -117,6 +122,12 @@ Component.register('swag-paypal-payment-detail', {
                 const lastTransactionIndex = order.transactions.length - 1;
                 this.orderTransactionState = order.transactions[lastTransactionIndex].stateMachineState.technicalName;
 
+                if (order.transactions[lastTransactionIndex].customFields === null) {
+                    this.isLoading = false;
+                    this.showPaymentDetails = false;
+
+                    return;
+                }
                 const paypalPaymentId = order.transactions[lastTransactionIndex].customFields.swag_paypal_transaction_id;
                 this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId).then((payment) => {
                     this.paymentResource = payment;
@@ -227,6 +238,11 @@ Component.register('swag-paypal-payment-detail', {
             this.updateDateTime = '';
             this.currency = '';
             this.amount = {};
+        },
+
+        emitIdentifier() {
+            const orderNumber = this.order !== null ? this.order.orderNumber : '';
+            this.$emit('identifier-change', orderNumber);
         }
     }
 });
