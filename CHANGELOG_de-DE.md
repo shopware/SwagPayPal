@@ -1,5 +1,6 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
 - PT-11681 - Titelleiste in Bestelldetails in Administration korrigiert, wenn Zahlungsdetails direkt aufgerufen wurden
+- PT-11860 - Sprache der Bestellbestätigungs-E-Mail bei PayPal Plus korrigiert
 - PT-11888 - Kleine Performanceverbesserung beim Erstellen einer Zahlung
 
 # 1.7.1
