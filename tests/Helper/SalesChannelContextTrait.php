@@ -7,8 +7,11 @@
 
 namespace Swag\PayPal\Test\Helper;
 
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -30,7 +33,8 @@ trait SalesChannelContextTrait
         PaymentMethodCollection $paymentCollection,
         ?string $paymentMethodId = null,
         bool $withCustomer = true,
-        bool $withOtherDefaultPayment = false
+        bool $withOtherDefaultPayment = false,
+        bool $withCartLineItems = false
     ): SalesChannelContext {
         /** @var EntityRepositoryInterface $languageRepo */
         $languageRepo = $container->get('language.repository');
@@ -55,7 +59,7 @@ trait SalesChannelContextTrait
         /** @var SalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
         $salesChannelContext = $salesChannelContextFactory->create(
-            'token',
+            Uuid::randomHex(),
             Defaults::SALES_CHANNEL,
             $options
         );
@@ -78,6 +82,19 @@ trait SalesChannelContextTrait
                 $salesChannelContext->getRuleIds()
             );
             $paymentCollection->add($paymentMethod);
+        }
+
+        if ($withCartLineItems) {
+            /** @var CartService $cartService */
+            $cartService = $this->getContainer()->get(CartService::class);
+
+            $productId = Uuid::randomHex();
+            $this->createProduct($productId, $salesChannelContext->getContext());
+
+            $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
+
+            $cart = $cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+            $cartService->add($cart, $lineItem, $salesChannelContext);
         }
 
         $salesChannelContext->getSalesChannel()->setPaymentMethods($paymentCollection);
@@ -124,5 +141,50 @@ trait SalesChannelContextTrait
         $customerRepo->upsert([$customer], Context::createDefaultContext());
 
         return $customerId;
+    }
+
+    private function createProduct(string $productId, Context $context): void
+    {
+        /** @var EntityRepositoryInterface $productRepo */
+        $productRepo = $this->getContainer()->get('product.repository');
+
+        $productRepo->create([
+            [
+                'id' => $productId,
+                'name' => 'foo bar',
+                'manufacturer' => [
+                    'id' => Uuid::randomHex(),
+                    'name' => 'amazing brand',
+                    'translations' => [
+                        Defaults::LANGUAGE_SYSTEM => [
+                            'name' => 'amazing brand',
+                        ],
+                    ],
+                ],
+                'productNumber' => 'P1234',
+                'taxId' => $this->getValidTaxId(),
+                'price' => [
+                    [
+                        'currencyId' => Defaults::CURRENCY,
+                        'gross' => 10,
+                        'net' => 12,
+                        'linked' => false,
+                    ],
+                ],
+                'stock' => 0,
+                'active' => true,
+                'visibilities' => [
+                    [
+                        'salesChannelId' => Defaults::SALES_CHANNEL,
+                        'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
+                    ],
+                ],
+                'translations' => [
+                    Defaults::LANGUAGE_SYSTEM => [
+                        'name' => 'foo bar',
+                    ],
+                ],
+            ],
+        ], $context);
     }
 }

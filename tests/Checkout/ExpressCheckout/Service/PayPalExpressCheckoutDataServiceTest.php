@@ -111,7 +111,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         $customerId = $this->getCustomerId();
         $taxId = $this->createTaxId(Context::createDefaultContext());
         $salesChannelContext = $this->salesChannelContextFactory->create(
-            'token',
+            Uuid::randomHex(),
             Defaults::SALES_CHANNEL,
             [
                 SalesChannelContextService::CUSTOMER_ID => $customerId,
