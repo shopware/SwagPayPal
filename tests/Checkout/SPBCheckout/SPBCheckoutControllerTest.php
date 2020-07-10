@@ -38,9 +38,19 @@ class SPBCheckoutControllerTest extends TestCase
     use SalesChannelContextTrait;
     use ServicesTrait;
 
-    public function testCreatePayment(): void
+    /**
+     * @dataProvider dataProviderTestCreatePayment
+     */
+    public function testCreatePayment(bool $withCartLineItems): void
     {
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $salesChannelContext = $this->createSalesChannelContext(
+            $this->getContainer(),
+            new PaymentMethodCollection(),
+            null,
+            true,
+            false,
+            $withCartLineItems
+        );
 
         $response = $this->createController()->createPayment($salesChannelContext, new Request());
         $content = $response->getContent();
@@ -103,6 +113,11 @@ class SPBCheckoutControllerTest extends TestCase
         $this->expectException(InvalidOrderException::class);
         $this->expectExceptionMessage('The order with id no-order-transaction-id is invalid or could not be found.');
         $this->createController()->createPayment($salesChannelContext, $request);
+    }
+
+    public function dataProviderTestCreatePayment(): array
+    {
+        return [[true], [false]];
     }
 
     private function createController(): SPBCheckoutController
