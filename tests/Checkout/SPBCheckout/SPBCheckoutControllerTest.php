@@ -131,8 +131,6 @@ class SPBCheckoutControllerTest extends TestCase
         $settings->setClientSecret('testClientSecret');
 
         $settingsService = new SettingsServiceMock($settings);
-        /** @var EntityRepositoryInterface $salesChannelRepo */
-        $salesChannelRepo = $container->get('sales_channel.repository');
         /** @var LocaleCodeProvider $localeCodeProvider */
         $localeCodeProvider = $container->get(LocaleCodeProvider::class);
         /** @var EntityRepositoryInterface $currencyRepo */
@@ -140,13 +138,11 @@ class SPBCheckoutControllerTest extends TestCase
 
         $cartPaymentBuilder = new CartPaymentBuilder(
             $settingsService,
-            $salesChannelRepo,
             $localeCodeProvider
         );
 
         $orderPaymentBuilder = new OrderPaymentBuilder(
             $settingsService,
-            $salesChannelRepo,
             $localeCodeProvider,
             $currencyRepo
         );

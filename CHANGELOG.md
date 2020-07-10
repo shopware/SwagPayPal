@@ -1,5 +1,6 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
 - PT-11681 - Fix order details header in Administration, if accessing payment details directly
+- PT-11888 - Minor performance improvement when creating a payment
 
 # 1.7.1
 - PT-11884 - If PayPal is not available, Plus and Smart Payment Buttons are no longer loaded

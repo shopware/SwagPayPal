@@ -12,7 +12,6 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Payment\Builder\Util\AmountProvider;
@@ -34,10 +33,9 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
 
     public function __construct(
         SettingsServiceInterface $settingsService,
-        EntityRepositoryInterface $salesChannelRepo,
         LocaleCodeProvider $localeCodeProvider
     ) {
-        parent::__construct($settingsService, $salesChannelRepo, $localeCodeProvider);
+        parent::__construct($settingsService, $localeCodeProvider);
         $this->priceFormatter = new PriceFormatter();
     }
 
