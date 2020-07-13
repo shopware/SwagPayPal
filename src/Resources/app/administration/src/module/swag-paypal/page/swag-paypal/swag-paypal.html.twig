@@ -44,16 +44,17 @@
                                                      @input.once="onInitialInput">
 
                                 {% block swag_paypal_content_card_channel_config_sales_channel %}
-                                    <template #select="{ onInput, selectedSalesChannelId, salesChannel }">
+                                    <template #select="{ onInput, selectedSalesChannelId }">
 
                                         {% block swag_paypal_content_card_channel_config_sales_channel_card %}
-                                            <sw-card title="Sales Channel Switch">
+                                            <sw-card :title="$tc('global.entities.sales_channel', 2)">
 
                                                 {% block swag_paypal_content_card_channel_config_sales_channel_card_title %}
                                                     <sw-single-select v-model="selectedSalesChannelId"
                                                                       labelProperty="translated.name"
                                                                       valueProperty="id"
-                                                                      :options="salesChannel"
+                                                                      :isLoading="isLoading"
+                                                                      :options="salesChannels"
                                                                       @input="onInput">
                                                     </sw-single-select>
                                                 {% endblock %}

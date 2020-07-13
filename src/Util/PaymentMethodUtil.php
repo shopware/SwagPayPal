@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Util;
 
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -126,6 +127,12 @@ class PaymentMethodUtil
             $criteria = new Criteria([$salesChannelId]);
         } else {
             $criteria = new Criteria();
+            $criteria->addFilter(
+                new EqualsFilter('typeId', [
+                    Defaults::SALES_CHANNEL_TYPE_STOREFRONT,
+                    Defaults::SALES_CHANNEL_TYPE_API,
+                ])
+            );
         }
 
         $criteria->addAssociation('paymentMethods');

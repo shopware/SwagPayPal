@@ -2,7 +2,8 @@ import template from './swag-paypal.html.twig';
 import './swag-paypal.scss';
 import constants from './swag-paypal-consts';
 
-const { Mixin } = Shopware;
+const { Mixin, Defaults } = Shopware;
+const { Criteria } = Shopware.Data;
 const { hasOwnProperty } = Shopware.Utils.object;
 
 Shopware.Component.register('swag-paypal', {
@@ -11,7 +12,8 @@ Shopware.Component.register('swag-paypal', {
     inject: [
         'SwagPayPalWebhookRegisterService',
         'SwagPayPalApiCredentialsService',
-        'SwagPaypalPaymentMethodServiceService'
+        'SwagPaypalPaymentMethodServiceService',
+        'repositoryFactory'
     ],
 
     mixins: [
@@ -29,6 +31,7 @@ Shopware.Component.register('swag-paypal', {
             clientIdSandboxFilled: false,
             clientSecretSandboxFilled: false,
             sandboxChecked: false,
+            salesChannels: [],
             config: null,
             clientIdErrorState: null,
             clientSecretErrorState: null,
@@ -73,6 +76,10 @@ Shopware.Component.register('swag-paypal', {
             const defaultConfig = this.$refs.configComponent.allConfigs.null;
 
             return defaultConfig['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY;
+        },
+
+        salesChannelRepository() {
+            return this.repositoryFactory.create('sales_channel');
         }
     },
 
@@ -115,7 +122,33 @@ Shopware.Component.register('swag-paypal', {
         }
     },
 
+    created() {
+        this.createdComponent();
+    },
+
     methods: {
+        createdComponent() {
+            this.isLoading = true;
+            const criteria = new Criteria();
+            criteria.addFilter(Criteria.equalsAny('typeId', [
+                Defaults.storefrontSalesChannelTypeId,
+                Defaults.apiSalesChannelTypeId
+            ]));
+
+            this.salesChannelRepository.search(criteria, Shopware.Context.api).then(res => {
+                res.add({
+                    id: null,
+                    translated: {
+                        name: this.$tc('sw-sales-channel-switch.labelDefaultOption')
+                    }
+                });
+
+                this.salesChannels = res;
+            }).finally(() => {
+                this.isLoading = false;
+            });
+        },
+
         onSave() {
             if ((!this.sandboxChecked && (!this.clientIdFilled || !this.clientSecretFilled)) ||
                 (this.sandboxChecked && (!this.clientIdSandboxFilled || !this.clientSecretSandboxFilled))) {
