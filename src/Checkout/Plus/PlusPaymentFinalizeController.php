@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\Plus;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
@@ -42,6 +43,11 @@ class PlusPaymentFinalizeController extends AbstractController
     private $paymentHandler;
 
     /**
+     * @var OrderTransactionStateHandler
+     */
+    private $transactionStateHandler;
+
+    /**
      * @var RouterInterface
      */
     private $router;
@@ -56,11 +62,13 @@ class PlusPaymentFinalizeController extends AbstractController
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepo,
         AsynchronousPaymentHandlerInterface $paymentHandler,
+        OrderTransactionStateHandler $transactionStateHandler,
         RouterInterface $router,
         LoggerInterface $logger
     ) {
         $this->orderTransactionRepo = $orderTransactionRepo;
         $this->paymentHandler = $paymentHandler;
+        $this->transactionStateHandler = $transactionStateHandler;
         $this->router = $router;
         $this->logger = $logger;
     }
@@ -130,6 +138,10 @@ class PlusPaymentFinalizeController extends AbstractController
         try {
             $this->paymentHandler->finalize($paymentTransactionStruct, $request, $salesChannelContext);
         } catch (PaymentProcessException $paymentProcessException) {
+            $this->transactionStateHandler->fail(
+                $paymentProcessException->getOrderTransactionId(),
+                $salesChannelContext->getContext()
+            );
             $finishUrl = $this->router->generate('frontend.checkout.finish.page', [
                 'orderId' => $orderId,
                 PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID => true,

@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\PayPal\Exeption;
+namespace Swag\PayPal\Test\PayPal\Exception;
 
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
