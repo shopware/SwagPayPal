@@ -169,6 +169,7 @@ class PlusDataService
             'checkoutOrderUrl' => $this->router->generate('sales-channel-api.checkout.order.create', ['version' => 2]),
             'setPaymentRouteUrl' => $this->router->generate('store-api.order.set-payment', ['version' => 2]),
             'isEnabledParameterName' => PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID,
+            'languageId' => $salesChannelContext->getContext()->getLanguageId(),
         ]);
         $billingAddress = $customer->getDefaultBillingAddress();
         if ($billingAddress !== null) {

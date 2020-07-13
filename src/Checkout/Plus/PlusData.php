@@ -62,6 +62,11 @@ class PlusData extends Struct
     protected $isEnabledParameterName;
 
     /**
+     * @var string
+     */
+    protected $languageId;
+
+    /**
      * @var string|null
      */
     protected $orderId;
@@ -114,6 +119,11 @@ class PlusData extends Struct
     public function getIsEnabledParameterName(): string
     {
         return $this->isEnabledParameterName;
+    }
+
+    public function getLanguageId(): string
+    {
+        return $this->languageId;
     }
 
     public function getOrderId(): ?string

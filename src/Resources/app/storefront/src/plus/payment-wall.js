@@ -141,6 +141,13 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         isEnabledParameterName: 'isPayPalPlusCheckout',
 
         /**
+         * Needed to send the checkoutOrder Request is sent in the correct language for order confirmation email
+         *
+         * @type string
+         */
+        languageId: null,
+
+        /**
          * Is set, if the plugin is used on the order edit page
          *
          * @type string|null
@@ -191,15 +198,20 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         ElementLoadingIndicatorUtil.create(document.body);
 
         const orderId = this.options.orderId;
+        const request = new XMLHttpRequest();
+        let callback = null;
         if (orderId !== null) {
             formData.set('orderId', orderId);
-
-            this._client.post(this.options.setPaymentRouteUrl, formData, this.afterSetPayment.bind(this));
-
-            return;
+            request.open('POST', this.options.setPaymentRouteUrl);
+            callback = this.afterSetPayment.bind(this);
+        } else {
+            request.open('POST', this.options.checkoutOrderUrl);
+            callback = this.afterCreateOrder.bind(this);
         }
+        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        request.setRequestHeader('sw-language-id', this.options.languageId);
 
-        this._client.post(this.options.checkoutOrderUrl, formData, this.afterCreateOrder.bind(this));
+        this._client._sendRequest(request, formData, callback);
     }
 
     /**

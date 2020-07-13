@@ -598,6 +598,7 @@ class PlusSubscriberTest extends TestCase
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_TOKEN, $plusExtension->getPaypalToken());
         static::assertSame('/sales-channel-api/v2/checkout/order', $plusExtension->getCheckoutOrderUrl());
         static::assertSame(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, $plusExtension->getIsEnabledParameterName());
+        static::assertSame($event->getContext()->getLanguageId(), $plusExtension->getLanguageId());
 
         return $plusExtension;
     }
