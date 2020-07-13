@@ -7,7 +7,9 @@
 
 namespace Swag\PayPal\Test\Checkout\Plus;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Struct\ArrayStruct;
@@ -26,6 +28,11 @@ class PlusPaymentFinalizeControllerTest extends TestCase
 
     public const WITHOUT_TRANSACTION = 'noTransactionFound';
     public const WITHOUT_ORDER = 'noOrderFound';
+
+    /**
+     * @var MockObject
+     */
+    private $orderTransactionStateHandler;
 
     public function testFinalizeTransaction(): void
     {
@@ -76,7 +83,10 @@ class PlusPaymentFinalizeControllerTest extends TestCase
     {
         $salesChannelContext = Generator::createSalesChannelContext();
         $request = new Request(['cancel' => true]);
-        $response = $this->createController()->finalizeTransaction($request, $salesChannelContext);
+        $controller = $this->createController();
+
+        $this->orderTransactionStateHandler->expects(static::once())->method('fail');
+        $response = $controller->finalizeTransaction($request, $salesChannelContext);
 
         static::assertStringContainsString('/checkout/finish?orderId=testOrderId&isPayPalPlusCheckout=1&changedPayment=0&paymentFailed=1', $response->getTargetUrl());
     }
@@ -86,9 +96,12 @@ class PlusPaymentFinalizeControllerTest extends TestCase
         /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
 
+        $this->orderTransactionStateHandler = $this->createMock(OrderTransactionStateHandler::class);
+
         return new PlusPaymentFinalizeController(
             new OrderTransactionRepoMock(),
             new AsyncPaymentHandlerMock(),
+            $this->orderTransactionStateHandler,
             $router,
             new LoggerMock()
         );
