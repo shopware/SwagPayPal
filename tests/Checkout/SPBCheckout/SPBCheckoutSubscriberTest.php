@@ -18,6 +18,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
@@ -52,6 +53,7 @@ class SPBCheckoutSubscriberTest extends TestCase
     use KernelTestBehaviour;
     use PaymentMethodTrait;
     use PaymentTransactionTrait;
+    use BasicTestDataBehaviour;
     use SalesChannelContextTrait;
 
     private const TEST_CLIENT_ID = 'testClientId';
