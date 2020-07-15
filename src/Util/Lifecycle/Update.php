@@ -7,9 +7,14 @@
 
 namespace Swag\PayPal\Util\Lifecycle;
 
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Webhook\WebhookService;
 
 class Update
@@ -20,13 +25,22 @@ class Update
     private $systemConfig;
 
     /**
+     * @var EntityRepositoryInterface
+     */
+    private $customFieldRepository;
+
+    /**
      * @var WebhookService|null
      */
     private $webhookService;
 
-    public function __construct(SystemConfigService $systemConfig, ?WebhookService $webhookService)
-    {
+    public function __construct(
+        SystemConfigService $systemConfig,
+        EntityRepositoryInterface $customFieldRepository,
+        ?WebhookService $webhookService
+    ) {
         $this->systemConfig = $systemConfig;
+        $this->customFieldRepository = $customFieldRepository;
         $this->webhookService = $webhookService;
     }
 
@@ -42,6 +56,11 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '1.7.0', '<')) {
             $this->updateTo170();
+        }
+
+        // ToDo: adjust versioning to REPLACE-GLOBAL-WITH-NEXT-VERSION
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.8.0', '<')) {
+            $this->updateTo180($updateContext->getContext());
         }
     }
 
@@ -78,5 +97,22 @@ class Update
         }
 
         $this->webhookService->registerWebhook(null);
+    }
+
+    private function updateTo180(Context $context): void
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('name', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID));
+
+        $customFieldIds = $this->customFieldRepository->searchIds($criteria, $context);
+
+        if ($customFieldIds->getTotal() === 0) {
+            return;
+        }
+
+        $data = \array_map(static function ($id) {
+            return ['id' => $id];
+        }, $customFieldIds->getIds());
+        $this->customFieldRepository->delete($data, $context);
     }
 }
