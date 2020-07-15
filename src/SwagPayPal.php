@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
+use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
@@ -140,6 +141,8 @@ class SwagPayPal extends Plugin
     {
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->container->get(SystemConfigService::class);
+        /** @var EntityRepositoryInterface $customFieldRepository */
+        $customFieldRepository = $this->container->get((new CustomFieldDefinition())->getEntityName() . '.repository');
 
         $webhookService = null;
         try {
@@ -149,7 +152,7 @@ class SwagPayPal extends Plugin
             // Plugin is not activated
         }
 
-        (new Update($systemConfigService, $webhookService))->update($updateContext);
+        (new Update($systemConfigService, $customFieldRepository, $webhookService))->update($updateContext);
         parent::update($updateContext);
     }
 

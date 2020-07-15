@@ -9,9 +9,14 @@ namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Migration\MigrationCollectionLoader;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\System\CustomField\CustomFieldDefinition;
+use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -86,6 +91,42 @@ class UpdateTest extends TestCase
         static::assertSame(self::OTHER_CLIENT_SECRET, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'));
     }
 
+    public function testUpdateTo180(): void
+    {
+        $context = Context::createDefaultContext();
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('name', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID));
+
+        /** @var EntityRepositoryInterface $customFieldRepository */
+        $customFieldRepository = $this->getContainer()->get((new CustomFieldDefinition())->getEntityName() . '.repository');
+
+        $customFieldIds = $customFieldRepository->searchIds($criteria, $context);
+
+        if ($customFieldIds->getTotal() !== 0) {
+            $data = \array_map(static function ($id) {
+                return ['id' => $id];
+            }, $customFieldIds->getIds());
+            $customFieldRepository->delete($data, $context);
+        }
+
+        $customFieldRepository->create(
+            [
+                [
+                    'name' => SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID,
+                    'type' => CustomFieldTypes::TEXT,
+                ],
+            ],
+            $context
+        );
+
+        $updateContext = $this->createUpdateContext('1.7.0', '1.8.0');
+        $update = $this->createUpdateService($this->createSystemConfigServiceMock());
+        $update->update($updateContext);
+
+        static::assertEquals(0, $customFieldRepository->searchIds($criteria, $context)->getTotal());
+    }
+
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext
     {
         /** @var MigrationCollectionLoader $migrationLoader */
@@ -103,6 +144,9 @@ class UpdateTest extends TestCase
 
     private function createUpdateService(SystemConfigServiceMock $systemConfigService): Update
     {
-        return new Update($systemConfigService, null);
+        /** @var EntityRepositoryInterface $customFieldRepository */
+        $customFieldRepository = $this->getContainer()->get((new CustomFieldDefinition())->getEntityName() . '.repository');
+
+        return new Update($systemConfigService, $customFieldRepository, null);
     }
 }
