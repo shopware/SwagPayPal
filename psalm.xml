@@ -47,6 +47,13 @@
             </errorLevel>
         </InternalMethod>
 
+        <DeprecatedInterface>
+            <errorLevel type="info">
+                <!-- TODO - Remove with Shopware 6.3 compatibility -->
+                <referencedClass name="Shopware\Core\System\Snippet\Files\SnippetFileInterface"/>
+            </errorLevel>
+        </DeprecatedInterface>
+
         <DeprecatedTrait>
             <errorLevel type="info">
                 <directory name="tests"/>
