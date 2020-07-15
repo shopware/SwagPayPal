@@ -16,6 +16,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
+use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutController;
 use Swag\PayPal\Payment\Builder\CartPaymentBuilder;
@@ -35,6 +36,7 @@ use Symfony\Component\HttpFoundation\Response;
 class SPBCheckoutControllerTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
+    use BasicTestDataBehaviour;
     use SalesChannelContextTrait;
     use ServicesTrait;
 

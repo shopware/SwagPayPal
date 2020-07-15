@@ -94,19 +94,22 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
+        $transactionId = $transaction->getOrderTransaction()->getId();
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
             throw new AsyncPaymentProcessException(
-                $transaction->getOrderTransaction()->getId(),
+                $transactionId,
                 (new CustomerNotLoggedInException())->getMessage()
             );
         }
+
+        $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
 
         if ($dataBag->get(self::PAYPAL_EXPRESS_CHECKOUT_ID)) {
             try {
                 return $this->ecsSpbHandler->handleEcsPayment($transaction, $dataBag, $salesChannelContext, $customer);
             } catch (\Exception $e) {
-                throw new AsyncPaymentProcessException($transaction->getOrderTransaction()->getId(), $e->getMessage());
+                throw new AsyncPaymentProcessException($transactionId, $e->getMessage());
             }
         }
 
@@ -118,14 +121,14 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             try {
                 return $this->plusHandler->handlePlusPayment($transaction, $dataBag, $salesChannelContext, $customer);
             } catch (\Exception $e) {
-                throw new AsyncPaymentProcessException($transaction->getOrderTransaction()->getId(), $e->getMessage());
+                throw new AsyncPaymentProcessException($transactionId, $e->getMessage());
             }
         }
 
         try {
             $response = $this->payPalHandler->handlePayPalPayment($transaction, $salesChannelContext, $customer);
         } catch (\Exception $e) {
-            throw new AsyncPaymentProcessException($transaction->getOrderTransaction()->getId(), $e->getMessage());
+            throw new AsyncPaymentProcessException($transactionId, $e->getMessage());
         }
 
         return new RedirectResponse($response->getLinks()[1]->getHref());
@@ -176,6 +179,10 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         // apply the payment status if its completed by PayPal
         if ($paymentState === PaymentStatus::PAYMENT_COMPLETED) {
             $this->orderTransactionStateHandler->paid($transactionId, $context);
+        }
+
+        if ($paymentState === PaymentStatus::PAYMENT_DENIED) {
+            $this->orderTransactionStateHandler->fail($transactionId, $context);
         }
 
         $this->savePaymentInstructions($response, $transactionId, $context);

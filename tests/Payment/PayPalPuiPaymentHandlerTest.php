@@ -11,10 +11,14 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder;
@@ -25,6 +29,7 @@ use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
+use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
@@ -36,6 +41,7 @@ class PayPalPuiPaymentHandlerTest extends TestCase
     use ServicesTrait;
     use PaymentTransactionTrait;
     use OrderFixture;
+    use SalesChannelContextTrait;
     use StateMachineStateTrait;
     use OrderTransactionTrait;
     use DatabaseTransactionBehaviour;
@@ -62,6 +68,42 @@ class PayPalPuiPaymentHandlerTest extends TestCase
         $this->stateMachineRegistry = $stateMachineRegistry;
     }
 
+    public function testPay(): void
+    {
+        $handler = $this->createPayPalPuiPaymentHandler();
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext(
+            $this->getContainer(),
+            new PaymentMethodCollection()
+        );
+        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+
+        $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
+    }
+
+    public function testPayWithoutCustomer(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $handler = $this->createPayPalPuiPaymentHandler($settings);
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext(
+            $this->getContainer(),
+            new PaymentMethodCollection(),
+            null,
+            false
+        );
+        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+
+        $this->expectException(AsyncPaymentProcessException::class);
+        $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
+Customer is not logged in.');
+        $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_OPEN, $transactionId, $salesChannelContext->getContext());
+    }
+
     public function testFinalize(): void
     {
         $handler = $this->createPayPalPuiPaymentHandler();
@@ -76,16 +118,7 @@ class PayPalPuiPaymentHandlerTest extends TestCase
             $salesChannelContext
         );
 
-        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            OrderTransactionStates::STATE_PAID,
-            $container,
-            $salesChannelContext->getContext()
-        );
-
-        $transaction = $this->getTransaction($transactionId, $container, $salesChannelContext->getContext());
-        static::assertNotNull($transaction);
-        static::assertNotNull($expectedStateId);
-        static::assertSame($expectedStateId, $transaction->getStateId());
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, $salesChannelContext->getContext());
     }
 
     private function createRequest(): Request

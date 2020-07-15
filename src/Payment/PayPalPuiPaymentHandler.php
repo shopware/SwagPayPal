@@ -69,18 +69,20 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
+        $transactionId = $transaction->getOrderTransaction()->getId();
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
             throw new AsyncPaymentProcessException(
-                $transaction->getOrderTransaction()->getId(),
+                $transactionId,
                 (new CustomerNotLoggedInException())->getMessage()
             );
         }
 
+        $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
         try {
             $response = $this->payPalHandler->handlePayPalPayment($transaction, $salesChannelContext, $customer, true);
         } catch (\Exception $e) {
-            throw new AsyncPaymentProcessException($transaction->getOrderTransaction()->getId(), $e->getMessage());
+            throw new AsyncPaymentProcessException($transactionId, $e->getMessage());
         }
 
         return new RedirectResponse($response->getLinks()[1]->getHref());
@@ -96,6 +98,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         SalesChannelContext $salesChannelContext
     ): void {
         $transactionId = $transaction->getOrderTransaction()->getId();
+        $context = $salesChannelContext->getContext();
 
         if ($request->query->getBoolean('cancel')) {
             throw new CustomerCanceledAsyncPaymentException(
@@ -121,7 +124,6 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         }
 
         $paymentState = $this->getPaymentState($response);
-        $context = $salesChannelContext->getContext();
 
         // apply the payment status if its completed by PayPal
         if ($paymentState === PaymentStatus::PAYMENT_COMPLETED) {

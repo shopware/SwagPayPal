@@ -121,4 +121,19 @@ trait OrderTransactionTrait
 
         return $orderTransactionId;
     }
+
+    private function assertOrderTransactionState(string $state, string $transactionId, Context $context): void
+    {
+        $container = $this->getContainer();
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
+            $state,
+            $container,
+            $context
+        );
+
+        $transaction = $this->getTransaction($transactionId, $container, $context);
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
+    }
 }

@@ -24,6 +24,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\SalesChannelRequest;
@@ -62,6 +63,7 @@ class PlusSubscriberTest extends TestCase
     use DatabaseTransactionBehaviour;
     use PaymentMethodTrait;
     use PaymentTransactionTrait;
+    use BasicTestDataBehaviour;
     use SalesChannelContextTrait;
     use ServicesTrait;
 

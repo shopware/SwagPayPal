@@ -24,10 +24,11 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Make sure you also implement the BasicTestDataBehaviour trait, while using this trait
+ */
 trait SalesChannelContextTrait
 {
-    use BasicTestDataBehaviour;
-
     protected function createSalesChannelContext(
         ContainerInterface $container,
         PaymentMethodCollection $paymentCollection,
