@@ -1,4 +1,3 @@
-import '../../../../app/component/swag-paypal-payment-actions';
 import template from './swag-paypal-payment-detail.html.twig';
 import './swag-paypal-payment-detail.scss';
 

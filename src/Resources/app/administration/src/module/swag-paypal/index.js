@@ -1,4 +1,5 @@
 import './page/swag-paypal';
+import './extension/sw-plugin';
 import './extension/sw-settings-index';
 import './components/sw-paypal-behaviour';
 import './components/sw-paypal-credentials';

@@ -15,17 +15,19 @@
         {% endblock %}
 
         {% block swag_paypal_payment_action_refund_invoice_number %}
-            <sw-text-field v-model="refundInvoiceNumber"
-                           :label="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.label')"
-                           :placeholder="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.placeholder')">
-            </sw-text-field>
+            <swag-paypal-text-field v-model="refundInvoiceNumber"
+                                    maxLength="127"
+                                    :label="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.label')"
+                                    :placeholder="$tc('swag-paypal-payment.refundAction.refundInvoiceNumber.placeholder')">
+            </swag-paypal-text-field>
         {% endblock %}
 
         {% block swag_paypal_payment_action_refund_reason %}
-            <sw-text-field v-model="refundReason"
-                           :label="$tc('swag-paypal-payment.refundAction.refundReason.label')"
-                           :placeholder="$tc('swag-paypal-payment.refundAction.refundReason.placeholder')">
-            </sw-text-field>
+            <swag-paypal-text-field v-model="refundReason"
+                                    maxLength="30"
+                                    :label="$tc('swag-paypal-payment.refundAction.refundReason.label')"
+                                    :placeholder="$tc('swag-paypal-payment.refundAction.refundReason.placeholder')">
+            </swag-paypal-text-field>
         {% endblock %}
 
         {% block swag_paypal_payment_action_refund_amount %}

@@ -6,6 +6,7 @@
 - PT-11860 - Sprache der Bestellbestätigungs-E-Mail bei PayPal Plus korrigiert
 - PT-11888 - Kleine Performanceverbesserung beim Erstellen einer Zahlung
 - PT-11903 - Durch den Nutzer abgebrochene PayPal Plus-Zahlungen werden nun korrekt als fehlgeschlagen markiert
+- PT-11928 - Eingabelänge von Textfeldern in der Administration passend zur PayPal-API limitiert
 
 # 1.7.1
 - PT-11884 - Wenn PayPal nicht verfügbar ist, werden Plus und Smart Payment Buttons nicht mehr geladen
