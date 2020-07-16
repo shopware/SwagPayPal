@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\IZettle\Setting\Service;
 
-use Shopware\Core\Content\Product\ProductEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -31,17 +31,14 @@ class ProductVisibilityCloneService
         Context $context
     ): void {
         $criteria = new Criteria();
-        $criteria->addAssociation('product');
         $criteria->addFilter(new EqualsFilter('salesChannelId', $fromSalesChannelId));
         $existingVisibility = $this->productVisibilityRepository->search($criteria, $context)->getEntities();
 
         $updates = [];
         foreach ($existingVisibility->getElements() as $visibilityElement) {
-            /** @var ProductEntity $product */
-            $product = $visibilityElement->getProduct();
+            /* @var ProductVisibilityEntity $visibilityElement */
             $updates[] = [
-                'productId' => $product->getId(),
-                'productVersionId' => $product->getVersionId(),
+                'productId' => $visibilityElement->getProductId(),
                 'salesChannelId' => $toSalesChannelId,
                 'visibility' => $visibilityElement->getVisibility(),
             ];
