@@ -6,6 +6,7 @@
 - PT-11860 - Fix order confirmation email language with PayPal Plus
 - PT-11888 - Minor performance improvement when creating a payment
 - PT-11903 - Fix failed transaction status for user-canceled PayPal Plus payments
+- PT-11928 - Limited length of text input fields in administration according to PayPal API
 
 # 1.7.1
 - PT-11884 - If PayPal is not available, Plus and Smart Payment Buttons are no longer loaded
