@@ -120,7 +120,7 @@ class UpdateTest extends TestCase
             $context
         );
 
-        $updateContext = $this->createUpdateContext('1.7.0', '1.8.0');
+        $updateContext = $this->createUpdateContext('1.7.1', '1.7.2');
         $update = $this->createUpdateService($this->createSystemConfigServiceMock());
         $update->update($updateContext);
 
