@@ -58,9 +58,8 @@ class Update
             $this->updateTo170();
         }
 
-        // ToDo: adjust versioning to REPLACE-GLOBAL-WITH-NEXT-VERSION
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.8.0', '<')) {
-            $this->updateTo180($updateContext->getContext());
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '1.7.2', '<')) {
+            $this->updateTo172($updateContext->getContext());
         }
     }
 
@@ -99,7 +98,7 @@ class Update
         $this->webhookService->registerWebhook(null);
     }
 
-    private function updateTo180(Context $context): void
+    private function updateTo172(Context $context): void
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('name', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID));

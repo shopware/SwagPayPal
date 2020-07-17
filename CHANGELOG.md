@@ -1,4 +1,4 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
+# 1.7.2
 - PT-10491 - Removed internally used custom field entity for transaction IDs
 - PT-11627 - Order transactions now have the state "In Progress" when the payment process has been started
 - PT-11680 - Removed unknown Sales Channel types from selection in settings

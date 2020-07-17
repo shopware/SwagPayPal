@@ -1,4 +1,4 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
+# 1.7.2
 - PT-10491 - Intern genutzte Zusatzfeld-Entität für Transaktions-IDs entfernt
 - PT-11627 - Bestelltransaktionen haben nun den Status "In Bearbeitung" wenn der Zahlungsprozess gestartet wurde
 - PT-11680 - Verkaufskanäle mit unbekanntem Typ in den Einstellungen entfernt
