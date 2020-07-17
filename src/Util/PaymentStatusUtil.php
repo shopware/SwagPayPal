@@ -84,7 +84,7 @@ class PaymentStatusUtil
             return;
         }
 
-        // TODO after NEXT-7683: Do transition even if transaction is already partially paid.
+        // TODO PT-11940 - Do transition even if transaction is already partially paid.
         if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_PARTIALLY_PAID) {
             $this->reopenTransaction($stateMachineState, $transactionId, $context);
             $this->orderTransactionStateHandler->payPartially($transactionId, $context);
@@ -168,7 +168,7 @@ class PaymentStatusUtil
             throw new InvalidTransactionException($transactionId);
         }
 
-        // TODO after NEXT-7683: Do transition even if transaction is already partially refunded.
+        // TODO PT-11940 - Do transition even if transaction is already partially refunded.
         if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_PARTIALLY_REFUNDED) {
             $this->orderTransactionStateHandler->refundPartially($transactionId, $context);
         }
