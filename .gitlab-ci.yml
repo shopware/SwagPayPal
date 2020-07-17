@@ -39,6 +39,13 @@ PHP analyze:
         reports:
             junit: development/php-cs-fixer.xml
 
+ToDos resolved:
+    stage: Static analyzes
+    allow_failure: true
+    script:
+        - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
+        - bin/check-todos.sh $CI_COMMIT_BRANCH
+
 PHPUnit (MariaDB):
     stage: Testing
     services:

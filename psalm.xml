@@ -49,7 +49,7 @@
 
         <DeprecatedInterface>
             <errorLevel type="info">
-                <!-- TODO - Remove with Shopware 6.3 compatibility -->
+                <!-- TODO PT-11920 - Remove with Shopware 6.3 compatibility -->
                 <referencedClass name="Shopware\Core\System\Snippet\Files\SnippetFileInterface"/>
             </errorLevel>
         </DeprecatedInterface>
