@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PATTERN='todo.*'
+PATTERN='todo[[:space:]:].*'
 DESCRIPTION="Checking project for missing ToDos"
 
 if [[ -n "$1" ]]; then
