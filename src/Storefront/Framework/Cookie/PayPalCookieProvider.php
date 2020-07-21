@@ -39,7 +39,7 @@ class PayPalCookieProvider implements CookieProviderInterface
             }
 
             $cookie['entries'][] = [
-                'snippet_name' => 'cookie.paypal.name',
+                'snippet_name' => 'paypal.cookie.name',
                 'cookie' => 'paypal-cookie-key',
             ];
         }

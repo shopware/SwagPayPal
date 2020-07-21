@@ -1,3 +1,7 @@
+# 1.8.0
+- PT-11912 - Storefront snippets now get auto registered
+- PT-11920 - Shopware 6.3 compatibility
+
 # 1.7.3
 - PT-11946 - Fix update with deactivated plugin
 - PT-11949 - Fix setting paypal as the default payment method in the settings menu for all Sales Channels

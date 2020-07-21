@@ -45,7 +45,7 @@ class ErrorController extends AbstractController
      */
     public function addErrorMessage(): Response
     {
-        $this->session->getFlashBag()->add('danger', $this->translator->trans('general.paymentError'));
+        $this->session->getFlashBag()->add('danger', $this->translator->trans('paypal.general.paymentError'));
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }

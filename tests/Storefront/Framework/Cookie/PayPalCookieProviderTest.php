@@ -64,7 +64,7 @@ class PayPalCookieProviderTest extends TestCase
         $payPalCookie = $entries[0];
         static::assertIsArray($payPalCookie);
         static::assertArrayHasKey('snippet_name', $payPalCookie);
-        static::assertSame('cookie.paypal.name', $payPalCookie['snippet_name']);
+        static::assertSame('paypal.cookie.name', $payPalCookie['snippet_name']);
         static::assertArrayHasKey('cookie', $payPalCookie);
         static::assertSame('paypal-cookie-key', $payPalCookie['cookie']);
     }
