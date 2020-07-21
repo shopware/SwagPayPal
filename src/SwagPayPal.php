@@ -23,7 +23,7 @@ use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class SwagPayPal extends Plugin
@@ -144,13 +144,8 @@ class SwagPayPal extends Plugin
         /** @var EntityRepositoryInterface $customFieldRepository */
         $customFieldRepository = $this->container->get((new CustomFieldDefinition())->getEntityName() . '.repository');
 
-        $webhookService = null;
-        try {
-            /** @var WebhookService|null $webhookService */
-            $webhookService = $this->container->get(WebhookService::class);
-        } catch (ServiceNotFoundException $e) {
-            // Plugin is not activated
-        }
+        /** @var WebhookService|null $webhookService */
+        $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
 
         (new Update($systemConfigService, $customFieldRepository, $webhookService))->update($updateContext);
         parent::update($updateContext);
