@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -128,7 +129,7 @@ class PaymentMethodUtil
         } else {
             $criteria = new Criteria();
             $criteria->addFilter(
-                new EqualsFilter('typeId', [
+                new EqualsAnyFilter('typeId', [
                     Defaults::SALES_CHANNEL_TYPE_STOREFRONT,
                     Defaults::SALES_CHANNEL_TYPE_API,
                 ])
