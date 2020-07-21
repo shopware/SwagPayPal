@@ -89,6 +89,13 @@ class PaymentMethodUtilTest extends TestCase
         $this->assertPaymentMethodUpdate($context);
     }
 
+    public function testSetPayPalAsDefaultPaymentMethodForAllCompatibleSalesChannels(): void
+    {
+        $context = Context::createDefaultContext();
+        $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod($context, null);
+        $this->assertPaymentMethodUpdate($context, false);
+    }
+
     public function testSetPayPalAsDefaultPaymentWithoutBeingPresentForTheRequestedSalesChannel(): void
     {
         $context = Context::createDefaultContext();

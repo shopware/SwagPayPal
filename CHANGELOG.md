@@ -1,3 +1,6 @@
+# 1.7.3
+- PT-11949 - Fix setting paypal as the default payment method in the settings menu for all Sales Channels
+
 # 1.7.2
 - PT-10491 - Removed internally used custom field entity for transaction IDs
 - PT-11627 - Order transactions now have the state "In Progress" when the payment process has been started
