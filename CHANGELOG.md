@@ -1,4 +1,5 @@
 # 1.7.3
+- PT-11946 - Fix update with deactivated plugin
 - PT-11949 - Fix setting paypal as the default payment method in the settings menu for all Sales Channels
 
 # 1.7.2
