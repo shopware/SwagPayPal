@@ -186,7 +186,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         if ($requestQuery->has(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
             && $requestQuery->has(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
         ) {
-            $this->session->getFlashBag()->add('success', $this->translator->trans('smartPaymentButtons.confirmPageHint'));
+            $this->session->getFlashBag()->add('success', $this->translator->trans('paypal.smartPaymentButtons.confirmPageHint'));
 
             return true;
         }
@@ -206,6 +206,6 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $paypalPaymentMethod->addTranslated('description', $this->translator->trans('smartPaymentButtons.description'));
+        $paypalPaymentMethod->addTranslated('description', $this->translator->trans('paypal.smartPaymentButtons.description'));
     }
 }

@@ -5,14 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Swag\PayPal\Resources\app\storefront\src\snippets\de_DE\SnippetFile_de_DE">
-            <tag name="shopware.snippet.file"/>
-        </service>
-
-        <service id="Swag\PayPal\Resources\app\storefront\src\snippets\en_GB\SnippetFile_en_GB">
-            <tag name="shopware.snippet.file"/>
-        </service>
-
         <service id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider" decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
             <argument type="service" id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider.inner"/>
         </service>

@@ -195,7 +195,7 @@ class PlusSubscriber implements EventSubscriberInterface
 
     private function changePaymentMethod(PaymentMethodEntity $paymentMethod): void
     {
-        $paymentMethod->addTranslated('name', $this->translator->trans('payPalPlus.paymentNameOverwrite'));
+        $paymentMethod->addTranslated('name', $this->translator->trans('paypal.plus.paymentNameOverwrite'));
 
         $description = $paymentMethod->getTranslation('description');
         if ($description === null) {
@@ -204,7 +204,7 @@ class PlusSubscriber implements EventSubscriberInterface
 
         $paymentMethod->addTranslated(
             'description',
-            $description . ' ' . $this->translator->trans('payPalPlus.paymentDescriptionExtension')
+            $description . ' ' . $this->translator->trans('paypal.plus.paymentDescriptionExtension')
         );
     }
 }

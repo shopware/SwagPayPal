@@ -17,7 +17,7 @@
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited"
                                               :value="props.currentValue"
-                                              @input="props.updateCurrentValue">
+                                              @change="props.updateCurrentValue">
                             </sw-single-select>
                         </template>
                     </sw-inherit-wrapper>
@@ -36,7 +36,7 @@
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited"
                                               :value="props.currentValue"
-                                              @input="props.updateCurrentValue">
+                                              @change="props.updateCurrentValue">
                             </sw-single-select>
 
                             {% block swag_paypal_content_card_channel_config_behaviour_settings_intent_hint %}
@@ -96,7 +96,7 @@
                                               :isInherited="props.isInherited"
                                               :disabled="props.isInherited"
                                               :value="props.currentValue"
-                                              @input="props.updateCurrentValue">
+                                              @change="props.updateCurrentValue">
                             </sw-single-select>
                         </template>
                     </sw-inherit-wrapper>

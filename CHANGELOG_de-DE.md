@@ -1,3 +1,7 @@
+# 1.8.0
+- PT-11912 - Die Storefront Übersetzungen werden jetzt automatisch registriert
+- PT-11920 - Shopware 6.3 Kompatibilität
+
 # 1.7.3
 - PT-11946 - Ein Update funktioniert nun auch wieder bei deaktiviertem Plugin
 - PT-11949 - Das Setzen von PayPal als Standardzahlungsart für alle Sales Channel ist wieder möglich
@@ -43,7 +47,7 @@
 - PT-11637 - Einzugs- und Rückerstattungs-Workflow verbessert
 
 # 1.5.0
-- NEXT-8322 - Shopware 6.2 compatibility
+- NEXT-8322 - Shopware 6.2 Kompatibilität
 - PT-10654 - Aktivieren und setzen Sie PayPal als Standard für den ausgewählten Saleschannel im Einstellungsmodul
 - PT-11599 - Behebt ein Problem, bei dem PayPal Plus nicht per Saleschannel konfiguriert werden konnte
 

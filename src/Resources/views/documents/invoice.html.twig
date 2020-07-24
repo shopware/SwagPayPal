@@ -10,7 +10,7 @@
     {% endfor %}
 
     {% if payPalPuiPaymentInstruction %}
-        {{ 'payUponInvoice.document.paymentShippingInfo.payPalPuiPaymentMethod'|trans() }}
+        {{ 'paypal.payUponInvoice.document.paymentShippingInfo.payPalPuiPaymentMethod'|trans() }}
     {% else %}
         {{ parent() }}
     {% endif %}
@@ -29,34 +29,34 @@
 
     {% if payPalPuiPaymentInstruction %}
         <br>
-        <div>{{ 'payUponInvoice.document.paymentNote'|trans({"%companyName%": config.companyName}) }}</div>
+        <div>{{ 'paypal.payUponInvoice.document.paymentNote'|trans({"%companyName%": config.companyName}) }}</div>
         <br>
-        <div>{{ "payUponInvoice.instructions.transferRequest"|trans({"%value%": payPalPuiPaymentInstruction.amount.value, "%currency%": payPalPuiPaymentInstruction.amount.currency, "%date%": payPalPuiPaymentInstruction.payment_due_date|format_date('short', locale=app.request.locale)}) }}</div>
+        <div>{{ "paypal.payUponInvoice.instructions.transferRequest"|trans({"%value%": payPalPuiPaymentInstruction.amount.value, "%currency%": payPalPuiPaymentInstruction.amount.currency, "%date%": payPalPuiPaymentInstruction.payment_due_date|format_date('short', locale=app.request.locale)}) }}</div>
         <br>
         <div>
             <table>
                 <tr>
-                    <td>{{ "payUponInvoice.instructions.table.bank"|trans() }}</td>
+                    <td>{{ "paypal.payUponInvoice.instructions.table.bank"|trans() }}</td>
                     <th>{{ payPalPuiPaymentInstruction.recipient_banking_instruction.bank_name }}</th>
                 </tr>
                 <tr>
-                    <td>{{ "payUponInvoice.instructions.table.iban"|trans() }}</td>
+                    <td>{{ "paypal.payUponInvoice.instructions.table.iban"|trans() }}</td>
                     <th>{{ payPalPuiPaymentInstruction.recipient_banking_instruction.international_bank_account_number }}</th>
                 </tr>
                 <tr>
-                    <td>{{ "payUponInvoice.instructions.table.bic"|trans() }}</td>
+                    <td>{{ "paypal.payUponInvoice.instructions.table.bic"|trans() }}</td>
                     <th>{{ payPalPuiPaymentInstruction.recipient_banking_instruction.bank_identifier_code }}</th>
                 </tr>
                 <tr>
-                    <td>{{ "payUponInvoice.instructions.table.holder"|trans() }}</td>
+                    <td>{{ "paypal.payUponInvoice.instructions.table.holder"|trans() }}</td>
                     <th>{{ payPalPuiPaymentInstruction.recipient_banking_instruction.account_holder_name }}</th>
                 </tr>
                 <tr>
-                    <td>{{ "payUponInvoice.instructions.table.amount"|trans() }}</td>
+                    <td>{{ "paypal.payUponInvoice.instructions.table.amount"|trans() }}</td>
                     <th>{{ payPalPuiPaymentInstruction.amount.value }}{{ payPalPuiPaymentInstruction.amount.currency }}</th>
                 </tr>
                 <tr>
-                    <td>{{ "payUponInvoice.instructions.table.reference"|trans() }}</td>
+                    <td>{{ "paypal.payUponInvoice.instructions.table.reference"|trans() }}</td>
                     <th>{{ payPalPuiPaymentInstruction.reference_number }}</th>
                 </tr>
             </table>
