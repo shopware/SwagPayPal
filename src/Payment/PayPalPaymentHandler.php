@@ -217,18 +217,21 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
                 if ($sale !== null) {
                     $paymentState = $sale->getState();
                 }
+
                 break;
             case PaymentIntent::AUTHORIZE:
                 $authorization = $relatedResource->getAuthorization();
                 if ($authorization !== null) {
                     $paymentState = $authorization->getState();
                 }
+
                 break;
             case PaymentIntent::ORDER:
                 $order = $relatedResource->getOrder();
                 if ($order !== null) {
                     $paymentState = $order->getState();
                 }
+
                 break;
         }
 

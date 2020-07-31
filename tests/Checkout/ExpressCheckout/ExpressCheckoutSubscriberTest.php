@@ -527,6 +527,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $request = new Request([], [], ['productId' => $product->getId()]);
 
         $quickViewLoader = null;
+
         try {
             /** @var QuickviewPageletLoader $quickViewLoader */
             $quickViewLoader = $this->getContainer()->get(QuickviewPageletLoader::class);

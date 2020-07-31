@@ -180,15 +180,19 @@ class PayPalPaymentController extends AbstractController
         switch ($resourceType) {
             case RelatedResource::SALE:
                 $resource = $this->saleResource->get($resourceId, $salesChannelId);
+
                 break;
             case RelatedResource::AUTHORIZE:
                 $resource = $this->authorizationResource->get($resourceId, $salesChannelId);
+
                 break;
             case RelatedResource::ORDER:
                 $resource = $this->ordersResource->get($resourceId, $salesChannelId);
+
                 break;
             case RelatedResource::CAPTURE:
                 $resource = $this->captureResource->get($resourceId, $salesChannelId);
+
                 break;
             default:
                 throw new RequiredParameterInvalidException('resourceType');
@@ -220,6 +224,7 @@ class PayPalPaymentController extends AbstractController
                     $salesChannelId
                 );
                 $this->paymentStatusUtil->applyRefundStateToPayment($orderId, $refundResponse, $context);
+
                 break;
             case RelatedResource::CAPTURE:
                 $refundResponse = $this->captureResource->refund(
@@ -229,6 +234,7 @@ class PayPalPaymentController extends AbstractController
                 );
                 $paymentResponse = $this->paymentResource->get($refundResponse->getParentPayment(), $salesChannelId);
                 $this->paymentStatusUtil->applyRefundStateToCapture($orderId, $refundResponse, $paymentResponse, $context);
+
                 break;
             default:
                 throw new RequiredParameterInvalidException('resourceType');
@@ -258,10 +264,12 @@ class PayPalPaymentController extends AbstractController
                     $capture,
                     $this->getSalesChannelIdByOrderId($orderId, $context)
                 );
+
                 break;
             case RelatedResource::ORDER:
                 $salesChannelId = $this->getSalesChannelIdByOrderId($orderId, $context);
                 $captureResponse = $this->ordersResource->capture($resourceId, $capture, $salesChannelId);
+
                 break;
             default:
                 throw new RequiredParameterInvalidException('resourceType');
@@ -289,12 +297,14 @@ class PayPalPaymentController extends AbstractController
                     $resourceId,
                     $this->getSalesChannelIdByOrderId($orderId, $context)
                 );
+
                 break;
             case RelatedResource::ORDER:
                 $voidResponse = $this->ordersResource->void(
                     $resourceId,
                     $this->getSalesChannelIdByOrderId($orderId, $context)
                 );
+
                 break;
             default:
                 throw new RequiredParameterInvalidException('resourceType');
