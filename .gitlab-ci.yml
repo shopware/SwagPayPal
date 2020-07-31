@@ -3,50 +3,72 @@ variables:
     DOCKER_HOST: "tcp://docker:2375"
     MYSQL_ROOT_PASSWORD: app
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
+    DEVELOPMENT_BRANCH: "master"
+    PLATFORM_BRANCH: "master"
+    CMS_EXTENSION_BRANCH: "master"
 
 stages:
-    - Static analyzes
+    - Static analysis
     - Testing
 
 default:
     image: shopware/development:latest
     before_script:
         - zip -rq plugin.zip .
-        - git clone --branch master http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $DEVELOPMENT_BRANCH
         - rm -rf development/platform
-        - git clone --branch 6.3.0.0 http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git development/custom/plugins/SwagCmsExtensions --branch pt-11919/6.3-compatibility
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git development/custom/plugins/SwagCmsExtensions --branch $CMS_EXTENSION_BRANCH
         - unzip -q plugin.zip -d development/custom/plugins/SwagPayPal
         - cd development
         - composer dump-autoload -d custom/plugins/SwagCmsExtensions
         - cp -v dev-ops/gitlab/.psh.yaml.override .
         - /entrypoint supervisord > /dev/null 2>&1 &
 
-# Stage: static
-
-PHP analyze:
-    stage: Static analyzes
+# Stage: Static analysis
+.static_analyze_base:
+    stage: Static analysis
     services:
         -   name: mysql:5.7
             alias: mysql
     script:
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal
-        - php dev-ops/analyze/vendor/bin/php-cs-fixer fix --config=vendor/shopware/platform/.php_cs.dist --dry-run -vvv --allow-risky=yes --format=junit custom/plugins/SwagPayPal | tee php-cs-fixer.xml
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
+        - php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.yml .
+        - php ../../../dev-ops/analyze/vendor/bin/php-cs-fixer fix --config=.php_cs.dist --dry-run -vvv
         - bin/static-analyze.sh
-    artifacts:
-        reports:
-            junit: development/php-cs-fixer.xml
+        - cd $CI_PROJECT_DIR/development
+        - ./psh.phar administration:init --APP_ENV="dev"
+        - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
+        - ./../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint --ignore-path .eslintignore --config ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/.eslintrc.js --ext .js,.vue .
+
+Static analyze (6.3.x.x dev):
+    extends: .static_analyze_base
+
+Static analyze (latest 6.2):
+    extends: .static_analyze_base
+    only:
+        - master
+    variables:
+        DEVELOPMENT_BRANCH: "6.2"
+        PLATFORM_BRANCH: "6.2"
+
+Static analyze (6.3.0.0)):
+    extends: .static_analyze_base
+    only:
+        - master
+    variables:
+        PLATFORM_BRANCH: "6.3.0.0"
 
 ToDos resolved:
-    stage: Static analyzes
+    stage: Static analysis
     allow_failure: true
     script:
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - bin/check-todos.sh $CI_COMMIT_BRANCH
 
-PHPUnit (MariaDB):
+PHPUnit Covarge (6.3.x.x dev):
     stage: Testing
     services:
         -   name: mariadb:10.3
@@ -72,3 +94,31 @@ PHPUnit (MariaDB):
             - development/build/artifacts/phpunit.clover.xml
         reports:
             junit: development/build/artifacts/phpunit.junit.xml
+
+.phpunit_base:
+    stage: Testing
+    services:
+        -   name: mysql:5.7
+            alias: mysql
+    script:
+        - ./psh.phar init
+        - php bin/console plugin:install --activate SwagPayPal
+        - php bin/console plugin:install --activate SwagCmsExtensions
+        - ./psh.phar init-test-databases
+        - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
+        - bin/phpunit.sh
+
+PHPUnit (latest 6.2):
+    extends: .phpunit_base
+    only:
+        - master
+    variables:
+        DEVELOPMENT_BRANCH: "6.2"
+        PLATFORM_BRANCH: "6.2"
+
+PHPUnit (6.3.0.0):
+    extends: .phpunit_base
+    only:
+        - master
+    variables:
+        PLATFORM_BRANCH: "6.3.0.0"

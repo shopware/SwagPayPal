@@ -29,6 +29,7 @@ abstract class PayPalStruct implements \JsonSerializable
 
             if ($this->isScalar($value)) {
                 $this->$setterMethod($value);
+
                 continue;
             }
 
@@ -42,6 +43,7 @@ abstract class PayPalStruct implements \JsonSerializable
 
                 $instance = $this->createNewAssociation($className, $value);
                 $this->$setterMethod($instance);
+
                 continue;
             }
 
@@ -99,7 +101,7 @@ abstract class PayPalStruct implements \JsonSerializable
 
     private function getNamespaceOfAssociation(): string
     {
-        return \get_class($this) . '\\';
+        return static::class . '\\';
     }
 
     private function getClassNameOfOneToManyAssociation(string $camelCaseKey): string

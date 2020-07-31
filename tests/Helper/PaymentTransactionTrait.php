@@ -90,10 +90,12 @@ trait PaymentTransactionTrait
             case ConstantsForTesting::VALID_ORDER_ID:
                 $order->setId(ConstantsForTesting::VALID_ORDER_ID);
                 $order->setLineItems($this->getLineItems(true));
+
                 break;
             case ConstantsForTesting::ORDER_ID_MISSING_PRICE:
                 $order->setId(ConstantsForTesting::ORDER_ID_MISSING_PRICE);
                 $order->setLineItems($this->getLineItems());
+
                 break;
             default:
                 $order->setId(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);

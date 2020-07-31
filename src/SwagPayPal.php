@@ -92,7 +92,7 @@ class SwagPayPal extends Plugin
             $countryRepository,
             $pluginIdProvider,
             $systemConfigService,
-            \get_class($this)
+            static::class
         ))->install($installContext->getContext());
 
         parent::install($installContext);
@@ -131,7 +131,7 @@ class SwagPayPal extends Plugin
             $countryRepository,
             $pluginIdProvider,
             $systemConfigService,
-            \get_class($this)
+            static::class
         ))->uninstall($context);
 
         parent::uninstall($uninstallContext);

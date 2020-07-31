@@ -109,6 +109,7 @@ class PlusSubscriber implements EventSubscriberInterface
         }
 
         $salesChannelContext = $event->getSalesChannelContext();
+
         try {
             $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
         } catch (PayPalSettingsInvalidException $e) {

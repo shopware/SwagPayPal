@@ -79,6 +79,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         }
 
         $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
+
         try {
             $response = $this->payPalHandler->handlePayPalPayment($transaction, $salesChannelContext, $customer, true);
         } catch (\Exception $e) {
