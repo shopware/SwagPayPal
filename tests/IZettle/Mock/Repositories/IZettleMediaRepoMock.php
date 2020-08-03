@@ -14,6 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
@@ -29,6 +30,14 @@ class IZettleMediaRepoMock extends AbstractRepoMock implements EntityRepositoryI
 
     public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
     {
+        $result = new AggregationResultCollection();
+
+        $count = $criteria->getAggregation('count');
+        if ($count !== null) {
+            $result->add(new CountResult('count', $this->search($criteria, $context)->getTotal()));
+        }
+
+        return $result;
     }
 
     public function searchIds(Criteria $criteria, Context $context): IdSearchResult

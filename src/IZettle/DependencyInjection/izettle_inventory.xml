@@ -42,7 +42,6 @@
         </service>
 
         <service id="Swag\PayPal\IZettle\Sync\InventorySyncer">
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater"/>

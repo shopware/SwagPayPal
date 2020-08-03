@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\IZettle\Api\Exception\IZettleTokenException;
+use Swag\PayPal\IZettle\MessageQueue\Handler\CloneVisiblityHandler;
 use Swag\PayPal\IZettle\Resource\TokenResource;
 use Swag\PayPal\IZettle\Resource\UserResource;
 use Swag\PayPal\IZettle\Setting\Service\ApiCredentialService;
@@ -28,6 +29,7 @@ use Swag\PayPal\IZettle\Setting\Struct\AdditionalInformation;
 use Swag\PayPal\Test\IZettle\ConstantsForTesting;
 use Swag\PayPal\Test\IZettle\Mock\Client\IZettleClientFactoryMock;
 use Swag\PayPal\Test\IZettle\Mock\Client\TokenClientFactoryMock;
+use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\ProductVisibilityRepoMock;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,12 +46,17 @@ class SettingsControllerTest extends TestCase
      */
     private $productVisibilityRepository;
 
+    /**
+     * @var MessageBusMock
+     */
+    private $messageBus;
+
     public function testValidateCredentialsValid(): void
     {
         $response = $this->getSettingsController()->validateApiCredentials(new Request([], [
             'apiKey' => ConstantsForTesting::VALID_API_KEY,
         ]));
-        static::assertEquals($response->getContent(), \json_encode(['credentialsValid' => true]));
+        static::assertSame($response->getContent(), \json_encode(['credentialsValid' => true]));
     }
 
     public function testValidateCredentialsInvalid(): void
@@ -66,7 +73,7 @@ class SettingsControllerTest extends TestCase
         $response = $this->getSettingsController()->fetchInformation(new Request([], [
             'apiKey' => ConstantsForTesting::VALID_API_KEY,
         ]), $context);
-        static::assertEquals($response->getContent(), \json_encode($this->createExpectedFetchedInformation($context)));
+        static::assertSame($response->getContent(), \json_encode($this->createExpectedFetchedInformation($context)));
     }
 
     public function testCloneProductVisibility(): void
@@ -86,6 +93,10 @@ class SettingsControllerTest extends TestCase
             'fromSalesChannelId' => self::FROM_SALES_CHANNEL,
             'toSalesChannelId' => self::TO_SALES_CHANNEL,
         ]), $context);
+
+        $this->messageBus->execute([
+            new CloneVisiblityHandler($this->productVisibilityRepository),
+        ]);
 
         static::assertCount(3, $this->productVisibilityRepository->filterBySalesChannelId(self::FROM_SALES_CHANNEL));
         static::assertCount(3, $this->productVisibilityRepository->filterBySalesChannelId(self::TO_SALES_CHANNEL));
@@ -115,6 +126,7 @@ class SettingsControllerTest extends TestCase
         $pluginIdProvider = $this->getContainer()->get('Shopware\Core\Framework\Plugin\Util\PluginIdProvider');
 
         $this->productVisibilityRepository = new ProductVisibilityRepoMock();
+        $this->messageBus = new MessageBusMock();
 
         return new SettingsController(
             new ApiCredentialService(new TokenResource(
@@ -137,6 +149,7 @@ class SettingsControllerTest extends TestCase
                 $shippingMethodRepository
             ),
             new ProductVisibilityCloneService(
+                $this->messageBus,
                 $this->productVisibilityRepository
             )
         );

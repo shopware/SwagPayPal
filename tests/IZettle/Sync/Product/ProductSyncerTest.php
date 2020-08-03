@@ -8,11 +8,8 @@
 namespace Swag\PayPal\Test\IZettle\Sync\Product;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Service\Converter\CategoryConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\OptionGroupConverter;
@@ -27,10 +24,8 @@ use Swag\PayPal\IZettle\Sync\Product\DeletedUpdater;
 use Swag\PayPal\IZettle\Sync\Product\NewUpdater;
 use Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater;
 use Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker;
-use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
 use Swag\PayPal\Test\IZettle\Mock\ProductContextMock;
-use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelProductRepoMock;
 
 class ProductSyncerTest extends AbstractProductSyncTest
 {
@@ -53,11 +48,6 @@ class ProductSyncerTest extends AbstractProductSyncTest
      * @var MockObject
      */
     private $productResource;
-
-    /**
-     * @var SalesChannelProductRepoMock
-     */
-    private $productRepository;
 
     /**
      * @var SalesChannelEntity
@@ -88,30 +78,15 @@ class ProductSyncerTest extends AbstractProductSyncTest
     {
         $context = Context::createDefaultContext();
 
-        $this->salesChannel = $this->createSalesChannel($context);
+        $this->salesChannel = $this->getSalesChannel($context);
 
         $this->productContext = new ProductContextMock($this->salesChannel, $context);
         $this->productContextFactory = $this->createMock(ProductContextFactory::class);
         $this->productContextFactory->method('getContext')->willReturn($this->productContext);
 
-        $productStreamBuilder = $this->createStub(ProductStreamBuilderInterface::class);
-        $productStreamBuilder->method('buildFilters')->willReturn(
-            [new NotFilter(NotFilter::CONNECTION_AND, [
-                new EqualsFilter('id', null),
-            ])]
-        );
-
         $this->productResource = $this->createPartialMock(
             ProductResource::class,
             ['createProduct', 'updateProduct', 'deleteProduct']
-        );
-
-        $this->productRepository = new SalesChannelProductRepoMock();
-
-        $productSelection = new ProductSelection(
-            $this->productRepository,
-            $productStreamBuilder,
-            $this->createMock(SalesChannelContextFactory::class)
         );
 
         $this->newUpdater = $this->createMock(NewUpdater::class);
@@ -120,7 +95,6 @@ class ProductSyncerTest extends AbstractProductSyncTest
         $this->unsyncedChecker = $this->createMock(UnsyncedChecker::class);
 
         $this->pruductSyncer = new ProductSyncer(
-            $productSelection,
             new ProductConverter(
                 new UuidConverter(),
                 new CategoryConverter(new UuidConverter()),
@@ -141,17 +115,32 @@ class ProductSyncerTest extends AbstractProductSyncTest
         $context = Context::createDefaultContext();
 
         $product = $this->getProduct();
-        $this->productRepository->addMockEntity($product);
 
         $this->productResource->expects(static::never())->method('updateProduct');
         $this->productResource->expects(static::never())->method('createProduct');
-        $this->productContextFactory->expects(static::exactly(3))->method('commit');
+        $this->productContextFactory->expects(static::exactly(2))->method('commit');
         $this->newUpdater->expects(static::once())->method('update');
         $this->outdatedUpdater->expects(static::once())->method('update');
+
+        $this->pruductSyncer->sync(new ProductCollection([$product]), $this->salesChannel, $context);
+
+        static::assertCount(0, $this->productContext->getProductChanges());
+        static::assertCount(0, $this->productContext->getProductRemovals());
+    }
+
+    public function testCleanUp(): void
+    {
+        $context = Context::createDefaultContext();
+
+        $product = $this->getProduct();
+
+        $this->productResource->expects(static::never())->method('updateProduct');
+        $this->productResource->expects(static::never())->method('createProduct');
+        $this->productContextFactory->expects(static::once())->method('commit');
         $this->deletedUpdater->expects(static::once())->method('update');
         $this->unsyncedChecker->expects(static::once())->method('checkForUnsynced');
 
-        $this->pruductSyncer->syncProducts($this->salesChannel, $context);
+        $this->pruductSyncer->cleanUp([$product->getId()], $this->salesChannel, $context);
 
         static::assertCount(0, $this->productContext->getProductChanges());
         static::assertCount(0, $this->productContext->getProductRemovals());

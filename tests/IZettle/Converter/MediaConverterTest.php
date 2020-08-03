@@ -27,8 +27,8 @@ class MediaConverterTest extends TestCase
 
         $image = $this->createMediaConverter()->convert(self::DOMAIN_URL, $shopwareMedia);
 
-        static::assertEquals(self::MEDIA_URL, $image->getImageUrl());
-        static::assertEquals('JPEG', $image->getImageFormat());
+        static::assertSame(self::MEDIA_URL, $image->getImageUrl());
+        static::assertSame('JPEG', $image->getImageFormat());
         static::assertNull($image->getImageLookupKey());
     }
 
@@ -47,9 +47,9 @@ class MediaConverterTest extends TestCase
 
         $image = $this->createMediaConverter()->convert(self::DOMAIN_URL, $shopwareMedia, self::LOOKUP_KEY);
 
-        static::assertEquals(self::MEDIA_URL, $image->getImageUrl());
-        static::assertEquals('JPEG', $image->getImageFormat());
-        static::assertEquals(self::LOOKUP_KEY, $image->getImageLookupKey());
+        static::assertSame(self::MEDIA_URL, $image->getImageUrl());
+        static::assertSame('JPEG', $image->getImageFormat());
+        static::assertSame(self::LOOKUP_KEY, $image->getImageLookupKey());
     }
 
     private function createMediaConverter(): MediaConverter

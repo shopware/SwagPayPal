@@ -22,7 +22,7 @@ class ApiKeyDecoderTest extends TestCase
 
         $decoded = $decoder->decode(self::EXAMPLE_API_KEY);
 
-        static::assertEquals(self::EXAMPLE_CLIENT_ID, $decoded->getPayload()->getClientId());
+        static::assertSame(self::EXAMPLE_CLIENT_ID, $decoded->getPayload()->getClientId());
     }
 
     public function dataProviderMalformedSegments(): array

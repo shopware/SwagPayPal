@@ -63,11 +63,11 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
             $iZettleProductCollection->add($entity);
         }
 
-        $productContext = new ProductContext($this->createSalesChannel($context), $iZettleProductCollection, new IZettleSalesChannelMediaCollection(), $context);
+        $productContext = new ProductContext($this->getSalesChannel($context), $iZettleProductCollection, new IZettleSalesChannelMediaCollection(), $context);
 
         $product = new Product();
         $product->setName($newName);
-        static::assertEquals($status, $productContext->checkForUpdate($productEntity, $product));
+        static::assertSame($status, $productContext->checkForUpdate($productEntity, $product));
     }
 
     public function testCheckForDefectiveMedia(): void
@@ -89,7 +89,7 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         $existingMedia->setMimeType('image/jpeg');
         $existingMedia->setFileExtension('jpg');
         $existingMedia->setFileName('filename');
-        static::assertEquals(self::IMAGE_URL, $productContext->checkForMediaUrl($existingMedia));
+        static::assertSame(self::IMAGE_URL, $productContext->checkForMediaUrl($existingMedia));
         static::assertEmpty($productContext->getMediaRequests());
     }
 
@@ -120,7 +120,7 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         $iZettleMediaRepoMock = new IZettleMediaRepoMock();
         $productContextFactory = new ProductContextFactory($iZettleProductRepoMock, $iZettleMediaRepoMock);
 
-        $productContext = new ProductContext($this->createSalesChannel($context), new IZettleSalesChannelProductCollection(), new IZettleSalesChannelMediaCollection(), $context);
+        $productContext = new ProductContext($this->getSalesChannel($context), new IZettleSalesChannelProductCollection(), new IZettleSalesChannelMediaCollection(), $context);
 
         $productEntity = $this->createProductEntity();
         $convertedProductOriginal = new Product();
@@ -154,7 +154,7 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         $iZettleProductRepoMock = new IZettleProductRepoMock();
         $iZettleMediaRepoMock = new IZettleMediaRepoMock();
         $productContextFactory = new ProductContextFactory($iZettleProductRepoMock, $iZettleMediaRepoMock);
-        $salesChannel = $this->createSalesChannel($context);
+        $salesChannel = $this->getSalesChannel($context);
 
         $inventoryContextFirst = $productContextFactory->getContext($salesChannel, $context);
         $inventoryContextSecond = $productContextFactory->getContext($salesChannel, $context);
@@ -181,7 +181,7 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         $iZettleMedia->setSalesChannelId(Defaults::SALES_CHANNEL);
         $iZettleMedia->setUniqueIdentifier(Uuid::randomHex());
         $iZettleMediaCollection = new IZettleSalesChannelMediaCollection([$iZettleMedia]);
-        $productContext = new ProductContext($this->createSalesChannel($context), new IZettleSalesChannelProductCollection(), $iZettleMediaCollection, $context);
+        $productContext = new ProductContext($this->getSalesChannel($context), new IZettleSalesChannelProductCollection(), $iZettleMediaCollection, $context);
 
         return $productContext;
     }

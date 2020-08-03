@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\IZettle\Sync;
 
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Media\MediaEntity;
@@ -14,8 +15,7 @@ use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\IZettle\Api\Image\BulkImageUpload;
 use Swag\PayPal\IZettle\Api\IZettleRequestUri;
@@ -23,13 +23,22 @@ use Swag\PayPal\IZettle\Api\Service\MediaConverter;
 use Swag\PayPal\IZettle\Client\IZettleClient;
 use Swag\PayPal\IZettle\Client\IZettleClientFactory;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaEntity;
+use Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ImageSyncHandler;
+use Swag\PayPal\IZettle\MessageQueue\Manager\ImageSyncManager;
 use Swag\PayPal\IZettle\Resource\ImageResource;
+use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Sync\ImageSyncer;
+use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\IZettle\Helper\SalesChannelTrait;
+use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleMediaRepoMock;
 
 class ImageSyncerTest extends TestCase
 {
+    use KernelTestBehaviour;
+    use SalesChannelTrait;
+
     private const DOMAIN_URL = 'https://some.shopware.domain';
     private const INVALID_MIME_TYPE = 'video/mp4';
     private const LOCAL_FILE_NAME = 'file';
@@ -52,10 +61,19 @@ class ImageSyncerTest extends TestCase
     public function testImageSync(): void
     {
         $context = Context::createDefaultContext();
-
-        $mediaRepository = $this->createMediaRepository($context);
         $imageResource = $this->createImageResource();
         $logger = $this->createLogger();
+
+        $mediaRepository = new IZettleMediaRepoMock();
+
+        $mediaA = $this->createMedia(self::MEDIA_ID_1, self::MEDIA_URL_VALID);
+        $mediaRepository->addMockEntity($mediaA);
+        $mediaB = $this->createMedia(self::MEDIA_ID_2, self::MEDIA_URL_INVALID);
+        $mediaRepository->addMockEntity($mediaB);
+        $mediaC = $this->createMedia(self::MEDIA_ID_3, self::MEDIA_URL_VALID, null, false);
+        $mediaRepository->addMockEntity($mediaC);
+        $mediaD = $this->createMedia(self::MEDIA_ID_4, self::DOMAIN_URL . '/' . self::MEDIA_URL_EXISTING, self::IZETTLE_IMAGE_LOOKUP_KEY_EXISTING);
+        $mediaRepository->addMockEntity($mediaD);
 
         $imageSyncer = new ImageSyncer(
             $mediaRepository,
@@ -64,7 +82,37 @@ class ImageSyncerTest extends TestCase
             $logger
         );
 
-        $imageSyncer->syncImages($this->createSalesChannel(), $context);
+        $messageBus = new MessageBusMock();
+
+        $imageSyncHandler = new ImageSyncHandler(
+            new RunService(
+                $this->createMock(EntityRepositoryInterface::class),
+                $this->createMock(EntityRepositoryInterface::class),
+                new Logger('test')
+            ),
+            $logger,
+            $mediaRepository,
+            $imageSyncer
+        );
+
+        $imageSyncManager = new ImageSyncManager($messageBus, $mediaRepository, $imageSyncer);
+
+        $salesChannel = $this->getSalesChannel($context);
+        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
+        static::assertInstanceOf(IZettleSalesChannelEntity::class, $iZettleSalesChannel);
+        $iZettleSalesChannel->setMediaDomain(self::DOMAIN_URL);
+
+        $imageSyncManager->buildMessages($salesChannel, $context, Uuid::randomHex());
+        $messageBus->execute([$imageSyncHandler]);
+
+        static::assertSame(self::IZETTLE_IMAGE_URL, $mediaA->getUrl());
+        static::assertSame(self::IZETTLE_IMAGE_LOOKUP_KEY, $mediaA->getLookupKey());
+        static::assertNull($mediaB->getUrl());
+        static::assertNull($mediaB->getLookupKey());
+        static::assertNull($mediaC->getUrl());
+        static::assertNull($mediaC->getLookupKey());
+        static::assertSame(self::IZETTLE_IMAGE_URL_EXISTING, $mediaD->getUrl());
+        static::assertSame(self::IZETTLE_IMAGE_LOOKUP_KEY_EXISTING, $mediaD->getLookupKey());
     }
 
     private function createUrlGenerator(): UrlGeneratorInterface
@@ -79,41 +127,6 @@ class ImageSyncerTest extends TestCase
         return $urlGenerator;
     }
 
-    private function createMediaRepository(Context $context): EntityRepositoryInterface
-    {
-        $mediaRepository = $this->createMock(EntityRepositoryInterface::class);
-        $mediaRepository->method('search')->willReturn(
-            new EntitySearchResult(
-                4,
-                new IZettleSalesChannelMediaCollection([
-                    $this->createMedia(self::MEDIA_ID_1, self::MEDIA_URL_VALID),
-                    $this->createMedia(self::MEDIA_ID_2, self::MEDIA_URL_INVALID),
-                    $this->createMedia(self::MEDIA_ID_3, self::MEDIA_URL_VALID, null, false),
-                    $this->createMedia(self::MEDIA_ID_4, self::DOMAIN_URL . '/' . self::MEDIA_URL_EXISTING, self::IZETTLE_IMAGE_LOOKUP_KEY_EXISTING),
-                ]),
-                null,
-                new Criteria(),
-                $context
-            )
-        );
-        $mediaRepository->expects(static::once())->method('upsert')->with([
-            [
-                'mediaId' => self::MEDIA_ID_1,
-                'salesChannelId' => Defaults::SALES_CHANNEL,
-                'url' => self::IZETTLE_IMAGE_URL,
-                'lookupKey' => self::IZETTLE_IMAGE_LOOKUP_KEY,
-            ],
-            [
-                'mediaId' => self::MEDIA_ID_4,
-                'salesChannelId' => Defaults::SALES_CHANNEL,
-                'url' => self::IZETTLE_IMAGE_URL_EXISTING,
-                'lookupKey' => self::IZETTLE_IMAGE_LOOKUP_KEY_EXISTING,
-            ],
-        ]);
-
-        return $mediaRepository;
-    }
-
     private function createMedia(string $id, string $url, ?string $lookupKey = null, bool $validMime = true): IZettleSalesChannelMediaEntity
     {
         $iZettleMedia = new IZettleSalesChannelMediaEntity();
@@ -126,22 +139,10 @@ class ImageSyncerTest extends TestCase
         $iZettleMedia->setMedia($media);
         $iZettleMedia->setMediaId($media->getId());
         $iZettleMedia->setSalesChannelId(Defaults::SALES_CHANNEL);
-        $iZettleMedia->setUniqueIdentifier(Uuid::randomHex());
+        $iZettleMedia->setUniqueIdentifier(Defaults::SALES_CHANNEL . '-' . $id);
         $iZettleMedia->setLookupKey($lookupKey);
 
         return $iZettleMedia;
-    }
-
-    private function createSalesChannel(): IZettleSalesChannelEntity
-    {
-        $iZettleSalesChannel = new IZettleSalesChannelEntity();
-        $iZettleSalesChannel->setApiKey('apiKey');
-        $iZettleSalesChannel->setProductStreamId('someProductStreamId');
-        $iZettleSalesChannel->setSyncPrices(true);
-        $iZettleSalesChannel->setSalesChannelId(Defaults::SALES_CHANNEL);
-        $iZettleSalesChannel->setMediaDomain(self::DOMAIN_URL);
-
-        return $iZettleSalesChannel;
     }
 
     private function createLogger(): LoggerInterface

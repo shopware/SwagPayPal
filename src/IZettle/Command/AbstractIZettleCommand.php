@@ -12,10 +12,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractIZettleCommand extends Command
 {
@@ -55,4 +57,32 @@ abstract class AbstractIZettleCommand extends Command
 
         return $salesChannels;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $context = Context::createDefaultContext();
+        $salesChannels = $this->getSalesChannels($input, $context);
+
+        if ($salesChannels->count() === 0) {
+            $output->writeln('No active iZettle sales channel found.');
+
+            return 1;
+        }
+
+        foreach ($salesChannels as $salesChannel) {
+            $this->executeForSalesChannel($salesChannel, $output, $context);
+            $output->writeln(\sprintf(
+                'The task "%s" has been started for sales channel "%s".',
+                $this->getDescription() !== '' ? $this->getDescription() : $this->getName() ?? '',
+                $salesChannel->getName() ?? $salesChannel->getId()
+            ));
+        }
+
+        return 0;
+    }
+
+    abstract protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void;
 }

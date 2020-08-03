@@ -8,19 +8,13 @@
 namespace Swag\PayPal\Test\IZettle\Sync\Inventory;
 
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
-use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
-use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\IZettle\Helper\SalesChannelTrait;
 
 trait InventoryTrait
 {
     use KernelTestBehaviour;
+    use SalesChannelTrait;
 
     /**
      * @var string[]
@@ -53,28 +47,5 @@ trait InventoryTrait
         $product->setAvailableStock(2);
 
         return $product;
-    }
-
-    protected function createSalesChannel(Context $context): SalesChannelEntity
-    {
-        $criteria = new Criteria();
-        $criteria->setIds([Defaults::SALES_CHANNEL]);
-        $criteria->addAssociation('currency');
-
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
-
-        /** @var SalesChannelEntity $salesChannel */
-        $salesChannel = $salesChannelRepository->search($criteria, $context)->first();
-
-        $iZettleSalesChannel = new IZettleSalesChannelEntity();
-        $iZettleSalesChannel->setSyncPrices(true);
-        $iZettleSalesChannel->setUniqueIdentifier(Uuid::randomHex());
-        $iZettleSalesChannel->setId(Uuid::randomHex());
-        $iZettleSalesChannel->setSalesChannelId(Defaults::SALES_CHANNEL);
-
-        $salesChannel->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleSalesChannel);
-
-        return $salesChannel;
     }
 }

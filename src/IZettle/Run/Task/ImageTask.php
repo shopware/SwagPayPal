@@ -7,37 +7,21 @@
 
 namespace Swag\PayPal\IZettle\Run\Task;
 
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\Run\RunService;
-use Swag\PayPal\IZettle\Sync\ImageSyncer;
+use Swag\PayPal\IZettle\MessageQueue\Handler\SyncManagerHandler;
 
 class ImageTask extends AbstractTask
 {
     private const TASK_NAME_IMAGE = 'image';
-
-    /**
-     * @var ImageSyncer
-     */
-    private $imageSyncer;
-
-    public function __construct(
-        RunService $runService,
-        LoggerInterface $logger,
-        ImageSyncer $imageSyncer
-    ) {
-        parent::__construct($runService, $logger);
-        $this->imageSyncer = $imageSyncer;
-    }
 
     public function getRunTaskName(): string
     {
         return self::TASK_NAME_IMAGE;
     }
 
-    protected function run(SalesChannelEntity $salesChannel, Context $context): void
+    public function getSteps(): array
     {
-        $this->imageSyncer->syncImages($this->getIZettleSalesChannel($salesChannel), $context);
+        return [
+            SyncManagerHandler::SYNC_IMAGE,
+        ];
     }
 }

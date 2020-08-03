@@ -10,7 +10,7 @@ namespace Swag\PayPal\IZettle\Sync\Inventory;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
-use Swag\PayPal\IZettle\Api\Inventory\Changes;
+use Swag\PayPal\IZettle\Api\Inventory\BulkChanges;
 use Swag\PayPal\IZettle\Api\Service\Inventory\RemoteCalculator;
 use Swag\PayPal\IZettle\Resource\InventoryResource;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContext;
@@ -44,31 +44,31 @@ class RemoteUpdater
 
     public function updateRemote(ProductCollection $productCollection, InventoryContext $inventoryContext): ProductCollection
     {
-        $iZettleChanges = new Changes();
+        $remoteChanges = new BulkChanges();
         $changedProducts = new ProductCollection();
         foreach ($productCollection->getElements() as $productEntity) {
             if ($productEntity->getChildCount() > 0) {
                 continue;
             }
 
-            $iZettleChange = $this->remoteCalculator->calculateRemoteChange($productEntity, $inventoryContext);
-            if ($iZettleChange === null) {
+            $productChange = $this->remoteCalculator->calculateRemoteChange($productEntity, $inventoryContext);
+            if ($productChange === null) {
                 continue;
             }
 
-            $iZettleChanges->addChange($iZettleChange);
+            $remoteChanges->addProductChange($productChange);
 
             $changedProducts->add($productEntity);
         }
 
-        if (\count($iZettleChanges->getChanges()) === 0) {
+        if (\count($remoteChanges->getProductChanges()) === 0) {
             return $changedProducts;
         }
 
-        $iZettleChanges->setReturnBalanceForLocationUuid($inventoryContext->getStoreUuid());
+        $remoteChanges->setReturnBalanceForLocationUuid($inventoryContext->getStoreUuid());
 
         try {
-            $status = $this->inventoryResource->changeInventory($inventoryContext->getIZettleSalesChannel(), $iZettleChanges);
+            $status = $this->inventoryResource->changeInventoryBulk($inventoryContext->getIZettleSalesChannel(), $remoteChanges);
         } catch (IZettleApiException $iZettleApiException) {
             $this->logger->error('Inventory sync error: ' . $iZettleApiException);
 
@@ -89,7 +89,7 @@ class RemoteUpdater
         }
 
         foreach ($status->getVariants() as $variant) {
-            $inventoryContext->addIZettleInventory($variant);
+            $inventoryContext->addRemoteInventory($variant);
         }
 
         return $changedProducts;

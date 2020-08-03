@@ -7,7 +7,9 @@
 
 namespace Swag\PayPal\IZettle\Sync;
 
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Service\ProductConverter;
 use Swag\PayPal\IZettle\Sync\Context\ProductContextFactory;
@@ -16,13 +18,8 @@ use Swag\PayPal\IZettle\Sync\Product\NewUpdater;
 use Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater;
 use Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker;
 
-class ProductSyncer
+class ProductSyncer extends AbstractSyncer
 {
-    /**
-     * @var ProductSelection
-     */
-    private $productSelection;
-
     /**
      * @var ProductConverter
      */
@@ -54,7 +51,6 @@ class ProductSyncer
     private $unsyncedChecker;
 
     public function __construct(
-        ProductSelection $productSelection,
         ProductConverter $productConverter,
         ProductContextFactory $productContextFactory,
         NewUpdater $newUpdater,
@@ -62,7 +58,6 @@ class ProductSyncer
         DeletedUpdater $deletedUpdater,
         UnsyncedChecker $unsyncedChecker
     ) {
-        $this->productSelection = $productSelection;
         $this->productConverter = $productConverter;
         $this->productContextFactory = $productContextFactory;
         $this->newUpdater = $newUpdater;
@@ -71,23 +66,38 @@ class ProductSyncer
         $this->unsyncedChecker = $unsyncedChecker;
     }
 
-    public function syncProducts(SalesChannelEntity $salesChannel, Context $context): void
-    {
+    /**
+     * @param ProductCollection $entityCollection
+     */
+    public function sync(
+        EntityCollection $entityCollection,
+        SalesChannelEntity $salesChannel,
+        Context $context
+    ): void {
         $productContext = $this->productContextFactory->getContext($salesChannel, $context);
         $currency = $productContext->getIZettleSalesChannel()->isSyncPrices() ? $salesChannel->getCurrency() : null;
 
-        $shopwareProducts = $this->productSelection->getProductCollection($productContext->getSalesChannel(), $context, true);
-        $productGroupings = $this->productConverter->convertShopwareProducts($shopwareProducts, $currency, $productContext);
-
-        $this->unsyncedChecker->checkForUnsynced($productGroupings, $productContext);
+        $productGroupings = $this->productConverter->convertShopwareProducts($entityCollection, $currency, $productContext);
 
         $this->newUpdater->update($productGroupings, $productContext);
         $this->productContextFactory->commit($productContext);
 
         $this->outdatedUpdater->update($productGroupings, $productContext);
         $this->productContextFactory->commit($productContext);
+    }
 
-        $this->deletedUpdater->update($productGroupings, $productContext);
+    /**
+     * @param string[] $productIds
+     */
+    public function cleanUp(
+        array $productIds,
+        SalesChannelEntity $salesChannel,
+        Context $context
+    ): void {
+        $productContext = $this->productContextFactory->getContext($salesChannel, $context);
+
+        $this->unsyncedChecker->checkForUnsynced($productIds, $productContext);
+        $this->deletedUpdater->update($productIds, $productContext);
         $this->productContextFactory->commit($productContext);
     }
 }

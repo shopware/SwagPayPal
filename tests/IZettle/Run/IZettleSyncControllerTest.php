@@ -9,21 +9,20 @@ namespace Swag\PayPal\Test\IZettle\Run;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\IZettleSyncController;
+use Swag\PayPal\IZettle\MessageQueue\Handler\SyncManagerHandler;
+use Swag\PayPal\IZettle\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
 use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Run\Task\CompleteTask;
 use Swag\PayPal\IZettle\Run\Task\ImageTask;
 use Swag\PayPal\IZettle\Run\Task\InventoryTask;
 use Swag\PayPal\IZettle\Run\Task\ProductTask;
-use Swag\PayPal\IZettle\Sync\ImageSyncer;
-use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
-use Swag\PayPal\IZettle\Sync\ProductSyncer;
+use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelRepoMock;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -44,21 +43,6 @@ class IZettleSyncControllerTest extends TestCase
     /**
      * @var MockObject
      */
-    private $productSyncer;
-
-    /**
-     * @var MockObject
-     */
-    private $imageSyncer;
-
-    /**
-     * @var MockObject
-     */
-    private $inventorySyncer;
-
-    /**
-     * @var MockObject
-     */
     private $logCleaner;
 
     /**
@@ -71,20 +55,23 @@ class IZettleSyncControllerTest extends TestCase
      */
     private $runService;
 
+    /**
+     * @var MessageBusMock
+     */
+    private $messageBus;
+
     protected function setUp(): void
     {
         $this->salesChannelRepoMock = new SalesChannelRepoMock();
-        $this->productSyncer = $this->createMock(ProductSyncer::class);
-        $this->imageSyncer = $this->createMock(ImageSyncer::class);
-        $this->inventorySyncer = $this->createMock(InventorySyncer::class);
+        $this->messageBus = new MessageBusMock();
         $this->logCleaner = $this->createMock(LogCleaner::class);
         $this->productSelection = $this->createMock(ProductSelection::class);
         $this->runService = $this->createMock(RunService::class);
 
-        $productTask = new ProductTask($this->runService, new NullLogger(), $this->productSyncer);
-        $imageTask = new ImageTask($this->runService, new NullLogger(), $this->imageSyncer);
-        $inventoryTask = new InventoryTask($this->runService, new NullLogger(), $this->inventorySyncer);
-        $completeTask = new CompleteTask($this->runService, new NullLogger(), $this->productSyncer, $this->imageSyncer, $this->inventorySyncer);
+        $productTask = new ProductTask($this->messageBus, $this->runService);
+        $imageTask = new ImageTask($this->messageBus, $this->runService);
+        $inventoryTask = new InventoryTask($this->messageBus, $this->runService);
+        $completeTask = new CompleteTask($this->messageBus, $this->runService);
 
         $this->iZettleSyncController = new IZettleSyncController(
             $this->salesChannelRepoMock,
@@ -103,40 +90,45 @@ class IZettleSyncControllerTest extends TestCase
             [
                 'syncAll',
                 [
-                    'productSyncer' => 'syncProducts',
-                    'imageSyncer' => 'syncImages',
-                    'inventorySyncer' => 'syncInventory',
+                    SyncManagerHandler::SYNC_PRODUCT,
+                    SyncManagerHandler::SYNC_IMAGE,
+                    SyncManagerHandler::SYNC_PRODUCT,
+                    SyncManagerHandler::SYNC_INVENTORY,
                 ],
             ],
             [
                 'syncInventory',
                 [
-                    'inventorySyncer' => 'syncInventory',
+                    SyncManagerHandler::SYNC_INVENTORY,
                 ],
             ],
             [
                 'syncProducts',
                 [
-                    'productSyncer' => 'syncProducts',
+                    SyncManagerHandler::SYNC_PRODUCT,
                 ],
             ],
             [
                 'syncImages',
                 [
-                    'imageSyncer' => 'syncImages',
-                ],
-            ],
-            [
-                'cleanUpLog',
-                [
-                    'logCleaner' => 'cleanUpLog',
+                    SyncManagerHandler::SYNC_IMAGE,
                 ],
             ],
         ];
     }
 
+    public function dataProviderFunctions(): array
+    {
+        return $this->dataProviderSyncFunctions() + [
+            [
+                'cleanUpLog',
+                null,
+            ],
+        ];
+    }
+
     /**
-     * @dataProvider dataProviderSyncFunctions
+     * @dataProvider dataProviderFunctions
      */
     public function testSyncWithInvalidId(string $syncFunction): void
     {
@@ -151,11 +143,20 @@ class IZettleSyncControllerTest extends TestCase
     public function testSyncNormal(string $syncFunction, array $serviceCalls): void
     {
         $context = Context::createDefaultContext();
-        foreach ($serviceCalls as $serviceName => $serviceCall) {
-            $this->$serviceName->expects(static::atLeastOnce())->method($serviceCall);
-        }
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
         $this->iZettleSyncController->$syncFunction($salesChannelId->getId(), $context);
+
+        /** @var SyncManagerMessage $message */
+        $message = \current($this->messageBus->getEnvelopes())->getMessage();
+        static::assertSame($serviceCalls, $message->getSteps());
+    }
+
+    public function testCleanUpLog(): void
+    {
+        $context = Context::createDefaultContext();
+        $this->logCleaner->expects(static::atLeastOnce())->method('cleanUpLog');
+        $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
+        $this->iZettleSyncController->cleanUpLog($salesChannelId->getId(), $context);
     }
 
     public function testProductLog(): void

@@ -75,7 +75,7 @@ class IZettleStructTest extends TestCase
         static::assertNull($iZettleStructArray['bar']);
         static::assertNull($iZettleStructArray['foo']);
         static::assertNull($iZettleStructArray['notExistingClass']);
-        static::assertEquals($iZettleStructArray['notExistingCollectionClass'], $data['not_existing_collection_class']);
+        static::assertSame($iZettleStructArray['notExistingCollectionClass'], $data['not_existing_collection_class']);
         static::assertIsArray($iZettleStructArray['notExistingCollectionClass']);
     }
 }

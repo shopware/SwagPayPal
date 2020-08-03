@@ -29,7 +29,7 @@ class UuidConverterTest extends TestCase
         if ($expectedUuid === '') {
             $this->expectException(InvalidUuidException::class);
         }
-        static::assertEquals($expectedUuid, $this->createUuidConverter()->convertUuidToV1($originalUuid));
+        static::assertSame($expectedUuid, $this->createUuidConverter()->convertUuidToV1($originalUuid));
     }
 
     public function dataProviderUuidConversionToV4(): array

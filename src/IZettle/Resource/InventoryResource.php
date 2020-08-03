@@ -7,9 +7,8 @@
 
 namespace Swag\PayPal\IZettle\Resource;
 
-use Swag\PayPal\IZettle\Api\Inventory\Changes;
+use Swag\PayPal\IZettle\Api\Inventory\BulkChanges;
 use Swag\PayPal\IZettle\Api\Inventory\Location;
-use Swag\PayPal\IZettle\Api\Inventory\StartTracking;
 use Swag\PayPal\IZettle\Api\Inventory\Status;
 use Swag\PayPal\IZettle\Api\IZettleBaseURL;
 use Swag\PayPal\IZettle\Api\IZettleRequestUri;
@@ -69,14 +68,14 @@ class InventoryResource
         return $inventory;
     }
 
-    public function changeInventory(IZettleSalesChannelEntity $salesChannelEntity, Changes $changes): ?Status
+    public function changeInventoryBulk(IZettleSalesChannelEntity $salesChannelEntity, BulkChanges $bulkChanges): ?Status
     {
         $apiKey = $salesChannelEntity->getApiKey();
         $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::INVENTORY, $apiKey);
 
-        $response = $client->sendPutRequest(IZettleRequestUri::INVENTORY_RESOURCE, $changes);
+        $response = $client->sendPostRequest(IZettleRequestUri::INVENTORY_RESOURCE_BULK, $bulkChanges);
 
-        if ($changes->getReturnBalanceForLocationUuid() === null) {
+        if ($bulkChanges->getReturnBalanceForLocationUuid() === null) {
             return null;
         }
 
@@ -84,26 +83,6 @@ class InventoryResource
         if ($response !== null) {
             $inventory->assign($response);
         }
-
-        return $inventory;
-    }
-
-    public function startTracking(IZettleSalesChannelEntity $salesChannelEntity, string $productUuid): ?Status
-    {
-        $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::INVENTORY, $apiKey);
-
-        $startTracking = new StartTracking();
-        $startTracking->setProductUuid($productUuid);
-
-        $response = $client->sendPostRequest(IZettleRequestUri::INVENTORY_RESOURCE, $startTracking);
-
-        if ($response === null) {
-            return null;
-        }
-
-        $inventory = new Status();
-        $inventory->assign($response);
 
         return $inventory;
     }

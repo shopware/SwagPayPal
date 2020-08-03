@@ -70,7 +70,6 @@
         </service>
 
         <service id="Swag\PayPal\IZettle\Sync\ProductSyncer">
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
             <argument type="service" id="Swag\PayPal\IZettle\Api\Service\ProductConverter"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Context\ProductContextFactory"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Product\NewUpdater"/>

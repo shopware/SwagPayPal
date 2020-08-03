@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Test\IZettle\Run;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Swag\PayPal\IZettle\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Run\Task\CompleteTask;
 use Swag\PayPal\IZettle\Run\Task\InventoryTask;
@@ -17,9 +17,7 @@ use Swag\PayPal\IZettle\Schedule\CompleteSyncTask;
 use Swag\PayPal\IZettle\Schedule\CompleteSyncTaskHandler;
 use Swag\PayPal\IZettle\Schedule\InventorySyncTask;
 use Swag\PayPal\IZettle\Schedule\InventorySyncTaskHandler;
-use Swag\PayPal\IZettle\Sync\ImageSyncer;
-use Swag\PayPal\IZettle\Sync\InventorySyncer;
-use Swag\PayPal\IZettle\Sync\ProductSyncer;
+use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelRepoMock;
 
 class ScheduledTaskTest extends TestCase
@@ -29,22 +27,20 @@ class ScheduledTaskTest extends TestCase
         $salesChannelRepoMock = new SalesChannelRepoMock();
         $scheduledTaskRepository = $this->createMock(EntityRepositoryInterface::class);
 
-        $productSyncer = $this->createPartialMock(ProductSyncer::class, ['syncProducts']);
-        $inventorySyncer = $this->createPartialMock(InventorySyncer::class, ['syncInventory']);
-        $imageSyncer = $this->createPartialMock(ImageSyncer::class, ['syncImages']);
+        $messageBus = new MessageBusMock();
         $runService = $this->createMock(RunService::class);
-        $completeTask = new CompleteTask($runService, new NullLogger(), $productSyncer, $imageSyncer, $inventorySyncer);
+        $completeTask = new CompleteTask($messageBus, $runService);
 
         $taskHandler = new CompleteSyncTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $completeTask);
 
         $runService->expects(static::once())->method('startRun');
-        $productSyncer->expects(static::exactly(2))->method('syncProducts');
-        $imageSyncer->expects(static::once())->method('syncImages');
-        $inventorySyncer->expects(static::once())->method('syncInventory');
-        $runService->expects(static::once())->method('finishRun');
 
         static::assertContains(CompleteSyncTask::class, CompleteSyncTaskHandler::getHandledMessages());
         $taskHandler->run();
+
+        /** @var SyncManagerMessage $message */
+        $message = \current($messageBus->getEnvelopes())->getMessage();
+        static::assertSame($completeTask->getSteps(), $message->getSteps());
     }
 
     public function testInventorySync(): void
@@ -52,17 +48,19 @@ class ScheduledTaskTest extends TestCase
         $salesChannelRepoMock = new SalesChannelRepoMock();
         $scheduledTaskRepository = $this->createMock(EntityRepositoryInterface::class);
 
-        $inventorySyncer = $this->createPartialMock(InventorySyncer::class, ['syncInventory']);
+        $messageBus = new MessageBusMock();
         $runService = $this->createMock(RunService::class);
-        $inventoryTask = new InventoryTask($runService, new NullLogger(), $inventorySyncer);
+        $inventoryTask = new InventoryTask($messageBus, $runService);
 
         $taskHandler = new InventorySyncTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $inventoryTask);
 
         $runService->expects(static::once())->method('startRun');
-        $inventorySyncer->expects(static::once())->method('syncInventory');
-        $runService->expects(static::once())->method('finishRun');
 
         static::assertContains(InventorySyncTask::class, InventorySyncTaskHandler::getHandledMessages());
         $taskHandler->run();
+
+        /** @var SyncManagerMessage $message */
+        $message = \current($messageBus->getEnvelopes())->getMessage();
+        static::assertSame($inventoryTask->getSteps(), $message->getSteps());
     }
 }

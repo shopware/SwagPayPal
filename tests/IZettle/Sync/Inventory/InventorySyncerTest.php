@@ -10,20 +10,17 @@ namespace Swag\PayPal\Test\IZettle\Sync\Inventory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\Resource\InventoryResource;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\IZettle\Api\Inventory\Status;
+use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelInventoryCollection;
+use Swag\PayPal\IZettle\Sync\Context\InventoryContext;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater;
 use Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
-use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleInventoryRepoMock;
-use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelProductRepoMock;
 
 class InventorySyncerTest extends TestCase
 {
@@ -33,21 +30,6 @@ class InventorySyncerTest extends TestCase
      * @var InventorySyncer
      */
     private $inventorySyncer;
-
-    /**
-     * @var SalesChannelProductRepoMock
-     */
-    private $salesChannelProductRepository;
-
-    /**
-     * @var SalesChannelEntity
-     */
-    private $salesChannel;
-
-    /**
-     * @var MockObject|InventoryResource
-     */
-    private $inventoryResource;
 
     /**
      * @var MockObject
@@ -64,32 +46,36 @@ class InventorySyncerTest extends TestCase
      */
     private $remoteUpdater;
 
+    /**
+     * @var InventoryContext
+     */
+    private $inventoryContext;
+
     public function setUp(): void
     {
         $context = Context::createDefaultContext();
 
-        $this->salesChannel = $this->createSalesChannel($context);
+        $salesChannel = $this->getSalesChannel($context);
 
-        $productStreamBuilder = $this->createStub(ProductStreamBuilderInterface::class);
-        $productStreamBuilder->method('buildFilters')->willReturn(
-            [new NotFilter(NotFilter::CONNECTION_AND, [
-                new EqualsFilter('id', null),
-            ])]
-        );
-
-        $this->salesChannelProductRepository = new SalesChannelProductRepoMock();
         $this->inventoryRepository = $this->createPartialMock(IZettleInventoryRepoMock::class, ['upsert']);
         $this->localUpdater = $this->createMock(LocalUpdater::class);
         $this->remoteUpdater = $this->createMock(RemoteUpdater::class);
 
-        $productSelection = new ProductSelection(
-            $this->salesChannelProductRepository,
-            $productStreamBuilder,
-            $this->createMock(SalesChannelContextFactory::class)
+        $uuidConverter = new UuidConverter();
+
+        $this->inventoryContext = new InventoryContext(
+            $uuidConverter,
+            $salesChannel,
+            $uuidConverter->convertUuidToV1(Uuid::randomHex()),
+            $uuidConverter->convertUuidToV1(Uuid::randomHex()),
+            $uuidConverter->convertUuidToV1(Uuid::randomHex()),
+            $uuidConverter->convertUuidToV1(Uuid::randomHex()),
+            new Status(),
+            new IZettleSalesChannelInventoryCollection(),
+            $context
         );
 
         $this->inventorySyncer = new InventorySyncer(
-            $productSelection,
             $this->createStub(InventoryContextFactory::class),
             $this->localUpdater,
             $this->remoteUpdater,
@@ -99,57 +85,57 @@ class InventorySyncerTest extends TestCase
 
     public function testInventorySyncLocal(): void
     {
-        $context = Context::createDefaultContext();
-
         $product = $this->getSingleProduct();
-        $this->salesChannelProductRepository->addMockEntity($product);
         $this->localUpdater->method('updateLocal')->willReturn(new ProductCollection([$product]));
         $this->remoteUpdater->method('updateRemote')->willReturn(new ProductCollection());
 
         $this->inventoryRepository->expects(static::once())->method('upsert');
 
-        $this->inventorySyncer->syncInventory($this->salesChannel, $context);
+        $this->inventorySyncer->sync(
+            new ProductCollection([$product]),
+            $this->inventoryContext
+        );
     }
 
     public function testInventorySyncRemote(): void
     {
-        $context = Context::createDefaultContext();
-
         $product = $this->getSingleProduct();
-        $this->salesChannelProductRepository->addMockEntity($product);
         $this->localUpdater->method('updateLocal')->willReturn(new ProductCollection());
         $this->remoteUpdater->method('updateRemote')->willReturn(new ProductCollection([$product]));
 
         $this->inventoryRepository->expects(static::once())->method('upsert');
 
-        $this->inventorySyncer->syncInventory($this->salesChannel, $context);
+        $this->inventorySyncer->sync(
+            new ProductCollection([$product]),
+            $this->inventoryContext
+        );
     }
 
     public function testInventorySyncBoth(): void
     {
-        $context = Context::createDefaultContext();
-
         $product = $this->getSingleProduct();
-        $this->salesChannelProductRepository->addMockEntity($product);
         $this->localUpdater->method('updateLocal')->willReturn(new ProductCollection([$product]));
         $this->remoteUpdater->method('updateRemote')->willReturn(new ProductCollection([$product]));
 
         $this->inventoryRepository->expects(static::exactly(2))->method('upsert');
 
-        $this->inventorySyncer->syncInventory($this->salesChannel, $context);
+        $this->inventorySyncer->sync(
+            new ProductCollection([$product]),
+            $this->inventoryContext
+        );
     }
 
     public function testInventorySyncNone(): void
     {
-        $context = Context::createDefaultContext();
-
         $product = $this->getSingleProduct();
-        $this->salesChannelProductRepository->addMockEntity($product);
         $this->localUpdater->method('updateLocal')->willReturn(new ProductCollection());
         $this->remoteUpdater->method('updateRemote')->willReturn(new ProductCollection());
 
         $this->inventoryRepository->expects(static::never())->method('upsert');
 
-        $this->inventorySyncer->syncInventory($this->salesChannel, $context);
+        $this->inventorySyncer->sync(
+            new ProductCollection([$product]),
+            $this->inventoryContext
+        );
     }
 }

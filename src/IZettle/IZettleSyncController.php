@@ -92,9 +92,9 @@ class IZettleSyncController extends AbstractController
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
 
-        $this->productTask->execute($salesChannel, $context);
+        $runId = $this->productTask->execute($salesChannel, $context);
 
-        return new Response('', Response::HTTP_NO_CONTENT);
+        return new JsonResponse(['runId' => $runId]);
     }
 
     /**
@@ -104,9 +104,9 @@ class IZettleSyncController extends AbstractController
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
 
-        $this->imageTask->execute($salesChannel, $context);
+        $runId = $this->imageTask->execute($salesChannel, $context);
 
-        return new Response('', Response::HTTP_NO_CONTENT);
+        return new JsonResponse(['runId' => $runId]);
     }
 
     /**
@@ -116,9 +116,9 @@ class IZettleSyncController extends AbstractController
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
 
-        $this->inventoryTask->execute($salesChannel, $context);
+        $runId = $this->inventoryTask->execute($salesChannel, $context);
 
-        return new Response('', Response::HTTP_NO_CONTENT);
+        return new JsonResponse(['runId' => $runId]);
     }
 
     /**
@@ -128,9 +128,9 @@ class IZettleSyncController extends AbstractController
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context);
 
-        $this->completeTask->execute($salesChannel, $context);
+        $runId = $this->completeTask->execute($salesChannel, $context);
 
-        return new Response('', Response::HTTP_NO_CONTENT);
+        return new JsonResponse(['runId' => $runId]);
     }
 
     /**

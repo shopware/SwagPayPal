@@ -9,21 +9,22 @@ namespace Swag\PayPal\IZettle\Sync;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Image\BulkImageUpload;
 use Swag\PayPal\IZettle\Api\Image\BulkImageUploadResponse\Uploaded;
 use Swag\PayPal\IZettle\Api\Service\MediaConverter;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaEntity;
 use Swag\PayPal\IZettle\Exception\InvalidMediaTypeException;
 use Swag\PayPal\IZettle\Resource\ImageResource;
 
-class ImageSyncer
+class ImageSyncer extends AbstractSyncer
 {
     /**
      * @var EntityRepositoryInterface
@@ -57,17 +58,21 @@ class ImageSyncer
         $this->logger = $logger;
     }
 
-    public function syncImages(
-        IZettleSalesChannelEntity $iZettleSalesChannel,
+    /**
+     * @param IZettleSalesChannelMediaCollection $entityCollection
+     */
+    public function sync(
+        EntityCollection $entityCollection,
+        SalesChannelEntity $salesChannel,
         Context $context
     ): void {
-        $iZettleMediaCollection = $this->getIZettleMediaCollection($iZettleSalesChannel, $context);
+        $iZettleSalesChannel = $this->getIZettleSalesChannel($salesChannel);
 
         $domain = $iZettleSalesChannel->getMediaDomain();
 
         $bulkUpload = new BulkImageUpload();
 
-        foreach ($iZettleMediaCollection as $entity) {
+        foreach ($entityCollection as $entity) {
             try {
                 /* @var IZettleSalesChannelMediaEntity $entity */
                 $upload = $this->mediaConverter->convert($domain, $entity->getMedia(), $entity->getLookupKey());
@@ -91,7 +96,7 @@ class ImageSyncer
 
         $updates = [];
         foreach ($response->getUploaded() as $uploaded) {
-            $update = $this->prepareMediaUpdate($iZettleMediaCollection, $uploaded, $iZettleSalesChannel->getSalesChannelId());
+            $update = $this->prepareMediaUpdate($entityCollection, $uploaded, $iZettleSalesChannel->getSalesChannelId());
             if ($update !== null) {
                 $updates[] = $update;
             }
@@ -111,27 +116,18 @@ class ImageSyncer
         }
     }
 
-    private function getIZettleMediaCollection(IZettleSalesChannelEntity $iZettleSalesChannel, Context $context): IZettleSalesChannelMediaCollection
+    public function getCriteria(string $salesChannelId): Criteria
     {
         $criteria = new Criteria();
-        $criteria->addAssociation('media');
         $criteria->addFilter(
-            new EqualsFilter('salesChannelId', $iZettleSalesChannel->getSalesChannelId()),
+            new EqualsFilter('salesChannelId', $salesChannelId),
             new MultiFilter(MultiFilter::CONNECTION_OR, [
                 new EqualsFilter('url', null),
                 new NotFilter(NotFilter::CONNECTION_OR, [new EqualsFilter('media.updatedAt', null)]),
             ])
         );
 
-        /** @var IZettleSalesChannelMediaCollection $iZettleMediaCollection */
-        $iZettleMediaCollection = $this->iZettleMediaRepository->search($criteria, $context)->getEntities()->filter(
-            static function (IZettleSalesChannelMediaEntity $entity) {
-                return $entity->getUrl() === null
-                    || $entity->getCreatedAt() < $entity->getMedia()->getUpdatedAt();
-            }
-        );
-
-        return $iZettleMediaCollection;
+        return $criteria;
     }
 
     private function prepareMediaUpdate(

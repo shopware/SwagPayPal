@@ -52,7 +52,7 @@ class LocalUpdater
 
             $stockChange = $this->getChangeAmount($productEntity, $inventoryContext);
 
-            if ($stockChange === 0 || $inventoryContext->getIZettleInventory($productEntity) === null) {
+            if ($stockChange === 0 || $inventoryContext->getSingleRemoteInventory($productEntity) === null) {
                 continue;
             }
 
@@ -89,7 +89,12 @@ class LocalUpdater
     private function getChangeAmount(ProductEntity $productEntity, InventoryContext $inventoryContext): int
     {
         $previousStock = $inventoryContext->getLocalInventory($productEntity);
-        $currentIZettleStock = $inventoryContext->getIZettleInventory($productEntity);
+
+        if ($previousStock === null) {
+            return 0;
+        }
+
+        $currentIZettleStock = $inventoryContext->getSingleRemoteInventory($productEntity);
 
         return $currentIZettleStock - $previousStock;
     }

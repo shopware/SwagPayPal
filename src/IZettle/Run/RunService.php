@@ -11,7 +11,6 @@ use Monolog\Logger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelRunEntity;
 
 class RunService
 {
@@ -21,35 +20,39 @@ class RunService
     private $runRepository;
 
     /**
+     * @var EntityRepositoryInterface
+     */
+    private $logRepository;
+
+    /**
      * @var Logger
      */
     private $logger;
 
     public function __construct(
         EntityRepositoryInterface $runRepository,
+        EntityRepositoryInterface $logRepository,
         Logger $logger
     ) {
         $this->runRepository = $runRepository;
+        $this->logRepository = $logRepository;
         $this->logger = $logger;
     }
 
-    public function startRun(string $salesChannelId, string $taskName, Context $context): IZettleSalesChannelRunEntity
+    public function startRun(string $salesChannelId, string $taskName, Context $context): string
     {
-        $run = new IZettleSalesChannelRunEntity();
-        $run->setId(Uuid::randomHex());
-        $run->setSalesChannelId($salesChannelId);
-        $run->setTask($taskName);
+        $runId = Uuid::randomHex();
 
         $this->runRepository->create([[
-            'id' => $run->getId(),
+            'id' => $runId,
             'salesChannelId' => $salesChannelId,
             'task' => $taskName,
         ]], $context);
 
-        return $run;
+        return $runId;
     }
 
-    public function finishRun(IZettleSalesChannelRunEntity $run, Context $context): void
+    public function writeLog(string $runId, Context $context): void
     {
         $logHandler = $this->getLogHandler();
         if ($logHandler === null) {
@@ -57,12 +60,24 @@ class RunService
         }
         $logs = $logHandler->getLogs();
 
-        $this->runRepository->update([[
-            'id' => $run->getId(),
-            'logs' => $logs,
-        ]], $context);
+        if (\count($logs) > 0) {
+            foreach ($logs as &$log) {
+                $log['runId'] = $runId;
+            }
+            unset($log);
+
+            $this->logRepository->create($logs, $context);
+        }
 
         $logHandler->flush();
+    }
+
+    public function finishRun(string $runId, Context $context): void
+    {
+        $this->runRepository->update([[
+            'id' => $runId,
+            'finishedAt' => new \DateTime(),
+        ]], $context);
     }
 
     private function getLogHandler(): ?LogHandler

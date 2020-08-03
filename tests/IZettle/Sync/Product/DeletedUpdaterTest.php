@@ -9,15 +9,12 @@ namespace Swag\PayPal\Test\IZettle\Sync\Product;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
-use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductEntity;
 use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\Product\DeletedUpdater;
@@ -29,11 +26,6 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
      * @var ProductContextMock
      */
     private $productContext;
-
-    /**
-     * @var ProductGroupingCollection
-     */
-    private $productGroupingCollection;
 
     /**
      * @var IZettleSalesChannelProductEntity
@@ -53,7 +45,7 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
     public function setUp(): void
     {
         $context = Context::createDefaultContext();
-        $salesChannel = $this->createSalesChannel($context);
+        $salesChannel = $this->getSalesChannel($context);
 
         $this->iZettleProductEntity = new IZettleSalesChannelProductEntity();
         $this->iZettleProductEntity->setSalesChannelId($salesChannel->getId());
@@ -63,8 +55,6 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
         $this->iZettleProductEntity->setChecksum('aChecksum');
 
         $this->productContext = new ProductContextMock($salesChannel, $context, $this->iZettleProductEntity);
-
-        $this->productGroupingCollection = new ProductGroupingCollection([]);
 
         $this->productResource = $this->createMock(ProductResource::class);
         $this->logger = $this->createMock(LoggerInterface::class);
@@ -84,7 +74,7 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
         $this->productResource->expects(static::once())->method('deleteProduct');
         $this->logger->expects(static::once())->method('info');
 
-        $updater->update($this->productGroupingCollection, $this->productContext);
+        $updater->update([], $this->productContext);
 
         static::assertCount(0, $this->productContext->getProductChanges());
         static::assertCount(1, $this->productContext->getProductRemovals());
@@ -99,17 +89,12 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
             new UuidConverter()
         );
 
-        $productEntity = new SalesChannelProductEntity();
-        $productEntity->setId($this->iZettleProductEntity->getProductId());
-        $productEntity->setVersionId($this->iZettleProductEntity->getProductVersionId());
-        $this->productGroupingCollection->addProducts(new ProductCollection([$productEntity]));
-
         $this->productResource->expects(static::never())->method('createProduct');
         $this->productResource->expects(static::never())->method('updateProduct');
         $this->productResource->expects(static::never())->method('deleteProduct');
         $this->logger->expects(static::never())->method('info');
 
-        $updater->update($this->productGroupingCollection, $this->productContext);
+        $updater->update([$this->iZettleProductEntity->getProductId()], $this->productContext);
 
         static::assertCount(0, $this->productContext->getProductChanges());
         static::assertCount(0, $this->productContext->getProductRemovals());
@@ -138,7 +123,7 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
         $this->productResource->expects(static::once())->method('deleteProduct');
         $this->logger->expects(static::once())->method('notice');
 
-        $updater->update($this->productGroupingCollection, $this->productContext);
+        $updater->update([], $this->productContext);
 
         static::assertCount(0, $this->productContext->getProductChanges());
         static::assertCount(1, $this->productContext->getProductRemovals());
@@ -162,6 +147,6 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
         );
 
         $this->logger->expects(static::once())->method('error');
-        $updater->update($this->productGroupingCollection, $this->productContext);
+        $updater->update([], $this->productContext);
     }
 }

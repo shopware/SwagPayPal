@@ -16,7 +16,6 @@ use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelInventoryCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelInventoryEntity;
-use Swag\PayPal\IZettle\Resource\InventoryResource;
 use Swag\PayPal\SwagPayPal;
 
 class InventoryContext
@@ -25,11 +24,6 @@ class InventoryContext
      * @var IZettleSalesChannelInventoryCollection
      */
     private $localInventory;
-
-    /**
-     * @var InventoryResource
-     */
-    private $inventoryResource;
 
     /**
      * @var UuidConverter
@@ -49,7 +43,7 @@ class InventoryContext
     /**
      * @var Status
      */
-    private $iZettleInventory;
+    private $remoteInventory;
 
     /**
      * @var string
@@ -72,35 +66,33 @@ class InventoryContext
     private $soldUuid;
 
     /**
-     * @var string[]
+     * @var string[]|null
      */
-    private $productsUuidsWithStartedTracking = [];
+    private $productIds;
 
     public function __construct(
-        InventoryResource $inventoryResource,
         UuidConverter $uuidConverter,
         SalesChannelEntity $salesChannel,
         string $storeUuid,
         string $supplierUuid,
         string $binUuid,
         string $soldUuid,
-        Status $iZettleInventory,
+        Status $remoteInventory,
         IZettleSalesChannelInventoryCollection $localInventory,
         Context $context
     ) {
-        $this->inventoryResource = $inventoryResource;
         $this->uuidConverter = $uuidConverter;
         $this->salesChannel = $salesChannel;
         $this->storeUuid = $storeUuid;
         $this->supplierUuid = $supplierUuid;
         $this->binUuid = $binUuid;
         $this->soldUuid = $soldUuid;
-        $this->iZettleInventory = $iZettleInventory;
+        $this->remoteInventory = $remoteInventory;
         $this->localInventory = $localInventory;
         $this->context = $context;
     }
 
-    public function getIZettleInventory(ProductEntity $productEntity, bool $ignoreTracking = false): ?int
+    public function getSingleRemoteInventory(ProductEntity $productEntity, bool $ignoreTracking = false): ?int
     {
         $productUuid = $productEntity->getParentId();
         $variantUuid = $productEntity->getId();
@@ -111,49 +103,24 @@ class InventoryContext
         $productUuid = $this->uuidConverter->convertUuidToV1($productUuid);
         $variantUuid = $this->uuidConverter->convertUuidToV1($variantUuid);
 
-        $variant = $this->findIZettleInventory($productUuid, $variantUuid);
+        $variant = $this->findRemoteInventory($productUuid, $variantUuid);
 
-        if ($variant === null || !($ignoreTracking || $this->isIZettleTracked($productEntity))) {
+        if ($variant === null || !($ignoreTracking || $this->isTracked($productEntity))) {
             return null;
         }
 
         return $variant->getBalance();
     }
 
-    public function isIZettleTracked(ProductEntity $productEntity): bool
+    public function isTracked(ProductEntity $productEntity): bool
     {
         $productUuid = $productEntity->getParentId() ?? $productEntity->getId();
         $productUuid = $this->uuidConverter->convertUuidToV1($productUuid);
 
-        return \in_array($productUuid, $this->iZettleInventory->getTrackedProducts(), true);
+        return \in_array($productUuid, $this->remoteInventory->getTrackedProducts(), true);
     }
 
-    public function startIZettleTracking(ProductEntity $productEntity): void
-    {
-        $productUuid = $productEntity->getParentId() ?? $productEntity->getId();
-        $productUuid = $this->uuidConverter->convertUuidToV1($productUuid);
-
-        if (\in_array($productUuid, $this->productsUuidsWithStartedTracking, true)) {
-            return;
-        }
-
-        $newStatus = $this->inventoryResource->startTracking($this->getIZettleSalesChannel(), $productUuid);
-        $this->productsUuidsWithStartedTracking[] = $productUuid;
-        if ($newStatus === null) {
-            return;
-        }
-        $variants = $newStatus->getVariants();
-
-        if (\count($variants) === 0) {
-            return;
-        }
-
-        foreach ($variants as $variant) {
-            $this->addIZettleInventory($variant);
-        }
-    }
-
-    public function getLocalInventory(ProductEntity $productEntity): int
+    public function getLocalInventory(ProductEntity $productEntity): ?int
     {
         $inventory = $this->localInventory->filter(
             static function (IZettleSalesChannelInventoryEntity $entity) use ($productEntity) {
@@ -164,7 +131,7 @@ class InventoryContext
 
         $inventoryEntry = $inventory->first();
         if ($inventoryEntry === null) {
-            return 0;
+            return null;
         }
 
         return $inventoryEntry->getStock();
@@ -190,15 +157,22 @@ class InventoryContext
         return $this->soldUuid;
     }
 
-    public function addIZettleInventory(Variant $newVariant): void
+    public function addRemoteInventory(Variant ...$newVariants): void
     {
-        $variant = $this->findIZettleInventory($newVariant->getProductUuid(), $newVariant->getVariantUuid());
-        if ($variant !== null) {
-            $variant->setBalance((string) $newVariant->getBalance());
+        foreach ($newVariants as $newVariant) {
+            $variant = $this->findRemoteInventory($newVariant->getProductUuid(), $newVariant->getVariantUuid());
+            if ($variant !== null) {
+                $variant->setBalance((string) $newVariant->getBalance());
 
-            return;
+                continue;
+            }
+            $this->remoteInventory->addVariant($newVariant);
         }
-        $this->iZettleInventory->addVariant($newVariant);
+    }
+
+    public function setRemoteInventory(Status $remoteInventory): void
+    {
+        $this->remoteInventory = $remoteInventory;
     }
 
     public function getSalesChannel(): SalesChannelEntity
@@ -214,11 +188,16 @@ class InventoryContext
         return $iZettleSalesChannel;
     }
 
-    public function updateLocalInventory(IZettleSalesChannelInventoryCollection $localInventory): void
+    public function addLocalInventory(IZettleSalesChannelInventoryCollection $localInventory): void
     {
         foreach ($localInventory->getElements() as $element) {
             $this->localInventory->add($element);
         }
+    }
+
+    public function getRemoteInventory(): Status
+    {
+        return $this->remoteInventory;
     }
 
     public function getContext(): Context
@@ -226,9 +205,25 @@ class InventoryContext
         return $this->context;
     }
 
-    private function findIZettleInventory(string $productUuid, string $variantUuid): ?Variant
+    /**
+     * @return string[]|null
+     */
+    public function getProductIds(): ?array
     {
-        foreach ($this->iZettleInventory->getVariants() as $variant) {
+        return $this->productIds;
+    }
+
+    /**
+     * @param string[] $productIds
+     */
+    public function setProductIds(array $productIds): void
+    {
+        $this->productIds = $productIds;
+    }
+
+    private function findRemoteInventory(string $productUuid, string $variantUuid): ?Variant
+    {
+        foreach ($this->remoteInventory->getVariants() as $variant) {
             if ($variant->getProductUuid() === $productUuid && $variant->getVariantUuid() === $variantUuid) {
                 return $variant;
             }

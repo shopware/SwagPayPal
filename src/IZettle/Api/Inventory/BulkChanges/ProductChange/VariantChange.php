@@ -5,11 +5,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\IZettle\Api\Inventory\Changes;
+namespace Swag\PayPal\IZettle\Api\Inventory\BulkChanges\ProductChange;
 
 use Swag\PayPal\IZettle\Api\Common\IZettleStruct;
 
-class Change extends IZettleStruct
+class VariantChange extends IZettleStruct
 {
     /**
      * @var string

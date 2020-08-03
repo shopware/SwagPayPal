@@ -35,8 +35,8 @@ class PriceConverterTest extends TestCase
         $currency->setIsoCode($currencyCode);
         $currency->setDecimalPrecision($decimalPrecision);
         $price = $this->createPriceConverter()->convert($shopwarePrice, $currency);
-        static::assertEquals($intValue, $price->getAmount());
-        static::assertEquals($currency->getIsoCode(), $price->getCurrencyId());
+        static::assertSame($intValue, $price->getAmount());
+        static::assertSame($currency->getIsoCode(), $price->getCurrencyId());
     }
 
     /**
@@ -48,8 +48,8 @@ class PriceConverterTest extends TestCase
         $currency->setIsoCode($currencyCode);
         $currency->setDecimalPrecision($decimalPrecision);
         $price = $this->createPriceConverter()->convertFloat($floatValue, $currency);
-        static::assertEquals($intValue, $price->getAmount());
-        static::assertEquals($currency->getIsoCode(), $price->getCurrencyId());
+        static::assertSame($intValue, $price->getAmount());
+        static::assertSame($currency->getIsoCode(), $price->getCurrencyId());
     }
 
     private function createPriceConverter(): PriceConverter

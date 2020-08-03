@@ -7,9 +7,9 @@
 
 namespace Swag\PayPal\IZettle\Api\Service\Inventory;
 
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductEntity;
-use Swag\PayPal\IZettle\Api\Inventory\Changes\Change;
+use Swag\PayPal\IZettle\Api\Inventory\BulkChanges\ProductChange;
+use Swag\PayPal\IZettle\Api\Inventory\BulkChanges\ProductChange\VariantChange;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContext;
 
@@ -20,11 +20,6 @@ class RemoteCalculator
      */
     private $uuidConverter;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
     public function __construct(UuidConverter $uuidConverter)
     {
         $this->uuidConverter = $uuidConverter;
@@ -33,35 +28,44 @@ class RemoteCalculator
     public function calculateRemoteChange(
         ProductEntity $productEntity,
         InventoryContext $inventoryContext
-    ): ?Change {
+    ): ?ProductChange {
         $difference = $this->getChangeAmount($productEntity, $inventoryContext);
+        $isTracked = $inventoryContext->isTracked($productEntity);
 
-        if ($difference === 0) {
+        if ($difference === 0 && $isTracked) {
             return null;
         }
 
-        $change = new Change();
+        $productUuid = $this->uuidConverter->convertUuidToV1($productEntity->getParentId() ?? $productEntity->getId());
 
-        $productUuid = $productEntity->getParentId() ?? $productEntity->getId();
-        $change->setProductUuid($this->uuidConverter->convertUuidToV1($productUuid));
+        $productChange = new ProductChange();
+        $productChange->setProductUuid($productUuid);
+        $productChange->setTrackingStatusChange($isTracked ? ProductChange::TRACKING_NOCHANGE : ProductChange::TRACKING_START);
 
+        if ($difference === 0) {
+            return $productChange;
+        }
+
+        $variantChange = new VariantChange();
+        $variantChange->setProductUuid($productUuid);
         $variantUuid = $productEntity->getId();
         if ($productEntity->getParentId() === null) {
             $variantUuid = $this->uuidConverter->incrementUuid($variantUuid);
         }
-        $change->setVariantUuid($this->uuidConverter->convertUuidToV1($variantUuid));
+        $variantChange->setVariantUuid($this->uuidConverter->convertUuidToV1($variantUuid));
 
         if ($difference > 0) {
-            $change->setFromLocationUuid($inventoryContext->getSupplierUuid());
-            $change->setToLocationUuid($inventoryContext->getStoreUuid());
-            $change->setChange($difference);
+            $variantChange->setFromLocationUuid($inventoryContext->getSupplierUuid());
+            $variantChange->setToLocationUuid($inventoryContext->getStoreUuid());
+            $variantChange->setChange($difference);
         } else {
-            $change->setFromLocationUuid($inventoryContext->getStoreUuid());
-            $change->setToLocationUuid($inventoryContext->getBinUuid());
-            $change->setChange(-$difference);
+            $variantChange->setFromLocationUuid($inventoryContext->getStoreUuid());
+            $variantChange->setToLocationUuid($inventoryContext->getBinUuid());
+            $variantChange->setChange(-$difference);
         }
+        $productChange->addVariantChange($variantChange);
 
-        return $change;
+        return $productChange;
     }
 
     public function getChangeAmount(
@@ -69,12 +73,10 @@ class RemoteCalculator
         InventoryContext $inventoryContext
     ): int {
         $currentStock = $productEntity->getAvailableStock();
+        $previousStock = $inventoryContext->getLocalInventory($productEntity);
 
-        if ($inventoryContext->isIZettleTracked($productEntity)) {
-            $previousStock = $inventoryContext->getLocalInventory($productEntity);
-        } else {
-            $inventoryContext->startIZettleTracking($productEntity);
-            $previousStock = $inventoryContext->getIZettleInventory($productEntity, true);
+        if ($previousStock === null || !$inventoryContext->isTracked($productEntity)) {
+            $previousStock = $inventoryContext->getSingleRemoteInventory($productEntity);
         }
 
         return $currentStock - $previousStock;

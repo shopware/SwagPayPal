@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\IZettle\Sync;
 
-use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -49,14 +48,10 @@ class ProductSelection
         $this->salesChannelContextFactory = $salesChannelContextFactory;
     }
 
-    /**
-     * @return ProductCollection containing SalesChannelProductEntity
-     */
-    public function getProductCollection(
+    public function getProductIds(
         SalesChannelEntity $salesChannel,
-        Context $context,
-        bool $addAssociations
-    ): ProductCollection {
+        Context $context
+    ): array {
         $salesChannelContext = $this->getSalesChannelContext($salesChannel);
 
         /** @var IZettleSalesChannelEntity $iZettleSalesChannel */
@@ -65,14 +60,7 @@ class ProductSelection
         $productStreamId = $iZettleSalesChannel->getProductStreamId();
         $criteria = $this->getProductStreamCriteria($productStreamId, $context);
 
-        if ($addAssociations) {
-            $this->addAssociations($criteria);
-        }
-
-        /** @var ProductCollection $shopwareProducts */
-        $shopwareProducts = $this->productRepository->search($criteria, $salesChannelContext)->getEntities();
-
-        return $shopwareProducts;
+        return $this->productRepository->searchIds($criteria, $salesChannelContext)->getIds();
     }
 
     public function getProductLogCollection(
@@ -112,7 +100,7 @@ class ProductSelection
         return $this->productRepository->search($criteria, $salesChannelContext);
     }
 
-    private function getProductStreamCriteria(?string $productStreamId, Context $context): Criteria
+    public function getProductStreamCriteria(?string $productStreamId, Context $context): Criteria
     {
         if (!$productStreamId) {
             return new Criteria();
@@ -129,7 +117,7 @@ class ProductSelection
         return $criteria;
     }
 
-    private function getSalesChannelContext(SalesChannelEntity $salesChannel): SalesChannelContext
+    public function getSalesChannelContext(SalesChannelEntity $salesChannel): SalesChannelContext
     {
         return $this->salesChannelContextFactory->create(
             Uuid::randomHex(),
@@ -137,7 +125,7 @@ class ProductSelection
         );
     }
 
-    private function addAssociations(Criteria $criteria): void
+    public function addAssociations(Criteria $criteria): void
     {
         $criteria
             ->addAssociation('categories')

@@ -84,7 +84,24 @@
         </service>
 
         <service id="Swag\PayPal\IZettle\Setting\Service\ProductVisibilityCloneService">
+            <argument type="service" id="messenger.bus.shopware"/>
             <argument type="service" id="product_visibility.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\MessageQueue\Handler\CloneVisiblityHandler">
+            <argument type="service" id="product_visibility.repository"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Swag\PayPal\IZettle\MessageQueue\Handler\SyncManagerHandler">
+            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="message_queue_stats.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>
+            <argument type="service" id="Swag\PayPal\IZettle\MessageQueue\Manager\ImageSyncManager"/>
+            <argument type="service" id="Swag\PayPal\IZettle\MessageQueue\Manager\InventorySyncManager"/>
+            <argument type="service" id="Swag\PayPal\IZettle\MessageQueue\Manager\ProductSyncManager"/>
+            <tag name="messenger.message_handler" />
         </service>
 
         <service id="Swag\PayPal\IZettle\Command\IZettleSyncCommand">
@@ -94,26 +111,80 @@
         </service>
 
         <service id="Swag\PayPal\IZettle\Run\Task\AbstractTask" abstract="true">
+            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Run\Task\CompleteTask" parent="Swag\PayPal\IZettle\Run\Task\AbstractTask" />
+        <service id="Swag\PayPal\IZettle\Run\Task\ProductTask" parent="Swag\PayPal\IZettle\Run\Task\AbstractTask" />
+        <service id="Swag\PayPal\IZettle\Run\Task\ImageTask" parent="Swag\PayPal\IZettle\Run\Task\AbstractTask" />
+        <service id="Swag\PayPal\IZettle\Run\Task\InventoryTask" parent="Swag\PayPal\IZettle\Run\Task\AbstractTask" />
+
+        <service id="Swag\PayPal\IZettle\MessageQueue\Manager\AbstractSyncManager" abstract="true">
+            <argument type="service" id="messenger.bus.shopware"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\MessageQueue\Manager\ImageSyncManager"
+                 parent="Swag\PayPal\IZettle\MessageQueue\Manager\AbstractSyncManager">
+            <argument type="service" id="swag_paypal_izettle_sales_channel_media.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ImageSyncer"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\MessageQueue\Manager\InventorySyncManager"
+                 parent="Swag\PayPal\IZettle\MessageQueue\Manager\AbstractSyncManager">
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\MessageQueue\Manager\ProductSyncManager"
+                 parent="Swag\PayPal\IZettle\MessageQueue\Manager\AbstractSyncManager">
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\AbstractSyncHandler" abstract="true">
             <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>
         </service>
 
-        <service id="Swag\PayPal\IZettle\Run\Task\CompleteTask" parent="Swag\PayPal\IZettle\Run\Task\AbstractTask">
+        <service id="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ProductSingleSyncHandler"
+                 parent="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\AbstractSyncHandler">
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\ImageSyncer"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
+            <tag name="messenger.message_handler" />
         </service>
 
-        <service id="Swag\PayPal\IZettle\Run\Task\ProductTask" parent="Swag\PayPal\IZettle\Run\Task\AbstractTask">
+        <service id="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ProductVariantSyncHandler"
+                 parent="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\AbstractSyncHandler">
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
+            <tag name="messenger.message_handler" />
         </service>
 
-        <service id="Swag\PayPal\IZettle\Run\Task\ImageTask" parent="Swag\PayPal\IZettle\Run\Task\AbstractTask">
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\ImageSyncer"/>
+        <service id="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ProductCleanupSyncHandler"
+                 parent="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\AbstractSyncHandler">
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSyncer"/>
+            <tag name="messenger.message_handler" />
         </service>
 
-        <service id="Swag\PayPal\IZettle\Run\Task\InventoryTask" parent="Swag\PayPal\IZettle\Run\Task\AbstractTask">
+        <service id="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\InventorySyncHandler"
+                 parent="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\AbstractSyncHandler">
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\InventorySyncer"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ImageSyncHandler"
+                 parent="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\AbstractSyncHandler">
+            <argument type="service" id="swag_paypal_izettle_sales_channel_media.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ImageSyncer"/>
+            <tag name="messenger.message_handler" />
         </service>
     </services>
 </container>

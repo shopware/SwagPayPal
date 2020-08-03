@@ -10,7 +10,6 @@ namespace Swag\PayPal\IZettle\Sync\Product;
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
-use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
 use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 
@@ -41,7 +40,10 @@ class UnsyncedChecker
         $this->uuidConverter = $uuidConverter;
     }
 
-    public function checkForUnsynced(ProductGroupingCollection $productGroupings, ProductContext $productContext): void
+    /**
+     * @param string[] $productIds
+     */
+    public function checkForUnsynced(array $productIds, ProductContext $productContext): void
     {
         if (!$productContext->getIZettleSalesChannel()->isReplace()) {
             return;
@@ -53,7 +55,7 @@ class UnsyncedChecker
         foreach ($existingIZettleProducts as $iZettleProduct) {
             $uuid = $this->uuidConverter->convertUuidToV4($iZettleProduct->getUuid());
 
-            if ($productGroupings->has($uuid)) {
+            if (\in_array($uuid, $productIds, true)) {
                 continue;
             }
 

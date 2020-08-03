@@ -14,20 +14,18 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\Tax\TaxEntity;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
-use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\IZettle\Helper\SalesChannelTrait;
 
 abstract class AbstractProductSyncTest extends TestCase
 {
     use KernelTestBehaviour;
+    use SalesChannelTrait;
 
     private const PRODUCT_NAME = 'Product Name';
     private const PRODUCT_DESCRIPTION = 'Product Description';
@@ -35,28 +33,6 @@ abstract class AbstractProductSyncTest extends TestCase
     private const PRODUCT_PRICE = 11.11;
     private const PRODUCT_EAN = '1234567890';
     private const TRANSLATION_MARK = '_t';
-
-    protected function createSalesChannel(Context $context): SalesChannelEntity
-    {
-        $criteria = new Criteria();
-        $criteria->setIds([Defaults::SALES_CHANNEL]);
-        $criteria->addAssociation('currency');
-
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
-
-        /** @var SalesChannelEntity $salesChannel */
-        $salesChannel = $salesChannelRepository->search($criteria, $context)->first();
-
-        $iZettleSalesChannel = new IZettleSalesChannelEntity();
-        $iZettleSalesChannel->setProductStreamId('someProductStreamId');
-        $iZettleSalesChannel->setSyncPrices(true);
-        $iZettleSalesChannel->setSalesChannelId(Defaults::SALES_CHANNEL);
-
-        $salesChannel->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleSalesChannel);
-
-        return $salesChannel;
-    }
 
     protected function getProduct(): SalesChannelProductEntity
     {

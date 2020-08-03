@@ -8,21 +8,15 @@
 namespace Swag\PayPal\IZettle\Sync;
 
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContext;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater;
 use Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater;
 
-class InventorySyncer
+class InventorySyncer extends AbstractSyncer
 {
-    /**
-     * @var ProductSelection
-     */
-    private $productSelection;
-
     /**
      * @var InventoryContextFactory
      */
@@ -44,34 +38,28 @@ class InventorySyncer
     private $inventoryRepository;
 
     public function __construct(
-        ProductSelection $productSelection,
         InventoryContextFactory $inventoryContextFactory,
         LocalUpdater $localUpdater,
         RemoteUpdater $remoteUpdater,
         EntityRepositoryInterface $inventoryRepository
     ) {
-        $this->productSelection = $productSelection;
         $this->inventoryContextFactory = $inventoryContextFactory;
         $this->localUpdater = $localUpdater;
         $this->remoteUpdater = $remoteUpdater;
         $this->inventoryRepository = $inventoryRepository;
     }
 
-    public function syncInventory(
-        SalesChannelEntity $salesChannel,
-        Context $context,
-        ?ProductCollection $productCollection = null
+    /**
+     * @param ProductCollection $entityCollection
+     */
+    public function sync(
+        EntityCollection $entityCollection,
+        InventoryContext $inventoryContext
     ): void {
-        if ($productCollection === null) {
-            $productCollection = $this->productSelection->getProductCollection($salesChannel, $context, false);
-        }
-
-        $inventoryContext = $this->inventoryContextFactory->getContext($salesChannel, $context);
-
-        $changes = $this->remoteUpdater->updateRemote($productCollection, $inventoryContext);
+        $changes = $this->remoteUpdater->updateRemote($entityCollection, $inventoryContext);
         $this->updateLocalChanges($changes, $inventoryContext);
 
-        $changes = $this->localUpdater->updateLocal($productCollection, $inventoryContext);
+        $changes = $this->localUpdater->updateLocal($entityCollection, $inventoryContext);
         $this->updateLocalChanges($changes, $inventoryContext);
     }
 
@@ -92,6 +80,6 @@ class InventorySyncer
         }
         $this->inventoryRepository->upsert($localChanges, $inventoryContext->getContext());
 
-        $this->inventoryContextFactory->updateContext($inventoryContext);
+        $this->inventoryContextFactory->updateLocal($inventoryContext);
     }
 }

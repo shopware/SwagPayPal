@@ -7,37 +7,21 @@
 
 namespace Swag\PayPal\IZettle\Run\Task;
 
-use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\Run\RunService;
-use Swag\PayPal\IZettle\Sync\ProductSyncer;
+use Swag\PayPal\IZettle\MessageQueue\Handler\SyncManagerHandler;
 
 class ProductTask extends AbstractTask
 {
     private const TASK_NAME_PRODUCT = 'product';
-
-    /**
-     * @var ProductSyncer
-     */
-    private $productSyncer;
-
-    public function __construct(
-        RunService $runService,
-        LoggerInterface $logger,
-        ProductSyncer $productSyncer
-    ) {
-        parent::__construct($runService, $logger);
-        $this->productSyncer = $productSyncer;
-    }
 
     public function getRunTaskName(): string
     {
         return self::TASK_NAME_PRODUCT;
     }
 
-    protected function run(SalesChannelEntity $salesChannel, Context $context): void
+    public function getSteps(): array
     {
-        $this->productSyncer->syncProducts($salesChannel, $context);
+        return [
+            SyncManagerHandler::SYNC_PRODUCT,
+        ];
     }
 }

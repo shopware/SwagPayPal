@@ -29,6 +29,11 @@ class IZettleSalesChannelRunEntity extends Entity
      */
     protected $logs;
 
+    /**
+     * @var \DateTimeInterface|null
+     */
+    protected $finishedAt;
+
     public function getSalesChannelId(): string
     {
         return $this->salesChannelId;
@@ -57,5 +62,15 @@ class IZettleSalesChannelRunEntity extends Entity
     public function setLogs(IZettleSalesChannelRunLogCollection $logs): void
     {
         $this->logs = $logs;
+    }
+
+    public function getFinishedAt(): ?\DateTimeInterface
+    {
+        return $this->finishedAt;
+    }
+
+    public function setFinishedAt(?\DateTimeInterface $finishedAt): void
+    {
+        $this->finishedAt = $finishedAt;
     }
 }

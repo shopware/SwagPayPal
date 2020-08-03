@@ -7,59 +7,49 @@
 
 namespace Swag\PayPal\IZettle\Run\Task;
 
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
-use Swag\PayPal\IZettle\Exception\UnexpectedSalesChannelTypeException;
+use Swag\PayPal\IZettle\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\IZettle\Run\RunService;
-use Swag\PayPal\SwagPayPal;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 abstract class AbstractTask
 {
+    /**
+     * @var MessageBusInterface
+     */
+    private $messageBus;
+
     /**
      * @var RunService
      */
     private $runService;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(RunService $runService, LoggerInterface $logger)
-    {
+    public function __construct(
+        MessageBusInterface $messageBus,
+        RunService $runService
+    ) {
+        $this->messageBus = $messageBus;
         $this->runService = $runService;
-        $this->logger = $logger;
     }
 
-    public function execute(SalesChannelEntity $salesChannel, Context $context): void
+    public function execute(SalesChannelEntity $salesChannel, Context $context): string
     {
-        $run = $this->runService->startRun($salesChannel->getId(), $this->getRunTaskName(), $context);
-        try {
-            $this->run($salesChannel, $context);
-        } catch (\Throwable $e) {
-            $this->logger->critical($e->__toString());
+        $runId = $this->runService->startRun($salesChannel->getId(), $this->getRunTaskName(), $context);
 
-            throw $e;
-        } finally {
-            $this->runService->finishRun($run, $context);
-        }
+        $message = new SyncManagerMessage();
+        $message->setContext($context);
+        $message->setSalesChannel($salesChannel);
+        $message->setRunId($runId);
+        $message->setSteps($this->getSteps());
+        $message->setCurrentStep(0);
+        $this->messageBus->dispatch($message);
+        $this->runService->writeLog($runId, $context);
+
+        return $runId;
     }
 
     abstract public function getRunTaskName(): string;
 
-    abstract protected function run(SalesChannelEntity $salesChannel, Context $context): void;
-
-    protected function getIZettleSalesChannel(SalesChannelEntity $salesChannel): IZettleSalesChannelEntity
-    {
-        /** @var IZettleSalesChannelEntity|null $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
-
-        if ($iZettleSalesChannel === null) {
-            throw new UnexpectedSalesChannelTypeException($salesChannel->getTypeId());
-        }
-
-        return $iZettleSalesChannel;
-    }
+    abstract public function getSteps(): array;
 }

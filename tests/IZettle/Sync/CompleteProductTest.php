@@ -23,7 +23,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\Tax\TaxEntity;
 use Swag\PayPal\IZettle\Api\Product;
 use Swag\PayPal\IZettle\Api\Product\Presentation;
@@ -36,12 +35,14 @@ use Swag\PayPal\IZettle\Api\Service\Converter\PriceConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter;
 use Swag\PayPal\IZettle\Api\Service\ProductConverter;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductCollection;
+use Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ProductCleanupSyncHandler;
+use Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ProductSingleSyncHandler;
+use Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ProductVariantSyncHandler;
+use Swag\PayPal\IZettle\MessageQueue\Manager\ProductSyncManager;
 use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Run\RunService;
-use Swag\PayPal\IZettle\Run\Task\ProductTask;
 use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 use Swag\PayPal\IZettle\Sync\Context\ProductContextFactory;
 use Swag\PayPal\IZettle\Sync\Product\DeletedUpdater;
@@ -50,13 +51,14 @@ use Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater;
 use Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
-use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\IZettle\ConstantsForTesting;
+use Swag\PayPal\Test\IZettle\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\CreateProductFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\DeleteProductFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\DeleteProductsFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\UpdateProductFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\IZettleClientFactoryMock;
+use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleMediaRepoMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleProductRepoMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\ProductRepoMock;
@@ -65,13 +67,14 @@ use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelProductRepoMock;
 class CompleteProductTest extends TestCase
 {
     use KernelTestBehaviour;
+    use SalesChannelTrait;
 
     private const DOMAIN = 'https://www.example.com';
     private const MEDIA_UPLOADED_URL = 'https://via.placeholder.com/500x500';
     private const MEDIA_A_ID = 'd7f9cc539a9c463ab95f15884872aad7';
     private const MEDIA_B_ID = '42e1a918149e4f599e16ca672e0f39e8';
 
-    public function testInventorySync(): void
+    public function testProductSync(): void
     {
         $productResource = new ProductResource(new IZettleClientFactoryMock());
         $iZettleProductRepository = new IZettleProductRepoMock();
@@ -94,43 +97,71 @@ class CompleteProductTest extends TestCase
             new PresentationConverter()
         );
 
-        $productTask = new ProductTask(
-            new RunService(
-                $this->createMock(EntityRepositoryInterface::class),
-                new Logger('test')
+        $messageBus = new MessageBusMock();
+
+        $runService = new RunService(
+            $this->createMock(EntityRepositoryInterface::class),
+            $this->createMock(EntityRepositoryInterface::class),
+            new Logger('test')
+        );
+
+        $productSyncer = new ProductSyncer(
+            $productConverter,
+            new ProductContextFactory(
+                $iZettleProductRepository,
+                $iZettleMediaRepository
             ),
-            new NullLogger(),
-            new ProductSyncer(
-                new ProductSelection(
-                    $salesChannelProductRepository,
-                    $this->createMock(ProductStreamBuilder::class),
-                    $salesChannelContextFactory
-                ),
-                $productConverter,
-                new ProductContextFactory(
-                    $iZettleProductRepository,
-                    $iZettleMediaRepository
-                ),
-                new NewUpdater(
-                    $productResource,
-                    new NullLogger()
-                ),
-                new OutdatedUpdater(
-                    $productResource,
-                    new NullLogger()
-                ),
-                new DeletedUpdater(
-                    $productResource,
-                    $productRepository,
-                    new NullLogger(),
-                    new UuidConverter()
-                ),
-                new UnsyncedChecker(
-                    $productResource,
-                    new NullLogger(),
-                    new UuidConverter()
-                )
+            new NewUpdater(
+                $productResource,
+                new NullLogger()
+            ),
+            new OutdatedUpdater(
+                $productResource,
+                new NullLogger()
+            ),
+            new DeletedUpdater(
+                $productResource,
+                $productRepository,
+                new NullLogger(),
+                new UuidConverter()
+            ),
+            new UnsyncedChecker(
+                $productResource,
+                new NullLogger(),
+                new UuidConverter()
             )
+        );
+
+        $productSelection = new ProductSelection(
+            $salesChannelProductRepository,
+            $this->createMock(ProductStreamBuilder::class),
+            $salesChannelContextFactory
+        );
+
+        $productSyncManager = new ProductSyncManager($messageBus, $productSelection, $salesChannelProductRepository);
+
+        $productVariantSyncHandler = new ProductVariantSyncHandler(
+            $runService,
+            new NullLogger(),
+            $productSelection,
+            $salesChannelProductRepository,
+            $productSyncer
+        );
+
+        $productSingleSyncHandler = new ProductSingleSyncHandler(
+            $runService,
+            new NullLogger(),
+            $productSelection,
+            $salesChannelProductRepository,
+            $productSyncer
+        );
+
+        $productCleanupSyncHandler = new ProductCleanupSyncHandler(
+            $runService,
+            new NullLogger(),
+            $productSelection,
+            $salesChannelProductRepository,
+            $productSyncer
         );
 
         $context = Context::createDefaultContext();
@@ -157,6 +188,7 @@ class CompleteProductTest extends TestCase
         $productRepository->addMockEntity($variantA);
         $variantB = $salesChannelProductRepository->createMockEntity($tax, $category, 'productB_variantB', ConstantsForTesting::VARIANT_B_ID, ConstantsForTesting::PRODUCT_B_ID);
         $productRepository->addMockEntity($variantB);
+        $productB->setChildCount(2);
         $productC = $salesChannelProductRepository->createMockEntity($tax, $category, 'productC', ConstantsForTesting::PRODUCT_C_ID, null, $mediaB);
         $productRepository->addMockEntity($productC);
         $productD = $salesChannelProductRepository->createMockEntity($tax, $category, 'productD', ConstantsForTesting::PRODUCT_D_ID);
@@ -167,6 +199,7 @@ class CompleteProductTest extends TestCase
         $productRepository->addMockEntity($variantC);
         $variantD = $salesChannelProductRepository->createMockEntity($tax, $category, 'productE_variantD', ConstantsForTesting::VARIANT_D_ID, ConstantsForTesting::PRODUCT_E_ID, $mediaA);
         $productRepository->addMockEntity($variantD);
+        $productE->setChildCount(2);
         static::assertCount(9, $productRepository->getCollection());
 
         // create current checksum for unchanged product A
@@ -188,21 +221,31 @@ class CompleteProductTest extends TestCase
 
         $mediaState = $iZettleMediaRepository->createMockEntity($mediaA, Defaults::SALES_CHANNEL, 'lookupKey', self::MEDIA_UPLOADED_URL);
 
-        $productTask->execute($salesChannel, $context);
+        $productSyncManager->buildMessages(
+            $salesChannel,
+            $context,
+            Uuid::randomHex()
+        );
+
+        $messageBus->execute([
+            $productSingleSyncHandler,
+            $productVariantSyncHandler,
+            $productCleanupSyncHandler,
+        ]);
 
         static::assertCount(5, $iZettleProductRepository->getCollection());
         static::assertNotContains($productStateF, $iZettleProductRepository->getCollection());
-        static::assertEquals($convertedGroupingA->getProduct()->generateChecksum(), $productStateA->getChecksum());
+        static::assertSame($convertedGroupingA->getProduct()->generateChecksum(), $productStateA->getChecksum());
         static::assertNotEquals((new Product())->generateChecksum(), $productStateD->getChecksum());
         static::assertNotEquals((new Product())->generateChecksum(), $productStateE->getChecksum());
 
-        static::assertEquals(ConstantsForTesting::PRODUCT_F_ID_CONVERTED, DeleteProductFixture::$lastDeletedUuid);
-        static::assertEquals([ConstantsForTesting::PRODUCT_G_ID_CONVERTED], DeleteProductsFixture::$lastDeletedUuids);
+        static::assertSame(ConstantsForTesting::PRODUCT_F_ID_CONVERTED, DeleteProductFixture::$lastDeletedUuid);
+        static::assertSame([ConstantsForTesting::PRODUCT_G_ID_CONVERTED], DeleteProductsFixture::$lastDeletedUuids);
 
-        static::assertContainsEquals($this->createConvertedProduct($productB, $variantA, $variantB), CreateProductFixture::$lastCreatedProducts);
+        static::assertEquals($this->createConvertedProduct($productB, $variantA, $variantB), CreateProductFixture::$lastCreatedProducts[1]);
         $productC->assign(['cover' => null]);
-        static::assertEquals($this->createConvertedProduct($productC, $productC), CreateProductFixture::$lastCreatedProducts[1]);
-        static::assertContainsEquals($this->createConvertedProduct($productD, $productD), UpdateProductFixture::$lastUpdatedProducts);
+        static::assertEquals($this->createConvertedProduct($productC, $productC), CreateProductFixture::$lastCreatedProducts[0]);
+        static::assertEquals($this->createConvertedProduct($productD, $productD), UpdateProductFixture::$lastUpdatedProducts[0]);
         static::assertEquals($this->createConvertedProduct($productE, $variantC, $variantD), UpdateProductFixture::$lastUpdatedProducts[1]);
         static::assertCount(2, CreateProductFixture::$lastCreatedProducts);
         static::assertCount(2, UpdateProductFixture::$lastUpdatedProducts);
@@ -309,28 +352,5 @@ class CompleteProductTest extends TestCase
         }
 
         return $product;
-    }
-
-    private function getSalesChannel(Context $context): SalesChannelEntity
-    {
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
-        $salesChannelCriteria = new Criteria([Defaults::SALES_CHANNEL]);
-        $salesChannelCriteria->addAssociation('currency');
-
-        /** @var SalesChannelEntity $salesChannel */
-        $salesChannel = $salesChannelRepository->search($salesChannelCriteria, $context)->first();
-        $iZettleSalesChannel = new IZettleSalesChannelEntity();
-        $iZettleSalesChannel->setId(Uuid::randomHex());
-        $iZettleSalesChannel->setSalesChannelId($salesChannel->getId());
-        $iZettleSalesChannel->setMediaDomain(self::DOMAIN);
-        $iZettleSalesChannel->setApiKey(ConstantsForTesting::VALID_API_KEY);
-        $iZettleSalesChannel->setReplace(true);
-        $iZettleSalesChannel->setSyncPrices(true);
-        $iZettleSalesChannel->setProductStreamId(null);
-        $salesChannel->setTypeId(SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE);
-        $salesChannel->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleSalesChannel);
-
-        return $salesChannel;
     }
 }

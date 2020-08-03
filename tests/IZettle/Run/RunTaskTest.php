@@ -9,38 +9,28 @@ namespace Swag\PayPal\Test\IZettle\Run;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
+use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Swag\PayPal\IZettle\MessageQueue\Handler\SyncManagerHandler;
+use Swag\PayPal\IZettle\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Run\Task\AbstractTask;
 use Swag\PayPal\IZettle\Run\Task\CompleteTask;
 use Swag\PayPal\IZettle\Run\Task\ImageTask;
 use Swag\PayPal\IZettle\Run\Task\InventoryTask;
 use Swag\PayPal\IZettle\Run\Task\ProductTask;
-use Swag\PayPal\IZettle\Sync\ImageSyncer;
-use Swag\PayPal\IZettle\Sync\InventorySyncer;
-use Swag\PayPal\IZettle\Sync\ProductSyncer;
-use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\IZettle\Helper\SalesChannelTrait;
+use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
 
 class RunTaskTest extends TestCase
 {
-    /**
-     * @var MockObject
-     */
-    private $productSyncer;
+    use KernelTestBehaviour;
+    use SalesChannelTrait;
 
     /**
-     * @var MockObject
+     * @var MessageBusMock
      */
-    private $inventorySyncer;
-
-    /**
-     * @var MockObject
-     */
-    private $imageSyncer;
+    private $messageBus;
 
     /**
      * @var MockObject
@@ -54,16 +44,14 @@ class RunTaskTest extends TestCase
 
     public function setUp(): void
     {
-        $this->productSyncer = $this->createPartialMock(ProductSyncer::class, ['syncProducts']);
-        $this->inventorySyncer = $this->createPartialMock(InventorySyncer::class, ['syncInventory']);
-        $this->imageSyncer = $this->createPartialMock(ImageSyncer::class, ['syncImages']);
+        $this->messageBus = new MessageBusMock();
         $this->runService = $this->createMock(RunService::class);
 
         $this->tasks = [
-            CompleteTask::class => new CompleteTask($this->runService, new NullLogger(), $this->productSyncer, $this->imageSyncer, $this->inventorySyncer),
-            ProductTask::class => new ProductTask($this->runService, new NullLogger(), $this->productSyncer),
-            ImageTask::class => new ImageTask($this->runService, new NullLogger(), $this->imageSyncer),
-            InventoryTask::class => new InventoryTask($this->runService, new NullLogger(), $this->inventorySyncer),
+            CompleteTask::class => new CompleteTask($this->messageBus, $this->runService),
+            ProductTask::class => new ProductTask($this->messageBus, $this->runService),
+            ImageTask::class => new ImageTask($this->messageBus, $this->runService),
+            InventoryTask::class => new InventoryTask($this->messageBus, $this->runService),
         ];
     }
 
@@ -90,7 +78,7 @@ class RunTaskTest extends TestCase
             ->setMethodsExcept(['getRunTaskName'])
             ->getMock();
 
-        static::assertEquals($expectedName, $task->getRunTaskName());
+        static::assertSame($expectedName, $task->getRunTaskName());
     }
 
     public function dataProviderExecution(): array
@@ -99,27 +87,28 @@ class RunTaskTest extends TestCase
             [
                 CompleteTask::class,
                 [
-                    'productSyncer' => 'syncProducts',
-                    'imageSyncer' => 'syncImages',
-                    'inventorySyncer' => 'syncInventory',
+                    SyncManagerHandler::SYNC_PRODUCT,
+                    SyncManagerHandler::SYNC_IMAGE,
+                    SyncManagerHandler::SYNC_PRODUCT,
+                    SyncManagerHandler::SYNC_INVENTORY,
                 ],
             ],
             [
                 ProductTask::class,
                 [
-                    'productSyncer' => 'syncProducts',
+                    SyncManagerHandler::SYNC_PRODUCT,
                 ],
             ],
             [
                 ImageTask::class,
                 [
-                    'imageSyncer' => 'syncImages',
+                    SyncManagerHandler::SYNC_IMAGE,
                 ],
             ],
             [
                 InventoryTask::class,
                 [
-                    'inventorySyncer' => 'syncInventory',
+                    SyncManagerHandler::SYNC_INVENTORY,
                 ],
             ],
         ];
@@ -132,18 +121,18 @@ class RunTaskTest extends TestCase
      */
     public function testExecution(string $taskName, array $serviceCalls): void
     {
-        $salesChannel = new SalesChannelEntity();
-        $salesChannel->setId(Uuid::randomHex());
-        $salesChannel->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, new IZettleSalesChannelEntity());
+        $context = Context::createDefaultContext();
+
+        $salesChannel = $this->getSalesChannel($context);
 
         $task = $this->tasks[$taskName];
 
-        foreach ($serviceCalls as $serviceName => $serviceCall) {
-            $this->$serviceName->expects(static::atLeastOnce())->method($serviceCall);
-        }
         $this->runService->expects(static::once())->method('startRun');
-        $this->runService->expects(static::once())->method('finishRun');
 
-        $task->execute($salesChannel, Context::createDefaultContext());
+        $task->execute($salesChannel, $context);
+
+        /** @var SyncManagerMessage $message */
+        $message = \current($this->messageBus->getEnvelopes())->getMessage();
+        static::assertSame($serviceCalls, $message->getSteps());
     }
 }

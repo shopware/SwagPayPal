@@ -14,7 +14,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
-use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
 use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 
@@ -52,14 +51,15 @@ class DeletedUpdater
         $this->uuidConverter = $uuidConverter;
     }
 
-    public function update(ProductGroupingCollection $productGroupings, ProductContext $productContext): void
+    /**
+     * @param string[] $productIds
+     */
+    public function update(array $productIds, ProductContext $productContext): void
     {
         $iZettleProductCollection = $productContext->getIZettleProductCollection();
 
         foreach ($iZettleProductCollection->getElements() as $salesChannelProductEntity) {
-            $productGrouping = $productGroupings->get($salesChannelProductEntity->getProductId());
-
-            if ($productGrouping !== null) {
+            if (\in_array($salesChannelProductEntity->getProductId(), $productIds, true)) {
                 continue;
             }
 

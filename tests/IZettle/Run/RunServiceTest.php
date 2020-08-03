@@ -25,13 +25,14 @@ class RunServiceTest extends TestCase
     public function testLogProcessAddLogWithoutProduct(): void
     {
         $runRepository = $this->createMock(EntityRepositoryInterface::class);
+        $logRepository = $this->createMock(EntityRepositoryInterface::class);
         $context = Context::createDefaultContext();
 
         $logger = (new LoggerFactory())->createLogger();
-        $runService = new RunService($runRepository, $logger);
+        $runService = new RunService($runRepository, $logRepository, $logger);
 
         $runRepository->expects(static::once())->method('create');
-        $run = $runService->startRun(Defaults::SALES_CHANNEL, 'complete', $context);
+        $runId = $runService->startRun(Defaults::SALES_CHANNEL, 'complete', $context);
 
         $logger->info('test');
 
@@ -42,28 +43,26 @@ class RunServiceTest extends TestCase
             new Criteria(),
             $context
         ));
-        $runRepository->expects(static::once())->method('update')->with([[
-            'id' => $run->getId(),
-            'logs' => [
-                [
-                    'level' => Logger::INFO,
-                    'message' => 'test',
-                ],
-            ],
+        $logRepository->expects(static::once())->method('create')->with([[
+            'level' => Logger::INFO,
+            'message' => 'test',
+            'runId' => $runId,
         ]]);
-        $runService->finishRun($run, $context);
+        $runService->writeLog($runId, $context);
+        $runService->finishRun($runId, $context);
     }
 
     public function testLogProcessAddLogWithProduct(): void
     {
         $runRepository = $this->createMock(EntityRepositoryInterface::class);
+        $logRepository = $this->createMock(EntityRepositoryInterface::class);
         $context = Context::createDefaultContext();
 
         $logger = (new LoggerFactory())->createLogger();
-        $runService = new RunService($runRepository, $logger);
+        $runService = new RunService($runRepository, $logRepository, $logger);
 
         $runRepository->expects(static::once())->method('create');
-        $run = $runService->startRun(Defaults::SALES_CHANNEL, 'complete', $context);
+        $runId = $runService->startRun(Defaults::SALES_CHANNEL, 'complete', $context);
 
         $product = new SalesChannelProductEntity();
         $product->setId(Uuid::randomHex());
@@ -79,17 +78,14 @@ class RunServiceTest extends TestCase
             new Criteria(),
             $context
         ));
-        $runRepository->expects(static::once())->method('update')->with([[
-            'id' => $run->getId(),
-            'logs' => [
-                [
-                    'level' => Logger::INFO,
-                    'message' => 'test',
-                    'productId' => $product->getParentId(),
-                    'productVersionId' => $product->getVersionId(),
-                ],
-            ],
+        $logRepository->expects(static::once())->method('create')->with([[
+            'level' => Logger::INFO,
+            'message' => 'test',
+            'runId' => $runId,
+            'productId' => $product->getParentId(),
+            'productVersionId' => $product->getVersionId(),
         ]]);
-        $runService->finishRun($run, $context);
+        $runService->writeLog($runId, $context);
+        $runService->finishRun($runId, $context);
     }
 }

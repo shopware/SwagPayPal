@@ -47,7 +47,7 @@ class NewUpdaterTest extends AbstractProductSyncTest
     public function setUp(): void
     {
         $context = Context::createDefaultContext();
-        $salesChannel = $this->createSalesChannel($context);
+        $salesChannel = $this->getSalesChannel($context);
 
         $this->productContext = new ProductContextMock($salesChannel, $context);
 

@@ -15,7 +15,7 @@ class InventorySyncTask extends ScheduledTask
 
     public static function getTaskName(): string
     {
-        return 'swag_papyal.izettle_complete_sync';
+        return 'swag_paypal.izettle_inventory_sync';
     }
 
     public static function getDefaultInterval(): int

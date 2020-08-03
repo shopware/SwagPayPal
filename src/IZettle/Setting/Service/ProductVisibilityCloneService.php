@@ -7,21 +7,35 @@
 
 namespace Swag\PayPal\IZettle\Setting\Service;
 
-use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Exception\InvalidAggregationQueryException;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Swag\PayPal\IZettle\MessageQueue\Message\CloneVisibilityMessage;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class ProductVisibilityCloneService
 {
+    private const CLONE_CHUNK_SIZE = 500;
+
+    /**
+     * @var MessageBusInterface
+     */
+    private $messageBus;
+
     /**
      * @var EntityRepositoryInterface
      */
     private $productVisibilityRepository;
 
-    public function __construct(EntityRepositoryInterface $productVisibilityRepository)
-    {
+    public function __construct(
+        MessageBusInterface $messageBus,
+        EntityRepositoryInterface $productVisibilityRepository
+    ) {
+        $this->messageBus = $messageBus;
         $this->productVisibilityRepository = $productVisibilityRepository;
     }
 
@@ -30,27 +44,36 @@ class ProductVisibilityCloneService
         string $toSalesChannelId,
         Context $context
     ): void {
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('salesChannelId', $fromSalesChannelId));
-        $existingVisibility = $this->productVisibilityRepository->search($criteria, $context)->getEntities();
+        $deletionCriteria = new Criteria();
+        $deletionCriteria->addFilter(new EqualsFilter('salesChannelId', $toSalesChannelId));
 
-        $updates = [];
-        foreach ($existingVisibility->getElements() as $visibilityElement) {
-            /* @var ProductVisibilityEntity $visibilityElement */
-            $updates[] = [
-                'productId' => $visibilityElement->getProductId(),
-                'salesChannelId' => $toSalesChannelId,
-                'visibility' => $visibilityElement->getVisibility(),
-            ];
-        }
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('salesChannelId', $toSalesChannelId));
-
-        $formerVisibilityIds = $this->productVisibilityRepository->searchIds($criteria, $context)->getIds();
+        $formerVisibilityIds = $this->productVisibilityRepository->searchIds($deletionCriteria, $context)->getIds();
         if (\count($formerVisibilityIds) > 0) {
             $this->productVisibilityRepository->delete($formerVisibilityIds, $context);
         }
-        $this->productVisibilityRepository->upsert($updates, $context);
+
+        $offset = 0;
+
+        $aggregationCriteria = new Criteria();
+        $aggregationCriteria->addFilter(new EqualsFilter('salesChannelId', $fromSalesChannelId));
+        $aggregationCriteria->addAggregation(new CountAggregation('count', 'productId'));
+
+        /** @var CountResult|null $aggregate */
+        $aggregate = $this->productVisibilityRepository->aggregate($aggregationCriteria, $context)->get('count');
+        if ($aggregate === null) {
+            throw new InvalidAggregationQueryException('Could not aggregate product visibility');
+        }
+
+        while ($offset < $aggregate->getCount()) {
+            $message = new CloneVisibilityMessage();
+            $message->setContext($context);
+            $message->setLimit(self::CLONE_CHUNK_SIZE);
+            $message->setOffset($offset);
+            $message->setFromSalesChannelId($fromSalesChannelId);
+            $message->setToSalesChannelId($toSalesChannelId);
+            $this->messageBus->dispatch($message);
+
+            $offset += self::CLONE_CHUNK_SIZE;
+        }
     }
 }

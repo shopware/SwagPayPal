@@ -53,21 +53,21 @@ class Status extends IZettleStruct
     /**
      * @param string[] $trackedProducts
      */
-    protected function setTrackedProducts(array $trackedProducts): void
+    public function setTrackedProducts(array $trackedProducts): void
     {
         $this->trackedProducts = $trackedProducts;
-    }
-
-    protected function setLocationUuid(string $locationUuid): void
-    {
-        $this->locationUuid = $locationUuid;
     }
 
     /**
      * @param Variant[] $variants
      */
-    protected function setVariants(array $variants): void
+    public function setVariants(array $variants): void
     {
         $this->variants = $variants;
+    }
+
+    protected function setLocationUuid(string $locationUuid): void
+    {
+        $this->locationUuid = $locationUuid;
     }
 }

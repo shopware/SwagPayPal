@@ -14,14 +14,23 @@ use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaEntity;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductDefinition;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\Bucket;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\TermsResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
@@ -38,6 +47,34 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
 
     public function aggregate(Criteria $criteria, SalesChannelContext $context): AggregationResultCollection
     {
+        $result = new AggregationResultCollection();
+
+        $count = $criteria->getAggregation('count');
+        if ($count !== null) {
+            $result->add(new CountResult('count', $this->search($criteria, $context)->getTotal()));
+        }
+
+        $parentIds = $criteria->getAggregation('parentIds');
+        if ($parentIds !== null) {
+            $buckets = [];
+            /** @var ProductEntity $product */
+            foreach ($this->search($criteria, $context)->getElements() as $product) {
+                $parentId = $product->getParentId();
+
+                if ($parentId === null) {
+                    continue;
+                }
+
+                if (!isset($buckets[$parentId])) {
+                    $buckets[$parentId] = new Bucket($parentId, 0, null);
+                }
+
+                $buckets[$parentId]->incrementCount(1);
+            }
+            $result->add(new TermsResult('parentIds', $buckets));
+        }
+
+        return $result;
     }
 
     public function searchIds(Criteria $criteria, SalesChannelContext $context): IdSearchResult
@@ -47,6 +84,72 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
 
     public function search(Criteria $criteria, SalesChannelContext $context): EntitySearchResult
     {
+        $firstFilter = \current($criteria->getFilters());
+
+        if ($firstFilter === false) {
+            return $this->searchCollection($this->entityCollection, $criteria, $context->getContext());
+        }
+
+        if ($firstFilter instanceof EqualsFilter
+            && $firstFilter->getField() === 'parentId'
+            && $firstFilter->getValue() === null) {
+            $collection = new ProductCollection();
+            /** @var ProductEntity $product */
+            foreach ($this->getCollection()->getElements() as $product) {
+                if ($product->getParentId() === null && !$product->getChildCount()) {
+                    $collection->add($product);
+                }
+            }
+
+            return $this->searchCollection($collection, $criteria, $context->getContext());
+        }
+
+        if ($firstFilter instanceof MultiFilter) {
+            $subFilter = \current($firstFilter->getQueries());
+
+            if ($firstFilter instanceof NotFilter
+                && $subFilter instanceof EqualsFilter
+                && $subFilter->getField() === 'parentId'
+                && $subFilter->getValue() === null) {
+                $collection = new ProductCollection();
+                /** @var ProductEntity $product */
+                foreach ($this->getCollection()->getElements() as $product) {
+                    if ($product->getParentId() !== null) {
+                        $collection->add($product);
+                    }
+                }
+
+                return $this->searchCollection($collection, $criteria, $context->getContext());
+            }
+
+            if ($subFilter instanceof EqualsAnyFilter
+                && ($subFilter->getField() === 'id' || $subFilter->getField() === 'parentId')) {
+                $collection = new ProductCollection();
+                /** @var ProductEntity $product */
+                foreach ($this->getCollection()->getElements() as $product) {
+                    if (\in_array($product->getParentId(), $subFilter->getValue(), true)
+                        || \in_array($product->getId(), $subFilter->getValue(), true)) {
+                        $collection->add($product);
+                    }
+                }
+
+                return $this->searchCollection($collection, $criteria, $context->getContext());
+            }
+        }
+
+        if ($firstFilter instanceof EqualsAnyFilter
+            && $firstFilter->getField() === 'parentId') {
+            $collection = new ProductCollection();
+            /** @var ProductEntity $product */
+            foreach ($this->getCollection()->getElements() as $product) {
+                if (\in_array($product->getParentId(), $firstFilter->getValue(), true)) {
+                    $collection->add($product);
+                }
+            }
+
+            return $this->searchCollection($collection, $criteria, $context->getContext());
+        }
+
         return $this->searchCollection($this->entityCollection, $criteria, $context->getContext());
     }
 
@@ -94,6 +197,7 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
         $entity->setId($id);
         $entity->setVersionId(Uuid::randomHex());
         $entity->setParentId($parentId);
+        $entity->setChildCount(0);
         $entity->setName($name);
         $entity->setDescription(ConstantsForTesting::PRODUCT_DESCRIPTION);
         $entity->setProductNumber(ConstantsForTesting::PRODUCT_NUMBER);

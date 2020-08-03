@@ -9,15 +9,12 @@ namespace Swag\PayPal\Test\IZettle\Sync\Product;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Product;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
-use Swag\PayPal\IZettle\Api\Service\Util\ProductGroupingCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductEntity;
 use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker;
@@ -29,11 +26,6 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
      * @var ProductContextMock
      */
     private $productContext;
-
-    /**
-     * @var ProductGroupingCollection
-     */
-    private $productGroupingCollection;
 
     /**
      * @var IZettleSalesChannelProductEntity
@@ -58,7 +50,7 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
     public function setUp(): void
     {
         $context = Context::createDefaultContext();
-        $salesChannel = $this->createSalesChannel($context);
+        $salesChannel = $this->getSalesChannel($context);
 
         $this->iZettleProductEntity = new IZettleSalesChannelProductEntity();
         $this->iZettleProductEntity->setSalesChannelId($salesChannel->getId());
@@ -73,8 +65,6 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
         $this->productContext = new ProductContextMock($salesChannel, $context, null);
         $this->productContext->getIZettleSalesChannel()->setReplace(true);
 
-        $this->productGroupingCollection = new ProductGroupingCollection([]);
-
         $this->productResource = $this->createMock(ProductResource::class);
         $this->logger = $this->createMock(LoggerInterface::class);
     }
@@ -88,23 +78,18 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
         $this->productResource->expects(static::never())->method('deleteProduct');
         $this->productResource->expects(static::once())->method('deleteProducts');
         $this->logger->expects(static::once())->method('info');
-        $updater->checkForUnsynced($this->productGroupingCollection, $this->productContext);
+        $updater->checkForUnsynced([], $this->productContext);
     }
 
     public function testSyncedProductInSalesChannel(): void
     {
         $this->productResource->method('getProducts')->willReturn([$this->iZettleProduct]);
 
-        $productEntity = new SalesChannelProductEntity();
-        $productEntity->setId($this->iZettleProductEntity->getProductId());
-        $productEntity->setVersionId($this->iZettleProductEntity->getProductVersionId());
-        $this->productGroupingCollection->addProducts(new ProductCollection([$productEntity]));
-
         $updater = new UnsyncedChecker($this->productResource, $this->logger, new UuidConverter());
 
         $this->productResource->expects(static::never())->method('deleteProduct');
         $this->productResource->expects(static::never())->method('deleteProducts');
-        $updater->checkForUnsynced($this->productGroupingCollection, $this->productContext);
+        $updater->checkForUnsynced([$this->iZettleProductEntity->getProductId()], $this->productContext);
     }
 
     public function testSyncedProductInLog(): void
@@ -116,7 +101,7 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
 
         $this->productResource->expects(static::never())->method('deleteProduct');
         $this->productResource->expects(static::never())->method('deleteProducts');
-        $updater->checkForUnsynced($this->productGroupingCollection, $this->productContext);
+        $updater->checkForUnsynced([], $this->productContext);
     }
 
     public function testUnsyncedProductWithReplaceDisabled(): void
@@ -128,7 +113,7 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
 
         $this->productResource->expects(static::never())->method('deleteProduct');
         $this->productResource->expects(static::never())->method('deleteProducts');
-        $updater->checkForUnsynced($this->productGroupingCollection, $this->productContext);
+        $updater->checkForUnsynced([], $this->productContext);
     }
 
     public function testUnsyncedProductDeletionError(): void
@@ -146,6 +131,6 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
         );
 
         $this->logger->expects(static::once())->method('warning');
-        $updater->checkForUnsynced($this->productGroupingCollection, $this->productContext);
+        $updater->checkForUnsynced([], $this->productContext);
     }
 }

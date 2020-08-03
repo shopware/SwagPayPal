@@ -48,7 +48,7 @@ class InventoryContextFactoryTest extends TestCase
     {
         $context = Context::createDefaultContext();
 
-        $this->salesChannel = $this->createSalesChannel($context);
+        $this->salesChannel = $this->getSalesChannel($context);
 
         $this->inventoryRepository = new IZettleInventoryRepoMock();
 
@@ -68,20 +68,10 @@ class InventoryContextFactoryTest extends TestCase
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
 
-        static::assertEquals($this->locations['STORE'], $inventoryContext->getStoreUuid());
-        static::assertEquals($this->locations['BIN'], $inventoryContext->getBinUuid());
-        static::assertEquals($this->locations['SUPPLIER'], $inventoryContext->getSupplierUuid());
-        static::assertEquals($this->locations['SOLD'], $inventoryContext->getSoldUuid());
-    }
-
-    public function testIdentical(): void
-    {
-        $context = Context::createDefaultContext();
-
-        $inventoryContextFirst = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
-        $inventoryContextSecond = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
-
-        static::assertSame($inventoryContextFirst, $inventoryContextSecond);
+        static::assertSame($this->locations['STORE'], $inventoryContext->getStoreUuid());
+        static::assertSame($this->locations['BIN'], $inventoryContext->getBinUuid());
+        static::assertSame($this->locations['SUPPLIER'], $inventoryContext->getSupplierUuid());
+        static::assertSame($this->locations['SOLD'], $inventoryContext->getSoldUuid());
     }
 
     public function testIZettleInventoryVariant(): void
@@ -101,11 +91,10 @@ class InventoryContextFactoryTest extends TestCase
         $status->assign(['trackedProducts' => [$uuidConverter->convertUuidToV1((string) $product->getParentId())]]);
 
         $this->inventoryResource->method('getInventory')->willReturn($status);
-        $this->inventoryResource->expects(static::never())->method('startTracking');
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
 
-        static::assertEquals($product->getAvailableStock(), $inventoryContext->getIZettleInventory($product));
+        static::assertSame($product->getAvailableStock(), $inventoryContext->getSingleRemoteInventory($product));
     }
 
     public function testIZettleInventorySingle(): void
@@ -125,11 +114,10 @@ class InventoryContextFactoryTest extends TestCase
         $status->assign(['trackedProducts' => [$uuidConverter->convertUuidToV1($product->getId())]]);
 
         $this->inventoryResource->method('getInventory')->willReturn($status);
-        $this->inventoryResource->expects(static::never())->method('startTracking');
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
 
-        static::assertEquals($product->getAvailableStock(), $inventoryContext->getIZettleInventory($product));
+        static::assertSame($product->getAvailableStock(), $inventoryContext->getSingleRemoteInventory($product));
     }
 
     public function testIZettleInventoryUntracked(): void
@@ -151,127 +139,7 @@ class InventoryContextFactoryTest extends TestCase
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
 
-        static::assertNull($inventoryContext->getIZettleInventory($product));
-    }
-
-    public function testStartIZettleInventoryTrackingWithTrackingReturn(): void
-    {
-        $context = Context::createDefaultContext();
-
-        $uuidConverter = new UuidConverter();
-        $status = new Status();
-        $product = $this->getVariantProduct();
-        $status->assign(['trackedProducts' => []]);
-
-        $newStatus = new Status();
-        $variant = new Variant();
-        $variant->assign([
-            'productUuid' => $uuidConverter->convertUuidToV1((string) $product->getParentId()),
-            'variantUuid' => $uuidConverter->convertUuidToV1($product->getId()),
-            'balance' => (string) $product->getAvailableStock(),
-        ]);
-        $newStatus->addVariant($variant);
-
-        $this->inventoryResource->method('getInventory')->willReturn($status);
-        $this->inventoryResource->expects(static::once())->method('startTracking')->willReturn($newStatus);
-
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
-
-        $inventoryContext->startIZettleTracking($product);
-
-        static::assertEquals($product->getAvailableStock(), $inventoryContext->getIZettleInventory($product, true));
-    }
-
-    public function testStartIZettleInventoryTrackingWithTrackingReturnAndExistingInventory(): void
-    {
-        $context = Context::createDefaultContext();
-
-        $uuidConverter = new UuidConverter();
-        $status = new Status();
-        $product = $this->getVariantProduct();
-        $variant = new Variant();
-        $variant->assign([
-            'productUuid' => $uuidConverter->convertUuidToV1((string) $product->getParentId()),
-            'variantUuid' => $uuidConverter->convertUuidToV1($product->getId()),
-            'balance' => (string) $product->getAvailableStock(),
-        ]);
-        $status->addVariant($variant);
-        $status->assign(['trackedProducts' => []]);
-
-        $newStatus = new Status();
-        $variant = new Variant();
-        $variant->assign([
-            'productUuid' => $uuidConverter->convertUuidToV1((string) $product->getParentId()),
-            'variantUuid' => $uuidConverter->convertUuidToV1($product->getId()),
-            'balance' => (string) ($product->getAvailableStock() + 1),
-        ]);
-        $newStatus->addVariant($variant);
-
-        $this->inventoryResource->method('getInventory')->willReturn($status);
-        $this->inventoryResource->expects(static::once())->method('startTracking')->willReturn($newStatus);
-
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
-
-        $inventoryContext->startIZettleTracking($product);
-
-        static::assertEquals($product->getAvailableStock() + 1, $inventoryContext->getIZettleInventory($product, true));
-    }
-
-    public function testStartIZettleInventoryTrackingWithoutTrackingReturn(): void
-    {
-        $context = Context::createDefaultContext();
-
-        $status = new Status();
-        $product = $this->getVariantProduct();
-        $status->assign(['trackedProducts' => []]);
-
-        $this->inventoryResource->method('getInventory')->willReturn($status);
-        $this->inventoryResource->expects(static::once())->method('startTracking')->willReturn(null);
-
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
-
-        $inventoryContext->startIZettleTracking($product);
-
-        static::assertNull($inventoryContext->getIZettleInventory($product, true));
-    }
-
-    public function testStartIZettleInventoryTrackingRepeatedly(): void
-    {
-        $context = Context::createDefaultContext();
-
-        $status = new Status();
-        $product = $this->getVariantProduct();
-        $status->assign(['trackedProducts' => []]);
-
-        $this->inventoryResource->method('getInventory')->willReturn($status);
-        $this->inventoryResource->expects(static::once())->method('startTracking')->willReturn(null);
-
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
-
-        $inventoryContext->startIZettleTracking($product);
-        $inventoryContext->startIZettleTracking($product);
-
-        static::assertNull($inventoryContext->getIZettleInventory($product, true));
-    }
-
-    public function testIZettleInventoryUntrackedWithEmptyTrackingReturn(): void
-    {
-        $context = Context::createDefaultContext();
-
-        $status = new Status();
-        $product = $this->getVariantProduct();
-        $status->assign(['trackedProducts' => []]);
-
-        $newStatus = new Status();
-
-        $this->inventoryResource->method('getInventory')->willReturn($status);
-        $this->inventoryResource->expects(static::once())->method('startTracking')->willReturn($newStatus);
-
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
-
-        $inventoryContext->startIZettleTracking($product);
-
-        static::assertNull($inventoryContext->getIZettleInventory($product, true));
+        static::assertNull($inventoryContext->getSingleRemoteInventory($product));
     }
 
     public function testLocalInventory(): void
@@ -284,9 +152,10 @@ class InventoryContextFactoryTest extends TestCase
         $this->inventoryRepository->createMockEntity($variantProduct, Defaults::SALES_CHANNEL, $variantProduct->getAvailableStock() + 2);
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
+        $this->inventoryContextFactory->updateLocal($inventoryContext);
 
-        static::assertEquals($singleProduct->getAvailableStock(), $inventoryContext->getLocalInventory($singleProduct));
-        static::assertEquals($variantProduct->getAvailableStock() + 2, $inventoryContext->getLocalInventory($variantProduct));
+        static::assertSame($singleProduct->getAvailableStock(), $inventoryContext->getLocalInventory($singleProduct));
+        static::assertSame($variantProduct->getAvailableStock() + 2, $inventoryContext->getLocalInventory($variantProduct));
     }
 
     public function testLocalInventoryEmpty(): void
@@ -297,7 +166,7 @@ class InventoryContextFactoryTest extends TestCase
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
 
-        static::assertEquals(0, $inventoryContext->getLocalInventory($singleProduct));
+        static::assertNull($inventoryContext->getLocalInventory($singleProduct));
     }
 
     public function testLocalInventoryRefresh(): void
@@ -306,11 +175,11 @@ class InventoryContextFactoryTest extends TestCase
 
         $singleProduct = $this->getSingleProduct();
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
-        static::assertEquals(0, $inventoryContext->getLocalInventory($singleProduct));
+        static::assertNull($inventoryContext->getLocalInventory($singleProduct));
 
         $this->inventoryRepository->createMockEntity($singleProduct, Defaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
-        $this->inventoryContextFactory->updateContext($inventoryContext);
-        static::assertEquals($singleProduct->getAvailableStock(), $inventoryContext->getLocalInventory($singleProduct));
+        $this->inventoryContextFactory->updateLocal($inventoryContext);
+        static::assertSame($singleProduct->getAvailableStock(), $inventoryContext->getLocalInventory($singleProduct));
     }
 
     private function getIZettleLocations(): array

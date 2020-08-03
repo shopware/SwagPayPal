@@ -29,6 +29,7 @@ class Migration1589882802IZettleRun extends MigrationStep
                 `task`             VARCHAR(16) NOT NULL,
                 `created_at`       DATETIME(3) NOT NULL,
                 `updated_at`       DATETIME(3) NULL,
+                `finished_at`      DATETIME(3) NULL,
                 PRIMARY KEY (`id`),
                 KEY `fk.swag_paypal_izettle_sales_channel_run.sales_channel_id` (`sales_channel_id`),
                 CONSTRAINT `fk.swag_paypal_izettle_sales_channel_run.sales_channel_id` FOREIGN KEY (`sales_channel_id`) REFERENCES `sales_channel` (`id`) ON DELETE CASCADE ON UPDATE CASCADE

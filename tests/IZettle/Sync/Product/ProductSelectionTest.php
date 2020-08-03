@@ -61,7 +61,7 @@ class ProductSelectionTest extends AbstractProductSyncTest
     {
         $context = Context::createDefaultContext();
 
-        $this->salesChannel = $this->createSalesChannel($context);
+        $this->salesChannel = $this->getSalesChannel($context);
 
         $this->productContext = new ProductContextMock($this->salesChannel, $context);
         $this->productContextFactory = $this->createMock(ProductContextFactory::class);
@@ -96,28 +96,6 @@ class ProductSelectionTest extends AbstractProductSyncTest
             [true, false],
             [true, true],
         ];
-    }
-
-    /**
-     * @dataProvider dataProviderProductSelection
-     */
-    public function testProductSelection(bool $withProductStream, bool $withAssociations): void
-    {
-        $context = Context::createDefaultContext();
-
-        $product = $this->getProduct();
-        $this->productRepository->addMockEntity($product);
-
-        $iZettleSalesChannel = $this->salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
-        static::assertNotNull($iZettleSalesChannel);
-        static::assertInstanceOf(IZettleSalesChannelEntity::class, $iZettleSalesChannel);
-        if (!$withProductStream) {
-            $iZettleSalesChannel->setProductStreamId(null);
-        }
-
-        $products = $this->productSelection->getProductCollection($this->salesChannel, $context, $withAssociations);
-
-        static::assertCount(1, $products);
     }
 
     public function testProductLog(): void

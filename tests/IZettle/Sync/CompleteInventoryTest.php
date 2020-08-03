@@ -19,23 +19,22 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Api\Service\Inventory\RemoteCalculator;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
+use Swag\PayPal\IZettle\MessageQueue\Handler\Sync\InventorySyncHandler;
+use Swag\PayPal\IZettle\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\IZettle\Resource\InventoryResource;
 use Swag\PayPal\IZettle\Run\RunService;
-use Swag\PayPal\IZettle\Run\Task\InventoryTask;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater;
 use Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
-use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\IZettle\ConstantsForTesting;
-use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\ChangeInventoryFixture;
-use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\StartInventoryTrackingFixture;
+use Swag\PayPal\Test\IZettle\Helper\SalesChannelTrait;
+use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\ChangeBulkInventoryFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\IZettleClientFactoryMock;
+use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleInventoryRepoMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\ProductRepoMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelProductRepoMock;
@@ -43,8 +42,7 @@ use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelProductRepoMock;
 class CompleteInventoryTest extends TestCase
 {
     use KernelTestBehaviour;
-
-    private const DOMAIN = 'https://www.example.com/';
+    use SalesChannelTrait;
 
     public function testInventorySync(): void
     {
@@ -53,26 +51,39 @@ class CompleteInventoryTest extends TestCase
         $productRepository = new ProductRepoMock();
         $salesChannelProductRepository = new SalesChannelProductRepoMock();
 
+        $inventoryContextFactory = new InventoryContextFactory(
+            $inventoryResource,
+            new UuidConverter(),
+            $inventoryRepository
+        );
+
         /** @var SalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $this->getContainer()->get('Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory');
 
-        $inventoryTask = new InventoryTask(
+        $messageBus = new MessageBusMock();
+
+        $inventorySyncManager = new InventorySyncManager(
+            $messageBus,
+            new ProductSelection(
+                $salesChannelProductRepository,
+                $this->createMock(ProductStreamBuilder::class),
+                $salesChannelContextFactory
+            ),
+            $salesChannelProductRepository,
+            $inventoryContextFactory
+        );
+
+        $inventorySyncHandler = new InventorySyncHandler(
             new RunService(
+                $this->createMock(EntityRepositoryInterface::class),
                 $this->createMock(EntityRepositoryInterface::class),
                 new Logger('test')
             ),
             new NullLogger(),
+            $productRepository,
+            $inventoryContextFactory,
             new InventorySyncer(
-                new ProductSelection(
-                    $salesChannelProductRepository,
-                    $this->createMock(ProductStreamBuilder::class),
-                    $salesChannelContextFactory
-                ),
-                new InventoryContextFactory(
-                    $inventoryResource,
-                    new UuidConverter(),
-                    $inventoryRepository
-                ),
+                $inventoryContextFactory,
                 new LocalUpdater(
                     $productRepository,
                     $this->createMock(StockUpdater::class),
@@ -91,22 +102,19 @@ class CompleteInventoryTest extends TestCase
 
         $context = Context::createDefaultContext();
 
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
-        $salesChannelCriteria = new Criteria([Defaults::SALES_CHANNEL]);
+        $salesChannel = $this->getSalesChannel($context);
 
-        /** @var SalesChannelEntity $salesChannel */
-        $salesChannel = $salesChannelRepository->search($salesChannelCriteria, $context)->first();
-        $iZettleSalesChannel = new IZettleSalesChannelEntity();
-        $iZettleSalesChannel->setId(Uuid::randomHex());
-        $iZettleSalesChannel->setSalesChannelId($salesChannel->getId());
-        $iZettleSalesChannel->setMediaDomain(self::DOMAIN);
-        $iZettleSalesChannel->setApiKey(ConstantsForTesting::VALID_API_KEY);
-        $iZettleSalesChannel->setReplace(true);
-        $iZettleSalesChannel->setSyncPrices(true);
-        $iZettleSalesChannel->setProductStreamId(null);
-        $salesChannel->setTypeId(SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE);
-        $salesChannel->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleSalesChannel);
+        $productIds = [
+            ConstantsForTesting::PRODUCT_A_ID,
+            ConstantsForTesting::PRODUCT_B_ID,
+            ConstantsForTesting::PRODUCT_C_ID,
+            ConstantsForTesting::PRODUCT_D_ID,
+            ConstantsForTesting::PRODUCT_E_ID,
+        ];
+
+        $inventoryContext = $inventoryContextFactory->getContext($salesChannel, $context);
+        $inventoryContext->setProductIds($productIds);
+        $inventoryContextFactory->updateLocal($inventoryContext);
 
         /*
          * A - unchanged
@@ -131,37 +139,37 @@ class CompleteInventoryTest extends TestCase
         $inventoryRepository->createMockEntity($productD, Defaults::SALES_CHANNEL, 3);
         $inventoryRepository->createMockEntity($productE, Defaults::SALES_CHANNEL, 4);
 
-        $inventoryTask->execute($salesChannel, $context);
+        $inventorySyncManager->buildMessages($salesChannel, $context, Uuid::randomHex());
+        $messageBus->execute([$inventorySyncHandler]);
 
         // product B added
-        static::assertTrue(StartInventoryTrackingFixture::$called);
-        static::assertEquals(5, $inventoryRepository->search(new Criteria(), $context)->getTotal());
+        static::assertSame(5, $inventoryRepository->search(new Criteria(), $context)->getTotal());
 
         // inventories saved correctly
         $inventory = $inventoryRepository->filterByProduct($productA);
         static::assertNotNull($inventory);
-        static::assertEquals(1, $inventory->getStock());
+        static::assertSame(1, $inventory->getStock());
         $inventory = $inventoryRepository->filterByProduct($productB);
         static::assertNotNull($inventory);
-        static::assertEquals(2, $inventory->getStock());
+        static::assertSame(2, $inventory->getStock());
         $inventory = $inventoryRepository->filterByProduct($productC);
         static::assertNotNull($inventory);
-        static::assertEquals(0, $inventory->getStock());
+        static::assertSame(0, $inventory->getStock());
         $inventory = $inventoryRepository->filterByProduct($productD);
         static::assertNotNull($inventory);
-        static::assertEquals(2, $inventory->getStock());
+        static::assertSame(2, $inventory->getStock());
         $inventory = $inventoryRepository->filterByProduct($productE);
         static::assertNotNull($inventory);
-        static::assertEquals(2, $inventory->getStock());
+        static::assertSame(2, $inventory->getStock());
 
         // stock updated in product
-        static::assertEquals(2, $productA->getStock());
-        static::assertEquals(2, $productB->getStock());
-        static::assertEquals(2, $productC->getStock());
-        static::assertEquals(3, $productD->getStock());
-        static::assertEquals(2, $productE->getStock());
+        static::assertSame(2, $productA->getStock());
+        static::assertSame(2, $productB->getStock());
+        static::assertSame(2, $productC->getStock());
+        static::assertSame(3, $productD->getStock());
+        static::assertSame(2, $productE->getStock());
 
         // inventory updated online
-        static::assertTrue(ChangeInventoryFixture::$called);
+        static::assertTrue(ChangeBulkInventoryFixture::$called);
     }
 }

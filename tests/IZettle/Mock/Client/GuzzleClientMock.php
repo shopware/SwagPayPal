@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 use Swag\PayPal\IZettle\Api\Common\IZettleStruct;
 use Swag\PayPal\IZettle\Api\IZettleRequestUri;
 use Swag\PayPal\Test\IZettle\ConstantsForTesting;
-use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\ChangeInventoryFixture;
+use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\ChangeBulkInventoryFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\CreateProductFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\CreateTokenResponseFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\DeleteProductFixture;
@@ -24,7 +24,6 @@ use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\FetchInformationResponseFixtu
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetInventoryFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetInventoryLocationsFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetProductsFixture;
-use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\StartInventoryTrackingFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\UpdateProductFixture;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -95,8 +94,8 @@ class GuzzleClientMock extends Client
     private function handlePostRequests(string $resourceUri, ?IZettleStruct $data): ?string
     {
         $response = [];
-        if ($resourceUri === IZettleRequestUri::INVENTORY_RESOURCE) {
-            $response = StartInventoryTrackingFixture::post($data);
+        if ($resourceUri === IZettleRequestUri::INVENTORY_RESOURCE_BULK) {
+            $response = ChangeBulkInventoryFixture::post($data);
         } elseif ($resourceUri === IZettleRequestUri::PRODUCT_RESOURCE) {
             $response = CreateProductFixture::post($data);
         }
@@ -110,9 +109,7 @@ class GuzzleClientMock extends Client
     private function handlePutRequests(string $resourceUri, IZettleStruct $data): ?string
     {
         $response = [];
-        if ($resourceUri === IZettleRequestUri::INVENTORY_RESOURCE) {
-            $response = ChangeInventoryFixture::put($data);
-        } elseif (\mb_strpos($resourceUri, IZettleRequestUri::PRODUCT_RESOURCE_V2) !== false) {
+        if (\mb_strpos($resourceUri, IZettleRequestUri::PRODUCT_RESOURCE_V2) !== false) {
             $response = UpdateProductFixture::put($data);
         }
 

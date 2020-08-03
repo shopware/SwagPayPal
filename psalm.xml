@@ -38,6 +38,8 @@
             <errorLevel type="info">
                 <file name="src/IZettle/Api/Service/Util/ProductGroupingCollection.php"/>
                 <file name="src/IZettle/DataAbstractionLayer/Entity/*Collection.php"/>
+                <file name="src/IZettle/MessageQueue/Handler/Sync/*Handler.php"/>
+                <file name="src/IZettle/Sync/*Syncer.php"/>
             </errorLevel>
         </MoreSpecificImplementedParamType>
 

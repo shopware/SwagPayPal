@@ -9,8 +9,8 @@ namespace Swag\PayPal\IZettle\Command;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Run\Task\ImageTask;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class IZettleImageSyncCommand extends AbstractIZettleCommand
@@ -42,21 +42,8 @@ class IZettleImageSyncCommand extends AbstractIZettleCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void
     {
-        $context = Context::createDefaultContext();
-        $salesChannels = $this->getSalesChannels($input, $context);
-
-        if ($salesChannels->count() === 0) {
-            $output->writeln('No active iZettle sales channel found.');
-
-            return 1;
-        }
-
-        foreach ($salesChannels as $salesChannel) {
-            $this->imageTask->execute($salesChannel, $context);
-        }
-
-        return 0;
+        $this->imageTask->execute($salesChannel, $context);
     }
 }

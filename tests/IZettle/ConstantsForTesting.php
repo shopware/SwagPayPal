@@ -17,6 +17,8 @@ final class ConstantsForTesting
     public const LOCATION_SUPPLIER = '54751312-69ca-11ea-8c71-0c48dee31184';
     public const LOCATION_SOLD = '54751394-69ca-11ea-9e37-9b5cf17b128a';
 
+    public const DOMAIN = 'https://www.example.com/';
+
     public const PRODUCT_A_ID = 'fe1a0eabc10949fc8923ea07a37b33d6';
     public const PRODUCT_A_ID_CONVERTED = 'fe1a0eab-c109-19fc-8923-ea07a37b33d6';
     public const PRODUCT_A_ID_VARIANT = 'fe1a0eab-c109-19fc-8923-ea07a37b33d7';

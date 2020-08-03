@@ -16,7 +16,6 @@ use Swag\PayPal\IZettle\Api\Inventory\Status\Variant;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelInventoryCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelInventoryEntity;
-use Swag\PayPal\IZettle\Resource\InventoryResource;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContext;
 
 trait UpdaterTrait
@@ -72,9 +71,8 @@ trait UpdaterTrait
         $context = Context::createDefaultContext();
 
         return new InventoryContext(
-            $this->createMock(InventoryResource::class),
             new UuidConverter(),
-            $this->createSalesChannel($context),
+            $this->getSalesChannel($context),
             $this->locations['STORE'],
             $this->locations['SUPPLIER'],
             $this->locations['BIN'],

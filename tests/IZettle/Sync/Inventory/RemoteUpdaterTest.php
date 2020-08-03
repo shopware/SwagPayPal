@@ -13,8 +13,9 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
-use Swag\PayPal\IZettle\Api\Inventory\Changes;
-use Swag\PayPal\IZettle\Api\Inventory\Changes\Change;
+use Swag\PayPal\IZettle\Api\Inventory\BulkChanges;
+use Swag\PayPal\IZettle\Api\Inventory\BulkChanges\ProductChange;
+use Swag\PayPal\IZettle\Api\Inventory\BulkChanges\ProductChange\VariantChange;
 use Swag\PayPal\IZettle\Api\Inventory\Status;
 use Swag\PayPal\IZettle\Api\Inventory\Status\Variant;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
@@ -64,20 +65,24 @@ class RemoteUpdaterTest extends TestCase
 
         $uuidConverter = new UuidConverter();
 
-        $changes = new Changes();
-        $changeObject = new Change();
-        $changeObject->setProductUuid($uuidConverter->convertUuidToV1((string) $product->getParentId()));
-        $changeObject->setVariantUuid($uuidConverter->convertUuidToV1($product->getId()));
-        $changeObject->setFromLocationUuid($change > 0 ? $this->locations['SUPPLIER'] : $this->locations['STORE']);
-        $changeObject->setToLocationUuid($change < 0 ? $this->locations['BIN'] : $this->locations['STORE']);
-        $changeObject->setChange(\abs($change));
-        $changes->addChange($changeObject);
-        $changes->setReturnBalanceForLocationUuid($this->locations['STORE']);
+        $bulkChanges = new BulkChanges();
+        $productChange = new ProductChange();
+        $variantChange = new VariantChange();
+        $variantChange->setProductUuid($uuidConverter->convertUuidToV1((string) $product->getParentId()));
+        $variantChange->setVariantUuid($uuidConverter->convertUuidToV1($product->getId()));
+        $variantChange->setFromLocationUuid($change > 0 ? $this->locations['SUPPLIER'] : $this->locations['STORE']);
+        $variantChange->setToLocationUuid($change < 0 ? $this->locations['BIN'] : $this->locations['STORE']);
+        $variantChange->setChange(\abs($change));
+        $productChange->addVariantChange($variantChange);
+        $productChange->setProductUuid($variantChange->getProductUuid());
+        $productChange->setTrackingStatusChange(ProductChange::TRACKING_NOCHANGE);
+        $bulkChanges->addProductChange($productChange);
+        $bulkChanges->setReturnBalanceForLocationUuid($this->locations['STORE']);
 
         $this->inventoryResource->expects($change === 0 ? static::never() : static::once())
-                                ->method('changeInventory')
-                                ->with(static::anything(), $changes)
-                                ->willReturn($this->createStatus($changeObject->getProductUuid(), $changeObject->getVariantUuid()));
+                                ->method('changeInventoryBulk')
+                                ->with(static::anything(), $bulkChanges)
+                                ->willReturn($this->createStatus($variantChange->getProductUuid(), $variantChange->getVariantUuid()));
 
         $this->logger->expects($change === 0 ? static::never() : static::once())
                      ->method('info');
@@ -97,19 +102,23 @@ class RemoteUpdaterTest extends TestCase
 
         $uuidConverter = new UuidConverter();
 
-        $changes = new Changes();
-        $changeObject = new Change();
-        $changeObject->setProductUuid($uuidConverter->convertUuidToV1($product->getId()));
-        $changeObject->setVariantUuid($uuidConverter->convertUuidToV1($uuidConverter->incrementUuid($product->getId())));
-        $changeObject->setFromLocationUuid($change > 0 ? $this->locations['SUPPLIER'] : $this->locations['STORE']);
-        $changeObject->setToLocationUuid($change < 0 ? $this->locations['BIN'] : $this->locations['STORE']);
-        $changeObject->setChange(\abs($change));
-        $changes->addChange($changeObject);
-        $changes->setReturnBalanceForLocationUuid($this->locations['STORE']);
+        $bulkChanges = new BulkChanges();
+        $productChange = new ProductChange();
+        $variantChange = new VariantChange();
+        $variantChange->setProductUuid($uuidConverter->convertUuidToV1($product->getId()));
+        $variantChange->setVariantUuid($uuidConverter->convertUuidToV1($uuidConverter->incrementUuid($product->getId())));
+        $variantChange->setFromLocationUuid($change > 0 ? $this->locations['SUPPLIER'] : $this->locations['STORE']);
+        $variantChange->setToLocationUuid($change < 0 ? $this->locations['BIN'] : $this->locations['STORE']);
+        $variantChange->setChange(\abs($change));
+        $productChange->addVariantChange($variantChange);
+        $productChange->setProductUuid($variantChange->getProductUuid());
+        $productChange->setTrackingStatusChange(ProductChange::TRACKING_NOCHANGE);
+        $bulkChanges->addProductChange($productChange);
+        $bulkChanges->setReturnBalanceForLocationUuid($this->locations['STORE']);
 
         $this->inventoryResource->expects($change === 0 ? static::never() : static::once())
-                                ->method('changeInventory')
-                                ->with(static::anything(), $changes);
+                                ->method('changeInventoryBulk')
+                                ->with(static::anything(), $bulkChanges);
 
         $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
@@ -120,7 +129,7 @@ class RemoteUpdaterTest extends TestCase
 
         $inventoryContext = $this->createInventoryContext($product, 5, 0);
 
-        $this->inventoryResource->expects(static::never())->method('changeInventory');
+        $this->inventoryResource->expects(static::never())->method('changeInventoryBulk');
 
         $this->remoteUpdater->updateRemote(new ProductCollection([$product]), $inventoryContext);
     }
@@ -136,7 +145,7 @@ class RemoteUpdaterTest extends TestCase
         $error->assign([
             'developerMessage' => 'anyError',
             'violations' => [], ]);
-        $this->inventoryResource->method('changeInventory')->willThrowException(
+        $this->inventoryResource->method('changeInventoryBulk')->willThrowException(
             new IZettleApiException($error)
         );
 
