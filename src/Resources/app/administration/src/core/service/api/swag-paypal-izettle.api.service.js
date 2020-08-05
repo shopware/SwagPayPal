@@ -8,7 +8,7 @@ class SwagPayPalIZettleApiService extends ApiService {
         };
     }
 
-    startSync(salesChannelId) {
+    startCompleteSync(salesChannelId) {
         const headers = this.getBasicHeaders();
 
         return this.httpClient.get(

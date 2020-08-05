@@ -6,10 +6,6 @@ Component.register('swag-paypal-izettle-status-view', {
     template,
 
     props: {
-        currentRun: {
-            type: Object,
-            required: false
-        },
         lastFinishedRun: {
             type: Object,
             required: false
@@ -79,7 +75,7 @@ Component.register('swag-paypal-izettle-status-view', {
         noRunYet() {
             return this.salesChannel === null
                 || this.salesChannel.id === null
-                || (this.currentRun === null && this.lastFinishedRun === null);
+                || this.lastFinishedRun === null;
         },
 
         incompleteLastRun() {
@@ -92,7 +88,9 @@ Component.register('swag-paypal-izettle-status-view', {
             let title = this.$tc(`swag-paypal-izettle.detail.base.status.message.${this.status}`);
             if (this.incompleteLastRun) {
                 const task = this.$tc(`swag-paypal-izettle.detail.base.status.task.${this.lastFinishedRun.task}`);
-                title += ` (${task})`;
+                if (!this.isSyncing) {
+                    title += ` (${task})`;
+                }
             }
             return title;
         },

@@ -36,7 +36,7 @@ Component.register('swag-paypal-izettle-detail-base', {
             isSyncing: false,
             syncErrors: null,
             showDeleteModal: false,
-            currentRun: null,
+            syncingRunId: null,
             lastFinishedRun: null,
             lastCompleteRun: null,
             statusErrorLevel: null
@@ -55,7 +55,7 @@ Component.register('swag-paypal-izettle-detail-base', {
 
     watch: {
         'salesChannel.id'() {
-            this.loadCurrentRun();
+            this.checkForSync();
             this.loadLastFinishedRun();
         }
     },
@@ -66,7 +66,7 @@ Component.register('swag-paypal-izettle-detail-base', {
 
     methods: {
         createdComponent() {
-            this.loadCurrentRun();
+            this.checkForSync();
             this.loadLastFinishedRun();
         },
 
@@ -93,77 +93,55 @@ Component.register('swag-paypal-izettle-detail-base', {
             this.$forceUpdate();
         },
 
-        onStartSync() {
+        startSync(callable) {
             this.syncErrors = null;
             this.isSyncing = true;
-            this.SwagPayPalIZettleApiService.startSync(this.salesChannel.id).catch((errorResponse) => {
+            callable(this.salesChannel.id).then((response) => {
+                this.syncingRunId = response.runId;
+                this.updateSync();
+            }).catch((errorResponse) => {
                 this.syncErrors = errorResponse.response.data.errors;
-            }).finally(() => {
                 this.loadLastFinishedRun().then(() => {
                     this.isSyncing = false;
                 });
             });
+        },
+
+        updateSync() {
+            if (this.runId === null) {
+                return;
+            }
+
+            this.runRepository.get(this.syncingRunId, Shopware.Context.api).then((entity) => {
+                if (entity.finishedAt === null) {
+                    setTimeout(this.updateSync, 1500);
+                    return;
+                }
+
+                this.syncingRunId = null;
+                this.loadLastFinishedRun().then(() => {
+                    this.isSyncing = false;
+                });
+            });
+        },
+
+        onStartSync() {
+            this.startSync(this.SwagPayPalIZettleApiService.startCompleteSync.bind(this.SwagPayPalIZettleApiService));
         },
 
         onStartProductSync() {
-            this.syncErrors = null;
-            this.isSyncing = true;
-            this.SwagPayPalIZettleApiService.startProductSync(this.salesChannel.id).catch((errorResponse) => {
-                this.syncErrors = errorResponse.response.data.errors;
-            }).finally(() => {
-                this.loadLastFinishedRun().then(() => {
-                    this.isSyncing = false;
-                });
-            });
+            this.startSync(this.SwagPayPalIZettleApiService.startProductSync.bind(this.SwagPayPalIZettleApiService));
         },
 
         onStartImageSync() {
-            this.syncErrors = null;
-            this.isSyncing = true;
-            this.SwagPayPalIZettleApiService.startImageSync(this.salesChannel.id).catch((errorResponse) => {
-                this.syncErrors = errorResponse.response.data.errors;
-            }).finally(() => {
-                this.loadLastFinishedRun().then(() => {
-                    this.isSyncing = false;
-                });
-            });
+            this.startSync(this.SwagPayPalIZettleApiService.startImageSync.bind(this.SwagPayPalIZettleApiService));
         },
 
         onStartInventorySync() {
-            this.syncErrors = null;
-            this.isSyncing = true;
-            this.SwagPayPalIZettleApiService.startInventorySync(this.salesChannel.id).catch((errorResponse) => {
-                this.syncErrors = errorResponse.response.data.errors;
-            }).finally(() => {
-                this.loadLastFinishedRun().then(() => {
-                    this.isSyncing = false;
-                });
-            });
+            this.startSync(this.SwagPayPalIZettleApiService.startInventorySync.bind(this.SwagPayPalIZettleApiService));
         },
 
-        loadCurrentRun() {
-            if (this.salesChannel === null || this.salesChannel.id === null) {
-                this.currentRun = null;
-                return Promise.resolve();
-            }
-
-            const criteria = new Criteria(1, 1);
-            criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
-            criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
-
-            return this.runRepository.search(criteria, Shopware.Context.api).then((result) => {
-                this.currentRun = result.first();
-                if (this.currentRun !== null) {
-                    this.isSyncing = this.currentRun.updatedAt === null;
-                    if (this.isSyncing) {
-                        setTimeout(this.loadCurrentRun, 3000);
-                    }
-                }
-                this.$forceUpdate();
-            });
-        },
-
-        loadLastFinishedRun() {
+        loadLastFinishedRun(needComplete = false) {
             if (this.salesChannel === null || this.salesChannel.id === null) {
                 this.lastFinishedRun = null;
                 return Promise.resolve();
@@ -171,14 +149,25 @@ Component.register('swag-paypal-izettle-detail-base', {
 
             const criteria = new Criteria(1, 1);
             criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
-            criteria.addFilter(Criteria.not('AND', [Criteria.equals('updatedAt', null)]));
+            criteria.addFilter(Criteria.not('AND', [Criteria.equals('finishedAt', null)]));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
-            criteria.addAssociation('logs');
+
+            if (needComplete) {
+                criteria.addFilter(Criteria.equals('task', 'complete'));
+            } else {
+                criteria.addAssociation('logs');
+            }
 
             return this.runRepository.search(criteria, Shopware.Context.api).then((result) => {
+                if (needComplete) {
+                    this.lastCompleteRun = result.first();
+                    this.$forceUpdate();
+                    return;
+                }
+
                 this.lastFinishedRun = result.first();
                 if (this.lastFinishedRun !== null && this.lastFinishedRun.task !== 'complete') {
-                    this.loadLastCompleteRun();
+                    this.loadLastFinishedRun(true);
                 } else {
                     this.lastCompleteRun = this.lastFinishedRun;
                 }
@@ -186,22 +175,23 @@ Component.register('swag-paypal-izettle-detail-base', {
             });
         },
 
-        loadLastCompleteRun() {
+        checkForSync() {
             if (this.salesChannel === null || this.salesChannel.id === null) {
-                this.lastCompleteRun = null;
-                return Promise.resolve();
+                return;
             }
 
             const criteria = new Criteria(1, 1);
             criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
-            criteria.addFilter(Criteria.equals('task', 'complete'));
-            criteria.addFilter(Criteria.not('AND', [Criteria.equals('updatedAt', null)]));
+            criteria.addFilter(Criteria.equals('finishedAt', null));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
-            criteria.addAssociation('logs');
 
-            return this.runRepository.search(criteria, Shopware.Context.api).then((result) => {
-                this.lastCompleteRun = result.first();
-                this.$forceUpdate();
+            this.runRepository.search(criteria, Shopware.Context.api).then((result) => {
+                if (result.first() === null) {
+                    return;
+                }
+                this.isSyncing = true;
+                this.syncingRunId = result.first().id;
+                this.updateSync();
             });
         }
     }
