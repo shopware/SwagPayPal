@@ -1,0 +1,37 @@
+{% block swag_paypal_izettle_wizard_sync %}
+    <div class="swag-paypal-izettle-wizard-sync">
+        <h3>{{ $tc('swag-paypal-izettle.wizard.sync.header') }}</h3>
+
+        {% block swag_paypal_izettle_wizard_sync_prices %}
+            <sw-card>
+
+                {% block swag_paypal_izettle_wizard_sync_prices_switch %}
+                    <sw-switch-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.syncPrices"
+                                     :label="$tc('swag-paypal-izettle.wizard.sync.syncPricesLabel')"
+                                     @input="forceUpdate">
+                    </sw-switch-field>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_wizard_sync_prices_disclaimer %}
+                    <div v-html="$tc('swag-paypal-izettle.wizard.sync.syncPricesSubtitle')" class="subtitle"></div>
+                {% endblock %}
+            </sw-card>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_sync_replace %}
+            <sw-card>
+
+                {% block swag_paypal_izettle_wizard_sync_replace_switch %}
+                    <sw-switch-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.replace"
+                                     :label="$tc('swag-paypal-izettle.wizard.sync.replaceLabel')"
+                                     @input="forceUpdate">
+                    </sw-switch-field>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_wizard_sync_replace_disclaimer %}
+                    <div v-html="$tc('swag-paypal-izettle.wizard.sync.replaceSubtitle')" class="subtitle" ></div>
+                {% endblock %}
+            </sw-card>
+        {% endblock %}
+    </div>
+{% endblock %}

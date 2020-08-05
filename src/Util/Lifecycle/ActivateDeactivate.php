@@ -97,14 +97,14 @@ class ActivateDeactivate
                 'iconName' => 'default-money-cash',
                 'translations' => [
                     'en-GB' => [
-                        'name' => 'iZettle integration',
-                        'manufacturer' => 'shopware AG',
-                        'description' => 'SalesChannel for synchronisation to your iZettle account',
+                        'name' => 'iZettle',
+                        'manufacturer' => 'Shopware',
+                        'description' => 'Sales Channel for synchronisation with your iZettle account',
                     ],
                     'de-DE' => [
-                        'name' => 'iZettle Integration',
-                        'manufacturer' => 'shopware AG',
-                        'description' => 'SalesChannel für die Synchronisation zu deinem iZettle Account',
+                        'name' => 'iZettle',
+                        'manufacturer' => 'Shopware',
+                        'description' => 'Sales Channel für die Synchronisation mit Deinem iZettle-Account',
                     ],
                 ],
             ],

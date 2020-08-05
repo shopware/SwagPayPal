@@ -1,0 +1,102 @@
+{% block swag_paypal_izettle_wizard_connection %}
+    <div class="swag-paypal-izettle-wizard-connection">
+
+        {% block swag_paypal_izettle_wizard_connection_header_connect %}
+            <div class="swag-paypal-izettle-wizard-connection-headline">
+                {{ $tc('swag-paypal-izettle.wizard.connection.headerConnect') }}
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_connection_apikey %}
+            <sw-text-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.apiKey"
+                           class="swag-paypal-izettle-wizard-connection-apikey-field"
+                           required
+                           :label="$tc('swag-paypal-izettle.wizard.connection.labelApiKey')"
+                           :placeholder="$tc('swag-paypal-izettle.wizard.connection.placeholderApiKey')"
+                           @input="forceUpdate">
+                <template #suffix>
+
+                    {% block swag_paypal_izettle_wizard_connection_apikey_suffix %}
+                        <sw-icon name="default-lock-key"
+                                 class="swag-paypal-izettle-wizard-connection-input-suffix"
+                                 size="22px">
+                        </sw-icon>
+                    {% endblock %}
+                </template>
+            </sw-text-field>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_connection_apikey_description %}
+            <div class="swag-paypal-izettle-wizard-connection-apikey-description">
+
+                {% block swag_paypal_izettle_wizard_connection_apikey_description_text %}
+                    <div v-html="$tc('swag-paypal-izettle.wizard.connection.apiKeyDescription')"
+                         class="swag-paypal-izettle-wizard-connection-apikey-description-text">
+                    </div>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_wizard_connection_apikey_description_link %}
+                    <div class="swag-paypal-izettle-wizard-connection-apikey-description-link">
+
+                        {% block swag_paypal_izettle_wizard_connection_apikey_description_link_text %}
+                            <a :href="apiKeyUrl">{{ $tc('swag-paypal-izettle.authentification.buttonGenerateKey') }}</a>
+                        {% endblock %}
+
+                        {% block swag_paypal_izettle_wizard_connection_apikey_description_link_icon %}
+                            <a :href="apiKeyUrl">
+                                <sw-icon class="swag-paypal-izettle-wizard-connection-apikey-description-link-icon"
+                                         name="default-action-external"
+                                         size="10px">
+                                </sw-icon>
+                            </a>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_connection_header_new_customer %}
+            <div class="swag-paypal-izettle-wizard-connection-headline">
+                {{ $tc('swag-paypal-izettle.wizard.connection.headerNewCustomer') }}
+            </div>
+        {% endblock %}
+
+
+        {% block swag_paypal_izettle_wizard_connection_new_customer %}
+            <sw-card>
+                <sw-container class="swag-paypal-izettle-wizard-connection-new-customer-container"
+                              columns="1fr 1fr"
+                              align="center"
+                              gap="300px">
+
+                    {% block swag_paypal_izettle_wizard_connection_new_customer_image %}
+                        <img class="swag-paypal-izettle-wizard-connection-izettle-logo"
+                             :src="'swagpaypal/static/img/izettle-logo-full.png' | asset"
+                             alt="iZettle logo">
+                    {% endblock %}
+
+                    {% block swag_paypal_izettle_wizard_connection_new_customer_button %}
+                        <sw-button class="swag-paypal-izettle-wizard-connection-izettle-link"
+                                   variant="ghost"
+                                   size="small"
+                                   :link="$tc('swag-paypal-izettle.wizard.connection.buttonCreateAccountLink')">
+
+                            {% block swag_paypal_izettle_wizard_connection_new_customer_button_text %}
+                                <span class="swag-paypal-izettle-wizard-connection-izettle-link-text">
+                                    {{ $tc('swag-paypal-izettle.wizard.connection.buttonCreateAccount') }}
+                                </span>
+                            {% endblock %}
+
+                            {% block swag_paypal_izettle_wizard_connection_new_customer_button_icon %}
+                                <sw-icon name="default-action-external"
+                                         class="swag-paypal-izettle-wizard-connection-izettle-link-icon"
+                                         size="10px">
+                                </sw-icon>
+                            {% endblock %}
+                        </sw-button>
+                    {% endblock %}
+                </sw-container>
+            </sw-card>
+        {% endblock %}
+    </div>
+{% endblock %}

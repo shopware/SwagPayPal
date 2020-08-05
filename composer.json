@@ -16,11 +16,11 @@
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
         "copyright": "(c) by shopware AG",
         "label": {
-            "de-DE": "PayPal Produkte für Shopware 6",
+            "de-DE": "PayPal-Produkte für Shopware 6",
             "en-GB": "PayPal Products for Shopware 6"
         },
         "description": {
-            "de-DE": "Bieten Sie Ihren Kunden Deutschlands beliebteste Bezahlmöglichkeiten mit nur einer Integration: Das neue PayPal Modul bietet PayPal PLUS, Kauf auf Rechnung, Ratenzahlung & Expressbutton",
+            "de-DE": "Bieten Sie Ihren Kunden Deutschlands beliebteste Bezahlmöglichkeiten mit nur einer Integration: Das neue PayPal-Modul bietet PayPal PLUS, Kauf auf Rechnung, Ratenzahlung & den Expressbutton",
             "en-GB": "Get access to over 100 currencies and 200 markets worldwide with the payment module PayPal for your Shopware shop. Experience an easy and comfortable way of payment."
         },
         "manufacturerLink": {

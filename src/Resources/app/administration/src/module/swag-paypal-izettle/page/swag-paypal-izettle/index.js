@@ -2,7 +2,7 @@ import template from './swag-paypal-izettle.html.twig';
 import './swag-paypal-izettle.scss';
 import { IZETTLE_SALES_CHANNEL_TYPE_ID } from '../../swag-paypal-izettle-consts';
 
-const { Component, Context, Mixin } = Shopware;
+const { Component, Context } = Shopware;
 const { Criteria } = Shopware.Data;
 
 Component.register('swag-paypal-izettle', {
@@ -16,8 +16,8 @@ Component.register('swag-paypal-izettle', {
     ],
 
     mixins: [
-        Mixin.getByName('notification'),
-        Mixin.getByName('placeholder')
+        'notification',
+        'placeholder'
     ],
 
     data() {
@@ -87,6 +87,8 @@ Component.register('swag-paypal-izettle', {
             }
         },
 
+        // ToDo PPI-22@M.Janz - Tidy up those functions
+
         createNewSalesChannel() {
             if (Context.api.languageId !== Context.api.systemLanguageId) {
                 Context.api.languageId = Context.api.systemLanguageId;
@@ -98,11 +100,18 @@ Component.register('swag-paypal-izettle', {
 
             this.salesChannel.extensions.paypalIZettleSalesChannel
                 = this.paypalIZettleSalesChannelRepository.create(Context.api);
-            this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey = '';
-            this.salesChannel.extensions.paypalIZettleSalesChannel.imageDomain = '';
-            this.salesChannel.extensions.paypalIZettleSalesChannel.productStreamId = null;
-            this.salesChannel.extensions.paypalIZettleSalesChannel.syncPrices = true;
-            this.salesChannel.extensions.paypalIZettleSalesChannel.replace = false;
+
+            Object.assign(
+                this.salesChannel.extensions.paypalIZettleSalesChannel,
+                {
+                    mediaDomain: 'https://example.com',
+                    apiKey: '',
+                    imageDomain: '',
+                    productStreamId: null,
+                    syncPrices: true,
+                    replace: false
+                }
+            );
 
             this.salesChannelService.generateKey().then((response) => {
                 this.salesChannel.accessKey = response.accessKey;
@@ -194,7 +203,6 @@ Component.register('swag-paypal-izettle', {
                     this.isLoading = false;
 
                     this.createNotificationError({
-                        title: this.$tc('sw-sales-channel.detail.titleSaveError'),
                         message: this.$tc('sw-sales-channel.detail.messageSaveError', 0, {
                             name: this.salesChannel.name || this.placeholder(this.salesChannel, 'name')
                         })

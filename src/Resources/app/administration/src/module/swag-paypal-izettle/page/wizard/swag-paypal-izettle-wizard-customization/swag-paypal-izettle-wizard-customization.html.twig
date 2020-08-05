@@ -1,0 +1,27 @@
+{% block swag_paypal_izettle_wizard_customization %}
+    <div class="swag-paypal-izettle-wizard-customization">
+        <h3>{{ $tc('swag-paypal-izettle.wizard.customization.header') }}</h3>
+
+        {% block swag_paypal_izettle_wizard_customization_name %}
+            <sw-text-field v-model="salesChannel.name"
+                           validation="required"
+                           required
+                           :label="$tc('sw-sales-channel.detail.labelInputName')"
+                           :placeholder="placeholder(salesChannel, 'name', $tc('sw-sales-channel.detail.placeholderName'))"
+                           @input="forceUpdate">
+            </sw-text-field>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_customization_media_domain %}
+            <sw-url-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain"
+                          required
+                          :label="$tc('swag-paypal-izettle.wizard.customization.labelDomain')"
+                          @input="forceUpdate">
+            </sw-url-field>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_connection_success_disclaimer %}
+            <div v-html="$tc('swag-paypal-izettle.wizard.customization.subtitle')" class="subtitle"></div>
+        {% endblock %}
+    </div>
+{% endblock %}

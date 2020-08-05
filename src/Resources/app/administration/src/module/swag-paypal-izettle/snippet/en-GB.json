@@ -1,5 +1,8 @@
 {
     "swag-paypal-izettle": {
+        "general": {
+            "moduleTitle": "iZettle"
+        },
         "header": "iZettle Sales Channel",
         "tabTitle": {
             "base": "General",
@@ -8,20 +11,20 @@
         },
         "detail": {
             "base": {
-                "titleSync": "Synchronization",
-                "buttonSync": "Synchronize Now",
-                "buttonSyncProducts": "Synchronize Product Details",
+                "titleSync": "Synchronisation",
+                "buttonSync": "Synchronise now",
+                "buttonSyncProducts": "Synchronise product details",
                 "buttonSyncImages": "Upload images",
-                "buttonSyncInventory": "Synchronize Inventory",
-                "syncErrorTitle": "Synchronization Error",
+                "buttonSyncInventory": "Synchronise inventory",
+                "syncErrorTitle": "Synchronisation error",
                 "status": {
-                    "disabled": "Sync is not enabled, because your sales channel is disabled.",
+                    "disabled": "Synchronisation is not enabled, because your Sales Channel is disabled.",
                     "message": {
-                        "syncing": "Synchronization in Progress",
+                        "syncing": "Synchronisation in progress",
                         "noRunYet": "No recent run found",
-                        "success": "Synchronized successfully",
-                        "warning": "Last synchronization finished with warnings",
-                        "error": "Last synchronization finished with errors"
+                        "success": "Synchronised successfully",
+                        "warning": "Last synchronisation finished with warnings",
+                        "error": "Last synchronisation finished with errors"
                     },
                     "task": {
                         "complete": "complete",
@@ -29,9 +32,9 @@
                         "image": "images",
                         "inventory": "inventory"
                     },
-                    "lastSynced": "Last synchronization",
-                    "lastSyncedComplete": "Last complete synchronization",
-                    "syncingDetail": "This could take a few minutes ... This process runs in the background. You can use your store as normal."
+                    "lastSynced": "Last synchronisation",
+                    "lastSyncedComplete": "Last complete synchronisation",
+                    "syncingDetail": "This could take a few minutes. This process runs in the background, meanwhile you can use your shop as usual."
                 }
             },
             "settings": {
@@ -39,21 +42,21 @@
                 "domain": "Domain for media download",
                 "productStream": "Dynamic product group",
                 "titleCredentials": "Credentials",
-                "titleSync": "Synchronization",
-                "syncPrices": "Sync Prices",
+                "titleSync": "Synchronisation",
+                "syncPrices": "Synchronise prices",
                 "replace": "Replace existing products in iZettle"
             },
             "log": {
-                "titleProducts": "Synced Products",
+                "titleProducts": "Synchronised products",
                 "titleLogs": "Other log entries",
                 "columnProduct": "Product",
                 "columnDate": "Date",
-                "columnLastSync": "Last Sync",
+                "columnLastSync": "Last synchronisation",
                 "emptyProductTitle": "No products selected",
-                "emptyProductMessage": "There are no products in your Sales Channel or Dynamic Product Group.",
+                "emptyProductMessage": "There are no products in your Sales Channel or dynamic product group.",
                 "emptyLogTitle": "No log entries",
-                "emptyLogMessage": "Either no sync has been started or no errors occured.",
-                "noEntry": "Not synced yet"
+                "emptyLogMessage": "Either no synchronisation has been started or no errors occured.",
+                "noEntry": "Not synchronised yet"
             },
             "save": "Save",
             "cleanLog": "Clean up log"
@@ -61,48 +64,60 @@
         "wizard": {
             "stepItemTitle": {
                 "connection": "Account setup",
-                "customization": "Customization",
-                "productselection": "Product Selection",
-                "productgroup": "Dynamic Product Group",
-                "sync": "Product Sync",
+                "connection-success": "Connection",
+                "customization": "Customisation",
+                "product-selection": "Product selection",
+                "sync": "Product synchronisation",
                 "finish": "Finish"
             },
             "connection": {
                 "modalTitle": "Account setup",
-                "header": "Enter your iZettle credentials and follow the next steps to setup product sync."
+                "headerConnect": "Connect your iZettle account",
+                "headerNewCustomer": "New to iZettle?",
+                "labelApiKey": "API key",
+                "placeholderApiKey": "Enter API key...",
+                "apiKeyDescription": "API keys function like passwords. Shopware will use your iZettle API key to establish a secure connection to your iZettle account.",
+                "buttonCreateAccount": "Create iZettle account",
+                "buttonCreateAccountLink": "https://register.izettle.com/"
+            },
+            "connection-success": {
+                "modalTitle": "Connection established",
+                "headline": "Your iZettle and Shopware accounts are now connected!",
+                "info": "Follow the next steps to finish setting up product synchronisation.",
+                "disconnectButton": "Disconnect",
+                "disconnectErrorMessage": "An error occured while disconnecting.",
+                "disclaimer": "Any changes you make to your Shopware products will now automatically be updated in your connected iZettle account.",
+                "fakeFirstName": "Currently",
+                "fakeLastName": "Loading",
+                "fakeMail": "izettle@example.com",
+                "salesChannelPrototypeName": "iZettle POS"
             },
             "customization": {
-                "modalTitle": "Customization",
+                "modalTitle": "Customisation",
                 "labelDomain": "Domain",
-                "header": "Customize your new Sales Channel",
+                "header": "Customise your new Sales Channel",
                 "subtitle": "The domain is needed as download URL for media. It needs to be publicly available."
             },
             "product-selection": {
                 "modalTitle": "Product selection",
                 "labelSelect": "Sales Channel",
-                "labelToggle": "Clone Product Selection",
-                "header": "Pick a Sales Channel for Product Selection",
-                "subtitle": "You may choose an existing Sales Channel to clone the current selection of products to sync. You can add or remove products of your Sales Channel after the setup wizard."
-            },
-            "product-stream": {
-                "modalTitle": "Dynamic Product Group",
-                "label": "Dynamic Product Group",
-                "header": "Pick a Dynamic Product Group",
-                "subtitle": "You can select a Dynamic Product Group to filter the synchronized products additionally.<br>If you have not yet created a Dynamic Product Group or do not wish to reduce the number of synchronized products, you can skip this step now or select a group later."
+                "labelToggle": "Clone product selection",
+                "header": "Pick a Sales Channel for product selection",
+                "subtitle": "You may choose an existing Sales Channel to clone the current selection of products to synchronise. You can add or remove products of your Sales Channel after the setup wizard."
             },
             "sync": {
-                "modalTitle": "Product Sync",
-                "header": "Set product sync settings",
-                "syncPricesLabel": "Sync Prices",
+                "modalTitle": "Product synchronisation",
+                "header": "Set product synchronisation settings",
+                "syncPricesLabel": "Synchronise prices",
                 "syncPricesSubtitle": "If checked, prices are exported with VAT.<br>Otherwise product prices will be set to 0 and can be changed in your iZettle product library.",
                 "replaceLabel": "Replace existing iZettle library",
                 "replaceSubtitle": "If checked, the existing products in your iZettle product library are removed."
             },
             "finish": {
                 "modalTitle": "Finish",
-                "header": "Product sync setup completed!",
+                "header": "Product synchronisation setup completed!",
                 "firstParagraph": "Your iZettle account is now linked to your Sales Channel and your products will be transferred to iZettle.<br>In the future, when you make a sale, we will update your stock in iZettle and Shopware.",
-                "secondParagraph": "If you need to update your products, we recommend you do this in Shopware and they'll sync to your iZettle app automatically."
+                "secondParagraph": "If you need to update your products, we recommend you do this in Shopware and they'll synchronise to your iZettle app automatically."
             }
         },
         "authentification": {
@@ -110,7 +125,7 @@
             "apiKey": "API key",
             "buttonTest": "Test credentials",
             "buttonGenerateKey": "Generate API key",
-            "apiKeyDescription": "You need to generate an API key at the iZettle website.<br>The generated key needs to be pasted here to authorize the connection to iZettle."
+            "apiKeyDescription": "You need to generate an API key at the iZettle website.<br>The generated key needs to be pasted here to authorise the connection to iZettle."
         },
         "messageCloneError": "Could not clone product visibility from another Sales Channel."
     }

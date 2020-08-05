@@ -166,6 +166,16 @@ class MerchantInformation extends IZettleStruct
         return $this->language;
     }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getReceiptEmail(): string
+    {
+        return $this->receiptEmail;
+    }
+
     protected function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;

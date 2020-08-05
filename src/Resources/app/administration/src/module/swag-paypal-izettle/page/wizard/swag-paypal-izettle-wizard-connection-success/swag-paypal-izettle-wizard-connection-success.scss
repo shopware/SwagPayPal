@@ -1,0 +1,50 @@
+@import '~scss/variables';
+
+.swag-paypal-izettle-wizard-connection-success {
+    text-align: center;
+
+    &-content {
+        margin-left: 80px;
+        margin-right: 80px;
+
+        &-icon {
+            padding: 24px;
+
+            &-wrapper {
+                display: inline-block;
+                margin: 16px;
+
+                background-color: $color-emerald-50;
+                border-radius: 50%;
+            }
+        }
+
+        &-headline > h5 {
+            font-weight: $font-weight-bold;
+            margin-bottom: 8px;
+        }
+    }
+
+    &-content-user {
+        margin: 36px 0;
+
+        &-info {
+            text-align: left;
+            font-size: $font-size-small;
+
+            &-name {
+                font-weight: 600;
+            }
+        }
+    }
+
+    &-disclaimer {
+        color: #adb5bd;
+        font-size: $font-size-extra-small;
+    }
+
+    .sw-card__content {
+        padding: 16px 24px;
+    }
+}
+

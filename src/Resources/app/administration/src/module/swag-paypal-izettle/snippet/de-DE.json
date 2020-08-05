@@ -1,5 +1,8 @@
 {
     "swag-paypal-izettle": {
+        "general": {
+            "moduleTitle": "iZettle"
+        },
         "header": "iZettle-Verkaufskanal",
         "tabTitle": {
             "base": "Allgemein",
@@ -31,7 +34,7 @@
                     },
                     "lastSynced": "Zuletzt synchronisiert",
                     "lastSyncedComplete": "Zuletzt vollständig synchronisiert",
-                    "syncingDetail": "Dies könnte einige Minuten dauern ... Dieser Prozess läuft im Hintergrund. Sie können ihren Store wie gewohnt weiterverwenden."
+                    "syncingDetail": "Dies könnte einige Minuten dauern. Der Prozess läuft im Hintergrund weiter. Du kannst Deinen Shop währendessen wie gewohnt weiterverwenden."
                 }
             },
             "settings": {
@@ -50,7 +53,7 @@
                 "columnDate": "Zeitpunkt",
                 "columnLastSync": "Letzte Synchronisation",
                 "emptyProductTitle": "Keine Produkte gewählt",
-                "emptyProductMessage": "Es existieren keine Produkte in Ihrem gewählten Verkaufskanal bzw. dynamischen Produktgruppe.",
+                "emptyProductMessage": "Es existieren keine Produkte in dem gewählten Verkaufskanal bzw. der dynamischen Produktgruppe.",
                 "emptyLogTitle": "Keine Protokolleinträge",
                 "emptyLogMessage": "Es wurde noch nicht synchronisiert oder es sind noch keine Fehler aufgetreten.",
                 "noEntry": "Noch nicht synchronisiert"
@@ -61,48 +64,60 @@
         "wizard": {
             "stepItemTitle": {
                 "connection": "Benutzerkonto-Einrichtung",
-                "customization": "Anpassung",
-                "productselection": "Produktauswahl",
-                "productgroup": "Dynamische Produktgruppe",
+                "connection-success": "Verbindung",
+                "customization": "Benutzerdefinierte Einstellungen",
+                "product-selection": "Produktauswahl",
                 "sync": "Produkt-Synchronsiation",
                 "finish": "Abschluss"
             },
             "connection": {
                 "modalTitle": "Benutzerkonto-Einrichtung",
-                "header": "Geben Sie hier Ihre iZettle-Benutzerdaten ein und folgenden Sie den nächsten Schritten zur Einrichtung der Synchronisation."
+                "headerConnect": "Verbinde Deinen iZettle-Account",
+                "headerNewCustomer": "Neu bei iZettle?",
+                "labelApiKey": "API-Schlüssel",
+                "placeholderApiKey": "API-Schüssel eingeben ...",
+                "apiKeyDescription": "Ein API-Schlüssel funktioniert wie ein Passwort. Shopware verwendet Deinen iZettle-API-Schlüssel, um eine sichere Verbindung zu Deinem iZettle-Konto herzustellen.",
+                "buttonCreateAccount": "iZettle-Account anlegen",
+                "buttonCreateAccountLink": "https://register.izettle.com/"
+            },
+            "connection-success": {
+                "modalTitle": "Verbindung hergestellt",
+                "headline": "Deine iZettle- und Shopware-Konten sind jetzt miteinander verbunden!",
+                "info": "Befolge zum Abschluss die nächsten Schritte zur Einrichtung der Produktsynchronisation.",
+                "disconnectButton": "Verbindung trennen",
+                "disconnectErrorMessage": "Beim Trennen der Verbindung ist ein Fehler aufgetreten.",
+                "disclaimer": "Alle Änderungen, die Du an Deinen Shopware-Produkten vornimmst, werden jetzt automatisch in Deinem verbundenen iZettle-Konto aktualisiert.",
+                "fakeFirstName": "Im",
+                "fakeLastName": "Ladeprozess",
+                "fakeMail": "izettle@example.com",
+                "salesChannelPrototypeName": "iZettle POS"
             },
             "customization": {
                 "modalTitle": "Benutzerdefinierte Einstellungen",
                 "labelDomain": "Domain",
-                "header": "Passen Sie Ihren neuen Verkaufskanal an",
+                "header": "Passe Deinen neuen Verkaufskanal an",
                 "subtitle": "Die Domain wird benötigt, damit iZettle Medien darüber herunterladen kann. Sie muss deshalb öffentlich verfügbar sein."
             },
             "product-selection": {
                 "modalTitle": "Produktauswahl",
                 "labelSelect": "Verkaufskanal",
                 "labelToggle": "Produktauswahl klonen",
-                "header": "Wählen Sie einen Verkaufskanal für die Produktauswahl",
-                "subtitle": "Sie können einen existierenden Verkaufskanal wählen, um die aktuelle Produktauswahl zu übernehmen. Sie können nach der Einrichtung der Synchronisiation Produkte dem Verkaufskanal hinzufügen oder entfernen."
-            },
-            "product-stream": {
-                "modalTitle": "Dynamische Produktgruppe",
-                "label": "Dynamische Produktgruppe",
-                "header": "Wählen Sie eine dynamische Produktgruppe",
-                "subtitle": "Sie können eine dynamische Produktgruppe wählen, um die synchronisierten Produkte weiter zu filtern.<br>Falls sie noch keine dynamische Produktgruppe erstellt haben oder die Auswahl nicht reduzieren möchten, können Sie diesen Schritt überspringen und im Bedarfsfall später eine Gruppe wählen."
+                "header": "Wähle einen Verkaufskanal für die Produktauswahl",
+                "subtitle": "Du kannst einen existierenden Verkaufskanal wählen, um die aktuelle Produktauswahl zu übernehmen. Nach der Einrichtung der Synchronisation kannst Du Produkte zum Verkaufskanal hinzufügen oder entfernen."
             },
             "sync": {
-                "modalTitle": "Product-Synchronisation",
+                "modalTitle": "Produkt-Synchronisation",
                 "header": "Festlegen von Synchronisations-Einstellungen",
                 "syncPricesLabel": "Preise synchronisieren",
-                "syncPricesSubtitle": "Wenn gewählt werden die Preise mit MwSt. übertragen.<br>Andernfalls werden die Preise auf 0 gesetzt und können in Ihrer iZettle-Produktbibliothek geändert werden.",
+                "syncPricesSubtitle": "Wenn gewählt, werden die Preise inkl. Mehrwertsteuer übertragen.<br>Andernfalls werden die Preise auf 0 gesetzt und können jederzeit in Deiner iZettle-Produktbibliothek geändert werden.",
                 "replaceLabel": "Bestehende Produkte in iZettle ersetzen",
-                "replaceSubtitle": "Wenn gewählt werden existierende Produkte in Ihrer iZettle-Produktbibliothek entfernt."
+                "replaceSubtitle": "Wenn gewählt, werden existierende Produkte aus Deiner iZettle-Produktbibliothek entfernt."
             },
             "finish": {
                 "modalTitle": "Fertiggestellt",
                 "header": "Einrichtung der Produkt-Synchronisation abgeschlossen!",
-                "firstParagraph": "Ihr iZettle-Konto ist jetzt mit Ihrem Verkaufskanal verknüpft und überträgt Ihre Produkte zu iZettle.<br>Wenn Sie in Zukunft einen Verkauf tätigen, werden wir Ihren Bestand an iZettle und Shopware aktualisieren.",
-                "secondParagraph": "Wenn Sie Ihre Produkte aktualisieren müssen, empfehlen wir Ihnen, dies in Shopware zu tun, und sie werden automatisch mit Ihrer iZettle-Anwendung synchronisiert."
+                "firstParagraph": "Dein iZettle-Konto ist jetzt mit Deinem Verkaufskanal verknüpft und überträgt Deine Produkte zu iZettle.<br>Wenn Du in Zukunft einen Verkauf tätigst, wird der Bestand bei iZettle und Shopware automatisch aktualisiert.",
+                "secondParagraph": "Wenn Du Deine Produkte aktualisieren möchtest, empfehlen wir Dir, dies in Shopware zu tun, um sie automatisch mit Deiner iZettle-Anwendung zu synchronisieren."
             }
         },
         "authentification": {
@@ -110,7 +125,7 @@
             "apiKey": "API-Key",
             "buttonTest": "Zugangsdaten testen",
             "buttonGenerateKey": "API-Key generieren",
-            "apiKeyDescription": "Zur Verwendung muss auf der iZettle Webseite ein API-Schlüssel erstellt werden.<br>Der generierte Schlüssel muss zur Authentifizierung hier eingefügt werden."
+            "apiKeyDescription": "Zur Verwendung muss auf der iZettle-Webseite ein API-Schlüssel erstellt werden.<br>Der generierte Schlüssel muss zur Authentifizierung hier eingefügt werden."
         }
     }
 }

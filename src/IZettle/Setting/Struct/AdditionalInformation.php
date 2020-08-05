@@ -46,6 +46,11 @@ class AdditionalInformation extends Struct
      */
     protected $paymentMethodId;
 
+    /**
+     * @var array
+     */
+    protected $merchantInformation;
+
     public function setCountryId(string $countryId): void
     {
         $this->countryId = $countryId;
@@ -79,5 +84,10 @@ class AdditionalInformation extends Struct
     public function setPaymentMethodId(string $paymentMethodId): void
     {
         $this->paymentMethodId = $paymentMethodId;
+    }
+
+    public function setMerchantInformation(array $merchantInformation): void
+    {
+        $this->merchantInformation = $merchantInformation;
     }
 }

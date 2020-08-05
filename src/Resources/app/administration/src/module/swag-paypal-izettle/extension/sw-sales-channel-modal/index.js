@@ -9,6 +9,7 @@ Component.override('sw-sales-channel-modal', {
             if (this.isIZettleSalesChannel(salesChannelTypeId)) {
                 this.onCloseModal();
                 this.$router.push({ name: 'swag.paypal.izettle.wizard' });
+
                 return;
             }
 

@@ -200,6 +200,10 @@ class SettingsControllerTest extends TestCase
             'navigationCategoryId' => $categoryRepository->searchIds($categoryCriteria, $context)->firstId(),
             'shippingMethodId' => $shippingMethodRepository->searchIds($shippingMethodCriteria, $context)->firstId(),
             'paymentMethodId' => $paymentMethodRepository->searchIds($paymentMethodCriteria, $context)->firstId(),
+            'merchantInformation' => [
+                'name' => 'Max Mustermann',
+                'receiptEmail' => 'someone@somewhere.com',
+            ],
         ]);
 
         return $expected;

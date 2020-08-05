@@ -1,0 +1,79 @@
+{% block swag_paypal_izettle_wizard_connection_success %}
+    <div class="swag-paypal-izettle-wizard-connection-success">
+
+        {% block swag_paypal_izettle_wizard_connection_success_headline_content %}
+            <div class="swag-paypal-izettle-wizard-connection-success-content">
+
+                {% block swag_paypal_izettle_wizard_connection_success_icon %}
+                    <div class="swag-paypal-izettle-wizard-connection-success-content-icon-wrapper">
+                        <sw-icon class="swag-paypal-izettle-wizard-connection-success-content-icon"
+                                 name="default-action-thumb-up"
+                                 size="80px"
+                                 color="#37D046">
+                        </sw-icon>
+                    </div>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_wizard_connection_success_headline %}
+                    <div class="swag-paypal-izettle-wizard-connection-success-content-headline">
+                        <h5>{{ $tc('swag-paypal-izettle.wizard.connection-success.headline') }}</h5>
+                    </div>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_wizard_connection_success_info %}
+                    <div class="swag-paypal-izettle-wizard-connection-success-content-info">
+                        {{ $tc('swag-paypal-izettle.wizard.connection-success.info') }}
+                    </div>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_wizard_connection_success_user %}
+                    <sw-card class="swag-paypal-izettle-wizard-connection-success-content-user"
+                             :isLoading="isFetchingInformation">
+                        <sw-container class="swag-paypal-izettle-wizard-connection-success-content-user-container"
+                                      columns="30px auto 150px"
+                                      align="center"
+                                      gap="30px">
+
+                            {% block swag_paypal_izettle_wizard_connection_success_user_avatar %}
+                                <sw-avatar
+                                    class="swag-paypal-izettle-wizard-connection-success-content-user-avatar"
+                                    size="40px"
+                                    :firstName="iZettleUser.firstName"
+                                    :lastName="iZettleUser.lastName">
+                                </sw-avatar>
+                            {% endblock %}
+
+                            {% block swag_paypal_izettle_wizard_connection_success_user_information %}
+                                <div class="swag-paypal-izettle-wizard-connection-success-content-user-info">
+
+                                    {% block swag_paypal_izettle_wizard_connection_success_user_information_real %}
+                                        <div class="swag-paypal-izettle-wizard-connection-success-content-user-info-name">
+                                            {{ iZettleUser.fullName }}
+                                        </div>
+                                        <div class="swag-paypal-izettle-wizard-connection-success-content-user-info-mail">
+                                            {{ iZettleUser.mail }}
+                                        </div>
+                                    {% endblock %}
+                                </div>
+                            {% endblock %}
+
+                            {% block swag_paypal_izettle_wizard_connection_success_user_disconnect_button %}
+                                <sw-button class="swag-paypal-izettle-wizard-connection-success-content-user-disconnect"
+                                           variant="ghost"
+                                           @click="onDisconnect">
+                                    {{ $tc('swag-paypal-izettle.wizard.connection-success.disconnectButton') }}
+                                </sw-button>
+                            {% endblock %}
+                        </sw-container>
+                    </sw-card>
+                {% endblock %}
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_connection_success_disclaimer %}
+            <div class="swag-paypal-izettle-wizard-connection-success-disclaimer">
+                {{ $tc('swag-paypal-izettle.wizard.connection-success.disclaimer') }}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

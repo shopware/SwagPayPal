@@ -179,6 +179,10 @@ class InformationFetchServiceTest extends TestCase
             'countryId' => $countryRepository->searchIds($countryCriteria, $context)->firstId(),
             'currencyId' => Defaults::CURRENCY,
             'languageId' => $languageRepository->searchIds($languageCriteria, $context)->firstId(),
+            'merchantInformation' => [
+                'name' => 'Max Mustermann',
+                'receiptEmail' => 'someone@somewhere.com',
+            ],
         ]);
 
         return $expected;

@@ -79,28 +79,14 @@
                                      @test-credentials="onTestCredentials"
                                      @update-clone-sales-channel="updateCloneSalesChannel">
                         </router-view>
-                        <swag-paypal-izettle-detail-base v-else
-                                                         :isLoading="isLoading"
-                                                         :isNewEntity="isNewEntity"
-                        ></swag-paypal-izettle-detail-base>
-                    {% endblock %}
-
-                    {% block swag_paypal_izettle_wizard %}
-                        <swag-paypal-izettle-wizard v-if="showWizard"
-                                                    :isLoading="isLoading"
-                                                    :isTestCredentialsSuccessful="isTestCredentialsSuccessful"
-                                                    :isTestingCredentials="isTestingCredentials"
-                                                    :salesChannel="salesChannel"
-                                                    :cloneSalesChannelId="cloneSalesChannelId"
-                                                    @test-credentials="onTestCredentials"
-                                                    @update-clone-sales-channel="updateCloneSalesChannel"
-                                                    @wizard-cancel="cancelWizard"
-                                                    @wizard-finish="onSave">
-                        </swag-paypal-izettle-wizard>
+                        <swag-paypal-izettle-detail-base
+                                v-else
+                                :isLoading="isLoading"
+                                :isNewEntity="isNewEntity">
+                        </swag-paypal-izettle-detail-base>
                     {% endblock %}
                 </sw-card-view>
             </template>
         {% endblock %}
-
     </sw-page>
 {% endblock %}

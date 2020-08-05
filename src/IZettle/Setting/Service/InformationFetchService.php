@@ -71,6 +71,15 @@ class InformationFetchService
         $information->setCountryId($this->getCountryId($merchantInformation, $context));
         $information->setCurrencyId($this->getCurrencyId($merchantInformation, $context));
         $information->setLanguageId($this->getLanguageId($merchantInformation, $context));
+        $information->setMerchantInformation($this->getMerchantInformation($merchantInformation));
+    }
+
+    private function getMerchantInformation(MerchantInformation $merchantInformation): array
+    {
+        return [
+            'name' => $merchantInformation->getName(),
+            'receiptEmail' => $merchantInformation->getReceiptEmail(),
+        ];
     }
 
     private function getCountryId(MerchantInformation $merchantInformation, Context $context): string
