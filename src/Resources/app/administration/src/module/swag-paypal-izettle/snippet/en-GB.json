@@ -68,7 +68,8 @@
                 "connection-success": "Connection",
                 "customization": "Customisation",
                 "product-selection": "Product selection",
-                "sync": "Product synchronisation",
+                "sync-prices": "Price synchronisation",
+                "sync-library": "Library synchronisation",
                 "finish": "Finish"
             },
             "connection": {
@@ -91,13 +92,15 @@
                 "fakeFirstName": "Currently",
                 "fakeLastName": "Loading",
                 "fakeMail": "izettle@example.com",
-                "salesChannelPrototypeName": "iZettle POS"
+                "salesChannelPrototypeName": "iZettle POS",
+                "salesChannelPrototypeMediaDomain": "https://example.com"
             },
             "customization": {
                 "modalTitle": "Customisation",
                 "labelDomain": "Domain",
                 "header": "Customise your new Sales Channel",
-                "subtitle": "The domain is needed as download URL for media. It needs to be publicly available."
+                "subtitle": "iZettle will use this domain to download media associated with your synchronised products.",
+                "placeholderDomain": "Enter domain..."
             },
             "product-selection": {
                 "modalTitle": "Product selection",
@@ -106,13 +109,18 @@
                 "header": "Pick a Sales Channel for product selection",
                 "subtitle": "You may choose an existing Sales Channel to clone the current selection of products to synchronise. You can add or remove products of your Sales Channel after the setup wizard."
             },
-            "sync": {
-                "modalTitle": "Product synchronisation",
-                "header": "Set product synchronisation settings",
-                "syncPricesLabel": "Synchronise prices",
-                "syncPricesSubtitle": "If checked, prices are exported with VAT.<br>Otherwise product prices will be set to 0 and can be changed in your iZettle product library.",
-                "replaceLabel": "Replace existing iZettle library",
-                "replaceSubtitle": "If checked, the existing products in your iZettle product library are removed."
+            "sync-prices": {
+                "modalTitle": "Price synchronisation",
+                "header": "How would you like to export product prices to iZettle?",
+                "description": "Your products’ prices will include VAT when synced to iZettle.",
+                "disclaimer": "You can edit your VAT manually in the iZettle product library.",
+                "optionTrueLabel" : "Export prices with VAT",
+                "optionTrueDescription" : "Prices synchronised to iZettle will include VAT.",
+                "optionFalseLabel" : "Don't export prices",
+                "optionFalseDescription" : "Exported product prices will be set to 0. You can change this in your product library."
+            },
+            "sync-library": {
+                "modalTitle": "Library synchronisation"
             },
             "finish": {
                 "modalTitle": "Finish",

@@ -1,4 +1,13 @@
 .swag-paypal-izettle-wizard-connection {
+    &-headline {
+        margin: 24px 0 18px 0;
+        font-weight: bold;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
     &-input-suffix {
         margin-bottom: 2px;
     }
@@ -31,15 +40,6 @@
         &-logo {
             object-fit: contain;
             text-align: left;
-        }
-    }
-
-    &-headline {
-        margin: 24px 0 18px 0;
-        font-weight: bold;
-
-        &:first-child {
-            margin-top: 0;
         }
     }
 }

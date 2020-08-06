@@ -1,0 +1,26 @@
+{% block swag_paypal_izettle_wizard_sync_library %}
+    <div class="swag-paypal-izettle-wizard-sync-library">
+
+        {# ToDo PPI-18 - This is copy pasted from sync-prices and just needs to be adjusted #}
+        {% block swag_paypal_izettle_wizard_sync_library_header %}
+            <div class="swag-paypal-izettle-wizard-sync-library-headline">
+                {{ $tc('swag-paypal-izettle.wizard.sync-library.header') }}
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_sync_library_description_input %}
+            <swag-paypal-izettle-wizard-boolean-radio
+{#               v-model="salesChannel.extensions.paypalIZettleSalesChannel.syncPrices"#}
+                :label="$tc('swag-paypal-izettle.wizard.sync-library.description')"
+                :optionTrue="optionTrue"
+                :optionFalse="optionFalse">
+            </swag-paypal-izettle-wizard-boolean-radio>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_wizard_sync_library_disclaimer %}
+            <div class="swag-paypal-izettle-wizard-sync-library-disclaimer">
+                {{ $tc('swag-paypal-izettle.wizard.sync-library.disclaimer') }}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

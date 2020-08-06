@@ -26,7 +26,8 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
                 'connection-success',
                 'customization',
                 'product-selection',
-                'sync',
+                'sync-prices',
+                'sync-library',
                 'finish'
             ],
             stepper: {},
@@ -207,7 +208,7 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
             Object.assign(
                 this.salesChannel.extensions.paypalIZettleSalesChannel,
                 {
-                    mediaDomain: 'https://example.com',
+                    mediaDomain: this.$tc('swag-paypal-izettle.wizard.connection-success.salesChannelPrototypeMediaDomain'),
                     apiKey: '',
                     imageDomain: '',
                     productStreamId: null,

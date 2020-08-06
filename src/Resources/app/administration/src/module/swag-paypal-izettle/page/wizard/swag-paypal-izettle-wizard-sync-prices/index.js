@@ -1,8 +1,9 @@
-import template from './swag-paypal-izettle-wizard-product-selection.html.twig';
+import template from './swag-paypal-izettle-wizard-sync-prices.html.twig';
+import './swag-paypal-izettle-wizard-sync-prices.scss';
 
 const { Component } = Shopware;
 
-Component.register('swag-paypal-izettle-wizard-product-selection', {
+Component.register('swag-paypal-izettle-wizard-sync-prices', {
     template,
 
     props: {
@@ -20,22 +21,19 @@ Component.register('swag-paypal-izettle-wizard-product-selection', {
         }
     },
 
-    data() {
-        return {
-            manualSalesChannel: false,
-            hasClone: false
-        };
-    },
-
     computed: {
-        localCloneSalesChannelId: {
-            get() {
-                this.updateButtons();
-                return this.cloneSalesChannelId;
-            },
-            set(cloneSalesChannelId) {
-                this.$emit('update-clone-sales-channel', cloneSalesChannelId);
-            }
+        optionTrue() {
+            return {
+                name: this.$tc('swag-paypal-izettle.wizard.sync-prices.optionTrueLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.sync-prices.optionTrueDescription')
+            };
+        },
+
+        optionFalse() {
+            return {
+                name: this.$tc('swag-paypal-izettle.wizard.sync-prices.optionFalseLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.sync-prices.optionFalseDescription')
+            };
         }
     },
 
@@ -50,7 +48,7 @@ Component.register('swag-paypal-izettle-wizard-product-selection', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.product-selection.modalTitle'));
+            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.sync-prices.modalTitle'));
         },
 
         updateButtons() {
@@ -59,7 +57,7 @@ Component.register('swag-paypal-izettle-wizard-product-selection', {
                     key: 'back',
                     label: this.$tc('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
-                    action: this.routeBackToCustomization,
+                    action: this.routeBackToProductSelection,
                     disabled: false
                 },
                 {
@@ -67,7 +65,7 @@ Component.register('swag-paypal-izettle-wizard-product-selection', {
                     label: this.$tc('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
-                    action: this.routeToSyncPrices,
+                    action: this.routeToSyncLibrary,
                     disabled: false
                 }
             ];
@@ -75,20 +73,20 @@ Component.register('swag-paypal-izettle-wizard-product-selection', {
             this.$emit('buttons-update', buttonConfig);
         },
 
-        routeBackToCustomization() {
+        routeBackToProductSelection() {
             this.$router.push({
-                name: 'swag.paypal.izettle.wizard.customization',
+                name: 'swag.paypal.izettle.wizard.product-selection',
                 params: { id: this.salesChannel.id }
             });
         },
 
-        routeToSyncPrices() {
+        routeToSyncLibrary() {
             this.toggleLoadingState(true);
 
             this.saveSalesChannel().then(() => {
                 this.toggleLoadingState(false);
                 this.$router.push({
-                    name: 'swag.paypal.izettle.wizard.sync-prices',
+                    name: 'swag.paypal.izettle.wizard.sync-library',
                     params: { id: this.salesChannel.id }
                 });
             }).finally(() => {
@@ -96,14 +94,8 @@ Component.register('swag-paypal-izettle-wizard-product-selection', {
             });
         },
 
-        updateClone() {
-            this.$emit('update-clone-sales-channel', null);
-            this.forceUpdate();
-        },
-
         forceUpdate() {
             this.$forceUpdate();
-            this.updateButtons();
         },
 
         toggleLoadingState(state) {

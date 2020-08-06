@@ -5,10 +5,6 @@ const { Component } = Shopware;
 Component.register('swag-paypal-izettle-wizard-customization', {
     template,
 
-    mixins: [
-        'placeholder'
-    ],
-
     props: {
         salesChannel: {
             type: Object,
@@ -59,8 +55,18 @@ Component.register('swag-paypal-izettle-wizard-customization', {
         },
 
         resetInputFields() {
-            this.salesChannel.name = '';
-            this.salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain = '';
+            const prototype = {
+                name: this.$tc('swag-paypal-izettle.wizard.connection-success.salesChannelPrototypeName'),
+                mediaDomain: this.$tc('swag-paypal-izettle.wizard.connection-success.salesChannelPrototypeMediaDomain')
+            };
+
+            if (this.salesChannel.name === prototype.name) {
+                this.salesChannel.name = '';
+            }
+
+            if (this.salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain === prototype.mediaDomain) {
+                this.salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain = '';
+            }
         },
 
         routeToProductSelection() {

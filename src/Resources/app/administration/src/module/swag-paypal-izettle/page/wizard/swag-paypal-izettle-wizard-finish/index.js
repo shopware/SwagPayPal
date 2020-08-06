@@ -37,7 +37,7 @@ Component.register('swag-paypal-izettle-wizard-finish', {
                     key: 'back',
                     label: this.$tc('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
-                    action: this.routeBackToSync,
+                    action: this.routeBackToSyncLibrary,
                     disabled: false
                 },
                 {
@@ -53,9 +53,9 @@ Component.register('swag-paypal-izettle-wizard-finish', {
             this.$emit('buttons-update', buttonConfig);
         },
 
-        routeBackToSync() {
+        routeBackToSyncLibrary() {
             this.$router.push({
-                name: 'swag.paypal.izettle.wizard.sync',
+                name: 'swag.paypal.izettle.wizard.sync-library',
                 params: { id: this.salesChannel.id }
             });
         },

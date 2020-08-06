@@ -1,9 +1,9 @@
-import template from './swag-paypal-izettle-wizard-sync.html.twig';
-import './swag-paypal-izettle-wizard-sync.scss';
+import template from './swag-paypal-izettle-wizard-sync-library.html.twig';
+import './swag-paypal-izettle-wizard-sync-library.scss';
 
 const { Component } = Shopware;
 
-Component.register('swag-paypal-izettle-wizard-sync', {
+Component.register('swag-paypal-izettle-wizard-sync-library', {
     template,
 
     props: {
@@ -21,6 +21,22 @@ Component.register('swag-paypal-izettle-wizard-sync', {
         }
     },
 
+    computed: {
+        optionTrue() {
+            return {
+                name: this.$tc('swag-paypal-izettle.wizard.sync-library.optionTrueLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.sync-library.optionTrueDescription')
+            };
+        },
+
+        optionFalse() {
+            return {
+                name: this.$tc('swag-paypal-izettle.wizard.sync-library.optionFalseLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.sync-library.optionFalseDescription')
+            };
+        }
+    },
+
     created() {
         this.createdComponent();
     },
@@ -32,7 +48,7 @@ Component.register('swag-paypal-izettle-wizard-sync', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.sync.modalTitle'));
+            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.sync-library.modalTitle'));
         },
 
         updateButtons() {
@@ -41,7 +57,7 @@ Component.register('swag-paypal-izettle-wizard-sync', {
                     key: 'back',
                     label: this.$tc('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
-                    action: this.routeBackToProductSelection,
+                    action: this.routeBackToSyncPrices,
                     disabled: false
                 },
                 {
@@ -57,9 +73,9 @@ Component.register('swag-paypal-izettle-wizard-sync', {
             this.$emit('buttons-update', buttonConfig);
         },
 
-        routeBackToProductSelection() {
+        routeBackToSyncPrices() {
             this.$router.push({
-                name: 'swag.paypal.izettle.wizard.product-selection',
+                name: 'swag.paypal.izettle.wizard.sync-prices',
                 params: { id: this.salesChannel.id }
             });
         },

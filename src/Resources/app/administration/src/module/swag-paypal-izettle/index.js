@@ -59,9 +59,13 @@ Module.register('swag-paypal-izettle', {
                     component: 'swag-paypal-izettle-wizard-product-selection',
                     path: 'product-selection'
                 },
-                sync: {
-                    component: 'swag-paypal-izettle-wizard-sync',
-                    path: 'sync'
+                'sync-prices': {
+                    component: 'swag-paypal-izettle-wizard-sync-prices',
+                    path: 'sync-prices'
+                },
+                'sync-library': {
+                    component: 'swag-paypal-izettle-wizard-sync-library',
+                    path: 'sync-library'
                 },
                 finish: {
                     component: 'swag-paypal-izettle-wizard-finish',

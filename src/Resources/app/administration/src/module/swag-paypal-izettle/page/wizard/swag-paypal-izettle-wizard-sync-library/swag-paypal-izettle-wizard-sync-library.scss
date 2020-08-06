@@ -1,0 +1,17 @@
+@import "~scss/variables";
+
+.swag-paypal-izettle-wizard-sync-library {
+    &-headline {
+        margin: 0 0 18px 0;
+        font-weight: bold;
+    }
+
+    &-description {
+        font-size: 14px;
+    }
+
+    &-disclaimer {
+        color: #adb5bd;
+        font-size: $font-size-extra-small;
+    }
+}

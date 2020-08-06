@@ -68,7 +68,8 @@
                 "connection-success": "Verbindung",
                 "customization": "Benutzerdefinierte Einstellungen",
                 "product-selection": "Produktauswahl",
-                "sync": "Produkt-Synchronsiation",
+                "sync-prices": "Preis-Synchronsiation",
+                "sync-library": "Synchronisation der Bibliothek",
                 "finish": "Abschluss"
             },
             "connection": {
@@ -91,13 +92,15 @@
                 "fakeFirstName": "Im",
                 "fakeLastName": "Ladeprozess",
                 "fakeMail": "izettle@example.com",
-                "salesChannelPrototypeName": "iZettle POS"
+                "salesChannelPrototypeName": "iZettle POS",
+                "salesChannelPrototypeMediaDomain": "https://example.com"
             },
             "customization": {
                 "modalTitle": "Benutzerdefinierte Einstellungen",
                 "labelDomain": "Domain",
                 "header": "Passe Deinen neuen Verkaufskanal an",
-                "subtitle": "Die Domain wird benötigt, damit iZettle Medien darüber herunterladen kann. Sie muss deshalb öffentlich verfügbar sein."
+                "subtitle": "iZettle verwendet diese Domain, um Medien herunterzuladen, die mit Deinen synchronisierten Produkten verbunden sind.",
+                "placeholderDomain": "Domain eingeben ..."
             },
             "product-selection": {
                 "modalTitle": "Produktauswahl",
@@ -106,13 +109,18 @@
                 "header": "Wähle einen Verkaufskanal für die Produktauswahl",
                 "subtitle": "Du kannst einen existierenden Verkaufskanal wählen, um die aktuelle Produktauswahl zu übernehmen. Nach der Einrichtung der Synchronisation kannst Du Produkte zum Verkaufskanal hinzufügen oder entfernen."
             },
-            "sync": {
-                "modalTitle": "Produkt-Synchronisation",
-                "header": "Festlegen von Synchronisations-Einstellungen",
-                "syncPricesLabel": "Preise synchronisieren",
-                "syncPricesSubtitle": "Wenn gewählt, werden die Preise inkl. Mehrwertsteuer übertragen.<br>Andernfalls werden die Preise auf 0 gesetzt und können jederzeit in Deiner iZettle-Produktbibliothek geändert werden.",
-                "replaceLabel": "Bestehende Produkte in iZettle ersetzen",
-                "replaceSubtitle": "Wenn gewählt, werden existierende Produkte aus Deiner iZettle-Produktbibliothek entfernt."
+            "sync-prices": {
+                "modalTitle": "Preis-Synchronisation",
+                "header": "Wie möchtest Du die Produktpreise nach iZettle exportieren?",
+                "description": "Die Preise Deiner Produkte enthalten die Mehrwertsteuer, wenn sie mit iZettle synchronisiert werden.",
+                "disclaimer": "Du kannst die Mehrwertsteuer manuell in der iZettle-Produktbibliothek pflegen.",
+                "optionTrueLabel" : "Preise mit Mehrwertsteuer exportieren",
+                "optionTrueDescription" : "Die mit iZettle synchronisierten Preise enthalten die Mehrwertsteuer.",
+                "optionFalseLabel" : "Preise werden nicht exportiert.",
+                "optionFalseDescription" : "Exportierte Produktpreise werden auf 0 gesetzt. Du kannst dies in Deiner Produktbibliothek anpassen."
+            },
+            "sync-library": {
+                "modalTitle": "Synchronisation der Bibliothek"
             },
             "finish": {
                 "modalTitle": "Fertiggestellt",
