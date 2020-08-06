@@ -15,9 +15,14 @@ use Swag\PayPal\PayPal\Api\Webhook\Resource\TransactionFee;
 class Resource extends PayPalStruct
 {
     /**
-     * @var string
+     * @var ?string
      */
     protected $parentPayment;
+
+    /**
+     * @var ?string
+     */
+    protected $billingAgreementId;
 
     /**
      * @var string
@@ -79,7 +84,7 @@ class Resource extends PayPalStruct
      */
     private $state;
 
-    public function getParentPayment(): string
+    public function getParentPayment(): ?string
     {
         return $this->parentPayment;
     }
@@ -87,6 +92,16 @@ class Resource extends PayPalStruct
     protected function setParentPayment(string $parentPayment): void
     {
         $this->parentPayment = $parentPayment;
+    }
+
+    public function getBillingAgreementId(): ?string
+    {
+        return $this->billingAgreementId;
+    }
+
+    protected function setBillingAgreementId(string $billingAgreementId): void
+    {
+        $this->billingAgreementId = $billingAgreementId;
     }
 
     protected function setUpdateTime(string $updateTime): void
