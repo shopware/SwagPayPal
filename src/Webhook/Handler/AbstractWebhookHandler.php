@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Webhook\Exception\ParentPaymentNotFoundException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use Swag\PayPal\Webhook\WebhookHandler;
 
@@ -46,11 +47,17 @@ abstract class AbstractWebhookHandler implements WebhookHandler
     abstract public function invoke(Webhook $webhook, Context $context): void;
 
     /**
+     * @throws ParentPaymentNotFoundException
      * @throws WebhookOrderTransactionNotFoundException
      */
     protected function getOrderTransaction(Webhook $webhook, Context $context): OrderTransactionEntity
     {
         $payPalTransactionId = $webhook->getResource()->getParentPayment();
+
+        if ($payPalTransactionId === null) {
+            throw new ParentPaymentNotFoundException($this->getEventType());
+        }
+
         $criteria = new Criteria();
         $criteria->addFilter(
             new EqualsFilter(
