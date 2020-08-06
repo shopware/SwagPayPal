@@ -141,6 +141,14 @@ Component.register('swag-paypal-izettle-detail-base', {
             this.startSync(this.SwagPayPalIZettleApiService.startInventorySync.bind(this.SwagPayPalIZettleApiService));
         },
 
+        onSyncAbort() {
+            if (this.syncingRunId !== null) {
+                this.SwagPayPalIZettleApiService.abortSync(this.syncingRunId).then(() => {
+                    this.updateSync();
+                });
+            }
+        },
+
         loadLastFinishedRun(needComplete = false) {
             if (this.salesChannel === null || this.salesChannel.id === null) {
                 this.lastFinishedRun = null;

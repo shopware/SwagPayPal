@@ -16,6 +16,7 @@
                 "buttonSyncProducts": "Synchronise product details",
                 "buttonSyncImages": "Upload images",
                 "buttonSyncInventory": "Synchronise inventory",
+                "buttonSyncAbort": "Abort synchronisation",
                 "syncErrorTitle": "Synchronisation error",
                 "status": {
                     "disabled": "Synchronisation is not enabled, because your Sales Channel is disabled.",

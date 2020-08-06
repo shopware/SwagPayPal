@@ -97,6 +97,13 @@ class SyncManagerHandler extends AbstractMessageHandler
      */
     public function handle($message): void
     {
+        $runId = $message->getRunId();
+        $context = $message->getContext();
+
+        if (!$this->runService->isRunActive($runId, $context)) {
+            return;
+        }
+
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('name', [
             CloneVisibilityMessage::class,
@@ -109,7 +116,7 @@ class SyncManagerHandler extends AbstractMessageHandler
         $criteria->addAggregation(new SumAggregation('totalSize', 'size'));
 
         /** @var SumResult|null $queued */
-        $queued = $message->getContext()->disableCache(function (Context $context) use ($criteria) {
+        $queued = $context->disableCache(function (Context $context) use ($criteria) {
             return $this->messageQueueStatsRepository->aggregate($criteria, $context)->get('totalSize');
         });
 
@@ -124,27 +131,28 @@ class SyncManagerHandler extends AbstractMessageHandler
 
         try {
             $steps = $message->getSteps();
+            $currentStep = $message->getCurrentStep();
 
-            if ($message->getCurrentStep() >= \count($steps)) {
-                $this->runService->finishRun($message->getRunId(), $message->getContext());
+            if ($currentStep >= \count($steps)) {
+                $this->runService->finishRun($runId, $context);
 
                 return;
             }
 
             $this->buildMessages(
-                $steps[$message->getCurrentStep()],
-                $message->getRunId(),
+                $steps[$currentStep],
+                $runId,
                 $message->getSalesChannel(),
-                $message->getContext()
+                $context
             );
 
-            $message->setCurrentStep($message->getCurrentStep() + 1);
+            $message->setCurrentStep($currentStep + 1);
 
             $this->messageBus->dispatch($message);
         } catch (\Throwable $e) {
             $this->logger->critical($e->__toString());
         } finally {
-            $this->runService->writeLog($message->getRunId(), $message->getContext());
+            $this->runService->writeLog($runId, $context);
         }
     }
 

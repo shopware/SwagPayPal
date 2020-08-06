@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
+use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Run\Task\CompleteTask;
 use Swag\PayPal\IZettle\Run\Task\ImageTask;
 use Swag\PayPal\IZettle\Run\Task\InventoryTask;
@@ -63,6 +64,11 @@ class IZettleSyncController extends AbstractController
     private $logCleaner;
 
     /**
+     * @var RunService
+     */
+    private $runService;
+
+    /**
      * @var ProductSelection
      */
     private $productSelection;
@@ -74,6 +80,7 @@ class IZettleSyncController extends AbstractController
         ImageTask $imageTask,
         InventoryTask $inventoryTask,
         LogCleaner $logCleaner,
+        RunService $runService,
         ProductSelection $productSelection
     ) {
         $this->salesChannelRepository = $salesChannelRepository;
@@ -82,6 +89,7 @@ class IZettleSyncController extends AbstractController
         $this->imageTask = $imageTask;
         $this->inventoryTask = $inventoryTask;
         $this->logCleaner = $logCleaner;
+        $this->runService = $runService;
         $this->productSelection = $productSelection;
     }
 
@@ -131,6 +139,16 @@ class IZettleSyncController extends AbstractController
         $runId = $this->completeTask->execute($salesChannel, $context);
 
         return new JsonResponse(['runId' => $runId]);
+    }
+
+    /**
+     * @Route("/api/v{version}/paypal/izettle/sync/abort/{runId}", name="api.paypal.izettle.sync.abort", methods={"GET"})
+     */
+    public function abortSync(string $runId, Context $context): Response
+    {
+        $this->runService->abortRun($runId, $context);
+
+        return new Response('', Response::HTTP_NO_CONTENT);
     }
 
     /**

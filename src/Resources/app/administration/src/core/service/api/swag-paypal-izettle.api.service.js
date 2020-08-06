@@ -78,6 +78,20 @@ class SwagPayPalIZettleApiService extends ApiService {
         });
     }
 
+    abortSync(runId) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient.get(
+            `${this.getApiBasePath()}/sync/abort/${runId}`,
+            {
+                ...this.basicConfig,
+                headers
+            }
+        ).then((response) => {
+            return ApiService.handleResponse(response);
+        });
+    }
+
     getProductLog(salesChannelId, page = 1, limit = 10) {
         const headers = this.getBasicHeaders();
 

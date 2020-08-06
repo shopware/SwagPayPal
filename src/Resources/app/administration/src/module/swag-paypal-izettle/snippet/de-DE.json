@@ -16,6 +16,7 @@
                 "buttonSyncProducts": "Produkt-Details synchronisieren",
                 "buttonSyncImages": "Bilder hochladen",
                 "buttonSyncInventory": "Bestand synchronisieren",
+                "buttonSyncAbort": "Synchronisation abbrechen",
                 "syncErrorTitle": "Synchronisations-Fehler",
                 "status": {
                     "disabled": "Die Synchronisation ist nicht aktiv, da dieser Verkaufskanal deaktiviert ist.",

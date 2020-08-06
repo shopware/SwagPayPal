@@ -24,6 +24,7 @@
             <argument type="service" id="Swag\PayPal\IZettle\Run\Task\ImageTask"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\Task\InventoryTask"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\Administration\LogCleaner"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
         </service>
 

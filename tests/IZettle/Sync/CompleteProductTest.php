@@ -62,6 +62,8 @@ use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleMediaRepoMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleProductRepoMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\ProductRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\RunLogRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelProductRepoMock;
 
 class CompleteProductTest extends TestCase
@@ -100,8 +102,8 @@ class CompleteProductTest extends TestCase
         $messageBus = new MessageBusMock();
 
         $runService = new RunService(
-            $this->createMock(EntityRepositoryInterface::class),
-            $this->createMock(EntityRepositoryInterface::class),
+            new RunRepoMock(),
+            new RunLogRepoMock(),
             new Logger('test')
         );
 
@@ -224,7 +226,7 @@ class CompleteProductTest extends TestCase
         $productSyncManager->buildMessages(
             $salesChannel,
             $context,
-            Uuid::randomHex()
+            $runService->startRun(Defaults::SALES_CHANNEL, 'product', $context)
         );
 
         $messageBus->execute([

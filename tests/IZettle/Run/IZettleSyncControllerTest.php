@@ -11,6 +11,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\IZettleSyncController;
 use Swag\PayPal\IZettle\MessageQueue\Handler\SyncManagerHandler;
@@ -51,7 +52,7 @@ class IZettleSyncControllerTest extends TestCase
     private $productSelection;
 
     /**
-     * @var MockObject|RunService
+     * @var MockObject
      */
     private $runService;
 
@@ -80,6 +81,7 @@ class IZettleSyncControllerTest extends TestCase
             $imageTask,
             $inventoryTask,
             $this->logCleaner,
+            $this->runService,
             $this->productSelection
         );
     }
@@ -149,6 +151,12 @@ class IZettleSyncControllerTest extends TestCase
         /** @var SyncManagerMessage $message */
         $message = \current($this->messageBus->getEnvelopes())->getMessage();
         static::assertSame($serviceCalls, $message->getSteps());
+    }
+
+    public function testAbortSync(): void
+    {
+        $this->runService->expects(static::once())->method('abortRun');
+        $this->iZettleSyncController->abortSync(Uuid::randomHex(), Context::createDefaultContext());
     }
 
     public function testCleanUpLog(): void

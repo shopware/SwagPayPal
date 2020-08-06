@@ -41,12 +41,19 @@ abstract class AbstractSyncHandler extends AbstractMessageHandler
      */
     public function handle($message): void
     {
+        $runId = $message->getRunId();
+        $context = $message->getContext();
+
+        if (!$this->runService->isRunActive($runId, $context)) {
+            return;
+        }
+
         try {
             $this->sync($message);
         } catch (\Throwable $e) {
             $this->logger->critical($e->__toString());
         } finally {
-            $this->runService->writeLog($message->getRunId(), $message->getContext());
+            $this->runService->writeLog($runId, $context);
         }
     }
 

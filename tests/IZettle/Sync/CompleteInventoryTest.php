@@ -14,10 +14,8 @@ use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Api\Service\Inventory\RemoteCalculator;
@@ -37,6 +35,8 @@ use Swag\PayPal\Test\IZettle\Mock\Client\IZettleClientFactoryMock;
 use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleInventoryRepoMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\ProductRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\RunLogRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelProductRepoMock;
 
 class CompleteInventoryTest extends TestCase
@@ -73,12 +73,14 @@ class CompleteInventoryTest extends TestCase
             $inventoryContextFactory
         );
 
+        $runService = new RunService(
+            new RunRepoMock(),
+            new RunLogRepoMock(),
+            new Logger('test')
+        );
+
         $inventorySyncHandler = new InventorySyncHandler(
-            new RunService(
-                $this->createMock(EntityRepositoryInterface::class),
-                $this->createMock(EntityRepositoryInterface::class),
-                new Logger('test')
-            ),
+            $runService,
             new NullLogger(),
             $productRepository,
             $inventoryContextFactory,
@@ -139,7 +141,11 @@ class CompleteInventoryTest extends TestCase
         $inventoryRepository->createMockEntity($productD, Defaults::SALES_CHANNEL, 3);
         $inventoryRepository->createMockEntity($productE, Defaults::SALES_CHANNEL, 4);
 
-        $inventorySyncManager->buildMessages($salesChannel, $context, Uuid::randomHex());
+        $inventorySyncManager->buildMessages(
+            $salesChannel,
+            $context,
+            $runService->startRun(Defaults::SALES_CHANNEL, 'inventory', $context)
+        );
         $messageBus->execute([$inventorySyncHandler]);
 
         // product B added

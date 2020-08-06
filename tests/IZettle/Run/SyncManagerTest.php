@@ -12,7 +12,6 @@ use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\MessageQueue\Handler\SyncManagerHandler;
@@ -31,6 +30,8 @@ use Swag\PayPal\IZettle\Run\Task\CompleteTask;
 use Swag\PayPal\IZettle\Schedule\InventorySyncTask;
 use Swag\PayPal\Test\IZettle\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\RunLogRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\RunRepoMock;
 
 class SyncManagerTest extends TestCase
 {
@@ -67,8 +68,8 @@ class SyncManagerTest extends TestCase
         $this->messageBus = new MessageBusMock();
 
         $runService = new RunService(
-            $this->createMock(EntityRepositoryInterface::class),
-            $this->createMock(EntityRepositoryInterface::class),
+            new RunRepoMock(),
+            new RunLogRepoMock(),
             new Logger('test')
         );
 

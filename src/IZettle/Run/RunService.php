@@ -10,7 +10,9 @@ namespace Swag\PayPal\IZettle\Run;
 use Monolog\Logger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelRunEntity;
 
 class RunService
 {
@@ -55,19 +57,23 @@ class RunService
     public function writeLog(string $runId, Context $context): void
     {
         $logHandler = $this->getLogHandler();
+
         if ($logHandler === null) {
             return;
         }
+
         $logs = $logHandler->getLogs();
 
-        if (\count($logs) > 0) {
-            foreach ($logs as &$log) {
-                $log['runId'] = $runId;
-            }
-            unset($log);
-
-            $this->logRepository->create($logs, $context);
+        if (\count($logs) === 0) {
+            return;
         }
+
+        foreach ($logs as &$log) {
+            $log['runId'] = $runId;
+        }
+        unset($log);
+
+        $this->logRepository->create($logs, $context);
 
         $logHandler->flush();
     }
@@ -78,6 +84,27 @@ class RunService
             'id' => $runId,
             'finishedAt' => new \DateTime(),
         ]], $context);
+    }
+
+    public function abortRun(string $runId, Context $context): void
+    {
+        $this->logger->emergency('This sync has been aborted.');
+        $this->writeLog($runId, $context);
+        $this->finishRun($runId, $context);
+    }
+
+    public function isRunActive(string $runId, Context $context): bool
+    {
+        /** @var IZettleSalesChannelRunEntity|null $run */
+        $run = $context->disableCache(function (Context $context) use ($runId) {
+            return $this->runRepository->search(new Criteria([$runId]), $context);
+        })->first();
+
+        if ($run === null) {
+            return false;
+        }
+
+        return $run->getFinishedAt() === null;
     }
 
     private function getLogHandler(): ?LogHandler

@@ -14,9 +14,7 @@ use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\IZettle\Api\Image\BulkImageUpload;
 use Swag\PayPal\IZettle\Api\IZettleRequestUri;
 use Swag\PayPal\IZettle\Api\Service\MediaConverter;
@@ -33,6 +31,8 @@ use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\IZettle\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleMediaRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\RunLogRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\RunRepoMock;
 
 class ImageSyncerTest extends TestCase
 {
@@ -83,13 +83,14 @@ class ImageSyncerTest extends TestCase
         );
 
         $messageBus = new MessageBusMock();
+        $runService = new RunService(
+            new RunRepoMock(),
+            new RunLogRepoMock(),
+            new Logger('test')
+        );
 
         $imageSyncHandler = new ImageSyncHandler(
-            new RunService(
-                $this->createMock(EntityRepositoryInterface::class),
-                $this->createMock(EntityRepositoryInterface::class),
-                new Logger('test')
-            ),
+            $runService,
             $logger,
             $mediaRepository,
             $imageSyncer
@@ -102,7 +103,9 @@ class ImageSyncerTest extends TestCase
         static::assertInstanceOf(IZettleSalesChannelEntity::class, $iZettleSalesChannel);
         $iZettleSalesChannel->setMediaDomain(self::DOMAIN_URL);
 
-        $imageSyncManager->buildMessages($salesChannel, $context, Uuid::randomHex());
+        $runId = $runService->startRun(Defaults::SALES_CHANNEL, 'image', $context);
+
+        $imageSyncManager->buildMessages($salesChannel, $context, $runId);
         $messageBus->execute([$imageSyncHandler]);
 
         static::assertSame(self::IZETTLE_IMAGE_URL, $mediaA->getUrl());
