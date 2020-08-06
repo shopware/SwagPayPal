@@ -89,7 +89,7 @@ class Resource extends PayPalStruct
         return $this->parentPayment;
     }
 
-    protected function setParentPayment(string $parentPayment): void
+    protected function setParentPayment(?string $parentPayment): void
     {
         $this->parentPayment = $parentPayment;
     }
@@ -97,9 +97,10 @@ class Resource extends PayPalStruct
     public function getBillingAgreementId(): ?string
     {
         return $this->billingAgreementId;
+
     }
 
-    protected function setBillingAgreementId(string $billingAgreementId): void
+    protected function setBillingAgreementId(?string $billingAgreementId): void
     {
         $this->billingAgreementId = $billingAgreementId;
     }
