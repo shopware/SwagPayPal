@@ -7,37 +7,8 @@
 
 namespace Swag\PayPal\PayPal\Api\Subscription;
 
-use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
+use Swag\PayPal\PayPal\Api\Common\Money;
 
-class ShippingAmount extends PayPalStruct
+class ShippingAmount extends Money
 {
-    /**
-     * @var string
-     */
-    protected $currencyCode;
-
-    /**
-     * @var string
-     */
-    protected $value;
-
-    public function getCurrencyCode(): string
-    {
-        return $this->currencyCode;
-    }
-
-    public function setCurrencyCode(string $currencyCode): void
-    {
-        $this->currencyCode = $currencyCode;
-    }
-
-    public function getValue(): string
-    {
-        return $this->value;
-    }
-
-    public function setValue(string $value): void
-    {
-        $this->value = $value;
-    }
 }
