@@ -59,6 +59,7 @@ class BulkChanges extends IZettleStruct
                         $existingChange->setTrackingStatusChange(ProductChange::TRACKING_START);
                     }
                     $foundExisting = true;
+
                     break;
                 }
             }

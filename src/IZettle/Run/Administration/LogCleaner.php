@@ -45,6 +45,7 @@ class LogCleaner
             $createdAt = $run->getCreatedAt();
             if ($createdAt !== null && $createdAt->diff($now)->days > self::LOG_RETENTION_PERIOD) {
                 $deletable[] = ['id' => $run->getId()];
+
                 continue;
             }
 
@@ -53,6 +54,7 @@ class LogCleaner
                 $productId = $log->getProductId();
                 if ($productId === null) {
                     $runUnnecessary = false;
+
                     continue;
                 }
                 if (!isset($logsPerProduct[$productId])) {

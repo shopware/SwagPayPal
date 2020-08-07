@@ -29,7 +29,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class ProductSyncManager extends AbstractSyncManager
 {
-    const CHUNK_SIZE = 50;
+    public const CHUNK_SIZE = 50;
 
     /**
      * @var ProductSelection

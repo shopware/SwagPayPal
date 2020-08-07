@@ -28,7 +28,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class InventorySyncManager extends AbstractSyncManager
 {
-    const CHUNK_SIZE = 500;
+    public const CHUNK_SIZE = 500;
 
     /**
      * @var InventoryContextFactory

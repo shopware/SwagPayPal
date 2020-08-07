@@ -24,6 +24,7 @@ abstract class IZettleStruct implements \JsonSerializable
                 if ($value !== null) {
                     $this->$setterMethod($value);
                 }
+
                 continue;
             }
 
@@ -37,6 +38,7 @@ abstract class IZettleStruct implements \JsonSerializable
 
                 $instance = $this->createNewAssociation($className, $value);
                 $this->$setterMethod($instance);
+
                 continue;
             }
 
@@ -47,6 +49,7 @@ abstract class IZettleStruct implements \JsonSerializable
                     return $var !== null;
                 });
                 $this->$setterMethod($arrayData);
+
                 continue;
             }
 
@@ -95,7 +98,7 @@ abstract class IZettleStruct implements \JsonSerializable
 
     private function getNamespaceOfAssociation(): string
     {
-        return \get_class($this) . '\\';
+        return static::class . '\\';
     }
 
     private function getClassNameOfOneToManyAssociation(string $camelCaseKey): string

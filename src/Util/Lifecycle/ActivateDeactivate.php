@@ -136,6 +136,7 @@ class ActivateDeactivate
             $names = $result->getEntities()->map(function (SalesChannelEntity $item): string {
                 return (string) $item->getName();
             });
+
             throw new ExistingIZettleSalesChannelsException($result->getTotal(), $names);
         }
     }

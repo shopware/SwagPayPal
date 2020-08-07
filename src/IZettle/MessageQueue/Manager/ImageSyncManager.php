@@ -19,7 +19,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class ImageSyncManager extends AbstractSyncManager
 {
-    const CHUNK_SIZE = 250;
+    public const CHUNK_SIZE = 250;
 
     /**
      * @var EntityRepositoryInterface
