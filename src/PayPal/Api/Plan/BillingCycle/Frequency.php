@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -12,10 +11,14 @@ use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
 class Frequency extends PayPalStruct
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $intervalUnit;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $intervalCount;
 
     public function getIntervalUnit(): string
@@ -23,11 +26,9 @@ class Frequency extends PayPalStruct
         return $this->intervalUnit;
     }
 
-    public function setIntervalUnit(string $intervalUnit): self
+    public function setIntervalUnit(string $intervalUnit): void
     {
         $this->intervalUnit = $intervalUnit;
-
-        return $this;
     }
 
     public function getIntervalCount(): int
@@ -35,10 +36,8 @@ class Frequency extends PayPalStruct
         return $this->intervalCount;
     }
 
-    public function setIntervalCount(int $intervalCount): self
+    public function setIntervalCount(int $intervalCount): void
     {
         $this->intervalCount = $intervalCount;
-
-        return $this;
     }
 }

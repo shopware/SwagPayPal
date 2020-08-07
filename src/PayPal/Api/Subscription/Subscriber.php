@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -13,13 +12,19 @@ use Swag\PayPal\PayPal\Api\Subscription\Subscriber\Name;
 
 class Subscriber extends PayPalStruct
 {
-    /** @var Name */
+    /**
+     * @var Name
+     */
     protected $name;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $emailAddress;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $payerId;
 
     public function getName(): Name
@@ -27,11 +32,9 @@ class Subscriber extends PayPalStruct
         return $this->name;
     }
 
-    public function setName(Name $name): self
+    public function setName(Name $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getEmailAddress(): string
@@ -39,11 +42,9 @@ class Subscriber extends PayPalStruct
         return $this->emailAddress;
     }
 
-    public function setEmailAddress(string $emailAddress): self
+    public function setEmailAddress(string $emailAddress): void
     {
         $this->emailAddress = $emailAddress;
-
-        return $this;
     }
 
     public function getPayerId(): string
@@ -51,10 +52,8 @@ class Subscriber extends PayPalStruct
         return $this->payerId;
     }
 
-    public function setPayerId(string $payerId): self
+    public function setPayerId(string $payerId): void
     {
         $this->payerId = $payerId;
-
-        return $this;
     }
 }

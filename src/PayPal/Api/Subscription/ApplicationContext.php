@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -15,22 +14,34 @@ class ApplicationContext extends PayPalStruct
     public const USER_ACTION_TYPE_SUBSCRIBE_NOW = 'SUBSCRIBE_NOW';
     public const USER_ACTION_TYPE_CONTINUE = 'CONTINUE';
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $userAction = self::USER_ACTION_TYPE_SUBSCRIBE_NOW;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $brandName;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $locale;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $shippingPreference = 'SET_PROVIDED_ADDRESS';
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $returnUrl;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $cancelUrl;
 
     public function getUserAction(): string
@@ -38,11 +49,9 @@ class ApplicationContext extends PayPalStruct
         return $this->userAction;
     }
 
-    public function setUserAction(string $userAction): self
+    public function setUserAction(string $userAction): void
     {
         $this->userAction = $userAction;
-
-        return $this;
     }
 
     public function getBrandName(): string
@@ -50,11 +59,9 @@ class ApplicationContext extends PayPalStruct
         return $this->brandName;
     }
 
-    public function setBrandName(string $brandName): self
+    public function setBrandName(string $brandName): void
     {
         $this->brandName = $brandName;
-
-        return $this;
     }
 
     public function getLocale(): string
@@ -62,11 +69,9 @@ class ApplicationContext extends PayPalStruct
         return $this->locale;
     }
 
-    public function setLocale(string $locale): self
+    public function setLocale(string $locale): void
     {
         $this->locale = $locale;
-
-        return $this;
     }
 
     public function getShippingPreference(): string
@@ -74,11 +79,9 @@ class ApplicationContext extends PayPalStruct
         return $this->shippingPreference;
     }
 
-    public function setShippingPreference(string $shippingPreference): self
+    public function setShippingPreference(string $shippingPreference): void
     {
         $this->shippingPreference = $shippingPreference;
-
-        return $this;
     }
 
     public function getReturnUrl(): string
@@ -86,11 +89,9 @@ class ApplicationContext extends PayPalStruct
         return $this->returnUrl;
     }
 
-    public function setReturnUrl(string $returnUrl): self
+    public function setReturnUrl(string $returnUrl): void
     {
         $this->returnUrl = $returnUrl;
-
-        return $this;
     }
 
     public function getCancelUrl(): string
@@ -98,10 +99,8 @@ class ApplicationContext extends PayPalStruct
         return $this->cancelUrl;
     }
 
-    public function setCancelUrl(string $cancelUrl): self
+    public function setCancelUrl(string $cancelUrl): void
     {
         $this->cancelUrl = $cancelUrl;
-
-        return $this;
     }
 }

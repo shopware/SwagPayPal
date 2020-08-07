@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -12,10 +11,14 @@ use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
 class PaymentPreferences extends PayPalStruct
 {
-    /** @var bool */
+    /**
+     * @var bool
+     */
     protected $autoBillOutstanding;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $paymentFailureThreshold;
 
     public function isAutoBillOutstanding(): bool
@@ -23,11 +26,9 @@ class PaymentPreferences extends PayPalStruct
         return $this->autoBillOutstanding;
     }
 
-    public function setAutoBillOutstanding(bool $autoBillOutstanding): self
+    public function setAutoBillOutstanding(bool $autoBillOutstanding): void
     {
         $this->autoBillOutstanding = $autoBillOutstanding;
-
-        return $this;
     }
 
     public function getPaymentFailureThreshold(): int
@@ -35,10 +36,8 @@ class PaymentPreferences extends PayPalStruct
         return $this->paymentFailureThreshold;
     }
 
-    public function setPaymentFailureThreshold(int $paymentFailureThreshold): self
+    public function setPaymentFailureThreshold(int $paymentFailureThreshold): void
     {
         $this->paymentFailureThreshold = $paymentFailureThreshold;
-
-        return $this;
     }
 }

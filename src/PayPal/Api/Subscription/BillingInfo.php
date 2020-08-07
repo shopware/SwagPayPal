@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -15,19 +14,29 @@ use Swag\PayPal\PayPal\Api\Subscription\BillingInfo\OutstandingBalance;
 
 class BillingInfo extends PayPalStruct
 {
-    /** @var OutstandingBalance */
+    /**
+     * @var OutstandingBalance
+     */
     protected $outstandingBalance;
 
-    /** @var CycleExecution[] */
+    /**
+     * @var CycleExecution[]
+     */
     protected $cycleExecutions = [];
 
-    /** @var LastPayment */
+    /**
+     * @var LastPayment
+     */
     protected $lastPayment;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $nextBillingTime;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $failedPaymentsCount;
 
     public function getOutstandingBalance(): OutstandingBalance
@@ -35,11 +44,9 @@ class BillingInfo extends PayPalStruct
         return $this->outstandingBalance;
     }
 
-    public function setOutstandingBalance(OutstandingBalance $outstandingBalance): self
+    public function setOutstandingBalance(OutstandingBalance $outstandingBalance): void
     {
         $this->outstandingBalance = $outstandingBalance;
-
-        return $this;
     }
 
     /**
@@ -53,11 +60,9 @@ class BillingInfo extends PayPalStruct
     /**
      * @param CycleExecution[] $cycleExecutions
      */
-    public function setCycleExecutions(array $cycleExecutions): self
+    public function setCycleExecutions(array $cycleExecutions): void
     {
         $this->cycleExecutions = $cycleExecutions;
-
-        return $this;
     }
 
     public function getLastPayment(): LastPayment
@@ -65,11 +70,9 @@ class BillingInfo extends PayPalStruct
         return $this->lastPayment;
     }
 
-    public function setLastPayment(LastPayment $lastPayment): self
+    public function setLastPayment(LastPayment $lastPayment): void
     {
         $this->lastPayment = $lastPayment;
-
-        return $this;
     }
 
     public function getNextBillingTime(): string
@@ -77,11 +80,9 @@ class BillingInfo extends PayPalStruct
         return $this->nextBillingTime;
     }
 
-    public function setNextBillingTime(string $nextBillingTime): self
+    public function setNextBillingTime(string $nextBillingTime): void
     {
         $this->nextBillingTime = $nextBillingTime;
-
-        return $this;
     }
 
     public function getFailedPaymentsCount(): int
@@ -89,10 +90,8 @@ class BillingInfo extends PayPalStruct
         return $this->failedPaymentsCount;
     }
 
-    public function setFailedPaymentsCount(int $failedPaymentsCount): self
+    public function setFailedPaymentsCount(int $failedPaymentsCount): void
     {
         $this->failedPaymentsCount = $failedPaymentsCount;
-
-        return $this;
     }
 }

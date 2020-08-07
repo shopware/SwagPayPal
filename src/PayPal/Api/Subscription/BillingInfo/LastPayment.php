@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -13,10 +12,14 @@ use Swag\PayPal\PayPal\Api\Subscription\BillingInfo\LastPayment\Amount;
 
 class LastPayment extends PayPalStruct
 {
-    /** @var Amount */
+    /**
+     * @var Amount
+     */
     protected $amount;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $time;
 
     public function getAmount(): Amount
@@ -24,11 +27,9 @@ class LastPayment extends PayPalStruct
         return $this->amount;
     }
 
-    public function setAmount(Amount $amount): self
+    public function setAmount(Amount $amount): void
     {
         $this->amount = $amount;
-
-        return $this;
     }
 
     public function getTime(): string
@@ -36,10 +37,8 @@ class LastPayment extends PayPalStruct
         return $this->time;
     }
 
-    public function setTime(string $time): self
+    public function setTime(string $time): void
     {
         $this->time = $time;
-
-        return $this;
     }
 }

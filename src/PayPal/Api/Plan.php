@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -15,25 +14,39 @@ use Swag\PayPal\PayPal\Api\Plan\Taxes;
 
 class Plan extends PayPalStruct
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $productId;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $name;
 
-    /** @var ?string */
+    /**
+     * @var ?string
+     */
     protected $description;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $status;
 
-    /** @var BillingCycle[] */
+    /**
+     * @var BillingCycle[]
+     */
     protected $billingCycles = [];
 
-    /** @var PaymentPreferences */
+    /**
+     * @var PaymentPreferences
+     */
     protected $paymentPreferences;
 
-    /** @var Taxes */
+    /**
+     * @var Taxes
+     */
     protected $taxes;
 
     public function getProductId(): string
@@ -41,11 +54,9 @@ class Plan extends PayPalStruct
         return $this->productId;
     }
 
-    public function setProductId(string $productId): self
+    public function setProductId(string $productId): void
     {
         $this->productId = $productId;
-
-        return $this;
     }
 
     public function getName(): string
@@ -53,11 +64,9 @@ class Plan extends PayPalStruct
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getDescription(): ?string
@@ -65,11 +74,9 @@ class Plan extends PayPalStruct
         return $this->description;
     }
 
-    public function setDescription(?string $description): self
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
-
-        return $this;
     }
 
     public function getStatus(): string
@@ -77,11 +84,9 @@ class Plan extends PayPalStruct
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(string $status): void
     {
         $this->status = $status;
-
-        return $this;
     }
 
     /**
@@ -95,11 +100,9 @@ class Plan extends PayPalStruct
     /**
      * @param BillingCycle[] $billingCycles
      */
-    public function setBillingCycles(array $billingCycles): self
+    public function setBillingCycles(array $billingCycles): void
     {
         $this->billingCycles = $billingCycles;
-
-        return $this;
     }
 
     public function getPaymentPreferences(): PaymentPreferences
@@ -107,11 +110,9 @@ class Plan extends PayPalStruct
         return $this->paymentPreferences;
     }
 
-    public function setPaymentPreferences(PaymentPreferences $paymentPreferences): self
+    public function setPaymentPreferences(PaymentPreferences $paymentPreferences): void
     {
         $this->paymentPreferences = $paymentPreferences;
-
-        return $this;
     }
 
     public function getTaxes(): Taxes
@@ -119,10 +120,8 @@ class Plan extends PayPalStruct
         return $this->taxes;
     }
 
-    public function setTaxes(Taxes $taxes): self
+    public function setTaxes(Taxes $taxes): void
     {
         $this->taxes = $taxes;
-
-        return $this;
     }
 }

@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -12,19 +11,29 @@ use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
 class CycleExecution extends PayPalStruct
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $tenureType;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $sequence;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $cyclesCompleted;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $cyclesRemaining;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $totalCycles;
 
     public function getTenureType(): string
@@ -32,11 +41,9 @@ class CycleExecution extends PayPalStruct
         return $this->tenureType;
     }
 
-    public function setTenureType(string $tenureType): self
+    public function setTenureType(string $tenureType): void
     {
         $this->tenureType = $tenureType;
-
-        return $this;
     }
 
     public function getSequence(): int
@@ -44,11 +51,9 @@ class CycleExecution extends PayPalStruct
         return $this->sequence;
     }
 
-    public function setSequence(int $sequence): self
+    public function setSequence(int $sequence): void
     {
         $this->sequence = $sequence;
-
-        return $this;
     }
 
     public function getCyclesCompleted(): int
@@ -56,11 +61,9 @@ class CycleExecution extends PayPalStruct
         return $this->cyclesCompleted;
     }
 
-    public function setCyclesCompleted(int $cyclesCompleted): self
+    public function setCyclesCompleted(int $cyclesCompleted): void
     {
         $this->cyclesCompleted = $cyclesCompleted;
-
-        return $this;
     }
 
     public function getCyclesRemaining(): int
@@ -68,11 +71,9 @@ class CycleExecution extends PayPalStruct
         return $this->cyclesRemaining;
     }
 
-    public function setCyclesRemaining(int $cyclesRemaining): self
+    public function setCyclesRemaining(int $cyclesRemaining): void
     {
         $this->cyclesRemaining = $cyclesRemaining;
-
-        return $this;
     }
 
     public function getTotalCycles(): int
@@ -80,10 +81,8 @@ class CycleExecution extends PayPalStruct
         return $this->totalCycles;
     }
 
-    public function setTotalCycles(int $totalCycles): self
+    public function setTotalCycles(int $totalCycles): void
     {
         $this->totalCycles = $totalCycles;
-
-        return $this;
     }
 }

@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -12,13 +11,19 @@ use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
 class Product extends PayPalStruct
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $name;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $description;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type;
 
     public function getName(): string
@@ -26,11 +31,9 @@ class Product extends PayPalStruct
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 
     public function getDescription(): string
@@ -38,11 +41,9 @@ class Product extends PayPalStruct
         return $this->description;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(string $description): void
     {
         $this->description = $description;
-
-        return $this;
     }
 
     public function getType(): string
@@ -50,10 +51,8 @@ class Product extends PayPalStruct
         return $this->type;
     }
 
-    public function setType(string $type): self
+    public function setType(string $type): void
     {
         $this->type = $type;
-
-        return $this;
     }
 }

@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -14,19 +13,29 @@ use Swag\PayPal\PayPal\Api\Plan\BillingCycle\PricingScheme;
 
 class BillingCycle extends PayPalStruct
 {
-    /** @var Frequency */
+    /**
+     * @var Frequency
+     */
     protected $frequency;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $tenureType;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $sequence;
 
-    /** @var PricingScheme */
+    /**
+     * @var PricingScheme
+     */
     protected $pricingScheme;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $totalCycles;
 
     public function getFrequency(): Frequency
@@ -34,11 +43,9 @@ class BillingCycle extends PayPalStruct
         return $this->frequency;
     }
 
-    public function setFrequency(Frequency $frequency): self
+    public function setFrequency(Frequency $frequency): void
     {
         $this->frequency = $frequency;
-
-        return $this;
     }
 
     public function getTenureType(): string
@@ -46,11 +53,9 @@ class BillingCycle extends PayPalStruct
         return $this->tenureType;
     }
 
-    public function setTenureType(string $tenureType): self
+    public function setTenureType(string $tenureType): void
     {
         $this->tenureType = $tenureType;
-
-        return $this;
     }
 
     public function getSequence(): int
@@ -58,11 +63,9 @@ class BillingCycle extends PayPalStruct
         return $this->sequence;
     }
 
-    public function setSequence(int $sequence): self
+    public function setSequence(int $sequence): void
     {
         $this->sequence = $sequence;
-
-        return $this;
     }
 
     public function getPricingScheme(): PricingScheme
@@ -70,11 +73,9 @@ class BillingCycle extends PayPalStruct
         return $this->pricingScheme;
     }
 
-    public function setPricingScheme(PricingScheme $pricingScheme): self
+    public function setPricingScheme(PricingScheme $pricingScheme): void
     {
         $this->pricingScheme = $pricingScheme;
-
-        return $this;
     }
 
     public function getTotalCycles(): int
@@ -82,10 +83,8 @@ class BillingCycle extends PayPalStruct
         return $this->totalCycles;
     }
 
-    public function setTotalCycles(int $totalCycles): self
+    public function setTotalCycles(int $totalCycles): void
     {
         $this->totalCycles = $totalCycles;
-
-        return $this;
     }
 }

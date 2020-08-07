@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -17,43 +16,69 @@ use Swag\PayPal\PayPal\Api\Subscription\Subscriber;
 
 class Subscription extends PayPalStruct
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $id;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $planId;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $startTime;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $quantity;
 
-    /** @var ShippingAmount */
+    /**
+     * @var ShippingAmount
+     */
     protected $shippingAmount;
 
-    /** @var Subscriber */
+    /**
+     * @var Subscriber
+     */
     protected $subscriber;
 
-    /** @var ?BillingInfo */
+    /**
+     * @var ?BillingInfo
+     */
     protected $billingInfo;
 
-    /** @var ApplicationContext */
+    /**
+     * @var ApplicationContext
+     */
     protected $applicationContext;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $status;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $statusUpdateTime;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $createTime;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $updateTime;
 
-    /** @var Link[] */
+    /**
+     * @var Link[]
+     */
     protected $links;
 
     public function getId(): string
@@ -61,11 +86,9 @@ class Subscription extends PayPalStruct
         return $this->id;
     }
 
-    public function setId(string $id): self
+    public function setId(string $id): void
     {
         $this->id = $id;
-
-        return $this;
     }
 
     public function getPlanId(): string
@@ -73,11 +96,9 @@ class Subscription extends PayPalStruct
         return $this->planId;
     }
 
-    public function setPlanId(string $planId): self
+    public function setPlanId(string $planId): void
     {
         $this->planId = $planId;
-
-        return $this;
     }
 
     public function getStartTime(): string
@@ -85,11 +106,9 @@ class Subscription extends PayPalStruct
         return $this->startTime;
     }
 
-    public function setStartTime(string $startTime): self
+    public function setStartTime(string $startTime): void
     {
         $this->startTime = $startTime;
-
-        return $this;
     }
 
     public function getQuantity(): string
@@ -97,11 +116,9 @@ class Subscription extends PayPalStruct
         return $this->quantity;
     }
 
-    public function setQuantity(string $quantity): self
+    public function setQuantity(string $quantity): void
     {
         $this->quantity = $quantity;
-
-        return $this;
     }
 
     public function getShippingAmount(): ShippingAmount
@@ -109,11 +126,9 @@ class Subscription extends PayPalStruct
         return $this->shippingAmount;
     }
 
-    public function setShippingAmount(ShippingAmount $shippingAmount): self
+    public function setShippingAmount(ShippingAmount $shippingAmount): void
     {
         $this->shippingAmount = $shippingAmount;
-
-        return $this;
     }
 
     public function getSubscriber(): Subscriber
@@ -121,11 +136,9 @@ class Subscription extends PayPalStruct
         return $this->subscriber;
     }
 
-    public function setSubscriber(Subscriber $subscriber): self
+    public function setSubscriber(Subscriber $subscriber): void
     {
         $this->subscriber = $subscriber;
-
-        return $this;
     }
 
     public function getApplicationContext(): ApplicationContext
@@ -133,11 +146,9 @@ class Subscription extends PayPalStruct
         return $this->applicationContext;
     }
 
-    public function setApplicationContext(ApplicationContext $applicationContext): self
+    public function setApplicationContext(ApplicationContext $applicationContext): void
     {
         $this->applicationContext = $applicationContext;
-
-        return $this;
     }
 
     public function getStatus(): string
@@ -145,11 +156,9 @@ class Subscription extends PayPalStruct
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(string $status): void
     {
         $this->status = $status;
-
-        return $this;
     }
 
     public function getStatusUpdateTime(): string
@@ -157,11 +166,9 @@ class Subscription extends PayPalStruct
         return $this->statusUpdateTime;
     }
 
-    public function setStatusUpdateTime(string $statusUpdateTime): self
+    public function setStatusUpdateTime(string $statusUpdateTime): void
     {
         $this->statusUpdateTime = $statusUpdateTime;
-
-        return $this;
     }
 
     public function getCreateTime(): string
@@ -169,11 +176,9 @@ class Subscription extends PayPalStruct
         return $this->createTime;
     }
 
-    public function setCreateTime(string $createTime): self
+    public function setCreateTime(string $createTime): void
     {
         $this->createTime = $createTime;
-
-        return $this;
     }
 
     public function getUpdateTime(): string
@@ -181,11 +186,9 @@ class Subscription extends PayPalStruct
         return $this->updateTime;
     }
 
-    public function setUpdateTime(string $updateTime): self
+    public function setUpdateTime(string $updateTime): void
     {
         $this->updateTime = $updateTime;
-
-        return $this;
     }
 
     public function getLinks(): array
@@ -193,11 +196,9 @@ class Subscription extends PayPalStruct
         return $this->links;
     }
 
-    public function setLinks(array $links): self
+    public function setLinks(array $links): void
     {
         $this->links = $links;
-
-        return $this;
     }
 
     public function getBillingInfo(): ?BillingInfo
@@ -205,10 +206,8 @@ class Subscription extends PayPalStruct
         return $this->billingInfo;
     }
 
-    public function setBillingInfo(?BillingInfo $billingInfo): self
+    public function setBillingInfo(?BillingInfo $billingInfo): void
     {
         $this->billingInfo = $billingInfo;
-
-        return $this;
     }
 }

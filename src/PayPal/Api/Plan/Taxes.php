@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -12,10 +11,14 @@ use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
 class Taxes extends PayPalStruct
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $percentage;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     protected $inclusive;
 
     public function getPercentage(): string
@@ -23,11 +26,9 @@ class Taxes extends PayPalStruct
         return $this->percentage;
     }
 
-    public function setPercentage(string $percentage): self
+    public function setPercentage(string $percentage): void
     {
         $this->percentage = $percentage;
-
-        return $this;
     }
 
     public function isInclusive(): bool
@@ -35,10 +36,8 @@ class Taxes extends PayPalStruct
         return $this->inclusive;
     }
 
-    public function setInclusive(bool $inclusive): self
+    public function setInclusive(bool $inclusive): void
     {
         $this->inclusive = $inclusive;
-
-        return $this;
     }
 }

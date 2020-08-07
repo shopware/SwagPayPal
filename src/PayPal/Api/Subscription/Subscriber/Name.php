@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -12,10 +11,14 @@ use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
 class Name extends PayPalStruct
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $givenName;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $surname;
 
     public function getGivenName(): string
@@ -23,11 +26,9 @@ class Name extends PayPalStruct
         return $this->givenName;
     }
 
-    public function setGivenName(string $givenName): self
+    public function setGivenName(string $givenName): void
     {
         $this->givenName = $givenName;
-
-        return $this;
     }
 
     public function getSurname(): string
@@ -35,10 +36,8 @@ class Name extends PayPalStruct
         return $this->surname;
     }
 
-    public function setSurname(string $surname): self
+    public function setSurname(string $surname): void
     {
         $this->surname = $surname;
-
-        return $this;
     }
 }

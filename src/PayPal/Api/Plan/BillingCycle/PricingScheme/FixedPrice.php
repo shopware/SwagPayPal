@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 /*
  * (c) shopware AG <info@shopware.com>
  * For the full copyright and license information, please view the LICENSE
@@ -12,10 +11,14 @@ use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
 class FixedPrice extends PayPalStruct
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $value;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $currencyCode;
 
     public function getValue(): string
@@ -23,11 +26,9 @@ class FixedPrice extends PayPalStruct
         return $this->value;
     }
 
-    public function setValue(string $value): self
+    public function setValue(string $value): void
     {
         $this->value = $value;
-
-        return $this;
     }
 
     public function getCurrencyCode(): string
@@ -35,10 +36,8 @@ class FixedPrice extends PayPalStruct
         return $this->currencyCode;
     }
 
-    public function setCurrencyCode(string $currencyCode): self
+    public function setCurrencyCode(string $currencyCode): void
     {
         $this->currencyCode = $currencyCode;
-
-        return $this;
     }
 }
