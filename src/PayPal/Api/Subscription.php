@@ -47,7 +47,7 @@ class Subscription extends PayPalStruct
     protected $subscriber;
 
     /**
-     * @var ?BillingInfo
+     * @var BillingInfo|null
      */
     protected $billingInfo;
 
