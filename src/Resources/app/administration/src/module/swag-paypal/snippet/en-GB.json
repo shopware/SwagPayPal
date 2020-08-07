@@ -135,7 +135,7 @@
                 }
             },
             "installment": {
-                "cardTitle": "Ratenzahlung",
+                "cardTitle": "Installments",
                 "installmentBannerEnabled": {
                     "label": "Enable installment banner"
                 }
