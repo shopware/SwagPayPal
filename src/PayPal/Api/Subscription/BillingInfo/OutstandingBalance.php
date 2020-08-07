@@ -7,8 +7,8 @@
 
 namespace Swag\PayPal\PayPal\Api\Subscription\BillingInfo;
 
-use Swag\PayPal\PayPal\Api\Plan\BillingCycle\PricingScheme\FixedPrice;
+use Swag\PayPal\PayPal\Api\Common\Money;
 
-class OutstandingBalance extends FixedPrice
+class OutstandingBalance extends Money
 {
 }

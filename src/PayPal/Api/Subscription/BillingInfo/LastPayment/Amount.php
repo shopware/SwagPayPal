@@ -7,8 +7,8 @@
 
 namespace Swag\PayPal\PayPal\Api\Subscription\BillingInfo\LastPayment;
 
-use Swag\PayPal\PayPal\Api\Subscription\BillingInfo\OutstandingBalance;
+use Swag\PayPal\PayPal\Api\Common\Money;
 
-class Amount extends OutstandingBalance
+class Amount extends Money
 {
 }
