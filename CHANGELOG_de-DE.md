@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-35 - Erweiterbarkeit für Dritt-Plugins verbessert
+
 # 1.8.0
 - PT-11912 - Die Storefront Übersetzungen werden jetzt automatisch registriert
 - PT-11920 - Shopware 6.3 Kompatibilität
