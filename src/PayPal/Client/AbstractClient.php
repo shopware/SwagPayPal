@@ -65,7 +65,7 @@ abstract class AbstractClient
 
     private function decodeJsonResponse(string $response): array
     {
-        return \json_decode($response, true);
+        return \json_decode($response, true) ?? [];
     }
 
     private function handleRequestException(RequestException $requestException, array $data): PayPalApiException

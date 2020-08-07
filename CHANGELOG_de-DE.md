@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- PPI-35 - Erweiterbarkeit für Dritt-Plugins verbessert
+- PPI-32, PPI-35 - Erweiterbarkeit für Dritt-Plugins verbessert
 
 # 1.8.0
 - PT-11912 - Die Storefront Übersetzungen werden jetzt automatisch registriert

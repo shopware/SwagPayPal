@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
-- PPI-35 - Improve extensibility for third party plugins
+- PPI-32, PPI-35 - Improve extensibility for third party plugins
 
 # 1.8.0
 - PT-11912 - Storefront snippets now get auto registered
