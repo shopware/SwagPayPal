@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-35 - Improve extensibility for third party plugins
+
 # 1.8.0
 - PT-11912 - Storefront snippets now get auto registered
 - PT-11920 - Shopware 6.3 compatibility
