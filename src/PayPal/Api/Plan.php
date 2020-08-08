@@ -25,7 +25,7 @@ class Plan extends PayPalStruct
     protected $name;
 
     /**
-     * @var ?string
+     * @var string|null
      */
     protected $description;
 
