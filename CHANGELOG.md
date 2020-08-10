@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-32, PPI-35 - Improve extensibility for third party plugins
+- PPI-36 - Add new PayPal API elements
 
 # 1.8.0
 - PT-11912 - Storefront snippets now get auto registered
