@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 1.8.1
 - PPI-32, PPI-35 - Erweiterbarkeit für Dritt-Plugins verbessert
 - PPI-36 - Weitere PayPal API Elemente hinzugefügt
 
