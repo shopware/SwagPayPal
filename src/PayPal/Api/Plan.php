@@ -12,6 +12,13 @@ use Swag\PayPal\PayPal\Api\Plan\BillingCycle;
 use Swag\PayPal\PayPal\Api\Plan\PaymentPreferences;
 use Swag\PayPal\PayPal\Api\Plan\Taxes;
 
+/**
+ * @codeCoverageIgnore
+ * @experimental
+ *
+ * This class is experimental and not officially supported.
+ * It is currently not used within the plugin itself. Use with caution.
+ */
 class Plan extends PayPalStruct
 {
     /**

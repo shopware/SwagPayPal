@@ -24,7 +24,6 @@
         <whitelist>
             <directory suffix=".php">./src</directory>
             <exclude>
-                <directory suffix=".php">./src/Resources</directory>
                 <file>src/SwagPayPal.php</file>
             </exclude>
         </whitelist>

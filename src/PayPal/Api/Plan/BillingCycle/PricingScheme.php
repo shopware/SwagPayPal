@@ -10,6 +10,13 @@ namespace Swag\PayPal\PayPal\Api\Plan\BillingCycle;
 use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 use Swag\PayPal\PayPal\Api\Plan\BillingCycle\PricingScheme\FixedPrice;
 
+/**
+ * @codeCoverageIgnore
+ * @experimental
+ *
+ * This class is experimental and not officially supported.
+ * It is currently not used within the plugin itself. Use with caution.
+ */
 class PricingScheme extends PayPalStruct
 {
     /**

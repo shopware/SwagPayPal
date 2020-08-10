@@ -14,6 +14,13 @@ use Swag\PayPal\PayPal\Api\Subscription\Link;
 use Swag\PayPal\PayPal\Api\Subscription\ShippingAmount;
 use Swag\PayPal\PayPal\Api\Subscription\Subscriber;
 
+/**
+ * @codeCoverageIgnore
+ * @experimental
+ *
+ * This class is experimental and not officially supported.
+ * It is currently not used within the plugin itself. Use with caution.
+ */
 class Subscription extends PayPalStruct
 {
     /**

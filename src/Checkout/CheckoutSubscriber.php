@@ -51,6 +51,11 @@ class CheckoutSubscriber implements EventSubscriberInterface
     {
         $paymentMethodCollection = $event->getPage()->getPaymentMethods();
 
-        $paymentMethodCollection->remove($this->paymentMethodUtil->getPayPalPaymentMethodId($event->getContext()));
+        $payPalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($event->getContext());
+        if ($payPalPaymentMethodId === null) {
+            return;
+        }
+
+        $paymentMethodCollection->remove($payPalPaymentMethodId);
     }
 }

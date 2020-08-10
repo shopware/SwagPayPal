@@ -7,7 +7,14 @@
 
 namespace Swag\PayPal\PayPal\Api\Common;
 
-class Money extends PayPalStruct
+/**
+ * @codeCoverageIgnore
+ * @experimental
+ *
+ * This class is experimental and not officially supported.
+ * It is currently not used within the plugin itself. Use with caution.
+ */
+abstract class Money extends PayPalStruct
 {
     /**
      * @var string

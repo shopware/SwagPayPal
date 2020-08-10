@@ -9,6 +9,13 @@ namespace Swag\PayPal\PayPal\Api\Subscription;
 
 use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 
+/**
+ * @codeCoverageIgnore
+ * @experimental
+ *
+ * This class is experimental and not officially supported.
+ * It is currently not used within the plugin itself. Use with caution.
+ */
 class ApplicationContext extends PayPalStruct
 {
     public const USER_ACTION_TYPE_SUBSCRIBE_NOW = 'SUBSCRIBE_NOW';

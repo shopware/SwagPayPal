@@ -9,6 +9,13 @@ namespace Swag\PayPal\PayPal\Api\Subscription\BillingInfo\LastPayment;
 
 use Swag\PayPal\PayPal\Api\Common\Money;
 
+/**
+ * @codeCoverageIgnore
+ * @experimental
+ *
+ * This class is experimental and not officially supported.
+ * It is currently not used within the plugin itself. Use with caution.
+ */
 class Amount extends Money
 {
 }
