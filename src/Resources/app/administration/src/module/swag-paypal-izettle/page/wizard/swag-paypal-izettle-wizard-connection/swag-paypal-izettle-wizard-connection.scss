@@ -1,5 +1,5 @@
 .swag-paypal-izettle-wizard-connection {
-    &-headline {
+    .swag-paypal-izettle-wizard-connection__headline {
         margin: 24px 0 18px 0;
         font-weight: bold;
 
@@ -8,38 +8,42 @@
         }
     }
 
-    &-input-suffix {
+    .swag-paypal-izettle-wizard-connection__apikey-field {
+        margin-bottom: 8px;
+    }
+
+    .swag-paypal-izettle-wizard-connection__apiKey-suffix {
         margin-bottom: 2px;
     }
 
-    &-apikey {
-        &-field {
-            margin-bottom: 8px;
-        }
-
-        &-description {
-            & > div {
-                display: inline;
-                margin-top: 8px;
-                color: #94A6B8;
-                font-size: 14px;
-            }
-
-            &-link-icon {
-                margin: 2px;
-            }
-        }
+    .swag-paypal-izettle-wizard-connection__apikey-description {
+        margin-bottom: 16px;
     }
 
-    &-izettle {
-        &-link {
-            display: flex;
-            justify-content: space-around;
-        }
+    .swag-paypal-izettle-wizard-connection__apikey-description-text {
+        display: inline;
+        margin-top: 8px;
+        color: #94A6B8;
+        font-size: 14px;
+    }
 
-        &-logo {
-            object-fit: contain;
-            text-align: left;
-        }
+    .swag-paypal-izettle-wizard-connection__link-icon {
+        margin: 2px;
+    }
+
+    .swag-paypal-izettle-wizard-connection__new-customer-headline {
+        margin-bottom: 16px;
+    }
+
+    .swag-paypal-izettle-wizard-connection__izettle-logo {
+        object-fit: contain;
+        object-position: left;
+        height: 38px;
+        width: auto;
+    }
+
+    .swag-paypal-izettle-wizard-connection__izettle-link {
+        display: flex;
+        justify-content: space-around;
     }
 }

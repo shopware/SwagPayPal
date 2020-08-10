@@ -24,15 +24,15 @@ Component.register('swag-paypal-izettle-wizard-sync-prices', {
     computed: {
         optionTrue() {
             return {
-                name: this.$tc('swag-paypal-izettle.wizard.sync-prices.optionTrueLabel'),
-                description: this.$tc('swag-paypal-izettle.wizard.sync-prices.optionTrueDescription')
+                name: this.$tc('swag-paypal-izettle.wizard.syncPrices.optionTrueLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.syncPrices.optionTrueDescription')
             };
         },
 
         optionFalse() {
             return {
-                name: this.$tc('swag-paypal-izettle.wizard.sync-prices.optionFalseLabel'),
-                description: this.$tc('swag-paypal-izettle.wizard.sync-prices.optionFalseDescription')
+                name: this.$tc('swag-paypal-izettle.wizard.syncPrices.optionFalseLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.syncPrices.optionFalseDescription')
             };
         }
     },
@@ -48,7 +48,7 @@ Component.register('swag-paypal-izettle-wizard-sync-prices', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.sync-prices.modalTitle'));
+            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.syncPrices.modalTitle'));
         },
 
         updateButtons() {
@@ -57,7 +57,7 @@ Component.register('swag-paypal-izettle-wizard-sync-prices', {
                     key: 'back',
                     label: this.$tc('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
-                    action: this.routeBackToProductSelection,
+                    action: this.routeBackToSyncLibrary,
                     disabled: false
                 },
                 {
@@ -65,7 +65,7 @@ Component.register('swag-paypal-izettle-wizard-sync-prices', {
                     label: this.$tc('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
-                    action: this.routeToSyncLibrary,
+                    action: this.routeToFinish,
                     disabled: false
                 }
             ];
@@ -73,20 +73,20 @@ Component.register('swag-paypal-izettle-wizard-sync-prices', {
             this.$emit('buttons-update', buttonConfig);
         },
 
-        routeBackToProductSelection() {
+        routeBackToSyncLibrary() {
             this.$router.push({
-                name: 'swag.paypal.izettle.wizard.product-selection',
+                name: 'swag.paypal.izettle.wizard.syncLibrary',
                 params: { id: this.salesChannel.id }
             });
         },
 
-        routeToSyncLibrary() {
+        routeToFinish() {
             this.toggleLoadingState(true);
 
             this.saveSalesChannel().then(() => {
                 this.toggleLoadingState(false);
                 this.$router.push({
-                    name: 'swag.paypal.izettle.wizard.sync-library',
+                    name: 'swag.paypal.izettle.wizard.finish',
                     params: { id: this.salesChannel.id }
                 });
             }).finally(() => {

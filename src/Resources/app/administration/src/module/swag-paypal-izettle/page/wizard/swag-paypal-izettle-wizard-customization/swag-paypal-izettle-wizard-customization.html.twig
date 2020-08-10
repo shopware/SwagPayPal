@@ -1,15 +1,12 @@
 {% block swag_paypal_izettle_wizard_customization %}
     <div class="swag-paypal-izettle-wizard-customization">
 
-        {% block swag_paypal_izettle_wizard_customization_header %}
-            <h3>{{ $tc('swag-paypal-izettle.wizard.customization.header') }}</h3>
-        {% endblock %}
-
         {% block swag_paypal_izettle_wizard_customization_name %}
             <sw-text-field v-model="salesChannel.name"
+                           class="swag-paypal-izettle-wizard-customization__name-field"
                            validation="required"
                            required
-                           :label="$tc('sw-sales-channel.detail.labelInputName')"
+                           :label="$tc('swag-paypal-izettle.wizard.customization.salesChannelLabel')"
                            :placeholder="$tc('sw-sales-channel.detail.placeholderName')"
                            @input="forceUpdate">
             </sw-text-field>
@@ -17,6 +14,7 @@
 
         {% block swag_paypal_izettle_wizard_customization_media_domain %}
             <sw-url-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain"
+                          class="swag-paypal-izettle-wizard-customization__domain-field"
                           required
                           :label="$tc('swag-paypal-izettle.wizard.customization.labelDomain')"
                           :placeholder="$tc('swag-paypal-izettle.wizard.customization.placeholderDomain')"
@@ -25,7 +23,9 @@
         {% endblock %}
 
         {% block swag_paypal_izettle_wizard_connection_success_disclaimer %}
-            <div v-html="$tc('swag-paypal-izettle.wizard.customization.subtitle')" class="subtitle"></div>
+            <div class="swag-paypal-izettle-wizard-customization__subtitle">
+                {{ $tc('swag-paypal-izettle.wizard.customization.subtitle') }}
+            </div>
         {% endblock %}
     </div>
 {% endblock %}

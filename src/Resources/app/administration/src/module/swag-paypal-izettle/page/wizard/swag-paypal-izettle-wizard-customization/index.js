@@ -1,4 +1,5 @@
 import template from './swag-paypal-izettle-wizard-customization.html.twig';
+import './swag-paypal-izettle-wizard-customization.scss';
 
 const { Component } = Shopware;
 
@@ -20,9 +21,6 @@ Component.register('swag-paypal-izettle-wizard-customization', {
         }
     },
 
-    computed: {
-    },
-
     created() {
         this.createdComponent();
     },
@@ -31,7 +29,6 @@ Component.register('swag-paypal-izettle-wizard-customization', {
         createdComponent() {
             this.updateButtons();
             this.setTitle();
-            this.resetInputFields();
         },
 
         setTitle() {
@@ -40,6 +37,13 @@ Component.register('swag-paypal-izettle-wizard-customization', {
 
         updateButtons() {
             const buttonConfig = [
+                {
+                    key: 'back',
+                    label: this.$tc('sw-first-run-wizard.general.buttonBack'),
+                    position: 'left',
+                    action: this.routeBackToConnectionSuccess,
+                    disabled: false
+                },
                 {
                     key: 'next',
                     label: this.$tc('sw-first-run-wizard.general.buttonNext'),
@@ -54,19 +58,11 @@ Component.register('swag-paypal-izettle-wizard-customization', {
             this.$emit('buttons-update', buttonConfig);
         },
 
-        resetInputFields() {
-            const prototype = {
-                name: this.$tc('swag-paypal-izettle.wizard.connection-success.salesChannelPrototypeName'),
-                mediaDomain: this.$tc('swag-paypal-izettle.wizard.connection-success.salesChannelPrototypeMediaDomain')
-            };
-
-            if (this.salesChannel.name === prototype.name) {
-                this.salesChannel.name = '';
-            }
-
-            if (this.salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain === prototype.mediaDomain) {
-                this.salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain = '';
-            }
+        routeBackToConnectionSuccess() {
+            this.$router.push({
+                name: 'swag.paypal.izettle.wizard.connectionSuccess',
+                params: { id: this.salesChannel.id }
+            });
         },
 
         routeToProductSelection() {
@@ -75,7 +71,7 @@ Component.register('swag-paypal-izettle-wizard-customization', {
             this.saveSalesChannel().then(() => {
                 this.toggleLoadingState(false);
                 this.$router.push({
-                    name: 'swag.paypal.izettle.wizard.product-selection',
+                    name: 'swag.paypal.izettle.wizard.productSelection',
                     params: { id: this.salesChannel.id }
                 });
             }).finally(() => {

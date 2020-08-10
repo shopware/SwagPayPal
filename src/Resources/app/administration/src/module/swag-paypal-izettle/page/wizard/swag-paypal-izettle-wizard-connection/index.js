@@ -73,7 +73,7 @@ Component.register('swag-paypal-izettle-wizard-connection', {
             this.SwagPayPalIZettleSettingApiService.validateApiCredentials(apiKey).then((response) => {
                 if (response.credentialsValid === true) {
                     this.toggleLoadingState(false);
-                    this.$router.push({ name: 'swag.paypal.izettle.wizard.connection-success' });
+                    this.$router.push({ name: 'swag.paypal.izettle.wizard.connectionSuccess' });
                 }
             }).catch((errorResponse) => {
                 this.catchAuthentificationError(errorResponse);

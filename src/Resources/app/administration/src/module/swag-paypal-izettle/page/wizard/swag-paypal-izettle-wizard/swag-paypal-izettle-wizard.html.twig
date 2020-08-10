@@ -7,17 +7,17 @@
                   @modal-close="onCloseModal">
 
             {% block swag_paypal_izettle_wizard_modal_content %}
-                <div class="swag-paypal-izettle-wizard-modal-content">
-                    <sw-container class="swag-paypal-izettle-wizard-modal-content__columns"
-                                  :class="{'one': !showSteps, 'two': showSteps}">
+                <div class="swag-paypal-izettle-wizard__modal-content">
+                    <sw-container class="swag-paypal-izettle-wizard__columns"
+                                  :class="{ 'swag-paypal-izettle-wizard__columns--two': showSteps }">
 
                         {% block swag_paypal_izettle_wizard_modal_content_steps %}
                             <div v-if="showSteps"
-                                 class="swag-paypal-izettle-wizard-modal-content__steps">
+                                 class="swag-paypal-izettle-wizard__steps">
                                 <sw-step-display :initialItemVariants="stepInitialItemVariants"
                                                  :itemIndex="stepIndex"
                                                  :itemVariant="stepVariant">
-                                    <sw-step-item v-for="pageName in stepperPages" :key="pageName">
+                                    <sw-step-item v-for="pageName in displayStepperPages" :key="pageName">
                                         {{ $tc(`swag-paypal-izettle.wizard.stepItemTitle.${pageName}`) }}
                                     </sw-step-item>
                                 </sw-step-display>
@@ -25,7 +25,7 @@
                         {% endblock %}
 
                         {% block swag_paypal_izettle_wizard_modal_content_page %}
-                            <div class="swag-paypal-izettle-wizard-modal-content__page">
+                            <div class="swag-paypal-izettle-wizard__page">
                                 <router-view :salesChannel="salesChannel"
                                              :cloneSalesChannelId="cloneSalesChannelId"
                                              :saveSalesChannel="save"
@@ -39,12 +39,12 @@
                             </div>
                         {% endblock %}
                     </sw-container>
-                    </div>
+                </div>
             {% endblock %}
 
             {% block swag_paypal_izettle_wizard_modal_footer %}
                 <template #modal-footer>
-                    <div class="swag-paypal-izettle-wizard-modal__footer">
+                    <div class="swag-paypal-izettle-wizard__footer">
 
                         {% block swag_paypal_izettle_wizard_modal_footer_left %}
                             <div class="footer-left">

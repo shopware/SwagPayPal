@@ -38,8 +38,14 @@ Component.register('swag-paypal-izettle-wizard-boolean-radio', {
     computed: {
         options() {
             return [
-                { ...{ value: true }, ...this.optionTrue },
-                { ...{ value: false }, ...this.optionFalse }
+                {
+                    value: true,
+                    ...this.optionTrue
+                },
+                {
+                    value: false,
+                    ...this.optionFalse
+                }
             ];
         },
 

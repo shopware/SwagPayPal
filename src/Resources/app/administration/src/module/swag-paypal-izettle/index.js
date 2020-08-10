@@ -47,23 +47,27 @@ Module.register('swag-paypal-izettle', {
                     component: 'swag-paypal-izettle-wizard-connection',
                     path: 'connection'
                 },
-                'connection-success': {
+                connectionSuccess: {
                     component: 'swag-paypal-izettle-wizard-connection-success',
                     path: 'connection-success'
+                },
+                connectionDisconnect: {
+                    component: 'swag-paypal-izettle-wizard-connection-disconnect',
+                    path: 'connection-disconnect'
                 },
                 customization: {
                     component: 'swag-paypal-izettle-wizard-customization',
                     path: 'customization'
                 },
-                'product-selection': {
+                productSelection: {
                     component: 'swag-paypal-izettle-wizard-product-selection',
                     path: 'product-selection'
                 },
-                'sync-prices': {
+                syncPrices: {
                     component: 'swag-paypal-izettle-wizard-sync-prices',
                     path: 'sync-prices'
                 },
-                'sync-library': {
+                syncLibrary: {
                     component: 'swag-paypal-izettle-wizard-sync-library',
                     path: 'sync-library'
                 },

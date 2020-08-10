@@ -1,26 +1,30 @@
 {% block swag_paypal_izettle_wizard_product_selection %}
-    <div class="swag-paypal-izettle-wizard-saleschannel">
-        <h3>{{ $tc('swag-paypal-izettle.wizard.product-selection.header') }}</h3>
+    <div class="swag-paypal-izettle-wizard-product-selection">
+
+        {% block swag_paypal_izettle_wizard_product_selection_info %}
+            <p class="swag-paypal-izettle-wizard-product-selection__info">
+                {{ $tc('swag-paypal-izettle.wizard.productSelection.info') }}
+            </p>
+        {% endblock %}
 
         {% block swag_paypal_izettle_wizard_product_selection_sales_channel_toggle %}
             <sw-switch-field v-model="hasClone"
+                             class="swag-paypal-izettle-wizard-product-selection__clone-switch"
                              bordered
-                             :label="$tc('swag-paypal-izettle.wizard.product-selection.labelToggle')"
+                             :label="$tc('swag-paypal-izettle.wizard.productSelection.labelToggle')"
                              @change="updateClone">
             </sw-switch-field>
         {% endblock %}
 
         {% block swag_paypal_izettle_wizard_product_selection_sales_channel_select %}
             <sw-entity-single-select v-model="localCloneSalesChannelId"
+                                     class="swag-paypal-izettle-wizard-product-selection__saleschannel-select"
                                      entity="sales_channel"
+                                     :criteria="salesChannelCriteria"
                                      :disabled="!hasClone"
-                                     :label="$tc('swag-paypal-izettle.wizard.product-selection.labelSelect')"
+                                     :label="$tc('swag-paypal-izettle.wizard.productSelection.labelSelect')"
                                      @input="forceUpdate">
             </sw-entity-single-select>
-        {% endblock %}
-
-        {% block swag_paypal_izettle_wizard_product_selection_disclaimer %}
-            <div v-html="$tc('swag-paypal-izettle.wizard.product-selection.subtitle')" class="subtitle"></div>
         {% endblock %}
     </div>
 {% endblock %}

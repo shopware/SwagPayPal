@@ -63,13 +63,14 @@
             "cleanLog": "Clean up log"
         },
         "wizard": {
+            "salesChannelPrototypeName": "iZettle POS",
             "stepItemTitle": {
                 "connection": "Account setup",
-                "connection-success": "Connection",
+                "connectionSuccess": "Connection",
                 "customization": "Customisation",
-                "product-selection": "Product selection",
-                "sync-prices": "Price synchronisation",
-                "sync-library": "Library synchronisation",
+                "productSelection": "Product selection",
+                "syncLibrary": "Product synchronisation",
+                "syncPrices": "Price synchronisation",
                 "finish": "Finish"
             },
             "connection": {
@@ -82,50 +83,62 @@
                 "buttonCreateAccount": "Create iZettle account",
                 "buttonCreateAccountLink": "https://register.izettle.com/"
             },
-            "connection-success": {
+            "connectionSuccess": {
                 "modalTitle": "Connection established",
                 "headline": "Your iZettle and Shopware accounts are now connected!",
                 "info": "Follow the next steps to finish setting up product synchronisation.",
                 "disconnectButton": "Disconnect",
-                "disconnectErrorMessage": "An error occured while disconnecting.",
                 "disclaimer": "Any changes you make to your Shopware products will now automatically be updated in your connected iZettle account.",
                 "fakeFirstName": "Currently",
                 "fakeLastName": "Loading",
-                "fakeMail": "izettle@example.com",
-                "salesChannelPrototypeName": "iZettle POS",
-                "salesChannelPrototypeMediaDomain": "https://example.com"
+                "fakeMail": "izettle@example.com"
+            },
+            "connectionDisconnect": {
+                "modalTitle": "Disconnect iZettle account",
+                "headline": "You are about to disconnect iZettle",
+                "info": "Products will no longer be updated and synchronized with your shown iZettle account when disconnecting your account.",
+                "disconnectButton": "Disconnect account",
+                "disconnectErrorMessage": "An error occured while disconnecting."
             },
             "customization": {
-                "modalTitle": "Customisation",
-                "labelDomain": "Domain",
-                "header": "Customise your new Sales Channel",
+                "salesChannelLabel": "Name of Sales Channel",
+                "modalTitle": "Sales Channel details",
+                "labelDomain": "Your Shop-Domain",
                 "subtitle": "iZettle will use this domain to download media associated with your synchronised products.",
-                "placeholderDomain": "Enter domain..."
+                "placeholderDomain": "www.my-store.shopware.com"
             },
-            "product-selection": {
-                "modalTitle": "Product selection",
+            "productSelection": {
+                "modalTitle": "Transfer products from existing Sales Channel",
                 "labelSelect": "Sales Channel",
                 "labelToggle": "Clone product selection",
-                "header": "Pick a Sales Channel for product selection",
-                "subtitle": "You may choose an existing Sales Channel to clone the current selection of products to synchronise. You can add or remove products of your Sales Channel after the setup wizard."
+                "info": "To get started quicker you now have the option to assign products from an existing Sales Channel to your newly created one. All assigned products will then be available for synchronisation in iZettle POS. No manual work needed."
             },
-            "sync-prices": {
-                "modalTitle": "Price synchronisation",
+            "syncLibrary": {
+                "modalTitle": "Setup product sync",
+                "header": "We found {shopwareProducts} and {iZettleProducts}",
+                "shopwareProducts": "no Shopware products | one Shopware product | {n} Shopware products",
+                "iZettleProducts": "no iZettle products | one iZettle product | {n} iZettle products",
+                "description": "All products are synced from your newly created Sales Channel in Shopware. How would you like to setup your iZettle library?",
+                "optionReplaceLabel": "Replace iZettle library",
+                "optionReplaceDescription": "Replace your existing iZettle library with products and stock quantities from Shopware.",
+                "optionAddLabel": "Add Shopware products",
+                "optionAddDescription": "Your products and stock quantities will be added to existing iZettle library.",
+                "disclaimer": "You can change these settings later at any time."
+            },
+            "syncPrices": {
+                "modalTitle": "Setup product sync",
                 "header": "How would you like to export product prices to iZettle?",
-                "description": "Your products’ prices will include VAT when synced to iZettle.",
+                "description": "Your products’ prices will include VAT when synchronised to iZettle.",
                 "disclaimer": "You can edit your VAT manually in the iZettle product library.",
                 "optionTrueLabel" : "Export prices with VAT",
                 "optionTrueDescription" : "Prices synchronised to iZettle will include VAT.",
                 "optionFalseLabel" : "Don't export prices",
                 "optionFalseDescription" : "Exported product prices will be set to 0. You can change this in your product library."
             },
-            "sync-library": {
-                "modalTitle": "Library synchronisation"
-            },
             "finish": {
                 "modalTitle": "Finish",
                 "header": "Product synchronisation setup completed!",
-                "firstParagraph": "Your iZettle account is now linked to your Sales Channel and your products will be transferred to iZettle.<br>In the future, when you make a sale, we will update your stock in iZettle and Shopware.",
+                "firstParagraph": "Your iZettle account is now linked to your Sales Channel and your products will be transferred to iZettle. In the future, when you make a sale, we will update your stock in iZettle and Shopware.",
                 "secondParagraph": "If you need to update your products, we recommend you do this in Shopware and they'll synchronise to your iZettle app automatically."
             }
         },
@@ -134,7 +147,7 @@
             "apiKey": "API key",
             "buttonTest": "Test credentials",
             "buttonGenerateKey": "Generate API key",
-            "apiKeyDescription": "You need to generate an API key at the iZettle website.<br>The generated key needs to be pasted here to authorise the connection to iZettle."
+            "apiKeyDescription": "You need to generate an API key at the iZettle website. The generated key needs to be pasted here to authorise the connection to iZettle."
         },
         "messageCloneError": "Could not clone product visibility from another Sales Channel."
     }

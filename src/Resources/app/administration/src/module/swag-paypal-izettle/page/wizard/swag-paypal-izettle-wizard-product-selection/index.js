@@ -1,6 +1,7 @@
 import template from './swag-paypal-izettle-wizard-product-selection.html.twig';
 
 const { Component } = Shopware;
+const { Criteria } = Shopware.Data;
 
 Component.register('swag-paypal-izettle-wizard-product-selection', {
     template,
@@ -36,6 +37,15 @@ Component.register('swag-paypal-izettle-wizard-product-selection', {
             set(cloneSalesChannelId) {
                 this.$emit('update-clone-sales-channel', cloneSalesChannelId);
             }
+        },
+
+        salesChannelCriteria() {
+            const criteria = new Criteria();
+            criteria.addFilter(Criteria.not('and', [
+                Criteria.equals('id', this.salesChannel.id)
+            ]));
+
+            return criteria;
         }
     },
 
@@ -50,7 +60,7 @@ Component.register('swag-paypal-izettle-wizard-product-selection', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.product-selection.modalTitle'));
+            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.productSelection.modalTitle'));
         },
 
         updateButtons() {
@@ -67,7 +77,7 @@ Component.register('swag-paypal-izettle-wizard-product-selection', {
                     label: this.$tc('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
-                    action: this.routeToSyncPrices,
+                    action: this.routeToSyncLibrary,
                     disabled: false
                 }
             ];
@@ -82,13 +92,13 @@ Component.register('swag-paypal-izettle-wizard-product-selection', {
             });
         },
 
-        routeToSyncPrices() {
+        routeToSyncLibrary() {
             this.toggleLoadingState(true);
 
             this.saveSalesChannel().then(() => {
                 this.toggleLoadingState(false);
                 this.$router.push({
-                    name: 'swag.paypal.izettle.wizard.sync-prices',
+                    name: 'swag.paypal.izettle.wizard.syncLibrary',
                     params: { id: this.salesChannel.id }
                 });
             }).finally(() => {

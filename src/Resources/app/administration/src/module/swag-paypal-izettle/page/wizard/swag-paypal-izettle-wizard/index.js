@@ -23,11 +23,12 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
             cloneSalesChannelId: null,
             stepperPages: [
                 'connection',
-                'connection-success',
+                'connectionSuccess',
+                'connectionDisconnect',
                 'customization',
-                'product-selection',
-                'sync-prices',
-                'sync-library',
+                'productSelection',
+                'syncLibrary',
+                'syncPrices',
                 'finish'
             ],
             stepper: {},
@@ -42,6 +43,12 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
     },
 
     computed: {
+        displayStepperPages() {
+            return this.stepperPages.filter((item) => {
+                return item !== 'connectionDisconnect';
+            });
+        },
+
         stepInitialItemVariants() {
             const maxNavigationIndex = this.stepperPages.length;
             const { navigationIndex } = this.currentStep;
@@ -120,6 +127,10 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
         generateStepper() {
             let index = 1;
             this.stepper = this.stepperPages.reduce((accumulator, pageName) => {
+                if (pageName === 'connectionDisconnect') {
+                    index -= 1;
+                }
+
                 accumulator[pageName] = {
                     name: `swag.paypal.izettle.wizard.${pageName}`,
                     variant: 'large',
@@ -200,7 +211,7 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
             this.previousApiKey = null;
             this.salesChannel = this.salesChannelRepository.create(Context.api);
             this.salesChannel.typeId = IZETTLE_SALES_CHANNEL_TYPE_ID;
-            this.salesChannel.name = this.$tc('swag-paypal-izettle.wizard.connection-success.salesChannelPrototypeName');
+            this.salesChannel.name = this.$tc('swag-paypal-izettle.wizard.salesChannelPrototypeName');
 
             this.salesChannel.extensions.paypalIZettleSalesChannel
                 = this.paypalIZettleSalesChannelRepository.create(Context.api);
@@ -208,7 +219,7 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
             Object.assign(
                 this.salesChannel.extensions.paypalIZettleSalesChannel,
                 {
-                    mediaDomain: this.$tc('swag-paypal-izettle.wizard.connection-success.salesChannelPrototypeMediaDomain'),
+                    mediaDomain: '',
                     apiKey: '',
                     imageDomain: '',
                     productStreamId: null,

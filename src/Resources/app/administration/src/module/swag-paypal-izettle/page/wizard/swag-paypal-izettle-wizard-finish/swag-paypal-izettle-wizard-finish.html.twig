@@ -2,11 +2,36 @@
     <div class="swag-paypal-izettle-wizard-finish">
 
         {% block swag_paypal_izettle_wizard_finish_content %}
-            <h3>{{ $tc('swag-paypal-izettle.wizard.finish.header') }}</h3>
+            <div class="swag-paypal-izettle-wizard-finish__content">
 
-            <div v-html="$tc('swag-paypal-izettle.wizard.finish.firstParagraph')" class="paragraph"></div>
+                {% block swag_paypal_izettle_wizard_finish_content_icon %}
+                    <div class="swag-paypal-izettle-wizard-finish__icon-wrapper">
+                        <sw-icon class="swag-paypal-izettle-wizard-finish__icon"
+                                 name="default-basic-checkmark-line"
+                                 size="80px"
+                                 color="#37D046">
+                        </sw-icon>
+                    </div>
+                {% endblock %}
 
-            <div v-html="$tc('swag-paypal-izettle.wizard.finish.secondParagraph')" class="paragraph"></div>
+                {% block swag_paypal_izettle_wizard_finish_content_header %}
+                    <div class="swag-paypal-izettle-wizard-finish__content-header">
+                        {{ $tc('swag-paypal-izettle.wizard.finish.header') }}
+                    </div>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_wizard_finish_content_description %}
+                    <div class="swag-paypal-izettle-wizard-finish__content-description">
+                        <p class="swag-paypal-izettle-wizard-finish__first-paragraph">
+                            {{ $tc('swag-paypal-izettle.wizard.finish.firstParagraph') }}
+                        </p>
+
+                        <p class="swag-paypal-izettle-wizard-finish__second-paragraph">
+                            {{ $tc('swag-paypal-izettle.wizard.finish.secondParagraph') }}
+                        </p>
+                    </div>
+                {% endblock %}
+            </div>
         {% endblock %}
     </div>
 {% endblock %}

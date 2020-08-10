@@ -1,9 +1,9 @@
-import template from './swag-paypal-izettle-wizard-connection-success.html.twig';
-import './swag-paypal-izettle-wizard-connection-success.scss';
+import template from './swag-paypal-izettle-wizard-connection-disconnect.html.twig';
+import './swag-paypal-izettle-wizard-connection-disconnect.scss';
 
-const { Component } = Shopware;
+const { Component, Context } = Shopware;
 
-Component.register('swag-paypal-izettle-wizard-connection-success', {
+Component.register('swag-paypal-izettle-wizard-connection-disconnect', {
     template,
 
     inject: [
@@ -12,7 +12,8 @@ Component.register('swag-paypal-izettle-wizard-connection-success', {
     ],
 
     mixin: [
-        'placeholder'
+        'placeholder',
+        'notification'
     ],
 
     props: {
@@ -87,17 +88,24 @@ Component.register('swag-paypal-izettle-wizard-connection-success', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.connectionSuccess.modalTitle'));
+            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.connectionDisconnect.modalTitle'));
         },
 
         updateButtons() {
             const buttonConfig = [
                 {
-                    key: 'next',
-                    label: this.$tc('sw-first-run-wizard.general.buttonNext'),
+                    key: 'cancel',
+                    label: this.$tc('global.default.cancel'),
                     position: 'right',
-                    variant: 'primary',
-                    action: this.routeToCustomization,
+                    action: this.routeBackToConnectionSuccess,
+                    disabled: false
+                },
+                {
+                    key: 'next',
+                    label: this.$tc('swag-paypal-izettle.wizard.connectionDisconnect.disconnectButton'),
+                    position: 'right',
+                    variant: 'danger',
+                    action: this.onDisconnect,
                     disabled: this.isFetchingInformation
                 }
             ];
@@ -105,17 +113,24 @@ Component.register('swag-paypal-izettle-wizard-connection-success', {
             this.$emit('buttons-update', buttonConfig);
         },
 
-        routeToCustomization() {
+        routeBackToConnectionSuccess() {
             this.$router.push({
-                name: 'swag.paypal.izettle.wizard.customization',
+                name: 'swag.paypal.izettle.wizard.connectionSuccess',
                 params: { id: this.salesChannel.id }
             });
         },
 
         onDisconnect() {
-            this.$router.push({
-                name: 'swag.paypal.izettle.wizard.connectionDisconnect',
-                params: { id: this.salesChannel.id }
+            // ToDo PPI-22 - The module should go into a disconnected state instead of deleting the whole saleschannel.
+            this.salesChannelRepository.delete(this.salesChannel.id, Context.api).then(() => {
+                this.$emit('recreate-sales-channel');
+                this.forceUpdate();
+
+                this.$router.push({ name: 'swag.paypal.izettle.wizard.connection' });
+            }).catch(() => {
+                this.createNotificationError({
+                    message: this.$tc('swag-paypal-izettle.wizard.connectionDisconnect.disconnectErrorMessage')
+                });
             });
         },
 

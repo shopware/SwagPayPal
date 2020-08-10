@@ -52,7 +52,7 @@ class IZettleSalesChannelDefinition extends EntityDefinition
             new FkField('product_stream_id', 'productStreamId', ProductStreamDefinition::class),
 
             (new StringField('api_key', 'apiKey', self::MAX_APIKEY_SIZE))->setFlags(new Required()),
-            (new StringField('media_domain', 'mediaDomain'))->setFlags(new Required()),
+            (new StringField('media_domain', 'mediaDomain')),
 
             (new BoolField('sync_prices', 'syncPrices')),
             (new BoolField('replace', 'replace')),

@@ -22,18 +22,26 @@ Component.register('swag-paypal-izettle-wizard-sync-library', {
     },
 
     computed: {
-        optionTrue() {
+        optionReplace() {
             return {
-                name: this.$tc('swag-paypal-izettle.wizard.sync-library.optionTrueLabel'),
-                description: this.$tc('swag-paypal-izettle.wizard.sync-library.optionTrueDescription')
+                name: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionReplaceLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionReplaceDescription')
             };
         },
 
-        optionFalse() {
+        optionAdd() {
             return {
-                name: this.$tc('swag-paypal-izettle.wizard.sync-library.optionFalseLabel'),
-                description: this.$tc('swag-paypal-izettle.wizard.sync-library.optionFalseDescription')
+                name: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionAddLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionAddDescription')
             };
+        },
+
+        shopwareProductsCount() {
+            return 0; // ToDo PPI-39 replace with fetched count
+        },
+
+        iZettleProductsCount() {
+            return 0; // ToDo PPI-39 replace with fetched count
         }
     },
 
@@ -48,7 +56,7 @@ Component.register('swag-paypal-izettle-wizard-sync-library', {
         },
 
         setTitle() {
-            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.sync-library.modalTitle'));
+            this.$emit('frw-set-title', this.$tc('swag-paypal-izettle.wizard.syncLibrary.modalTitle'));
         },
 
         updateButtons() {
@@ -57,7 +65,7 @@ Component.register('swag-paypal-izettle-wizard-sync-library', {
                     key: 'back',
                     label: this.$tc('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
-                    action: this.routeBackToSyncPrices,
+                    action: this.routeBackToProductSelection,
                     disabled: false
                 },
                 {
@@ -65,7 +73,7 @@ Component.register('swag-paypal-izettle-wizard-sync-library', {
                     label: this.$tc('sw-first-run-wizard.general.buttonNext'),
                     position: 'right',
                     variant: 'primary',
-                    action: this.routeToFinish,
+                    action: this.routeToSyncPrices,
                     disabled: false
                 }
             ];
@@ -73,20 +81,20 @@ Component.register('swag-paypal-izettle-wizard-sync-library', {
             this.$emit('buttons-update', buttonConfig);
         },
 
-        routeBackToSyncPrices() {
+        routeBackToProductSelection() {
             this.$router.push({
-                name: 'swag.paypal.izettle.wizard.sync-prices',
+                name: 'swag.paypal.izettle.wizard.productSelection',
                 params: { id: this.salesChannel.id }
             });
         },
 
-        routeToFinish() {
+        routeToSyncPrices() {
             this.toggleLoadingState(true);
 
             this.saveSalesChannel().then(() => {
                 this.toggleLoadingState(false);
                 this.$router.push({
-                    name: 'swag.paypal.izettle.wizard.finish',
+                    name: 'swag.paypal.izettle.wizard.syncPrices',
                     params: { id: this.salesChannel.id }
                 });
             }).finally(() => {
