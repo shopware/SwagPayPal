@@ -19,9 +19,10 @@ use Swag\PayPal\PayPal\Resource\CaptureResource;
 use Swag\PayPal\PayPal\Resource\OrdersResource;
 use Swag\PayPal\PayPal\Resource\SaleResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetAuthorizeResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
@@ -49,7 +50,7 @@ class PayPalPaymentControllerTest extends TestCase
         $paymentDetails = \json_decode($responseContent, true);
 
         static::assertSame(
-            GetSaleResponseFixture::TRANSACTION_AMOUNT_DETAILS_SUBTOTAL,
+            GetPaymentSaleResponseFixture::TRANSACTION_AMOUNT_DETAILS_SUBTOTAL,
             $paymentDetails['transactions'][0]['amount']['details']['subtotal']
         );
     }
@@ -71,7 +72,7 @@ class PayPalPaymentControllerTest extends TestCase
                 RelatedResource::AUTHORIZE,
                 [
                     self::KEY_TO_TEST => 'id',
-                    self::VALUE_TO_TEST => GetAuthorizeResponseFixture::ID,
+                    self::VALUE_TO_TEST => GetResourceAuthorizeResponseFixture::ID,
                 ],
             ],
             [
@@ -85,14 +86,14 @@ class PayPalPaymentControllerTest extends TestCase
                 RelatedResource::ORDER,
                 [
                     self::KEY_TO_TEST => 'id',
-                    self::VALUE_TO_TEST => GetOrderResponseFixture::ID,
+                    self::VALUE_TO_TEST => GetResourceOrderResponseFixture::ID,
                 ],
             ],
             [
                 RelatedResource::SALE,
                 [
                     self::KEY_TO_TEST => 'id',
-                    self::VALUE_TO_TEST => GetSaleResponseFixture::ID,
+                    self::VALUE_TO_TEST => GetResourceSaleResponseFixture::ID,
                 ],
             ],
         ];

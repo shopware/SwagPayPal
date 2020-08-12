@@ -35,12 +35,6 @@
             </errorLevel>
         </InvalidReturnType>
 
-        <DocblockTypeContradiction>
-            <errorLevel type="info">
-                <file name="src/PayPal/Api/Common/PayPalStruct.php"/>
-            </errorLevel>
-        </DocblockTypeContradiction>
-
         <InternalMethod>
             <errorLevel type="info">
                 <directory name="tests"/>

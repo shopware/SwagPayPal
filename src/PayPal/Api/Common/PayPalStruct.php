@@ -33,6 +33,10 @@ abstract class PayPalStruct implements \JsonSerializable
                 continue;
             }
 
+            if ($value === []) {
+                continue;
+            }
+
             $namespace = $this->getNamespaceOfAssociation();
             if ($this->isAssociativeArray($value)) {
                 /** @var class-string<PayPalStruct> $className */
@@ -92,10 +96,6 @@ abstract class PayPalStruct implements \JsonSerializable
 
     private function isAssociativeArray(array $value): bool
     {
-        if ($value === []) {
-            return false;
-        }
-
         return \array_keys($value) !== \range(0, \count($value) - 1);
     }
 
