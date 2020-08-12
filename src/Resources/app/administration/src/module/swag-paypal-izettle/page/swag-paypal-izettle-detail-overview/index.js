@@ -1,9 +1,9 @@
-import template from './swag-paypal-izettle-detail-base.html.twig';
+import template from './swag-paypal-izettle-detail-overview.html.twig';
 
 const { Component } = Shopware;
 const { Criteria } = Shopware.Data;
 
-Component.register('swag-paypal-izettle-detail-base', {
+Component.register('swag-paypal-izettle-detail-overview', {
     template,
 
     inject: [
@@ -21,10 +21,6 @@ Component.register('swag-paypal-izettle-detail-base', {
             type: Object,
             required: false
         },
-        isLoading: {
-            type: Boolean,
-            default: false
-        },
         isNewEntity: {
             type: Boolean,
             default: false
@@ -39,7 +35,8 @@ Component.register('swag-paypal-izettle-detail-base', {
             syncingRunId: null,
             lastFinishedRun: null,
             lastCompleteRun: null,
-            statusErrorLevel: null
+            statusErrorLevel: null,
+            isLoading: false
         };
     },
 
@@ -64,10 +61,18 @@ Component.register('swag-paypal-izettle-detail-base', {
         this.createdComponent();
     },
 
+    mounted() {
+        this.mountedComponent();
+    },
+
     methods: {
         createdComponent() {
             this.checkForSync();
             this.loadLastFinishedRun();
+        },
+
+        mountedComponent() {
+            this.updateButtons();
         },
 
         onCloseDeleteModal() {
@@ -201,6 +206,12 @@ Component.register('swag-paypal-izettle-detail-base', {
                 this.syncingRunId = result.first().id;
                 this.updateSync();
             });
+        },
+
+        updateButtons() {
+            const buttonConfig = [];
+
+            this.$emit('buttons-update', buttonConfig);
         }
     }
 });

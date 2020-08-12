@@ -1,22 +1,22 @@
-{% block swag_paypal_izettle_detail_log %}
-    <div class="swag-paypal-izettle-detail-log">
+{% block swag_paypal_izettle_detail_logs %}
+    <div class="swag-paypal-izettle-detail-logs">
 
-        {% block swag_paypal_izettle_detail_log_products %}
-            <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.log.titleProducts')">
+        {% block swag_paypal_izettle_detail_logs_products %}
+            <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.logs.titleProducts')">
 
-                {% block swag_paypal_izettle_detail_log_products_grid %}
+                {% block swag_paypal_izettle_detail_logs_products_grid %}
                     <sw-data-grid v-if="productTotal"
                                   :columns="[
-                                      { property: 'name', label: 'swag-paypal-izettle.detail.log.columnProduct', sortable: false },
-                                      { property: 'updatedAt', label: 'swag-paypal-izettle.detail.log.columnDate', sortable: false },
-                                      { property: 'log', label: 'swag-paypal-izettle.detail.log.columnLastSync', sortable: false },
+                                      { property: 'name', label: 'swag-paypal-izettle.detail.logs.columnProduct', sortable: false },
+                                      { property: 'updatedAt', label: 'swag-paypal-izettle.detail.logs.columnDate', sortable: false },
+                                      { property: 'log', label: 'swag-paypal-izettle.detail.logs.columnLastSync', sortable: false },
                                   ]"
                                   :dataSource="products"
                                   :isLoading="isLoading || loadingProducts"
                                   :showActions="false"
                                   :showSelection="false">
 
-                        {% block swag_paypal_izettle_detail_log_products_grid_pagination %}
+                        {% block swag_paypal_izettle_detail_logs_products_grid_pagination %}
                             <template #pagination>
                                 <sw-pagination :limit="productLimit"
                                                :page="productPage"
@@ -27,10 +27,10 @@
                             </template>
                         {% endblock %}
 
-                        {% block swag_paypal_izettle_detail_log_products_grid_column_date %}
+                        {% block swag_paypal_izettle_detail_logs_products_grid_column_date %}
                             <template #column-updatedAt="{ item }">
 
-                                {% block swag_paypal_izettle_detail_log_products_grid_column_date_formatted %}
+                                {% block swag_paypal_izettle_detail_logs_products_grid_column_date_formatted %}
                                     <template v-if="item.extensions.paypalIZettleLog.length">
                                         {{ item.extensions.paypalIZettleLog[0].run.updatedAt | date({
                                                 hour: '2-digit',
@@ -43,20 +43,20 @@
                                     </template>
                                 {% endblock %}
 
-                                {% block swag_paypal_izettle_detail_log_products_grid_column_date_empty %}
+                                {% block swag_paypal_izettle_detail_logs_products_grid_column_date_empty %}
                                     <template v-else>
-                                        {{ $tc('swag-paypal-izettle.detail.log.noEntry') }}
+                                        {{ $tc('swag-paypal-izettle.detail.logs.noEntry') }}
                                     </template>
                                 {% endblock %}
                             </template>
                         {% endblock %}
 
-                        {% block swag_paypal_izettle_detail_log_products_grid_column_log %}
+                        {% block swag_paypal_izettle_detail_logs_products_grid_column_log %}
                             <template #column-log="{ item }">
 
-                                {% block swag_paypal_izettle_detail_log_products_grid_column_log_first %}
+                                {% block swag_paypal_izettle_detail_logs_products_grid_column_log_first %}
                                     <template v-if="item.extensions.paypalIZettleLog.length">
-                                        <sw-icon class="swag-paypal-izettle-detail-log-entry__icon"
+                                        <sw-icon class="swag-paypal-izettle-detail-logs-entry__icon"
                                                  small
                                                  :class="iconClass(item.extensions.paypalIZettleLog[0])"
                                                  :name="icon(item.extensions.paypalIZettleLog[0])">
@@ -69,30 +69,30 @@
                     </sw-data-grid>
                 {% endblock %}
 
-                {% block swag_paypal_izettle_detail_log_products_empty_state %}
+                {% block swag_paypal_izettle_detail_logs_products_empty_state %}
                     <sw-empty-state v-else-if="!isLoading && !productTotal"
-                                    :title="$tc('swag-paypal-izettle.detail.log.emptyProductTitle')"
-                                    :subline="$tc('swag-paypal-izettle.detail.log.emptyProductMessage')">
+                                    :title="$tc('swag-paypal-izettle.detail.logs.emptyProductTitle')"
+                                    :subline="$tc('swag-paypal-izettle.detail.logs.emptyProductMessage')">
                     </sw-empty-state>
                 {% endblock %}
             </sw-card>
         {% endblock %}
 
-        {% block swag_paypal_izettle_detail_log_other %}
-            <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.log.titleLogs')">
+        {% block swag_paypal_izettle_detail_logs_other %}
+            <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.logs.titleLogs')">
 
-                {% block swag_paypal_izettle_detail_log_other_grid %}
+                {% block swag_paypal_izettle_detail_logs_other_grid %}
                     <sw-data-grid v-if="logTotal"
                                   :columns="[
-                                      { property: 'updatedAt', label: 'swag-paypal-izettle.detail.log.columnDate', sortable: false },
-                                      { property: 'log', label: 'swag-paypal-izettle.detail.log.columnLastSync', sortable: false },
+                                      { property: 'updatedAt', label: 'swag-paypal-izettle.detail.logs.columnDate', sortable: false },
+                                      { property: 'log', label: 'swag-paypal-izettle.detail.logs.columnLastSync', sortable: false },
                                   ]"
                                   :dataSource="logs"
                                   :isLoading="isLoading || loadingLogs"
                                   :showActions="false"
                                   :showSelection="false">
 
-                        {% block swag_paypal_izettle_detail_log_other_grid_pagination %}
+                        {% block swag_paypal_izettle_detail_logs_other_grid_pagination %}
                             <template #pagination>
                                 <sw-pagination :limit="logLimit"
                                                :page="logPage"
@@ -103,7 +103,7 @@
                             </template>
                         {% endblock %}
 
-                        {% block swag_paypal_izettle_detail_log_other_grid_column_date %}
+                        {% block swag_paypal_izettle_detail_logs_other_grid_column_date %}
                             <template #column-updatedAt="{ item }">
                                 {{ item.run.updatedAt | date({
                                         hour: '2-digit',
@@ -116,9 +116,9 @@
                             </template>
                         {% endblock %}
 
-                        {% block swag_paypal_izettle_detail_log_other_grid_column_log %}
+                        {% block swag_paypal_izettle_detail_logs_other_grid_column_log %}
                             <template #column-log="{ item }">
-                                <sw-icon class="swag-paypal-izettle-detail-log-entry__icon"
+                                <sw-icon class="swag-paypal-izettle-detail-logs-entry__icon"
                                          small
                                          :class="iconClass(item)"
                                          :name="icon(item)">
@@ -129,10 +129,10 @@
                     </sw-data-grid>
                 {% endblock %}
 
-                {% block swag_paypal_izettle_detail_log_other_empty_state %}
+                {% block swag_paypal_izettle_detail_logs_other_empty_state %}
                     <sw-empty-state v-else-if="!isLoading && !logTotal"
-                                    :title="$tc('swag-paypal-izettle.detail.log.emptyLogTitle')"
-                                    :subline="$tc('swag-paypal-izettle.detail.log.emptyLogMessage')">
+                                    :title="$tc('swag-paypal-izettle.detail.logs.emptyLogTitle')"
+                                    :subline="$tc('swag-paypal-izettle.detail.logs.emptyLogMessage')">
                     </sw-empty-state>
                 {% endblock %}
             </sw-card>

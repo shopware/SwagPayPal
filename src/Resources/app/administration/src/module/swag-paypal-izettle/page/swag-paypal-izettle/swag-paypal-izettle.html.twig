@@ -11,28 +11,15 @@
 
         {% block swag_paypal_izettle_actions %}
             <template #smart-bar-actions>
-
-                {% block swag_paypal_izettle_actions_clean_log %}
-                    <sw-button-process v-if="showLogCleanAction"
-                                       v-model="isCleanLogSuccessful"
-                                       class="swag_paypal_izettle__clean-log-action"
-                                       :disabled="isCleaningLog"
-                                       :isLoading="isCleaningLog"
-                                       @click="onCleanLog">
-                        {{ $tc('swag-paypal-izettle.detail.cleanLog') }}
-                    </sw-button-process>
-                {% endblock %}
-
-                {% block swag_paypal_izettle_actions_save %}
-                    <sw-button-process v-model="isSaveSuccessful"
-                                       class="swag_paypal_izettle__save-action"
-                                       variant="primary"
-                                       :disabled="isLoading"
-                                       :isLoading="isLoading"
-                                       @click="onSave">
-                        {{ $tc('swag-paypal-izettle.detail.save') }}
-                    </sw-button-process>
-                {% endblock %}
+                <sw-button v-for="button in buttonConfig"
+                           size="small"
+                           :key="button.key"
+                           :disabled="button.disabled"
+                           :isLoading="button.isLoading || isLoading"
+                           :variant="button.variant"
+                           @click="onButtonClick(button.action)">
+                    {{ button.label }}
+                </sw-button>
             </template>
         {% endblock %}
 
@@ -41,12 +28,12 @@
                 <sw-card-view>
 
                     {% block swag_paypal_izettle_content_tabs %}
-                        <sw-tabs v-if="!isNewEntity" class="swag-paypal-izettle-__tabs">
+                        <sw-tabs v-if="!isNewEntity && !isLoading" class="swag-paypal-izettle__tabs">
 
                             {%  block swag_paypal_izettle_content_tab_base %}
-                                <sw-tabs-item :route="{ name: 'swag.paypal.izettle.detail', params: { id: $route.params.id } }"
-                                              :title="$tc('swag-paypal-izettle.tabTitle.base')">
-                                    {{ $tc('swag-paypal-izettle.tabTitle.base') }}
+                                <sw-tabs-item :route="{ name: 'swag.paypal.izettle.detail.overview', params: { id: $route.params.id } }"
+                                              :title="$tc('swag-paypal-izettle.tabTitle.overview')">
+                                    {{ $tc('swag-paypal-izettle.tabTitle.overview') }}
                                 </sw-tabs-item>
                             {% endblock %}
 
@@ -59,31 +46,24 @@
 
                             {%  block swag_paypal_izettle_content_tab_log %}
                                 <sw-tabs-item v-if="!isNewEntity"
-                                              :route="{ name: 'swag.paypal.izettle.detail.log', params: { id: $route.params.id } }"
-                                              :title="$tc('swag-paypal-izettle.tabTitle.log')">
-                                    {{ $tc('swag-paypal-izettle.tabTitle.log') }}
+                                              :route="{ name: 'swag.paypal.izettle.detail.logs', params: { id: $route.params.id } }"
+                                              :title="$tc('swag-paypal-izettle.tabTitle.logs')">
+                                    {{ $tc('swag-paypal-izettle.tabTitle.logs') }}
                                 </sw-tabs-item>
                             {% endblock %}
                         </sw-tabs>
                     {% endblock %}
 
                     {% block swag_paypal_izettle_content_card %}
-                        <router-view v-if="!isNewEntity"
-                                     :isLoading="isLoading"
-                                     :isNewEntity="isNewEntity"
-                                     :isTestCredentialsSuccessful="isTestCredentialsSuccessful"
-                                     :isTestingCredentials="isTestingCredentials"
+                        <router-view v-if="!isLoading"
                                      :key="$route.params.id"
                                      :salesChannel="salesChannel"
                                      :cloneSalesChannelId="cloneSalesChannelId"
-                                     @test-credentials="onTestCredentials"
+                                     :isNewEntity="isNewEntity"
+                                     @buttons-update="updateButtons"
                                      @update-clone-sales-channel="updateCloneSalesChannel">
                         </router-view>
-                        <swag-paypal-izettle-detail-base
-                                v-else
-                                :isLoading="isLoading"
-                                :isNewEntity="isNewEntity">
-                        </swag-paypal-izettle-detail-base>
+                        <sw-loader v-if="isLoading"></sw-loader>
                     {% endblock %}
                 </sw-card-view>
             </template>

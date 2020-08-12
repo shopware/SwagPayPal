@@ -1,10 +1,10 @@
-import template from './swag-paypal-izettle-detail-log.html.twig';
-import './swag-paypal-izettle-detail-log.scss';
+import template from './swag-paypal-izettle-detail-logs.html.twig';
+import './swag-paypal-izettle-detail-logs.scss';
 
 const { Component, Context } = Shopware;
 const { Criteria } = Shopware.Data;
 
-Component.register('swag-paypal-izettle-detail-log', {
+Component.register('swag-paypal-izettle-detail-logs', {
     template,
 
     inject: [
@@ -13,17 +13,14 @@ Component.register('swag-paypal-izettle-detail-log', {
     ],
 
     mixins: [
-        'placeholder'
+        'placeholder',
+        'notification'
     ],
 
     props: {
         salesChannel: {
             type: Object,
             required: false
-        },
-        isLoading: {
-            type: Boolean,
-            default: false
         },
         isNewEntity: {
             type: Boolean,
@@ -43,7 +40,10 @@ Component.register('swag-paypal-izettle-detail-log', {
             logPage: 1,
             logLimit: 10,
             logTotal: 10,
-            loadingLogs: false
+            loadingLogs: false,
+            isLoading: false,
+            isCleaningLog: false,
+            isCleanLogSuccessful: false
         };
     },
 
@@ -51,10 +51,6 @@ Component.register('swag-paypal-izettle-detail-log', {
         logRepository() {
             return this.repositoryFactory.create('swag_paypal_izettle_sales_channel_run_log');
         }
-    },
-
-    created() {
-        this.createdComponent();
     },
 
     watch: {
@@ -65,11 +61,23 @@ Component.register('swag-paypal-izettle-detail-log', {
         }
     },
 
+    created() {
+        this.createdComponent();
+    },
+
+    mounted() {
+        this.mountedComponent();
+    },
+
     methods: {
         createdComponent() {
             this.doProductSearch();
             this.createLogCriteria();
             this.doLogSearch();
+        },
+
+        mountedComponent() {
+            this.updateButtons();
         },
 
         createLogCriteria() {
@@ -158,6 +166,49 @@ Component.register('swag-paypal-izettle-detail-log', {
                 return 'default-badge-info';
             }
             return 'default-basic-checkmark-circle';
+        },
+
+        onCleanLog() {
+            this.isCleaningLog = true;
+            this.isCleanLogSuccessful = false;
+            this.updateButtons();
+
+            this.SwagPayPalIZettleApiService.startLogCleanup(this.salesChannel.id).then(() => {
+                this.isCleaningLog = false;
+                this.isCleanLogSuccessful = true;
+                this.updateButtons();
+            }).catch((errorResponse) => {
+                if (errorResponse.response.data && errorResponse.response.data.errors) {
+                    let message = '';
+                    message += errorResponse.response.data.errors.map((error) => {
+                        return error.detail;
+                    }).join(' / ');
+
+                    this.createNotificationError({
+                        title: this.$tc('global.default.error'),
+                        message
+                    });
+
+                    this.isCleaningLog = false;
+                    this.isCleanLogSuccessful = false;
+                    this.updateButtons();
+                }
+            });
+        },
+
+        updateButtons() {
+            const buttonConfig = [
+                {
+                    key: 'clean',
+                    label: this.$tc('swag-paypal-izettle.detail.cleanLog'),
+                    variant: '',
+                    action: this.onCleanLog,
+                    disabled: false,
+                    isLoading: this.isCleaningLog
+                }
+            ];
+
+            this.$emit('buttons-update', buttonConfig);
         }
     }
 });

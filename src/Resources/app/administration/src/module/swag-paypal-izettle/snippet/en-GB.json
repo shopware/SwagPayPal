@@ -5,12 +5,12 @@
         },
         "header": "iZettle Sales Channel",
         "tabTitle": {
-            "base": "General",
+            "overview": "Overview",
             "settings": "Settings",
-            "log": "Log"
+            "logs": "Logs"
         },
         "detail": {
-            "base": {
+            "overview": {
                 "titleSync": "Synchronisation",
                 "buttonSync": "Synchronise now",
                 "buttonSyncProducts": "Synchronise product details",
@@ -47,7 +47,7 @@
                 "syncPrices": "Synchronise prices",
                 "replace": "Replace existing products in iZettle"
             },
-            "log": {
+            "logs": {
                 "titleProducts": "Synchronised products",
                 "titleLogs": "Other log entries",
                 "columnProduct": "Product",

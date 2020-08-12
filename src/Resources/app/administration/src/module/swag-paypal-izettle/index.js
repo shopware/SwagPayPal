@@ -19,20 +19,20 @@ Module.register('swag-paypal-izettle', {
             component: 'swag-paypal-izettle',
             path: ':id/detail',
             redirect: {
-                name: 'swag.paypal.izettle.detail.base'
+                name: 'swag.paypal.izettle.detail.overview'
             },
             children: {
-                base: {
-                    component: 'swag-paypal-izettle-detail-base',
-                    path: 'base'
+                overview: {
+                    component: 'swag-paypal-izettle-detail-overview',
+                    path: 'overview'
                 },
                 settings: {
                     component: 'swag-paypal-izettle-detail-settings',
                     path: 'settings'
                 },
-                log: {
-                    component: 'swag-paypal-izettle-detail-log',
-                    path: 'log'
+                logs: {
+                    component: 'swag-paypal-izettle-detail-logs',
+                    path: 'logs'
                 }
             }
         },

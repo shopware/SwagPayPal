@@ -85,9 +85,9 @@ Component.register('swag-paypal-izettle-status-view', {
         },
 
         statusTitle() {
-            let title = this.$tc(`swag-paypal-izettle.detail.base.status.message.${this.status}`);
+            let title = this.$tc(`swag-paypal-izettle.detail.overview.status.message.${this.status}`);
             if (this.incompleteLastRun) {
-                const task = this.$tc(`swag-paypal-izettle.detail.base.status.task.${this.lastFinishedRun.task}`);
+                const task = this.$tc(`swag-paypal-izettle.detail.overview.status.task.${this.lastFinishedRun.task}`);
                 if (!this.isSyncing) {
                     title += ` (${task})`;
                 }

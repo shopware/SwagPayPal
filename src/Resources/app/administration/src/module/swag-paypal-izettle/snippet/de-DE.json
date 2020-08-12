@@ -5,12 +5,12 @@
         },
         "header": "iZettle-Verkaufskanal",
         "tabTitle": {
-            "base": "Allgemein",
+            "overview": "Overview",
             "settings": "Einstellungen",
-            "log": "Protokoll"
+            "logs": "Protokoll"
         },
         "detail": {
-            "base": {
+            "overview": {
                 "titleSync": "Synchronisation",
                 "buttonSync": "Jetzt synchronisieren",
                 "buttonSyncProducts": "Produkt-Details synchronisieren",
@@ -47,7 +47,7 @@
                 "syncPrices": "Preise übertragen",
                 "replace": "Existierende Produkte in iZettle ersetzen"
             },
-            "log": {
+            "logs": {
                 "titleProducts": "Synchronisierte Produkte",
                 "titleLogs": "Weitere Protokoll-Einträge",
                 "columnProduct": "Produkt",
