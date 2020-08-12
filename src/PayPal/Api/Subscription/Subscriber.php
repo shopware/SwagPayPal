@@ -9,6 +9,7 @@ namespace Swag\PayPal\PayPal\Api\Subscription;
 
 use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
 use Swag\PayPal\PayPal\Api\Subscription\Subscriber\Name;
+use Swag\PayPal\PayPal\Api\Subscription\Subscriber\ShippingAddress;
 
 /**
  * @codeCoverageIgnore
@@ -33,6 +34,11 @@ class Subscriber extends PayPalStruct
      * @var string
      */
     protected $payerId;
+
+    /**
+     * @var ShippingAddress|null
+     */
+    protected $shippingAddress;
 
     public function getName(): Name
     {
@@ -62,5 +68,15 @@ class Subscriber extends PayPalStruct
     public function setPayerId(string $payerId): void
     {
         $this->payerId = $payerId;
+    }
+
+    public function getShippingAddress(): ?ShippingAddress
+    {
+        return $this->shippingAddress;
+    }
+
+    public function setShippingAddress(?ShippingAddress $shippingAddress): void
+    {
+        $this->shippingAddress = $shippingAddress;
     }
 }
