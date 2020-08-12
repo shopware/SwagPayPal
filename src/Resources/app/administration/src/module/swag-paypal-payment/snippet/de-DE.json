@@ -72,7 +72,7 @@
             },
             "refundAmount": {
                 "label": "Betrag",
-                "placeholder": "Betrag angeben"
+                "helpText": "Ein Betrag von '0' sorgt für die Erstattung der kompletten Zahlung."
             },
             "refundDescription": {
                 "label": "Beschreibung",

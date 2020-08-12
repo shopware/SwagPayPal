@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEW_VERSION
+- PPI-46 - Behebt Fehler beim Erstatten ohne Betrag
+
 # 1.8.1
 - PPI-32, PPI-35 - Erweiterbarkeit für Dritt-Plugins verbessert
 - PPI-36 - Weitere PayPal API Elemente hinzugefügt

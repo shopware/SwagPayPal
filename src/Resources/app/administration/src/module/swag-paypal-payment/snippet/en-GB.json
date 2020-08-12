@@ -72,7 +72,7 @@
             },
             "refundAmount": {
                 "label": "Amount",
-                "placeholder": "Enter a amount"
+                "helpText": "An amount of '0' will cause the refund of the complete payment"
             },
             "refundDescription": {
                 "label": "Description",
