@@ -8,10 +8,7 @@
 namespace Swag\PayPal\IZettle\Sync\Product;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Resource\ProductResource;
@@ -58,31 +55,31 @@ class DeletedUpdater
     {
         $iZettleProductCollection = $productContext->getIZettleProductCollection();
 
-        foreach ($iZettleProductCollection->getElements() as $salesChannelProductEntity) {
-            if (\in_array($salesChannelProductEntity->getProductId(), $productIds, true)) {
+        $deletions = [];
+
+        foreach ($iZettleProductCollection->getElements() as $iZettleProductEntity) {
+            if (\in_array($iZettleProductEntity->getProductId(), $productIds, true)) {
                 continue;
             }
 
-            $productUuid = $this->uuidConverter->convertUuidToV1($salesChannelProductEntity->getProductId());
+            $deletions[$iZettleProductEntity->getProductId()] = $iZettleProductEntity;
+        }
 
-            /** @var ProductEntity|null $productEntity */
-            $productEntity = $this->productRepository->search(
-                new Criteria([$salesChannelProductEntity->getProductId()]),
-                $productContext->getContext()
-            )->first();
+        if (\count($deletions) === 0) {
+            return;
+        }
 
-            try {
-                $this->productResource->deleteProduct($productContext->getIZettleSalesChannel(), $productUuid);
-                $productContext->removeProductReference($salesChannelProductEntity);
-                $this->logger->info('Product deleted: {productId}', ['product' => $productEntity, 'productId' => $productUuid]);
-            } catch (IZettleApiException $iZettleApiException) {
-                if ($iZettleApiException->getApiError()->getErrorType() === IZettleApiError::ERROR_TYPE_ENTITY_NOT_FOUND) {
-                    $productContext->removeProductReference($salesChannelProductEntity);
-                    $this->logger->notice('Not found product to delete at iZettle: {productId}', ['product' => $productEntity, 'productId' => $productUuid]);
-                } else {
-                    $this->logger->error('Product deletion error: ' . $iZettleApiException);
-                }
-            }
+        $productUuids = \array_map([$this->uuidConverter, 'convertUuidToV1'], \array_keys($deletions));
+
+        try {
+            $this->productResource->deleteProducts($productContext->getIZettleSalesChannel(), $productUuids);
+            $this->logger->info('Deleted products at iZettle: {productIds}', ['productIds' => \implode(', ', \array_keys($deletions))]);
+        } catch (IZettleApiException $iZettleApiException) {
+            $this->logger->error('Product deletion error: ' . $iZettleApiException);
+        }
+
+        foreach ($deletions as $deletion) {
+            $productContext->removeProductReference($deletion);
         }
     }
 }

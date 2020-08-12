@@ -12,11 +12,17 @@ class DeleteProductsFixture
     /**
      * @var string[]|null
      */
-    public static $lastDeletedUuids;
+    public static $deletedUuids;
 
     public static function delete(string $query): ?array
     {
-        self::$lastDeletedUuids = \explode('&', \str_replace('uuid=', '', $query));
+        if (self::$deletedUuids === null) {
+            self::$deletedUuids = [];
+        }
+        self::$deletedUuids = \array_merge(
+            self::$deletedUuids,
+            \explode('&', \str_replace('uuid=', '', $query))
+        );
 
         return null;
     }

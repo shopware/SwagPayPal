@@ -16,6 +16,8 @@ use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 
 class ProductResource
 {
+    public const DELETION_CHUNK_SIZE = 100;
+
     /**
      * @var IZettleClientFactory
      */
@@ -66,14 +68,6 @@ class ProductResource
         return $client->sendPutRequest(IZettleRequestUri::PRODUCT_RESOURCE_V2 . $product->getUuid(), $product);
     }
 
-    public function deleteProduct(IZettleSalesChannelEntity $salesChannelEntity, string $productUuid): ?array
-    {
-        $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $apiKey);
-
-        return $client->sendDeleteRequest(IZettleRequestUri::PRODUCT_RESOURCE . $productUuid);
-    }
-
     /**
      * @param string[] $productUuids
      */
@@ -82,11 +76,19 @@ class ProductResource
         $apiKey = $salesChannelEntity->getApiKey();
         $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $apiKey);
 
-        foreach ($productUuids as &$productUuid) {
-            $productUuid = "uuid=${productUuid}";
+        // limited by GET request length
+        $offset = 0;
+        while ($offset < \count($productUuids)) {
+            $deletionChunk = \array_splice($productUuids, $offset, self::DELETION_CHUNK_SIZE);
+            $deletionChunk = \array_map(static function (string $productUuid) {
+                return "uuid=${productUuid}";
+            }, $deletionChunk);
+
+            $client->sendDeleteRequest(IZettleRequestUri::PRODUCT_RESOURCE, \implode('&', $deletionChunk));
+            $offset += self::DELETION_CHUNK_SIZE;
         }
 
-        return $client->sendDeleteRequest(IZettleRequestUri::PRODUCT_RESOURCE, \implode('&', $productUuids));
+        return null;
     }
 
     public function getProductCount(IZettleSalesChannelEntity $salesChannelEntity): ProductCountResponse

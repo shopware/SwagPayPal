@@ -75,7 +75,6 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
 
         $updater = new UnsyncedChecker($this->productResource, $this->logger, new UuidConverter());
 
-        $this->productResource->expects(static::never())->method('deleteProduct');
         $this->productResource->expects(static::once())->method('deleteProducts');
         $this->logger->expects(static::once())->method('info');
         $updater->checkForUnsynced([], $this->productContext);
@@ -87,7 +86,6 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
 
         $updater = new UnsyncedChecker($this->productResource, $this->logger, new UuidConverter());
 
-        $this->productResource->expects(static::never())->method('deleteProduct');
         $this->productResource->expects(static::never())->method('deleteProducts');
         $updater->checkForUnsynced([$this->iZettleProductEntity->getProductId()], $this->productContext);
     }
@@ -99,7 +97,6 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
 
         $updater = new UnsyncedChecker($this->productResource, $this->logger, new UuidConverter());
 
-        $this->productResource->expects(static::never())->method('deleteProduct');
         $this->productResource->expects(static::never())->method('deleteProducts');
         $updater->checkForUnsynced([], $this->productContext);
     }
@@ -111,7 +108,6 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
 
         $updater = new UnsyncedChecker($this->productResource, $this->logger, new UuidConverter());
 
-        $this->productResource->expects(static::never())->method('deleteProduct');
         $this->productResource->expects(static::never())->method('deleteProducts');
         $updater->checkForUnsynced([], $this->productContext);
     }

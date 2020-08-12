@@ -71,7 +71,7 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
 
         $this->productResource->expects(static::never())->method('createProduct');
         $this->productResource->expects(static::never())->method('updateProduct');
-        $this->productResource->expects(static::once())->method('deleteProduct');
+        $this->productResource->expects(static::once())->method('deleteProducts');
         $this->logger->expects(static::once())->method('info');
 
         $updater->update([], $this->productContext);
@@ -91,42 +91,13 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
 
         $this->productResource->expects(static::never())->method('createProduct');
         $this->productResource->expects(static::never())->method('updateProduct');
-        $this->productResource->expects(static::never())->method('deleteProduct');
+        $this->productResource->expects(static::never())->method('deleteProducts');
         $this->logger->expects(static::never())->method('info');
 
         $updater->update([$this->iZettleProductEntity->getProductId()], $this->productContext);
 
         static::assertCount(0, $this->productContext->getProductChanges());
         static::assertCount(0, $this->productContext->getProductRemovals());
-    }
-
-    public function testDeletedProductButNotExistsAtIZettle(): void
-    {
-        $updater = new DeletedUpdater(
-            $this->productResource,
-            $this->createMock(EntityRepositoryInterface::class),
-            $this->logger,
-            new UuidConverter()
-        );
-
-        $error = new IZettleApiError();
-        $error->assign([
-            'errorType' => IZettleApiError::ERROR_TYPE_ENTITY_NOT_FOUND,
-            'developerMessage' => IZettleApiError::ERROR_TYPE_ENTITY_NOT_FOUND,
-            'violations' => [], ]);
-        $this->productResource->method('deleteProduct')->willThrowException(
-            new IZettleApiException($error)
-        );
-
-        $this->productResource->expects(static::never())->method('createProduct');
-        $this->productResource->expects(static::never())->method('updateProduct');
-        $this->productResource->expects(static::once())->method('deleteProduct');
-        $this->logger->expects(static::once())->method('notice');
-
-        $updater->update([], $this->productContext);
-
-        static::assertCount(0, $this->productContext->getProductChanges());
-        static::assertCount(1, $this->productContext->getProductRemovals());
     }
 
     public function testDeletedProductDeletionError(): void
@@ -142,7 +113,7 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
         $error->assign([
             'developerMessage' => 'anyError',
             'violations' => [], ]);
-        $this->productResource->method('deleteProduct')->willThrowException(
+        $this->productResource->method('deleteProducts')->willThrowException(
             new IZettleApiException($error)
         );
 

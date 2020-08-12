@@ -86,7 +86,7 @@ class ProductSyncerTest extends AbstractProductSyncTest
 
         $this->productResource = $this->createPartialMock(
             ProductResource::class,
-            ['createProduct', 'updateProduct', 'deleteProduct']
+            ['createProduct', 'updateProduct', 'deleteProducts']
         );
 
         $this->newUpdater = $this->createMock(NewUpdater::class);

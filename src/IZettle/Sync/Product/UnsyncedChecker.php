@@ -72,7 +72,7 @@ class UnsyncedChecker
 
         try {
             $this->productResource->deleteProducts($productContext->getIZettleSalesChannel(), $deletions);
-            $this->logger->info('Unsynced products at iZettle deleted: {productIds}', ['productIds' => $deletions]);
+            $this->logger->info('Removed unsynced products at iZettle: {productIds}', ['productIds' => \implode(', ', $deletions)]);
         } catch (IZettleApiException $iZettleApiException) {
             $this->logger->warning('Unsynced product deletion error: ' . $iZettleApiException);
         }

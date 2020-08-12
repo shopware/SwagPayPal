@@ -37,7 +37,7 @@ final class ConstantsForTesting
     public const PRODUCT_F_ID = '308f915c928b4f878e5a7d4ba1dedc7b';
     public const PRODUCT_F_ID_CONVERTED = '308f915c-928b-1f87-8e5a-7d4ba1dedc7b';
     public const PRODUCT_F_ID_VARIANT = '308f915c-928b-1f87-8e5a-7d4ba1dedc7c';
-    public const PRODUCT_G_ID_CONVERTED = '8450d162fd204e25bc470568420f881a';
+    public const PRODUCT_G_ID_CONVERTED = '8450d162-fd20-1e25-bc47-0568420f881a';
 
     public const VARIANT_A_ID = 'c6482952242f4ac6bc1342313f77f16d';
     public const VARIANT_A_ID_CONVERTED = 'c6482952-242f-1ac6-bc13-42313f77f16d';

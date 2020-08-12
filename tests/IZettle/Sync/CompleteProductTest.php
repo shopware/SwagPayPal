@@ -54,7 +54,6 @@ use Swag\PayPal\IZettle\Sync\ProductSyncer;
 use Swag\PayPal\Test\IZettle\ConstantsForTesting;
 use Swag\PayPal\Test\IZettle\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\CreateProductFixture;
-use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\DeleteProductFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\DeleteProductsFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\UpdateProductFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\IZettleClientFactoryMock;
@@ -241,8 +240,10 @@ class CompleteProductTest extends TestCase
         static::assertNotEquals((new Product())->generateChecksum(), $productStateD->getChecksum());
         static::assertNotEquals((new Product())->generateChecksum(), $productStateE->getChecksum());
 
-        static::assertSame(ConstantsForTesting::PRODUCT_F_ID_CONVERTED, DeleteProductFixture::$lastDeletedUuid);
-        static::assertSame([ConstantsForTesting::PRODUCT_G_ID_CONVERTED], DeleteProductsFixture::$lastDeletedUuids);
+        static::assertEqualsCanonicalizing(
+            [ConstantsForTesting::PRODUCT_F_ID_CONVERTED, ConstantsForTesting::PRODUCT_G_ID_CONVERTED],
+            DeleteProductsFixture::$deletedUuids
+        );
 
         static::assertEquals($this->createConvertedProduct($productB, $variantA, $variantB), CreateProductFixture::$lastCreatedProducts[1]);
         $productC->assign(['cover' => null]);

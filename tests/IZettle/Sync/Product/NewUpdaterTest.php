@@ -73,7 +73,7 @@ class NewUpdaterTest extends AbstractProductSyncTest
 
         $this->productResource->expects(static::once())->method('createProduct');
         $this->productResource->expects(static::never())->method('updateProduct');
-        $this->productResource->expects(static::never())->method('deleteProduct');
+        $this->productResource->expects(static::never())->method('deleteProducts');
         $this->logger->expects(static::once())->method('info');
 
         $updater->update($this->productGroupingCollection, $this->productContext);
@@ -98,7 +98,7 @@ class NewUpdaterTest extends AbstractProductSyncTest
 
         $this->productResource->expects(static::once())->method('createProduct');
         $this->productResource->expects(static::never())->method('updateProduct');
-        $this->productResource->expects(static::never())->method('deleteProduct');
+        $this->productResource->expects(static::never())->method('deleteProducts');
         $this->logger->expects(static::once())->method('notice');
 
         $updater->update($this->productGroupingCollection, $this->productContext);
@@ -143,7 +143,7 @@ class NewUpdaterTest extends AbstractProductSyncTest
 
         $this->productResource->expects(static::never())->method('createProduct');
         $this->productResource->expects(static::never())->method('updateProduct');
-        $this->productResource->expects(static::never())->method('deleteProduct');
+        $this->productResource->expects(static::never())->method('deleteProducts');
 
         $updater->update($this->productGroupingCollection, $this->productContext);
 

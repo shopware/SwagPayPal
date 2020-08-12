@@ -76,7 +76,7 @@ class ProductSelectionTest extends AbstractProductSyncTest
 
         $this->productResource = $this->createPartialMock(
             ProductResource::class,
-            ['createProduct', 'updateProduct', 'deleteProduct']
+            ['createProduct', 'updateProduct', 'deleteProducts']
         );
 
         $this->productRepository = new SalesChannelProductRepoMock();

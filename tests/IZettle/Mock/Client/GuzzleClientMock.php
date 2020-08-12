@@ -18,7 +18,6 @@ use Swag\PayPal\Test\IZettle\ConstantsForTesting;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\ChangeBulkInventoryFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\CreateProductFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\CreateTokenResponseFixture;
-use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\DeleteProductFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\DeleteProductsFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\FetchInformationResponseFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetInventoryFixture;
@@ -126,9 +125,7 @@ class GuzzleClientMock extends Client
     {
         $response = [];
         if (\mb_strpos($resourceUri, IZettleRequestUri::PRODUCT_RESOURCE) !== false) {
-            if ($query === null) {
-                $response = DeleteProductFixture::delete($resourceUri);
-            } else {
+            if ($query !== null) {
                 $response = DeleteProductsFixture::delete($query);
             }
         }
