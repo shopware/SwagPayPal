@@ -7,15 +7,15 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures;
 
-class ExecuteSaleResponseFixture
+class ExecutePaymentOrderResponseFixture
 {
     public static function get(): array
     {
         return [
-            'id' => 'PAY-46D69568SY211161GLP6CHGA',
-            'intent' => 'sale',
+            'id' => 'PAY-35B10430TC590490WLQDJXTI',
+            'intent' => 'order',
             'state' => 'approved',
-            'cart' => '1X136001V5949163B',
+            'cart' => '1KU5881047858235H',
             'payer' => [
                 'payment_method' => 'paypal',
                 'status' => 'VERIFIED',
@@ -24,7 +24,6 @@ class ExecuteSaleResponseFixture
                     'first_name' => 'Test',
                     'last_name' => 'Test',
                     'payer_id' => 'BNJDKJVFBCXPJ',
-                    'phone' => '605-521-1234',
                     'shipping_address' => [
                         'recipient_name' => 'Test Test',
                         'line1' => 'Ebbinghoff 10',
@@ -41,17 +40,16 @@ class ExecuteSaleResponseFixture
             'transactions' => [
                 0 => [
                     'amount' => [
-                        'total' => '727.00',
+                        'total' => '375.00',
                         'currency' => 'EUR',
                         'details' => [
-                            'subtotal' => '727.00',
-                            'tax' => '0.00',
+                            'subtotal' => '315.13',
+                            'tax' => '59.87',
                             'shipping' => '0.00',
                         ],
                     ],
                     'payee' => [
                         'merchant_id' => 'HCKBUJL8YWQZS',
-                        'email' => 'test@shopware.de',
                     ],
                     'item_list' => [
                         'shipping_address' => [
@@ -64,58 +62,61 @@ class ExecuteSaleResponseFixture
                             'postal_code' => '4862',
                             'country_code' => 'AT',
                         ],
-                        'shipping_options' => [
-                            0 => null,
-                        ],
                     ],
                     'related_resources' => [
                         0 => [
-                            'sale' => [
-                                'id' => '5GB9720606957970A',
-                                'state' => 'completed',
+                            'order' => [
+                                'id' => 'O-7PS41727C2382141U',
+                                'create_time' => '2018-12-04T15:23:24Z',
+                                'update_time' => '2018-12-04T15:23:24Z',
                                 'amount' => [
-                                    'total' => '727.00',
+                                    'total' => '375.00',
                                     'currency' => 'EUR',
                                     'details' => [
-                                        'subtotal' => '727.00',
+                                        'subtotal' => '315.13',
+                                        'tax' => '59.87',
+                                        'shipping' => '0.00',
                                     ],
                                 ],
-                                'payment_mode' => 'INSTANT_TRANSFER',
-                                'protection_eligibility' => 'ELIGIBLE',
-                                'protection_eligibility_type' => 'ITEM_NOT_RECEIVED_ELIGIBLE,UNAUTHORIZED_PAYMENT_ELIGIBLE',
-                                'transaction_fee' => [
-                                    'value' => '14.16',
-                                    'currency' => 'EUR',
-                                ],
-                                'parent_payment' => 'PAY-46D69568SY211161GLP6CHGA',
-                                'create_time' => '2018-11-26T16:47:46Z',
-                                'update_time' => '2018-11-26T16:47:46Z',
+                                'state' => 'PENDING',
+                                'reason_code' => 'ORDER',
                                 'links' => [
                                     0 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/sale/5GB9720606957970A',
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U',
                                         'rel' => 'self',
                                         'method' => 'GET',
                                     ],
                                     1 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/sale/5GB9720606957970A/refund',
-                                        'rel' => 'refund',
-                                        'method' => 'POST',
-                                    ],
-                                    2 => [
-                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-46D69568SY211161GLP6CHGA',
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-35B10430TC590490WLQDJXTI',
                                         'rel' => 'parent_payment',
                                         'method' => 'GET',
                                     ],
+                                    2 => [
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U/do-void',
+                                        'rel' => 'void',
+                                        'method' => 'POST',
+                                    ],
+                                    3 => [
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U/authorize',
+                                        'rel' => 'authorization',
+                                        'method' => 'POST',
+                                    ],
+                                    4 => [
+                                        'href' => 'https://api.sandbox.paypal.com/v1/payments/orders/O-7PS41727C2382141U/capture',
+                                        'rel' => 'capture',
+                                        'method' => 'POST',
+                                    ],
                                 ],
+                                'parent_payment' => 'PAY-35B10430TC590490WLQDJXTI',
                             ],
                         ],
                     ],
                 ],
             ],
-            'create_time' => '2018-11-26T16:47:47Z',
+            'create_time' => '2018-12-04T15:23:25Z',
             'links' => [
                 0 => [
-                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-46D69568SY211161GLP6CHGA',
+                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-35B10430TC590490WLQDJXTI',
                     'rel' => 'self',
                     'method' => 'GET',
                 ],

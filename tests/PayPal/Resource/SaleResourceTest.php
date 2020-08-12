@@ -14,7 +14,7 @@ use Swag\PayPal\PayPal\Api\Refund;
 use Swag\PayPal\PayPal\PaymentStatus;
 use Swag\PayPal\PayPal\Resource\SaleResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceSaleResponseFixture;
 
 class SaleResourceTest extends TestCase
 {
@@ -32,7 +32,7 @@ class SaleResourceTest extends TestCase
 
         $saleArray = \json_decode($sale, true);
 
-        static::assertSame(GetSaleResponseFixture::ID, $saleArray['id']);
+        static::assertSame(GetResourceSaleResponseFixture::ID, $saleArray['id']);
     }
 
     public function testRefund(): void

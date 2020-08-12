@@ -22,15 +22,18 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CaptureAuthorizationResponseFi
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CaptureOrdersResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateTokenResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteAuthorizeResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePuiResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecuteSaleResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetAuthorizeResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetCapturedOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleWithRefundResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentCapturedOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentSaleWithRefundResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
@@ -109,7 +112,7 @@ class GuzzleClientMock extends Client
         }
 
         if (\strncmp($resourceUri, RequestUri::AUTHORIZATION_RESOURCE, 22) === 0) {
-            $response = GetAuthorizeResponseFixture::get();
+            $response = GetResourceAuthorizeResponseFixture::get();
         }
 
         if (\strncmp($resourceUri, RequestUri::CAPTURE_RESOURCE, 16) === 0) {
@@ -117,11 +120,11 @@ class GuzzleClientMock extends Client
         }
 
         if (\strncmp($resourceUri, RequestUri::ORDERS_RESOURCE, 15) === 0) {
-            $response = GetOrderResponseFixture::get();
+            $response = GetResourceOrderResponseFixture::get();
         }
 
         if (\strncmp($resourceUri, RequestUri::SALE_RESOURCE, 13) === 0) {
-            $response = GetSaleResponseFixture::get();
+            $response = GetResourceSaleResponseFixture::get();
         }
 
         if (\strncmp($resourceUri, 'customer/partners/', 18) === 0) {
@@ -137,22 +140,22 @@ class GuzzleClientMock extends Client
     private function handlePaymentGetRequests(string $resourceUri): array
     {
         if (\mb_strpos($resourceUri, PaymentResourceTest::ORDER_PAYMENT_ID) !== false) {
-            return GetOrderResponseFixture::get();
+            return GetPaymentOrderResponseFixture::get();
         }
 
         if (\mb_strpos($resourceUri, PaymentResourceTest::CAPTURED_ORDER_PAYMENT_ID) !== false) {
-            return GetCapturedOrderResponseFixture::get();
+            return GetPaymentCapturedOrderResponseFixture::get();
         }
 
         if (\mb_strpos($resourceUri, PaymentResourceTest::AUTHORIZE_PAYMENT_ID) !== false) {
-            return GetAuthorizeResponseFixture::get();
+            return GetPaymentAuthorizeResponseFixture::get();
         }
 
         if (\mb_strpos($resourceUri, PaymentResourceTest::SALE_WITH_REFUND_PAYMENT_ID) !== false) {
-            return GetSaleWithRefundResponseFixture::get();
+            return GetPaymentSaleWithRefundResponseFixture::get();
         }
 
-        return GetSaleResponseFixture::get();
+        return GetPaymentSaleResponseFixture::get();
     }
 
     /**
@@ -255,18 +258,18 @@ class GuzzleClientMock extends Client
         /** @var ExecutePayerInfo $payerInfo */
         $payerInfo = $data;
         if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE) {
-            return ExecuteAuthorizeResponseFixture::get();
+            return ExecutePaymentAuthorizeResponseFixture::get();
         }
 
         if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_ORDER) {
-            return ExecuteOrderResponseFixture::get();
+            return ExecutePaymentOrderResponseFixture::get();
         }
 
         if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_PUI) {
             return ExecutePuiResponseFixture::get();
         }
 
-        $response = ExecuteSaleResponseFixture::get();
+        $response = ExecutePaymentSaleResponseFixture::get();
         if ($payerInfo->getPayerId() !== PayPalPaymentHandlerTest::PAYER_ID_PAYMENT_INCOMPLETE) {
             return $response;
         }

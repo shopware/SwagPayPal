@@ -9,7 +9,7 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures;
 
 class CreateResponseFixture
 {
-    public const CREATE_PAYMENT_ID = 'PAY-9FS21791UL732760GLP2ASLY';
+    public const CREATE_PAYMENT_ID = 'PAYID-L4Z5SZA5FJ16145VJ547490N';
     public const CREATE_PAYMENT_APPROVAL_TOKEN = 'EC-44X706219E3526258';
     public const CREATE_PAYMENT_APPROVAL_URL = 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=' . self::CREATE_PAYMENT_APPROVAL_TOKEN;
 
@@ -22,6 +22,13 @@ class CreateResponseFixture
             'payer' => [
                 'payment_method' => 'paypal',
             ],
+            'application_context' => [
+                'locale' => 'en-GB',
+                'landing_page' => 'Login',
+                'brand_name' => 'Storefront',
+                'shipping_preference' => 'SET_PROVIDED_ADDRESS',
+                'user_action' => 'commit',
+            ],
             'transactions' => [
                 0 => [
                     'amount' => [
@@ -33,13 +40,25 @@ class CreateResponseFixture
                             'shipping' => '0.00',
                         ],
                     ],
+                    'item_list' => [
+                        'items' => [
+                            0 => [
+                                'name' => 'Test',
+                                'sku' => 'SW10000',
+                                'price' => '970.00',
+                                'currency' => 'EUR',
+                                'tax' => '0.00',
+                                'quantity' => 1,
+                            ],
+                        ],
+                    ],
                     'related_resources' => [],
                 ],
             ],
-            'createTime' => '2018-11-20T13:16:30Z',
+            'create_time' => '2020-08-12T11:58:27Z',
             'links' => [
                 0 => [
-                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-9FS21791UL732760GLP2ASLY',
+                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAYID-L4Z5SZA5FJ16145VJ547490N',
                     'rel' => 'self',
                     'method' => 'GET',
                 ],
@@ -49,7 +68,7 @@ class CreateResponseFixture
                     'method' => 'REDIRECT',
                 ],
                 2 => [
-                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAY-9FS21791UL732760GLP2ASLY/execute',
+                    'href' => 'https://api.sandbox.paypal.com/v1/payments/payment/PAYID-L4Z5SZA5FJ16145VJ547490N/execute',
                     'rel' => 'execute',
                     'method' => 'POST',
                 ],

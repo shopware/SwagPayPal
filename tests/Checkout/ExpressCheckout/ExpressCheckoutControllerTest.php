@@ -35,7 +35,7 @@ use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentSaleResponseFixture;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -100,8 +100,8 @@ class ExpressCheckoutControllerTest extends TestCase
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         $customer = $this->assertCustomer($salesChannelContext->getContext());
 
-        static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_FIRST_NAME, $customer->getFirstName());
-        static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_LAST_NAME, $customer->getLastName());
+        static::assertSame(GetPaymentSaleResponseFixture::PAYER_PAYER_INFO_FIRST_NAME, $customer->getFirstName());
+        static::assertSame(GetPaymentSaleResponseFixture::PAYER_PAYER_INFO_LAST_NAME, $customer->getLastName());
 
         $addresses = $customer->getAddresses();
         static::assertNotNull($addresses);
@@ -109,8 +109,8 @@ class ExpressCheckoutControllerTest extends TestCase
         $address = $addresses->first();
         static::assertNotNull($address);
 
-        static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_SHIPPING_ADDRESS_STREET, $address->getStreet());
-        static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_SHIPPING_ADDRESS_CITY, $address->getCity());
+        static::assertSame(GetPaymentSaleResponseFixture::PAYER_PAYER_INFO_SHIPPING_ADDRESS_STREET, $address->getStreet());
+        static::assertSame(GetPaymentSaleResponseFixture::PAYER_PAYER_INFO_SHIPPING_ADDRESS_CITY, $address->getCity());
         $country = $address->getCountry();
         static::assertNotNull($country);
         static::assertSame('USA', $country->getTranslation('name'));
@@ -124,7 +124,7 @@ class ExpressCheckoutControllerTest extends TestCase
             ->getExtension(ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID);
 
         static::assertInstanceOf(ExpressCheckoutData::class, $ecsCartExtension);
-        static::assertSame(GetSaleResponseFixture::PAYER_PAYER_INFO_PAYER_ID, $ecsCartExtension->getPayerId());
+        static::assertSame(GetPaymentSaleResponseFixture::PAYER_PAYER_INFO_PAYER_ID, $ecsCartExtension->getPayerId());
         static::assertSame($testPaymentId, $ecsCartExtension->getPaymentId());
     }
 
@@ -279,7 +279,7 @@ class ExpressCheckoutControllerTest extends TestCase
         $customerRepo = $this->getContainer()->get('customer.repository');
 
         $criteria = (new Criteria())
-            ->addFilter(new EqualsFilter('email', GetSaleResponseFixture::PAYER_PAYER_INFO_EMAIL))
+            ->addFilter(new EqualsFilter('email', GetPaymentSaleResponseFixture::PAYER_PAYER_INFO_EMAIL))
             ->addAssociation('addresses.country')
             ->addAssociation('addresses.countryState');
         /** @var CustomerEntity|null $customer */

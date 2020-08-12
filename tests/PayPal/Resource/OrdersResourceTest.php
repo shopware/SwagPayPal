@@ -12,7 +12,7 @@ use Shopware\Core\Defaults;
 use Swag\PayPal\PayPal\Api\Capture;
 use Swag\PayPal\PayPal\Resource\OrdersResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
 
 class OrdersResourceTest extends TestCase
@@ -31,7 +31,7 @@ class OrdersResourceTest extends TestCase
 
         $ordersArray = \json_decode($orders, true);
 
-        static::assertSame(GetOrderResponseFixture::ID, $ordersArray['id']);
+        static::assertSame(GetResourceOrderResponseFixture::ID, $ordersArray['id']);
     }
 
     public function testCapture(): void
