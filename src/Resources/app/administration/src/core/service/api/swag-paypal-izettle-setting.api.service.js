@@ -80,6 +80,26 @@ class SwagPayPalIZettleSettingApiService extends ApiService {
     }
 
     /**
+     * Get product count from iZettle and cloned Sales Channel
+     *
+     * @param {String} salesChannelId
+     * @param {String|null} cloneSalesChannelId
+     * @returns {Promise|Object}
+     */
+    getProductCount(salesChannelId, cloneSalesChannelId) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .post(
+                `_action/${this.getApiBasePath()}/product-count`,
+                { salesChannelId, cloneSalesChannelId },
+                { headers }
+            ).then((response) => {
+                return ApiService.handleResponse(response);
+            });
+    }
+
+    /**
      * @returns {string}
      */
     generateApiUrl() {

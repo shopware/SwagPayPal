@@ -79,7 +79,7 @@ class IZettleClient extends AbstractClient
     public function sendGetRequest(string $resourceUri, ?IZettleStruct $data = null): ?array
     {
         if ($data === null) {
-            $this->get($resourceUri);
+            return $this->get($resourceUri);
         }
 
         $options = [

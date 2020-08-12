@@ -6,6 +6,10 @@ const { Component } = Shopware;
 Component.register('swag-paypal-izettle-wizard-sync-library', {
     template,
 
+    inject: [
+        'SwagPayPalIZettleSettingApiService'
+    ],
+
     props: {
         salesChannel: {
             type: Object,
@@ -21,6 +25,13 @@ Component.register('swag-paypal-izettle-wizard-sync-library', {
         }
     },
 
+    data() {
+        return {
+            shopwareProductsCount: 0,
+            iZettleProductsCount: 0
+        };
+    },
+
     computed: {
         optionReplace() {
             return {
@@ -34,14 +45,6 @@ Component.register('swag-paypal-izettle-wizard-sync-library', {
                 name: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionAddLabel'),
                 description: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionAddDescription')
             };
-        },
-
-        shopwareProductsCount() {
-            return 0; // ToDo PPI-39 replace with fetched count
-        },
-
-        iZettleProductsCount() {
-            return 0; // ToDo PPI-39 replace with fetched count
         }
     },
 
@@ -53,6 +56,7 @@ Component.register('swag-paypal-izettle-wizard-sync-library', {
         createdComponent() {
             this.updateButtons();
             this.setTitle();
+            this.fetchProductCounts();
         },
 
         setTitle() {
@@ -109,6 +113,19 @@ Component.register('swag-paypal-izettle-wizard-sync-library', {
         toggleLoadingState(state) {
             this.isConnecting = state;
             this.$emit('toggle-loading', state);
+        },
+
+        fetchProductCounts() {
+            this.toggleLoadingState(true);
+            this.SwagPayPalIZettleSettingApiService.getProductCount(
+                this.salesChannel.id,
+                this.cloneSalesChannelId
+            ).then((response) => {
+                this.shopwareProductsCount = response.localCount;
+                this.iZettleProductsCount = response.remoteCount;
+            }).finally(() => {
+                this.toggleLoadingState(false);
+            });
         }
     }
 });

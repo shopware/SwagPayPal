@@ -61,6 +61,7 @@
             <argument type="service" id="Swag\PayPal\IZettle\Setting\Service\InformationFetchService"/>
             <argument type="service" id="Swag\PayPal\IZettle\Setting\Service\InformationDefaultService"/>
             <argument type="service" id="Swag\PayPal\IZettle\Setting\Service\ProductVisibilityCloneService"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Setting\Service\ProductCountService"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Setting\Service\ApiCredentialService">
@@ -72,6 +73,13 @@
             <argument type="service" id="country.repository"/>
             <argument type="service" id="currency.repository"/>
             <argument type="service" id="language.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Setting\Service\ProductCountService">
+            <argument type="service" id="Swag\PayPal\IZettle\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="sales_channel.repository"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\Setting\Service\InformationDefaultService">

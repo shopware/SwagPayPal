@@ -22,6 +22,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\IZettle\ConstantsForTesting;
 
 class SalesChannelRepoMock extends AbstractRepoMock implements EntityRepositoryInterface
 {
@@ -126,6 +127,7 @@ class SalesChannelRepoMock extends AbstractRepoMock implements EntityRepositoryI
         $entity->setCurrency($currency);
 
         $iZettleEntity = new IZettleSalesChannelEntity();
+        $iZettleEntity->setApiKey(ConstantsForTesting::VALID_API_KEY);
         $entity->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleEntity);
         $this->addMockEntity($entity);
 

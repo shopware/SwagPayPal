@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Swag\PayPal\IZettle\Setting\Service\ApiCredentialService;
 use Swag\PayPal\IZettle\Setting\Service\InformationDefaultService;
 use Swag\PayPal\IZettle\Setting\Service\InformationFetchService;
+use Swag\PayPal\IZettle\Setting\Service\ProductCountService;
 use Swag\PayPal\IZettle\Setting\Service\ProductVisibilityCloneService;
 use Swag\PayPal\IZettle\Setting\Struct\AdditionalInformation;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,16 +46,23 @@ class SettingsController extends AbstractController
      */
     private $productVisibilityCloneService;
 
+    /**
+     * @var ProductCountService
+     */
+    private $productCountService;
+
     public function __construct(
         ApiCredentialService $apiService,
         InformationFetchService $informationFetchService,
         InformationDefaultService $informationDefaultService,
-        ProductVisibilityCloneService $productVisibilityCloneService
+        ProductVisibilityCloneService $productVisibilityCloneService,
+        ProductCountService $productCountService
     ) {
         $this->apiCredentialService = $apiService;
         $this->informationFetchService = $informationFetchService;
         $this->informationDefaultService = $informationDefaultService;
         $this->productVisibilityCloneService = $productVisibilityCloneService;
+        $this->productCountService = $productCountService;
     }
 
     /**
@@ -100,11 +108,28 @@ class SettingsController extends AbstractController
      */
     public function cloneProductVisibility(Request $request, Context $context): Response
     {
-        $fromSalesChannelId = $request->request->get('fromSalesChannelId');
-        $toSalesChannelId = $request->request->get('toSalesChannelId');
+        $fromSalesChannelId = $request->request->getAlnum('fromSalesChannelId');
+        $toSalesChannelId = $request->request->getAlnum('toSalesChannelId');
 
         $this->productVisibilityCloneService->cloneProductVisibility($fromSalesChannelId, $toSalesChannelId, $context);
 
         return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Route(
+     *     "/api/v{version}/_action/paypal/izettle/product-count",
+     *     name="api.action.paypal.izettle.product.count",
+     *     methods={"POST"}
+     * )
+     */
+    public function getProductCounts(Request $request, Context $context): JsonResponse
+    {
+        $salesChannelId = $request->request->getAlnum('salesChannelId');
+        $cloneSalesChannelId = $request->request->getAlnum('cloneSalesChannelId');
+
+        $productCounts = $this->productCountService->getProductCounts($salesChannelId, $cloneSalesChannelId, $context);
+
+        return new JsonResponse($productCounts);
     }
 }

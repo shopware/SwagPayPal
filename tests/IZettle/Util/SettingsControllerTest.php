@@ -8,6 +8,8 @@
 namespace Swag\PayPal\Test\IZettle\Util;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -16,21 +18,30 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Swag\PayPal\IZettle\Api\Exception\IZettleTokenException;
 use Swag\PayPal\IZettle\MessageQueue\Handler\CloneVisiblityHandler;
+use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Resource\TokenResource;
 use Swag\PayPal\IZettle\Resource\UserResource;
 use Swag\PayPal\IZettle\Setting\Service\ApiCredentialService;
 use Swag\PayPal\IZettle\Setting\Service\InformationDefaultService;
 use Swag\PayPal\IZettle\Setting\Service\InformationFetchService;
+use Swag\PayPal\IZettle\Setting\Service\ProductCountService;
 use Swag\PayPal\IZettle\Setting\Service\ProductVisibilityCloneService;
 use Swag\PayPal\IZettle\Setting\SettingsController;
 use Swag\PayPal\IZettle\Setting\Struct\AdditionalInformation;
+use Swag\PayPal\IZettle\Setting\Struct\ProductCount;
+use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\Test\IZettle\ConstantsForTesting;
+use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetProductCountFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\IZettleClientFactoryMock;
 use Swag\PayPal\Test\IZettle\Mock\Client\TokenClientFactoryMock;
 use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\ProductVisibilityRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelProductRepoMock;
+use Swag\PayPal\Test\IZettle\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -40,6 +51,7 @@ class SettingsControllerTest extends TestCase
 
     private const FROM_SALES_CHANNEL = 'salesChannelA';
     private const TO_SALES_CHANNEL = 'salesChannelB';
+    private const LOCAL_PRODUCT_COUNT = 5;
 
     /**
      * @var ProductVisibilityRepoMock
@@ -50,6 +62,16 @@ class SettingsControllerTest extends TestCase
      * @var MessageBusMock
      */
     private $messageBus;
+
+    /**
+     * @var SalesChannelProductRepoMock
+     */
+    private $salesChannelProductRepository;
+
+    /**
+     * @var SalesChannelRepoMock
+     */
+    private $salesChannelRepository;
 
     public function testValidateCredentialsValid(): void
     {
@@ -102,6 +124,52 @@ class SettingsControllerTest extends TestCase
         static::assertCount(3, $this->productVisibilityRepository->filterBySalesChannelId(self::TO_SALES_CHANNEL));
     }
 
+    public function testProductCount(): void
+    {
+        $context = Context::createDefaultContext();
+        $settingsController = $this->getSettingsController();
+
+        for ($i = 0; $i < self::LOCAL_PRODUCT_COUNT; ++$i) {
+            $product = new SalesChannelProductEntity();
+            $product->setId(Uuid::randomHex());
+            $product->setVersionId(Uuid::randomHex());
+            $this->salesChannelProductRepository->addMockEntity($product);
+        }
+
+        $this->salesChannelRepository->getMockEntityWithNoTypeId()->setId(Defaults::SALES_CHANNEL);
+
+        $request = new Request([], [
+            'salesChannelId' => $this->salesChannelRepository->getMockEntity()->getId(),
+            'cloneSalesChannelId' => $this->salesChannelRepository->getMockEntityWithNoTypeId()->getId(),
+        ]);
+
+        $response = $settingsController->getProductCounts($request, $context);
+
+        $expected = new ProductCount();
+        $expected->setLocalCount(self::LOCAL_PRODUCT_COUNT);
+        $expected->setRemoteCount(GetProductCountFixture::PRODUCT_COUNT);
+
+        static::assertSame(\json_encode($expected), $response->getContent());
+    }
+
+    public function testProductCountNoClone(): void
+    {
+        $context = Context::createDefaultContext();
+        $settingsController = $this->getSettingsController();
+
+        $request = new Request([], [
+            'salesChannelId' => $this->salesChannelRepository->getMockEntity()->getId(),
+        ]);
+
+        $response = $settingsController->getProductCounts($request, $context);
+
+        $expected = new ProductCount();
+        $expected->setLocalCount(0);
+        $expected->setRemoteCount(GetProductCountFixture::PRODUCT_COUNT);
+
+        static::assertSame(\json_encode($expected), $response->getContent());
+    }
+
     private function getSettingsController(): SettingsController
     {
         /** @var EntityRepositoryInterface $countryRepository */
@@ -128,6 +196,12 @@ class SettingsControllerTest extends TestCase
         $this->productVisibilityRepository = new ProductVisibilityRepoMock();
         $this->messageBus = new MessageBusMock();
 
+        $this->salesChannelProductRepository = new SalesChannelProductRepoMock();
+        $this->salesChannelRepository = new SalesChannelRepoMock();
+
+        /** @var SalesChannelContextFactory $salesChannelContextFactory */
+        $salesChannelContextFactory = $this->getContainer()->get('Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory');
+
         return new SettingsController(
             new ApiCredentialService(new TokenResource(
                 new CacheMock(),
@@ -151,6 +225,16 @@ class SettingsControllerTest extends TestCase
             new ProductVisibilityCloneService(
                 $this->messageBus,
                 $this->productVisibilityRepository
+            ),
+            new ProductCountService(
+                new ProductResource(new IZettleClientFactoryMock()),
+                new ProductSelection(
+                    $this->salesChannelProductRepository,
+                    $this->createMock(ProductStreamBuilder::class),
+                    $salesChannelContextFactory
+                ),
+                $this->salesChannelProductRepository,
+                $this->salesChannelRepository
             )
         );
     }

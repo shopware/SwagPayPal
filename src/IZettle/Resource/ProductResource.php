@@ -10,6 +10,7 @@ namespace Swag\PayPal\IZettle\Resource;
 use Swag\PayPal\IZettle\Api\IZettleBaseURL;
 use Swag\PayPal\IZettle\Api\IZettleRequestUri;
 use Swag\PayPal\IZettle\Api\Product;
+use Swag\PayPal\IZettle\Api\Product\ProductCountResponse;
 use Swag\PayPal\IZettle\Client\IZettleClientFactory;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 
@@ -86,5 +87,20 @@ class ProductResource
         }
 
         return $client->sendDeleteRequest(IZettleRequestUri::PRODUCT_RESOURCE, \implode('&', $productUuids));
+    }
+
+    public function getProductCount(IZettleSalesChannelEntity $salesChannelEntity): ProductCountResponse
+    {
+        $apiKey = $salesChannelEntity->getApiKey();
+        $client = $this->iZettleClientFactory->createIZettleClient(IZettleBaseURL::PRODUCTS, $apiKey);
+
+        $response = $client->sendGetRequest(IZettleRequestUri::PRODUCT_RESOURCE_COUNT);
+
+        $productCountResponse = new ProductCountResponse();
+        if ($response !== null) {
+            $productCountResponse->assign($response);
+        }
+
+        return $productCountResponse;
     }
 }

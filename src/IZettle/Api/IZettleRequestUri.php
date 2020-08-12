@@ -12,6 +12,7 @@ final class IZettleRequestUri
     public const TOKEN_RESOURCE = 'token/';
     public const PRODUCT_RESOURCE = 'organizations/self/products/';
     public const PRODUCT_RESOURCE_V2 = 'organizations/self/products/v2/';
+    public const PRODUCT_RESOURCE_COUNT = 'organizations/self/products/v2/count/';
     public const INVENTORY_RESOURCE_LOCATIONS = 'organizations/self/locations/';
     public const INVENTORY_RESOURCE_GET = 'organizations/self/inventory/locations/%s/';
     public const INVENTORY_RESOURCE_BULK = 'organizations/self/v2/inventory/bulk/';

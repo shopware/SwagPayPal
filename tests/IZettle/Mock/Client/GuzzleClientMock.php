@@ -23,6 +23,7 @@ use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\DeleteProductsFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\FetchInformationResponseFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetInventoryFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetInventoryLocationsFixture;
+use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetProductCountFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetProductsFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\UpdateProductFixture;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -82,6 +83,8 @@ class GuzzleClientMock extends Client
             $response = GetInventoryFixture::get();
         } elseif ($resourceUri === IZettleRequestUri::PRODUCT_RESOURCE) {
             $response = GetProductsFixture::get();
+        } elseif ($resourceUri === IZettleRequestUri::PRODUCT_RESOURCE_COUNT) {
+            $response = GetProductCountFixture::get();
         }
 
         return $this->ensureValidJson($response);
