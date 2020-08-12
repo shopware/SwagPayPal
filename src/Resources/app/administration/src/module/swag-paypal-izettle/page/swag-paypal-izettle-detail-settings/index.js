@@ -150,7 +150,7 @@ Component.register('swag-paypal-izettle-detail-settings', {
                         });
                     }
 
-                    this.$router.push({ name: 'swag.paypal.izettle.detail.base', params: { id: this.salesChannel.id } });
+                    this.$router.push({ name: 'swag.paypal.izettle.detail.overview', params: { id: this.salesChannel.id } });
                 }).catch(() => {
                     this.isLoading = false;
                     this.updateButtons();

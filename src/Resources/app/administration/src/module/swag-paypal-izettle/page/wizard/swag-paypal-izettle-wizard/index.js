@@ -150,7 +150,7 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
             this.showModal = false;
             this.$nextTick(() => {
                 if (!this.salesChannel._isNew && (this.$route.params.id || this.salesChannel.id)) {
-                    this.$router.push({ name: 'swag.paypal.izettle.detail.base', params: { id: this.salesChannel.id } });
+                    this.$router.push({ name: 'swag.paypal.izettle.detail.overview', params: { id: this.salesChannel.id } });
 
                     return;
                 }
