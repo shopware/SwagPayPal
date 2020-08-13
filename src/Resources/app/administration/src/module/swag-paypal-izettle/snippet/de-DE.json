@@ -18,6 +18,9 @@
                 "buttonSyncInventory": "Bestand synchronisieren",
                 "buttonSyncAbort": "Synchronisation abbrechen",
                 "syncErrorTitle": "Synchronisations-Fehler",
+                "manageAccount": "iZettle-Konto verwalten",
+                "editConnection": "Verbindung bearbeiten",
+                "lastUpdated": "Zuletzt aktualisiert",
                 "status": {
                     "disabled": "Die Synchronisation ist nicht aktiv, da dieser Verkaufskanal deaktiviert ist.",
                     "message": {

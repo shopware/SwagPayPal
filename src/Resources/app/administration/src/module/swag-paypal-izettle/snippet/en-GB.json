@@ -18,6 +18,9 @@
                 "buttonSyncInventory": "Synchronise inventory",
                 "buttonSyncAbort": "Abort synchronisation",
                 "syncErrorTitle": "Synchronisation error",
+                "manageAccount": "Manage account",
+                "editConnection": "Edit connection",
+                "lastUpdated": "Last updated",
                 "status": {
                     "disabled": "Synchronisation is not enabled, because your Sales Channel is disabled.",
                     "message": {

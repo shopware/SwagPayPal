@@ -1,0 +1,53 @@
+@import "~scss/variables";
+
+.swag-paypal-izettle-account {
+    .swag-paypal-izettle-account__logo {
+        object-fit: contain;
+    }
+
+    .swag-paypal-izettle-account__container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .swag-paypal-izettle-account__account-info {
+        margin-left: 24px;
+    }
+
+    .swag-paypal-izettle-account__edit-connection-button {
+        margin-top: 12px;
+    }
+
+    .swag-paypal-izettle-account__status-container {
+        display: flex;
+        flex-direction: column;
+        align-content: end;
+    }
+
+    .swag-paypal-izettle-account__status-label {
+        margin-left: auto;
+        margin-right: 0;
+    }
+
+    .swag-paypal-izettle-account__status-color-badge {
+        margin: 4px auto 0px auto;
+    }
+
+    .swag-paypal-izettle-account__status-updated{
+        color: $color-gray-500;
+        font-size: $font-size-extra-small;
+    }
+
+    .swag-paypal-izettle-account__name{
+        font-weight: $font-weight-semi-bold;
+    }
+
+    .swag-paypal-izettle-account__manage-link{
+        font-size: $font-size-small;
+    }
+
+    .swag-paypal-izettle-account__status-text {
+        font-weight: $font-weight-semi-bold;
+    }
+}

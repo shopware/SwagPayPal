@@ -1,0 +1,101 @@
+{% block swag_paypal_izettle_account %}
+    <sw-card class="swag-paypal-izettle-account"
+             :title="$tc('sw-sales-channel.detail.titleAccount')"
+             :isLoading="isLoading">
+
+        {% block swag_paypal_izettle_account_grid %}
+            <sw-container columns="min-content 1fr" align="center">
+
+                {% block swag_paypal_izettle_account_grid_logo %}
+                    <img class="swag-paypal-izettle-account__logo"
+                         alt="iZettle Logo"
+                         :src="'/swagpaypal/static/img/izettle-logo.svg' | asset">
+                {% endblock %}
+
+                {% block swag_paypal_izettle_account_grid_container %}
+                    <div class="swag-paypal-izettle-account__container">
+
+                        {% block swag_paypal_izettle_account_grid_container_info %}
+                            <div class="swag-paypal-izettle-account__account-info">
+
+                                {% block swag_paypal_izettle_account_grid_container_info_name %}
+                                    <div class="swag-paypal-izettle-account__name">
+                                        {{ accountName }}
+                                    </div>
+                                {% endblock %}
+
+                                {% block swag_paypal_izettle_account_grid_container_info_link %}
+                                    <a href="https://my.izettle.com"
+                                       target="_blank"
+                                       class="link swag-paypal-izettle-account__manage-link">
+
+                                        {% block swag_paypal_izettle_account_grid_container_info_link_text %}
+                                            {{ $tc('swag-paypal-izettle.detail.overview.manageAccount') }}
+                                        {% endblock %}
+
+                                        {% block swag_paypal_izettle_account_grid_container_info_link_icon %}
+                                            <sw-icon name="default-action-external"
+                                                     size="8px">
+                                            </sw-icon>
+                                        {% endblock %}
+                                    </a>
+                                {% endblock %}
+
+                                {% block swag_paypal_izettle_account_grid_container_info_edit_button %}
+                                    <sw-button class="swag-paypal-izettle-account__edit-connection-button"
+                                               size="small"
+                                               disabled
+                                               block>
+                                        {{ $tc('swag-paypal-izettle.detail.overview.editConnection') }}
+                                    </sw-button>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+
+                        {% block swag_paypal_izettle_account_grid_container_status %}
+                            <div class="swag-paypal-izettle-account__status-container">
+
+                                {% block swag_paypal_izettle_account_grid_container_status_label %}
+                                    <sw-label class="swag-paypal-izettle-account__status-label"
+                                              variant="success"
+                                              size="medium"
+                                              appearance="pill"
+                                              :ghost="false"
+                                              :caps="false">
+
+                                        {% block swag_paypal_izettle_account_grid_container_status_label_badge %}
+                                            <sw-color-badge class="swag-paypal-izettle-account__status-color-badge"
+                                                            color="#37d046"
+                                                            rounded>
+                                            </sw-color-badge>
+                                        {% endblock %}
+
+                                        {% block swag_paypal_izettle_account_grid_container_status_label_text %}
+                                            <span class="swag-paypal-izettle-account__status-text">
+                                                    Verbunden
+                                            </span>
+                                        {% endblock %}
+                                    </sw-label>
+                                {% endblock %}
+
+                                {% block swag_paypal_izettle_account_grid_container_status_updated %}
+                                    <div v-if="lastRun"
+                                         class="swag-paypal-izettle-account__status-updated">
+                                        {{ $tc('swag-paypal-izettle.detail.overview.lastUpdated') }} {{ lastRun.updatedAt | date({
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            second: '2-digit',
+                                            day: '2-digit',
+                                            month: 'short',
+                                            year: 'numeric'
+                                        }) }}
+                                    </div>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </sw-container>
+        {% endblock %}
+    </sw-card>
+{% endblock %}

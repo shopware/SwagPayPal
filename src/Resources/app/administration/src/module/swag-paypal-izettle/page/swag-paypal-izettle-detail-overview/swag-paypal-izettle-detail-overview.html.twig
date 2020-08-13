@@ -1,6 +1,10 @@
 {% block swag_paypal_izettle_detail_overview %}
     <div class="sw-sales-channel-detail-overview">
 
+        {% block swag_paypal_izettle_detail_overview_account %}
+            <swag-paypal-izettle-account :salesChannel="salesChannel"></swag-paypal-izettle-account>
+        {% endblock %}
+
         {% block swag_paypal_izettle_detail_overview_status %}
             <swag-paypal-izettle-status-view v-if="!isNewEntity"
                                              :isLoading="isLoading"
