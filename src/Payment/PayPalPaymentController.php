@@ -344,7 +344,7 @@ class PayPalPaymentController extends AbstractController
             $refund->setInvoiceNumber($invoiceNumber);
         }
 
-        if ($refundAmount !== '0') {
+        if ($refundAmount !== '0.00') {
             $amount = new RefundAmount();
             $amount->setTotal($refundAmount);
             $amount->setCurrency($currency);

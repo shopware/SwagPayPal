@@ -14,8 +14,10 @@
             <sw-number-field v-model="captureValue"
                              :max="maxCaptureValue"
                              :min="0"
-                             :label="$tc('swag-paypal-payment.captureAction.currentAmount')"
-                             :suffix="currency">
+                             :label="$tc('swag-paypal-payment.captureAction.currentAmount')">
+                <template #suffix>
+                    {{ currency }}
+                </template>
             </sw-number-field>
         {% endblock %}
 
