@@ -11,12 +11,12 @@
         {% endblock %}
 
         {% block swag_paypal_izettle_wizard_sync_library_description_input %}
-            <swag-paypal-izettle-wizard-boolean-radio
+            <swag-paypal-izettle-boolean-radio
                 v-model="salesChannel.extensions.paypalIZettleSalesChannel.replace"
                 :label="$tc('swag-paypal-izettle.wizard.syncLibrary.description')"
                 :optionTrue="optionReplace"
                 :optionFalse="optionAdd">
-            </swag-paypal-izettle-wizard-boolean-radio>
+            </swag-paypal-izettle-boolean-radio>
         {% endblock %}
 
         {% block swag_paypal_izettle_wizard_sync_library_disclaimer %}

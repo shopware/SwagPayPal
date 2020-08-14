@@ -31,7 +31,6 @@ Component.register('swag-paypal-izettle-detail-overview', {
         return {
             isSyncing: false,
             syncErrors: null,
-            showDeleteModal: false,
             syncingRunId: null,
             lastFinishedRun: null,
             lastCompleteRun: null,
@@ -73,25 +72,6 @@ Component.register('swag-paypal-izettle-detail-overview', {
 
         mountedComponent() {
             this.updateButtons();
-        },
-
-        onCloseDeleteModal() {
-            this.showDeleteModal = false;
-        },
-
-        onConfirmDelete() {
-            this.showDeleteModal = false;
-
-            this.$nextTick(() => {
-                this.deleteSalesChannel(this.salesChannel.id);
-                this.$router.push({ name: 'sw.dashboard.index' });
-            });
-        },
-
-        deleteSalesChannel(salesChannelId) {
-            this.salesChannelRepository.delete(salesChannelId, Shopware.Context.api).then(() => {
-                this.$root.$emit('sales-channel-change');
-            });
         },
 
         forceUpdate() {

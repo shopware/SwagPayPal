@@ -1,9 +1,10 @@
-import template from './swag-paypal-izettle-wizard-boolean-radio.html.twig';
-import './swag-paypal-izettle-wizard-boolean-radio.scss';
+import template from './swag-paypal-izettle-boolean-radio.html.twig';
+import './swag-paypal-izettle-boolean-radio.scss';
 
 const { Component } = Shopware;
+const utils = Shopware.Utils;
 
-Component.register('swag-paypal-izettle-wizard-boolean-radio', {
+Component.register('swag-paypal-izettle-boolean-radio', {
     template,
 
     model: {
@@ -35,6 +36,12 @@ Component.register('swag-paypal-izettle-wizard-boolean-radio', {
         }
     },
 
+    data() {
+        return {
+            inputId: utils.createId()
+        };
+    },
+
     computed: {
         options() {
             return [
@@ -57,6 +64,10 @@ Component.register('swag-paypal-izettle-wizard-boolean-radio', {
             set(val) {
                 this.$emit('change', val);
             }
+        },
+
+        name() {
+            return `swag-paypal-izettle-boolean-radio-${this.inputId}`;
         }
     }
 });

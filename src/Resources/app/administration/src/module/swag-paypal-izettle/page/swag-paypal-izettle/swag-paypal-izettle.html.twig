@@ -61,6 +61,7 @@
                                      :cloneSalesChannelId="cloneSalesChannelId"
                                      :isNewEntity="isNewEntity"
                                      @buttons-update="updateButtons"
+                                     @load-sales-channel="loadSalesChannel"
                                      @update-clone-sales-channel="updateCloneSalesChannel">
                         </router-view>
                         <sw-loader v-if="isLoading"></sw-loader>

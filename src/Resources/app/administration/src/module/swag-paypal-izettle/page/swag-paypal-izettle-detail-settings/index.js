@@ -1,8 +1,7 @@
 import template from './swag-paypal-izettle-detail-settings.html.twig';
 import './swag-paypal-izettle-detail-settings.scss';
 
-const { Component, Defaults, Context } = Shopware;
-const { Criteria } = Shopware.Data;
+const { Component, Context } = Shopware;
 const { mapPropertyErrors } = Component.getComponentHelper();
 
 Component.register('swag-paypal-izettle-detail-settings', {
@@ -36,54 +35,45 @@ Component.register('swag-paypal-izettle-detail-settings', {
             showDeleteModal: false,
             isSaveSuccessful: false,
             isTestingCredentials: false,
-            isTestCredentialsSuccessful: false
+            isTestCredentialsSuccessful: false,
+            apiKeyUrl: this.SwagPayPalIZettleSettingApiService.generateApiUrl(),
+            previousApiKey: this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey
         };
     },
 
     computed: {
         ...mapPropertyErrors('salesChannel', ['name']),
 
-        storefrontSalesChannelCriteria() {
-            const criteria = new Criteria();
-            return criteria.addFilter(Criteria.equals('typeId', Defaults.storefrontSalesChannelTypeId));
-        },
-
-        storefrontSalesChannelDomainCriteria() {
-            const criteria = new Criteria();
-            if (!this.storefrontSalesChannelId) {
-                return criteria;
-            }
-            return criteria.addFilter(Criteria.equals('salesChannelId', this.storefrontSalesChannelId));
-        },
-
-        storefrontSalesChannelDomainCurrencyCriteria() {
-            const criteria = new Criteria();
-            criteria.addAssociation('salesChannels');
-            if (!this.storefrontSalesChannelId) {
-                return criteria;
-            }
-            return criteria.addFilter(Criteria.equals('salesChannels.id', this.storefrontSalesChannelId));
-        },
-
-        globalDomainRepository() {
-            return this.repositoryFactory.create('sales_channel_domain');
-        },
-
         salesChannelRepository() {
             return this.repositoryFactory.create('sales_channel');
         },
 
-        localStorefrontSalesChannelId: {
-            get() {
-                return this.storefrontSalesChannelId;
-            },
-            set(storefrontSalesChannelId) {
-                this.$emit('update-storefront-sales-channel', storefrontSalesChannelId);
-            }
+        optionSyncPrices() {
+            return {
+                name: this.$tc('swag-paypal-izettle.wizard.syncPrices.optionTrueLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.syncPrices.optionTrueDescription')
+            };
         },
 
-        apiKeyUrl() {
-            return this.SwagPayPalIZettleSettingApiService.generateApiUrl();
+        optionNotSyncPrices() {
+            return {
+                name: this.$tc('swag-paypal-izettle.wizard.syncPrices.optionFalseLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.syncPrices.optionFalseDescription')
+            };
+        },
+
+        optionReplace() {
+            return {
+                name: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionReplaceLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionReplaceDescription')
+            };
+        },
+
+        optionAdd() {
+            return {
+                name: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionAddLabel'),
+                description: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionAddDescription')
+            };
         }
     },
 
@@ -94,10 +84,6 @@ Component.register('swag-paypal-izettle-detail-settings', {
     methods: {
         mountedComponent() {
             this.updateButtons();
-        },
-
-        onStorefrontSelectionChange(storefrontSalesChannelId) {
-            this.$emit('update-storefront-sales-channel', storefrontSalesChannelId);
         },
 
         forceUpdate() {
@@ -115,13 +101,13 @@ Component.register('swag-paypal-izettle-detail-settings', {
 
             return this.SwagPayPalIZettleSettingApiService
                 .fetchInformation(this.salesChannel)
+                .then(this.save)
                 .catch((errorResponse) => {
                     this.catchAuthentificationError((errorResponse));
                     this.isLoading = false;
                     this.updateButtons();
                     throw errorResponse;
-                })
-                .then(this.save);
+                });
         },
 
         save() {
@@ -130,11 +116,10 @@ Component.register('swag-paypal-izettle-detail-settings', {
                 .then(() => {
                     this.isLoading = false;
                     this.isSaveSuccessful = true;
-                    this.isNewEntity = false;
                     this.updateButtons();
 
+                    this.$emit('load-sales-channel');
                     this.$root.$emit('sales-channel-change');
-                    this.loadSalesChannel();
 
                     if (this.cloneSalesChannelId !== null) {
                         this.SwagPayPalIZettleSettingApiService.cloneProductVisibility(
@@ -149,8 +134,6 @@ Component.register('swag-paypal-izettle-detail-settings', {
                             }
                         });
                     }
-
-                    this.$router.push({ name: 'swag.paypal.izettle.detail.overview', params: { id: this.salesChannel.id } });
                 }).catch(() => {
                     this.isLoading = false;
                     this.updateButtons();
@@ -209,6 +192,25 @@ Component.register('swag-paypal-izettle-detail-settings', {
             ];
 
             this.$emit('buttons-update', buttonConfig);
+        },
+
+        onCloseDeleteModal() {
+            this.showDeleteModal = false;
+        },
+
+        onConfirmDelete() {
+            this.showDeleteModal = false;
+
+            this.$nextTick(() => {
+                this.deleteSalesChannel(this.salesChannel.id);
+                this.$router.push({ name: 'sw.dashboard.index' });
+            });
+        },
+
+        deleteSalesChannel(salesChannelId) {
+            this.salesChannelRepository.delete(salesChannelId, Shopware.Context.api).then(() => {
+                this.$root.$emit('sales-channel-change');
+            });
         }
     }
 });

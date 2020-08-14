@@ -21,6 +21,7 @@
                 "manageAccount": "Manage account",
                 "editConnection": "Edit connection",
                 "lastUpdated": "Last updated",
+                "connected": "Connected",
                 "status": {
                     "disabled": "Synchronisation is not enabled, because your Sales Channel is disabled.",
                     "message": {
@@ -47,8 +48,11 @@
                 "productStream": "Dynamic product group",
                 "titleCredentials": "Credentials",
                 "titleSync": "Synchronisation",
+                "titlePrices": "Prices",
                 "syncPrices": "Synchronise prices",
-                "replace": "Replace existing products in iZettle"
+                "replace": "Replace existing products in iZettle",
+                "activeHelpText": "If true the iZettle sync will happen automatically in the background.",
+                "saveAlert": "Saved changes are available after the currently running synchronisation between Shopware and iZettle ended."
             },
             "logs": {
                 "titleProducts": "Synchronised products",

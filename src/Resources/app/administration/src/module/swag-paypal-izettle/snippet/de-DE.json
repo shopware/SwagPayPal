@@ -21,6 +21,7 @@
                 "manageAccount": "iZettle-Konto verwalten",
                 "editConnection": "Verbindung bearbeiten",
                 "lastUpdated": "Zuletzt aktualisiert",
+                "connected": "Verbunden",
                 "status": {
                     "disabled": "Die Synchronisation ist nicht aktiv, da dieser Verkaufskanal deaktiviert ist.",
                     "message": {
@@ -47,8 +48,11 @@
                 "productStream": "Dynamische Produktgruppe",
                 "titleCredentials": "Zugangsdaten",
                 "titleSync": "Synchronisation",
+                "titlePrices": "Prices",
                 "syncPrices": "Preise übertragen",
-                "replace": "Existierende Produkte in iZettle ersetzen"
+                "replace": "Existierende Produkte in iZettle ersetzen",
+                "activeHelpText": "If true the iZettle sync will happen automatically in the background.",
+                "saveAlert": "Saved changes are available after the currently running synchronisation between Shopware and iZettle ended."
             },
             "logs": {
                 "titleProducts": "Synchronisierte Produkte",

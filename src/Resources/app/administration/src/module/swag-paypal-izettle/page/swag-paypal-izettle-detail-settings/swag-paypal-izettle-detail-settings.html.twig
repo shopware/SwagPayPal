@@ -1,9 +1,19 @@
 {% block swag_paypal_izettle_detail_settings %}
     <div class="swag-paypal-izettle-detail-settings">
 
+        {% block swag_paypal_izettle_detail_settings_account %}
+            <swag-paypal-izettle-account :salesChannel="salesChannel">
+            </swag-paypal-izettle-account>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_detail_settings_alert %}
+            <sw-alert class="swag-paypal-izettle-detail-settings__save-alert">
+                {{ $tc('swag-paypal-izettle.detail.settings.saveAlert') }}
+            </sw-alert>
+        {% endblock %}
+
         {% block swag_paypal_izettle_detail_settings_basic %}
             <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.settings.titleGeneralSettings')">
-
                 <sw-container columns="1fr 200px" gap="0px 30px">
 
                     {% block swag_paypal_izettle_detail_settings_input_name %}
@@ -20,9 +30,11 @@
                     {% block swag_paypal_izettle_detail_settings_input_active %}
                         <sw-switch-field v-model="salesChannel.active"
                                          bordered
-                                         :label="$tc('sw-sales-channel.detail.labelInputActive')">
+                                         :label="$tc('sw-sales-channel.detail.labelInputActive')"
+                                         :helpText="$tc('swag-paypal-izettle.detail.settings.activeHelpText')">
                         </sw-switch-field>
                     {% endblock %}
+
                 </sw-container>
 
                 {% block swag_paypal_izettle_detail_settings_input_media_domain %}
@@ -34,12 +46,15 @@
                 {% endblock %}
 
                 {% block swag_paypal_izettle_detail_settings_input_product_stream %}
-                    <sw-entity-single-select v-model="salesChannel.extensions.paypalIZettleSalesChannel.productStreamId"
+                    {# ToDo PPI-56 implement support for product streams #}
+                    <sw-entity-single-select v-if="false"
+                                             v-model="salesChannel.extensions.paypalIZettleSalesChannel.productStreamId"
                                              entity="product_stream"
                                              :label="$tc('swag-paypal-izettle.detail.settings.productStream')"
                                              @input="forceUpdate">
                     </sw-entity-single-select>
                 {% endblock %}
+
             </sw-card>
         {% endblock %}
 
@@ -47,21 +62,36 @@
             <div class="sw-sales-channel-detail-sync">
                 <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.settings.titleSync')">
 
-                    {% block swag_paypal_izettle_detail_settings_additional_syncprices %}
-                        <sw-switch-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.syncPrices"
-                                         bordered
-                                         :label="$tc('swag-paypal-izettle.detail.settings.syncPrices')"
-                                         @input="forceUpdate">
-                        </sw-switch-field>
+                    {% block swag_paypal_izettle_detail_settings_sync_input %}
+                        <swag-paypal-izettle-boolean-radio
+                            v-model="salesChannel.extensions.paypalIZettleSalesChannel.replace"
+                            class="swag-paypal-izettle-detail-settings__sync-replace-input"
+                            :label="$tc('swag-paypal-izettle.wizard.syncLibrary.description')"
+                            :optionTrue="optionReplace"
+                            :optionFalse="optionAdd"
+                            @input="forceUpdate">
+                        </swag-paypal-izettle-boolean-radio>
                     {% endblock %}
 
-                    {% block swag_paypal_izettle_detail_settings_additional_replace %}
-                        <sw-switch-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.replace"
-                                         bordered
-                                         :label="$tc('swag-paypal-izettle.detail.settings.replace')"
-                                         @input="forceUpdate">
-                        </sw-switch-field>
+                </sw-card>
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_detail_settings_prices %}
+            <div class="sw-sales-channel-detail-prices">
+                <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.settings.titlePrices')">
+
+                    {% block swag_paypal_izettle_detail_settings_prices_input %}
+                        <swag-paypal-izettle-boolean-radio
+                            v-model="salesChannel.extensions.paypalIZettleSalesChannel.syncPrices"
+                            class="swag-paypal-izettle-detail-settings__sync-prices-input"
+                            :label="$tc('swag-paypal-izettle.wizard.syncPrices.description')"
+                            :optionTrue="optionSyncPrices"
+                            :optionFalse="optionNotSyncPrices"
+                            @input="forceUpdate">
+                        </swag-paypal-izettle-boolean-radio>
                     {% endblock %}
+
                 </sw-card>
             </div>
         {% endblock %}
@@ -101,10 +131,84 @@
                                     {{ $tc('swag-paypal-izettle.authentification.buttonTest') }}
                                 </sw-button-process>
                             {% endblock %}
+
                         </sw-button-group>
                     {% endblock %}
+
                 </sw-card>
             </div>
         {% endblock %}
+
+        {% block swag_paypal_izettle_detail_settings_options %}
+            <sw-card :title="$tc('sw-sales-channel.detail.deleteModalTitle')" :isLoading="isLoading">
+
+                {% block swag_paypal_izettle_detail_settings_options_delete %}
+                    <sw-container columns="1fr 175px" gap="0px 30px" class="sw-sales-channel-detail-settings__delete-sales-channel">
+
+                        {% block sw_sales_channel_detail_base_options_delete_text %}
+                            <div class="sw-sales-channel-detail-settings__description-text">
+                                <strong>{{ $tc('global.default.warning') }}</strong>
+                                {{ $tc('sw-sales-channel.detail.textDeleteSalesChannelWarning') }}
+                            </div>
+                        {% endblock %}
+
+                        {% block sw_sales_channel_detail_base_options_delete_button %}
+                            <div class="sw-sales-channel-detail-settings__button-delete">
+                                <sw-button
+                                    variant="danger"
+                                    size="small"
+                                    @click="showDeleteModal = true">
+                                    {{ $tc('sw-sales-channel.detail.buttonDelete') }}
+                                </sw-button>
+                            </div>
+                        {% endblock %}
+
+                    </sw-container>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_detail_settings_options_delete_modal %}
+                    <sw-modal v-if="showDeleteModal"
+                              class="sw-sales-channel-detail-settings__delete-modal"
+                              ref="modal"
+                              variant="small"
+                              :title="$tc('sw-sales-channel.detail.deleteModalTitle')"
+                              @modal-close="onCloseDeleteModal">
+
+                        {% block swag_paypal_izettle_detail_settings_options_delete_modal_confirmtext %}
+                            <p class="sw-sales-channel-detail-settings__delete-modal-confirm-text">
+                                {{ $tc('sw-sales-channel.detail.textConfirmDelete') }}
+                            </p>
+                            <p class="sw-sales-channel-detail-settings__delete-modal-name">
+                                <strong>{{ placeholder(salesChannel, 'name') }}</strong>
+                            </p>
+                            <p>{{ $tc('sw-sales-channel.detail.textDeleteInfo') }}</p>
+                        {% endblock %}
+
+                        {% block sw_sales_channel_detail_options_delete_modal_footer %}
+                            <template #modal-footer>
+
+                                {% block swag_paypal_izettle_detail_settings_options_delete_modal_abort %}
+                                    <sw-button size="small" @click="onCloseDeleteModal">
+                                        {{ $tc('sw-sales-channel.detail.buttonCloseDeleteModal') }}
+                                    </sw-button>
+                                {% endblock %}
+
+                                {% block swag_paypal_izettle_detail_settings_options_delete_modal_confirm %}
+                                    <sw-button size="small"
+                                               variant="danger"
+                                               @click="onConfirmDelete">
+                                        {{ $tc('sw-sales-channel.detail.buttonConfirmDelete') }}
+                                    </sw-button>
+                                {% endblock %}
+
+                            </template>
+                        {% endblock %}
+
+                    </sw-modal>
+                {% endblock %}
+
+            </sw-card>
+        {% endblock %}
+
     </div>
 {% endblock %}
