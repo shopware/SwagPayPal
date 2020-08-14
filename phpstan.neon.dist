@@ -7,6 +7,9 @@ parameters:
         # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
         container_xml_path: '%rootDir%/../../../../../../..%ShopwareHashedCacheDir%/srcShopware_Development_KernelDevDebugContainer.xml'
 
+    featureToggles:
+        unusedClassElements: true
+
     ignoreErrors:
         -   # the mock classes do not implement all methods correctly
             message: '#Method .*Mock::.* but return statement is missing\.#'
@@ -14,6 +17,9 @@ parameters:
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
+        -   # The API structs have many unused class elements
+            message: '#is never read, only written#'
+            path: src/PayPal/Api
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

@@ -19,23 +19,16 @@ class ActivateDeactivate
     private $paymentRepository;
 
     /**
-     * @var EntityRepositoryInterface
-     */
-    private $customFieldRepository;
-
-    /**
      * @var PaymentMethodUtil
      */
     private $paymentMethodUtil;
 
     public function __construct(
         PaymentMethodUtil $paymentMethodUtil,
-        EntityRepositoryInterface $paymentRepository,
-        EntityRepositoryInterface $customFieldRepository
+        EntityRepositoryInterface $paymentRepository
     ) {
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->paymentRepository = $paymentRepository;
-        $this->customFieldRepository = $customFieldRepository;
     }
 
     public function activate(Context $context): void
