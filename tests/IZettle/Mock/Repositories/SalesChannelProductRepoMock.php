@@ -25,6 +25,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\Bucket;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\TermsResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -54,24 +55,23 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
             $result->add(new CountResult('count', $this->search($criteria, $context)->getTotal()));
         }
 
-        $parentIds = $criteria->getAggregation('parentIds');
+        $parentIds = $criteria->getAggregation('ids');
         if ($parentIds !== null) {
             $buckets = [];
             /** @var ProductEntity $product */
             foreach ($this->search($criteria, $context)->getElements() as $product) {
-                $parentId = $product->getParentId();
+                $childCount = $product->getChildCount();
 
-                if ($parentId === null) {
+                if ($childCount === null || $childCount <= 0) {
                     continue;
                 }
 
-                if (!isset($buckets[$parentId])) {
-                    $buckets[$parentId] = new Bucket($parentId, 0, null);
-                }
+                $bucket = new Bucket($product->getId(), 0, new SumResult('count', $childCount));
+                $bucket->incrementCount(1);
 
-                $buckets[$parentId]->incrementCount(1);
+                $buckets[] = $bucket;
             }
-            $result->add(new TermsResult('parentIds', $buckets));
+            $result->add(new TermsResult('ids', $buckets));
         }
 
         return $result;

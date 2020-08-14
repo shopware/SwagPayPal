@@ -8,13 +8,8 @@
 namespace Swag\PayPal\IZettle\MessageQueue\Manager;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\Exception\InvalidAggregationQueryException;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Bucket\TermsAggregation;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\Bucket;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\BucketResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -103,20 +98,8 @@ class InventorySyncManager extends AbstractSyncManager
 
     private function getParentIds(Criteria $criteria, SalesChannelContext $salesChannelContext): array
     {
-        $criteria->addAggregation(new TermsAggregation('parentIds', 'parentId'));
-        $criteria->addFilter(new NotFilter(NotFilter::CONNECTION_OR, [
-            new EqualsFilter('parentId', null),
-        ]));
+        $criteria->addFilter(new RangeFilter('childCount', [RangeFilter::GT => 0]));
 
-        /** @var BucketResult|null $aggregate */
-        $aggregate = $this->productRepository->aggregate($criteria, $salesChannelContext)->get('parentIds');
-        if ($aggregate === null) {
-            throw new InvalidAggregationQueryException('Could not aggregate product count');
-        }
-        $buckets = $aggregate->getBuckets();
-
-        return \array_map(static function (Bucket $bucket) {
-            return $bucket->getKey();
-        }, $buckets);
+        return $this->productRepository->searchIds($criteria, $salesChannelContext)->getIds();
     }
 }

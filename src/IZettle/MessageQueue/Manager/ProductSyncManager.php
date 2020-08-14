@@ -11,11 +11,13 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InvalidAggregationQueryException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Bucket\TermsAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\SumAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\BucketResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -104,13 +106,11 @@ class ProductSyncManager extends AbstractSyncManager
         SalesChannelEntity $salesChannel,
         string $runId
     ): void {
-        $criteria->addAggregation(new TermsAggregation('parentIds', 'parentId'));
-        $criteria->addFilter(new NotFilter(NotFilter::CONNECTION_OR, [
-            new EqualsFilter('parentId', null),
-        ]));
+        $criteria->addAggregation(new TermsAggregation('ids', 'id', null, null, new SumAggregation('count', 'childCount')));
+        $criteria->addFilter(new RangeFilter('childCount', [RangeFilter::GT => 0]));
 
         /** @var BucketResult|null $aggregate */
-        $aggregate = $this->productRepository->aggregate($criteria, $salesChannelContext)->get('parentIds');
+        $aggregate = $this->productRepository->aggregate($criteria, $salesChannelContext)->get('ids');
         if ($aggregate === null) {
             throw new InvalidAggregationQueryException('Could not aggregate product count');
         }
@@ -120,7 +120,11 @@ class ProductSyncManager extends AbstractSyncManager
         $chunkSize = 0;
         foreach ($buckets as $bucket) {
             $ids[] = $bucket->getKey();
-            $chunkSize += $bucket->getCount();
+
+            /** @var SumResult|null $result */
+            $result = $bucket->getResult();
+
+            $chunkSize += $result !== null ? $result->getSum() : 2;
 
             if ($chunkSize >= self::CHUNK_SIZE) {
                 $this->createVariantMessage($salesChannelContext, $runId, $salesChannel, $ids);
