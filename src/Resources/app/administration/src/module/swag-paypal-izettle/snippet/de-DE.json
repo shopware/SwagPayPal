@@ -6,8 +6,9 @@
         "header": "iZettle-Verkaufskanal",
         "tabTitle": {
             "overview": "Overview",
+            "syncedProducts": "Synchronisierte Produkte",
             "settings": "Einstellungen",
-            "logs": "Protokoll"
+            "runs": "Protokoll"
         },
         "detail": {
             "overview": {
@@ -42,6 +43,22 @@
                     "syncingDetail": "Dies könnte einige Minuten dauern. Der Prozess läuft im Hintergrund weiter. Du kannst Deinen Shop währendessen wie gewohnt weiterverwenden."
                 }
             },
+            "syncedProducts": {
+                "title": "Synchronisierte Produkte",
+                "notSyncedYet": "Noch nicht synchronisiert",
+                "columns": {
+                    "name": "Name",
+                    "state": "Status",
+                    "date": "Datum"
+                },
+                "emptyState": {
+                    "title": "Keine Produkte gewählt",
+                    "message": "Es existieren keine Produkte in dem gewählten Verkaufskanal bzw. der dynamischen Produktgruppe."
+                },
+                "actions": {
+                    "productDetails": "Produktdetails"
+                }
+            },
             "settings": {
                 "titleGeneralSettings": "Allgemein",
                 "domain": "Domain für Medien-Download",
@@ -55,19 +72,36 @@
                 "saveAlert": "Saved changes are available after the currently running synchronisation between Shopware and iZettle ended."
             },
             "logs": {
-                "titleProducts": "Synchronisierte Produkte",
-                "titleLogs": "Weitere Protokoll-Einträge",
-                "columnProduct": "Produkt",
-                "columnDate": "Zeitpunkt",
-                "columnLastSync": "Letzte Synchronisation",
-                "emptyProductTitle": "Keine Produkte gewählt",
-                "emptyProductMessage": "Es existieren keine Produkte in dem gewählten Verkaufskanal bzw. der dynamischen Produktgruppe.",
-                "emptyLogTitle": "Keine Protokolleinträge",
-                "emptyLogMessage": "Es wurde noch nicht synchronisiert oder es sind noch keine Fehler aufgetreten.",
-                "noEntry": "Noch nicht synchronisiert"
+                "columnLastSync": "Details",
+                "noEntry": "Noch nicht synchronisiert",
+                "states": {
+                    "success": "Aktualisiert",
+                    "failed": "Fehlgeschlagen"
+                }
+            },
+            "runs": {
+                "title": "Synchronisations Historie",
+                "toolbarText": "Wenn Sie die Protokolle aufräumen, werden alle leeren oder sicher zu löschenden Protokolle gelöscht.",
+                "states": {
+                    "withWarnings": "Durchlauf mit Warnungen abgeschlossen",
+                    "successful": "Durchlauf abgeschlossen"
+                },
+                "actions": {
+                    "showDetails": "Details anzeigen"
+                },
+                "emptyState": {
+                    "title": "Keine beendeten Synchronisationen",
+                    "message": "Synchronisiere jetzt um Einträge zu erhalten."
+                },
+                "columns": {
+                    "task": "Typ",
+                    "state": "Status",
+                    "date": "Datum"
+                },
+                "taskPostfix": "Synchronisation"
             },
             "save": "Speichern",
-            "cleanLog": "Protokoll aufräumen"
+            "cleanLog": "Protokolle aufräumen"
         },
         "wizard": {
             "salesChannelPrototypeName": "iZettle POS",

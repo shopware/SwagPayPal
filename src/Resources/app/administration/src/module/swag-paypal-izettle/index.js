@@ -26,13 +26,17 @@ Module.register('swag-paypal-izettle', {
                     component: 'swag-paypal-izettle-detail-overview',
                     path: 'overview'
                 },
+                syncedProducts: {
+                    component: 'swag-paypal-izettle-synced-products',
+                    path: 'synced-products'
+                },
                 settings: {
                     component: 'swag-paypal-izettle-detail-settings',
                     path: 'settings'
                 },
-                logs: {
-                    component: 'swag-paypal-izettle-detail-logs',
-                    path: 'logs'
+                runs: {
+                    component: 'swag-paypal-izettle-detail-runs',
+                    path: 'runs'
                 }
             }
         },

@@ -1,0 +1,95 @@
+{% block swag_paypal_izettle_synced_products %}
+    <div class="swag-paypal-izettle-detail-logs">
+
+        {% block swag_paypal_izettle_synced_products_account %}
+            <swag-paypal-izettle-account :salesChannel="salesChannel"></swag-paypal-izettle-account>
+        {% endblock %}
+
+        <sw-card :title="$tc('swag-paypal-izettle.detail.syncedProducts.title')"
+                 :isLoading="isLoading">
+
+            {% block swag_paypal_izettle_synced_products_grid %}
+                <template v-if="total > 0"
+                          #grid>
+                    <sw-data-grid :columns="columns"
+                                  :dataSource="products"
+                                  :isLoading="isLoading"
+                                  :showActions="actions.length > 0"
+                                  :showSelection="false">
+
+                        {% block swag_paypal_izettle_synced_products_grid_pagination %}
+                            <template #pagination>
+                                <sw-pagination :limit="limit"
+                                               :page="page"
+                                               :total="total"
+                                               :total-visible="7"
+                                               @page-change="onPaginateProducts">
+                                </sw-pagination>
+                            </template>
+                        {% endblock %}
+
+                        {% block swag_paypal_izettle_synced_products_grid_column_date %}
+                            <template #column-date="{ item }">
+
+                                {% block swag_paypal_izettle_synced_products_grid_column_date_formatted %}
+                                    <template v-if="item.extensions.paypalIZettleLog.length">
+                                        {{ item.extensions.paypalIZettleLog[0].run.updatedAt | date({
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: '2-digit'
+                                        })
+                                        }}
+                                    </template>
+                                {% endblock %}
+
+                                {% block swag_paypal_izettle_synced_products_grid_column_date_empty %}
+                                    <template v-else>
+                                        {{ $tc('swag-paypal-izettle.detail.syncedProducts.notSyncedYet') }}
+                                    </template>
+                                {% endblock %}
+
+                            </template>
+                        {% endblock %}
+
+                        {% block swag_paypal_izettle_synced_products_grid_column_state %}
+                            <template #column-state="{ item }">
+
+                                {% block swag_paypal_izettle_synced_products_grid_column_state_label %}
+                                    <template v-if="item.extensions.paypalIZettleLog.length">
+                                        <sw-label appearance="pill"
+                                                  :variant="getLabelVariant(item.extensions.paypalIZettleLog[0].level)">
+                                            {{ $tc(getLabel(item.extensions.paypalIZettleLog[0].level)) }}
+                                        </sw-label>
+                                    </template>
+                                {% endblock %}
+
+                            </template>
+                        {% endblock %}
+
+                        {% block swag_paypal_izettle_synced_products_grid_actions %}
+                            <template v-if="actions"
+                                      #actions="{ item }">
+                                <sw-context-menu-item v-for="action in actions"
+                                                      :key="action.label"
+                                                      @click="action.callback(item)">
+                                    {{ $tc(action.label) }}
+                                </sw-context-menu-item>
+                            </template>
+                        {% endblock %}
+
+                    </sw-data-grid>
+                </template>
+            {% endblock %}
+
+            {% block swag_paypal_izettle_synced_products_empty_state %}
+                <sw-empty-state v-else
+                                :title="$tc('swag-paypal-izettle.detail.syncedProducts.emptyState.title')"
+                                :subline="$tc('swag-paypal-izettle.detail.syncedProducts.emptyState.message')">
+                </sw-empty-state>
+            {% endblock %}
+
+        </sw-card>
+    </div>
+{% endblock %}

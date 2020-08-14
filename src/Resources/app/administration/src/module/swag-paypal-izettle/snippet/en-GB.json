@@ -6,8 +6,9 @@
         "header": "iZettle Sales Channel",
         "tabTitle": {
             "overview": "Overview",
+            "syncedProducts": "Synced Products",
             "settings": "Settings",
-            "logs": "Logs"
+            "runs": "Logs"
         },
         "detail": {
             "overview": {
@@ -42,6 +43,22 @@
                     "syncingDetail": "This could take a few minutes. This process runs in the background, meanwhile you can use your shop as usual."
                 }
             },
+            "syncedProducts": {
+                "title": "Synced Products",
+                "notSyncedYet": "Not synchronised yet",
+                "columns": {
+                    "name": "Name",
+                    "state": "Status",
+                    "date": "Date"
+                },
+                "emptyState": {
+                    "title": "No products selected",
+                    "message": "There are no products in your Sales Channel or dynamic product group."
+                },
+                "actions": {
+                    "productDetails": "Product details"
+                }
+            },
             "settings": {
                 "titleGeneralSettings": "General settings",
                 "domain": "Domain for media download",
@@ -55,16 +72,33 @@
                 "saveAlert": "Saved changes are available after the currently running synchronisation between Shopware and iZettle ended."
             },
             "logs": {
-                "titleProducts": "Synchronised products",
-                "titleLogs": "Other log entries",
-                "columnProduct": "Product",
-                "columnDate": "Date",
-                "columnLastSync": "Last synchronisation",
-                "emptyProductTitle": "No products selected",
-                "emptyProductMessage": "There are no products in your Sales Channel or dynamic product group.",
-                "emptyLogTitle": "No log entries",
-                "emptyLogMessage": "Either no synchronisation has been started or no errors occured.",
-                "noEntry": "Not synchronised yet"
+                "columnLastSync": "Details",
+                "noEntry": "Not synchronised yet",
+                "states": {
+                    "success": "Updated",
+                    "failed": "Failed"
+                }
+            },
+            "runs": {
+                "title": "Synchronisation History",
+                "toolbarText": "Clearing the logs will delete any empty or safe to delete logs.",
+                "states": {
+                    "withWarnings": "Task completed with warnings",
+                    "successful": "Task completed"
+                },
+                "actions": {
+                    "showDetails": "Show details"
+                },
+                "emptyState": {
+                    "title": "No finished synchronisations",
+                    "message": "Synchronise now to generate logs."
+                },
+                "columns": {
+                    "task": "Type",
+                    "state": "State",
+                    "date": "Date"
+                },
+                "taskPostfix": "Synchronisation"
             },
             "save": "Save",
             "cleanLog": "Clean up log"
@@ -103,7 +137,7 @@
             "connectionDisconnect": {
                 "modalTitle": "Disconnect iZettle account",
                 "headline": "You are about to disconnect iZettle",
-                "info": "Products will no longer be updated and synchronized with your shown iZettle account when disconnecting your account.",
+                "info": "Products will no longer be updated and synchronised with your shown iZettle account when disconnecting your account.",
                 "disconnectButton": "Disconnect account",
                 "disconnectErrorMessage": "An error occured while disconnecting."
             },

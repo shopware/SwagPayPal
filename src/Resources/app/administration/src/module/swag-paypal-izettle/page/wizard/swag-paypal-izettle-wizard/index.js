@@ -15,6 +15,10 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
         'repositoryFactory'
     ],
 
+    mixins: [
+        'notification'
+    ],
+
     data() {
         return {
             showModal: true,

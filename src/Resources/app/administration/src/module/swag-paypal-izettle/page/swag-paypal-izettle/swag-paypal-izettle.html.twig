@@ -37,6 +37,13 @@
                                 </sw-tabs-item>
                             {% endblock %}
 
+                            {%  block swag_paypal_izettle_content_tab_synced_products %}
+                                <sw-tabs-item :route="{ name: 'swag.paypal.izettle.detail.syncedProducts', params: { id: $route.params.id } }"
+                                              :title="$tc('swag-paypal-izettle.tabTitle.syncedProducts')">
+                                    {{ $tc('swag-paypal-izettle.tabTitle.syncedProducts') }}
+                                </sw-tabs-item>
+                            {% endblock %}
+
                             {%  block swag_paypal_izettle_content_tab_settings %}
                                 <sw-tabs-item :route="{ name: 'swag.paypal.izettle.detail.settings', params: { id: $route.params.id } }"
                                               :title="$tc('swag-paypal-izettle.tabTitle.settings')">
@@ -44,11 +51,11 @@
                                 </sw-tabs-item>
                             {% endblock %}
 
-                            {%  block swag_paypal_izettle_content_tab_log %}
+                            {%  block swag_paypal_izettle_content_tab_runs %}
                                 <sw-tabs-item v-if="!isNewEntity"
-                                              :route="{ name: 'swag.paypal.izettle.detail.logs', params: { id: $route.params.id } }"
-                                              :title="$tc('swag-paypal-izettle.tabTitle.logs')">
-                                    {{ $tc('swag-paypal-izettle.tabTitle.logs') }}
+                                              :route="{ name: 'swag.paypal.izettle.detail.runs', params: { id: $route.params.id } }"
+                                              :title="$tc('swag-paypal-izettle.tabTitle.runs')">
+                                    {{ $tc('swag-paypal-izettle.tabTitle.runs') }}
                                 </sw-tabs-item>
                             {% endblock %}
                         </sw-tabs>
