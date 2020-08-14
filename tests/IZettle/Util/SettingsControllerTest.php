@@ -129,10 +129,13 @@ class SettingsControllerTest extends TestCase
         $context = Context::createDefaultContext();
         $settingsController = $this->getSettingsController();
 
-        for ($i = 0; $i < self::LOCAL_PRODUCT_COUNT; ++$i) {
+        for ($i = 0; $i < self::LOCAL_PRODUCT_COUNT * 2; ++$i) {
             $product = new SalesChannelProductEntity();
             $product->setId(Uuid::randomHex());
             $product->setVersionId(Uuid::randomHex());
+            if ($i % 2 === 0) {
+                $product->setParentId(Uuid::randomHex());
+            }
             $this->salesChannelProductRepository->addMockEntity($product);
         }
 

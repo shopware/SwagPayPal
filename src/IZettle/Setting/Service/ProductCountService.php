@@ -14,6 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Exception\InvalidAggregationQue
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
@@ -91,6 +92,7 @@ class ProductCountService
         $salesChannelContext = $this->productSelection->getSalesChannelContext($cloneSalesChannel);
 
         $criteria = $this->productSelection->getProductStreamCriteria($iZettleSalesChannel->getProductStreamId(), $context);
+        $criteria->addFilter(new EqualsFilter('parentId', null));
         $criteria->addAggregation(new CountAggregation('count', 'id'));
 
         /** @var CountResult|null $aggregate */
