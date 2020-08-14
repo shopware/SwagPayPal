@@ -81,6 +81,7 @@ Component.register('swag-paypal-izettle-detail-overview', {
         startSync(callable) {
             this.syncErrors = null;
             this.isSyncing = true;
+            this.updateButtons();
             callable(this.salesChannel.id).then((response) => {
                 this.syncingRunId = response.runId;
                 this.updateSync();
@@ -88,6 +89,7 @@ Component.register('swag-paypal-izettle-detail-overview', {
                 this.syncErrors = errorResponse.response.data.errors;
                 this.loadLastFinishedRun().then(() => {
                     this.isSyncing = false;
+                    this.updateButtons();
                 });
             });
         },
@@ -106,6 +108,7 @@ Component.register('swag-paypal-izettle-detail-overview', {
                 this.syncingRunId = null;
                 this.loadLastFinishedRun().then(() => {
                     this.isSyncing = false;
+                    this.updateButtons();
                 });
             });
         },
@@ -189,7 +192,16 @@ Component.register('swag-paypal-izettle-detail-overview', {
         },
 
         updateButtons() {
-            const buttonConfig = [];
+            const buttonConfig = [
+                {
+                    key: 'sync',
+                    label: this.$tc('swag-paypal-izettle.detail.overview.buttonSync'),
+                    variant: 'primary',
+                    action: this.onStartSync,
+                    disabled: !(this.salesChannel && this.salesChannel.active),
+                    isLoading: this.isSyncing
+                }
+            ];
 
             this.$emit('buttons-update', buttonConfig);
         }

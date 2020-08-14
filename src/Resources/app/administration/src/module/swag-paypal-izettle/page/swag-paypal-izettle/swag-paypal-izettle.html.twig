@@ -58,6 +58,18 @@
                                     {{ $tc('swag-paypal-izettle.tabTitle.runs') }}
                                 </sw-tabs-item>
                             {% endblock %}
+
+                            {%  block swag_paypal_izettle_content_tab_help %}
+                                <sw-tabs-item v-if="!isNewEntity"
+                                              href="https://www.izettle.com/help/articles/1083274-what-is-izettle"
+                                              target="_blank"
+                                              :title="$tc('swag-paypal-izettle.tabTitle.help')">
+                                    {{ $tc('swag-paypal-izettle.tabTitle.help') }}
+                                    <sw-icon name="default-action-external"
+                                             size="8px">
+                                    </sw-icon>
+                                </sw-tabs-item>
+                            {% endblock %}
                         </sw-tabs>
                     {% endblock %}
 

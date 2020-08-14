@@ -8,7 +8,8 @@
             "overview": "Overview",
             "syncedProducts": "Synced Products",
             "settings": "Settings",
-            "runs": "Logs"
+            "runs": "Logs",
+            "help": "Help"
         },
         "detail": {
             "overview": {
