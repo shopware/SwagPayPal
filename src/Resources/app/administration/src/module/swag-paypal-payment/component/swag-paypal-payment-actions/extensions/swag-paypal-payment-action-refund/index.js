@@ -141,13 +141,17 @@ Component.register('swag-paypal-payment-action-refund', {
         refund() {
             this.isLoading = true;
 
-            const refundAmount = this.refundAmount;
+            let refundAmount = this.refundAmount;
             const description = this.refundDescription;
             const currency = this.selectedCapture.currency;
             const resourceType = this.selectedCapture.type;
             const resourceId = this.selectedCapture.id;
             const reason = this.refundReason;
             const invoiceNumber = this.refundInvoiceNumber;
+
+            if (refundAmount === 0) {
+                refundAmount = this.refundableAmount;
+            }
 
             this.SwagPayPalPaymentService.refundPayment(
                 this.orderId,
