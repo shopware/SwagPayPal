@@ -6,6 +6,10 @@ const { Component } = Shopware;
 Component.register('swag-paypal-izettle-wizard-finish', {
     template,
 
+    inject: [
+        'SwagPayPalIZettleApiService'
+    ],
+
     props: {
         salesChannel: {
             type: Object,
@@ -25,6 +29,11 @@ Component.register('swag-paypal-izettle-wizard-finish', {
         createdComponent() {
             this.updateButtons();
             this.setTitle();
+            this.triggerCompleteSync();
+        },
+
+        triggerCompleteSync() {
+            this.SwagPayPalIZettleApiService.startCompleteSync(this.salesChannel.id);
         },
 
         setTitle() {

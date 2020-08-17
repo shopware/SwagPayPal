@@ -22,6 +22,13 @@ Component.register('swag-paypal-izettle-wizard-connection', {
         cloneSalesChannelId: {
             type: String,
             required: false
+        },
+        isLoading: {
+            type: Boolean,
+            required: false,
+            default() {
+                return false;
+            }
         }
     },
 
@@ -34,6 +41,16 @@ Component.register('swag-paypal-izettle-wizard-connection', {
     computed: {
         apiKeyUrl() {
             return this.SwagPayPalIZettleSettingApiService.generateApiUrl();
+        }
+    },
+
+    watch: {
+        'salesChannel.extensions.paypalIZettleSalesChannel.apiKey'(key) {
+            if (!key) {
+                return;
+            }
+
+            this.updateButtons();
         }
     },
 
@@ -59,7 +76,7 @@ Component.register('swag-paypal-izettle-wizard-connection', {
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToConnectionSuccess,
-                    disabled: !(this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey)
+                    disabled: this.isLoading || !(this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey)
                 }
             ];
 

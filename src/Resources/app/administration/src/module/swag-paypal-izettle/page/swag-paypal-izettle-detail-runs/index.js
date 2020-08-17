@@ -60,6 +60,7 @@ Component.register('swag-paypal-izettle-detail-runs', {
 
     methods: {
         createdComponent() {
+            this.$emit('buttons-update', []);
             this.createRunCriteria();
             this.fetchRuns();
         },

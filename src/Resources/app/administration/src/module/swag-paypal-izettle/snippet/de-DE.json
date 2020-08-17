@@ -42,6 +42,14 @@
                     "lastSynced": "Zuletzt synchronisiert",
                     "lastSyncedComplete": "Zuletzt vollständig synchronisiert",
                     "syncingDetail": "Dies könnte einige Minuten dauern. Der Prozess läuft im Hintergrund weiter. Du kannst Deinen Shop währendessen wie gewohnt weiterverwenden."
+                },
+                "continueSetup": {
+                    "cardTitle": "Einrichtung",
+                    "content": {
+                        "headline": "Produkt-Synchronisation einrichten",
+                        "firstLine": "Ihre iZettle- und Shopware-Konten sind miteinander verbunden! Richten Sie zum Abschluss die Produktsynchronisierung ein.",
+                        "secondLine": "Nach der Aktivierung werden alle Änderungen, die Sie an Ihren Shopware-Produkten vornehmen, automatisch in iZettle aktualisiert. Wenn Sie einen Verkauf auf einem der beiden Systeme tätigen, wird der Lagerbestand aktualisiert, und Sie können alle Ihre Verkäufe an einem Ort bei Shopware einsehen."
+                    }
                 }
             },
             "syncedProducts": {

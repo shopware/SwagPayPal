@@ -18,6 +18,23 @@ Component.register('swag-paypal-izettle-wizard-customization', {
         saveSalesChannel: {
             type: Function,
             required: true
+        },
+        isLoading: {
+            type: Boolean,
+            required: false,
+            default() {
+                return false;
+            }
+        }
+    },
+
+    watch: {
+        'isLoading'(loading) {
+            if (loading) {
+                return;
+            }
+
+            this.updateButtons();
         }
     },
 
@@ -50,12 +67,17 @@ Component.register('swag-paypal-izettle-wizard-customization', {
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToProductSelection,
-                    disabled: !(this.salesChannel.name)
-                           || !(this.salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain)
+                    disabled: this.nextButtonDisabled()
                 }
             ];
 
             this.$emit('buttons-update', buttonConfig);
+        },
+
+        nextButtonDisabled() {
+            return this.isLoading
+                || !(this.salesChannel.name)
+                || !(this.salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain);
         },
 
         routeBackToConnectionSuccess() {

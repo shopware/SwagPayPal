@@ -1,5 +1,6 @@
 {% block swag_paypal_izettle_wizard_connection %}
-    <div class="swag-paypal-izettle-wizard-connection">
+    <div v-if="!isLoading"
+         class="swag-paypal-izettle-wizard-connection">
 
         {% block swag_paypal_izettle_wizard_connection_headline %}
             <div class="swag-paypal-izettle-wizard-connection__headline">

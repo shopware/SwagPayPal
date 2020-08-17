@@ -83,7 +83,8 @@ Component.register('swag-paypal-izettle-wizard-sync-prices', {
         routeToFinish() {
             this.toggleLoadingState(true);
 
-            this.saveSalesChannel().then(() => {
+            // Save the SalesChannel and activate it to mark the setup as complete
+            this.saveSalesChannel(true).then(() => {
                 this.toggleLoadingState(false);
                 this.$router.push({
                     name: 'swag.paypal.izettle.wizard.finish',

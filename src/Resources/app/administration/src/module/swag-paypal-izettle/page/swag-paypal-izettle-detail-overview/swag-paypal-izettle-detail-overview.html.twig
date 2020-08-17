@@ -6,7 +6,7 @@
         {% endblock %}
 
         {% block swag_paypal_izettle_detail_overview_status %}
-            <swag-paypal-izettle-status-view v-if="!isNewEntity"
+            <swag-paypal-izettle-status-view v-if="!isNewEntity && salesChannel.active"
                                              :isLoading="isLoading"
                                              :isSyncing="isSyncing"
                                              :lastCompleteRun="lastCompleteRun"
@@ -67,6 +67,11 @@
                     </template>
                 {% endblock %}
             </swag-paypal-izettle-status-view>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_detail_overview_setup %}
+            <swag-paypal-izettle-continue-setup v-else>
+            </swag-paypal-izettle-continue-setup>
         {% endblock %}
     </div>
 {% endblock %}

@@ -169,7 +169,11 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
             });
         },
 
-        save() {
+        save(activateSalesChannel = false) {
+            if (activateSalesChannel) {
+                this.salesChannel.active = true;
+            }
+
             return this.salesChannelRepository.save(this.salesChannel, Context.api).then(async () => {
                 this.isLoading = false;
                 this.isSaveSuccessful = true;
@@ -216,6 +220,7 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
             this.salesChannel = this.salesChannelRepository.create(Context.api);
             this.salesChannel.typeId = IZETTLE_SALES_CHANNEL_TYPE_ID;
             this.salesChannel.name = this.$tc('swag-paypal-izettle.wizard.salesChannelPrototypeName');
+            this.salesChannel.active = false;
 
             this.salesChannel.extensions.paypalIZettleSalesChannel
                 = this.paypalIZettleSalesChannelRepository.create(Context.api);

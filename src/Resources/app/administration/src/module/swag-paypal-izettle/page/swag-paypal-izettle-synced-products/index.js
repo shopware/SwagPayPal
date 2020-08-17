@@ -47,6 +47,7 @@ Component.register('swag-paypal-izettle-synced-products', {
 
     methods: {
         createdComponent() {
+            this.$emit('buttons-update', []);
             this.fetchProducts();
         },
 

@@ -42,6 +42,14 @@
                     "lastSynced": "Last synchronisation",
                     "lastSyncedComplete": "Last complete synchronisation",
                     "syncingDetail": "This could take a few minutes. This process runs in the background, meanwhile you can use your shop as usual."
+                },
+                "continueSetup": {
+                    "cardTitle": "Setup",
+                    "content": {
+                        "headline": "Setup product sync",
+                        "firstLine": "Your iZettle and Shopware accounts are connected! To finish, setup the product sync.",
+                        "secondLine": "Once activated, any changes you make to your Shopware products will automatically be updated in iZettle. Making a sale on either system will update stock and you can see all of your sales in one place at Shopware."
+                    }
                 }
             },
             "syncedProducts": {

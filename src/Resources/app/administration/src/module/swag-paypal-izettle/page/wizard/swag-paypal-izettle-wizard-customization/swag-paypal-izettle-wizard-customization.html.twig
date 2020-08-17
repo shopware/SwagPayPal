@@ -1,5 +1,6 @@
 {% block swag_paypal_izettle_wizard_customization %}
-    <div class="swag-paypal-izettle-wizard-customization">
+    <div v-if="!isLoading"
+         class="swag-paypal-izettle-wizard-customization">
 
         {% block swag_paypal_izettle_wizard_customization_name %}
             <sw-text-field v-model="salesChannel.name"

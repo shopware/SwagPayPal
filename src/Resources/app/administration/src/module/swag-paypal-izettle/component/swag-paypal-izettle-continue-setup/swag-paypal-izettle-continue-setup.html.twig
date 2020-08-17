@@ -1,0 +1,30 @@
+{% block swag_paypal_izettle_continue_setup %}
+    <sw-card :title="$tc('swag-paypal-izettle.detail.overview.continueSetup.cardTitle')">
+
+        {% block swag_paypal_izettle_continue_setup_container %}
+            <div class="swag-paypal-izettle__continue-setup">
+
+                {% block swag_paypal_izettle_continue_setup_container_headline %}
+                    <h6>{{ $tc('swag-paypal-izettle.detail.overview.continueSetup.content.headline') }}</h6>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_continue_setup_container_firstLine %}
+                    <p>{{ $tc('swag-paypal-izettle.detail.overview.continueSetup.content.firstLine') }}</p>
+                {% endblock %}
+
+                {% block swag_paypal_izettle_continue_setup_container_secondLine %}
+                    <p>{{ $tc('swag-paypal-izettle.detail.overview.continueSetup.content.secondLine') }}</p>
+                {% endblock %}
+
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_izettle_continue_setup_button %}
+            <sw-button variant="ghost"
+                       @click="onContinueSetup">
+                {{ $tc('swag-paypal-izettle.detail.overview.continueSetup.content.headline') }}
+            </sw-button>
+        {% endblock %}
+
+    </sw-card>
+{% endblock %}
