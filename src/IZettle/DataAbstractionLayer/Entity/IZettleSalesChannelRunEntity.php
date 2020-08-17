@@ -34,6 +34,11 @@ class IZettleSalesChannelRunEntity extends Entity
      */
     protected $finishedAt;
 
+    /**
+     * @var bool
+     */
+    protected $abortedByUser = false;
+
     public function getSalesChannelId(): string
     {
         return $this->salesChannelId;
@@ -72,5 +77,15 @@ class IZettleSalesChannelRunEntity extends Entity
     public function setFinishedAt(?\DateTimeInterface $finishedAt): void
     {
         $this->finishedAt = $finishedAt;
+    }
+
+    public function getAbortedByUser(): bool
+    {
+        return $this->abortedByUser;
+    }
+
+    public function setAbortedByUser(bool $abortedByUser): void
+    {
+        $this->abortedByUser = $abortedByUser;
     }
 }

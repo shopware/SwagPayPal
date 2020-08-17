@@ -78,19 +78,25 @@ class RunService
         $logHandler->flush();
     }
 
-    public function finishRun(string $runId, Context $context): void
+    public function finishRun(string $runId, Context $context, bool $abortedByUser = false): void
     {
-        $this->runRepository->update([[
+        $data = [
             'id' => $runId,
             'finishedAt' => new \DateTime(),
-        ]], $context);
+        ];
+
+        if ($abortedByUser) {
+            $data['abortedByUser'] = true;
+        }
+
+        $this->runRepository->update([$data], $context);
     }
 
     public function abortRun(string $runId, Context $context): void
     {
         $this->logger->emergency('This sync has been aborted.');
         $this->writeLog($runId, $context);
-        $this->finishRun($runId, $context);
+        $this->finishRun($runId, $context, true);
     }
 
     public function isRunActive(string $runId, Context $context): bool

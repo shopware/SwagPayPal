@@ -92,6 +92,11 @@ Component.register('swag-paypal-izettle-status-view', {
                     title += ` (${task})`;
                 }
             }
+
+            if (this.lastFinishedRun && this.lastFinishedRun.abortedByUser) {
+                title = this.$tc('swag-paypal-izettle.detail.overview.status.message.aborted');
+            }
+
             return title;
         },
 
@@ -111,13 +116,19 @@ Component.register('swag-paypal-izettle-status-view', {
 
     methods: {
         getHighestLevel(run) {
+            if (run.abortedByUser) {
+                return 'info';
+            }
+
             const level = Math.max(...run.logs.map((log) => { return log.level; }));
             if (level >= 400) {
                 return 'error';
             }
+
             if (level >= 300) {
                 return 'warning';
             }
+
             return 'success';
         }
     }

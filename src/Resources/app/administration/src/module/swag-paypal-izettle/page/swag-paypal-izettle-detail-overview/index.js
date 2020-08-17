@@ -100,7 +100,7 @@ Component.register('swag-paypal-izettle-detail-overview', {
             }
 
             this.runRepository.get(this.syncingRunId, Shopware.Context.api).then((entity) => {
-                if (entity.finishedAt === null) {
+                if (!entity || entity.finishedAt === null) {
                     setTimeout(this.updateSync, 1500);
                     return;
                 }

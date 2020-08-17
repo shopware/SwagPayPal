@@ -67,6 +67,7 @@ Component.register('swag-paypal-izettle-detail-logs', {
         createLogCriteria() {
             this.logCriteria = new Criteria(this.logPage, this.logLimit);
             this.logCriteria.addFilter(Criteria.equals('runId', this.runId));
+            this.logCriteria.addAssociation('run');
             this.logCriteria.addSorting(Criteria.sort('level', 'DESC'));
             this.logCriteria.addSorting(Criteria.sort('createdAt', 'DESC'));
         },
@@ -91,6 +92,22 @@ Component.register('swag-paypal-izettle-detail-logs', {
                 this.logLimit = result.criteria.limit;
                 this.loadingLogs = false;
             });
+        },
+
+        getLabelVariantForItem(item) {
+            if (item.run && item.run.abortedByUser) {
+                return 'info';
+            }
+
+            return this.getLabelVariant(item.level);
+        },
+
+        getLabelForItem(item) {
+            if (item.run && item.run.abortedByUser) {
+                return 'swag-paypal-izettle.detail.logs.states.aborted';
+            }
+
+            return this.getLabel(item.level);
         }
     }
 });

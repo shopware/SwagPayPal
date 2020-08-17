@@ -8,6 +8,7 @@
 namespace Swag\PayPal\IZettle\DataAbstractionLayer\Entity;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
@@ -44,6 +45,7 @@ class IZettleSalesChannelRunDefinition extends EntityDefinition
 
             (new StringField('task', 'task', 16))->addFlags(new Required()),
             (new DateTimeField('finished_at', 'finishedAt')),
+            new BoolField('aborted_by_user', 'abortedByUser'),
 
             (new OneToManyAssociationField('logs', IZettleSalesChannelRunLogDefinition::class, 'run_id'))->addFlags(new CascadeDelete()),
         ]);

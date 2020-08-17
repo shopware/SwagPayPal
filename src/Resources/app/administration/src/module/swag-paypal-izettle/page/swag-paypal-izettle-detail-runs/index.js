@@ -136,6 +136,10 @@ Component.register('swag-paypal-izettle-detail-runs', {
         },
 
         getLabelVariant(item) {
+            if (item.abortedByUser) {
+                return 'info';
+            }
+
             if (item.logs.length <= 0) {
                 return 'success';
             }
@@ -156,6 +160,10 @@ Component.register('swag-paypal-izettle-detail-runs', {
         },
 
         getLabel(item) {
+            if (item.abortedByUser) {
+                return 'swag-paypal-izettle.detail.runs.states.aborted';
+            }
+
             if (item.logs.length <= 0) {
                 return 'swag-paypal-izettle.detail.runs.states.successful';
             }

@@ -31,7 +31,8 @@
                         "noRunYet": "No recent run found",
                         "success": "Synchronised successfully",
                         "warning": "Last synchronisation finished with warnings",
-                        "error": "Last synchronisation finished with errors"
+                        "error": "Last synchronisation finished with errors",
+                        "aborted": "Last synchronisation was aborted by the user"
                     },
                     "task": {
                         "complete": "complete",
@@ -85,7 +86,8 @@
                 "noEntry": "Not synchronised yet",
                 "states": {
                     "success": "Updated",
-                    "failed": "Failed"
+                    "failed": "Failed",
+                    "aborted": "Aborted"
                 }
             },
             "runs": {
@@ -93,7 +95,8 @@
                 "toolbarText": "Clearing the logs will delete any empty or safe to delete logs.",
                 "states": {
                     "withWarnings": "Task completed with warnings",
-                    "successful": "Task completed"
+                    "successful": "Task completed",
+                    "aborted": "Task aborted by user"
                 },
                 "actions": {
                     "showDetails": "Show details"

@@ -31,7 +31,8 @@
                         "noRunYet": "Noch keine Synchronisation durchgeführt",
                         "success": "Synchronisation erfolgreich",
                         "warning": "Die letzte Synchronisation wurde mit Warnmeldungen abgeschlossen",
-                        "error": "Die letzte Synchronisation wurde mit Fehlern abgeschlossen"
+                        "error": "Die letzte Synchronisation wurde mit Fehlern abgeschlossen",
+                        "aborted": "Die letzte Synchronisation wurde vom Benutzer abgebrochen"
                     },
                     "task": {
                         "complete": "Vollständig",
@@ -85,7 +86,8 @@
                 "noEntry": "Noch nicht synchronisiert",
                 "states": {
                     "success": "Aktualisiert",
-                    "failed": "Fehlgeschlagen"
+                    "failed": "Fehlgeschlagen",
+                    "aborted": "Abgebrochen"
                 }
             },
             "runs": {
@@ -93,7 +95,8 @@
                 "toolbarText": "Wenn Sie die Protokolle aufräumen, werden alle leeren oder sicher zu löschenden Protokolle gelöscht.",
                 "states": {
                     "withWarnings": "Durchlauf mit Warnungen abgeschlossen",
-                    "successful": "Durchlauf abgeschlossen"
+                    "successful": "Durchlauf abgeschlossen",
+                    "aborted": "Durchlauf durch Benutzer abgebrochen"
                 },
                 "actions": {
                     "showDetails": "Details anzeigen"

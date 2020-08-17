@@ -121,10 +121,12 @@ class RunServiceTest extends TestCase
         static::assertNotNull($run);
         static::assertNull($run->getFinishedAt());
         static::assertCount(0, $this->logRepository->getCollection());
+        static::assertFalse($run->getAbortedByUser());
 
         $this->runService->abortRun($run->getId(), $this->context);
 
         static::assertNotNull($run->getFinishedAt());
+        static::assertTrue($run->getAbortedByUser());
 
         $logEntry = $this->logRepository->getCollection()->first();
         static::assertNotNull($logEntry);

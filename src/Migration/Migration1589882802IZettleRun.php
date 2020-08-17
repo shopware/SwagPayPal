@@ -26,6 +26,7 @@ class Migration1589882802IZettleRun extends MigrationStep
             CREATE TABLE IF NOT EXISTS `swag_paypal_izettle_sales_channel_run` (
                 `id`               BINARY(16)  NOT NULL,
                 `sales_channel_id` BINARY(16)  NOT NULL,
+                `aborted_by_user`  TINYINT(1)  DEFAULT 0,
                 `task`             VARCHAR(16) NOT NULL,
                 `created_at`       DATETIME(3) NOT NULL,
                 `updated_at`       DATETIME(3) NULL,

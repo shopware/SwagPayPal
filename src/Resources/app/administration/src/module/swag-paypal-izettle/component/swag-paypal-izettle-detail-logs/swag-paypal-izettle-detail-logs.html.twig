@@ -54,8 +54,8 @@
                     {% block swag_paypal_izettle_detail_logs_grid_column_state_label %}
                         <sw-label v-if="item.level"
                                   appearance="pill"
-                                  :variant="getLabelVariant(item.level)">
-                            {{ $tc(getLabel(item.level)) }}
+                                  :variant="getLabelVariantForItem(item)">
+                            {{ $tc(getLabelForItem(item)) }}
                         </sw-label>
                     {% endblock %}
 
