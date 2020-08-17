@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEW_VERSION
+# 1.8.2
 - PPI-46 - Fixes issue on refund without amount
 - PPI-47, PPI-48 - Enhancement of the PayPal API elements
 
