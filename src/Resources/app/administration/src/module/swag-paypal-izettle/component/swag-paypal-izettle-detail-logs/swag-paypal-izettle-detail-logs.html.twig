@@ -1,18 +1,25 @@
 {% block swag_paypal_izettle_detail_logs %}
     {% block swag_paypal_izettle_detail_logs_grid %}
-        <sw-data-grid :columns="columns"
+        <sw-data-grid identifier="swag-paypal-izettle-detail-logs"
+                      :columns="columns"
                       :dataSource="logs"
                       :isLoading="isLoading || loadingLogs"
-                      :showActions="false"
-                      :showSelection="false">
+                      :showActions="true"
+                      :showSelection="false"
+                      :showSettings="true"
+                      :allowColumnEdit="true"
+                      :sortBy="sortBy"
+                      :sortDirection="sortDirection"
+                      :skeletonItemAmount="limit"
+                      @column-sort="onSortColumn">
 
             {% block swag_paypal_izettle_detail_logs_grid_pagination %}
                 <template #pagination>
-                    <sw-pagination :limit="logLimit"
-                                   :page="logPage"
-                                   :total="logTotal"
+                    <sw-pagination :limit="limit"
+                                   :page="page"
+                                   :total="total"
                                    :total-visible="7"
-                                   @page-change="onPaginateLogs">
+                                   @page-change="onPageChange">
                     </sw-pagination>
                 </template>
             {% endblock %}
@@ -39,12 +46,6 @@
                         </template>
                     {% endblock %}
 
-                </template>
-            {% endblock %}
-
-            {% block swag_paypal_izettle_detail_logs_grid_column_log %}
-                <template #column-log="{ item }">
-                    {{ item.message }}
                 </template>
             {% endblock %}
 

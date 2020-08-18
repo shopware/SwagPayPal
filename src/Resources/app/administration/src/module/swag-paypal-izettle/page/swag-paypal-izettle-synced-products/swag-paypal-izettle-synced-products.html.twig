@@ -1,5 +1,5 @@
 {% block swag_paypal_izettle_synced_products %}
-    <div class="swag-paypal-izettle-detail-logs">
+    <div class="swag-paypal-izettle-synced-products">
 
         {% block swag_paypal_izettle_synced_products_account %}
             <swag-paypal-izettle-account :salesChannel="salesChannel"></swag-paypal-izettle-account>
@@ -9,13 +9,20 @@
                  :isLoading="isLoading">
 
             {% block swag_paypal_izettle_synced_products_grid %}
-                <template v-if="total > 0"
-                          #grid>
-                    <sw-data-grid :columns="columns"
+                <template #grid>
+                    <sw-data-grid v-if="total > 0"
+                                  identifier="swag-paypal-izettle-synced-products"
                                   :dataSource="products"
+                                  :columns="columns"
                                   :isLoading="isLoading"
                                   :showActions="actions.length > 0"
-                                  :showSelection="false">
+                                  :showSelection="false"
+                                  :showSettings="true"
+                                  :allowColumnEdit="true"
+                                  :sortBy="sortBy"
+                                  :sortDirection="sortDirection"
+                                  :skeletonItemAmount="limit"
+                                  @column-sort="onSortColumn">
 
                         {% block swag_paypal_izettle_synced_products_grid_pagination %}
                             <template #pagination>
@@ -23,7 +30,7 @@
                                                :page="page"
                                                :total="total"
                                                :total-visible="7"
-                                               @page-change="onPaginateProducts">
+                                               @page-change="onPageChange">
                                 </sw-pagination>
                             </template>
                         {% endblock %}
@@ -84,7 +91,8 @@
             {% endblock %}
 
             {% block swag_paypal_izettle_synced_products_empty_state %}
-                <sw-empty-state v-else
+                <sw-empty-state v-if="total < 1"
+                                class="swag-paypal-izettle-synced-products__empty-state"
                                 :title="$tc('swag-paypal-izettle.detail.syncedProducts.emptyState.title')"
                                 :subline="$tc('swag-paypal-izettle.detail.syncedProducts.emptyState.message')">
                 </sw-empty-state>

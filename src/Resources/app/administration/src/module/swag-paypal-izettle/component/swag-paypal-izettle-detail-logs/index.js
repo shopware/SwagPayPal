@@ -1,5 +1,4 @@
 import template from './swag-paypal-izettle-detail-logs.html.twig';
-import './swag-paypal-izettle-detail-logs.scss';
 
 const { Component, Context } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -14,7 +13,8 @@ Component.register('swag-paypal-izettle-detail-logs', {
 
     mixins: [
         'notification',
-        'swag-paypal-izettle-log-label'
+        'swag-paypal-izettle-log-label',
+        'listing'
     ],
 
     props: {
@@ -27,16 +27,31 @@ Component.register('swag-paypal-izettle-detail-logs', {
     data() {
         return {
             logs: [],
-            logCriteria: null,
-            logPage: 1,
-            logLimit: 10,
-            logTotal: 0,
+            limit: 10,
+            sortBy: 'createdAt',
+            sortDirection: 'DESC',
             loadingLogs: false,
             isLoading: false,
+            disableRouteParams: true,
             columns: [
-                { property: 'date', label: 'swag-paypal-izettle.detail.syncedProducts.columns.date', sortable: false },
-                { property: 'state', label: 'swag-paypal-izettle.detail.syncedProducts.columns.state', sortable: false },
-                { property: 'log', label: 'swag-paypal-izettle.detail.logs.columnLastSync', sortable: false }
+                {
+                    property: 'date',
+                    dataIndex: 'createdAt',
+                    label: 'swag-paypal-izettle.detail.syncedProducts.columns.date',
+                    sortable: true
+                },
+                {
+                    property: 'state',
+                    dataIndex: 'level',
+                    label: 'swag-paypal-izettle.detail.syncedProducts.columns.state',
+                    sortable: true
+                },
+                {
+                    property: 'message',
+                    dataIndex: 'message',
+                    label: 'swag-paypal-izettle.detail.logs.columnLastSync',
+                    sortable: true
+                }
             ]
         };
     },
@@ -47,49 +62,27 @@ Component.register('swag-paypal-izettle-detail-logs', {
         }
     },
 
-    watch: {
-        'salesChannel.id'() {
-            this.createLogCriteria();
-            this.fetchLogs();
-        }
-    },
-
-    created() {
-        this.createdComponent();
-    },
-
     methods: {
-        createdComponent() {
-            this.createLogCriteria();
-            this.fetchLogs();
+        getListCriteria() {
+            const params = this.getListingParams();
+            const criteria = new Criteria(this.page, this.limit);
+            criteria.addFilter(Criteria.equals('runId', this.runId));
+            criteria.addAssociation('run');
+
+            criteria.addSorting(Criteria.sort(params.sortBy, params.sortDirection, params.naturalSorting));
+            criteria.addSorting(Criteria.sort('level', 'DESC'));
+            criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
+
+            return criteria;
         },
 
-        createLogCriteria() {
-            this.logCriteria = new Criteria(this.logPage, this.logLimit);
-            this.logCriteria.addFilter(Criteria.equals('runId', this.runId));
-            this.logCriteria.addAssociation('run');
-            this.logCriteria.addSorting(Criteria.sort('level', 'DESC'));
-            this.logCriteria.addSorting(Criteria.sort('createdAt', 'DESC'));
-        },
-
-        onPaginateLogs({ page = 1, limit = 10 }) {
-            this.logCriteria.setPage(page);
-            this.logCriteria.setLimit(limit);
-
-            return this.fetchLogs();
-        },
-
-        fetchLogs() {
-            if (this.logCriteria === null) {
-                return Promise.resolve();
-            }
-
+        getList() {
             this.loadingLogs = true;
-            return this.logRepository.search(this.logCriteria, Context.api).then((result) => {
+            return this.logRepository.search(this.getListCriteria(), Context.api).then((result) => {
                 this.logs = result;
-                this.logTotal = result.total;
-                this.logPage = result.criteria.page;
-                this.logLimit = result.criteria.limit;
+                this.total = result.total;
+                this.page = result.criteria.page;
+                this.limit = result.criteria.limit;
                 this.loadingLogs = false;
             });
         },

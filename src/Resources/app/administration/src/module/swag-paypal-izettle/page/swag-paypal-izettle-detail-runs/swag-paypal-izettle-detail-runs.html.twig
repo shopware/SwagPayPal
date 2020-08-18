@@ -1,5 +1,5 @@
 {% block swag_paypal_izettle_detail_runs %}
-    <div class="swag-paypal-izettle-detail-logs">
+    <div class="swag-paypal-izettle-detail-runs">
 
         {% block swag_paypal_izettle_detail_runs_account %}
             <swag-paypal-izettle-account :salesChannel="salesChannel"></swag-paypal-izettle-account>
@@ -10,21 +10,29 @@
                      :isLoading="isLoading">
 
                 {% block swag_paypal_izettle_detail_runs_card_grid %}
-                    <template v-if="runTotal > 0"
-                              #grid>
+                    <template #grid>
 
-                        <sw-data-grid :columns="columns"
+                        <sw-data-grid v-if="total > 0"
+                                      identifier="swag-paypal-izettle-detail-runs"
+                                      :columns="columns"
                                       :dataSource="runs"
-                                      :isLoading="isLoading"
-                                      :showSelection="false">
+                                      :isLoading="isLoading || total === 0"
+                                      :showActions="true"
+                                      :showSelection="false"
+                                      :showSettings="true"
+                                      :allowColumnEdit="true"
+                                      :sortBy="sortBy"
+                                      :sortDirection="sortDirection"
+                                      :skeletonItemAmount="limit"
+                                      @column-sort="onSortColumn">
 
                             {% block swag_paypal_izettle_detail_runs_card_grid_pagination %}
                                 <template #pagination>
-                                    <sw-pagination :limit="runLimit"
-                                                   :page="runPage"
-                                                   :total="runTotal"
+                                    <sw-pagination :limit="limit"
+                                                   :page="page"
+                                                   :total="total"
                                                    :total-visible="7"
-                                                   @page-change="onPaginate">
+                                                   @page-change="onPageChange">
                                     </sw-pagination>
                                 </template>
                             {% endblock %}
@@ -83,10 +91,13 @@
                 {% endblock %}
 
                 {% block swag_paypal_izettle_detail_runs_card_empty_state %}
-                    <sw-empty-state v-else
-                                    :title="$tc('swag-paypal-izettle.detail.runs.emptyState.title')"
-                                    :subline="$tc('swag-paypal-izettle.detail.runs.emptyState.message')">
-                    </sw-empty-state>
+                    <template #default>
+                        <sw-empty-state v-if="total < 1"
+                                        class="swag-paypal-izettle-detail-runs__empty-state"
+                                        :title="$tc('swag-paypal-izettle.detail.runs.emptyState.title')"
+                                        :subline="$tc('swag-paypal-izettle.detail.runs.emptyState.message')">
+                        </sw-empty-state>
+                    </template>
                 {% endblock %}
 
                 {% block swag_paypal_izettle_detail_runs_card_toolbar %}
@@ -117,7 +128,7 @@
 
         {% block swag_paypal_izettle_detail_runs_log_modal %}
             <sw-modal v-if="showModal"
-                      class="swag-paypal-izettle-detail-logs__modal"
+                      class="swag-paypal-izettle-detail-runs__modal"
                       :title="$tc('swag-paypal-izettle.detail.runs.title')"
                       :isLoading="isLoading"
                       variant="large"

@@ -1,4 +1,5 @@
 import template from './swag-paypal-izettle-synced-products.html.twig';
+import './swag-paypal-izettle-synced-products.scss';
 
 const { Component } = Shopware;
 
@@ -10,7 +11,8 @@ Component.register('swag-paypal-izettle-synced-products', {
     ],
 
     mixins: [
-        'swag-paypal-izettle-log-label'
+        'swag-paypal-izettle-log-label',
+        'listing'
     ],
 
     props: {
@@ -23,9 +25,7 @@ Component.register('swag-paypal-izettle-synced-products', {
     data() {
         return {
             products: [],
-            page: 1,
             limit: 10,
-            total: 0,
             isLoading: false,
             actions: [
                 {
@@ -34,9 +34,21 @@ Component.register('swag-paypal-izettle-synced-products', {
                 }
             ],
             columns: [
-                { property: 'name', label: 'swag-paypal-izettle.detail.syncedProducts.columns.name', sortable: false },
-                { property: 'state', label: 'swag-paypal-izettle.detail.syncedProducts.columns.state', sortable: false },
-                { property: 'date', label: 'swag-paypal-izettle.detail.syncedProducts.columns.date', sortable: false }
+                {
+                    property: 'name',
+                    label: 'swag-paypal-izettle.detail.syncedProducts.columns.name',
+                    sortable: false
+                },
+                {
+                    property: 'state',
+                    label: 'swag-paypal-izettle.detail.syncedProducts.columns.state',
+                    sortable: false
+                },
+                {
+                    property: 'date',
+                    label: 'swag-paypal-izettle.detail.syncedProducts.columns.date',
+                    sortable: false
+                }
             ]
         };
     },
@@ -48,31 +60,26 @@ Component.register('swag-paypal-izettle-synced-products', {
     methods: {
         createdComponent() {
             this.$emit('buttons-update', []);
-            this.fetchProducts();
+            this.getList();
         },
 
-        fetchProducts() {
+        getList() {
             if (this.salesChannel === null || this.salesChannel.id === null) {
                 return Promise.resolve();
             }
 
             this.isLoading = true;
+            const params = this.getListingParams();
+
             return this.SwagPayPalIZettleApiService.getProductLog(
                 this.salesChannel.id,
-                this.page,
-                this.limit
+                params.page,
+                params.limit
             ).then((result) => {
                 this.products = Object.values(result.elements);
                 this.total = result.total;
                 this.isLoading = false;
             });
-        },
-
-        onPaginateProducts({ page = 1, limit = 10 }) {
-            this.page = page;
-            this.limit = limit;
-
-            return this.fetchProducts();
         },
 
         onProductDetails(item) {

@@ -1,4 +1,5 @@
 import template from './swag-paypal-izettle-detail-runs.html.twig';
+import './swag-paypal-izettle-detail-runs.scss';
 
 const { Component, Context } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -12,7 +13,8 @@ Component.register('swag-paypal-izettle-detail-runs', {
     ],
 
     mixins: [
-        'notification'
+        'notification',
+        'listing'
     ],
 
     props: {
@@ -25,18 +27,32 @@ Component.register('swag-paypal-izettle-detail-runs', {
     data() {
         return {
             runs: [],
-            runCriteria: null,
-            runPage: 1,
-            runLimit: 10,
-            runTotal: 0,
+            limit: 10,
+            sortBy: 'finishedAt',
+            sortDirection: 'DESC',
             isLoading: false,
             isCleaningLog: false,
             showModal: false,
             currentRunId: '',
             columns: [
-                { property: 'task', label: 'swag-paypal-izettle.detail.runs.columns.task', sortable: false },
-                { property: 'state', label: 'swag-paypal-izettle.detail.runs.columns.state', sortable: false },
-                { property: 'date', label: 'swag-paypal-izettle.detail.runs.columns.date', sortable: false }
+                {
+                    property: 'task',
+                    dataIndex: 'task',
+                    label: 'swag-paypal-izettle.detail.runs.columns.task',
+                    sortable: true
+                },
+                {
+                    property: 'state',
+                    dataIndex: 'logs.level',
+                    label: 'swag-paypal-izettle.detail.runs.columns.state',
+                    sortable: true
+                },
+                {
+                    property: 'date',
+                    dataIndex: 'finishedAt',
+                    label: 'swag-paypal-izettle.detail.runs.columns.date',
+                    sortable: true
+                }
             ]
         };
     },
@@ -47,13 +63,6 @@ Component.register('swag-paypal-izettle-detail-runs', {
         }
     },
 
-    watch: {
-        'salesChannel.id'() {
-            this.createRunCriteria();
-            this.fetchRuns();
-        }
-    },
-
     created() {
         this.createdComponent();
     },
@@ -61,43 +70,35 @@ Component.register('swag-paypal-izettle-detail-runs', {
     methods: {
         createdComponent() {
             this.$emit('buttons-update', []);
-            this.createRunCriteria();
-            this.fetchRuns();
         },
 
-        createRunCriteria() {
+        getListCriteria() {
+            const criteria = new Criteria(this.page, this.limit);
+            criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
+            criteria.addFilter(Criteria.not('AND', [Criteria.equals('finishedAt', null)]));
+
+            criteria.addAssociation('logs');
+            criteria.getAssociation('logs').limit = 1;
+            criteria.getAssociation('logs').addSorting(Criteria.sort('level', 'DESC'));
+
+            const params = this.getListingParams();
+            criteria.addSorting(Criteria.sort(params.sortBy, params.sortDirection, params.naturalSorting));
+            criteria.addSorting(Criteria.sort('finishedAt', 'DESC'));
+
+            return criteria;
+        },
+
+        getList() {
             if (this.salesChannel === null || this.salesChannel.id === null) {
-                this.runCriteria = null;
-                return;
-            }
-
-            this.runCriteria = new Criteria(this.runPage, this.runLimit);
-            this.runCriteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
-            this.runCriteria.addFilter(Criteria.not('AND', [Criteria.equals('finishedAt', null)]));
-            this.runCriteria.addSorting(Criteria.sort('finishedAt', 'DESC'));
-            this.runCriteria.addAssociation('logs');
-            this.runCriteria.getAssociation('logs').limit = 1;
-            this.runCriteria.getAssociation('logs').addSorting(Criteria.sort('level', 'DESC'));
-        },
-
-        onPaginate({ page = 1, limit = 10 }) {
-            this.runCriteria.setPage(page);
-            this.runCriteria.setLimit(limit);
-
-            return this.fetchRuns();
-        },
-
-        fetchRuns() {
-            if (this.runCriteria === null) {
                 return Promise.resolve();
             }
 
             this.isLoading = true;
-            return this.runRepository.search(this.runCriteria, Context.api).then((result) => {
+            return this.runRepository.search(this.getListCriteria(), Context.api).then((result) => {
                 this.runs = result;
-                this.runTotal = result.total;
-                this.runPage = result.criteria.page;
-                this.runLimit = result.criteria.limit;
+                this.total = result.total;
+                this.page = result.criteria.page;
+                this.limit = result.criteria.limit;
                 this.isLoading = false;
             });
         },
@@ -115,9 +116,8 @@ Component.register('swag-paypal-izettle-detail-runs', {
         onClearLogs() {
             this.isLoading = true;
 
-            this.SwagPayPalIZettleApiService.startLogCleanup(this.salesChannel.id).then(() => {
-                this.fetchRuns();
-                this.isLoading = false;
+            return this.SwagPayPalIZettleApiService.startLogCleanup(this.salesChannel.id).then(() => {
+                return this.getList();
             }).catch((errorResponse) => {
                 if (errorResponse.response.data && errorResponse.response.data.errors) {
                     const message = errorResponse.response.data.errors.map((error) => {
@@ -129,8 +129,7 @@ Component.register('swag-paypal-izettle-detail-runs', {
                         message
                     });
 
-                    this.fetchRuns();
-                    this.isLoading = false;
+                    this.getList();
                 }
             });
         },
