@@ -10,7 +10,6 @@ namespace Swag\PayPal\IZettle\Command;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Run\Task\InventoryTask;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -22,11 +21,6 @@ class IZettleInventorySyncCommand extends AbstractIZettleCommand
      * @var InventoryTask
      */
     private $inventoryTask;
-
-    /**
-     * @var RunService
-     */
-    private $runService;
 
     public function __construct(
         EntityRepositoryInterface $salesChannelRepository,

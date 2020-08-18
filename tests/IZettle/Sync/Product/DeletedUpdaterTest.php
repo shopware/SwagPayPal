@@ -10,7 +10,6 @@ namespace Swag\PayPal\Test\IZettle\Sync\Product;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\IZettle\Api\Error\IZettleApiError;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
@@ -64,7 +63,6 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
     {
         $updater = new DeletedUpdater(
             $this->productResource,
-            $this->createMock(EntityRepositoryInterface::class),
             $this->logger,
             new UuidConverter()
         );
@@ -84,7 +82,6 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
     {
         $updater = new DeletedUpdater(
             $this->productResource,
-            $this->createMock(EntityRepositoryInterface::class),
             $this->logger,
             new UuidConverter()
         );
@@ -104,7 +101,6 @@ class DeletedUpdaterTest extends AbstractProductSyncTest
     {
         $updater = new DeletedUpdater(
             $this->productResource,
-            $this->createMock(EntityRepositoryInterface::class),
             $this->logger,
             new UuidConverter()
         );

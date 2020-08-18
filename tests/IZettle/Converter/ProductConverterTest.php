@@ -47,7 +47,6 @@ class ProductConverterTest extends TestCase
     private const PRODUCT_DESCRIPTION = 'Product Description';
     private const PRODUCT_NUMBER = 'Product Description';
     private const PRODUCT_PRICE = 11.11;
-    private const PRODUCT_PRICE_CONVERTED = 1111;
     private const TRANSLATION_MARK = '_t';
 
     public function testConvertMinimal(): void

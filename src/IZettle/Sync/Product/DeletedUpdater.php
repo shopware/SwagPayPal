@@ -8,7 +8,6 @@
 namespace Swag\PayPal\IZettle\Sync\Product;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\IZettle\Api\Exception\IZettleApiException;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Resource\ProductResource;
@@ -22,11 +21,6 @@ class DeletedUpdater
     private $productResource;
 
     /**
-     * @var EntityRepositoryInterface
-     */
-    private $productRepository;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -38,12 +32,10 @@ class DeletedUpdater
 
     public function __construct(
         ProductResource $productResource,
-        EntityRepositoryInterface $productRepository,
         LoggerInterface $logger,
         UuidConverter $uuidConverter
     ) {
         $this->productResource = $productResource;
-        $this->productRepository = $productRepository;
         $this->logger = $logger;
         $this->uuidConverter = $uuidConverter;
     }

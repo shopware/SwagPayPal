@@ -70,7 +70,6 @@ class CompleteProductTest extends TestCase
     use KernelTestBehaviour;
     use SalesChannelTrait;
 
-    private const DOMAIN = 'https://www.example.com';
     private const MEDIA_UPLOADED_URL = 'https://via.placeholder.com/500x500';
     private const MEDIA_A_ID = 'd7f9cc539a9c463ab95f15884872aad7';
     private const MEDIA_B_ID = '42e1a918149e4f599e16ca672e0f39e8';
@@ -122,7 +121,6 @@ class CompleteProductTest extends TestCase
             ),
             new DeletedUpdater(
                 $productResource,
-                $productRepository,
                 new NullLogger(),
                 new UuidConverter()
             ),

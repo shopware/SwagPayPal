@@ -18,7 +18,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelRunLogCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelRunLogEntity;
-use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Sync\Context\ProductContextFactory;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\SwagPayPal;
@@ -36,11 +35,6 @@ class ProductSelectionTest extends AbstractProductSyncTest
      * @var ProductContextMock
      */
     private $productContext;
-
-    /**
-     * @var MockObject
-     */
-    private $productResource;
 
     /**
      * @var SalesChannelProductRepoMock
@@ -72,11 +66,6 @@ class ProductSelectionTest extends AbstractProductSyncTest
             [new NotFilter(NotFilter::CONNECTION_AND, [
                 new EqualsFilter('id', null),
             ])]
-        );
-
-        $this->productResource = $this->createPartialMock(
-            ProductResource::class,
-            ['createProduct', 'updateProduct', 'deleteProducts']
         );
 
         $this->productRepository = new SalesChannelProductRepoMock();
