@@ -17,15 +17,18 @@
 
     <issueHandlers>
         <LessSpecificImplementedReturnType>
-            <!-- <deprecated> tag:v2.0.0 - Remove once the Token class is final -->
             <errorLevel type="info">
+                <!-- <deprecated> tag:v2.0.0 - Remove once the Token class is final -->
                 <file name="src/PayPal/Api/Token.php"/>
             </errorLevel>
         </LessSpecificImplementedReturnType>
+
         <DeprecatedClass>
-            <!-- <deprecated> tag:v2.0.0 - Remove once the Token class is final -->
             <errorLevel type="info">
+                <!-- <deprecated> tag:v2.0.0 - Remove once the Token class is final -->
                 <referencedClass name="Swag\PayPal\PayPal\Api\Token"/>
+                <!-- TODO PPI-65 - Switch to the routes once the Shopware minimum version is set to 6.3.1 or with 6.4 compatibility -->
+                <referencedClass name="Shopware\Core\Checkout\Customer\SalesChannel\AccountRegistrationService"/>
             </errorLevel>
         </DeprecatedClass>
 
