@@ -183,6 +183,7 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
                 await this.loadSalesChannel();
 
                 this.cloneProductVisibility();
+                this.registerWebhook();
             }).catch(() => {
                 this.isLoading = false;
 
@@ -192,6 +193,16 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
                     })
                 });
             });
+        },
+
+        registerWebhook() {
+            return this.SwagPayPalIZettleWebhookRegisterService.registerWebhook(this.salesChannel.id)
+                .catch(() => {
+                    this.createNotificationError({
+                        title: this.$tc('global.default.error'),
+                        message: this.$tc('swag-paypal-izettle.messageWebhookRegisterError')
+                    });
+                });
         },
 
         cloneProductVisibility() {

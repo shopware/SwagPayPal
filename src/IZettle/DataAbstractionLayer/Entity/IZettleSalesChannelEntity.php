@@ -35,6 +35,11 @@ class IZettleSalesChannelEntity extends Entity
     protected $mediaDomain;
 
     /**
+     * @var string|null
+     */
+    protected $webhookSigningKey;
+
+    /**
      * @var bool
      */
     protected $syncPrices;
@@ -82,6 +87,16 @@ class IZettleSalesChannelEntity extends Entity
     public function setMediaDomain(string $mediaDomain): void
     {
         $this->mediaDomain = $mediaDomain;
+    }
+
+    public function getWebhookSigningKey(): ?string
+    {
+        return $this->webhookSigningKey;
+    }
+
+    public function setWebhookSigningKey(?string $webhookSigningKey): void
+    {
+        $this->webhookSigningKey = $webhookSigningKey;
     }
 
     public function isSyncPrices(): bool

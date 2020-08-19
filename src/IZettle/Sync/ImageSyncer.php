@@ -23,9 +23,12 @@ use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaColl
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaEntity;
 use Swag\PayPal\IZettle\Exception\InvalidMediaTypeException;
 use Swag\PayPal\IZettle\Resource\ImageResource;
+use Swag\PayPal\IZettle\Util\IZettleSalesChannelTrait;
 
-class ImageSyncer extends AbstractSyncer
+class ImageSyncer
 {
+    use IZettleSalesChannelTrait;
+
     /**
      * @var EntityRepositoryInterface
      */

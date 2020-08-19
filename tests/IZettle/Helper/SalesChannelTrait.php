@@ -37,6 +37,7 @@ trait SalesChannelTrait
         $iZettleSalesChannel->setReplace(true);
         $iZettleSalesChannel->setSyncPrices(true);
         $iZettleSalesChannel->setProductStreamId(null);
+        $iZettleSalesChannel->setWebhookSigningKey(ConstantsForTesting::WEBHOOK_SIGNING_KEY);
         $salesChannel->setTypeId(SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE);
         $salesChannel->addExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION, $iZettleSalesChannel);
 

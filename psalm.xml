@@ -40,6 +40,7 @@
                 <file name="src/IZettle/DataAbstractionLayer/Entity/*Collection.php"/>
                 <file name="src/IZettle/MessageQueue/Handler/Sync/*Handler.php"/>
                 <file name="src/IZettle/Sync/*Syncer.php"/>
+                <file name="src/IZettle/Webhook/Handler/*Handler.php"/>
             </errorLevel>
         </MoreSpecificImplementedParamType>
 

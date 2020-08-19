@@ -14,6 +14,7 @@ final class IZettleBaseURL
     public const INVENTORY = 'https://inventory.izettle.com/';
     public const IMAGE = 'https://image.izettle.com/';
     public const SECURE = 'https://secure.izettle.com/';
+    public const PUSHER = 'https://pusher.izettle.com/';
 
     private function __construct()
     {

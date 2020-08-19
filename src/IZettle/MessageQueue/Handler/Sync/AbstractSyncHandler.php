@@ -9,12 +9,8 @@ namespace Swag\PayPal\IZettle\MessageQueue\Handler\Sync;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
-use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
-use Swag\PayPal\IZettle\Exception\UnexpectedSalesChannelTypeException;
 use Swag\PayPal\IZettle\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\IZettle\Run\RunService;
-use Swag\PayPal\SwagPayPal;
 
 abstract class AbstractSyncHandler extends AbstractMessageHandler
 {
@@ -58,16 +54,4 @@ abstract class AbstractSyncHandler extends AbstractMessageHandler
     }
 
     abstract protected function sync(AbstractSyncMessage $message): void;
-
-    protected function getIZettleSalesChannel(SalesChannelEntity $salesChannel): IZettleSalesChannelEntity
-    {
-        /** @var IZettleSalesChannelEntity|null $iZettleSalesChannel */
-        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
-
-        if ($iZettleSalesChannel === null) {
-            throw new UnexpectedSalesChannelTypeException($salesChannel->getTypeId());
-        }
-
-        return $iZettleSalesChannel;
-    }
 }

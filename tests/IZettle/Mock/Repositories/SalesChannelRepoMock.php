@@ -137,19 +137,21 @@ class SalesChannelRepoMock extends AbstractRepoMock implements EntityRepositoryI
     private function getFilteredCollection(Criteria $criteria): SalesChannelCollection
     {
         if ($criteria->getIds()) {
-            if (\in_array($this->mockEntityWithNoTypeId->getId(), $criteria->getIds(), true)) {
-                return new SalesChannelCollection([$this->mockEntityWithNoTypeId]);
+            $collection = new SalesChannelCollection();
+            foreach ($criteria->getIds() as $id) {
+                $entity = $this->entityCollection->get($id);
+
+                if ($entity !== null) {
+                    $collection->add($entity);
+                }
             }
 
-            if (\in_array($this->mockInactiveEntity->getId(), $criteria->getIds(), true)) {
-                return new SalesChannelCollection([$this->mockInactiveEntity]);
-            }
-
-            if (!\in_array($this->mockEntity->getId(), $criteria->getIds(), true)) {
-                return new SalesChannelCollection([]);
-            }
+            return $collection;
         }
 
-        return new SalesChannelCollection([$this->mockEntity]);
+        /** @var SalesChannelCollection $entityCollection */
+        $entityCollection = $this->entityCollection;
+
+        return $entityCollection;
     }
 }

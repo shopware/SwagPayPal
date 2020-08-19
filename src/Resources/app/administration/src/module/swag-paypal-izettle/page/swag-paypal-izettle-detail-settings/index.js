@@ -9,6 +9,7 @@ Component.register('swag-paypal-izettle-detail-settings', {
 
     inject: [
         'SwagPayPalIZettleSettingApiService',
+        'SwagPayPalIZettleWebhookRegisterService',
         'salesChannelService',
         'repositoryFactory'
     ],
@@ -111,6 +112,20 @@ Component.register('swag-paypal-izettle-detail-settings', {
         },
 
         save() {
+            this.SwagPayPalIZettleWebhookRegisterService.registerWebhook(this.salesChannel.id)
+                .catch((errorResponse) => {
+                    if (errorResponse.response.data && errorResponse.response.data.errors) {
+                        const message = errorResponse.response.data.errors.map((error) => {
+                            return error.detail;
+                        }).join(' / ');
+
+                        this.createNotificationError({
+                            title: this.$tc('global.default.error'),
+                            message: `${this.$tc('swag-paypal-izettle.messageWebhookRegisterError')}: ${message}`
+                        });
+                    }
+                });
+
             return this.salesChannelRepository
                 .save(this.salesChannel, Context.api)
                 .then(() => {
@@ -208,8 +223,10 @@ Component.register('swag-paypal-izettle-detail-settings', {
         },
 
         deleteSalesChannel(salesChannelId) {
-            this.salesChannelRepository.delete(salesChannelId, Shopware.Context.api).then(() => {
-                this.$root.$emit('sales-channel-change');
+            return this.SwagPayPalIZettleWebhookRegisterService.unregisterWebhook(salesChannelId).finally(() => {
+                return this.salesChannelRepository.delete(salesChannelId, Shopware.Context.api).then(() => {
+                    this.$root.$emit('sales-channel-change');
+                });
             });
         }
     }

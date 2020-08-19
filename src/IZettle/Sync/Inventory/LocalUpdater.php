@@ -10,9 +10,9 @@ namespace Swag\PayPal\IZettle\Sync\Inventory;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContext;
+use Swag\PayPal\IZettle\Sync\Inventory\Calculator\LocalCalculatorInterface;
 
 class LocalUpdater
 {
@@ -20,6 +20,11 @@ class LocalUpdater
      * @var EntityRepositoryInterface
      */
     private $productRepository;
+
+    /**
+     * @var LocalCalculatorInterface
+     */
+    private $localCalculator;
 
     /**
      * @var StockUpdater
@@ -33,10 +38,12 @@ class LocalUpdater
 
     public function __construct(
         EntityRepositoryInterface $productRepository,
+        LocalCalculatorInterface $localCalculator,
         StockUpdater $stockUpdater,
         LoggerInterface $logger
     ) {
         $this->productRepository = $productRepository;
+        $this->localCalculator = $localCalculator;
         $this->stockUpdater = $stockUpdater;
         $this->logger = $logger;
     }
@@ -50,13 +57,13 @@ class LocalUpdater
                 continue;
             }
 
-            $stockChange = $this->getChangeAmount($productEntity, $inventoryContext);
+            $stockChange = $this->localCalculator->getChangeAmount($productEntity, $inventoryContext);
 
             if ($stockChange === 0 || $inventoryContext->getSingleRemoteInventory($productEntity) === null) {
                 continue;
             }
 
-            $productEntity->setAvailableStock($productEntity->getAvailableStock() + $stockChange);
+            $productEntity->addExtension(StockChange::STOCK_CHANGE_EXTENSION, new StockChange($stockChange));
             $changedProducts->add($productEntity);
             $productChanges[] = [
                 'id' => $productEntity->getId(),
@@ -72,30 +79,22 @@ class LocalUpdater
         $this->productRepository->update($productChanges, $inventoryContext->getContext());
 
         foreach ($changedProducts as $changedProduct) {
-            $changeAmount = $this->getChangeAmount($changedProduct, $inventoryContext);
+            /** @var StockChange|null $stockChange */
+            $stockChange = $changedProduct->getExtension(StockChange::STOCK_CHANGE_EXTENSION);
+
+            if ($stockChange === null) {
+                continue;
+            }
 
             $this->logger->info('Changed local inventory of {productName} by {change}', [
                 'product' => $changedProduct,
                 'productName' => $changedProduct->getName() ?? 'variant',
-                'change' => $changeAmount,
+                'change' => $stockChange,
             ]);
         }
 
         $this->stockUpdater->update($changedProducts->getKeys(), $inventoryContext->getContext());
 
         return $changedProducts;
-    }
-
-    private function getChangeAmount(ProductEntity $productEntity, InventoryContext $inventoryContext): int
-    {
-        $previousStock = $inventoryContext->getLocalInventory($productEntity);
-
-        if ($previousStock === null) {
-            return 0;
-        }
-
-        $currentIZettleStock = $inventoryContext->getSingleRemoteInventory($productEntity);
-
-        return $currentIZettleStock - $previousStock;
     }
 }

@@ -17,9 +17,12 @@ use Swag\PayPal\IZettle\MessageQueue\Message\Sync\ProductVariantSyncMessage;
 use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\IZettle\Sync\ProductSyncer;
+use Swag\PayPal\IZettle\Util\IZettleSalesChannelTrait;
 
 class ProductVariantSyncHandler extends AbstractSyncHandler
 {
+    use IZettleSalesChannelTrait;
+
     /**
      * @var ProductSelection
      */

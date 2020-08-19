@@ -6,6 +6,8 @@ import SwagPayPalIZettleSettingApiService
     from '../core/service/api/swag-paypal-izettle-setting.api.service';
 import SwagPayPalIZettleApiService
     from '../core/service/api/swag-paypal-izettle.api.service';
+import SwagPayPalIZettleWebhookRegisterService
+    from '../core/service/api/swag-paypal-izettle-webhook-register.service';
 import SwagPayPalPaymentService
     from '../core/service/api/swag-paypal-payment.service';
 import SwagPaypalPaymentMethodServiceService
@@ -33,6 +35,11 @@ Application.addServiceProvider(
 Application.addServiceProvider(
     'SwagPayPalIZettleApiService',
     (container) => new SwagPayPalIZettleApiService(initContainer.httpClient, container.loginService)
+);
+
+Application.addServiceProvider(
+    'SwagPayPalIZettleWebhookRegisterService',
+    (container) => new SwagPayPalIZettleWebhookRegisterService(initContainer.httpClient, container.loginService)
 );
 
 Application.addServiceProvider(

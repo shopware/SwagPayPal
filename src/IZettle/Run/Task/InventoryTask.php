@@ -11,7 +11,7 @@ use Swag\PayPal\IZettle\MessageQueue\Handler\SyncManagerHandler;
 
 class InventoryTask extends AbstractTask
 {
-    private const TASK_NAME_INVENTORY = 'inventory';
+    public const TASK_NAME_INVENTORY = 'inventory';
 
     public function getRunTaskName(): string
     {

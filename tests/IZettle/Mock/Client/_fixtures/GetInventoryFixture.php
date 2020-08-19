@@ -20,6 +20,7 @@ class GetInventoryFixture
                 ConstantsForTesting::PRODUCT_C_ID_CONVERTED,
                 ConstantsForTesting::PRODUCT_D_ID_CONVERTED,
                 ConstantsForTesting::PRODUCT_E_ID_CONVERTED,
+                ConstantsForTesting::PRODUCT_F_ID_CONVERTED,
                 '20fd7ad9-6b04-1237-9135-fe281c9c47d8',
             ],
             'variants' => [
@@ -49,6 +50,20 @@ class GetInventoryFixture
                     'locationType' => 'STORE',
                     'productUuid' => ConstantsForTesting::PRODUCT_E_ID_CONVERTED,
                     'variantUuid' => ConstantsForTesting::PRODUCT_E_ID_VARIANT,
+                    'balance' => '3',
+                ],
+                [
+                    'locationUuid' => ConstantsForTesting::LOCATION_STORE,
+                    'locationType' => 'STORE',
+                    'productUuid' => ConstantsForTesting::PRODUCT_F_ID_CONVERTED,
+                    'variantUuid' => ConstantsForTesting::VARIANT_A_ID_CONVERTED,
+                    'balance' => '3',
+                ],
+                [
+                    'locationUuid' => ConstantsForTesting::LOCATION_STORE,
+                    'locationType' => 'STORE',
+                    'productUuid' => ConstantsForTesting::PRODUCT_F_ID_CONVERTED,
+                    'variantUuid' => ConstantsForTesting::VARIANT_B_ID_CONVERTED,
                     'balance' => '3',
                 ],
                 [

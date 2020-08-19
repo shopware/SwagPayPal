@@ -202,6 +202,7 @@
             "buttonGenerateKey": "Generate API key",
             "apiKeyDescription": "You need to generate an API key at the iZettle website. The generated key needs to be pasted here to authorise the connection to iZettle."
         },
-        "messageCloneError": "Could not clone product visibility from another Sales Channel."
+        "messageCloneError": "Could not clone product visibility from another Sales Channel.",
+        "messageWebhookRegisterError": "Could not register webhook at iZettle."
     }
 }

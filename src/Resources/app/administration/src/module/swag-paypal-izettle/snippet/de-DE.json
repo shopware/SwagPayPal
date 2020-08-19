@@ -201,6 +201,8 @@
             "buttonTest": "Zugangsdaten testen",
             "buttonGenerateKey": "API-Key generieren",
             "apiKeyDescription": "Zur Verwendung muss auf der iZettle-Webseite ein API-Schlüssel erstellt werden. Der generierte Schlüssel muss zur Authentifizierung hier eingefügt werden."
-        }
+        },
+        "messageCloneError": "Konnte die Produktzuordnung nicht von anderem Verkaufskanal übertragen.",
+        "messageWebhookRegisterError": "Konnte den Webhook nicht bei iZettle registrieren."
     }
 }

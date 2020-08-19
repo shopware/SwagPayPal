@@ -29,6 +29,7 @@ class Migration1584005462IZettleSalesChannel extends MigrationStep
                 `product_stream_id`         BINARY(16)              NULL,
                 `api_key`                   VARCHAR(8192)           NOT NULL,
                 `media_domain`              VARCHAR(255)            NULL,
+                `webhook_signing_key`       VARCHAR(64)             NULL,
                 `sync_prices`               TINYINT(1)  DEFAULT 1   NOT NULL,
                 `replace`                   TINYINT(1)  DEFAULT 0   NOT NULL,
                 `created_at`                DATETIME(3)             NOT NULL,

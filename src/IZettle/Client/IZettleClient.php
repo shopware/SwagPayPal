@@ -53,7 +53,7 @@ class IZettleClient extends AbstractClient
     public function sendDeleteRequest(string $resourceUri, ?string $query = null): ?array
     {
         if ($query === null) {
-            $this->delete($resourceUri);
+            return $this->delete($resourceUri);
         }
 
         $options = [

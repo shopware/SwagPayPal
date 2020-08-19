@@ -58,6 +58,9 @@ class RemoteUpdater
 
             $remoteChanges->addProductChange($productChange);
 
+            $changeAmount = $this->remoteCalculator->getChangeAmount($productEntity, $inventoryContext);
+            $productEntity->addExtension(StockChange::STOCK_CHANGE_EXTENSION, new StockChange($changeAmount));
+
             $changedProducts->add($productEntity);
         }
 
@@ -76,11 +79,17 @@ class RemoteUpdater
         }
 
         foreach ($changedProducts as $changedProduct) {
-            $changeAmount = $this->remoteCalculator->getChangeAmount($changedProduct, $inventoryContext);
+            /** @var StockChange|null $stockChange */
+            $stockChange = $changedProduct->getExtension(StockChange::STOCK_CHANGE_EXTENSION);
+
+            if ($stockChange === null) {
+                continue;
+            }
+
             $this->logger->info('Changed remote inventory of {productName} by {change}', [
                 'product' => $changedProduct,
                 'productName' => $changedProduct->getName() ?? 'variant',
-                'change' => $changeAmount,
+                'change' => $stockChange->getStockChange(),
             ]);
         }
 

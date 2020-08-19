@@ -5,14 +5,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\IZettle\Sync;
+namespace Swag\PayPal\IZettle\Util;
 
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\Exception\UnexpectedSalesChannelTypeException;
 use Swag\PayPal\SwagPayPal;
 
-abstract class AbstractSyncer
+trait IZettleSalesChannelTrait
 {
     protected function getIZettleSalesChannel(SalesChannelEntity $salesChannel): IZettleSalesChannelEntity
     {

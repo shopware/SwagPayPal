@@ -13,6 +13,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Swag\PayPal\IZettle\Sync\Inventory\Calculator\LocalCalculator;
 use Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater;
 
 class LocalUpdaterTest extends TestCase
@@ -47,7 +48,12 @@ class LocalUpdaterTest extends TestCase
 
         $this->logger = $this->createMock(LoggerInterface::class);
 
-        $this->localUpdater = new LocalUpdater($this->productRepository, $this->stockUpdater, $this->logger);
+        $this->localUpdater = new LocalUpdater(
+            $this->productRepository,
+            new LocalCalculator(),
+            $this->stockUpdater,
+            $this->logger
+        );
     }
 
     /**

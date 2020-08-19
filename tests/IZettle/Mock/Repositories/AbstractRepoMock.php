@@ -62,6 +62,12 @@ abstract class AbstractRepoMock
                 $entity->assign($entry);
             }
 
+            foreach ($entity->getExtensions() as $name => $extension) {
+                if (isset($entry[$name])) {
+                    $extension->assign($entry[$name]);
+                }
+            }
+
             $this->entityCollection->add($entity);
         }
 

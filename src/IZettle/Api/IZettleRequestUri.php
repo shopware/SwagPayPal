@@ -18,6 +18,8 @@ final class IZettleRequestUri
     public const INVENTORY_RESOURCE_BULK = 'organizations/self/v2/inventory/bulk/';
     public const IMAGE_RESOURCE_BULK = 'v2/images/organizations/self/products/bulk';
     public const MERCHANT_INFORMATION = 'api/resources/organizations/self/';
+    public const SUBSCRIPTION_RESOURCE = 'organizations/self/subscriptions/';
+    public const SUBSCRIPTION_RESOURCE_DELETE = 'organizations/self/subscriptions/uuid/';
 
     private function __construct()
     {

@@ -13,6 +13,9 @@
             <argument type="service" id="Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter"/>
         </service>
 
+        <service id="Swag\PayPal\IZettle\Sync\Inventory\Calculator\LocalCalculator"/>
+        <service id="Swag\PayPal\IZettle\Sync\Inventory\Calculator\LocalWebhookCalculator"/>
+
         <service id="Swag\PayPal\IZettle\Command\IZettleInventorySyncCommand">
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\Task\InventoryTask"/>
@@ -29,8 +32,16 @@
             <argument type="service" id="swag_paypal_izettle_sales_channel_inventory.repository"/>
         </service>
 
-        <service id="Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater">
+        <service id="swag.paypal.izettle.sync.inventory.local_updater" class="Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater">
+        <argument type="service" id="product.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Inventory\Calculator\LocalCalculator"/>
+            <argument type="service" id="Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>
+        </service>
+
+        <service id="swag.paypal.izettle.sync.inventory.local_webhook_updater" class="Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater">
             <argument type="service" id="product.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\Inventory\Calculator\LocalWebhookCalculator"/>
             <argument type="service" id="Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\Logger"/>
         </service>
@@ -43,7 +54,7 @@
 
         <service id="Swag\PayPal\IZettle\Sync\InventorySyncer">
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory"/>
-            <argument type="service" id="Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater"/>
+            <argument type="service" id="swag.paypal.izettle.sync.inventory.local_updater"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater"/>
             <argument type="service" id="swag_paypal_izettle_sales_channel_inventory.repository"/>
         </service>

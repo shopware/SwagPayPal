@@ -140,6 +140,7 @@ class SettingsControllerTest extends TestCase
         }
 
         $this->salesChannelRepository->getMockEntityWithNoTypeId()->setId(Defaults::SALES_CHANNEL);
+        $this->salesChannelRepository->addMockEntity($this->salesChannelRepository->getMockEntityWithNoTypeId());
 
         $request = new Request([], [
             'salesChannelId' => $this->salesChannelRepository->getMockEntity()->getId(),

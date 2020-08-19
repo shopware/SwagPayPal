@@ -24,9 +24,14 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 class IZettleSalesChannelDefinition extends EntityDefinition
 {
     /**
-     * limited by max. header size
+     * Limited by max. header size
      */
     private const MAX_APIKEY_SIZE = 8192;
+
+    /**
+     * Limited by sha256 hex length
+     */
+    private const MAX_WEBHOOK_KEY_SIZE = 64;
 
     public function getEntityName(): string
     {
@@ -53,6 +58,7 @@ class IZettleSalesChannelDefinition extends EntityDefinition
 
             (new StringField('api_key', 'apiKey', self::MAX_APIKEY_SIZE))->setFlags(new Required()),
             (new StringField('media_domain', 'mediaDomain')),
+            (new StringField('webhook_signing_key', 'webhookSigningKey', self::MAX_WEBHOOK_KEY_SIZE)),
 
             (new BoolField('sync_prices', 'syncPrices')),
             (new BoolField('replace', 'replace')),

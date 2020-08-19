@@ -14,8 +14,9 @@ use Swag\PayPal\IZettle\Sync\Context\InventoryContext;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater;
 use Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater;
+use Swag\PayPal\IZettle\Sync\Inventory\StockChange;
 
-class InventorySyncer extends AbstractSyncer
+class InventorySyncer
 {
     /**
      * @var InventoryContextFactory
@@ -63,7 +64,7 @@ class InventorySyncer extends AbstractSyncer
         $this->updateLocalChanges($changes, $inventoryContext);
     }
 
-    private function updateLocalChanges(ProductCollection $productCollection, InventoryContext $inventoryContext): void
+    public function updateLocalChanges(ProductCollection $productCollection, InventoryContext $inventoryContext): void
     {
         if ($productCollection->count() === 0) {
             return;
@@ -71,12 +72,21 @@ class InventorySyncer extends AbstractSyncer
 
         $localChanges = [];
         foreach ($productCollection->getElements() as $productEntity) {
+            /** @var StockChange|null $stockChange */
+            $stockChange = $productEntity->getExtension(StockChange::STOCK_CHANGE_EXTENSION);
+
+            if ($stockChange === null) {
+                continue;
+            }
+
             $localChanges[] = [
                 'salesChannelId' => $inventoryContext->getSalesChannel()->getId(),
                 'productId' => $productEntity->getId(),
                 'productVersionId' => $productEntity->getVersionId(),
-                'stock' => $productEntity->getAvailableStock(),
+                'stock' => $inventoryContext->getLocalInventory($productEntity) + $stockChange->getStockChange(),
             ];
+
+            $productEntity->removeExtension(StockChange::STOCK_CHANGE_EXTENSION);
         }
         $this->inventoryRepository->upsert($localChanges, $inventoryContext->getContext());
 

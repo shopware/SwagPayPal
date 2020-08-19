@@ -25,6 +25,9 @@ use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetInventoryLocationsFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetProductCountFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\GetProductsFixture;
 use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\UpdateProductFixture;
+use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\WebhookRegisterFixture;
+use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\WebhookUnregisterFixture;
+use Swag\PayPal\Test\IZettle\Mock\Client\_fixtures\WebhookUpdateFixture;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class GuzzleClientMock extends Client
@@ -100,6 +103,8 @@ class GuzzleClientMock extends Client
             $response = ChangeBulkInventoryFixture::post($data);
         } elseif ($resourceUri === IZettleRequestUri::PRODUCT_RESOURCE) {
             $response = CreateProductFixture::post($data);
+        } elseif ($resourceUri === IZettleRequestUri::SUBSCRIPTION_RESOURCE) {
+            $response = WebhookRegisterFixture::post($data);
         }
 
         return $response === null ? null : $this->ensureValidJson($response);
@@ -113,6 +118,8 @@ class GuzzleClientMock extends Client
         $response = [];
         if (\mb_strpos($resourceUri, IZettleRequestUri::PRODUCT_RESOURCE_V2) !== false) {
             $response = UpdateProductFixture::put($data);
+        } elseif (\mb_strpos($resourceUri, IZettleRequestUri::SUBSCRIPTION_RESOURCE) !== false) {
+            $response = WebhookUpdateFixture::put($resourceUri, $data);
         }
 
         return $response === null ? null : $this->ensureValidJson($response);
@@ -128,6 +135,8 @@ class GuzzleClientMock extends Client
             if ($query !== null) {
                 $response = DeleteProductsFixture::delete($query);
             }
+        } elseif (\mb_strpos($resourceUri, IZettleRequestUri::SUBSCRIPTION_RESOURCE_DELETE) !== false) {
+            $response = WebhookUnregisterFixture::delete($resourceUri);
         }
 
         return $response === null ? null : $this->ensureValidJson($response);

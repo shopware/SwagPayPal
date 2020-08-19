@@ -52,4 +52,6 @@ final class ConstantsForTesting
     public const PRODUCT_NUMBER = 'Number';
     public const PRODUCT_PRICE = 11.11;
     public const PRODUCT_PRICE_CONVERTED = 1111;
+
+    public const WEBHOOK_SIGNING_KEY = 'TYBIhOYNK8bKZ86LqedXHabZE0u1XeVXBXPto8XBYRm6smCICLIh2800z7lS7FYn';
 }

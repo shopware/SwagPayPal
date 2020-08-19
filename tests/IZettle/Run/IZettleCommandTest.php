@@ -155,7 +155,7 @@ class IZettleCommandTest extends TestCase
 
     public function testLogCleanup(): void
     {
-        $this->logCleaner->expects(static::once())->method('cleanUpLog');
+        $this->logCleaner->expects(static::exactly($this->salesChannelRepoMock->getCollection()->count()))->method('cleanUpLog');
         $input = new ArrayInput([]);
 
         static::assertSame(0, $this->commands[IZettleLogCleanupCommand::class]->run($input, new NullOutput()));

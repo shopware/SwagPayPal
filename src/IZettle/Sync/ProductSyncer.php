@@ -18,7 +18,7 @@ use Swag\PayPal\IZettle\Sync\Product\NewUpdater;
 use Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater;
 use Swag\PayPal\IZettle\Sync\Product\UnsyncedChecker;
 
-class ProductSyncer extends AbstractSyncer
+class ProductSyncer
 {
     /**
      * @var ProductConverter

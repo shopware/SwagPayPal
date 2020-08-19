@@ -24,6 +24,7 @@ use Swag\PayPal\IZettle\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\IZettle\Resource\InventoryResource;
 use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Sync\Context\InventoryContextFactory;
+use Swag\PayPal\IZettle\Sync\Inventory\Calculator\LocalCalculator;
 use Swag\PayPal\IZettle\Sync\Inventory\LocalUpdater;
 use Swag\PayPal\IZettle\Sync\Inventory\RemoteUpdater;
 use Swag\PayPal\IZettle\Sync\InventorySyncer;
@@ -88,6 +89,7 @@ class CompleteInventoryTest extends TestCase
                 $inventoryContextFactory,
                 new LocalUpdater(
                     $productRepository,
+                    new LocalCalculator(),
                     $this->createMock(StockUpdater::class),
                     new NullLogger()
                 ),
