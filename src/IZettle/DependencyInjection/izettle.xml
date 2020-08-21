@@ -196,5 +196,19 @@
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ImageSyncer"/>
             <tag name="messenger.message_handler" />
         </service>
+
+        <service id="Swag\PayPal\IZettle\Sync\Inventory\StockSubscriber">
+            <argument type="service" id="order_line_item.repository"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\IZettle\MessageQueue\Handler\InventoryUpdateHandler">
+            <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\MessageQueue\Manager\InventorySyncManager"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+            <tag name="messenger.message_handler" />
+        </service>
     </services>
 </container>

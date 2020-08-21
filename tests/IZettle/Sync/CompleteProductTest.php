@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\IZettle\Sync\Product;
+namespace Swag\PayPal\Test\IZettle\Sync;
 
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;

@@ -52,7 +52,7 @@ class InventorySyncManager extends AbstractSyncManager
         $this->inventoryContextFactory = $inventoryContextFactory;
     }
 
-    public function buildMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): void
+    public function buildMessages(SalesChannelEntity $salesChannel, Context $context, string $runId, ?array $reducedIds = null): void
     {
         $salesChannelContext = $this->productSelection->getSalesChannelContext($salesChannel);
 
@@ -62,7 +62,15 @@ class InventorySyncManager extends AbstractSyncManager
         $productStreamId = $iZettleSalesChannel->getProductStreamId();
         $criteria = $this->productSelection->getProductStreamCriteria($productStreamId, $context);
         $parentIds = $this->getParentIds(clone $criteria, $salesChannelContext);
+        if ($reducedIds !== null) {
+            $criteria->setIds($reducedIds);
+        }
+
         $productIds = $this->productRepository->searchIds($criteria, $salesChannelContext)->getIds();
+        if (empty($productIds)) {
+            return;
+        }
+
         $inventoryContext = $this->inventoryContextFactory->getContext($salesChannel, $context);
 
         $accumulatedIds = [];
