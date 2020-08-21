@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PPI-70 - Order number is now correctly submitted to PayPal for payments with Express Checkout, PLUS and Smart Payment Buttons
+
 # 1.8.2
 - PPI-46 - Fixes issue on refund without amount
 - PPI-47, PPI-48 - Enhancement of the PayPal API elements

@@ -26,6 +26,7 @@ use Swag\PayPal\Payment\Handler\AbstractPaymentHandler;
 use Swag\PayPal\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Payment\Handler\PlusHandler;
+use Swag\PayPal\Payment\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
@@ -44,6 +45,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPaymentHandlerTest extends TestCase
@@ -300,7 +302,7 @@ An error occurred during the communication with PayPal');
         );
     }
 
-    private function createPayPalPaymentHandler(?SwagPayPalSettingStruct $settings = null): PayPalPaymentHandler
+    private function createPayPalPaymentHandler(?SwagPayPalSettingStruct $settings = null, ?OrderNumberPatchBuilder $orderNumberPatchBuilder = null): PayPalPaymentHandler
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
         $this->clientFactory = $this->createPayPalClientFactory($settings);
@@ -327,7 +329,9 @@ An error occurred during the communication with PayPal');
                 $this->orderTransactionRepo,
                 $payerInfoPatchBuilder,
                 $shippingAddressPatchBuilder
-            )
+            ),
+            $orderNumberPatchBuilder ?? new OrderNumberPatchBuilder(),
+            new SettingsServiceMock($settings)
         );
     }
 
@@ -343,7 +347,31 @@ An error occurred during the communication with PayPal');
         Request $request,
         string $state = OrderTransactionStates::STATE_PAID
     ): void {
-        $handler = $this->createPayPalPaymentHandler();
+        $orderNumberPatchActions = [
+            PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID,
+            PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID,
+            PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER,
+        ];
+
+        $addOrderNumberPatchMock = false;
+        foreach ($orderNumberPatchActions as $action) {
+            if ($addOrderNumberPatchMock || !$request->query->getBoolean($action)) {
+                continue;
+            }
+
+            $addOrderNumberPatchMock = true;
+        }
+
+        if (!$addOrderNumberPatchMock) {
+            $handler = $this->createPayPalPaymentHandler();
+        } else {
+            $orderNumberPatchMock = $this->getMockBuilder(OrderNumberPatchBuilder::class)->getMock();
+            $orderNumberPatchMock->expects(static::once())
+                ->method('createOrderNumberPatch')
+                ->willReturn(new Patch());
+
+            $handler = $this->createPayPalPaymentHandler(null, $orderNumberPatchMock);
+        }
 
         $salesChannelContext = Generator::createSalesChannelContext();
         $container = $this->getContainer();
