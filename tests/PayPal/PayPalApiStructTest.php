@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
 use Swag\PayPal\Test\PayPal\_fixtures\TestStruct;
 
-class PayPalStructTest extends TestCase
+class PayPalApiStructTest extends TestCase
 {
     use AssertArraySubsetBehaviour;
 

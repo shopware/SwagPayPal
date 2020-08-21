@@ -62,28 +62,34 @@ class PayPalClient extends AbstractClient
         parent::__construct($client, $logger);
     }
 
-    public function sendPostRequest(string $resourceUri, PayPalApiStruct $data): array
+    public function sendPostRequest(string $resourceUri, ?PayPalApiStruct $data, array $headers = []): array
     {
+        $headers['content-type'] = 'application/json';
         $options = [
-            'headers' => ['content-type' => 'application/json'],
+            'headers' => $headers,
             'json' => $data,
         ];
 
         return $this->post($resourceUri, $options);
     }
 
-    public function sendGetRequest(string $resourceUri): array
+    public function sendGetRequest(string $resourceUri, array $headers = []): array
     {
-        return $this->get($resourceUri);
+        $options = [
+            'headers' => $headers,
+        ];
+
+        return $this->get($resourceUri, $options);
     }
 
     /**
      * @param PayPalApiStruct[] $data
      */
-    public function sendPatchRequest(string $resourceUri, array $data): array
+    public function sendPatchRequest(string $resourceUri, array $data, array $headers = []): array
     {
+        $headers['content-type'] = 'application/json';
         $options = [
-            'headers' => ['content-type' => 'application/json'],
+            'headers' => $headers,
             'json' => $data,
         ];
 

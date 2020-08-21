@@ -102,14 +102,14 @@ abstract class AbstractClient
         if (isset($error['details'])) {
             $message .= ': ';
             foreach ($error['details'] as $detail) {
+                if (isset($detail['description'])) {
+                    $message .= \sprintf('%s ', $detail['description']);
+                }
                 if (isset($detail['issue'])) {
-                    $message .= $detail['issue'];
+                    $message .= \sprintf('%s ', $detail['issue']);
                 }
                 if (isset($detail['field'])) {
-                    $message .= ' (' . $detail['field'] . ') ';
-                }
-                if (isset($detail['description'])) {
-                    $message .= ' (' . $detail['description'] . ') ';
+                    $message .= \sprintf('(%s) ', $detail['field']);
                 }
             }
         }

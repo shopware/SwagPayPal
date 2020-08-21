@@ -23,6 +23,10 @@ abstract class PayPalApiStruct implements \JsonSerializable
         $nameConverter = new CamelCaseToSnakeCaseNameConverter();
 
         foreach ($arrayDataWithSnakeCaseKeys as $snakeCaseKey => $value) {
+            if ($value === [] || $value === null) {
+                continue;
+            }
+
             $camelCaseKey = \ucfirst($nameConverter->denormalize($snakeCaseKey));
             $setterMethod = 'set' . $camelCaseKey;
             if (!\method_exists($this, $setterMethod)) {
@@ -34,10 +38,6 @@ abstract class PayPalApiStruct implements \JsonSerializable
             if ($this->isScalar($value)) {
                 $this->$setterMethod($value);
 
-                continue;
-            }
-
-            if ($value === []) {
                 continue;
             }
 
@@ -55,6 +55,13 @@ abstract class PayPalApiStruct implements \JsonSerializable
                 continue;
             }
 
+            // Value is not a list of objects
+            if (!\is_array($value[0])) {
+                $this->$setterMethod($value);
+
+                continue;
+            }
+
             /** @var class-string<PayPalApiStruct> $className */
             $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
             if (!\class_exists($className)) {
@@ -63,10 +70,6 @@ abstract class PayPalApiStruct implements \JsonSerializable
 
             $arrayWithToManyAssociations = [];
             foreach ($value as $toManyAssociation) {
-                if ($toManyAssociation === null) {
-                    continue;
-                }
-
                 $instance = $this->createNewAssociation($className, $toManyAssociation);
                 $arrayWithToManyAssociations[] = $instance;
             }
