@@ -15,30 +15,42 @@ use Psr\Http\Message\ResponseInterface;
 use Swag\PayPal\PayPal\ApiV1\Api\OAuthCredentials;
 use Swag\PayPal\PayPal\ApiV1\Api\Payment\Payer\ExecutePayerInfo;
 use Swag\PayPal\PayPal\ApiV1\RequestUriV1;
+use Swag\PayPal\PayPal\ApiV2\RequestUriV2;
 use Swag\PayPal\PayPal\PayPalApiStruct;
 use Swag\PayPal\Test\Checkout\ExpressCheckout\ExpressCheckoutControllerTest;
 use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CaptureAuthorizationResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CaptureOrdersResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateTokenResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentAuthorizeResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentSaleResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePuiResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentAuthorizeResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentCapturedOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentSaleResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetPaymentSaleWithRefundResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceAuthorizeResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceSaleResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundCaptureResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\RefundSaleResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CaptureAuthorizationResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CaptureOrdersResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateTokenResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePuiResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentCapturedOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentSaleWithRefundResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\RefundCaptureResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\RefundSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidAuthorizationResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureAuthorization;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefund;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
 use Swag\PayPal\Test\PayPal\ApiV1\Resource\PaymentResourceTest;
 use Swag\PayPal\Test\PayPal\ApiV1\Resource\WebhookResourceTest;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -101,9 +113,23 @@ class GuzzleClientMock extends Client
      */
     private function handleGetRequests(string $resourceUri): string
     {
-        $response = [];
+        if (\strpos($resourceUri, 'v1') === 0) {
+            $response = $this->handleApiV1GetRequests($resourceUri);
+        } elseif (\strpos($resourceUri, 'v2') === 0) {
+            $response = $this->handleApiV2GetRequests($resourceUri);
+        }
+
+        if (!isset($response)) {
+            throw new \RuntimeException('No fixture defined for ' . $resourceUri);
+        }
+
+        return $this->ensureValidJson($response);
+    }
+
+    private function handleApiV1GetRequests(string $resourceUri): array
+    {
         if (\strpos($resourceUri, RequestUriV1::WEBHOOK_RESOURCE) !== false) {
-            $response = $this->handleWebhookGetRequests($resourceUri);
+            return $this->handleWebhookGetRequests($resourceUri);
         }
 
         if (\strpos($resourceUri, RequestUriV1::PAYMENT_RESOURCE) !== false) {
@@ -119,32 +145,63 @@ class GuzzleClientMock extends Client
             if (\mb_strpos($resourceUri, ExpressCheckoutControllerTest::TEST_PAYMENT_ID_WITH_STATE_NOT_FOUND) !== false) {
                 $response['payer']['payer_info']['shipping_address']['state'] = 'XY';
             }
+
+            return $response;
         }
 
         if (\strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false) {
-            $response = GetResourceAuthorizeResponseFixture::get();
+            return GetResourceAuthorizeResponseFixture::get();
         }
 
         if (\strpos($resourceUri, RequestUriV1::CAPTURE_RESOURCE) !== false) {
-            $response = CaptureAuthorizationResponseFixture::get();
+            return CaptureAuthorizationResponseFixture::get();
         }
 
         if (\strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false) {
-            $response = GetResourceOrderResponseFixture::get();
+            return GetResourceOrderResponseFixture::get();
         }
 
         if (\strpos($resourceUri, RequestUriV1::SALE_RESOURCE) !== false) {
-            $response = GetResourceSaleResponseFixture::get();
+            return GetResourceSaleResponseFixture::get();
         }
 
         if (\strpos($resourceUri, 'customer/partners/') !== false) {
-            $response = [
+            return [
                 'client_id' => ConstantsForTesting::VALID_CLIENT_ID,
                 'client_secret' => ConstantsForTesting::VALID_CLIENT_SECRET,
             ];
         }
 
-        return $this->ensureValidJson($response);
+        throw new \RuntimeException('No fixture defined for ' . $resourceUri);
+    }
+
+    private function handleApiV2GetRequests(string $resourceUri): array
+    {
+        if (\strpos($resourceUri, RequestUriV2::ORDERS_RESOURCE) !== false) {
+            if (\mb_substr($resourceUri, -17) === GetCapturedOrderCapture::ID) {
+                return GetCapturedOrderCapture::get();
+            }
+
+            if (\mb_substr($resourceUri, -17) === GetRefundedOrderCapture::ID) {
+                return GetRefundedOrderCapture::get();
+            }
+
+            return GetOrderCapture::get();
+        }
+
+        if (\strpos($resourceUri, RequestUriV2::CAPTURES_RESOURCE) !== false) {
+            return GetCapture::get();
+        }
+
+        if (\strpos($resourceUri, RequestUriV2::REFUNDS_RESOURCE) !== false) {
+            return GetRefund::get();
+        }
+
+        if (\strpos($resourceUri, RequestUriV2::AUTHORIZATIONS_RESOURCE) !== false) {
+            return GetAuthorization::get();
+        }
+
+        throw new \RuntimeException('No fixture defined for ' . $resourceUri);
     }
 
     private function handlePaymentGetRequests(string $resourceUri): array
@@ -190,7 +247,21 @@ class GuzzleClientMock extends Client
      */
     private function handlePostRequests(string $resourceUri, ?PayPalApiStruct $data): string
     {
-        $response = [];
+        if (\strpos($resourceUri, 'v1') === 0) {
+            $response = $this->handleApiV1PostRequests($resourceUri, $data);
+        } elseif (\strpos($resourceUri, 'v2') === 0) {
+            $response = $this->handleApiV2PostRequests($resourceUri);
+        }
+
+        if (!isset($response)) {
+            throw new \RuntimeException('No fixture defined for ' . $resourceUri);
+        }
+
+        return $this->ensureValidJson($response);
+    }
+
+    private function handleApiV1PostRequests(string $resourceUri, ?PayPalApiStruct $data): array
+    {
         if ($resourceUri === RequestUriV1::TOKEN_RESOURCE) {
             $headers = $this->getConfig()['headers'];
             if (isset($headers['Authorization'])) {
@@ -206,7 +277,7 @@ class GuzzleClientMock extends Client
                 }
             }
 
-            $response = CreateTokenResponseFixture::get();
+            return CreateTokenResponseFixture::get();
         }
 
         if (\strpos($resourceUri, RequestUriV1::PAYMENT_RESOURCE) !== false) {
@@ -223,44 +294,77 @@ class GuzzleClientMock extends Client
                 if ($data === null) {
                     throw new \RuntimeException('Execute requests needs valid ExecutePayerInfo struct');
                 }
-                $response = $this->handlePaymentExecuteRequests($data);
-            } else {
-                $response = CreateResponseFixture::get();
+
+                return $this->handlePaymentExecuteRequests($data);
             }
+
+            return CreateResponseFixture::get();
         }
 
         if (\strpos($resourceUri, RequestUriV1::WEBHOOK_RESOURCE) !== false) {
             if ($data === null) {
                 throw new \RuntimeException('Create webhook request needs valid Webhook struct');
             }
-            $response = $this->handleWebhookCreateRequests($data);
+
+            return $this->handleWebhookCreateRequests($data);
         }
 
         if (\strpos($resourceUri, RequestUriV1::SALE_RESOURCE) !== false && \mb_substr($resourceUri, -7) === '/refund') {
-            $response = RefundSaleResponseFixture::get();
+            return RefundSaleResponseFixture::get();
         }
 
         if (\strpos($resourceUri, RequestUriV1::CAPTURE_RESOURCE) !== false && \mb_substr($resourceUri, -7) === '/refund') {
-            $response = RefundCaptureResponseFixture::get();
+            return RefundCaptureResponseFixture::get();
         }
 
         if (\strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/capture') {
-            $response = CaptureAuthorizationResponseFixture::get();
+            return CaptureAuthorizationResponseFixture::get();
         }
 
         if (\strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false && \mb_substr($resourceUri, -5) === '/void') {
-            $response = VoidAuthorizationResponseFixture::get();
+            return VoidAuthorizationResponseFixture::get();
         }
 
         if (\strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/capture') {
-            $response = CaptureOrdersResponseFixture::get();
+            return CaptureOrdersResponseFixture::get();
         }
 
         if (\strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/do-void') {
-            $response = VoidOrderResponseFixture::get();
+            return VoidOrderResponseFixture::get();
         }
 
-        return $this->ensureValidJson($response);
+        throw new \RuntimeException('No fixture defined for ' . $resourceUri);
+    }
+
+    private function handleApiV2PostRequests(string $resourceUri): array
+    {
+        if (\strpos($resourceUri, RequestUriV2::ORDERS_RESOURCE) !== false) {
+            if (\mb_substr($resourceUri, -8) === '/capture') {
+                return CaptureOrderCapture::get();
+            }
+
+            if (\mb_substr($resourceUri, -10) === '/authorize') {
+                return AuthorizeOrderAuthorization::get();
+            }
+
+            return CreateOrderCapture::get();
+        }
+
+        if (\strpos($resourceUri, RequestUriV2::CAPTURES_RESOURCE) !== false) {
+            return RefundCapture::get();
+        }
+
+        if (\strpos($resourceUri, RequestUriV2::AUTHORIZATIONS_RESOURCE) !== false) {
+            if (\mb_substr($resourceUri, -5) === '/void') {
+                return [];
+            }
+
+            if (\mb_substr($resourceUri, -8) === '/capture') {
+                return CaptureAuthorization::get();
+            }
+        }
+
+        throw new \RuntimeException('No fixture defined for ' . $resourceUri);
     }
 
     private function handlePaymentExecuteRequests(PayPalApiStruct $data): array
@@ -317,7 +421,6 @@ class GuzzleClientMock extends Client
      */
     private function handlePatchRequests(string $resourceUri, array $data): string
     {
-        $response = [];
         if (\mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID) !== false) {
             throw $this->createClientExceptionWithInvalidId();
         }
@@ -328,7 +431,7 @@ class GuzzleClientMock extends Client
 
         $this->data = $data;
 
-        return $this->ensureValidJson($response);
+        return $this->ensureValidJson([]);
     }
 
     /**

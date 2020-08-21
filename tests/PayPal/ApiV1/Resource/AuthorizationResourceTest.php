@@ -12,8 +12,8 @@ use Shopware\Core\Defaults;
 use Swag\PayPal\PayPal\ApiV1\Api\Capture;
 use Swag\PayPal\PayPal\ApiV1\Resource\AuthorizationResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceAuthorizeResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidAuthorizationResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidAuthorizationResponseFixture;
 
 class AuthorizationResourceTest extends TestCase
 {

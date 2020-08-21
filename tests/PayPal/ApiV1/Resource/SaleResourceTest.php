@@ -14,7 +14,7 @@ use Swag\PayPal\PayPal\ApiV1\Api\Refund;
 use Swag\PayPal\PayPal\ApiV1\PaymentStatusV1;
 use Swag\PayPal\PayPal\ApiV1\Resource\SaleResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceSaleResponseFixture;
 
 class SaleResourceTest extends TestCase
 {

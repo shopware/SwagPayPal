@@ -9,7 +9,7 @@ namespace Swag\PayPal\Test\Util;
 
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\PayPal\ApiV1\Api\Payment;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Util\PaymentTokenExtractor;
 
 class PaymentTokenExtractorTest extends TestCase

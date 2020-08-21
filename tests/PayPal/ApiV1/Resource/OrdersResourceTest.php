@@ -12,8 +12,8 @@ use Shopware\Core\Defaults;
 use Swag\PayPal\PayPal\ApiV1\Api\Capture;
 use Swag\PayPal\PayPal\ApiV1\Resource\OrdersResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\GetResourceOrderResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\VoidOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceOrderResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
 
 class OrdersResourceTest extends TestCase
 {
