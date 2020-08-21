@@ -34,4 +34,7 @@ final class ConstantsForTesting
 
     public const PAYPAL_RESOURCE_THROWS_EXCEPTION = 'createRequestThrowsException';
     public const PAYPAL_RESOURCE_THROWS_EXCEPTION_WITH_PREFIX = 'TEST_createRequestThrowsException';
+
+    public const WITHOUT_TRANSACTION = 'noTransactionFound';
+    public const WITHOUT_ORDER = 'noOrderFound';
 }

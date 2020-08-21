@@ -7,6 +7,7 @@
     <import resource="../../Administration/**/*Controller.php" type="annotation"/>
     <import resource="../../Checkout/**/*Controller.php" type="annotation"/>
     <import resource="../../Pos/**/*Controller.php" type="annotation"/>
+    <import resource="../../OrdersApi/**/*Controller.php" type="annotation"/>
     <import resource="../../PaymentsApi/**/*Controller.php" type="annotation"/>
     <import resource="../../Setting/**/*Controller.php" type="annotation"/>
     <import resource="../../Webhook/**/*Controller.php" type="annotation"/>

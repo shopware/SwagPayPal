@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Mock\Repositories;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -21,7 +22,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Event\NestedEventCollection;
-use Swag\PayPal\Test\Checkout\Plus\PlusPaymentFinalizeControllerTest;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 
 class OrderTransactionRepoMock implements EntityRepositoryInterface
@@ -52,16 +52,21 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-        $filter = $criteria->getFilters()[0];
+        $filters = $criteria->getFilters();
+        $filter = null;
+        if ($filters !== []) {
+            $filter = $filters[0];
+        }
+
         if ($filter instanceof EqualsFilter && $filter->getValue() === self::WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION) {
             return $this->createEntitySearchResultWithoutTransaction($criteria, $context);
         }
 
-        if ($context->hasExtension(PlusPaymentFinalizeControllerTest::WITHOUT_TRANSACTION)) {
+        if ($context->hasExtension(ConstantsForTesting::WITHOUT_TRANSACTION)) {
             return $this->createEntitySearchResultWithoutTransaction($criteria, $context);
         }
 
-        if ($context->hasExtension(PlusPaymentFinalizeControllerTest::WITHOUT_ORDER)) {
+        if ($context->hasExtension(ConstantsForTesting::WITHOUT_ORDER)) {
             return $this->createEntitySearchResult($criteria, $context, false);
         }
 
@@ -153,6 +158,7 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
     {
         $order = new OrderEntity();
         $order->setId('testOrderId');
+        $order->setSalesChannelId(Defaults::SALES_CHANNEL);
 
         return $order;
     }

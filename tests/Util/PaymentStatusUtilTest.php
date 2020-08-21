@@ -266,9 +266,6 @@ class PaymentStatusUtilTest extends TestCase
         $this->assertTransactionState($orderId, $expectedOrderTransactionState);
     }
 
-    /**
-     * @dataProvider dataProviderTestApplyRefundStateToPayment
-     */
     public function testApplyRefundStateToCapture(): void
     {
         $orderId = $this->createBasicOrder();

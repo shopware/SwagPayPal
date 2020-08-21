@@ -11,6 +11,7 @@ use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\System\SystemConfig\Util\ConfigReader;
+use Swag\PayPal\OrdersApi\Builder\OrderOrderBuilder;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
 use Swag\PayPal\PayPal\ApiV1\PaymentIntentV1;
 use Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource;
@@ -96,6 +97,15 @@ trait ServicesTrait
             new LocaleCodeProviderMock(new EntityRepositoryMock()),
             new EntityRepositoryMock()
         );
+    }
+
+    protected function createOrderBuilder(?SwagPayPalSettingStruct $settings = null): OrderOrderBuilder
+    {
+        $settings = $settings ?? $this->createDefaultSettingStruct();
+
+        $settingsService = new SettingsServiceMock($settings);
+
+        return new OrderOrderBuilder($settingsService);
     }
 
     protected function createWebhookRegistry(?OrderTransactionRepoMock $orderTransactionRepo = null): WebhookRegistry
