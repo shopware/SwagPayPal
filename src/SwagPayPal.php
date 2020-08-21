@@ -22,10 +22,7 @@ use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookService;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class SwagPayPal extends Plugin
 {
@@ -72,29 +69,6 @@ class SwagPayPal extends Plugin
     public function setActivateDeactivate(ActivateDeactivate $activateDeactivate): void
     {
         $this->activateDeactivate = $activateDeactivate;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function build(ContainerBuilder $container): void
-    {
-        parent::build($container);
-
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
-        $loader->load('administration.xml');
-        $loader->load('client.xml');
-        $loader->load('payments_api.xml');
-        $loader->load('resource.xml');
-        $loader->load('setting.xml');
-        $loader->load('util.xml');
-        $loader->load('webhook.xml');
-        $loader->load('express_checkout.xml');
-        $loader->load('spb_checkout.xml');
-        $loader->load('pui_checkout.xml');
-        $loader->load('checkout.xml');
-        $loader->load('plus.xml');
-        $loader->load('installment.xml');
     }
 
     public function install(InstallContext $installContext): void

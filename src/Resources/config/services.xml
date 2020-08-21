@@ -5,6 +5,22 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <imports>
+        <import resource="./services/administration.xml"/>
+        <import resource="./services/checkout.xml"/>
+        <import resource="./services/client.xml"/>
+        <import resource="./services/express_checkout.xml"/>
+        <import resource="./services/installment.xml"/>
+        <import resource="./services/orders_api.xml"/>
+        <import resource="./services/payments_api.xml"/>
+        <import resource="./services/plus.xml"/>
+        <import resource="./services/pui_checkout.xml"/>
+        <import resource="./services/resource_v1.xml"/>
+        <import resource="./services/resource_v2.xml"/>
+        <import resource="./services/setting.xml"/>
+        <import resource="./services/spb_checkout.xml"/>
+        <import resource="./services/util.xml"/>
+        <import resource="./services/webhook.xml"/>
+
         <import resource="./services/pos/api.xml"/>
         <import resource="./services/pos/command.xml"/>
         <import resource="./services/pos/dal.xml"/>
@@ -17,7 +33,8 @@
     </imports>
 
     <services>
-        <service id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider" decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
+        <service id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider"
+                 decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
             <argument type="service" id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider.inner"/>
         </service>
     </services>
