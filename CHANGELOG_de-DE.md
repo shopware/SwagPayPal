@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PPI-70 - Bestellnummer wird jetzt für Zahlungen mit Express Checkout, PLUS und Smart Payment Buttons korrekt übermittelt
+
 # 1.8.2
 - PPI-46 - Behebt Fehler beim Erstatten ohne Betrag
 - PPI-47, PPI-48 - Erweiterung der PayPal API Elemente

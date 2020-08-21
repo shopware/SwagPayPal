@@ -21,12 +21,14 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Payment\Handler\PlusHandler;
+use Swag\PayPal\Payment\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\PayPal\Api\Payment;
 use Swag\PayPal\PayPal\Api\Payment\PaymentInstruction;
 use Swag\PayPal\PayPal\PartnerAttributionId;
 use Swag\PayPal\PayPal\PaymentIntent;
 use Swag\PayPal\PayPal\PaymentStatus;
 use Swag\PayPal\PayPal\Resource\PaymentResource;
+use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,13 +72,25 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
      */
     private $plusHandler;
 
+    /**
+     * @var OrderNumberPatchBuilder
+     */
+    private $orderNumberPatchBuilder;
+
+    /**
+     * @var SettingsServiceInterface
+     */
+    private $settingsService;
+
     public function __construct(
         PaymentResource $paymentResource,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         EntityRepositoryInterface $orderTransactionRepo,
         EcsSpbHandler $ecsSpbHandler,
         PayPalHandler $payPalHandler,
-        PlusHandler $plusHandler
+        PlusHandler $plusHandler,
+        OrderNumberPatchBuilder $orderNumberPatchBuilder,
+        SettingsServiceInterface $settingsService
     ) {
         $this->paymentResource = $paymentResource;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
@@ -84,6 +98,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->ecsSpbHandler = $ecsSpbHandler;
         $this->payPalHandler = $payPalHandler;
         $this->plusHandler = $plusHandler;
+        $this->orderNumberPatchBuilder = $orderNumberPatchBuilder;
+        $this->settingsService = $settingsService;
     }
 
     /**
@@ -152,6 +168,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             );
         }
 
+        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
+        $settings = $this->settingsService->getSettings($salesChannelId);
         $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
         $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
         $isExpressCheckout = $request->query->getBoolean(self::PAYPAL_EXPRESS_CHECKOUT_ID);
@@ -159,11 +177,30 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $isPlus = $request->query->getBoolean(self::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER);
         $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout, $isPlus);
 
+        if ($settings->getSendOrderNumber() && ($isExpressCheckout || $isSPBCheckout || $isPlus)) {
+            try {
+                $this->paymentResource->patch(
+                    [
+                        $this->orderNumberPatchBuilder->createOrderNumberPatch(
+                            $transaction->getOrder()->getOrderNumber()
+                        ),
+                    ],
+                    $paymentId,
+                    $salesChannelId
+                );
+            } catch (\Exception $e) {
+                throw new AsyncPaymentFinalizeException(
+                    $transactionId,
+                    'An error occurred during the communication with PayPal' . PHP_EOL . $e->getMessage()
+                );
+            }
+        }
+
         try {
             $response = $this->paymentResource->execute(
                 $payerId,
                 $paymentId,
-                $salesChannelContext->getSalesChannel()->getId(),
+                $salesChannelId,
                 $partnerAttributionId
             );
         } catch (\Exception $e) {

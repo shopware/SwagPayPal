@@ -12,6 +12,8 @@
             <argument type="service" id="Swag\PayPal\Payment\Handler\EcsSpbHandler"/>
             <argument type="service" id="Swag\PayPal\Payment\Handler\PayPalHandler"/>
             <argument type="service" id="Swag\PayPal\Payment\Handler\PlusHandler"/>
+            <argument type="service" id="Swag\PayPal\Payment\Patch\OrderNumberPatchBuilder"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <tag name="shopware.payment.method.async"/>
         </service>
 
@@ -76,6 +78,7 @@
 
         <service id="Swag\PayPal\Payment\Patch\AmountPatchBuilder"/>
         <service id="Swag\PayPal\Payment\Patch\ItemListPatchBuilder"/>
+        <service id="Swag\PayPal\Payment\Patch\OrderNumberPatchBuilder"/>
         <service id="Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder"/>
         <service id="Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder"/>
     </services>
