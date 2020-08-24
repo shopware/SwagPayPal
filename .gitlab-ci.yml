@@ -46,20 +46,26 @@ default:
 Static analyze (6.3.x.x dev):
     extends: .static_analyze_base
 
-Static analyze (latest 6.2):
-    extends: .static_analyze_base
-    only:
-        - master
-    variables:
-        DEVELOPMENT_BRANCH: "6.2"
-        PLATFORM_BRANCH: "6.2"
-
 Static analyze (6.3.0.0)):
     extends: .static_analyze_base
     only:
         - master
     variables:
         PLATFORM_BRANCH: "6.3.0.0"
+
+Static analyze (6.3.0.1)):
+    extends: .static_analyze_base
+    only:
+        - master
+    variables:
+        PLATFORM_BRANCH: "6.3.0.1"
+
+Static analyze (6.3.0.2)):
+    extends: .static_analyze_base
+    only:
+        - master
+    variables:
+        PLATFORM_BRANCH: "6.3.0.2"
 
 ToDos resolved:
     stage: Static analysis
@@ -122,3 +128,17 @@ PHPUnit (6.3.0.0):
         - master
     variables:
         PLATFORM_BRANCH: "6.3.0.0"
+
+PHPUnit (6.3.0.1):
+    extends: .phpunit_base
+    only:
+        - master
+    variables:
+        PLATFORM_BRANCH: "6.3.0.1"
+
+PHPUnit (6.3.0.2):
+    extends: .phpunit_base
+    only:
+        - master
+    variables:
+        PLATFORM_BRANCH: "6.3.0.2"

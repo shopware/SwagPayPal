@@ -1,4 +1,4 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
+# 1.8.3
 - PPI-70 - Bestellnummer wird jetzt für Zahlungen mit Express Checkout, PLUS und Smart Payment Buttons korrekt übermittelt
 
 # 1.8.2
