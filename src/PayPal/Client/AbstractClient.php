@@ -114,7 +114,7 @@ abstract class AbstractClient
             }
         }
 
-        $this->logger->error($exceptionMessage . ' ' . $message, [$error, $data]);
+        $this->logger->error(\sprintf('%s %s', $exceptionMessage, $message), [$error, $data]);
 
         return new PayPalApiException($error['name'], $message, (int) $requestException->getCode());
     }

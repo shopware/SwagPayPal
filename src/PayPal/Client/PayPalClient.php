@@ -114,6 +114,6 @@ class PayPalClient extends AbstractClient
     {
         $token = $this->tokenResource->getToken($credentials, $url);
 
-        return $token->getTokenType() . ' ' . $token->getAccessToken();
+        return \sprintf('%s %s', $token->getTokenType(), $token->getAccessToken());
     }
 }

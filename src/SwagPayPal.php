@@ -152,7 +152,7 @@ class SwagPayPal extends Plugin
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->container->get(SystemConfigService::class);
         /** @var EntityRepositoryInterface $customFieldRepository */
-        $customFieldRepository = $this->container->get((new CustomFieldDefinition())->getEntityName() . '.repository');
+        $customFieldRepository = $this->container->get(\sprintf('%s.repository', (new CustomFieldDefinition())->getEntityName()));
         /** @var EntityRepositoryInterface $paymentRepository */
         $paymentRepository = $this->container->get('payment_method.repository');
 

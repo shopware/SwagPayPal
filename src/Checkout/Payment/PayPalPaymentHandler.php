@@ -204,7 +204,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             } catch (\Exception $e) {
                 throw new AsyncPaymentFinalizeException(
                     $transactionId,
-                    'An error occurred during the communication with PayPal' . PHP_EOL . $e->getMessage()
+                    \sprintf('An error occurred during the communication with PayPal%s%s', PHP_EOL, $e->getMessage())
                 );
             }
         }
@@ -241,7 +241,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         } catch (\Exception $e) {
             throw new AsyncPaymentFinalizeException(
                 $transactionId,
-                'An error occurred during the communication with PayPal' . PHP_EOL . $e->getMessage()
+                \sprintf('An error occurred during the communication with PayPal%s%s', PHP_EOL, $e->getMessage())
             );
         }
 

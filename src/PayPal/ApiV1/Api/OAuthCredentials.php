@@ -21,7 +21,7 @@ class OAuthCredentials
 
     public function __toString(): string
     {
-        return 'Basic ' . \base64_encode($this->restId . ':' . $this->restSecret);
+        return \sprintf('Basic %s', \base64_encode($this->restId . ':' . $this->restSecret));
     }
 
     public function getRestId(): string

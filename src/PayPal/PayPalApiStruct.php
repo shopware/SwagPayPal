@@ -28,7 +28,7 @@ abstract class PayPalApiStruct implements \JsonSerializable
             }
 
             $camelCaseKey = \ucfirst($nameConverter->denormalize($snakeCaseKey));
-            $setterMethod = 'set' . $camelCaseKey;
+            $setterMethod = \sprintf('set%s', $camelCaseKey);
             if (!\method_exists($this, $setterMethod)) {
                 // There is no setter/property for a given data key from PayPal.
                 // Continue here to not break the plugin, if the plugin is not up-to-date with the PayPal API
@@ -108,7 +108,7 @@ abstract class PayPalApiStruct implements \JsonSerializable
 
     private function getNamespaceOfAssociation(): string
     {
-        return static::class . '\\';
+        return \sprintf('%s\\', static::class);
     }
 
     private function getClassNameOfOneToManyAssociation(string $camelCaseKey): string

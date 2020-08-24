@@ -43,7 +43,7 @@ class CredentialsClient extends AbstractClient
         $options = [
             'headers' => [
                 'content-type' => 'application/json',
-                'Authorization' => 'Bearer ' . $accessToken,
+                'Authorization' => \sprintf('Bearer %s', $accessToken),
             ],
         ];
 

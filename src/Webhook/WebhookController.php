@@ -166,7 +166,7 @@ class WebhookController extends AbstractController
             $this->webhookService->executeWebhook($webhook, $context);
         } catch (WebhookException $webhookException) {
             $this->logger->error(
-                '[PayPal Webhook] ' . $webhookException->getMessage(),
+                \sprintf('[PayPal Webhook] %s', $webhookException->getMessage()),
                 [
                     'type' => $webhookException->getEventType(),
                     'webhook' => \json_encode($webhook),
@@ -175,7 +175,7 @@ class WebhookController extends AbstractController
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         } catch (\Exception $e) {
-            $this->logger->error('[PayPal Webhook] ' . $e->getMessage());
+            $this->logger->error(\sprintf('[PayPal Webhook] %s', $e->getMessage()));
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         }
