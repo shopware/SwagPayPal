@@ -42,11 +42,12 @@ class PaymentStatusUtil
 
     public function __construct(
         EntityRepositoryInterface $orderRepository,
-        OrderTransactionStateHandler $orderTransactionStateHandler
+        OrderTransactionStateHandler $orderTransactionStateHandler,
+        PriceFormatter $priceFormatter
     ) {
         $this->orderRepository = $orderRepository;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
-        $this->priceFormatter = new PriceFormatter();
+        $this->priceFormatter = $priceFormatter;
     }
 
     public function applyVoidStateToOrder(string $orderId, Context $context): void

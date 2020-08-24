@@ -40,6 +40,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentSaleResponseFixtu
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -251,7 +252,8 @@ class ExpressCheckoutControllerTest extends TestCase
 
         $cartPaymentBuilder = new CartPaymentBuilder(
             $settingsService,
-            $localeCodeProvider
+            $localeCodeProvider,
+            new PriceFormatter()
         );
         if ($cartService === null) {
             /** @var CartService $cartService */

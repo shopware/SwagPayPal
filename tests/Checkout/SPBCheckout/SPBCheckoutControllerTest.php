@@ -30,6 +30,7 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -140,13 +141,15 @@ class SPBCheckoutControllerTest extends TestCase
 
         $cartPaymentBuilder = new CartPaymentBuilder(
             $settingsService,
-            $localeCodeProvider
+            $localeCodeProvider,
+            new PriceFormatter()
         );
 
         $orderPaymentBuilder = new OrderPaymentBuilder(
             $settingsService,
             $localeCodeProvider,
-            $currencyRepo
+            $currencyRepo,
+            new PriceFormatter()
         );
 
         return new SPBCheckoutController(

@@ -12,14 +12,17 @@
             <argument type="service" id="Swag\PayPal\PayPal\ApiV2\Resource\RefundResource"/>
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentStatusUtilV2"/>
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
         </service>
 
         <service id="Swag\PayPal\OrdersApi\Builder\CartOrderBuilder">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
         </service>
 
         <service id="Swag\PayPal\OrdersApi\Builder\OrderOrderBuilder">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
         </service>
     </services>
 </container>

@@ -10,15 +10,26 @@ namespace Swag\PayPal\PaymentsApi\Patch;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Swag\PayPal\PaymentsApi\Builder\Util\AmountProvider;
 use Swag\PayPal\PayPal\ApiV1\Api\Patch;
+use Swag\PayPal\Util\PriceFormatter;
 
 class AmountPatchBuilder
 {
+    /**
+     * @var PriceFormatter
+     */
+    private $priceFormatter;
+
+    public function __construct(PriceFormatter $priceFormatter)
+    {
+        $this->priceFormatter = $priceFormatter;
+    }
+
     public function createAmountPatch(
         CalculatedPrice $orderTransactionAmount,
         float $shippingCosts,
         string $currency
     ): Patch {
-        $amount = (new AmountProvider())->createAmount($orderTransactionAmount, $shippingCosts, $currency);
+        $amount = (new AmountProvider($this->priceFormatter))->createAmount($orderTransactionAmount, $shippingCosts, $currency);
         $amountArray = \json_decode((string) \json_encode($amount), true);
 
         $amountPatch = new Patch();

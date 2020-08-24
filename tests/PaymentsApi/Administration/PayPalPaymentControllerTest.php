@@ -29,6 +29,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidAuthorizationResponseFi
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
 use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
 use Swag\PayPal\Test\Mock\Util\PaymentStatusUtilMock;
+use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPaymentControllerTest extends TestCase
@@ -311,7 +312,8 @@ class PayPalPaymentControllerTest extends TestCase
             new OrdersResource($this->createPayPalClientFactory()),
             new CaptureResource($this->createPayPalClientFactory()),
             new PaymentStatusUtilMock(),
-            new OrderRepositoryMock()
+            new OrderRepositoryMock(),
+            new PriceFormatter()
         );
     }
 
@@ -339,7 +341,8 @@ class PayPalPaymentControllerTest extends TestCase
             new OrdersResource($this->createPayPalClientFactory()),
             new CaptureResource($this->createPayPalClientFactory()),
             new PaymentStatusUtilMock(),
-            new OrderRepositoryMock()
+            new OrderRepositoryMock(),
+            new PriceFormatter()
         );
     }
 }

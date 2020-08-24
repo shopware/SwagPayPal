@@ -18,6 +18,7 @@ use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\EntityRepositoryMock;
 use Swag\PayPal\Util\PaymentStatusUtil;
+use Swag\PayPal\Util\PriceFormatter;
 
 class PaymentStatusUtilMock extends PaymentStatusUtil
 {
@@ -34,7 +35,8 @@ class PaymentStatusUtilMock extends PaymentStatusUtil
 
         parent::__construct(
             $entityRepository,
-            new OrderTransactionStateHandler($stateMachineRegistry)
+            new OrderTransactionStateHandler($stateMachineRegistry),
+            new PriceFormatter()
         );
     }
 

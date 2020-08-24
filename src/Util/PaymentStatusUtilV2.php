@@ -38,11 +38,12 @@ class PaymentStatusUtilV2
 
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepository,
-        OrderTransactionStateHandler $orderTransactionStateHandler
+        OrderTransactionStateHandler $orderTransactionStateHandler,
+        PriceFormatter $priceFormatter
     ) {
         $this->orderTransactionRepository = $orderTransactionRepository;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
-        $this->priceFormatter = new PriceFormatter();
+        $this->priceFormatter = $priceFormatter;
     }
 
     public function applyRefundState(string $orderTransactionId, Refund $refundResponse, Order $payPalOrder, Context $context): void

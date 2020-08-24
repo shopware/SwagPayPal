@@ -35,6 +35,7 @@ use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\Payment\Builder\OrderPaymentBuilderTest;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\PriceFormatter;
 use Swag\PayPal\Webhook\WebhookRegistry;
 
 trait ServicesTrait
@@ -95,7 +96,8 @@ trait ServicesTrait
         return new OrderPaymentBuilder(
             $settingsService,
             new LocaleCodeProviderMock(new EntityRepositoryMock()),
-            new EntityRepositoryMock()
+            new EntityRepositoryMock(),
+            new PriceFormatter()
         );
     }
 
@@ -105,7 +107,7 @@ trait ServicesTrait
 
         $settingsService = new SettingsServiceMock($settings);
 
-        return new OrderOrderBuilder($settingsService);
+        return new OrderOrderBuilder($settingsService, new PriceFormatter());
     }
 
     protected function createWebhookRegistry(?OrderTransactionRepoMock $orderTransactionRepo = null): WebhookRegistry

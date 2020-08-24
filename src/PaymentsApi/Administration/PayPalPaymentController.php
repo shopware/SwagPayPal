@@ -93,7 +93,8 @@ class PayPalPaymentController extends AbstractController
         OrdersResource $ordersResource,
         CaptureResource $captureResource,
         PaymentStatusUtil $paymentStatusUtil,
-        EntityRepositoryInterface $orderRepository
+        EntityRepositoryInterface $orderRepository,
+        PriceFormatter $priceFormatter
     ) {
         $this->paymentResource = $paymentResource;
         $this->saleResource = $saleResource;
@@ -102,7 +103,7 @@ class PayPalPaymentController extends AbstractController
         $this->captureResource = $captureResource;
         $this->paymentStatusUtil = $paymentStatusUtil;
         $this->orderRepository = $orderRepository;
-        $this->priceFormatter = new PriceFormatter();
+        $this->priceFormatter = $priceFormatter;
     }
 
     /**

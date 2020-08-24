@@ -23,6 +23,7 @@ use Swag\PayPal\PayPal\ApiV1\Api\Payment\Transaction;
 use Swag\PayPal\PayPal\ApiV1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\PriceFormatter;
 
 class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPaymentBuilderInterface
 {
@@ -34,9 +35,10 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
     public function __construct(
         SettingsServiceInterface $settingsService,
         LocaleCodeProvider $localeCodeProvider,
-        EntityRepositoryInterface $currencyRepository
+        EntityRepositoryInterface $currencyRepository,
+        PriceFormatter $priceFormatter
     ) {
-        parent::__construct($settingsService, $localeCodeProvider);
+        parent::__construct($settingsService, $localeCodeProvider, $priceFormatter);
         $this->currencyRepository = $currencyRepository;
     }
 
@@ -83,7 +85,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 
         $transaction = new Transaction();
 
-        $amount = (new AmountProvider())->createAmount(
+        $amount = (new AmountProvider($this->priceFormatter))->createAmount(
             $orderTransactionAmount,
             $order->getShippingCosts()->getTotalPrice(),
             $currency
@@ -98,7 +100,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 
         $itemListValid = true;
         if ($this->settings->getSubmitCart()) {
-            $items = (new ItemListProvider())->getItemList($order, $currency);
+            $items = (new ItemListProvider($this->priceFormatter))->getItemList($order, $currency);
 
             if (!empty($items)) {
                 $itemList = new ItemList();

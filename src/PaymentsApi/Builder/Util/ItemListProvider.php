@@ -21,9 +21,9 @@ class ItemListProvider
      */
     private $priceFormatter;
 
-    public function __construct()
+    public function __construct(PriceFormatter $priceFormatter)
     {
-        $this->priceFormatter = new PriceFormatter();
+        $this->priceFormatter = $priceFormatter;
     }
 
     /**

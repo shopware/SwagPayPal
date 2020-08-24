@@ -36,10 +36,10 @@ abstract class AbstractOrderBuilder
      */
     protected $settingsService;
 
-    public function __construct(SettingsServiceInterface $settingsService)
+    public function __construct(SettingsServiceInterface $settingsService, PriceFormatter $priceFormatter)
     {
         $this->settingsService = $settingsService;
-        $this->priceFormatter = new PriceFormatter();
+        $this->priceFormatter = $priceFormatter;
     }
 
     protected function getIntent(): string

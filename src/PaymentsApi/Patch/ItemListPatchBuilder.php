@@ -10,12 +10,23 @@ namespace Swag\PayPal\PaymentsApi\Patch;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Swag\PayPal\PaymentsApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\PayPal\ApiV1\Api\Patch;
+use Swag\PayPal\Util\PriceFormatter;
 
 class ItemListPatchBuilder
 {
+    /**
+     * @var PriceFormatter
+     */
+    private $priceFormatter;
+
+    public function __construct(PriceFormatter $priceFormatter)
+    {
+        $this->priceFormatter = $priceFormatter;
+    }
+
     public function createItemListPatch(OrderEntity $order, string $currency): Patch
     {
-        $itemList = (new ItemListProvider())->getItemList($order, $currency);
+        $itemList = (new ItemListProvider($this->priceFormatter))->getItemList($order, $currency);
         $itemListArray = \json_decode((string) \json_encode($itemList), true);
 
         $itemListPatch = new Patch();

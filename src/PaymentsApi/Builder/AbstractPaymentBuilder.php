@@ -16,6 +16,7 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\PriceFormatter;
 
 abstract class AbstractPaymentBuilder
 {
@@ -34,12 +35,19 @@ abstract class AbstractPaymentBuilder
      */
     protected $localeCodeProvider;
 
+    /**
+     * @var PriceFormatter
+     */
+    protected $priceFormatter;
+
     public function __construct(
         SettingsServiceInterface $settingsService,
-        LocaleCodeProvider $localeCodeProvider
+        LocaleCodeProvider $localeCodeProvider,
+        PriceFormatter $priceFormatter
     ) {
         $this->settingsService = $settingsService;
         $this->localeCodeProvider = $localeCodeProvider;
+        $this->priceFormatter = $priceFormatter;
     }
 
     protected function getIntent(): string

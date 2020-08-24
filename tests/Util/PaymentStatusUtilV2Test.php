@@ -30,6 +30,7 @@ use Swag\PayPal\PayPal\ApiV2\Api\Order\PurchaseUnit\Payments\Refund\Amount as Re
 use Swag\PayPal\PayPal\ApiV2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown;
 use Swag\PayPal\PayPal\ApiV2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\TotalRefundedAmount;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
+use Swag\PayPal\Util\PriceFormatter;
 
 class PaymentStatusUtilV2Test extends TestCase
 {
@@ -74,7 +75,8 @@ class PaymentStatusUtilV2Test extends TestCase
 
         $this->paymentStatusUtil = new PaymentStatusUtilV2(
             $this->orderTransactionRepository,
-            $orderTransactionStateHandler
+            $orderTransactionStateHandler,
+            new PriceFormatter()
         );
 
         $this->context = Context::createDefaultContext();

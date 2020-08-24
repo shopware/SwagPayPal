@@ -26,17 +26,12 @@ use Swag\PayPal\Util\PriceFormatter;
 
 class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBuilderInterface
 {
-    /**
-     * @var PriceFormatter
-     */
-    private $priceFormatter;
-
     public function __construct(
         SettingsServiceInterface $settingsService,
-        LocaleCodeProvider $localeCodeProvider
+        LocaleCodeProvider $localeCodeProvider,
+        PriceFormatter $priceFormatter
     ) {
-        parent::__construct($settingsService, $localeCodeProvider);
-        $this->priceFormatter = new PriceFormatter();
+        parent::__construct($settingsService, $localeCodeProvider, $priceFormatter);
     }
 
     public function getPayment(
@@ -84,7 +79,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
 
         $transaction = new Transaction();
         $shippingCostsTotal = $cart->getDeliveries()->getShippingCosts()->sum()->getTotalPrice();
-        $amount = (new AmountProvider())->createAmount($transactionAmount, $shippingCostsTotal, $currency);
+        $amount = (new AmountProvider($this->priceFormatter))->createAmount($transactionAmount, $shippingCostsTotal, $currency);
         $transaction->setAmount($amount);
 
         $itemListValid = true;

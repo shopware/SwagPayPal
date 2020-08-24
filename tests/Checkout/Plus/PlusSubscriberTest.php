@@ -54,6 +54,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
@@ -466,12 +467,14 @@ class PlusSubscriberTest extends TestCase
         $plusDataService = new PlusDataService(
             new CartPaymentBuilder(
                 $settingsService,
-                $localeCodeProvider
+                $localeCodeProvider,
+                new PriceFormatter()
             ),
             new OrderPaymentBuilder(
                 $settingsService,
                 $localeCodeProvider,
-                $currencyRepo
+                $currencyRepo,
+                new PriceFormatter()
             ),
             $this->createPaymentResource($settings),
             $router,

@@ -13,12 +13,16 @@
         <service id="Swag\PayPal\Util\PaymentStatusUtil">
             <argument type="service" id="order.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
         </service>
 
         <service id="Swag\PayPal\Util\PaymentStatusUtilV2">
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
         </service>
+
+        <service id="Swag\PayPal\Util\PriceFormatter"/>
 
         <service id="Swag\PayPal\Util\LocaleCodeProvider">
             <argument type="service" id="language.repository"/>
