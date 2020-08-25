@@ -9,12 +9,12 @@
         {% endblock %}
 
         {% block swag_paypal_izettle_wizard_connection_apikey %}
-            <sw-text-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.apiKey"
-                           class="swag-paypal-izettle-wizard-connection__apikey-field"
-                           required
-                           :label="$tc('swag-paypal-izettle.wizard.connection.labelApiKey')"
-                           :placeholder="$tc('swag-paypal-izettle.wizard.connection.placeholderApiKey')"
-                           @input="forceUpdate">
+            <sw-password-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.apiKey"
+                               class="swag-paypal-izettle-wizard-connection__apikey-field"
+                               required
+                               :label="$tc('swag-paypal-izettle.wizard.connection.labelApiKey')"
+                               :placeholder="$tc('swag-paypal-izettle.wizard.connection.placeholderApiKey')"
+                               @input="forceUpdate">
                 <template #suffix>
 
                     {% block swag_paypal_izettle_wizard_connection_apikey_suffix %}
@@ -24,7 +24,7 @@
                         </sw-icon>
                     {% endblock %}
                 </template>
-            </sw-text-field>
+            </sw-password-field>
         {% endblock %}
 
         {% block swag_paypal_izettle_wizard_connection_apikey_description %}

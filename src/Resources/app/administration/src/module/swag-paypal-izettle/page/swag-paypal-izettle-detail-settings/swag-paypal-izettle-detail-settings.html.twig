@@ -101,11 +101,11 @@
                 <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.settings.titleCredentials')">
 
                     {% block swag_paypal_izettle_detail_settings_credentials_apikey %}
-                        <sw-text-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.apiKey"
-                                       required
-                                       :label="$tc('swag-paypal-izettle.authentification.apiKey')"
-                                       @input="forceUpdate">
-                        </sw-text-field>
+                        <sw-password-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.apiKey"
+                                           required
+                                           :label="$tc('swag-paypal-izettle.authentification.apiKey')"
+                                           @input="forceUpdate">
+                        </sw-password-field>
                     {% endblock %}
 
                     {% block swag_paypal_izettle_detail_settings_credentials_apikey_description %}
