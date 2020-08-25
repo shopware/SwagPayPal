@@ -78,8 +78,8 @@
                 "titlePrices": "Prices",
                 "syncPrices": "Preise übertragen",
                 "replace": "Existierende Produkte in iZettle ersetzen",
-                "activeHelpText": "If true the iZettle sync will happen automatically in the background.",
-                "saveAlert": "Saved changes are available after the currently running synchronisation between Shopware and iZettle ended."
+                "activeHelpText": "Wenn aktiv, wird die Synchronisation mit iZettle automatisch im Hintergrund stattfinden.",
+                "saveAlert": "Änderungen werden erst nach der aktuell laufenden Synchronsiation zwischen Shopware und iZettle aktiv."
             },
             "logs": {
                 "columnLastSync": "Details",
@@ -147,24 +147,24 @@
                 "fakeMail": "izettle@example.com"
             },
             "connectionDisconnect": {
-                "modalTitle": "Disconnect iZettle account",
-                "headline": "You are about to disconnect iZettle",
-                "info": "Products will no longer be updated and synchronized with your shown iZettle account when disconnecting your account.",
-                "disconnectButton": "Disconnect account",
-                "disconnectErrorMessage": "An error occured while disconnecting."
+                "modalTitle": "iZettle-Konto trennen",
+                "headline": "Du bist dabei, die Verbindung zu iZettle zu trennen",
+                "info": "Produkte werden nicht weiter mit dem angezeigten iZettle-Account synchronisiert, wenn die Verbindung getrennt wurde.",
+                "disconnectButton": "Konto trennen",
+                "disconnectErrorMessage": "Ein Fehler ist beim Trennen aufgetreten."
             },
             "customization": {
-                "salesChannelLabel": "Name of Sales Channel",
-                "modalTitle": "Sales Channel details",
-                "labelDomain": "Your Shop-Domain",
-                "subtitle": "iZettle will use this domain to download media associated with your synchronised products.",
-                "placeholderDomain": "www.my-store.shopware.com"
+                "salesChannelLabel": "Name des Verkaufskanals",
+                "modalTitle": "Verkaufskanal-Details",
+                "labelDomain": "Deine Shop-Domain",
+                "subtitle": "iZettle wird diese Domain nutzen, um Mediendaten Deiner synchronisierten Produkte herunterzuladen.",
+                "placeholderDomain": "www.mein-store.shopware.com"
             },
             "productSelection": {
-                "modalTitle": "Transfer products from existing Sales Channel",
+                "modalTitle": "Produkte von einem existierenden Verkaufskanal übertragen",
                 "labelSelect": "Verkaufskanal",
-                "labelToggle": "Produktauswahl klonen",
-                "info": "To get started quicker you now have the option to assign products from an existing Sales Channel to your newly created one. All assigned products will then be available for synchronisation in iZettle POS. No manual work needed."
+                "labelToggle": "Produktauswahl übertragen",
+                "info": "Um direkt durchzustarten kannst Du nun Produkte eines bestehenden Verkaufskanals Deinem neuen Verkaufskanal zuweisen. Alle zugewiesenen Produkte werden dann zur Synchronisation mit iZettle POS zur Verfügung stehen.",
             },
             "syncLibrary": {
                 "modalTitle": "Setup product sync",

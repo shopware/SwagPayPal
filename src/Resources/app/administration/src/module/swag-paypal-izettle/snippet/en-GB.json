@@ -78,7 +78,7 @@
                 "titlePrices": "Prices",
                 "syncPrices": "Synchronise prices",
                 "replace": "Replace existing products in iZettle",
-                "activeHelpText": "If true the iZettle sync will happen automatically in the background.",
+                "activeHelpText": "If active, the iZettle sync will happen automatically in the background.",
                 "saveAlert": "Saved changes are available after the currently running synchronisation between Shopware and iZettle ended."
             },
             "logs": {
@@ -163,7 +163,7 @@
             "productSelection": {
                 "modalTitle": "Transfer products from existing Sales Channel",
                 "labelSelect": "Sales Channel",
-                "labelToggle": "Clone product selection",
+                "labelToggle": "Transfer product selection",
                 "info": "To get started quicker you now have the option to assign products from an existing Sales Channel to your newly created one. All assigned products will then be available for synchronisation in iZettle POS. No manual work needed."
             },
             "syncLibrary": {
@@ -202,7 +202,7 @@
             "buttonGenerateKey": "Generate API key",
             "apiKeyDescription": "You need to generate an API key at the iZettle website. The generated key needs to be pasted here to authorise the connection to iZettle."
         },
-        "messageCloneError": "Could not clone product visibility from another Sales Channel.",
+        "messageCloneError": "Could not transfer product visibility from another Sales Channel.",
         "messageWebhookRegisterError": "Could not register webhook at iZettle."
     }
 }
