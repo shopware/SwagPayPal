@@ -86,10 +86,15 @@ abstract class AbstractRepoMock
 
     protected function searchCollectionIds(EntityCollection $entityCollection, Criteria $criteria, Context $context): IdSearchResult
     {
+        $repository = $this;
+
         return new IdSearchResult(
             \count($entityCollection),
-            \array_map(static function (Entity $entity) {
-                return ['primaryKey' => $entity->get('id'), 'data' => $entity];
+            \array_map(static function (Entity $entity) use ($repository) {
+                return [
+                    'primaryKey' => $entity->has('id') ? $entity->get('id') : $repository->getUniqueIdentifier($entity),
+                    'data' => $entity,
+                ];
             }, $entityCollection->getElements()),
             $criteria,
             $context

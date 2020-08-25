@@ -150,6 +150,7 @@
                  parent="Swag\PayPal\IZettle\MessageQueue\Manager\AbstractSyncManager">
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
             <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Sync\ImageSyncer"/>
         </service>
 
         <service id="Swag\PayPal\IZettle\MessageQueue\Handler\Sync\AbstractSyncHandler" abstract="true">

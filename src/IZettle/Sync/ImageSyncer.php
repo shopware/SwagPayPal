@@ -130,6 +130,23 @@ class ImageSyncer extends AbstractSyncer
         return $criteria;
     }
 
+    public function cleanUp(string $salesChannelId, Context $context): void
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new EqualsFilter('salesChannelId', $salesChannelId),
+            new MultiFilter(MultiFilter::CONNECTION_AND, [
+                new EqualsFilter('url', null),
+                new EqualsFilter('lookupKey', null),
+            ])
+        );
+
+        $ids = $this->iZettleMediaRepository->searchIds($criteria, $context)->getIds();
+        if (!empty($ids)) {
+            $this->iZettleMediaRepository->delete($ids, $context);
+        }
+    }
+
     private function prepareMediaUpdate(
         IZettleSalesChannelMediaCollection $iZettleMediaCollection,
         Uploaded $uploaded,

@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Media\MediaEntity;
+use Shopware\Core\Content\Media\Pathname\UrlGenerator;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
@@ -34,6 +35,7 @@ use Swag\PayPal\IZettle\Api\Service\Converter\PresentationConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\PriceConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\IZettle\Api\Service\Converter\VariantConverter;
+use Swag\PayPal\IZettle\Api\Service\MediaConverter;
 use Swag\PayPal\IZettle\Api\Service\ProductConverter;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelProductCollection;
@@ -41,10 +43,12 @@ use Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ProductCleanupSyncHandler;
 use Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ProductSingleSyncHandler;
 use Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ProductVariantSyncHandler;
 use Swag\PayPal\IZettle\MessageQueue\Manager\ProductSyncManager;
+use Swag\PayPal\IZettle\Resource\ImageResource;
 use Swag\PayPal\IZettle\Resource\ProductResource;
 use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Sync\Context\ProductContext;
 use Swag\PayPal\IZettle\Sync\Context\ProductContextFactory;
+use Swag\PayPal\IZettle\Sync\ImageSyncer;
 use Swag\PayPal\IZettle\Sync\Product\DeletedUpdater;
 use Swag\PayPal\IZettle\Sync\Product\NewUpdater;
 use Swag\PayPal\IZettle\Sync\Product\OutdatedUpdater;
@@ -137,7 +141,17 @@ class CompleteProductTest extends TestCase
             $salesChannelContextFactory
         );
 
-        $productSyncManager = new ProductSyncManager($messageBus, $productSelection, $salesChannelProductRepository);
+        $productSyncManager = new ProductSyncManager(
+            $messageBus,
+            $productSelection,
+            $salesChannelProductRepository,
+            new ImageSyncer(
+                $iZettleMediaRepository,
+                new MediaConverter($this->createMock(UrlGenerator::class)),
+                new ImageResource(new IZettleClientFactoryMock()),
+                new NullLogger()
+            )
+        );
 
         $productVariantSyncHandler = new ProductVariantSyncHandler(
             $runService,
@@ -169,6 +183,7 @@ class CompleteProductTest extends TestCase
         $category = $this->getCategory();
         $mediaA = $this->getMedia(self::MEDIA_A_ID, 'first.jpg');
         $mediaB = $this->getMedia(self::MEDIA_B_ID, 'second.jpg');
+        $mediaC = $this->getMedia(Uuid::randomHex(), 'non_existing.jpg');
 
         /*
           * A - unchanged
@@ -218,7 +233,8 @@ class CompleteProductTest extends TestCase
         $productStateF = $iZettleProductRepository->createMockEntity($deletedProductF, new Product(), Defaults::SALES_CHANNEL);
         static::assertCount(4, $iZettleProductRepository->getCollection());
 
-        $mediaState = $iZettleMediaRepository->createMockEntity($mediaA, Defaults::SALES_CHANNEL, 'lookupKey', self::MEDIA_UPLOADED_URL);
+        $existingMedia = $iZettleMediaRepository->createMockEntity($mediaA, Defaults::SALES_CHANNEL, 'lookupKey', self::MEDIA_UPLOADED_URL);
+        $removeableMedia = $iZettleMediaRepository->createMockEntity($mediaC, Defaults::SALES_CHANNEL);
 
         $productSyncManager->buildMessages(
             $salesChannel,
@@ -252,7 +268,8 @@ class CompleteProductTest extends TestCase
         static::assertCount(2, UpdateProductFixture::$lastUpdatedProducts);
 
         static::assertCount(2, $iZettleMediaRepository->getCollection());
-        static::assertContains($mediaState, $iZettleMediaRepository->getCollection());
+        static::assertContains($existingMedia, $iZettleMediaRepository->getCollection());
+        static::assertNotContains($removeableMedia, $iZettleMediaRepository->getCollection());
     }
 
     private function getTax(): TaxEntity

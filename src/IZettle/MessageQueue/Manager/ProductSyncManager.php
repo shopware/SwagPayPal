@@ -25,6 +25,7 @@ use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\MessageQueue\Message\Sync\ProductCleanupSyncMessage;
 use Swag\PayPal\IZettle\MessageQueue\Message\Sync\ProductSingleSyncMessage;
 use Swag\PayPal\IZettle\MessageQueue\Message\Sync\ProductVariantSyncMessage;
+use Swag\PayPal\IZettle\Sync\ImageSyncer;
 use Swag\PayPal\IZettle\Sync\ProductSelection;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -43,14 +44,21 @@ class ProductSyncManager extends AbstractSyncManager
      */
     private $productRepository;
 
+    /**
+     * @var ImageSyncer
+     */
+    private $imageSyncer;
+
     public function __construct(
         MessageBusInterface $messageBus,
         ProductSelection $productSelection,
-        SalesChannelRepositoryInterface $productRepository
+        SalesChannelRepositoryInterface $productRepository,
+        ImageSyncer $imageSyncer
     ) {
         parent::__construct($messageBus);
         $this->productSelection = $productSelection;
         $this->productRepository = $productRepository;
+        $this->imageSyncer = $imageSyncer;
     }
 
     public function buildMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): void
@@ -62,6 +70,8 @@ class ProductSyncManager extends AbstractSyncManager
 
         $productStreamId = $iZettleSalesChannel->getProductStreamId();
         $criteria = $this->productSelection->getProductStreamCriteria($productStreamId, $context);
+
+        $this->imageSyncer->cleanUp($salesChannel->getId(), $context);
 
         $this->buildSingleMessages(clone $criteria, $salesChannelContext, $salesChannel, $runId);
         $this->buildVariantMessages(clone $criteria, $salesChannelContext, $salesChannel, $runId);

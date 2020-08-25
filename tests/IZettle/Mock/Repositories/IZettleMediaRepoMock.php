@@ -17,7 +17,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaDefinition;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaEntity;
 
@@ -42,12 +44,12 @@ class IZettleMediaRepoMock extends AbstractRepoMock implements EntityRepositoryI
 
     public function searchIds(Criteria $criteria, Context $context): IdSearchResult
     {
-        return $this->searchCollectionIds($this->entityCollection, $criteria, $context);
+        return $this->searchCollectionIds($this->getFilteredCollection($criteria), $criteria, $context);
     }
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
-        return $this->searchCollection($this->entityCollection, $criteria, $context);
+        return $this->searchCollection($this->getFilteredCollection($criteria), $criteria, $context);
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
@@ -82,7 +84,7 @@ class IZettleMediaRepoMock extends AbstractRepoMock implements EntityRepositoryI
     {
     }
 
-    public function createMockEntity(MediaEntity $mediaEntity, string $salesChannelId, ?string $lookupKey, ?string $url): IZettleSalesChannelMediaEntity
+    public function createMockEntity(MediaEntity $mediaEntity, string $salesChannelId, ?string $lookupKey = null, ?string $url = null): IZettleSalesChannelMediaEntity
     {
         $entity = new IZettleSalesChannelMediaEntity();
         $entity->setSalesChannelId($salesChannelId);
@@ -102,5 +104,22 @@ class IZettleMediaRepoMock extends AbstractRepoMock implements EntityRepositoryI
             $entity->get('salesChannelId'),
             $entity->get('mediaId'),
         ]);
+    }
+
+    private function getFilteredCollection(Criteria $criteria): IZettleSalesChannelMediaCollection
+    {
+        foreach ($criteria->getFilters() as $filter) {
+            if ($filter instanceof MultiFilter && $filter->getOperator() === MultiFilter::CONNECTION_AND) {
+                /** @var IZettleSalesChannelMediaCollection $newCollection */
+                $newCollection = $this->entityCollection->filterByProperty('lookupKey', null);
+
+                return $newCollection;
+            }
+        }
+
+        /** @var IZettleSalesChannelMediaCollection $entityCollection */
+        $entityCollection = $this->entityCollection;
+
+        return $entityCollection;
     }
 }
