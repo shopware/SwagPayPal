@@ -6,7 +6,7 @@
         "header": "iZettle Sales Channel",
         "tabTitle": {
             "overview": "Overview",
-            "syncedProducts": "Synced Products",
+            "syncedProducts": "Synchronised Products",
             "settings": "Settings",
             "runs": "Logs",
             "help": "Help"
@@ -47,14 +47,14 @@
                 "continueSetup": {
                     "cardTitle": "Setup",
                     "content": {
-                        "headline": "Setup product sync",
-                        "firstLine": "Your iZettle and Shopware accounts are connected! To finish, setup the product sync.",
+                        "headline": "Setup product synchronisation",
+                        "firstLine": "Your iZettle and Shopware accounts are connected! To finish, setup the product synchronisation.",
                         "secondLine": "Once activated, any changes you make to your Shopware products will automatically be updated in iZettle. Making a sale on either system will update stock and you can see all of your sales in one place at Shopware."
                     }
                 }
             },
             "syncedProducts": {
-                "title": "Synced Products",
+                "title": "Synchronised Products",
                 "notSyncedYet": "Not synchronised yet",
                 "columns": {
                     "name": "Name",
@@ -78,7 +78,7 @@
                 "titlePrices": "Prices",
                 "syncPrices": "Synchronise prices",
                 "replace": "Replace existing products in iZettle",
-                "activeHelpText": "If active, the iZettle sync will happen automatically in the background.",
+                "activeHelpText": "If active, the iZettle synchronisation will happen automatically in the background.",
                 "saveAlert": "Saved changes are available after the currently running synchronisation between Shopware and iZettle ended."
             },
             "logs": {
@@ -167,11 +167,11 @@
                 "info": "To get started quicker you now have the option to assign products from an existing Sales Channel to your newly created one. All assigned products will then be available for synchronisation in iZettle POS. No manual work needed."
             },
             "syncLibrary": {
-                "modalTitle": "Setup product sync",
+                "modalTitle": "Setup product synchronisation",
                 "header": "We found {shopwareProducts} and {iZettleProducts}",
                 "shopwareProducts": "no Shopware products | one Shopware product | {n} Shopware products",
                 "iZettleProducts": "no iZettle products | one iZettle product | {n} iZettle products",
-                "description": "All products are synced from your newly created Sales Channel in Shopware. How would you like to setup your iZettle library?",
+                "description": "All products are synchronised from your newly created Sales Channel in Shopware. How would you like to setup your iZettle library?",
                 "optionReplaceLabel": "Replace iZettle library",
                 "optionReplaceDescription": "Replace your existing iZettle library with products and stock quantities from Shopware.",
                 "optionAddLabel": "Add Shopware products",
@@ -179,14 +179,14 @@
                 "disclaimer": "You can change these settings later at any time."
             },
             "syncPrices": {
-                "modalTitle": "Setup product sync",
-                "header": "How would you like to export product prices to iZettle?",
+                "modalTitle": "Setup product synchronisation",
+                "header": "How would you like to synchronise product prices with iZettle?",
                 "description": "Your products’ prices will include VAT when synchronised to iZettle.",
                 "disclaimer": "You can edit your VAT manually in the iZettle product library.",
-                "optionTrueLabel" : "Export prices with VAT",
+                "optionTrueLabel" : "Synchronise prices with VAT",
                 "optionTrueDescription" : "Prices synchronised to iZettle will include VAT.",
-                "optionFalseLabel" : "Don't export prices",
-                "optionFalseDescription" : "Exported product prices will be set to 0. You can change this in your product library."
+                "optionFalseLabel" : "Don't synchronise prices",
+                "optionFalseDescription" : "Product prices will not be transferred on synchronisation. You can set them in your iZettle product library."
             },
             "finish": {
                 "modalTitle": "Finish",

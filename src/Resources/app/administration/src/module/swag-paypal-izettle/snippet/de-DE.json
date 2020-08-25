@@ -78,7 +78,7 @@
                 "titlePrices": "Prices",
                 "syncPrices": "Preise übertragen",
                 "replace": "Existierende Produkte in iZettle ersetzen",
-                "activeHelpText": "Wenn aktiv, wird die Synchronisation mit iZettle automatisch im Hintergrund stattfinden.",
+                "activeHelpText": "Wenn der Verkaufskanal aktiv ist, erfolgt die iZettle-Synchronisierung automatisch im Hintergrund.",
                 "saveAlert": "Änderungen werden erst nach der aktuell laufenden Synchronsiation zwischen Shopware und iZettle aktiv."
             },
             "logs": {
@@ -167,26 +167,26 @@
                 "info": "Um direkt durchzustarten kannst Du nun Produkte eines bestehenden Verkaufskanals Deinem neuen Verkaufskanal zuweisen. Alle zugewiesenen Produkte werden dann zur Synchronisation mit iZettle POS zur Verfügung stehen.",
             },
             "syncLibrary": {
-                "modalTitle": "Setup product sync",
-                "header": "We found {shopwareProducts} and {iZettleProducts}",
-                "shopwareProducts": "no Shopware products | one Shopware product | {n} Shopware products",
-                "iZettleProducts": "no iZettle products | one iZettle product | {n} iZettle products",
-                "description": "All products are synced from your newly created Sales Channel in Shopware. How would you like to setup your iZettle library?",
-                "optionReplaceLabel": "Replace iZettle library",
-                "optionReplaceDescription": "Replace your existing iZettle library with products and stock quantities from Shopware.",
-                "optionAddLabel": "Add Shopware products",
-                "optionAddDescription": "Your products and stock quantities will be added to existing iZettle library.",
-                "disclaimer": "You can change these settings later at any time."
+                "modalTitle": "Produktsynchronisation einrichten",
+                "header": "Wir haben {shopwareProducts} und {iZettleProducts} gefunden",
+                "shopwareProducts": "keine Shopware-Produkte | ein Shopware-Produkt | {n} Shopware-Produkte",
+                "iZettleProducts": "keine iZettle-Produkte | ein iZettle-Produkt | {n} iZettle-Produkte",
+                "description": "Alle Produkte werden aus dem neuen Shopware-Verkaufskanal synchronisiert. Wie möchtest Du Deine iZettle-Produktbibliothek einrichten?",
+                "optionReplaceLabel": "iZettle-Produktbibliothek ersetzen",
+                "optionReplaceDescription": "Ersetze die bestehende iZettle-Produktbibliothek mit den Produkten und Beständen aus Shopware.",
+                "optionAddLabel": "Shopware-Produkte hinzufügen",
+                "optionAddDescription": "Deine Produkte und Bestände werden Deiner iZettle-Produktbibliothek hinzugefügt.",
+                "disclaimer": "Du kannst diese Einstellung jederzeit ändern."
             },
             "syncPrices": {
                 "modalTitle": "Preis-Synchronisation",
-                "header": "Wie möchtest Du die Produktpreise nach iZettle exportieren?",
+                "header": "Wie möchtest Du die Produktpreise nach iZettle synchronisieren?",
                 "description": "Die Preise Deiner Produkte enthalten die Mehrwertsteuer, wenn sie mit iZettle synchronisiert werden.",
                 "disclaimer": "Du kannst die Mehrwertsteuer manuell in der iZettle-Produktbibliothek pflegen.",
-                "optionTrueLabel" : "Preise mit Mehrwertsteuer exportieren",
+                "optionTrueLabel" : "Preise mit Mehrwertsteuer synchronisieren",
                 "optionTrueDescription" : "Die mit iZettle synchronisierten Preise enthalten die Mehrwertsteuer.",
-                "optionFalseLabel" : "Preise werden nicht exportiert.",
-                "optionFalseDescription" : "Exportierte Produktpreise werden auf 0 gesetzt. Du kannst dies in Deiner Produktbibliothek anpassen."
+                "optionFalseLabel" : "Preise werden nicht synchronisiert.",
+                "optionFalseDescription" : "Produktpreise werden bei der Synchronisation nicht übertragen. Du kannst diese in Deiner iZettle-Produktbibliothek anpassen."
             },
             "finish": {
                 "modalTitle": "Fertiggestellt",
