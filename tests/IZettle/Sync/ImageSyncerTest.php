@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\IZettle\Sync;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Defaults;
@@ -22,6 +23,7 @@ use Swag\PayPal\IZettle\Client\IZettleClient;
 use Swag\PayPal\IZettle\Client\IZettleClientFactory;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelEntity;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaEntity;
+use Swag\PayPal\IZettle\Exception\MediaDomainNotSetException;
 use Swag\PayPal\IZettle\MessageQueue\Handler\Sync\ImageSyncHandler;
 use Swag\PayPal\IZettle\MessageQueue\Manager\ImageSyncManager;
 use Swag\PayPal\IZettle\Resource\ImageResource;
@@ -29,6 +31,7 @@ use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Sync\ImageSyncer;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\IZettle\Helper\SalesChannelTrait;
+use Swag\PayPal\Test\IZettle\Mock\Client\IZettleClientFactoryMock;
 use Swag\PayPal\Test\IZettle\Mock\MessageBusMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\IZettleMediaRepoMock;
 use Swag\PayPal\Test\IZettle\Mock\Repositories\RunLogRepoMock;
@@ -116,6 +119,37 @@ class ImageSyncerTest extends TestCase
         static::assertNull($mediaC->getLookupKey());
         static::assertSame(self::IZETTLE_IMAGE_URL_EXISTING, $mediaD->getUrl());
         static::assertSame(self::IZETTLE_IMAGE_LOOKUP_KEY_EXISTING, $mediaD->getLookupKey());
+    }
+
+    public function testNoMediaUrl(): void
+    {
+        $context = Context::createDefaultContext();
+
+        $imageSyncer = new ImageSyncer(
+            new IZettleMediaRepoMock(),
+            new MediaConverter($this->createUrlGenerator()),
+            new ImageResource(new IZettleClientFactoryMock()),
+            new NullLogger()
+        );
+
+        $messageBus = new MessageBusMock();
+        $runService = new RunService(
+            new RunRepoMock(),
+            new RunLogRepoMock(),
+            new Logger('test')
+        );
+
+        $imageSyncManager = new ImageSyncManager($messageBus, new IZettleMediaRepoMock(), $imageSyncer);
+
+        $salesChannel = $this->getSalesChannel($context);
+        $iZettleSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_IZETTLE_EXTENSION);
+        static::assertInstanceOf(IZettleSalesChannelEntity::class, $iZettleSalesChannel);
+        $iZettleSalesChannel->setMediaDomain(null);
+
+        $runId = $runService->startRun(Defaults::SALES_CHANNEL, 'image', $context);
+
+        $this->expectException(MediaDomainNotSetException::class);
+        $imageSyncManager->buildMessages($salesChannel, $context, $runId);
     }
 
     private function createUrlGenerator(): UrlGeneratorInterface

@@ -13,12 +13,16 @@ use Shopware\Core\Framework\DataAbstractionLayer\Exception\InvalidAggregationQue
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Swag\PayPal\IZettle\Exception\MediaDomainNotSetException;
 use Swag\PayPal\IZettle\MessageQueue\Message\Sync\ImageSyncMessage;
 use Swag\PayPal\IZettle\Sync\ImageSyncer;
+use Swag\PayPal\IZettle\Util\IZettleSalesChannelTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class ImageSyncManager extends AbstractSyncManager
 {
+    use IZettleSalesChannelTrait;
+
     public const CHUNK_SIZE = 250;
 
     /**
@@ -43,6 +47,13 @@ class ImageSyncManager extends AbstractSyncManager
 
     public function buildMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): void
     {
+        $iZettleSalesChannel = $this->getIZettleSalesChannel($salesChannel);
+        $domain = $iZettleSalesChannel->getMediaDomain();
+
+        if ($domain === null || $domain === '') {
+            throw new MediaDomainNotSetException($salesChannel->getId());
+        }
+
         $criteria = $this->imageSyncer->getCriteria($salesChannel->getId());
         $criteria->addAggregation(new CountAggregation('count', 'mediaId'));
 

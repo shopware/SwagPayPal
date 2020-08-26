@@ -71,7 +71,8 @@
             },
             "settings": {
                 "titleGeneralSettings": "Allgemein",
-                "domain": "Domain für Medien-Download",
+                "domain": "Deine Shop-Domain",
+                "domainHelpText": "iZettle wird diese Domain nutzen, um Mediendaten Deiner synchronisierten Produkte herunterzuladen.",
                 "productStream": "Dynamische Produktgruppe",
                 "titleCredentials": "Zugangsdaten",
                 "titleSync": "Synchronisation",

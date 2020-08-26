@@ -30,7 +30,7 @@ class IZettleSalesChannelEntity extends Entity
     protected $apiKey;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $mediaDomain;
 
@@ -79,12 +79,12 @@ class IZettleSalesChannelEntity extends Entity
         $this->apiKey = $apiKey;
     }
 
-    public function getMediaDomain(): string
+    public function getMediaDomain(): ?string
     {
         return $this->mediaDomain;
     }
 
-    public function setMediaDomain(string $mediaDomain): void
+    public function setMediaDomain(?string $mediaDomain): void
     {
         $this->mediaDomain = $mediaDomain;
     }
