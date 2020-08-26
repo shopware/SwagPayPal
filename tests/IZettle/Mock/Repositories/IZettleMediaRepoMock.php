@@ -17,7 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaCollection;
 use Swag\PayPal\IZettle\DataAbstractionLayer\Entity\IZettleSalesChannelMediaDefinition;
@@ -106,10 +106,32 @@ class IZettleMediaRepoMock extends AbstractRepoMock implements EntityRepositoryI
         ]);
     }
 
+    /**
+     * @return string[]
+     */
+    protected function getPrimaryKeyWrite(Entity $entity): array
+    {
+        return [
+            'salesChannelId' => $entity->get('salesChannelId'),
+            'mediaId' => $entity->get('mediaId'),
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getPrimaryKeyRead(Entity $entity): array
+    {
+        return [
+            'sales_channel_id' => $entity->get('salesChannelId'),
+            'media_id' => $entity->get('mediaId'),
+        ];
+    }
+
     private function getFilteredCollection(Criteria $criteria): IZettleSalesChannelMediaCollection
     {
         foreach ($criteria->getFilters() as $filter) {
-            if ($filter instanceof MultiFilter && $filter->getOperator() === MultiFilter::CONNECTION_AND) {
+            if ($filter instanceof EqualsFilter && $filter->getField() === 'lookupKey') {
                 /** @var IZettleSalesChannelMediaCollection $newCollection */
                 $newCollection = $this->entityCollection->filterByProperty('lookupKey', null);
 

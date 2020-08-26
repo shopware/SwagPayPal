@@ -151,6 +151,7 @@ class SyncManagerHandler extends AbstractMessageHandler
             $this->messageBus->dispatch($message);
         } catch (\Throwable $e) {
             $this->logger->critical($e->__toString());
+            $this->runService->finishRun($runId, $context);
         } finally {
             $this->runService->writeLog($runId, $context);
         }

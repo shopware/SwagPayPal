@@ -138,14 +138,19 @@ class ImageSyncer
         $criteria = new Criteria();
         $criteria->addFilter(
             new EqualsFilter('salesChannelId', $salesChannelId),
-            new MultiFilter(MultiFilter::CONNECTION_AND, [
-                new EqualsFilter('url', null),
-                new EqualsFilter('lookupKey', null),
-            ])
+            new EqualsFilter('url', null),
+            new EqualsFilter('lookupKey', null)
         );
 
         $ids = $this->iZettleMediaRepository->searchIds($criteria, $context)->getIds();
         if (!empty($ids)) {
+            $ids = \array_map(static function ($id) {
+                if (!\is_array($id)) {
+                    return null;
+                }
+
+                return ['salesChannelId' => $id['sales_channel_id'], 'mediaId' => $id['media_id']];
+            }, $ids);
             $this->iZettleMediaRepository->delete($ids, $context);
         }
     }

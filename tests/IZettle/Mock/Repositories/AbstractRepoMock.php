@@ -76,15 +76,12 @@ abstract class AbstractRepoMock
 
     protected function removeFromCollection(array $data, Context $context): EntityWrittenContainerEvent
     {
-        foreach ($data as $id) {
-            if (\is_array($id)) {
-                /** @var class-string<Entity> $className */
-                $className = $this->getDefinition()->getEntityClass();
-                $entity = new $className();
-                $entity->assign($id);
-                $id = $this->getUniqueIdentifier($entity);
+        foreach ($data as $primaryKey) {
+            foreach ($this->getCollection() as $collectionKey => $element) {
+                if (\array_diff($this->getPrimaryKeyWrite($element), $primaryKey) === []) {
+                    $this->entityCollection->remove($collectionKey);
+                }
             }
-            $this->entityCollection->remove($id);
         }
 
         return new EntityWrittenContainerEvent($context, new NestedEventCollection([]), []);
@@ -97,8 +94,13 @@ abstract class AbstractRepoMock
         return new IdSearchResult(
             \count($entityCollection),
             \array_map(static function (Entity $entity) use ($repository) {
+                $key = $repository->getPrimaryKeyRead($entity);
+                if (\count($key) === 1) {
+                    $key = \array_pop($key);
+                }
+
                 return [
-                    'primaryKey' => $entity->has('id') ? $entity->get('id') : $repository->getUniqueIdentifier($entity),
+                    'primaryKey' => $key,
                     'data' => $entity,
                 ];
             }, $entityCollection->getElements()),
@@ -116,6 +118,26 @@ abstract class AbstractRepoMock
             $criteria,
             $context
         );
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getPrimaryKeyWrite(Entity $entity): array
+    {
+        return [
+            'id' => $entity->get('id'),
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getPrimaryKeyRead(Entity $entity): array
+    {
+        return [
+            'id' => $entity->get('id'),
+        ];
     }
 
     protected function getUniqueIdentifier(Entity $entity): string

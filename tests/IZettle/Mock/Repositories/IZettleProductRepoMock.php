@@ -97,4 +97,26 @@ class IZettleProductRepoMock extends AbstractRepoMock implements EntityRepositor
             $entity->get('productId'),
         ]);
     }
+
+    /**
+     * @return string[]
+     */
+    protected function getPrimaryKeyWrite(Entity $entity): array
+    {
+        return [
+            'salesChannelId' => $entity->get('salesChannelId'),
+            'productId' => $entity->get('productId'),
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function getPrimaryKeyRead(Entity $entity): array
+    {
+        return [
+            'sales_channel_id' => $entity->get('salesChannelId'),
+            'product_id' => $entity->get('productId'),
+        ];
+    }
 }

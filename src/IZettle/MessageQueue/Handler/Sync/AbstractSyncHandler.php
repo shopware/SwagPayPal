@@ -48,6 +48,7 @@ abstract class AbstractSyncHandler extends AbstractMessageHandler
             $this->sync($message);
         } catch (\Throwable $e) {
             $this->logger->critical($e->__toString());
+            $this->runService->finishRun($runId, $context);
         } finally {
             $this->runService->writeLog($runId, $context);
         }
