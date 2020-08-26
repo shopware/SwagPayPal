@@ -80,7 +80,16 @@
                 "syncPrices": "Synchronise prices",
                 "replace": "Replace existing products in iZettle",
                 "activeHelpText": "If active, the iZettle synchronisation will happen automatically in the background.",
-                "saveAlert": "Saved changes are available after the currently running synchronisation between Shopware and iZettle ended."
+                "saveAlert": "Saved changes are available after the currently running synchronisation between Shopware and iZettle ended.",
+                "optionsTitle": "Options",
+                "reset": {
+                    "buttonTitle": "Reset synchronisation",
+                    "descriptionText": "If you are experiencing issues, you may re-upload all products and images.",
+                    "modalConfirmText": "This will reset the synchronisation history for the Sales Channel",
+                    "modalTextInfo": "All items will be re-uploaded on the next synchronisation. This may take a while. You will not lose any data in Shopware, some data may be overwritten at iZettle.",
+                    "modalTitle": "Resetting synchronisation history",
+                    "modalButtonConfirm": "Reset synchronisation"
+                }
             },
             "logs": {
                 "columnLastSync": "Details",

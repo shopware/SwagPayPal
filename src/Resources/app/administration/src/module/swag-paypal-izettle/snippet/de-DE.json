@@ -80,7 +80,16 @@
                 "syncPrices": "Preise übertragen",
                 "replace": "Existierende Produkte in iZettle ersetzen",
                 "activeHelpText": "Wenn der Verkaufskanal aktiv ist, erfolgt die iZettle-Synchronisierung automatisch im Hintergrund.",
-                "saveAlert": "Änderungen werden erst nach der aktuell laufenden Synchronsiation zwischen Shopware und iZettle aktiv."
+                "saveAlert": "Änderungen werden erst nach der aktuell laufenden Synchronsiation zwischen Shopware und iZettle aktiv.",
+                "optionsTitle": "Optionen",
+                "reset": {
+                    "buttonTitle": "Synchronisation zurücksetzen",
+                    "descriptionText": "Wenn Probleme auftreten, hast du hier die Möglichkeit, alle Produkte & Bilder neu hochzuladen.",
+                    "modalConfirmText": "Diese Aktion wird die Synchronisations-Historie des folgenden Verkaufskanals zurücksetzen",
+                    "modalTextInfo": "Alle Produkte & Bilder werden bei der nächsten Synchronisation neu hochgeladen. Dies kann etwas Zeit in Anspruch nehmen. Du wirst keine Daten in Shopware verlieren, einige Daten werden möglicherweise in iZettle überschrieben.",
+                    "modalTitle": "Synchronisation zurücksetzen",
+                    "modalButtonConfirm": "Synchronisation zurücksetzen"
+                }
             },
             "logs": {
                 "columnLastSync": "Details",

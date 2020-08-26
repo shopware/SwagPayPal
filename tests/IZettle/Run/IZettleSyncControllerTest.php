@@ -17,6 +17,7 @@ use Swag\PayPal\IZettle\IZettleSyncController;
 use Swag\PayPal\IZettle\MessageQueue\Handler\SyncManagerHandler;
 use Swag\PayPal\IZettle\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
+use Swag\PayPal\IZettle\Run\Administration\SyncResetter;
 use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Run\Task\CompleteTask;
 use Swag\PayPal\IZettle\Run\Task\ImageTask;
@@ -61,6 +62,11 @@ class IZettleSyncControllerTest extends TestCase
      */
     private $messageBus;
 
+    /**
+     * @var MockObject
+     */
+    private $syncResetter;
+
     protected function setUp(): void
     {
         $this->salesChannelRepoMock = new SalesChannelRepoMock();
@@ -68,6 +74,7 @@ class IZettleSyncControllerTest extends TestCase
         $this->logCleaner = $this->createMock(LogCleaner::class);
         $this->productSelection = $this->createMock(ProductSelection::class);
         $this->runService = $this->createMock(RunService::class);
+        $this->syncResetter = $this->createMock(SyncResetter::class);
 
         $productTask = new ProductTask($this->messageBus, $this->runService);
         $imageTask = new ImageTask($this->messageBus, $this->runService);
@@ -82,6 +89,7 @@ class IZettleSyncControllerTest extends TestCase
             $inventoryTask,
             $this->logCleaner,
             $this->runService,
+            $this->syncResetter,
             $this->productSelection
         );
     }
@@ -126,6 +134,10 @@ class IZettleSyncControllerTest extends TestCase
                 'cleanUpLog',
                 null,
             ],
+            [
+                'resetSync',
+                null,
+            ],
         ];
     }
 
@@ -165,6 +177,14 @@ class IZettleSyncControllerTest extends TestCase
         $this->logCleaner->expects(static::atLeastOnce())->method('cleanUpLog');
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
         $this->iZettleSyncController->cleanUpLog($salesChannelId->getId(), $context);
+    }
+
+    public function testResetSync(): void
+    {
+        $context = Context::createDefaultContext();
+        $this->syncResetter->expects(static::atLeastOnce())->method('resetSync');
+        $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
+        $this->iZettleSyncController->resetSync($salesChannelId->getId(), $context);
     }
 
     public function testProductLog(): void

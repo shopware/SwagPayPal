@@ -15,9 +15,11 @@ use Swag\PayPal\IZettle\Command\IZettleInventorySyncCommand;
 use Swag\PayPal\IZettle\Command\IZettleLogCleanupCommand;
 use Swag\PayPal\IZettle\Command\IZettleProductSyncCommand;
 use Swag\PayPal\IZettle\Command\IZettleSyncCommand;
+use Swag\PayPal\IZettle\Command\IZettleSyncResetCommand;
 use Swag\PayPal\IZettle\MessageQueue\Handler\SyncManagerHandler;
 use Swag\PayPal\IZettle\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
+use Swag\PayPal\IZettle\Run\Administration\SyncResetter;
 use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Run\Task\CompleteTask;
 use Swag\PayPal\IZettle\Run\Task\ImageTask;
@@ -48,6 +50,11 @@ class IZettleCommandTest extends TestCase
     private $logCleaner;
 
     /**
+     * @var MockObject
+     */
+    private $syncResetter;
+
+    /**
      * @var AbstractIZettleCommand[]
      */
     private $commands;
@@ -63,6 +70,7 @@ class IZettleCommandTest extends TestCase
         $this->messageBus = new MessageBusMock();
         $this->runService = $this->createMock(RunService::class);
         $this->logCleaner = $this->createMock(LogCleaner::class);
+        $this->syncResetter = $this->createMock(SyncResetter::class);
 
         $productTask = new ProductTask($this->messageBus, $this->runService);
         $imageTask = new ImageTask($this->messageBus, $this->runService);
@@ -75,6 +83,7 @@ class IZettleCommandTest extends TestCase
             IZettleInventorySyncCommand::class => new IZettleInventorySyncCommand($this->salesChannelRepoMock, $inventoryTask),
             IZettleProductSyncCommand::class => new IZettleProductSyncCommand($this->salesChannelRepoMock, $productTask),
             IZettleLogCleanupCommand::class => new IZettleLogCleanupCommand($this->salesChannelRepoMock, $this->logCleaner),
+            IZettleSyncResetCommand::class => new IZettleSyncResetCommand($this->salesChannelRepoMock, $this->syncResetter),
         ];
     }
 
@@ -118,11 +127,15 @@ class IZettleCommandTest extends TestCase
                 IZettleLogCleanupCommand::class,
                 null,
             ],
+            [
+                IZettleSyncResetCommand::class,
+                null,
+            ],
         ];
     }
 
     /**
-     * @dataProvider dataProviderSyncFunctions
+     * @dataProvider dataProviderFunctions
      */
     public function testSyncWithInvalidId(string $commandClassName): void
     {
@@ -131,7 +144,7 @@ class IZettleCommandTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderSyncFunctions
+     * @dataProvider dataProviderFunctions
      */
     public function testSyncWithValidId(string $commandClassName): void
     {
@@ -159,5 +172,13 @@ class IZettleCommandTest extends TestCase
         $input = new ArrayInput([]);
 
         static::assertSame(0, $this->commands[IZettleLogCleanupCommand::class]->run($input, new NullOutput()));
+    }
+
+    public function testSyncReset(): void
+    {
+        $this->syncResetter->expects(static::exactly($this->salesChannelRepoMock->getCollection()->count()))->method('resetSync');
+        $input = new ArrayInput([]);
+
+        static::assertSame(0, $this->commands[IZettleSyncResetCommand::class]->run($input, new NullOutput()));
     }
 }

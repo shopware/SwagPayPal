@@ -10,6 +10,7 @@ Component.register('swag-paypal-izettle-detail-settings', {
     template,
 
     inject: [
+        'SwagPayPalIZettleApiService',
         'SwagPayPalIZettleSettingApiService',
         'SwagPayPalIZettleWebhookRegisterService',
         'salesChannelService',
@@ -36,6 +37,7 @@ Component.register('swag-paypal-izettle-detail-settings', {
         return {
             isLoading: false,
             showDeleteModal: false,
+            showResetModal: false,
             isSaveSuccessful: false,
             isTestingCredentials: false,
             isTestCredentialsSuccessful: false,
@@ -223,10 +225,6 @@ Component.register('swag-paypal-izettle-detail-settings', {
             this.$emit('buttons-update', buttonConfig);
         },
 
-        onCloseDeleteModal() {
-            this.showDeleteModal = false;
-        },
-
         onConfirmDelete() {
             this.showDeleteModal = false;
 
@@ -240,6 +238,16 @@ Component.register('swag-paypal-izettle-detail-settings', {
             return this.SwagPayPalIZettleWebhookRegisterService.unregisterWebhook(salesChannelId).finally(() => {
                 return this.salesChannelRepository.delete(salesChannelId, Shopware.Context.api).then(() => {
                     this.$root.$emit('sales-channel-change');
+                });
+            });
+        },
+
+        onConfirmReset() {
+            this.showResetModal = false;
+
+            this.$nextTick(() => {
+                this.SwagPayPalIZettleApiService.resetSync(this.salesChannel.id).then(() => {
+                    this.$router.push({ name: 'swag.paypal.izettle.detail.overview', params: { id: this.salesChannel.id } });
                 });
             });
         }

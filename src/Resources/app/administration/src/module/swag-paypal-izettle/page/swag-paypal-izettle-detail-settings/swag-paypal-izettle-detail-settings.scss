@@ -11,9 +11,13 @@
         align-items: center;
     }
 
-    .sw-sales-channel-detail-settings__description-text {
+    .swag-paypal-izettle-detail-settings__options-description-text {
         font-size: $font-size-small;
         margin: 8px 0 0;
+    }
+
+    .swag-paypal-izettle-detail-settings__options-button {
+        text-align: right;
     }
 
     .swag-paypal-izettle-detail-settings__save-alert {
@@ -25,6 +29,7 @@
     }
 }
 
+.swag-paypal-izettle-detail-settings__reset-sync-modal,
 .sw-sales-channel-detail-settings__delete-modal {
     .sw-modal__body {
         font-size: $font-size-small;

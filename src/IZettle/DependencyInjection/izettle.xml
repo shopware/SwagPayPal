@@ -25,6 +25,7 @@
             <argument type="service" id="Swag\PayPal\IZettle\Run\Task\InventoryTask"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\Administration\LogCleaner"/>
             <argument type="service" id="Swag\PayPal\IZettle\Run\RunService"/>
+            <argument type="service" id="Swag\PayPal\IZettle\Run\Administration\SyncResetter"/>
             <argument type="service" id="Swag\PayPal\IZettle\Sync\ProductSelection"/>
         </service>
 
@@ -209,6 +210,13 @@
             <argument type="service" id="Swag\PayPal\IZettle\MessageQueue\Manager\InventorySyncManager"/>
             <argument type="service" id="messenger.bus.shopware"/>
             <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Swag\PayPal\IZettle\Run\Administration\SyncResetter">
+            <argument type="service" id="swag_paypal_izettle_sales_channel_product.repository"/>
+            <argument type="service" id="swag_paypal_izettle_sales_channel_inventory.repository"/>
+            <argument type="service" id="swag_paypal_izettle_sales_channel_media.repository"/>
+            <argument type="service" id="swag_paypal_izettle_sales_channel_run.repository"/>
         </service>
     </services>
 </container>

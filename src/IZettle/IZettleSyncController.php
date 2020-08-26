@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\IZettle\Run\Administration\LogCleaner;
+use Swag\PayPal\IZettle\Run\Administration\SyncResetter;
 use Swag\PayPal\IZettle\Run\RunService;
 use Swag\PayPal\IZettle\Run\Task\CompleteTask;
 use Swag\PayPal\IZettle\Run\Task\ImageTask;
@@ -73,6 +74,11 @@ class IZettleSyncController extends AbstractController
      */
     private $productSelection;
 
+    /**
+     * @var SyncResetter
+     */
+    private $syncResetter;
+
     public function __construct(
         EntityRepositoryInterface $salesChannelRepository,
         CompleteTask $completeTask,
@@ -81,6 +87,7 @@ class IZettleSyncController extends AbstractController
         InventoryTask $inventoryTask,
         LogCleaner $logCleaner,
         RunService $runService,
+        SyncResetter $syncResetter,
         ProductSelection $productSelection
     ) {
         $this->salesChannelRepository = $salesChannelRepository;
@@ -90,6 +97,7 @@ class IZettleSyncController extends AbstractController
         $this->inventoryTask = $inventoryTask;
         $this->logCleaner = $logCleaner;
         $this->runService = $runService;
+        $this->syncResetter = $syncResetter;
         $this->productSelection = $productSelection;
     }
 
@@ -147,6 +155,18 @@ class IZettleSyncController extends AbstractController
     public function abortSync(string $runId, Context $context): Response
     {
         $this->runService->abortRun($runId, $context);
+
+        return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @Route("/api/v{version}/paypal/izettle/sync/reset/{salesChannelId}", name="api.paypal.izettle.sync.abort", methods={"GET"})
+     */
+    public function resetSync(string $salesChannelId, Context $context): Response
+    {
+        $salesChannel = $this->getSalesChannel($salesChannelId, $context);
+
+        $this->syncResetter->resetSync($salesChannel, $context);
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }
