@@ -38,19 +38,20 @@
                 </sw-container>
 
                 {% block swag_paypal_izettle_detail_settings_input_media_domain %}
-                    <sw-url-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.mediaDomain"
-                                  required
-                                  validation="required"
-                                  :label="$tc('swag-paypal-izettle.detail.settings.domain')"
-                                  :helpText="$tc('swag-paypal-izettle.detail.settings.domainHelpText')"
-                                  @input="forceUpdate">
-                    </sw-url-field>
+                    <swag-paypal-izettle-url-field v-model="swagPaypalIzettleSalesChannel.mediaDomain"
+                                                   required
+                                                   validation="required"
+                                                   :error="swagPaypalIzettleSalesChannelMediaDomainError"
+                                                   :label="$tc('swag-paypal-izettle.detail.settings.domain')"
+                                                   :helpText="$tc('swag-paypal-izettle.detail.settings.domainHelpText')"
+                                                   @input="forceUpdate">
+                    </swag-paypal-izettle-url-field>
                 {% endblock %}
 
                 {% block swag_paypal_izettle_detail_settings_input_product_stream %}
                     {# ToDo PPI-56 implement support for product streams #}
                     <sw-entity-single-select v-if="false"
-                                             v-model="salesChannel.extensions.paypalIZettleSalesChannel.productStreamId"
+                                             v-model="swagPaypalIzettleSalesChannel.productStreamId"
                                              entity="product_stream"
                                              :label="$tc('swag-paypal-izettle.detail.settings.productStream')"
                                              @input="forceUpdate">
@@ -66,7 +67,7 @@
 
                     {% block swag_paypal_izettle_detail_settings_sync_input %}
                         <swag-paypal-izettle-boolean-radio
-                            v-model="salesChannel.extensions.paypalIZettleSalesChannel.replace"
+                            v-model="swagPaypalIzettleSalesChannel.replace"
                             class="swag-paypal-izettle-detail-settings__sync-replace-input"
                             :label="$tc('swag-paypal-izettle.wizard.syncLibrary.description')"
                             :optionTrue="optionReplace"
@@ -85,7 +86,7 @@
 
                     {% block swag_paypal_izettle_detail_settings_prices_input %}
                         <swag-paypal-izettle-boolean-radio
-                            v-model="salesChannel.extensions.paypalIZettleSalesChannel.syncPrices"
+                            v-model="swagPaypalIzettleSalesChannel.syncPrices"
                             class="swag-paypal-izettle-detail-settings__sync-prices-input"
                             :label="$tc('swag-paypal-izettle.wizard.syncPrices.description')"
                             :optionTrue="optionSyncPrices"
@@ -103,7 +104,7 @@
                 <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-izettle.detail.settings.titleCredentials')">
 
                     {% block swag_paypal_izettle_detail_settings_credentials_apikey %}
-                        <sw-password-field v-model="salesChannel.extensions.paypalIZettleSalesChannel.apiKey"
+                        <sw-password-field v-model="swagPaypalIzettleSalesChannel.apiKey"
                                            required
                                            :label="$tc('swag-paypal-izettle.authentification.apiKey')"
                                            @input="forceUpdate">
@@ -128,7 +129,7 @@
                             {% block swag_paypal_izettle_detail_settings_credentials_actions_test %}
                                 <sw-button-process v-model="isTestCredentialsSuccessful"
                                                    :isLoading="isTestingCredentials"
-                                                   :disabled="!(this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey)"
+                                                   :disabled="!(this.swagPaypalIzettleSalesChannel.apiKey)"
                                                    @click="onTestCredentials">
                                     {{ $tc('swag-paypal-izettle.authentification.buttonTest') }}
                                 </sw-button-process>

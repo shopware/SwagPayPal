@@ -1,8 +1,10 @@
 import template from './swag-paypal-izettle-detail-settings.html.twig';
 import './swag-paypal-izettle-detail-settings.scss';
 
-const { Component, Context } = Shopware;
+const { Component, Context, State } = Shopware;
 const { mapPropertyErrors } = Component.getComponentHelper();
+const { ShopwareError } = Shopware.Classes;
+
 
 Component.register('swag-paypal-izettle-detail-settings', {
     template,
@@ -44,6 +46,7 @@ Component.register('swag-paypal-izettle-detail-settings', {
 
     computed: {
         ...mapPropertyErrors('salesChannel', ['name']),
+        ...mapPropertyErrors('swagPaypalIzettleSalesChannel', ['mediaDomain']),
 
         salesChannelRepository() {
             return this.repositoryFactory.create('sales_channel');
@@ -75,6 +78,10 @@ Component.register('swag-paypal-izettle-detail-settings', {
                 name: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionAddLabel'),
                 description: this.$tc('swag-paypal-izettle.wizard.syncLibrary.optionAddDescription')
             };
+        },
+
+        swagPaypalIzettleSalesChannel() {
+            return this.salesChannel.extensions.paypalIZettleSalesChannel;
         }
     },
 
@@ -96,7 +103,7 @@ Component.register('swag-paypal-izettle-detail-settings', {
             this.isSaveSuccessful = false;
             this.updateButtons();
 
-            if (this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey === this.previousApiKey) {
+            if (this.swagPaypalIzettleSalesChannel.apiKey === this.previousApiKey) {
                 return this.save();
             }
 
@@ -158,11 +165,18 @@ Component.register('swag-paypal-izettle-detail-settings', {
                             name: this.salesChannel.name || this.placeholder(this.salesChannel, 'name')
                         })
                     });
+                }).finally(() => {
+                    if (this.swagPaypalIzettleSalesChannel.mediaDomain === null) {
+                        const expression =
+                            `swag_paypal_izettle_sales_channel.${this.swagPaypalIzettleSalesChannel.id}.mediaDomain`;
+                        const error = new ShopwareError({ code: 'INVALID_URL' });
+                        State.commit('error/addApiError', { expression, error });
+                    }
                 });
         },
 
         onTestCredentials() {
-            const apiKey = this.salesChannel.extensions.paypalIZettleSalesChannel.apiKey;
+            const apiKey = this.swagPaypalIzettleSalesChannel.apiKey;
 
             this.isTestingCredentials = true;
             this.isTestCredentialsSuccessful = false;
