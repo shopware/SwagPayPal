@@ -31,7 +31,7 @@ Mixin.register('swag-paypal-izettle-log-label', {
          * @returns {string}
          */
         getLabel(level) {
-            if (level > 200) {
+            if (level >= 300) {
                 return 'swag-paypal-izettle.detail.logs.states.failed';
             }
 

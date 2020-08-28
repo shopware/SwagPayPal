@@ -76,7 +76,7 @@
                 "productStream": "Dynamische Produktgruppe",
                 "titleCredentials": "Zugangsdaten",
                 "titleSync": "Synchronisation",
-                "titlePrices": "Prices",
+                "titlePrices": "Preise",
                 "syncPrices": "Preise übertragen",
                 "replace": "Existierende Produkte in iZettle ersetzen",
                 "activeHelpText": "Wenn der Verkaufskanal aktiv ist, erfolgt die iZettle-Synchronisierung automatisch im Hintergrund.",
@@ -165,7 +165,7 @@
                 "modalTitle": "Produkte von einem existierenden Verkaufskanal übertragen",
                 "labelSelect": "Verkaufskanal",
                 "labelToggle": "Produktauswahl übertragen",
-                "info": "Um direkt durchzustarten kannst Du nun Produkte eines bestehenden Verkaufskanals Deinem neuen Verkaufskanal zuweisen. Alle zugewiesenen Produkte werden dann zur Synchronisation mit iZettle POS zur Verfügung stehen.",
+                "info": "Um direkt durchzustarten kannst Du nun Produkte eines bestehenden Verkaufskanals Deinem neuen Verkaufskanal zuweisen. Alle zugewiesenen Produkte werden dann zur Synchronisation mit iZettle POS zur Verfügung stehen."
             },
             "syncLibrary": {
                 "modalTitle": "Produktsynchronisation einrichten",
@@ -184,10 +184,10 @@
                 "header": "Wie möchtest Du die Produktpreise nach iZettle synchronisieren?",
                 "description": "Die Preise Deiner Produkte enthalten die Mehrwertsteuer, wenn sie mit iZettle synchronisiert werden.",
                 "disclaimer": "Du kannst die Mehrwertsteuer manuell in der iZettle-Produktbibliothek pflegen.",
-                "optionTrueLabel" : "Preise mit Mehrwertsteuer synchronisieren",
-                "optionTrueDescription" : "Die mit iZettle synchronisierten Preise enthalten die Mehrwertsteuer.",
-                "optionFalseLabel" : "Preise werden nicht synchronisiert.",
-                "optionFalseDescription" : "Produktpreise werden bei der Synchronisation nicht übertragen. Du kannst diese in Deiner iZettle-Produktbibliothek anpassen."
+                "optionTrueLabel": "Preise mit Mehrwertsteuer synchronisieren",
+                "optionTrueDescription": "Die mit iZettle synchronisierten Preise enthalten die Mehrwertsteuer.",
+                "optionFalseLabel": "Preise werden nicht synchronisiert.",
+                "optionFalseDescription": "Produktpreise werden bei der Synchronisation nicht übertragen. Du kannst diese in Deiner iZettle-Produktbibliothek anpassen."
             },
             "finish": {
                 "modalTitle": "Fertiggestellt",

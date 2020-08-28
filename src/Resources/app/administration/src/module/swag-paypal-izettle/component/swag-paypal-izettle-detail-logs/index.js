@@ -1,4 +1,5 @@
 import template from './swag-paypal-izettle-detail-logs.html.twig';
+import './swag-paypal-izettle-detail-logs.scss';
 
 const { Component, Context } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -38,12 +39,14 @@ Component.register('swag-paypal-izettle-detail-logs', {
                     property: 'date',
                     dataIndex: 'createdAt',
                     label: 'swag-paypal-izettle.detail.syncedProducts.columns.date',
+                    width: '140px',
                     sortable: true
                 },
                 {
                     property: 'state',
                     dataIndex: 'level',
                     label: 'swag-paypal-izettle.detail.syncedProducts.columns.state',
+                    width: '120px',
                     sortable: true
                 },
                 {

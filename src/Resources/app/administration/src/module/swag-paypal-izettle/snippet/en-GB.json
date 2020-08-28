@@ -184,10 +184,10 @@
                 "header": "How would you like to synchronise product prices with iZettle?",
                 "description": "Your products’ prices will include VAT when synchronised to iZettle.",
                 "disclaimer": "You can edit your VAT manually in the iZettle product library.",
-                "optionTrueLabel" : "Synchronise prices with VAT",
-                "optionTrueDescription" : "Prices synchronised to iZettle will include VAT.",
-                "optionFalseLabel" : "Don't synchronise prices",
-                "optionFalseDescription" : "Product prices will not be transferred on synchronisation. You can set them in your iZettle product library."
+                "optionTrueLabel": "Synchronise prices with VAT",
+                "optionTrueDescription": "Prices synchronised to iZettle will include VAT.",
+                "optionFalseLabel": "Don't synchronise prices",
+                "optionFalseDescription": "Product prices will not be transferred on synchronisation. You can set them in your iZettle product library."
             },
             "finish": {
                 "modalTitle": "Finish",
