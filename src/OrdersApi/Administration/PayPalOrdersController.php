@@ -9,14 +9,19 @@ namespace Swag\PayPal\OrdersApi\Administration;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureStateHandler;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Swag\PayPal\Checkout\PayPalOrderTransactionCaptureService;
 use Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
+use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\AuthorizationResource;
 use Swag\PayPal\RestApi\V2\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -75,6 +80,16 @@ class PayPalOrdersController extends AbstractController
      */
     private $captureRefundCreator;
 
+    /**
+     * @var OrderTransactionCaptureStateHandler
+     */
+    private $orderTransactionCaptureStateHandler;
+
+    /**
+     * @var PayPalOrderTransactionCaptureService
+     */
+    private $payPalOrderTransactionCaptureService;
+
     public function __construct(
         OrderResource $orderResource,
         AuthorizationResource $authorizationResource,
@@ -82,7 +97,9 @@ class PayPalOrdersController extends AbstractController
         RefundResource $refundResource,
         EntityRepositoryInterface $orderTransactionRepository,
         PaymentStatusUtilV2 $paymentStatusUtil,
-        CaptureRefundCreator $captureRefundCreator
+        CaptureRefundCreator $captureRefundCreator,
+        OrderTransactionCaptureStateHandler $orderTransactionCaptureStateHandler,
+        PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService
     ) {
         $this->orderResource = $orderResource;
         $this->authorizationResource = $authorizationResource;
@@ -91,6 +108,8 @@ class PayPalOrdersController extends AbstractController
         $this->orderTransactionRepository = $orderTransactionRepository;
         $this->paymentStatusUtil = $paymentStatusUtil;
         $this->captureRefundCreator = $captureRefundCreator;
+        $this->orderTransactionCaptureStateHandler = $orderTransactionCaptureStateHandler;
+        $this->payPalOrderTransactionCaptureService = $payPalOrderTransactionCaptureService;
     }
 
     /**
@@ -403,13 +422,42 @@ class PayPalOrdersController extends AbstractController
     ): JsonResponse {
         $capture = $this->captureRefundCreator->createCapture($request);
 
-        $captureResponse = $this->authorizationResource->capture(
-            $authorizationId,
-            $capture,
-            $this->getSalesChannelId($orderTransactionId, $context),
-            $this->getPartnerAttributionId($request),
-            false
+        if ($capture->getAmount() !== null) {
+            $orderTransactionCaptureId = $this->payPalOrderTransactionCaptureService->createOrderTransactionCaptureForCustomAmount(
+                $orderTransactionId,
+                (float)$capture->getAmount()->getValue(),
+                $context
+            );
+        } else {
+            $orderTransactionCaptureId = $this->payPalOrderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
+                $orderTransactionId,
+                $context
+            );
+        }
+
+        try {
+            $captureResponse = $this->authorizationResource->capture(
+                $authorizationId,
+                $capture,
+                $this->getSalesChannelId($orderTransactionId, $context),
+                $this->getPartnerAttributionId($request),
+                false
+            );
+        } catch (PayPalApiException $apiException) {
+            $this->orderTransactionCaptureStateHandler->fail($orderTransactionCaptureId, $context);
+
+            throw $apiException;
+        }
+        $paypalCaptureId = $captureResponse->getId();
+        $this->payPalOrderTransactionCaptureService->addPayPalResourceToOrderTransactionCapture(
+            $orderTransactionCaptureId,
+            $paypalCaptureId,
+            RelatedResource::CAPTURE,
+            $context
         );
+        if ($captureResponse->getStatus() === PaymentStatusV2::ORDER_CAPTURE_COMPLETED) {
+            $this->orderTransactionCaptureStateHandler->complete($orderTransactionCaptureId, $context);
+        }
 
         $this->paymentStatusUtil->applyCaptureState($orderTransactionId, $captureResponse, $context);
 

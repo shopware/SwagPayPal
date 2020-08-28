@@ -9,18 +9,24 @@ namespace Swag\PayPal\PaymentsApi\Administration;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureStateHandler;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Swag\PayPal\Checkout\PayPalOrderTransactionCaptureService;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Api\Capture\Amount as CaptureAmount;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 use Swag\PayPal\RestApi\V1\Api\Refund;
 use Swag\PayPal\RestApi\V1\Api\Refund\Amount as RefundAmount;
+use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\AuthorizationResource;
 use Swag\PayPal\RestApi\V1\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V1\Resource\OrdersResource;
@@ -86,6 +92,16 @@ class PayPalPaymentController extends AbstractController
      */
     private $priceFormatter;
 
+    /**
+     * @var OrderTransactionCaptureStateHandler
+     */
+    private $orderTransactionCaptureStateHandler;
+
+    /**
+     * @var PayPalOrderTransactionCaptureService
+     */
+    private $payPalOrderTransactionCaptureService;
+
     public function __construct(
         PaymentResource $paymentResource,
         SaleResource $saleResource,
@@ -94,7 +110,9 @@ class PayPalPaymentController extends AbstractController
         CaptureResource $captureResource,
         PaymentStatusUtil $paymentStatusUtil,
         EntityRepositoryInterface $orderRepository,
-        PriceFormatter $priceFormatter
+        PriceFormatter $priceFormatter,
+        OrderTransactionCaptureStateHandler $orderTransactionCaptureStateHandler,
+        PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService
     ) {
         $this->paymentResource = $paymentResource;
         $this->saleResource = $saleResource;
@@ -104,6 +122,8 @@ class PayPalPaymentController extends AbstractController
         $this->paymentStatusUtil = $paymentStatusUtil;
         $this->orderRepository = $orderRepository;
         $this->priceFormatter = $priceFormatter;
+        $this->orderTransactionCaptureStateHandler = $orderTransactionCaptureStateHandler;
+        $this->payPalOrderTransactionCaptureService = $payPalOrderTransactionCaptureService;
     }
 
     /**
@@ -263,22 +283,47 @@ class PayPalPaymentController extends AbstractController
     ): JsonResponse {
         $capture = $this->createCapture($request);
 
-        switch ($resourceType) {
-            case RelatedResource::AUTHORIZE:
-                $captureResponse = $this->authorizationResource->capture(
-                    $resourceId,
-                    $capture,
-                    $this->getSalesChannelIdByOrderId($orderId, $context)
-                );
+        $orderTransactionId = $this->getOrderTransactionIdForOrder($orderId, $context);
+        $orderTransactionCaptureId = $this->payPalOrderTransactionCaptureService->createOrderTransactionCaptureForCustomAmount(
+            $orderTransactionId,
+            (float)$capture->getAmount()->getTotal(),
+            $context
+        );
+        try {
+            switch ($resourceType) {
+                case RelatedResource::AUTHORIZE:
+                    $captureResponse = $this->authorizationResource->capture(
+                        $resourceId,
+                        $capture,
+                        $this->getSalesChannelIdByOrderId($orderId, $context)
+                    );
+                    break;
+                case RelatedResource::ORDER:
+                    $salesChannelId = $this->getSalesChannelIdByOrderId($orderId, $context);
+                    $captureResponse = $this->ordersResource->capture($resourceId, $capture, $salesChannelId);
+                    break;
+                default:
+                    $this->payPalOrderTransactionCaptureService->deleteOrderTransactionCapture(
+                        $orderTransactionCaptureId,
+                        $context
+                    );
 
-                break;
-            case RelatedResource::ORDER:
-                $salesChannelId = $this->getSalesChannelIdByOrderId($orderId, $context);
-                $captureResponse = $this->ordersResource->capture($resourceId, $capture, $salesChannelId);
+                    throw new RequiredParameterInvalidException('resourceType');
+            }
+        } catch (PayPalApiException $apiException) {
+            $this->orderTransactionCaptureStateHandler->fail($orderTransactionCaptureId, $context);
 
-                break;
-            default:
-                throw new RequiredParameterInvalidException('resourceType');
+            throw $apiException;
+        }
+        $paypalCaptureId = $captureResponse->getId();
+        $this->payPalOrderTransactionCaptureService->addPayPalResourceToOrderTransactionCapture(
+            $orderTransactionCaptureId,
+            $paypalCaptureId,
+            RelatedResource::CAPTURE,
+            $context
+        );
+        if ($captureResponse->getState() === PaymentStatusV1::PAYMENT_CAPTURE_COMPLETED) {
+            $this->orderTransactionCaptureStateHandler->complete($orderTransactionCaptureId, $context);
         }
 
         $this->paymentStatusUtil->applyCaptureState($orderId, $captureResponse, $context);
@@ -384,5 +429,32 @@ class PayPalPaymentController extends AbstractController
         $capture->setAmount($amount);
 
         return $capture;
+    }
+
+    private function getOrderTransactionIdForOrder(string $orderId, Context $context): string
+    {
+        $criteria = new Criteria([$orderId]);
+        $criteria->addAssociation('transactions');
+        $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
+        /** @var OrderEntity|null $order */
+        $order = $this->orderRepository->search($criteria, $context)->first();
+
+        if ($order === null) {
+            throw new OrderNotFoundException($orderId);
+        }
+
+        $transactionCollection = $order->getTransactions();
+
+        if ($transactionCollection === null) {
+            throw new InvalidOrderException($orderId);
+        }
+
+        $transaction = $transactionCollection->last();
+
+        if ($transaction === null) {
+            throw new InvalidOrderException($orderId);
+        }
+
+        return $transaction->getId();
     }
 }
