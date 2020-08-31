@@ -1,0 +1,22 @@
+@import "~scss/variables";
+
+.swag-paypal-pos-boolean-radio {
+    margin-bottom: 16px;
+
+    .sw-field__radio-option {
+        border: 1px solid #d9dfe5;
+        border-radius: 4px;
+        padding: 16px;
+        margin: 16px 0;
+
+        & > label > span {
+            font-size: 16px;
+            font-weight: $font-weight-bold;
+        }
+    }
+
+    .sw-field__radio-option-checked {
+        background-color: transparentize($color-shopware-brand-500, 0.95);
+        border: 1px solid $color-shopware-brand-500;
+    }
+}

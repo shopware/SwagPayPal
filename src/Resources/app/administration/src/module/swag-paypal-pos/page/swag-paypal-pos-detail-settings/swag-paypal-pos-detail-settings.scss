@@ -1,0 +1,41 @@
+@import "~scss/variables";
+
+.swag-paypal-pos-detail-settings {
+
+    .swag-paypal-pos-detail-settings__description-text {
+        font-size: $font-size-small;
+        margin: 20px 0;
+    }
+
+    .sw-sales-channel-detail-settings__delete-sales-channel {
+        align-items: center;
+    }
+
+    .swag-paypal-pos-detail-settings__options-description-text {
+        font-size: $font-size-small;
+        margin: 8px 0 0;
+    }
+
+    .swag-paypal-pos-detail-settings__options-button {
+        text-align: right;
+    }
+
+    .swag-paypal-pos-detail-settings__save-alert {
+        max-width: 800px;
+
+        @media screen and (max-width: 1360px) {
+            max-width: 770px;
+        }
+    }
+}
+
+.swag-paypal-pos-detail-settings__reset-sync-modal,
+.sw-sales-channel-detail-settings__delete-modal {
+    .sw-modal__body {
+        font-size: $font-size-small;
+    }
+
+    p {
+        margin-bottom: 15px;
+    }
+}

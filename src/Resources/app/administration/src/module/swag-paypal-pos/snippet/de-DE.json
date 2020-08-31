@@ -1,0 +1,218 @@
+{
+    "swag-paypal-pos": {
+        "general": {
+            "moduleTitle": "iZettle"
+        },
+        "header": "iZettle-Verkaufskanal",
+        "tabTitle": {
+            "overview": "Übersicht",
+            "syncedProducts": "Synchronisierte Produkte",
+            "settings": "Einstellungen",
+            "runs": "Protokoll",
+            "help": "Hilfe"
+        },
+        "detail": {
+            "overview": {
+                "titleSync": "Synchronisation",
+                "buttonSync": "Jetzt synchronisieren",
+                "buttonSyncProducts": "Produkt-Details synchronisieren",
+                "buttonSyncImages": "Bilder hochladen",
+                "buttonSyncInventory": "Bestand synchronisieren",
+                "buttonSyncAbort": "Synchronisation abbrechen",
+                "syncErrorTitle": "Synchronisations-Fehler",
+                "manageAccount": "iZettle-Konto verwalten",
+                "editConnection": "Verbindung bearbeiten",
+                "lastUpdated": "Zuletzt aktualisiert",
+                "connected": "Verbunden",
+                "status": {
+                    "disabled": "Die Synchronisation ist nicht aktiv, da dieser Verkaufskanal deaktiviert ist.",
+                    "message": {
+                        "syncing": "Synchronisation läuft",
+                        "noRunYet": "Noch keine Synchronisation durchgeführt",
+                        "success": "Synchronisation erfolgreich",
+                        "warning": "Die letzte Synchronisation wurde mit Warnmeldungen abgeschlossen",
+                        "error": "Die letzte Synchronisation wurde mit Fehlern abgeschlossen",
+                        "aborted": "Die letzte Synchronisation wurde vom Benutzer abgebrochen"
+                    },
+                    "task": {
+                        "complete": "Vollständig",
+                        "product": "Produkte",
+                        "image": "Bilder",
+                        "inventory": "Bestand"
+                    },
+                    "lastSynced": "Zuletzt synchronisiert",
+                    "lastSyncedComplete": "Zuletzt vollständig synchronisiert",
+                    "syncingDetail": "Dies könnte einige Minuten dauern. Der Prozess läuft im Hintergrund weiter. Du kannst Deinen Shop währendessen wie gewohnt weiterverwenden."
+                },
+                "continueSetup": {
+                    "cardTitle": "Einrichtung",
+                    "content": {
+                        "headline": "Produkt-Synchronisation einrichten",
+                        "firstLine": "Ihre iZettle- und Shopware-Konten sind miteinander verbunden! Richten Sie zum Abschluss die Produktsynchronisierung ein.",
+                        "secondLine": "Nach der Aktivierung werden alle Änderungen, die Sie an Ihren Shopware-Produkten vornehmen, automatisch in iZettle aktualisiert. Wenn Sie einen Verkauf auf einem der beiden Systeme tätigen, wird der Lagerbestand aktualisiert, und Sie können alle Ihre Verkäufe an einem Ort bei Shopware einsehen."
+                    }
+                }
+            },
+            "syncedProducts": {
+                "title": "Synchronisierte Produkte",
+                "notSyncedYet": "Noch nicht synchronisiert",
+                "columns": {
+                    "name": "Name",
+                    "state": "Status",
+                    "date": "Datum"
+                },
+                "emptyState": {
+                    "title": "Keine Produkte gewählt",
+                    "message": "Es existieren keine Produkte in dem gewählten Verkaufskanal bzw. der dynamischen Produktgruppe."
+                },
+                "actions": {
+                    "productDetails": "Produktdetails"
+                }
+            },
+            "settings": {
+                "titleGeneralSettings": "Allgemein",
+                "domain": "Deine Shop-Domain",
+                "domainHelpText": "iZettle wird diese Domain nutzen, um Mediendaten Deiner synchronisierten Produkte herunterzuladen.",
+                "productStream": "Dynamische Produktgruppe",
+                "titleCredentials": "Zugangsdaten",
+                "titleSync": "Synchronisation",
+                "titlePrices": "Preise",
+                "syncPrices": "Preise übertragen",
+                "replace": "Existierende Produkte in iZettle ersetzen",
+                "activeHelpText": "Wenn der Verkaufskanal aktiv ist, erfolgt die iZettle-Synchronisierung automatisch im Hintergrund.",
+                "saveAlert": "Änderungen werden erst nach der aktuell laufenden Synchronsiation zwischen Shopware und iZettle aktiv.",
+                "optionsTitle": "Optionen",
+                "reset": {
+                    "buttonTitle": "Synchronisation zurücksetzen",
+                    "descriptionText": "Wenn Probleme auftreten, hast du hier die Möglichkeit, alle Produkte & Bilder neu hochzuladen.",
+                    "modalConfirmText": "Diese Aktion wird die Synchronisations-Historie des folgenden Verkaufskanals zurücksetzen",
+                    "modalTextInfo": "Alle Produkte & Bilder werden bei der nächsten Synchronisation neu hochgeladen. Dies kann etwas Zeit in Anspruch nehmen. Du wirst keine Daten in Shopware verlieren, einige Daten werden möglicherweise in iZettle überschrieben.",
+                    "modalTitle": "Synchronisation zurücksetzen",
+                    "modalButtonConfirm": "Synchronisation zurücksetzen"
+                }
+            },
+            "logs": {
+                "columnLastSync": "Details",
+                "noEntry": "Noch nicht synchronisiert",
+                "states": {
+                    "success": "Aktualisiert",
+                    "failed": "Fehlgeschlagen",
+                    "aborted": "Abgebrochen"
+                }
+            },
+            "runs": {
+                "title": "Synchronisations Historie",
+                "toolbarText": "Wenn Sie die Protokolle aufräumen, werden alle leeren oder sicher zu löschenden Protokolle gelöscht.",
+                "states": {
+                    "withWarnings": "Durchlauf mit Warnungen abgeschlossen",
+                    "successful": "Durchlauf abgeschlossen",
+                    "aborted": "Durchlauf durch Benutzer abgebrochen"
+                },
+                "actions": {
+                    "showDetails": "Details anzeigen"
+                },
+                "emptyState": {
+                    "title": "Keine beendeten Synchronisationen",
+                    "message": "Synchronisiere jetzt um Einträge zu erhalten."
+                },
+                "columns": {
+                    "task": "Typ",
+                    "state": "Status",
+                    "date": "Datum"
+                },
+                "taskPostfix": "Synchronisation"
+            },
+            "save": "Speichern",
+            "cleanLog": "Protokolle aufräumen"
+        },
+        "wizard": {
+            "salesChannelPrototypeName": "iZettle POS",
+            "stepItemTitle": {
+                "connection": "Benutzerkonto-Einrichtung",
+                "connectionSuccess": "Verbindung",
+                "customization": "Benutzerdefinierte Einstellungen",
+                "productSelection": "Produktauswahl",
+                "syncLibrary": "Product synchronisation",
+                "syncPrices": "Preis-Synchronsiation",
+                "finish": "Abschluss"
+            },
+            "connection": {
+                "modalTitle": "Benutzerkonto-Einrichtung",
+                "headerConnect": "Verbinde Deinen iZettle-Account",
+                "headerNewCustomer": "Neu bei iZettle?",
+                "labelApiKey": "API-Schlüssel",
+                "placeholderApiKey": "API-Schüssel eingeben ...",
+                "apiKeyDescription": "Ein API-Schlüssel funktioniert wie ein Passwort. Shopware verwendet Deinen iZettle-API-Schlüssel, um eine sichere Verbindung zu Deinem iZettle-Konto herzustellen.",
+                "buttonCreateAccount": "iZettle-Account anlegen",
+                "buttonCreateAccountLink": "https://register.izettle.com/"
+            },
+            "connectionSuccess": {
+                "modalTitle": "Verbindung hergestellt",
+                "headline": "Deine iZettle- und Shopware-Konten sind jetzt miteinander verbunden!",
+                "info": "Befolge zum Abschluss die nächsten Schritte zur Einrichtung der Produktsynchronisation.",
+                "disconnectButton": "Verbindung trennen",
+                "disclaimer": "Alle Änderungen, die Du an Deinen Shopware-Produkten vornimmst, werden jetzt automatisch in Deinem verbundenen iZettle-Konto aktualisiert.",
+                "fakeFirstName": "Im",
+                "fakeLastName": "Ladeprozess",
+                "fakeMail": "pos@example.com"
+            },
+            "connectionDisconnect": {
+                "modalTitle": "iZettle-Konto trennen",
+                "headline": "Du bist dabei, die Verbindung zu iZettle zu trennen",
+                "info": "Produkte werden nicht weiter mit dem angezeigten iZettle-Account synchronisiert, wenn die Verbindung getrennt wurde.",
+                "disconnectButton": "Konto trennen",
+                "disconnectErrorMessage": "Ein Fehler ist beim Trennen aufgetreten."
+            },
+            "customization": {
+                "salesChannelLabel": "Name des Verkaufskanals",
+                "modalTitle": "Verkaufskanal-Details",
+                "labelDomain": "Deine Shop-Domain",
+                "subtitle": "iZettle wird diese Domain nutzen, um Mediendaten Deiner synchronisierten Produkte herunterzuladen.",
+                "placeholderDomain": "www.mein-store.shopware.com"
+            },
+            "productSelection": {
+                "modalTitle": "Produkte von einem existierenden Verkaufskanal übertragen",
+                "labelSelect": "Verkaufskanal",
+                "labelToggle": "Produktauswahl übertragen",
+                "info": "Um direkt durchzustarten kannst Du nun Produkte eines bestehenden Verkaufskanals Deinem neuen Verkaufskanal zuweisen. Alle zugewiesenen Produkte werden dann zur Synchronisation mit iZettle POS zur Verfügung stehen."
+            },
+            "syncLibrary": {
+                "modalTitle": "Produktsynchronisation einrichten",
+                "header": "Wir haben {shopwareProducts} und {iZettleProducts} gefunden",
+                "shopwareProducts": "keine Shopware-Produkte | ein Shopware-Produkt | {n} Shopware-Produkte",
+                "iZettleProducts": "keine iZettle-Produkte | ein iZettle-Produkt | {n} iZettle-Produkte",
+                "description": "Alle Produkte werden aus dem neuen Shopware-Verkaufskanal synchronisiert. Wie möchtest Du Deine iZettle-Produktbibliothek einrichten?",
+                "optionReplaceLabel": "iZettle-Produktbibliothek ersetzen",
+                "optionReplaceDescription": "Ersetze die bestehende iZettle-Produktbibliothek mit den Produkten und Beständen aus Shopware.",
+                "optionAddLabel": "Shopware-Produkte hinzufügen",
+                "optionAddDescription": "Deine Produkte und Bestände werden Deiner iZettle-Produktbibliothek hinzugefügt.",
+                "disclaimer": "Du kannst diese Einstellung jederzeit ändern."
+            },
+            "syncPrices": {
+                "modalTitle": "Preis-Synchronisation",
+                "header": "Wie möchtest Du die Produktpreise nach iZettle synchronisieren?",
+                "description": "Die Preise Deiner Produkte enthalten die Mehrwertsteuer, wenn sie mit iZettle synchronisiert werden.",
+                "disclaimer": "Du kannst die Mehrwertsteuer manuell in der iZettle-Produktbibliothek pflegen.",
+                "optionTrueLabel": "Preise mit Mehrwertsteuer synchronisieren",
+                "optionTrueDescription": "Die mit iZettle synchronisierten Preise enthalten die Mehrwertsteuer.",
+                "optionFalseLabel": "Preise werden nicht synchronisiert.",
+                "optionFalseDescription": "Produktpreise werden bei der Synchronisation nicht übertragen. Du kannst diese in Deiner iZettle-Produktbibliothek anpassen."
+            },
+            "finish": {
+                "modalTitle": "Fertiggestellt",
+                "header": "Einrichtung der Produkt-Synchronisation abgeschlossen!",
+                "firstParagraph": "Dein iZettle-Konto ist jetzt mit Deinem Verkaufskanal verknüpft und überträgt Deine Produkte zu iZettle. Wenn Du in Zukunft einen Verkauf tätigst, wird der Bestand bei iZettle und Shopware automatisch aktualisiert.",
+                "secondParagraph": "Wenn Du Deine Produkte aktualisieren möchtest, empfehlen wir Dir, dies in Shopware zu tun, um sie automatisch mit Deiner iZettle-Anwendung zu synchronisieren."
+            }
+        },
+        "authentification": {
+            "messageTestError": "Die Zugangsdaten konnten nicht validiert werden.",
+            "apiKey": "API-Key",
+            "buttonTest": "Zugangsdaten testen",
+            "buttonGenerateKey": "API-Key generieren",
+            "apiKeyDescription": "Zur Verwendung muss auf der iZettle-Webseite ein API-Schlüssel erstellt werden. Der generierte Schlüssel muss zur Authentifizierung hier eingefügt werden."
+        },
+        "messageCloneError": "Konnte die Produktzuordnung nicht von anderem Verkaufskanal übertragen.",
+        "messageWebhookRegisterError": "Konnte den Webhook nicht bei iZettle registrieren."
+    }
+}

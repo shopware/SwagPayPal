@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_pos_sales_channel_media"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Api\Service\MediaConverter">
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Api\Service\Converter\PresentationConverter"/>
+
+        <service id="Swag\PayPal\Pos\Resource\ImageResource">
+            <argument type="service" id="Swag\PayPal\Pos\Client\PosClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\ImageSyncer">
+            <argument type="service" id="swag_paypal_pos_sales_channel_media.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\MediaConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Resource\ImageResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Command\PosImageSyncCommand">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\ImageTask"/>
+            <tag name="console.command"/>
+        </service>
+    </services>
+</container>

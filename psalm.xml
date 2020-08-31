@@ -36,11 +36,11 @@
 
         <MoreSpecificImplementedParamType>
             <errorLevel type="info">
-                <file name="src/IZettle/Api/Service/Util/ProductGroupingCollection.php"/>
-                <file name="src/IZettle/DataAbstractionLayer/Entity/*Collection.php"/>
-                <file name="src/IZettle/MessageQueue/Handler/Sync/*Handler.php"/>
-                <file name="src/IZettle/Sync/*Syncer.php"/>
-                <file name="src/IZettle/Webhook/Handler/*Handler.php"/>
+                <file name="src/Pos/Api/Service/Util/ProductGroupingCollection.php"/>
+                <file name="src/Pos/DataAbstractionLayer/Entity/*Collection.php"/>
+                <file name="src/Pos/MessageQueue/Handler/Sync/*Handler.php"/>
+                <file name="src/Pos/Sync/*Syncer.php"/>
+                <file name="src/Pos/Webhook/Handler/*Handler.php"/>
             </errorLevel>
         </MoreSpecificImplementedParamType>
 
@@ -53,22 +53,22 @@
         <InvalidReturnType>
             <errorLevel type="info">
                 <directory name="tests/Mock"/>
-                <directory name="tests/IZettle/Mock"/>
+                <directory name="tests/Pos/Mock"/>
             </errorLevel>
         </InvalidReturnType>
 
         <DocblockTypeContradiction>
             <errorLevel type="info">
-                <file name="src/IZettle/Api/Service/Util/ProductGrouping.php"/>
-                <file name="src/IZettle/Api/Common/IZettleStruct.php"/>
+                <file name="src/Pos/Api/Service/Util/ProductGrouping.php"/>
+                <file name="src/Pos/Api/Common/PosStruct.php"/>
                 <file name="src/PayPal/Api/Common/PayPalStruct.php"/>
             </errorLevel>
         </DocblockTypeContradiction>
 
         <InternalMethod>
             <errorLevel type="info">
-                <file name="src/IZettle/Command/*Command.php"/>
-                <file name="src/IZettle/Schedule/*Handler.php"/>
+                <file name="src/Pos/Command/*Command.php"/>
+                <file name="src/Pos/Schedule/*Handler.php"/>
                 <directory name="tests"/>
             </errorLevel>
         </InternalMethod>
@@ -102,13 +102,13 @@
 
         <PossiblyInvalidArgument>
             <errorLevel type="info">
-                <file name="tests/IZettle/Sync/Product/*Test.php"/>
+                <file name="tests/Pos/Sync/Product/*Test.php"/>
             </errorLevel>
         </PossiblyInvalidArgument>
 
         <PossiblyUndefinedMethod>
             <errorLevel type="info">
-                <file name="tests/IZettle/Sync/Product/*Test.php"/>
+                <file name="tests/Pos/Sync/Product/*Test.php"/>
             </errorLevel>
         </PossiblyUndefinedMethod>
 

@@ -1,5 +1,5 @@
 import './mixin/swag-paypal-credentials-loader.mixin';
-import './mixin/swag-paypal-izettle-log-label.mixin';
+import './mixin/swag-paypal-pos-log-label.mixin';
 import './module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials';
 
 import './module/swag-paypal';
@@ -8,4 +8,4 @@ import './init/api-service.init';
 import './init/translation.init';
 import './init/svg-icons.init';
 
-import './module/swag-paypal-izettle';
+import './module/swag-paypal-pos';

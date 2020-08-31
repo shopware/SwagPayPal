@@ -1,0 +1,100 @@
+{% block swag_paypal_pos_wizard_connection %}
+    <div v-if="!isLoading"
+         class="swag-paypal-pos-wizard-connection">
+
+        {% block swag_paypal_pos_wizard_connection_headline %}
+            <div class="swag-paypal-pos-wizard-connection__headline">
+                {{ $tc('swag-paypal-pos.wizard.connection.headerConnect') }}
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_wizard_connection_apikey %}
+            <sw-password-field v-model="salesChannel.extensions.paypalPosSalesChannel.apiKey"
+                               class="swag-paypal-pos-wizard-connection__apikey-field"
+                               required
+                               :label="$tc('swag-paypal-pos.wizard.connection.labelApiKey')"
+                               :placeholder="$tc('swag-paypal-pos.wizard.connection.placeholderApiKey')"
+                               @input="forceUpdate">
+                <template #suffix>
+
+                    {% block swag_paypal_pos_wizard_connection_apikey_suffix %}
+                        <sw-icon name="default-lock-key"
+                                 class="swag-paypal-pos-wizard-connection__apiKey-suffix"
+                                 size="22px">
+                        </sw-icon>
+                    {% endblock %}
+                </template>
+            </sw-password-field>
+        {% endblock %}
+
+        {% block swag_paypal_pos_wizard_connection_apikey_description %}
+            <div class="swag-paypal-pos-wizard-connection__apikey-description">
+
+                {% block swag_paypal_pos_wizard_connection_apikey_description_text %}
+                    <div class="swag-paypal-pos-wizard-connection__apikey-description-text">
+                        {{ $tc('swag-paypal-pos.wizard.connection.apiKeyDescription') }}
+                    </div>
+                {% endblock %}
+
+                {% block swag_paypal_pos_wizard_connection_apikey_description_link %}
+                    <a :href="apiKeyUrl"
+                       target="_blank"
+                       class="link swag-paypal-pos-wizard-connection__apikey-description-link">
+
+                        {% block swag_paypal_pos_wizard_connection_apikey_description_link_text %}
+                            {{ $tc('swag-paypal-pos.authentification.buttonGenerateKey') }}
+                            <sw-icon class="swag-paypal-pos-wizard-connection__link-icon"
+                                     name="default-action-external"
+                                     size="10px">
+                            </sw-icon>
+                        {% endblock %}
+                    </a>
+                {% endblock %}
+            </div>
+        {% endblock %}
+
+        {% block swag_paypal_pos_wizard_connection_header_new_customer %}
+            <div class="swag-paypal-pos-wizard-connection__new-customer-headline">
+                {{ $tc('swag-paypal-pos.wizard.connection.headerNewCustomer') }}
+            </div>
+        {% endblock %}
+
+
+        {% block swag_paypal_pos_wizard_connection_new_customer %}
+            <sw-card>
+                <sw-container class="swag-paypal-pos-wizard-connection__new-customer-container"
+                              columns="1fr 1fr"
+                              align="center"
+                              gap="300px">
+
+                    {% block swag_paypal_pos_wizard_connection_new_customer_image %}
+                        <img class="swag-paypal-pos-wizard-connection__pos-logo"
+                             :src="'swagpaypal/static/img/izettle-logo-full.png' | asset"
+                             alt="iZettle logo">
+                    {% endblock %}
+
+                    {% block swag_paypal_pos_wizard_connection_new_customer_button %}
+                        <sw-button class="swag-paypal-pos-wizard-connection__pos-link"
+                                   variant="ghost"
+                                   size="small"
+                                   :link="$tc('swag-paypal-pos.wizard.connection.buttonCreateAccountLink')">
+
+                            {% block swag_paypal_pos_wizard_connection_new_customer_button_text %}
+                                <span class="swag-paypal-pos-wizard-connection__pos-link-text">
+                                    {{ $tc('swag-paypal-pos.wizard.connection.buttonCreateAccount') }}
+                                </span>
+                            {% endblock %}
+
+                            {% block swag_paypal_pos_wizard_connection_new_customer_button_icon %}
+                                <sw-icon name="default-action-external"
+                                         class="swag-paypal-pos-wizard-connection__pos-link-icon"
+                                         size="10px">
+                                </sw-icon>
+                            {% endblock %}
+                        </sw-button>
+                    {% endblock %}
+                </sw-container>
+            </sw-card>
+        {% endblock %}
+    </div>
+{% endblock %}

@@ -21,7 +21,7 @@ parameters:
             message: '#is never read, only written#'
             paths:
                 - src/PayPal/Api
-                - src/IZettle/Api
+                - src/Pos/Api
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

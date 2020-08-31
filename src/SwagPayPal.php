@@ -31,9 +31,9 @@ class SwagPayPal extends Plugin
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID = 'swag_paypal_transaction_id';
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TOKEN = 'swag_paypal_token';
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION = 'swag_paypal_pui_payment_instruction';
-    public const SALES_CHANNEL_TYPE_IZETTLE = '1ce0868f406d47d98cfe4b281e62f099';
-    public const SALES_CHANNEL_IZETTLE_EXTENSION = 'paypalIZettleSalesChannel';
-    public const PRODUCT_LOG_IZETTLE_EXTENSION = 'paypalIZettleLog';
+    public const SALES_CHANNEL_TYPE_POS = '1ce0868f406d47d98cfe4b281e62f099';
+    public const SALES_CHANNEL_POS_EXTENSION = 'paypalPosSalesChannel';
+    public const PRODUCT_LOG_POS_EXTENSION = 'paypalPosLog';
 
     /**
      * @var ActivateDeactivate
@@ -57,7 +57,7 @@ class SwagPayPal extends Plugin
 
         $loader = new XmlFileLoader($container, new FileLocator([
             __DIR__ . '/DependencyInjection/',
-            __DIR__ . '/IZettle/DependencyInjection/',
+            __DIR__ . '/Pos/DependencyInjection/',
         ]));
 
         $loader->load('client.xml');
@@ -72,13 +72,13 @@ class SwagPayPal extends Plugin
         $loader->load('checkout.xml');
         $loader->load('plus.xml');
         $loader->load('installment.xml');
-        $loader->load('izettle.xml');
-        $loader->load('izettle_products.xml');
-        $loader->load('izettle_inventory.xml');
-        $loader->load('izettle_log.xml');
-        $loader->load('izettle_media.xml');
-        $loader->load('izettle_schedule.xml');
-        $loader->load('izettle_webhook.xml');
+        $loader->load('pos.xml');
+        $loader->load('pos_products.xml');
+        $loader->load('pos_inventory.xml');
+        $loader->load('pos_log.xml');
+        $loader->load('pos_media.xml');
+        $loader->load('pos_schedule.xml');
+        $loader->load('pos_webhook.xml');
     }
 
     public function install(InstallContext $installContext): void

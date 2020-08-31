@@ -2,12 +2,12 @@ import SwagPayPalWebhookRegisterService
     from '../core/service/api/swag-paypal-webhook-register.service';
 import SwagPayPalApiCredentialsService
     from '../core/service/api/swag-paypal-api-credentials.service';
-import SwagPayPalIZettleSettingApiService
-    from '../core/service/api/swag-paypal-izettle-setting.api.service';
-import SwagPayPalIZettleApiService
-    from '../core/service/api/swag-paypal-izettle.api.service';
-import SwagPayPalIZettleWebhookRegisterService
-    from '../core/service/api/swag-paypal-izettle-webhook-register.service';
+import SwagPayPalPosSettingApiService
+    from '../core/service/api/swag-paypal-pos-setting.api.service';
+import SwagPayPalPosApiService
+    from '../core/service/api/swag-paypal-pos.api.service';
+import SwagPayPalPosWebhookRegisterService
+    from '../core/service/api/swag-paypal-pos-webhook-register.service';
 import SwagPayPalPaymentService
     from '../core/service/api/swag-paypal-payment.service';
 import SwagPaypalPaymentMethodServiceService
@@ -28,18 +28,18 @@ Application.addServiceProvider(
 );
 
 Application.addServiceProvider(
-    'SwagPayPalIZettleSettingApiService',
-    (container) => new SwagPayPalIZettleSettingApiService(initContainer.httpClient, container.loginService)
+    'SwagPayPalPosSettingApiService',
+    (container) => new SwagPayPalPosSettingApiService(initContainer.httpClient, container.loginService)
 );
 
 Application.addServiceProvider(
-    'SwagPayPalIZettleApiService',
-    (container) => new SwagPayPalIZettleApiService(initContainer.httpClient, container.loginService)
+    'SwagPayPalPosApiService',
+    (container) => new SwagPayPalPosApiService(initContainer.httpClient, container.loginService)
 );
 
 Application.addServiceProvider(
-    'SwagPayPalIZettleWebhookRegisterService',
-    (container) => new SwagPayPalIZettleWebhookRegisterService(initContainer.httpClient, container.loginService)
+    'SwagPayPalPosWebhookRegisterService',
+    (container) => new SwagPayPalPosWebhookRegisterService(initContainer.httpClient, container.loginService)
 );
 
 Application.addServiceProvider(

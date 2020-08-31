@@ -13,8 +13,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\IZettle\Exception\ExistingIZettleSalesChannelsException;
-use Swag\PayPal\IZettle\Setting\Service\InformationDefaultService;
+use Swag\PayPal\Pos\Exception\ExistingPosSalesChannelsException;
+use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
@@ -62,15 +62,15 @@ class ActivateDeactivate
     public function activate(Context $context): void
     {
         $this->setPaymentMethodsIsActive(true, $context);
-        $this->addIZettleSalesChannelType($context);
+        $this->addPosSalesChannelType($context);
     }
 
     public function deactivate(Context $context): void
     {
         $this->setPaymentMethodsIsActive(false, $context);
-        $this->checkIZettleSalesChannels($context);
-        $this->removeIZettleSalesChannelType($context);
-        $this->removeIZettleDefaultEntities($context);
+        $this->checkPosSalesChannels($context);
+        $this->removePosSalesChannelType($context);
+        $this->removePosDefaultEntities($context);
     }
 
     private function setPaymentMethodsIsActive(bool $active, Context $context): void
@@ -89,11 +89,11 @@ class ActivateDeactivate
         $this->paymentRepository->update($updateData, $context);
     }
 
-    private function addIZettleSalesChannelType(Context $context): void
+    private function addPosSalesChannelType(Context $context): void
     {
         $this->salesChannelTypeRepository->upsert([
             [
-                'id' => SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE,
+                'id' => SwagPayPal::SALES_CHANNEL_TYPE_POS,
                 'iconName' => 'default-money-cash',
                 'translations' => [
                     'en-GB' => [
@@ -111,20 +111,20 @@ class ActivateDeactivate
         ], $context);
     }
 
-    private function removeIZettleSalesChannelType(Context $context): void
+    private function removePosSalesChannelType(Context $context): void
     {
-        $this->salesChannelTypeRepository->delete([['id' => SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE]], $context);
+        $this->salesChannelTypeRepository->delete([['id' => SwagPayPal::SALES_CHANNEL_TYPE_POS]], $context);
     }
 
     /**
-     * @throws ExistingIZettleSalesChannelsException
+     * @throws ExistingPosSalesChannelsException
      */
-    private function checkIZettleSalesChannels(Context $context): void
+    private function checkPosSalesChannels(Context $context): void
     {
         $criteria = new Criteria();
         $criteria
             ->addFilter(
-                new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_IZETTLE)
+                new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS)
             );
 
         /** @var EntitySearchResult $result */
@@ -137,13 +137,13 @@ class ActivateDeactivate
                 return (string) $item->getName();
             });
 
-            throw new ExistingIZettleSalesChannelsException($result->getTotal(), $names);
+            throw new ExistingPosSalesChannelsException($result->getTotal(), $names);
         }
     }
 
-    private function removeIZettleDefaultEntities(Context $context): void
+    private function removePosDefaultEntities(Context $context): void
     {
-        $this->paymentRepository->delete([InformationDefaultService::IZETTLE_PAYMENT_METHOD_ID], $context);
-        $this->shippingRepository->delete([InformationDefaultService::IZETTLE_SHIPPING_METHOD_ID], $context);
+        $this->paymentRepository->delete([InformationDefaultService::POS_PAYMENT_METHOD_ID], $context);
+        $this->shippingRepository->delete([InformationDefaultService::POS_SHIPPING_METHOD_ID], $context);
     }
 }

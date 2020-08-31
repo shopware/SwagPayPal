@@ -1,0 +1,222 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelDefinition">
+            <tag name="shopware.entity.definition" entity="swag_paypal_pos_sales_channel"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Extension\SalesChannelExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Extension\ProductExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\PosSyncController" public="true">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\CompleteTask"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\ProductTask"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\ImageTask"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\InventoryTask"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Administration\LogCleaner"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\RunService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Administration\SyncResetter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSelection"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\ProductSelection">
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
+        <service id="Swag\PayPal\Pos\Api\Service\ApiKeyDecoder"/>
+
+        <service id="Swag\PayPal\Pos\Client\TokenClientFactory">
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="Swag\PayPal\Pos\Api\Service\ApiKeyDecoder"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Client\PosClientFactory">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\TokenResource"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Resource\TokenResource">
+            <argument type="service" id="cache.object"/>
+            <argument type="service" id="Swag\PayPal\Pos\Client\TokenClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Resource\UserResource">
+            <argument type="service" id="Swag\PayPal\Pos\Client\PosClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Setting\SettingsController" public="true">
+            <argument type="service" id="Swag\PayPal\Pos\Setting\Service\ApiCredentialService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Setting\Service\InformationFetchService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Setting\Service\InformationDefaultService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Setting\Service\ProductVisibilityCloneService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Setting\Service\ProductCountService"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Setting\Service\ApiCredentialService">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\TokenResource"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Setting\Service\InformationFetchService">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\UserResource"/>
+            <argument type="service" id="country.repository"/>
+            <argument type="service" id="currency.repository"/>
+            <argument type="service" id="language.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Setting\Service\ProductCountService">
+            <argument type="service" id="Swag\PayPal\Pos\Resource\ProductResource"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="sales_channel.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Setting\Service\InformationDefaultService">
+            <argument type="service" id="customer_group.repository"/>
+            <argument type="service" id="category.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="rule.repository"/>
+            <argument type="service" id="delivery_time.repository"/>
+            <argument type="service" id="shipping_method.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Setting\Service\ProductVisibilityCloneService">
+            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="product_visibility.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\CloneVisiblityHandler">
+            <argument type="service" id="product_visibility.repository"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\SyncManagerHandler">
+            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="message_queue_stats.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\RunService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+            <argument type="service" id="Swag\PayPal\Pos\MessageQueue\Manager\ImageSyncManager"/>
+            <argument type="service" id="Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager"/>
+            <argument type="service" id="Swag\PayPal\Pos\MessageQueue\Manager\ProductSyncManager"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Swag\PayPal\Pos\Command\PosSyncCommand">
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Task\CompleteTask"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Run\Task\AbstractTask" abstract="true">
+            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\RunService"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\Run\Task\CompleteTask" parent="Swag\PayPal\Pos\Run\Task\AbstractTask" />
+        <service id="Swag\PayPal\Pos\Run\Task\ProductTask" parent="Swag\PayPal\Pos\Run\Task\AbstractTask" />
+        <service id="Swag\PayPal\Pos\Run\Task\ImageTask" parent="Swag\PayPal\Pos\Run\Task\AbstractTask" />
+        <service id="Swag\PayPal\Pos\Run\Task\InventoryTask" parent="Swag\PayPal\Pos\Run\Task\AbstractTask" />
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Manager\AbstractSyncManager" abstract="true">
+            <argument type="service" id="messenger.bus.shopware"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Manager\ImageSyncManager"
+                 parent="Swag\PayPal\Pos\MessageQueue\Manager\AbstractSyncManager">
+            <argument type="service" id="swag_paypal_pos_sales_channel_media.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ImageSyncer"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager"
+                 parent="Swag\PayPal\Pos\MessageQueue\Manager\AbstractSyncManager">
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Context\InventoryContextFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Manager\ProductSyncManager"
+                 parent="Swag\PayPal\Pos\MessageQueue\Manager\AbstractSyncManager">
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ImageSyncer"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\Sync\AbstractSyncHandler" abstract="true">
+            <argument type="service" id="Swag\PayPal\Pos\Run\RunService"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\Sync\ProductSingleSyncHandler"
+                 parent="Swag\PayPal\Pos\MessageQueue\Handler\Sync\AbstractSyncHandler">
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSyncer"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\Sync\ProductVariantSyncHandler"
+                 parent="Swag\PayPal\Pos\MessageQueue\Handler\Sync\AbstractSyncHandler">
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSyncer"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\Sync\ProductCleanupSyncHandler"
+                 parent="Swag\PayPal\Pos\MessageQueue\Handler\Sync\AbstractSyncHandler">
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSelection"/>
+            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSyncer"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\Sync\InventorySyncHandler"
+                 parent="Swag\PayPal\Pos\MessageQueue\Handler\Sync\AbstractSyncHandler">
+            <argument type="service" id="product.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\Context\InventoryContextFactory"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\InventorySyncer"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\Sync\ImageSyncHandler"
+                 parent="Swag\PayPal\Pos\MessageQueue\Handler\Sync\AbstractSyncHandler">
+            <argument type="service" id="swag_paypal_pos_sales_channel_media.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\Sync\ImageSyncer"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Swag\PayPal\Pos\Sync\Inventory\StockSubscriber">
+            <argument type="service" id="order_line_item.repository"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\InventoryUpdateHandler">
+            <argument type="service" id="Swag\PayPal\Pos\Run\RunService"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager"/>
+            <argument type="service" id="messenger.bus.shopware"/>
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Swag\PayPal\Pos\Run\Administration\SyncResetter">
+            <argument type="service" id="swag_paypal_pos_sales_channel_product.repository"/>
+            <argument type="service" id="swag_paypal_pos_sales_channel_inventory.repository"/>
+            <argument type="service" id="swag_paypal_pos_sales_channel_media.repository"/>
+            <argument type="service" id="swag_paypal_pos_sales_channel_run.repository"/>
+        </service>
+    </services>
+</container>

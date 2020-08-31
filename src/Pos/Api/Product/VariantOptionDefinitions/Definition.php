@@ -1,0 +1,42 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions;
+
+use Swag\PayPal\Pos\Api\Common\PosStruct;
+use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions\Definition\Property;
+
+class Definition extends PosStruct
+{
+    /**
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * @var Property[]
+     */
+    protected $properties = [];
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function addProperty(Property ...$properties): void
+    {
+        $this->properties = \array_merge($this->properties, $properties);
+    }
+
+    /**
+     * @param Property[] $properties
+     */
+    protected function setPropertys(array $properties): void
+    {
+        $this->properties = $properties;
+    }
+}
