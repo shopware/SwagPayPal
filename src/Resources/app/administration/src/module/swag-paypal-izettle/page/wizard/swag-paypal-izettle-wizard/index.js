@@ -11,6 +11,7 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
     inject: [
         'SwagPayPalIZettleApiService',
         'SwagPayPalIZettleSettingApiService',
+        'SwagPayPalIZettleWebhookRegisterService',
         'salesChannelService',
         'repositoryFactory'
     ],
@@ -197,10 +198,14 @@ Component.extend('swag-paypal-izettle-wizard', 'sw-first-run-wizard-modal', {
 
         registerWebhook() {
             return this.SwagPayPalIZettleWebhookRegisterService.registerWebhook(this.salesChannel.id)
-                .catch(() => {
+                .catch((errorResponse) => {
+                    const message = errorResponse.response.data.errors.map((error) => {
+                        return error.detail;
+                    }).join(' / ');
+
                     this.createNotificationError({
                         title: this.$tc('global.default.error'),
-                        message: this.$tc('swag-paypal-izettle.messageWebhookRegisterError')
+                        message: `${this.$tc('swag-paypal-izettle.messageWebhookRegisterError')}: ${message}`
                     });
                 });
         },
