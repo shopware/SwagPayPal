@@ -9,7 +9,7 @@ if [[ -n "$1" ]]; then
     unset IFS;
 
     TICKETNR="${BRANCH[0]}"
-    PATTERN+="${TICKETNR}.*"
+    PATTERN+=":space:${TICKETNR}:space:.*"
     DESCRIPTION+=" regarding the current ticket number: ${TICKETNR}"
 fi
 
