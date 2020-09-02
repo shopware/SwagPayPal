@@ -16,6 +16,9 @@ class SystemConfigServiceMock extends SystemConfigService
      */
     private $data = [];
 
+    /**
+     * @return array|bool|float|int|null|string
+     */
     public function get(string $key, ?string $salesChannelId = null, bool $inherit = true)
     {
         $salesChannelId = (string) $salesChannelId;
