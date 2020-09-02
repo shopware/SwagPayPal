@@ -19,6 +19,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Api\Webhook\Subscription\CreateSubscription;
 use Swag\PayPal\Pos\Api\Webhook\Subscription\UpdateSubscription;
 use Swag\PayPal\Pos\Api\Webhook\Webhook;
+use Swag\PayPal\Pos\Exception\InvalidContactEmailException;
 use Swag\PayPal\Pos\Resource\SubscriptionResource;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
 use Swag\PayPal\Pos\Webhook\Exception\WebhookIdInvalidException;
@@ -93,7 +94,7 @@ class WebhookService
         $subscription = new CreateSubscription();
         $subscription->setUuid($this->uuidConverter->convertUuidToV1($salesChannelId));
         $subscription->setTransportName('WEBHOOK');
-        $subscription->setContactEmail($this->systemConfig->get(self::EMAIL_CONFIG_KEY, $salesChannelId));
+        $subscription->setContactEmail($this->getContactEmail($salesChannelId));
         $subscription->setDestination($this->getWebhookUrl($salesChannelId));
         $subscription->setEventNames([WebhookEventNames::INVENTORY_BALANCE_CHANGED]);
 
@@ -149,7 +150,7 @@ class WebhookService
         }
 
         $subscription = new UpdateSubscription();
-        $subscription->setContactEmail($this->systemConfig->get(self::EMAIL_CONFIG_KEY, $salesChannelId));
+        $subscription->setContactEmail($this->getContactEmail($salesChannelId));
         $subscription->setDestination($this->getWebhookUrl($salesChannelId));
         $subscription->setEventNames([WebhookEventNames::INVENTORY_BALANCE_CHANGED]);
 
@@ -202,5 +203,16 @@ class WebhookService
         }
 
         return $salesChannel;
+    }
+
+    private function getContactEmail(string $salesChannelId): string
+    {
+        $contactEmail = $this->systemConfig->get(self::EMAIL_CONFIG_KEY, $salesChannelId);
+
+        if (!\is_string($contactEmail)) {
+            throw new InvalidContactEmailException($salesChannelId);
+        }
+
+        return $contactEmail;
     }
 }

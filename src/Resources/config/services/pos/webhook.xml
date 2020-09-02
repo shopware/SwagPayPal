@@ -11,10 +11,6 @@
             <argument type="service" id="sales_channel.repository"/>
         </service>
 
-        <service id="Swag\PayPal\Pos\Resource\SubscriptionResource">
-            <argument type="service" id="Swag\PayPal\Pos\Client\PosClientFactory"/>
-        </service>
-
         <service id="Swag\PayPal\Pos\Webhook\WebhookService" public="true">
             <argument type="service" id="Swag\PayPal\Pos\Resource\SubscriptionResource"/>
             <argument type="service" id="Swag\PayPal\Pos\Webhook\WebhookRegistry"/>

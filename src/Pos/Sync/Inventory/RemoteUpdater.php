@@ -11,9 +11,9 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Api\Inventory\BulkChanges;
-use Swag\PayPal\Pos\Api\Service\Inventory\RemoteCalculator;
 use Swag\PayPal\Pos\Resource\InventoryResource;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
+use Swag\PayPal\Pos\Sync\Inventory\Calculator\RemoteCalculator;
 
 class RemoteUpdater
 {

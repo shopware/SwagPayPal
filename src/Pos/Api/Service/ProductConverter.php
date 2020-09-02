@@ -15,9 +15,9 @@ use Swag\PayPal\Pos\Api\Service\Converter\OptionGroupConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\PresentationConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\VariantConverter;
-use Swag\PayPal\Pos\Api\Service\Util\ProductGrouping;
-use Swag\PayPal\Pos\Api\Service\Util\ProductGroupingCollection;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
+use Swag\PayPal\Pos\Sync\Product\Util\ProductGrouping;
+use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
 
 class ProductConverter
 {

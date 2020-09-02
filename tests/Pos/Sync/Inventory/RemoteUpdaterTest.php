@@ -19,8 +19,8 @@ use Swag\PayPal\Pos\Api\Inventory\BulkChanges\ProductChange\VariantChange;
 use Swag\PayPal\Pos\Api\Inventory\Status;
 use Swag\PayPal\Pos\Api\Inventory\Status\Variant;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
-use Swag\PayPal\Pos\Api\Service\Inventory\RemoteCalculator;
 use Swag\PayPal\Pos\Resource\InventoryResource;
+use Swag\PayPal\Pos\Sync\Inventory\Calculator\RemoteCalculator;
 use Swag\PayPal\Pos\Sync\Inventory\RemoteUpdater;
 
 class RemoteUpdaterTest extends TestCase

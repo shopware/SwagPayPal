@@ -16,10 +16,10 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\Api\Error\PosApiError;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Api\Product;
-use Swag\PayPal\Pos\Api\Service\Util\ProductGroupingCollection;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 use Swag\PayPal\Pos\Sync\Product\OutdatedUpdater;
+use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
 use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 
 class OutdatedUpdaterTest extends AbstractProductSyncTest

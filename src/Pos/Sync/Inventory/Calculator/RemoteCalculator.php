@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Pos\Api\Service\Inventory;
+namespace Swag\PayPal\Pos\Sync\Inventory\Calculator;
 
 use Shopware\Core\Content\Product\ProductEntity;
 use Swag\PayPal\Pos\Api\Inventory\BulkChanges\ProductChange;

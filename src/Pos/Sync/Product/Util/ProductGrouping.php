@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Pos\Api\Service\Util;
+namespace Swag\PayPal\Pos\Sync\Product\Util;
 
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Swag\PayPal\Pos\Api\Product;

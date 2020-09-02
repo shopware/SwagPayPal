@@ -10,9 +10,9 @@ namespace Swag\PayPal\Pos\Sync\Product;
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\Pos\Api\Error\PosApiError;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
-use Swag\PayPal\Pos\Api\Service\Util\ProductGroupingCollection;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
+use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
 
 class OutdatedUpdater
 {
