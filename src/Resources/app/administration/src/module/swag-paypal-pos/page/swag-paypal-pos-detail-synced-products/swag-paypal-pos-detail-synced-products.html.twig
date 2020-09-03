@@ -1,5 +1,5 @@
 {% block swag_paypal_pos_synced_products %}
-    <div class="swag-paypal-pos-synced-products">
+    <div class="swag-paypal-pos-detail-synced-products">
 
         {% block swag_paypal_pos_synced_products_account %}
             <swag-paypal-pos-account :salesChannel="salesChannel"></swag-paypal-pos-account>
@@ -11,7 +11,7 @@
             {% block swag_paypal_pos_synced_products_grid %}
                 <template #grid>
                     <sw-data-grid v-if="total > 0"
-                                  identifier="swag-paypal-pos-synced-products"
+                                  identifier="swag-paypal-pos-detail-synced-products"
                                   :dataSource="products"
                                   :columns="columns"
                                   :isLoading="isLoading"
@@ -39,8 +39,8 @@
                             <template #column-date="{ item }">
 
                                 {% block swag_paypal_pos_synced_products_grid_column_date_formatted %}
-                                    <template v-if="item.extensions.paypalPosLog.length">
-                                        {{ item.extensions.paypalPosLog[0].run.updatedAt | date({
+                                    <template v-if="hasSync(item)">
+                                        {{ getSyncDate(item) | date({
                                             hour: '2-digit',
                                             minute: '2-digit',
                                             day: '2-digit',
@@ -63,11 +63,11 @@
                         {% block swag_paypal_pos_synced_products_grid_column_state %}
                             <template #column-state="{ item }">
 
-                                {% block swag_paypal_pos_synced_products_grid_column_state_label %}
-                                    <template v-if="item.extensions.paypalPosLog.length">
+                                {% block swag_paypal_pos_synced_products_grid_column_state_label_log %}
+                                    <template v-if="hasSync(item)">
                                         <sw-label appearance="pill"
-                                                  :variant="getLabelVariant(item.extensions.paypalPosLog[0].level)">
-                                            {{ $tc(getLabel(item.extensions.paypalPosLog[0].level)) }}
+                                                  :variant="getLabelVariant(getLevel(item))">
+                                            {{ $tc(getLabel(getLevel(item))) }}
                                         </sw-label>
                                     </template>
                                 {% endblock %}
@@ -92,7 +92,7 @@
 
             {% block swag_paypal_pos_synced_products_empty_state %}
                 <sw-empty-state v-if="total < 1"
-                                class="swag-paypal-pos-synced-products__empty-state"
+                                class="swag-paypal-pos-detail-synced-products__empty-state"
                                 :title="$tc('swag-paypal-pos.detail.syncedProducts.emptyState.title')"
                                 :subline="$tc('swag-paypal-pos.detail.syncedProducts.emptyState.message')">
                 </sw-empty-state>

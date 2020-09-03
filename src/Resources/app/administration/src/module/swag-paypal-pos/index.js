@@ -27,7 +27,7 @@ Module.register('swag-paypal-pos', {
                     path: 'overview'
                 },
                 syncedProducts: {
-                    component: 'swag-paypal-pos-synced-products',
+                    component: 'swag-paypal-pos-detail-synced-products',
                     path: 'synced-products'
                 },
                 settings: {

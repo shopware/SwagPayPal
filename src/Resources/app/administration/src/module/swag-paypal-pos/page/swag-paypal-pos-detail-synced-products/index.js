@@ -1,9 +1,9 @@
-import template from './swag-paypal-pos-synced-products.html.twig';
-import './swag-paypal-pos-synced-products.scss';
+import template from './swag-paypal-pos-detail-synced-products.html.twig';
+import './swag-paypal-pos-detail-synced-products.scss';
 
 const { Component } = Shopware;
 
-Component.register('swag-paypal-pos-synced-products', {
+Component.register('swag-paypal-pos-detail-synced-products', {
     template,
 
     inject: [
@@ -91,6 +91,28 @@ Component.register('swag-paypal-pos-synced-products', {
                     }
                 }
             );
+        },
+
+        hasSync(item) {
+            return item.extensions.paypalPosLog.length || item.extensions.paypalPosSync.length;
+        },
+
+        getSyncDate(item) {
+            if (!this.hasSync(item)) {
+                return null;
+            }
+
+            if (item.extensions.paypalPosLog[0]) {
+                return item.extensions.paypalPosLog[0].run.updatedAt
+                    || item.extensions.paypalPosLog[0].createdAt;
+            }
+
+            return item.extensions.paypalPosSync[0].updatedAt
+                || item.extensions.paypalPosSync[0].createdAt;
+        },
+
+        getLevel(item) {
+            return item.extensions.paypalPosLog[0] ? item.extensions.paypalPosLog[0].level : 200;
         }
     }
 });

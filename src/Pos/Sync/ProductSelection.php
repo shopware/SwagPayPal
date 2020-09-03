@@ -78,21 +78,24 @@ class ProductSelection
         $criteria = $this->getProductStreamCriteria($productStreamId, $context);
 
         $criteria->addFilter(new EqualsFilter('parentId', null));
-        $criteria->addFilter(new EqualsFilter(
-            SwagPayPal::PRODUCT_LOG_POS_EXTENSION . '.run.salesChannelId',
-            $posSalesChannel->getSalesChannelId()
-        ));
-
-        $criteria->addAssociation(SwagPayPal::PRODUCT_LOG_POS_EXTENSION . '.run');
-        $criteria->getAssociation(SwagPayPal::PRODUCT_LOG_POS_EXTENSION)->addSorting(
-            new FieldSorting('createdAt', FieldSorting::DESCENDING),
-            new FieldSorting('level', FieldSorting::DESCENDING)
-        );
-        $criteria->getAssociation(SwagPayPal::PRODUCT_LOG_POS_EXTENSION)->setLimit(1);
         $criteria->addSorting(
             new FieldSorting(SwagPayPal::PRODUCT_LOG_POS_EXTENSION . '.run.createdAt', FieldSorting::DESCENDING),
             new FieldSorting(SwagPayPal::PRODUCT_LOG_POS_EXTENSION . '.level', FieldSorting::DESCENDING)
         );
+
+        $criteria->addAssociation(SwagPayPal::PRODUCT_LOG_POS_EXTENSION . '.run');
+        $logAssociation = $criteria->getAssociation(SwagPayPal::PRODUCT_LOG_POS_EXTENSION);
+        $logAssociation->addSorting(
+            new FieldSorting('createdAt', FieldSorting::DESCENDING),
+            new FieldSorting('level', FieldSorting::DESCENDING)
+        );
+        $logAssociation->setLimit(1);
+        $logAssociation->addFilter(new EqualsFilter('run.salesChannelId', $posSalesChannel->getSalesChannelId()));
+
+        $criteria->addAssociation(SwagPayPal::PRODUCT_SYNC_POS_EXTENSION);
+        $syncAssociation = $criteria->getAssociation(SwagPayPal::PRODUCT_SYNC_POS_EXTENSION);
+        $syncAssociation->addFilter(new EqualsFilter('salesChannelId', $posSalesChannel->getSalesChannelId()));
+
         $criteria->setTotalCountMode(Criteria::TOTAL_COUNT_MODE_EXACT);
         $criteria->setOffset($offset);
         $criteria->setLimit($limit);

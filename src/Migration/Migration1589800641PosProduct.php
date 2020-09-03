@@ -28,6 +28,7 @@ class Migration1589800641PosProduct extends MigrationStep
                 `product_id`         BINARY(16)  NOT NULL,
                 `product_version_id` BINARY(16)  NOT NULL,
                 `checksum`           CHAR(32)    NOT NULL,
+                `created_at`         DATETIME(3) NOT NULL,
                 `updated_at`         DATETIME(3) NULL,
                 PRIMARY KEY (`sales_channel_id`, `product_id`, `product_version_id`),
                 KEY `fk.swag_paypal_pos_sales_channel_products.sales_channel_id` (`sales_channel_id`),

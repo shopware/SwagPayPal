@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityExtension;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\SetNullOnDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogDefinition;
 use Swag\PayPal\SwagPayPal;
 
@@ -25,6 +26,14 @@ class ProductExtension extends EntityExtension
                 PosSalesChannelRunLogDefinition::class,
                 'product_id'
             ))->addFlags(new SetNullOnDelete())
+        );
+
+        $collection->add(
+            new OneToManyAssociationField(
+                SwagPayPal::PRODUCT_SYNC_POS_EXTENSION,
+                PosSalesChannelProductDefinition::class,
+                'product_id'
+            )
         );
     }
 
