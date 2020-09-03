@@ -101,8 +101,8 @@
                 }
             },
             "runs": {
-                "title": "Synchronisations Historie",
-                "toolbarText": "Wenn Sie die Protokolle aufräumen, werden alle leeren oder sicher zu löschenden Protokolle gelöscht.",
+                "title": "Synchronisations-Historie",
+                "toolbarText": "Wenn Sie die Protokolle aufräumen, werden alle Protokolle gelöscht. Alte Protokolle werden automatisch regelmäßig entfernt.",
                 "states": {
                     "withWarnings": "Durchlauf mit Warnungen abgeschlossen",
                     "successful": "Durchlauf abgeschlossen",

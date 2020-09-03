@@ -9,11 +9,18 @@ namespace Swag\PayPal\Test\Pos\Run;
 
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogCollection;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\Run\Administration\LogCleaner;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Run\Task\CompleteTask;
 use Swag\PayPal\Pos\Run\Task\InventoryTask;
+use Swag\PayPal\Pos\Schedule\CleanUpLogTask;
+use Swag\PayPal\Pos\Schedule\CleanUpLogTaskHandler;
 use Swag\PayPal\Pos\Schedule\CompleteSyncTask;
 use Swag\PayPal\Pos\Schedule\CompleteSyncTaskHandler;
 use Swag\PayPal\Pos\Schedule\InventorySyncTask;
@@ -71,5 +78,33 @@ class ScheduledTaskTest extends TestCase
         /** @var SyncManagerMessage $message */
         $message = \current($messageBus->getEnvelopes())->getMessage();
         static::assertSame($inventoryTask->getSteps(), $message->getSteps());
+    }
+
+    public function testCleanUpLog(): void
+    {
+        $salesChannelRepoMock = new SalesChannelRepoMock();
+        $scheduledTaskRepository = $this->createMock(EntityRepositoryInterface::class);
+
+        $runRepository = new RunRepoMock();
+        $runA = new PosSalesChannelRunEntity();
+        $runA->setId(Uuid::randomHex());
+        $runA->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $runA->setLogs(new PosSalesChannelRunLogCollection());
+        $runB = new PosSalesChannelRunEntity();
+        $runB->setId(Uuid::randomHex());
+        $runB->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $runB->setLogs(new PosSalesChannelRunLogCollection());
+        $runRepository->addMockEntity($runA);
+        $runRepository->addMockEntity($runB);
+        $logCleaner = new LogCleaner($runRepository);
+
+        $taskHandler = new CleanUpLogTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $logCleaner);
+
+        static::assertCount(2, $runRepository->getCollection());
+        static::assertContains(CleanUpLogTask::class, CleanUpLogTaskHandler::getHandledMessages());
+
+        $taskHandler->run();
+
+        static::assertCount(1, $runRepository->getCollection());
     }
 }

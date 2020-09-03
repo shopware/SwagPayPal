@@ -178,7 +178,7 @@ class PosSyncController extends AbstractController
     {
         $salesChannel = $this->getSalesChannel($salesChannelId, $context, true);
 
-        $this->logCleaner->cleanUpLog($salesChannel->getId(), $context);
+        $this->logCleaner->clearLog($salesChannel->getId(), $context);
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }

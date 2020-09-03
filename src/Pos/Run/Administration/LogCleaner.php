@@ -75,4 +75,20 @@ class LogCleaner
             $this->runRepository->delete($deletable, $context);
         }
     }
+
+    public function clearLog(string $salesChannelId, Context $context): void
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
+        $runIds = $this->runRepository->searchIds($criteria, $context)->getIds();
+        if (!empty($runIds)) {
+            $this->runRepository->delete(\array_map(static function ($id) {
+                if (!\is_string($id)) {
+                    return null;
+                }
+
+                return ['id' => $id];
+            }, $runIds), $context);
+        }
+    }
 }

@@ -102,7 +102,7 @@
             },
             "runs": {
                 "title": "Synchronisation History",
-                "toolbarText": "Clearing the logs will delete any empty or safe to delete logs.",
+                "toolbarText": "Clearing the logs will delete all logs. Old logs will be removed from time to time automatically.",
                 "states": {
                     "withWarnings": "Task completed with warnings",
                     "successful": "Task completed",

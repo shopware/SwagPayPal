@@ -174,7 +174,7 @@ class PosSyncControllerTest extends TestCase
     public function testCleanUpLog(): void
     {
         $context = Context::createDefaultContext();
-        $this->logCleaner->expects(static::atLeastOnce())->method('cleanUpLog');
+        $this->logCleaner->expects(static::atLeastOnce())->method('clearLog');
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
         $this->posSyncController->cleanUpLog($salesChannelId->getId(), $context);
     }
