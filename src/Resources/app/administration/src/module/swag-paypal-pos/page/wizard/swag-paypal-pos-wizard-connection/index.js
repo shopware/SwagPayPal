@@ -34,14 +34,9 @@ Component.register('swag-paypal-pos-wizard-connection', {
 
     data() {
         return {
-            isConnecting: false
+            isConnecting: false,
+            apiKeyUrl: this.SwagPayPalPosSettingApiService.generateApiUrl()
         };
-    },
-
-    computed: {
-        apiKeyUrl() {
-            return this.SwagPayPalPosSettingApiService.generateApiUrl();
-        }
     },
 
     watch: {

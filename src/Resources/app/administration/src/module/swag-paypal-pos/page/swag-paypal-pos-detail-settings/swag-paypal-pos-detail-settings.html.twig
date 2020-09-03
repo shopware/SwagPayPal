@@ -38,10 +38,10 @@
                 </sw-container>
 
                 {% block swag_paypal_pos_detail_settings_input_media_domain %}
-                    <swag-paypal-pos-url-field v-model="swagPaypalIzettleSalesChannel.mediaDomain"
+                    <swag-paypal-pos-url-field v-model="swagPaypalPosSalesChannel.mediaDomain"
                                                    required
                                                    validation="required"
-                                                   :error="swagPaypalIzettleSalesChannelMediaDomainError"
+                                                   :error="swagPaypalPosSalesChannelMediaDomainError"
                                                    :label="$tc('swag-paypal-pos.detail.settings.domain')"
                                                    :helpText="$tc('swag-paypal-pos.detail.settings.domainHelpText')"
                                                    @input="forceUpdate">
@@ -51,7 +51,7 @@
                 {% block swag_paypal_pos_detail_settings_input_product_stream %}
                     {# ToDo PPI-56 implement support for product streams #}
                     <sw-entity-single-select v-if="false"
-                                             v-model="swagPaypalIzettleSalesChannel.productStreamId"
+                                             v-model="swagPaypalPosSalesChannel.productStreamId"
                                              entity="product_stream"
                                              :label="$tc('swag-paypal-pos.detail.settings.productStream')"
                                              @input="forceUpdate">
@@ -67,7 +67,7 @@
 
                     {% block swag_paypal_pos_detail_settings_sync_input %}
                         <swag-paypal-pos-boolean-radio
-                            v-model="swagPaypalIzettleSalesChannel.replace"
+                            v-model="swagPaypalPosSalesChannel.replace"
                             class="swag-paypal-pos-detail-settings__sync-replace-input"
                             :label="$tc('swag-paypal-pos.wizard.syncLibrary.description')"
                             :optionTrue="optionReplace"
@@ -86,7 +86,7 @@
 
                     {% block swag_paypal_pos_detail_settings_prices_input %}
                         <swag-paypal-pos-boolean-radio
-                            v-model="swagPaypalIzettleSalesChannel.syncPrices"
+                            v-model="swagPaypalPosSalesChannel.syncPrices"
                             class="swag-paypal-pos-detail-settings__sync-prices-input"
                             :label="$tc('swag-paypal-pos.wizard.syncPrices.description')"
                             :optionTrue="optionSyncPrices"
@@ -104,38 +104,48 @@
                 <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-pos.detail.settings.titleCredentials')">
 
                     {% block swag_paypal_pos_detail_settings_credentials_apikey %}
-                        <sw-password-field v-model="swagPaypalIzettleSalesChannel.apiKey"
+                        <sw-password-field v-model="swagPaypalPosSalesChannel.apiKey"
+                                           class="swag-paypal-pos-detail-settings__apikey-field"
                                            required
-                                           :label="$tc('swag-paypal-pos.authentification.apiKey')"
+                                           :label="$tc('swag-paypal-pos.authentification.labelApiKey')"
+                                           :placeholder="$tc('swag-paypal-pos.authentification.placeholderApiKey')"
                                            @input="forceUpdate">
+                            <template #suffix>
+
+                                {% block swag_paypal_pos_detail_settings_credentials_apikey_suffix %}
+                                    <sw-icon name="default-lock-key"
+                                             class="swag-paypal-pos-detail-settings__apikey-suffix"
+                                             size="22px">
+                                    </sw-icon>
+                                {% endblock %}
+                            </template>
                         </sw-password-field>
                     {% endblock %}
 
                     {% block swag_paypal_pos_detail_settings_credentials_apikey_description %}
-                        <div v-html="$tc('swag-paypal-pos.authentification.apiKeyDescription')"
-                             class="swag-paypal-pos-detail-settings__description-text">
+                        <div class="swag-paypal-pos-detail-settings__apikey-description">
+
+                            {% block swag_paypal_pos_detail_settings_credentials_apikey_description_text %}
+                                <div class="swag-paypal-pos-detail-settings__apikey-description-text">
+                                    {{ $tc('swag-paypal-pos.authentification.apiKeyDescription') }}
+                                </div>
+                            {% endblock %}
+
+                            {% block swag_paypal_pos_detail_settings_credentials_apikey_description_link %}
+                                <a :href="apiKeyUrl"
+                                   target="_blank"
+                                   class="link swag-paypal-pos-detail-settings__apikey-description-link">
+
+                                    {% block swag_paypal_pos_detail_settings_credentials_apikey_description_link_text %}
+                                        {{ $tc('swag-paypal-pos.authentification.buttonGenerateKey') }}
+                                        <sw-icon class="swag-paypal-pos-detail-settings__link-icon"
+                                                 name="default-action-external"
+                                                 size="10px">
+                                        </sw-icon>
+                                    {% endblock %}
+                                </a>
+                            {% endblock %}
                         </div>
-                    {% endblock %}
-
-                    {% block swag_paypal_pos_detail_settings_credentials_actions %}
-                        <sw-button-group>
-
-                            {% block swag_paypal_pos_detail_settings_credentials_actions_generate_key %}
-                                <sw-button :link="apiKeyUrl">
-                                    {{ $tc('swag-paypal-pos.authentification.buttonGenerateKey') }}
-                                </sw-button>
-                            {% endblock %}
-
-                            {% block swag_paypal_pos_detail_settings_credentials_actions_test %}
-                                <sw-button-process v-model="isTestCredentialsSuccessful"
-                                                   :isLoading="isTestingCredentials"
-                                                   :disabled="!(this.swagPaypalIzettleSalesChannel.apiKey)"
-                                                   @click="onTestCredentials">
-                                    {{ $tc('swag-paypal-pos.authentification.buttonTest') }}
-                                </sw-button-process>
-                            {% endblock %}
-
-                        </sw-button-group>
                     {% endblock %}
 
                 </sw-card>

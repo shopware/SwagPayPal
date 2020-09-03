@@ -140,9 +140,6 @@
                 "modalTitle": "Benutzerkonto-Einrichtung",
                 "headerConnect": "Verbinde Deinen iZettle-Account",
                 "headerNewCustomer": "Neu bei iZettle?",
-                "labelApiKey": "API-Schlüssel",
-                "placeholderApiKey": "API-Schüssel eingeben ...",
-                "apiKeyDescription": "Ein API-Schlüssel funktioniert wie ein Passwort. Shopware verwendet Deinen iZettle-API-Schlüssel, um eine sichere Verbindung zu Deinem iZettle-Konto herzustellen.",
                 "buttonCreateAccount": "iZettle-Account anlegen",
                 "buttonCreateAccountLink": "https://register.izettle.com/"
             },
@@ -207,10 +204,10 @@
         },
         "authentification": {
             "messageTestError": "Die Zugangsdaten konnten nicht validiert werden.",
-            "apiKey": "API-Key",
-            "buttonTest": "Zugangsdaten testen",
-            "buttonGenerateKey": "API-Key generieren",
-            "apiKeyDescription": "Zur Verwendung muss auf der iZettle-Webseite ein API-Schlüssel erstellt werden. Der generierte Schlüssel muss zur Authentifizierung hier eingefügt werden."
+            "labelApiKey": "API-Schlüssel",
+            "placeholderApiKey": "API-Schüssel eingeben ...",
+            "apiKeyDescription": "Ein API-Schlüssel funktioniert wie ein Passwort. Shopware verwendet Deinen iZettle-API-Schlüssel, um eine sichere Verbindung zu Deinem iZettle-Konto herzustellen.",
+            "buttonGenerateKey": "API-Key generieren"
         },
         "messageCloneError": "Konnte die Produktzuordnung nicht von anderem Verkaufskanal übertragen.",
         "messageWebhookRegisterError": "Konnte den Webhook nicht bei iZettle registrieren."

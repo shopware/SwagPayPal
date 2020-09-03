@@ -27,6 +27,29 @@
             max-width: 770px;
         }
     }
+
+    .swag-paypal-pos-detail-settings__apikey-field {
+        margin-bottom: 8px;
+    }
+
+    .swag-paypal-pos-detail-settings__apikey-suffix {
+        margin-bottom: 2px;
+    }
+
+    .swag-paypal-pos-detail-settings__apikey-description {
+        margin-bottom: 16px;
+    }
+
+    .swag-paypal-pos-detail-settings__apikey-description-text {
+        display: inline;
+        margin-top: 8px;
+        color: #94A6B8;
+        font-size: 14px;
+    }
+
+    .swag-paypal-pos-detail-settings__link-icon {
+        margin: 2px;
+    }
 }
 
 .swag-paypal-pos-detail-settings__reset-sync-modal,

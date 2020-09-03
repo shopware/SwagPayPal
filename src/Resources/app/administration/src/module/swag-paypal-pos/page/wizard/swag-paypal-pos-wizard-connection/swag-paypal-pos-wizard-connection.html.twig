@@ -12,14 +12,14 @@
             <sw-password-field v-model="salesChannel.extensions.paypalPosSalesChannel.apiKey"
                                class="swag-paypal-pos-wizard-connection__apikey-field"
                                required
-                               :label="$tc('swag-paypal-pos.wizard.connection.labelApiKey')"
-                               :placeholder="$tc('swag-paypal-pos.wizard.connection.placeholderApiKey')"
+                               :label="$tc('swag-paypal-pos.authentification.labelApiKey')"
+                               :placeholder="$tc('swag-paypal-pos.authentification.placeholderApiKey')"
                                @input="forceUpdate">
                 <template #suffix>
 
                     {% block swag_paypal_pos_wizard_connection_apikey_suffix %}
                         <sw-icon name="default-lock-key"
-                                 class="swag-paypal-pos-wizard-connection__apiKey-suffix"
+                                 class="swag-paypal-pos-wizard-connection__apikey-suffix"
                                  size="22px">
                         </sw-icon>
                     {% endblock %}
@@ -32,7 +32,7 @@
 
                 {% block swag_paypal_pos_wizard_connection_apikey_description_text %}
                     <div class="swag-paypal-pos-wizard-connection__apikey-description-text">
-                        {{ $tc('swag-paypal-pos.wizard.connection.apiKeyDescription') }}
+                        {{ $tc('swag-paypal-pos.authentification.apiKeyDescription') }}
                     </div>
                 {% endblock %}
 

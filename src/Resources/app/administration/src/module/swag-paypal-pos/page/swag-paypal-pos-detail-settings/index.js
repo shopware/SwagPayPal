@@ -48,7 +48,7 @@ Component.register('swag-paypal-pos-detail-settings', {
 
     computed: {
         ...mapPropertyErrors('salesChannel', ['name']),
-        ...mapPropertyErrors('swagPaypalIzettleSalesChannel', ['mediaDomain']),
+        ...mapPropertyErrors('swagPaypalPosSalesChannel', ['mediaDomain']),
 
         salesChannelRepository() {
             return this.repositoryFactory.create('sales_channel');
@@ -82,7 +82,7 @@ Component.register('swag-paypal-pos-detail-settings', {
             };
         },
 
-        swagPaypalIzettleSalesChannel() {
+        swagPaypalPosSalesChannel() {
             return this.salesChannel.extensions.paypalPosSalesChannel;
         }
     },
@@ -105,7 +105,7 @@ Component.register('swag-paypal-pos-detail-settings', {
             this.isSaveSuccessful = false;
             this.updateButtons();
 
-            if (this.swagPaypalIzettleSalesChannel.apiKey === this.previousApiKey) {
+            if (this.swagPaypalPosSalesChannel.apiKey === this.previousApiKey) {
                 return this.save();
             }
 
@@ -168,9 +168,9 @@ Component.register('swag-paypal-pos-detail-settings', {
                         })
                     });
                 }).finally(() => {
-                    if (this.swagPaypalIzettleSalesChannel.mediaDomain === null) {
+                    if (this.swagPaypalPosSalesChannel.mediaDomain === null) {
                         const expression =
-                            `swag_paypal_pos_sales_channel.${this.swagPaypalIzettleSalesChannel.id}.mediaDomain`;
+                            `swag_paypal_pos_sales_channel.${this.swagPaypalPosSalesChannel.id}.mediaDomain`;
                         const error = new ShopwareError({ code: 'INVALID_URL' });
                         State.commit('error/addApiError', { expression, error });
                     }
@@ -178,7 +178,7 @@ Component.register('swag-paypal-pos-detail-settings', {
         },
 
         onTestCredentials() {
-            const apiKey = this.swagPaypalIzettleSalesChannel.apiKey;
+            const apiKey = this.swagPaypalPosSalesChannel.apiKey;
 
             this.isTestingCredentials = true;
             this.isTestCredentialsSuccessful = false;

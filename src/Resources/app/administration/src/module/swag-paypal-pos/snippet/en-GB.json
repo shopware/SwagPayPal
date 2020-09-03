@@ -140,9 +140,6 @@
                 "modalTitle": "Account setup",
                 "headerConnect": "Connect your iZettle account",
                 "headerNewCustomer": "New to iZettle?",
-                "labelApiKey": "API key",
-                "placeholderApiKey": "Enter API key...",
-                "apiKeyDescription": "API keys function like passwords. Shopware will use your iZettle API key to establish a secure connection to your iZettle account.",
                 "buttonCreateAccount": "Create iZettle account",
                 "buttonCreateAccountLink": "https://register.izettle.com/"
             },
@@ -207,10 +204,10 @@
         },
         "authentification": {
             "messageTestError": "The credentials could not be validated.",
-            "apiKey": "API key",
-            "buttonTest": "Test credentials",
-            "buttonGenerateKey": "Generate API key",
-            "apiKeyDescription": "You need to generate an API key at the iZettle website. The generated key needs to be pasted here to authorise the connection to iZettle."
+            "labelApiKey": "API key",
+            "placeholderApiKey": "Enter API key...",
+            "apiKeyDescription": "API keys function like passwords. Shopware will use your iZettle API key to establish a secure connection to your iZettle account.",
+            "buttonGenerateKey": "Generate API key"
         },
         "messageCloneError": "Could not transfer product visibility from another Sales Channel.",
         "messageWebhookRegisterError": "Could not register webhook at iZettle."
