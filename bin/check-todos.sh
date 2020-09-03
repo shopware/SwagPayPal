@@ -9,14 +9,14 @@ if [[ -n "$1" ]]; then
     unset IFS;
 
     TICKETNR="${BRANCH[0]}"
-    PATTERN+=":space:${TICKETNR}:space:.*"
+    PATTERN+="${TICKETNR}\\s.*"
     DESCRIPTION+=" regarding the current ticket number: ${TICKETNR}"
 fi
 
 DESCRIPTION+="\n"
 printf "${DESCRIPTION}"
 
-RESULT=$(grep -inRw "${PATTERN}" --exclude-dir={\*node_modules,dist,vendor,public\*} --include=\*.{js,twig,php,xml} | awk -F":" '{print "\033[1;37m"$1"\n\033[0;31m"$2":\t"$3"\033[0m\n"}')
+RESULT=$(grep -inRw "${PATTERN}" --exclude-dir={\*node_modules,dist,vendor,public,.git\*} --exclude=\*.md | awk -F":" '{print "\033[1;37m"$1"\n\033[0;31m"$2":\t"$3"\033[0m\n"}')
 
 if [[ -n "$RESULT" ]]; then
     printf "${RESULT}"
