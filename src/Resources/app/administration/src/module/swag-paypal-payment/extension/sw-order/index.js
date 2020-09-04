@@ -21,7 +21,7 @@ Component.override('sw-order-detail', {
             return !this.isPayPalPayment || this.$route.name !== 'swag.paypal.payment.detail';
         },
 
-        // TODO PT-10455 - Remove
+        // TODO PPI-74 - Remove
         showTabs() {
             return true;
         }
