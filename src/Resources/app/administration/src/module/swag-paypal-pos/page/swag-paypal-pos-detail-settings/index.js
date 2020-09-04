@@ -18,6 +18,7 @@ Component.register('swag-paypal-pos-detail-settings', {
     ],
 
     mixins: [
+        'swag-paypal-pos-catch-error',
         'placeholder',
         'notification'
     ],
@@ -122,18 +123,7 @@ Component.register('swag-paypal-pos-detail-settings', {
 
         save() {
             this.SwagPayPalPosWebhookRegisterService.registerWebhook(this.salesChannel.id)
-                .catch((errorResponse) => {
-                    if (errorResponse.response.data && errorResponse.response.data.errors) {
-                        const message = errorResponse.response.data.errors.map((error) => {
-                            return error.detail;
-                        }).join(' / ');
-
-                        this.createNotificationError({
-                            title: this.$tc('global.default.error'),
-                            message: `${this.$tc('swag-paypal-pos.messageWebhookRegisterError')}: ${message}`
-                        });
-                    }
-                });
+                .catch(this.catchError.bind(this, 'swag-paypal-pos.messageWebhookRegisterError'));
 
             return this.salesChannelRepository
                 .save(this.salesChannel, Context.api)
@@ -149,14 +139,7 @@ Component.register('swag-paypal-pos-detail-settings', {
                         this.SwagPayPalPosSettingApiService.cloneProductVisibility(
                             this.cloneSalesChannelId,
                             this.salesChannel.id
-                        ).catch((errorResponse) => {
-                            if (errorResponse.response.data && errorResponse.response.data.errors) {
-                                this.createNotificationError({
-                                    title: this.$tc('global.default.error'),
-                                    message: this.$tc('swag-paypal-pos.messageCloneError')
-                                });
-                            }
-                        });
+                        ).catch(this.catchError.bind(this, 'swag-paypal-pos.messageCloneError'));
                     }
                 }).catch(() => {
                     this.isLoading = false;
@@ -194,20 +177,10 @@ Component.register('swag-paypal-pos-detail-settings', {
         },
 
         catchAuthentificationError(errorResponse) {
-            if (errorResponse.response.data && errorResponse.response.data.errors) {
-                let message = `<b>${this.$tc('swag-paypal-pos.authentification.messageTestError')}</b> `;
-                message += errorResponse.response.data.errors.map((error) => {
-                    return error.detail;
-                }).join(' / ');
+            this.catchError('swag-paypal-pos.authentification.messageTestError', errorResponse);
 
-                this.createNotificationError({
-                    title: this.$tc('global.default.error'),
-                    message
-                });
-
-                this.isTestingCredentials = false;
-                this.isTestCredentialsSuccessful = false;
-            }
+            this.isTestingCredentials = false;
+            this.isTestCredentialsSuccessful = false;
         },
 
         updateButtons() {

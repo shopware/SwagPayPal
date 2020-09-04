@@ -13,6 +13,7 @@ Component.register('swag-paypal-pos-detail-runs', {
     ],
 
     mixins: [
+        'swag-paypal-pos-catch-error',
         'notification',
         'listing'
     ],
@@ -119,18 +120,8 @@ Component.register('swag-paypal-pos-detail-runs', {
             return this.SwagPayPalPosApiService.startLogCleanup(this.salesChannel.id).then(() => {
                 return this.getList();
             }).catch((errorResponse) => {
-                if (errorResponse.response.data && errorResponse.response.data.errors) {
-                    const message = errorResponse.response.data.errors.map((error) => {
-                        return error.detail;
-                    }).join(' / ');
-
-                    this.createNotificationError({
-                        title: this.$tc('global.default.error'),
-                        message
-                    });
-
-                    this.getList();
-                }
+                this.catchError(null, errorResponse);
+                this.getList();
             });
         },
 

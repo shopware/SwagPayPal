@@ -87,23 +87,11 @@ Component.register('swag-paypal-pos-wizard-connection', {
                     this.toggleLoadingState(false);
                     this.$router.push({ name: 'swag.paypal.pos.wizard.connectionSuccess' });
                 }
-            }).catch((errorResponse) => {
-                this.catchAuthentificationError(errorResponse);
-            }).finally(() => {
+            }).catch(
+                this.catchError.bind(this, null)
+            ).finally(() => {
                 this.toggleLoadingState(false);
             });
-        },
-
-        catchAuthentificationError(errorResponse) {
-            if (errorResponse.response.data && errorResponse.response.data.errors) {
-                const message = errorResponse.response.data.errors.map((error) => {
-                    return error.detail;
-                }).join(' / ');
-
-                this.createNotificationError({
-                    message
-                });
-            }
         },
 
         forceUpdate() {

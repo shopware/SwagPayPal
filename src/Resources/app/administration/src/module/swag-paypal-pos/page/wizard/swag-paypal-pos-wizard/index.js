@@ -17,6 +17,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
     ],
 
     mixins: [
+        'swag-paypal-pos-catch-error',
         'notification'
     ],
 
@@ -198,16 +199,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
         registerWebhook() {
             return this.SwagPayPalPosWebhookRegisterService.registerWebhook(this.salesChannel.id)
-                .catch((errorResponse) => {
-                    const message = errorResponse.response.data.errors.map((error) => {
-                        return error.detail;
-                    }).join(' / ');
-
-                    this.createNotificationError({
-                        title: this.$tc('global.default.error'),
-                        message: `${this.$tc('swag-paypal-pos.messageWebhookRegisterError')}: ${message}`
-                    });
-                });
+                .catch(this.catchError.bind(this, 'swag-paypal-pos.messageWebhookRegisterError'));
         },
 
         cloneProductVisibility() {

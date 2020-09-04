@@ -210,6 +210,6 @@
             "buttonGenerateKey": "API-Key generieren"
         },
         "messageCloneError": "Konnte die Produktzuordnung nicht von anderem Verkaufskanal übertragen.",
-        "messageWebhookRegisterError": "Konnte den Webhook nicht bei iZettle registrieren."
+        "messageWebhookRegisterError": "Der Webhook konnte nicht bei iZettle registriert werden"
     }
 }
