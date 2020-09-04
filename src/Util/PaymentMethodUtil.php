@@ -112,6 +112,7 @@ class PaymentMethodUtil
         $salesChannelId = $salesChannelEntity->getId();
         $criteria = new Criteria([$salesChannelId]);
         $criteria->addAssociation('paymentMethods');
+        $criteria->getAssociation('paymentMethods')->addFilter(new EqualsFilter('active', true));
         /** @var SalesChannelEntity|null $result */
         $result = $this->salesChannelRepository->search($criteria, $context)->get($salesChannelId);
 
