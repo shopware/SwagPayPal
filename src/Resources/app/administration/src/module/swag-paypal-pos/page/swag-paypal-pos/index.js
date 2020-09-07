@@ -27,7 +27,21 @@ Component.register('swag-paypal-pos', {
         };
     },
 
+    metaInfo() {
+        return {
+            title: this.title
+        };
+    },
+
     computed: {
+        title() {
+            return [
+                this.$tc('global.sw-admin-menu.textShopwareAdmin'),
+                this.$tc('sw-sales-channel.general.titleMenuItems'),
+                this.$tc('swag-paypal-pos.general.moduleTitle')
+            ].reverse().join(' | ');
+        },
+
         paypalPosSalesChannelRepository() {
             return this.repositoryFactory.create('swag_paypal_pos_sales_channel');
         },

@@ -1,15 +1,15 @@
 {% block swag_paypal_pos_status_view %}
     <swag-paypal-pos-status :disabled="disabled"
-                                :disabledText="$tc('swag-paypal-pos.detail.overview.status.disabled')"
-                                :icon="statusIcon"
-                                :subIcon="statusIconComplete"
-                                :iconAnimated="isSyncing"
-                                :isLoading="isLoading || status === null"
-                                :status="statusTitle"
-                                :showSubStatus="incompleteLastRun"
-                                :title="$tc('swag-paypal-pos.detail.overview.titleSync')"
-                                :variant="statusVariant"
-                                :subVariant="statusCompleteErrorLevel">
+                            :disabledText="$tc('swag-paypal-pos.detail.overview.status.disabled')"
+                            :icon="statusIcon"
+                            :subIcon="statusIconComplete"
+                            :iconAnimated="isSyncing"
+                            :isLoading="isLoading || status === null"
+                            :status="statusTitle"
+                            :showSubStatus="incompleteLastRun"
+                            :title="$tc('swag-paypal-pos.detail.overview.titleSync')"
+                            :variant="statusVariant"
+                            :subVariant="statusCompleteErrorLevel">
 
         {% block swag_paypal_pos_status_view_actions %}
             <template #actions>

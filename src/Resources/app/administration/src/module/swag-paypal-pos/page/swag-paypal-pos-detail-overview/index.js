@@ -1,4 +1,5 @@
 import template from './swag-paypal-pos-detail-overview.html.twig';
+import './swag-paypal-pos-detail-overview.scss';
 
 const { Component } = Shopware;
 const { Criteria } = Shopware.Data;

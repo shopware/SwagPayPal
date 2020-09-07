@@ -1,3 +1,5 @@
+@import "~scss/variables";
+
 .swag-paypal-pos-wizard-connection {
     .swag-paypal-pos-wizard-connection__headline {
         margin: 24px 0 18px 0;
@@ -18,13 +20,14 @@
 
     .swag-paypal-pos-wizard-connection__apikey-description {
         margin-bottom: 16px;
+        font-size: $font-size-small;
     }
 
     .swag-paypal-pos-wizard-connection__apikey-description-text {
         display: inline;
         margin-top: 8px;
         color: #94A6B8;
-        font-size: 14px;
+        font-size: $font-size-small;
     }
 
     .swag-paypal-pos-wizard-connection__link-icon {

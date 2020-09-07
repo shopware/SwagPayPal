@@ -12,6 +12,12 @@
             "help": "Help"
         },
         "detail": {
+            "disclaimer": {
+                "headline": "iZettle is a PayPal service",
+                "subheadline": "Help increase sales through the power of PayPal. Get started for free.",
+                "linkTarget": "https://www.paypal.com/en/webapps/mpp/merchant",
+                "linkText": "Activate PayPal for your shop"
+            },
             "overview": {
                 "titleSync": "Synchronisation",
                 "buttonSync": "Synchronise now",
@@ -48,8 +54,8 @@
                     "cardTitle": "Setup",
                     "content": {
                         "headline": "Setup product synchronisation",
-                        "firstLine": "Your iZettle and Shopware accounts are connected! To finish, setup the product synchronisation.",
-                        "secondLine": "Once activated, any changes you make to your Shopware products will automatically be updated in iZettle. Making a sale on either system will update stock and you can see all of your sales in one place at Shopware."
+                        "firstLine": "Your iZettle and Shopware accounts are now connected! You may now setup product synchronisation.",
+                        "secondLine": "Once activated, iZettle will automatically be kept in sync with your Shopware products. Sales made through iZettle are also synchronised with Shopware and you can use the Administration to keep yourself up to date on iZettle and Shopware sales as well."
                     }
                 }
             },
@@ -101,12 +107,12 @@
                 }
             },
             "runs": {
-                "title": "Synchronisation History",
-                "toolbarText": "Clearing the logs will delete all logs. Old logs will be removed from time to time automatically.",
+                "title": "Synchronisation history",
+                "toolbarText": "\"Clean up logs\" will delete all logs. Logs older than 30 days will be removed automatically.",
                 "states": {
-                    "withWarnings": "Task completed with warnings",
-                    "successful": "Task completed",
-                    "aborted": "Task aborted by user"
+                    "withWarnings": "Synchronisation completed with warnings",
+                    "successful": "Synchronisation completed",
+                    "aborted": "Synchronisation aborted by user"
                 },
                 "actions": {
                     "showDetails": "Show details"
@@ -208,6 +214,17 @@
             "placeholderApiKey": "Enter API key...",
             "apiKeyDescription": "API keys function like passwords. Shopware will use your iZettle API key to establish a secure connection to your iZettle account.",
             "buttonGenerateKey": "Generate API key"
+        },
+        "gettingStarted": {
+            "cardTitle": "Get started with iZettle",
+            "readerHeadline": "Login to iZettle to order your iZettle card reader",
+            "readerText": "Learn more about the card reader and order one right here:",
+            "readerLinkTarget": "https://shop.izettle.com",
+            "readerLinkText": "shop.izettle.com",
+            "readerImageAlt": "iZettle card reader",
+            "appHeadline": "Download the iZettle Go app",
+            "appText": "Available for iOS and Android tablets and phones.<br>Connect your iZettle account and your card reader to start making sales.",
+            "appImageAlt": "iZettle app"
         },
         "messageCloneError": "Could not transfer product visibility from another Sales Channel.",
         "messageWebhookRegisterError": "The webhook could not be registered at iZettle"

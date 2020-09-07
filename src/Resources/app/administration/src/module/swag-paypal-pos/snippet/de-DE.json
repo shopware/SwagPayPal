@@ -12,6 +12,12 @@
             "help": "Hilfe"
         },
         "detail": {
+            "disclaimer": {
+                "headline": "iZettle ist ein PayPal-Service",
+                "subheadline": "Steigere Deinen Umsatz durch die Möglichkeiten von PayPal. Erstelle jetzt ein kostenloses Konto.",
+                "linkTarget": "https://www.paypal.com/de/webapps/mpp/merchant",
+                "linkText": "Aktiviere PayPal für Deinen Shop"
+            },
             "overview": {
                 "titleSync": "Synchronisation",
                 "buttonSync": "Jetzt synchronisieren",
@@ -48,8 +54,8 @@
                     "cardTitle": "Einrichtung",
                     "content": {
                         "headline": "Produkt-Synchronisation einrichten",
-                        "firstLine": "Ihre iZettle- und Shopware-Konten sind miteinander verbunden! Richten Sie zum Abschluss die Produktsynchronisierung ein.",
-                        "secondLine": "Nach der Aktivierung werden alle Änderungen, die Sie an Ihren Shopware-Produkten vornehmen, automatisch in iZettle aktualisiert. Wenn Sie einen Verkauf auf einem der beiden Systeme tätigen, wird der Lagerbestand aktualisiert, und Sie können alle Ihre Verkäufe an einem Ort bei Shopware einsehen."
+                        "firstLine": "Dein iZettle- und Dein Shopware-Konto sind nun miteinander verbunden! Richte zum Abschluss noch die Produktsynchronisierung ein.",
+                        "secondLine": "Nach der Aktivierung werden alle Änderungen, die Du an Deinen Shopware-Produkten vornimmst, automatisch in iZettle aktualisiert. Wenn ein Verkauf auf einem der beiden Systeme getätigt wird, wird der Lagerbestand aktualisiert und Du kannst alle Deine Verkäufe bei Shopware einsehen."
                     }
                 }
             },
@@ -102,11 +108,11 @@
             },
             "runs": {
                 "title": "Synchronisations-Historie",
-                "toolbarText": "Wenn Sie die Protokolle aufräumen, werden alle Protokolle gelöscht. Alte Protokolle werden automatisch regelmäßig entfernt.",
+                "toolbarText": "Mit \"Protokolle aufräumen\" kannst Du jederzeit alle Protokolle löschen. Protokolle die älter als 30 Tage sind, werden automatisch entfernt.",
                 "states": {
-                    "withWarnings": "Durchlauf mit Warnungen abgeschlossen",
-                    "successful": "Durchlauf abgeschlossen",
-                    "aborted": "Durchlauf durch Benutzer abgebrochen"
+                    "withWarnings": "Synchronisierung mit Warnungen abgeschlossen",
+                    "successful": "Synchronisierung abgeschlossen",
+                    "aborted": "Synchronisierung durch Benutzer abgebrochen"
                 },
                 "actions": {
                     "showDetails": "Details anzeigen"
@@ -208,6 +214,17 @@
             "placeholderApiKey": "API-Schüssel eingeben ...",
             "apiKeyDescription": "Ein API-Schlüssel funktioniert wie ein Passwort. Shopware verwendet Deinen iZettle-API-Schlüssel, um eine sichere Verbindung zu Deinem iZettle-Konto herzustellen.",
             "buttonGenerateKey": "API-Key generieren"
+        },
+        "gettingStarted": {
+            "cardTitle": "Erste Schritte mit iZettle",
+            "readerHeadline": "Melde Dich bei iZettle an und bestelle jetzt Dein iZettle-Kartenlesegerät!",
+            "readerText": "Mehr Infos zum Kartenlesegerät findest Du auf der Bestellseite:",
+            "readerLinkTarget": "https://shop.izettle.com",
+            "readerLinkText": "shop.izettle.com",
+            "readerImageAlt": "iZettle-Kartenlesegerät",
+            "appHeadline": "iZettle-Go-App herunterladen",
+            "appText": "Verfügbar für iOS- und Android-Geräte.<br>Verbinde Dein iZettle-Konto mit dem Kartenlesegerät, um sofort loszulegen.",
+            "appImageAlt": "iZettle app"
         },
         "messageCloneError": "Konnte die Produktzuordnung nicht von anderem Verkaufskanal übertragen.",
         "messageWebhookRegisterError": "Der Webhook konnte nicht bei iZettle registriert werden"
