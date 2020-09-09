@@ -1,6 +1,6 @@
 import template from './swag-paypal-pos-wizard.html.twig';
 import './swag-paypal-pos-wizard.scss';
-import { POS_SALES_CHANNEL_TYPE_ID } from '../../../swag-paypal-pos-consts';
+import { PAYPAL_POS_SALES_CHANNEL_TYPE_ID } from '../../../../../constant/swag-paypal.constant';
 
 const { Component, Context } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -226,7 +226,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
             this.previousApiKey = null;
             this.salesChannel = this.salesChannelRepository.create(Context.api);
-            this.salesChannel.typeId = POS_SALES_CHANNEL_TYPE_ID;
+            this.salesChannel.typeId = PAYPAL_POS_SALES_CHANNEL_TYPE_ID;
             this.salesChannel.name = this.$tc('swag-paypal-pos.wizard.salesChannelPrototypeName');
             this.salesChannel.active = false;
 

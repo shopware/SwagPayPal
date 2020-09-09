@@ -1,6 +1,5 @@
 {% block swag_paypal_pos_wizard_connection %}
-    <div v-if="!isLoading"
-         class="swag-paypal-pos-wizard-connection">
+    <div class="swag-paypal-pos-wizard-connection">
 
         {% block swag_paypal_pos_wizard_connection_headline %}
             <div class="swag-paypal-pos-wizard-connection__headline">
@@ -9,12 +8,13 @@
         {% endblock %}
 
         {% block swag_paypal_pos_wizard_connection_apikey %}
-            <sw-password-field v-model="salesChannel.extensions.paypalPosSalesChannel.apiKey"
-                               class="swag-paypal-pos-wizard-connection__apikey-field"
-                               required
-                               :label="$tc('swag-paypal-pos.authentification.labelApiKey')"
-                               :placeholder="$tc('swag-paypal-pos.authentification.placeholderApiKey')"
-                               @input="forceUpdate">
+            <sw-password-field
+                    v-model="salesChannel.extensions.paypalPosSalesChannel.apiKey"
+                    class="swag-paypal-pos-wizard-connection__apikey-field"
+                    required
+                    :label="$tc('swag-paypal-pos.authentification.labelApiKey')"
+                    :placeholder="$tc('swag-paypal-pos.authentification.placeholderApiKey')"
+                    @input="forceUpdate">
                 <template #suffix>
 
                     {% block swag_paypal_pos_wizard_connection_apikey_suffix %}
@@ -61,11 +61,12 @@
 
 
         {% block swag_paypal_pos_wizard_connection_new_customer %}
-            <sw-card>
-                <sw-container class="swag-paypal-pos-wizard-connection__new-customer-container"
-                              columns="1fr 1fr"
-                              align="center"
-                              gap="300px">
+            <sw-card :isLoading="isConnecting">
+                <sw-container
+                        class="swag-paypal-pos-wizard-connection__new-customer-container"
+                        columns="1fr 1fr"
+                        align="center"
+                        gap="300px">
 
                     {% block swag_paypal_pos_wizard_connection_new_customer_image %}
                         <img class="swag-paypal-pos-wizard-connection__pos-logo"

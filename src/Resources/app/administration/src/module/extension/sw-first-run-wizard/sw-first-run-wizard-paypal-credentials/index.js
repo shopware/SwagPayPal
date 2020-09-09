@@ -1,5 +1,5 @@
 import template from './sw-first-run-wizard-paypal-credentials.html.twig';
-import './sw-first-run-wizard-paypal-credentials.html.scss';
+import './sw-first-run-wizard-paypal-credentials.scss';
 
 const { Component, Mixin } = Shopware;
 

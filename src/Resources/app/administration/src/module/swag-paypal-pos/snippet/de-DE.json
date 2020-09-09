@@ -1,7 +1,11 @@
 {
     "swag-paypal-pos": {
         "general": {
-            "moduleTitle": "iZettle"
+            "moduleTitle": "iZettle",
+            "salesChannelDetailDescription": {
+                "title": "Lasse Dein Geschäft mit Shopware und iZettle wachsen",
+                "manufacturer": "iZettle von PayPal"
+            }
         },
         "header": "iZettle-Verkaufskanal",
         "tabTitle": {

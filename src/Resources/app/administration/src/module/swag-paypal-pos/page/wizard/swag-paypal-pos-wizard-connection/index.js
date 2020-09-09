@@ -11,7 +11,8 @@ Component.register('swag-paypal-pos-wizard-connection', {
     ],
 
     mixins: [
-        'notification'
+        'notification',
+        'swag-paypal-pos-catch-error'
     ],
 
     props: {

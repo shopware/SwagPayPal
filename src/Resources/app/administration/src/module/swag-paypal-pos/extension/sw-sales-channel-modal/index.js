@@ -1,4 +1,4 @@
-import { POS_SALES_CHANNEL_TYPE_ID } from '../../swag-paypal-pos-consts';
+import { PAYPAL_POS_SALES_CHANNEL_TYPE_ID } from '../../../../constant/swag-paypal.constant';
 
 const { Component } = Shopware;
 
@@ -6,7 +6,7 @@ Component.override('sw-sales-channel-modal', {
 
     methods: {
         onAddChannel(salesChannelTypeId) {
-            if (this.isPosSalesChannel(salesChannelTypeId)) {
+            if (this.isPayPalPosSalesChannel(salesChannelTypeId)) {
                 this.onCloseModal();
                 this.$router.push({ name: 'swag.paypal.pos.wizard' });
 
@@ -16,8 +16,8 @@ Component.override('sw-sales-channel-modal', {
             this.$super('onAddChannel', salesChannelTypeId);
         },
 
-        isPosSalesChannel(salesChannelTypeId) {
-            return salesChannelTypeId === POS_SALES_CHANNEL_TYPE_ID;
+        isPayPalPosSalesChannel(salesChannelTypeId) {
+            return salesChannelTypeId === PAYPAL_POS_SALES_CHANNEL_TYPE_ID;
         }
     }
 });
