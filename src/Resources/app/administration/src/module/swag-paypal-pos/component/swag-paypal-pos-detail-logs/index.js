@@ -33,35 +33,34 @@ Component.register('swag-paypal-pos-detail-logs', {
             sortDirection: 'DESC',
             loadingLogs: false,
             isLoading: false,
-            disableRouteParams: true,
-            columns: [
-                {
-                    property: 'date',
-                    dataIndex: 'createdAt',
-                    label: 'swag-paypal-pos.detail.syncedProducts.columns.date',
-                    width: '140px',
-                    sortable: true
-                },
-                {
-                    property: 'state',
-                    dataIndex: 'level',
-                    label: 'swag-paypal-pos.detail.syncedProducts.columns.state',
-                    width: '120px',
-                    sortable: true
-                },
-                {
-                    property: 'message',
-                    dataIndex: 'message',
-                    label: 'swag-paypal-pos.detail.logs.columnLastSync',
-                    sortable: true
-                }
-            ]
+            disableRouteParams: true
         };
     },
 
     computed: {
         logRepository() {
             return this.repositoryFactory.create('swag_paypal_pos_sales_channel_run_log');
+        },
+
+        columns() {
+            return [{
+                property: 'date',
+                dataIndex: 'createdAt',
+                label: 'swag-paypal-pos.detail.syncedProducts.columns.date',
+                width: '140px',
+                sortable: true
+            }, {
+                property: 'state',
+                dataIndex: 'level',
+                label: 'swag-paypal-pos.detail.syncedProducts.columns.state',
+                width: '120px',
+                sortable: true
+            }, {
+                property: 'message',
+                dataIndex: 'message',
+                label: 'swag-paypal-pos.detail.logs.columnLastSync',
+                sortable: true
+            }];
         }
     },
 

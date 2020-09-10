@@ -34,33 +34,32 @@ Component.register('swag-paypal-pos-detail-runs', {
             isLoading: false,
             isCleaningLog: false,
             showModal: false,
-            currentRunId: '',
-            columns: [
-                {
-                    property: 'task',
-                    dataIndex: 'task',
-                    label: 'swag-paypal-pos.detail.runs.columns.task',
-                    sortable: true
-                },
-                {
-                    property: 'state',
-                    dataIndex: 'logs.level',
-                    label: 'swag-paypal-pos.detail.runs.columns.state',
-                    sortable: true
-                },
-                {
-                    property: 'date',
-                    dataIndex: 'finishedAt',
-                    label: 'swag-paypal-pos.detail.runs.columns.date',
-                    sortable: true
-                }
-            ]
+            currentRunId: ''
         };
     },
 
     computed: {
         runRepository() {
             return this.repositoryFactory.create('swag_paypal_pos_sales_channel_run');
+        },
+
+        columns() {
+            return [{
+                property: 'task',
+                dataIndex: 'task',
+                label: 'swag-paypal-pos.detail.runs.columns.task',
+                sortable: true
+            }, {
+                property: 'state',
+                dataIndex: 'logs.level',
+                label: 'swag-paypal-pos.detail.runs.columns.state',
+                sortable: true
+            }, {
+                property: 'date',
+                dataIndex: 'finishedAt',
+                label: 'swag-paypal-pos.detail.runs.columns.date',
+                sortable: true
+            }];
         }
     },
 

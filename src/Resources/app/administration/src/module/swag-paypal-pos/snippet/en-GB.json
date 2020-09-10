@@ -113,10 +113,14 @@
             "runs": {
                 "title": "Synchronisation history",
                 "toolbarText": "\"Clean up logs\" will delete all logs. Logs older than 30 days will be removed automatically.",
+                "completeTask": "Complete",
+                "productTask": "Product",
+                "inventoryTask": "Inventory",
+                "imageTask": "Image",
                 "states": {
-                    "withWarnings": "Synchronisation completed with warnings",
-                    "successful": "Synchronisation completed",
-                    "aborted": "Synchronisation aborted by user"
+                    "withWarnings": "Completed with warnings",
+                    "successful": "Completed",
+                    "aborted": "Aborted by user"
                 },
                 "actions": {
                     "showDetails": "Show details"
@@ -129,8 +133,7 @@
                     "task": "Type",
                     "state": "State",
                     "date": "Date"
-                },
-                "taskPostfix": "Synchronisation"
+                }
             },
             "save": "Save",
             "cleanLog": "Clean up log"

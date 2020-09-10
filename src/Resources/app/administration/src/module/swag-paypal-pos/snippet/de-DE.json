@@ -113,10 +113,14 @@
             "runs": {
                 "title": "Synchronisations-Historie",
                 "toolbarText": "Mit \"Protokolle aufräumen\" kannst Du jederzeit alle Protokolle löschen. Protokolle die älter als 30 Tage sind, werden automatisch entfernt.",
+                "completeTask": "Vollständig",
+                "productTask": "Produkt",
+                "inventoryTask": "Inventar",
+                "imageTask": "Bilder",
                 "states": {
-                    "withWarnings": "Synchronisierung mit Warnungen abgeschlossen",
-                    "successful": "Synchronisierung abgeschlossen",
-                    "aborted": "Synchronisierung durch Benutzer abgebrochen"
+                    "withWarnings": "Mit Warnungen abgeschlossen",
+                    "successful": "Abgeschlossen",
+                    "aborted": "Durch Benutzer abgebrochen"
                 },
                 "actions": {
                     "showDetails": "Details anzeigen"
@@ -129,8 +133,7 @@
                     "task": "Typ",
                     "state": "Status",
                     "date": "Datum"
-                },
-                "taskPostfix": "Synchronisation"
+                }
             },
             "save": "Speichern",
             "cleanLog": "Protokolle aufräumen"
