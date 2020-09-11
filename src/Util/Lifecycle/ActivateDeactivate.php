@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Util\Lifecycle;
 
+use Shopware\Core\Checkout\Payment\DataAbstractionLayer\PaymentMethodRepositoryDecorator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -21,7 +22,7 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 class ActivateDeactivate
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var PaymentMethodRepositoryDecorator
      */
     private $paymentRepository;
 
@@ -47,7 +48,7 @@ class ActivateDeactivate
 
     public function __construct(
         PaymentMethodUtil $paymentMethodUtil,
-        EntityRepositoryInterface $paymentRepository,
+        PaymentMethodRepositoryDecorator $paymentRepository,
         EntityRepositoryInterface $salesChannelRepository,
         EntityRepositoryInterface $salesChannelTypeRepository,
         EntityRepositoryInterface $shippingRepository
@@ -146,7 +147,7 @@ class ActivateDeactivate
 
     private function removePosDefaultEntities(Context $context): void
     {
-        $this->paymentRepository->delete([InformationDefaultService::POS_PAYMENT_METHOD_ID], $context);
-        $this->shippingRepository->delete([InformationDefaultService::POS_SHIPPING_METHOD_ID], $context);
+        $this->paymentRepository->internalDelete([['id' => InformationDefaultService::POS_PAYMENT_METHOD_ID]], $context);
+        $this->shippingRepository->delete([['id' => InformationDefaultService::POS_SHIPPING_METHOD_ID]], $context);
     }
 }
