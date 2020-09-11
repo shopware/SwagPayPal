@@ -88,16 +88,9 @@ Component.register('swag-paypal-pos-wizard-customization', {
         },
 
         routeToProductSelection() {
-            this.toggleLoadingState(true);
-
-            this.saveSalesChannel().then(() => {
-                this.toggleLoadingState(false);
-                this.$router.push({
-                    name: 'swag.paypal.pos.wizard.productSelection',
-                    params: { id: this.salesChannel.id }
-                });
-            }).finally(() => {
-                this.toggleLoadingState(false);
+            this.$router.push({
+                name: 'swag.paypal.pos.wizard.productSelection',
+                params: { id: this.salesChannel.id }
             });
         },
 

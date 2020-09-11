@@ -93,16 +93,9 @@ Component.register('swag-paypal-pos-wizard-product-selection', {
         },
 
         routeToSyncLibrary() {
-            this.toggleLoadingState(true);
-
-            this.saveSalesChannel().then(() => {
-                this.toggleLoadingState(false);
-                this.$router.push({
-                    name: 'swag.paypal.pos.wizard.syncLibrary',
-                    params: { id: this.salesChannel.id }
-                });
-            }).finally(() => {
-                this.toggleLoadingState(false);
+            this.$router.push({
+                name: 'swag.paypal.pos.wizard.syncLibrary',
+                params: { id: this.salesChannel.id }
             });
         },
 

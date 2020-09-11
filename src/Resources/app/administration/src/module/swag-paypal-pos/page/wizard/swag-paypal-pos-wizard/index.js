@@ -153,25 +153,39 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
         },
 
         onCloseModal() {
+            if (!this.salesChannel._isNew && (this.$route.params.id || this.salesChannel.id)) {
+                this.routeToDetailOverview();
+
+                return;
+            }
+
+            this.routeToDashboard();
+        },
+
+        onFinishWizard() {
+            this.routeToDetailOverview();
+        },
+
+        routeToDashboard() {
             this.showModal = false;
+
             this.$nextTick(() => {
-                if (!this.salesChannel._isNew && (this.$route.params.id || this.salesChannel.id)) {
-                    this.$router.push({ name: 'swag.paypal.pos.detail.overview', params: { id: this.salesChannel.id } });
-
-                    return;
-                }
-
                 this.$router.push({ name: 'sw.dashboard.index' });
             });
         },
 
-        finishWizard() {
+        routeToDetailOverview() {
+            this.showModal = false;
+
             this.save().then(() => {
-                this.onCloseModal();
+                this.$router.push({
+                    name: 'swag.paypal.pos.detail.overview',
+                    params: { id: this.salesChannel.id }
+                });
             });
         },
 
-        save(activateSalesChannel = false) {
+        save(activateSalesChannel = false, silentWebhook = false) {
             if (activateSalesChannel) {
                 this.salesChannel.active = true;
             }
@@ -185,7 +199,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
                 await this.loadSalesChannel();
 
                 this.cloneProductVisibility();
-                this.registerWebhook();
+                this.registerWebhook(silentWebhook);
             }).catch(() => {
                 this.isLoading = false;
 
@@ -197,9 +211,14 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
             });
         },
 
-        registerWebhook() {
-            return this.SwagPayPalPosWebhookRegisterService.registerWebhook(this.salesChannel.id)
-                .catch(this.catchError.bind(this, 'swag-paypal-pos.messageWebhookRegisterError'));
+        registerWebhook(silent = false) {
+            const webhookPromise = this.SwagPayPalPosWebhookRegisterService.registerWebhook(this.salesChannel.id);
+
+            if (!silent) {
+                return webhookPromise.catch(this.catchError.bind(this, 'swag-paypal-pos.messageWebhookRegisterError'));
+            }
+
+            return webhookPromise;
         },
 
         cloneProductVisibility() {

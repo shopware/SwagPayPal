@@ -81,17 +81,9 @@ Component.register('swag-paypal-pos-wizard-sync-prices', {
         },
 
         routeToFinish() {
-            this.toggleLoadingState(true);
-
-            // Save the SalesChannel and activate it to mark the setup as complete
-            this.saveSalesChannel(true).then(() => {
-                this.toggleLoadingState(false);
-                this.$router.push({
-                    name: 'swag.paypal.pos.wizard.finish',
-                    params: { id: this.salesChannel.id }
-                });
-            }).finally(() => {
-                this.toggleLoadingState(false);
+            this.$router.push({
+                name: 'swag.paypal.pos.wizard.finish',
+                params: { id: this.salesChannel.id }
             });
         },
 

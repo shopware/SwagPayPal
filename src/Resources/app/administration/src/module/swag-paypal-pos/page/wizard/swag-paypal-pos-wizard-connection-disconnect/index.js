@@ -79,8 +79,6 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
 
             this.SwagPayPalPosSettingApiService.fetchInformation(this.salesChannel).then((response) => {
                 this.iZettleData = response;
-
-                return this.saveSalesChannel();
             }).finally(() => {
                 this.isFetchingInformation = false;
                 this.updateButtons();
