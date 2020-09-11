@@ -118,6 +118,12 @@ PHPUnit (latest 6.2):
     extends: .phpunit_base
     only:
         - master
+    script:
+        - ./psh.phar init
+        - php bin/console plugin:install --activate SwagPayPal
+        - ./psh.phar init-test-databases
+        - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
+        - bin/phpunit.sh
     variables:
         DEVELOPMENT_BRANCH: "6.2"
         PLATFORM_BRANCH: "6.2"
