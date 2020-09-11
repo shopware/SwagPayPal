@@ -9,11 +9,11 @@ namespace Swag\PayPal\Test\PaymentsApi\Service;
 
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\PaymentsApi\Service\TransactionValidator;
-use Swag\PayPal\PayPal\ApiV1\Api\DoVoid\Amount\Details;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\Transaction;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\Transaction\Amount;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\Transaction\ItemList;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\Transaction\ItemList\Item;
+use Swag\PayPal\RestApi\V1\Api\DoVoid\Amount\Details;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Amount;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
 
 class TransactionValidatorTest extends TestCase
 {

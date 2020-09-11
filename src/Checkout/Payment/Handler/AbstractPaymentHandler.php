@@ -11,8 +11,8 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Swag\PayPal\PayPal\ApiV1\Api\Patch;
-use Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource;
+use Swag\PayPal\RestApi\V1\Api\Patch;
+use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\SwagPayPal;
 
 abstract class AbstractPaymentHandler

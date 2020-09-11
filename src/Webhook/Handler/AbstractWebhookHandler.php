@@ -15,7 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Swag\PayPal\PayPal\ApiV1\Api\Webhook;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Webhook\Exception\ParentPaymentNotFoundException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;

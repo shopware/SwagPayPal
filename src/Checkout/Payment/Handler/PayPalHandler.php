@@ -15,11 +15,11 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilderInterface;
 use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\PaymentInstruction;
-use Swag\PayPal\PayPal\ApiV1\PaymentIntentV1;
-use Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource;
-use Swag\PayPal\PayPal\PartnerAttributionId;
+use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V1\Api\Payment;
+use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction;
+use Swag\PayPal\RestApi\V1\PaymentIntentV1;
+use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 
 class PayPalHandler extends AbstractPaymentHandler
 {

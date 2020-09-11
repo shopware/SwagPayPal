@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Webhook\Handler;
 
 use Shopware\Core\Framework\Context;
-use Swag\PayPal\PayPal\ApiV1\Api\Webhook;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
 class SaleComplete extends AbstractWebhookHandler

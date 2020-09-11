@@ -8,8 +8,8 @@
 namespace Swag\PayPal\PaymentsApi\Builder\Util;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\Transaction\Amount;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\Transaction\Amount\Details;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Amount;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Amount\Details;
 use Swag\PayPal\Util\PriceFormatter;
 
 class AmountProvider

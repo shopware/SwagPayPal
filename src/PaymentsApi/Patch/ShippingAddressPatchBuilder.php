@@ -9,8 +9,8 @@ namespace Swag\PayPal\PaymentsApi\Patch;
 
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
-use Swag\PayPal\PayPal\ApiV1\Api\Patch;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\Transaction\ItemList\ShippingAddress;
+use Swag\PayPal\RestApi\V1\Api\Patch;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingAddress;
 
 class ShippingAddressPatchBuilder
 {

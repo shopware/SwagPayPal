@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\PayPal\Client\CredentialsClient;
-use Swag\PayPal\PayPal\Client\CredentialsClientFactory;
+use Swag\PayPal\RestApi\Client\CredentialsClient;
+use Swag\PayPal\RestApi\Client\CredentialsClientFactory;
 
 class CredentialsClientFactoryMock extends CredentialsClientFactory
 {

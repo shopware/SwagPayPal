@@ -9,8 +9,8 @@ namespace Swag\PayPal\Test\Setting\Service;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\ApplicationContext;
-use Swag\PayPal\PayPal\ApiV1\PaymentIntentV1;
+use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
+use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Test\Helper\ServicesTrait;

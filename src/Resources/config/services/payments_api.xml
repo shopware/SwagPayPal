@@ -6,11 +6,11 @@
 
     <services>
         <service id="Swag\PayPal\PaymentsApi\Administration\PayPalPaymentController" public="true">
-            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource"/>
-            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\SaleResource"/>
-            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\AuthorizationResource"/>
-            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\OrdersResource"/>
-            <argument type="service" id="Swag\PayPal\PayPal\ApiV1\Resource\CaptureResource"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\PaymentResource"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\SaleResource"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\AuthorizationResource"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\OrdersResource"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\CaptureResource"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentStatusUtil"/>
             <argument type="service" id="order.repository"/>
             <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>

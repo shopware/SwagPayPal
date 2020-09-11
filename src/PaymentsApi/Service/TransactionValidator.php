@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\PaymentsApi\Service;
 
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\Transaction;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 
 class TransactionValidator
 {

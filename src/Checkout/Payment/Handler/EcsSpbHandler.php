@@ -21,7 +21,7 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\PaymentsApi\Patch\AmountPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\ItemListPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
-use Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource;
+use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 

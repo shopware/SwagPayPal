@@ -9,7 +9,7 @@ namespace Swag\PayPal\PaymentsApi\Patch;
 
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Swag\PayPal\PaymentsApi\Builder\Util\ItemListProvider;
-use Swag\PayPal\PayPal\ApiV1\Api\Patch;
+use Swag\PayPal\RestApi\V1\Api\Patch;
 use Swag\PayPal\Util\PriceFormatter;
 
 class ItemListPatchBuilder

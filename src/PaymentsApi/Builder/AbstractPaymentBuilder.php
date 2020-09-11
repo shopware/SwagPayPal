@@ -8,10 +8,10 @@
 namespace Swag\PayPal\PaymentsApi\Builder;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\ApplicationContext;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\Payer;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\RedirectUrls;
-use Swag\PayPal\PayPal\ApiV1\PaymentIntentV1;
+use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
+use Swag\PayPal\RestApi\V1\Api\Payment\Payer;
+use Swag\PayPal\RestApi\V1\Api\Payment\RedirectUrls;
+use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;

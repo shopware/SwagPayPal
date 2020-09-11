@@ -12,11 +12,11 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
-use Swag\PayPal\PayPal\ApiV1\Api\OAuthCredentials;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\Payer\ExecutePayerInfo;
-use Swag\PayPal\PayPal\ApiV1\RequestUriV1;
-use Swag\PayPal\PayPal\ApiV2\RequestUriV2;
-use Swag\PayPal\PayPal\PayPalApiStruct;
+use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
+use Swag\PayPal\RestApi\V1\Api\Payment\Payer\ExecutePayerInfo;
+use Swag\PayPal\RestApi\V1\RequestUriV1;
+use Swag\PayPal\RestApi\V2\RequestUriV2;
 use Swag\PayPal\Test\Checkout\ExpressCheckout\ExpressCheckoutControllerTest;
 use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -51,8 +51,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefund;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
-use Swag\PayPal\Test\PayPal\ApiV1\Resource\PaymentResourceTest;
-use Swag\PayPal\Test\PayPal\ApiV1\Resource\WebhookResourceTest;
+use Swag\PayPal\Test\RestApi\V1\Resource\PaymentResourceTest;
+use Swag\PayPal\Test\RestApi\V1\Resource\WebhookResourceTest;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class GuzzleClientMock extends Client

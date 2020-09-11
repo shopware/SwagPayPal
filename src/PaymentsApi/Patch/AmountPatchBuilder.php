@@ -9,7 +9,7 @@ namespace Swag\PayPal\PaymentsApi\Patch;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Swag\PayPal\PaymentsApi\Builder\Util\AmountProvider;
-use Swag\PayPal\PayPal\ApiV1\Api\Patch;
+use Swag\PayPal\RestApi\V1\Api\Patch;
 use Swag\PayPal\Util\PriceFormatter;
 
 class AmountPatchBuilder

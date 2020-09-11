@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\PayPal\Client\CredentialsClient;
+use Swag\PayPal\RestApi\Client\CredentialsClient;
 
 class CredentialsClientMock extends CredentialsClient
 {

@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Test\Setting\Service;
 
 use PHPUnit\Framework\TestCase;
-use Swag\PayPal\PayPal\ApiV1\Resource\TokenResource;
-use Swag\PayPal\PayPal\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;

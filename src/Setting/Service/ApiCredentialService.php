@@ -7,11 +7,11 @@
 
 namespace Swag\PayPal\Setting\Service;
 
-use Swag\PayPal\PayPal\ApiV1\Api\OAuthCredentials;
-use Swag\PayPal\PayPal\ApiV1\Resource\TokenResource;
-use Swag\PayPal\PayPal\BaseURL;
-use Swag\PayPal\PayPal\Exception\PayPalApiException;
-use Swag\PayPal\PayPal\PartnerId;
+use Swag\PayPal\RestApi\BaseURL;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\PartnerId;
+use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
+use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Symfony\Component\HttpFoundation\Response;
 

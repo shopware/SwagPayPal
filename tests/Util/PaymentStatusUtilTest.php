@@ -23,11 +23,11 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use Swag\PayPal\PayPal\ApiV1\Api\Capture;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\Transaction;
-use Swag\PayPal\PayPal\ApiV1\Api\Refund;
-use Swag\PayPal\PayPal\ApiV1\Api\Refund\TotalRefundedAmount;
+use Swag\PayPal\RestApi\V1\Api\Capture;
+use Swag\PayPal\RestApi\V1\Api\Payment;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
+use Swag\PayPal\RestApi\V1\Api\Refund;
+use Swag\PayPal\RestApi\V1\Api\Refund\TotalRefundedAmount;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PriceFormatter;
 

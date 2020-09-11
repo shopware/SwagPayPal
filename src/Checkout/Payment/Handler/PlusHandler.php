@@ -14,7 +14,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
-use Swag\PayPal\PayPal\ApiV1\Resource\PaymentResource;
+use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class PlusHandler extends AbstractPaymentHandler

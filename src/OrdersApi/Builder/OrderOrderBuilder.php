@@ -12,16 +12,16 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\PayPal\ApiV2\Api\Order;
-use Swag\PayPal\PayPal\ApiV2\Api\Order\ApplicationContext;
-use Swag\PayPal\PayPal\ApiV2\Api\Order\PurchaseUnit;
-use Swag\PayPal\PayPal\ApiV2\Api\Order\PurchaseUnit\Amount;
-use Swag\PayPal\PayPal\ApiV2\Api\Order\PurchaseUnit\Amount\Breakdown;
-use Swag\PayPal\PayPal\ApiV2\Api\Order\PurchaseUnit\Amount\Breakdown\Discount;
-use Swag\PayPal\PayPal\ApiV2\Api\Order\PurchaseUnit\Amount\Breakdown\ItemTotal;
-use Swag\PayPal\PayPal\ApiV2\Api\Order\PurchaseUnit\Amount\Breakdown\Shipping as BreakdownShipping;
-use Swag\PayPal\PayPal\ApiV2\Api\Order\PurchaseUnit\Item;
-use Swag\PayPal\PayPal\ApiV2\Api\Order\PurchaseUnit\Item\UnitAmount;
+use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Discount;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\ItemTotal;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Shipping as BreakdownShipping;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
 
 class OrderOrderBuilder extends AbstractOrderBuilder
 {

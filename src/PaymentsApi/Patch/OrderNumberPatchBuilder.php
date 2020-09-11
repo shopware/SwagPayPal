@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\PaymentsApi\Patch;
 
-use Swag\PayPal\PayPal\ApiV1\Api\Patch;
+use Swag\PayPal\RestApi\V1\Api\Patch;
 
 class OrderNumberPatchBuilder
 {

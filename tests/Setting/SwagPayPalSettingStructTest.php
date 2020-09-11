@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Test\Setting;
 
 use PHPUnit\Framework\TestCase;
-use Swag\PayPal\PayPal\ApiV1\Api\Payment\ApplicationContext;
-use Swag\PayPal\PayPal\ApiV1\PaymentIntentV1;
+use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
+use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Webhook\WebhookService;
 
