@@ -30,6 +30,7 @@
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="sales_channel_type.repository"/>
             <argument type="service" id="shipping_method.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Payment\DataAbstractionLayer\PaymentMethodRepositoryDecorator"/>
         </service>
     </services>
 </container>

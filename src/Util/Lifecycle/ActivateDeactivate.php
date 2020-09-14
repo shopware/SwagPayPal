@@ -22,7 +22,7 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 class ActivateDeactivate
 {
     /**
-     * @var PaymentMethodRepositoryDecorator
+     * @var EntityRepositoryInterface
      */
     private $paymentRepository;
 
@@ -46,18 +46,25 @@ class ActivateDeactivate
      */
     private $shippingRepository;
 
+    /**
+     * @var PaymentMethodRepositoryDecorator
+     */
+    private $paymentMethodRepoDecorator;
+
     public function __construct(
         PaymentMethodUtil $paymentMethodUtil,
-        PaymentMethodRepositoryDecorator $paymentRepository,
+        EntityRepositoryInterface $paymentRepository,
         EntityRepositoryInterface $salesChannelRepository,
         EntityRepositoryInterface $salesChannelTypeRepository,
-        EntityRepositoryInterface $shippingRepository
+        EntityRepositoryInterface $shippingRepository,
+        PaymentMethodRepositoryDecorator $paymentMethodRepoDecorator
     ) {
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->paymentRepository = $paymentRepository;
         $this->salesChannelRepository = $salesChannelRepository;
         $this->salesChannelTypeRepository = $salesChannelTypeRepository;
         $this->shippingRepository = $shippingRepository;
+        $this->paymentMethodRepoDecorator = $paymentMethodRepoDecorator;
     }
 
     public function activate(Context $context): void
@@ -147,7 +154,7 @@ class ActivateDeactivate
 
     private function removePosDefaultEntities(Context $context): void
     {
-        $this->paymentRepository->internalDelete([['id' => InformationDefaultService::POS_PAYMENT_METHOD_ID]], $context);
+        $this->paymentMethodRepoDecorator->internalDelete([['id' => InformationDefaultService::POS_PAYMENT_METHOD_ID]], $context);
         $this->shippingRepository->delete([['id' => InformationDefaultService::POS_SHIPPING_METHOD_ID]], $context);
     }
 }
