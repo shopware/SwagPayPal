@@ -102,7 +102,11 @@ class PosSyncController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/pos/sync/{salesChannelId}/products", name="api.action.paypal.pos.sync.products", methods={"POST"})
+     * @Route(
+     *     "/api/v{version}/_action/paypal/pos/sync/{salesChannelId}/products",
+     *      name="api.action.paypal.pos.sync.products",
+     *      methods={"POST"}
+     * )
      */
     public function syncProducts(string $salesChannelId, Context $context): Response
     {
@@ -114,7 +118,11 @@ class PosSyncController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/pos/sync/{salesChannelId}/images", name="api.action.paypal.pos.sync.images", methods={"POST"})
+     * @Route(
+     *     "/api/v{version}/_action/paypal/pos/sync/{salesChannelId}/images",
+     *      name="api.action.paypal.pos.sync.images",
+     *      methods={"POST"}
+     * )
      */
     public function syncImages(string $salesChannelId, Context $context): Response
     {
@@ -126,7 +134,11 @@ class PosSyncController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/pos/sync/{salesChannelId}/inventory", name="api.action.paypal.pos.sync.inventory", methods={"POST"})
+     * @Route(
+     *     "/api/v{version}/_action/paypal/pos/sync/{salesChannelId}/inventory",
+     *      name="api.action.paypal.pos.sync.inventory",
+     *      methods={"POST"}
+     * )
      */
     public function syncInventory(string $salesChannelId, Context $context): Response
     {
@@ -138,7 +150,11 @@ class PosSyncController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/pos/sync/{salesChannelId}", name="api.action.paypal.pos.sync", methods={"POST"})
+     * @Route(
+     *     "/api/v{version}/_action/paypal/pos/sync/{salesChannelId}",
+     *      name="api.action.paypal.pos.sync",
+     *      methods={"POST"}
+     * )
      */
     public function syncAll(string $salesChannelId, Context $context): Response
     {
@@ -150,7 +166,11 @@ class PosSyncController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/pos/sync/abort/{runId}", name="api.action.paypal.pos.sync.abort", methods={"POST"})
+     * @Route(
+     *     "/api/v{version}/_action/paypal/pos/sync/abort/{runId}",
+     *      name="api.action.paypal.pos.sync.abort",
+     *      methods={"POST"}
+     * )
      */
     public function abortSync(string $runId, Context $context): Response
     {
@@ -160,7 +180,11 @@ class PosSyncController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/pos/sync/reset/{salesChannelId}", name="api.action.paypal.pos.sync.abort", methods={"POST"})
+     * @Route(
+     *     "/api/v{version}/_action/paypal/pos/sync/reset/{salesChannelId}",
+     *      name="api.action.paypal.pos.sync.reset",
+     *      methods={"POST"}
+     * )
      */
     public function resetSync(string $salesChannelId, Context $context): Response
     {
@@ -172,7 +196,11 @@ class PosSyncController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/pos/log/cleanup/{salesChannelId}", name="api.action.paypal.pos.log.cleanup", methods={"POST"})
+     * @Route(
+     *     "/api/v{version}/_action/paypal/pos/log/cleanup/{salesChannelId}",
+     *      name="api.action.paypal.pos.log.cleanup",
+     *      methods={"POST"}
+     * )
      */
     public function cleanUpLog(string $salesChannelId, Context $context): Response
     {
@@ -184,7 +212,11 @@ class PosSyncController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/paypal/pos/product-log/{salesChannelId}", name="api.paypal.pos.product-log", methods={"GET"})
+     * @Route(
+     *     "/api/v{version}/paypal/pos/product-log/{salesChannelId}",
+     *      name="api.paypal.pos.product-log",
+     *      methods={"GET"}
+     * )
      */
     public function getProductLog(string $salesChannelId, Request $request, Context $context): Response
     {
