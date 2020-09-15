@@ -167,7 +167,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
         },
 
         onFinishWizard() {
-            this.routeToDetailOverview();
+            this.routeToDetailOverview(true);
         },
 
         routeToDashboard() {
@@ -178,10 +178,14 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
             });
         },
 
-        routeToDetailOverview() {
+        routeToDetailOverview(finished = false) {
             this.showModal = false;
 
-            this.save().then(() => {
+            this.save(finished).then(() => {
+                if (finished) {
+                    this.SwagPayPalPosApiService.startCompleteSync(this.salesChannel.id);
+                }
+
                 this.$router.push({
                     name: 'swag.paypal.pos.detail.overview',
                     params: { id: this.salesChannel.id }
