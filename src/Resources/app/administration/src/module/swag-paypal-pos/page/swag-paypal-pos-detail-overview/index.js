@@ -92,12 +92,12 @@ Component.register('swag-paypal-pos-detail-overview', {
         },
 
         updateSync() {
-            if (this.runId === null) {
+            if (this.syncingRunId === null) {
                 return;
             }
 
             this.runRepository.get(this.syncingRunId, Shopware.Context.api).then((entity) => {
-                if (!entity || entity.finishedAt === null) {
+                if (entity !== null && entity.finishedAt === null) {
                     setTimeout(this.updateSync, 1500);
                     return;
                 }
