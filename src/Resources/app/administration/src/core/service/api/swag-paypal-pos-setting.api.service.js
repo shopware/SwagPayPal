@@ -33,7 +33,7 @@ class SwagPayPalPosSettingApiService extends ApiService {
         const apiKey = salesChannel.extensions.paypalPosSalesChannel.apiKey;
 
         return this.httpClient
-            .post(`_action/${this.getApiBasePath()}/fetch-information`, { apiKey }, { headers })
+            .post(`${this.getApiBasePath()}/fetch-information`, { apiKey }, { headers })
             .then((response) => {
                 const data = ApiService.handleResponse(response);
                 delete data.extensions;
@@ -90,10 +90,12 @@ class SwagPayPalPosSettingApiService extends ApiService {
         const headers = this.getBasicHeaders();
 
         return this.httpClient
-            .post(
-                `_action/${this.getApiBasePath()}/product-count`,
-                { salesChannelId, cloneSalesChannelId },
-                { headers }
+            .get(
+                `${this.getApiBasePath()}/product-count`,
+                {
+                    params: { salesChannelId, cloneSalesChannelId },
+                    headers
+                }
             ).then((response) => {
                 return ApiService.handleResponse(response);
             });

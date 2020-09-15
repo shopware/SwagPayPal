@@ -142,7 +142,7 @@ class SettingsControllerTest extends TestCase
         $this->salesChannelRepository->getMockEntityWithNoTypeId()->setId(Defaults::SALES_CHANNEL);
         $this->salesChannelRepository->addMockEntity($this->salesChannelRepository->getMockEntityWithNoTypeId());
 
-        $request = new Request([], [
+        $request = new Request([
             'salesChannelId' => $this->salesChannelRepository->getMockEntity()->getId(),
             'cloneSalesChannelId' => $this->salesChannelRepository->getMockEntityWithNoTypeId()->getId(),
         ]);
@@ -161,7 +161,7 @@ class SettingsControllerTest extends TestCase
         $context = Context::createDefaultContext();
         $settingsController = $this->getSettingsController();
 
-        $request = new Request([], [
+        $request = new Request([
             'salesChannelId' => $this->salesChannelRepository->getMockEntity()->getId(),
         ]);
 

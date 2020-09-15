@@ -83,8 +83,8 @@ class SettingsController extends AbstractController
 
     /**
      * @Route(
-     *     "/api/v{version}/_action/paypal/pos/fetch-information",
-     *     name="api.action.paypal.pos.fetch.information",
+     *     "/api/v{version}/paypal/pos/fetch-information",
+     *     name="api.paypal.pos.fetch.information",
      *     methods={"POST"}
      * )
      */
@@ -118,15 +118,15 @@ class SettingsController extends AbstractController
 
     /**
      * @Route(
-     *     "/api/v{version}/_action/paypal/pos/product-count",
-     *     name="api.action.paypal.pos.product.count",
-     *     methods={"POST"}
+     *     "/api/v{version}/paypal/pos/product-count",
+     *     name="api.paypal.pos.product.count",
+     *     methods={"GET"}
      * )
      */
     public function getProductCounts(Request $request, Context $context): JsonResponse
     {
-        $salesChannelId = $request->request->getAlnum('salesChannelId');
-        $cloneSalesChannelId = $request->request->getAlnum('cloneSalesChannelId');
+        $salesChannelId = $request->query->getAlnum('salesChannelId');
+        $cloneSalesChannelId = $request->query->getAlnum('cloneSalesChannelId');
 
         $productCounts = $this->productCountService->getProductCounts($salesChannelId, $cloneSalesChannelId, $context);
 
