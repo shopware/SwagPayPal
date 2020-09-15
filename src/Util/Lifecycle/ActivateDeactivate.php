@@ -103,7 +103,12 @@ class ActivateDeactivate
             [
                 'id' => SwagPayPal::SALES_CHANNEL_TYPE_POS,
                 'iconName' => 'default-money-cash',
-                'screenshotUrls' => ['swagpaypal/static/img/paypal-pos-sales-channel-type-description.png'],
+                'screenshotUrls' => [
+                    'swagpaypal/static/img/paypal-pos-sales-channel-type-description-family.png',
+                    'swagpaypal/static/img/paypal-pos-sales-channel-type-description-kit.png',
+                    'swagpaypal/static/img/paypal-pos-sales-channel-type-description-reader.png',
+                    'swagpaypal/static/img/paypal-pos-sales-channel-type-description-tap-payment.png',
+                ],
                 'translations' => [
                     'en-GB' => [
                         'name' => 'Point of Sale – iZettle',

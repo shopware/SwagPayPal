@@ -235,5 +235,8 @@
         },
         "messageCloneError": "Konnte die Produktzuordnung nicht von anderem Verkaufskanal übertragen.",
         "messageWebhookRegisterError": "Der Webhook konnte nicht bei iZettle registriert werden"
+    },
+    "swag-image-slider": {
+        "imageAlt": "Bild {index} / {total}"
     }
 }

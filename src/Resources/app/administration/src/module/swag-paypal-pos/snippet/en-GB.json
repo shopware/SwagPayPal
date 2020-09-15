@@ -235,5 +235,8 @@
         },
         "messageCloneError": "Could not transfer product visibility from another Sales Channel.",
         "messageWebhookRegisterError": "The webhook could not be registered at iZettle"
+    },
+    "swag-image-slider": {
+        "imageAlt": "Image {index} / {total}"
     }
 }

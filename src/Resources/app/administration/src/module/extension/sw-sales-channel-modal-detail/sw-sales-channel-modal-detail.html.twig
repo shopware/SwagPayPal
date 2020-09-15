@@ -49,10 +49,12 @@
 {% block sw_sales_channel_modal_detail_screenshots %}
     <div v-if="isPayPalPosSalesChannel(detailType.id)"
          class="sw-sales-channel-modal-detail__screenshots">
-        <div v-if="detailType.screenshotUrls">
-            <img class="swag-paypal-pos-modal-detail__screenshot"
-                 :src="detailType.screenshotUrls[0] | asset">
-        </div>
+        <swag-image-slider
+                :images="detailType.screenshotUrls"
+                :canvasWidth="580"
+                :canvasHeight="272"
+                overflow="visible">
+        </swag-image-slider>
     </div>
 
     <template v-else>
