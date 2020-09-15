@@ -194,7 +194,8 @@ class WebhookService
 
     private function getSalesChannel(string $salesChannelId, Context $context): SalesChannelEntity
     {
-        $criteria = (new Criteria())->setIds([$salesChannelId]);
+        $criteria = new Criteria([$salesChannelId]);
+        $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
 
         $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
 

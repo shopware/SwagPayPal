@@ -89,7 +89,7 @@ class LocalUpdater
             $this->logger->info('Changed local inventory of {productName} by {change}', [
                 'product' => $changedProduct,
                 'productName' => $changedProduct->getName() ?? 'variant',
-                'change' => $stockChange,
+                'change' => $stockChange->getStockChange(),
             ]);
         }
 

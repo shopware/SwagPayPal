@@ -1,6 +1,9 @@
 import template from './swag-paypal-pos-wizard.html.twig';
 import './swag-paypal-pos-wizard.scss';
-import { PAYPAL_POS_SALES_CHANNEL_TYPE_ID } from '../../../../../constant/swag-paypal.constant';
+import {
+    PAYPAL_POS_SALES_CHANNEL_EXTENSION,
+    PAYPAL_POS_SALES_CHANNEL_TYPE_ID
+} from '../../../../../constant/swag-paypal.constant';
 
 const { Component, Context } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -82,6 +85,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
         salesChannelCriteria() {
             return (new Criteria())
+                .addAssociation(PAYPAL_POS_SALES_CHANNEL_EXTENSION)
                 .addAssociation('countries')
                 .addAssociation('currencies')
                 .addAssociation('domains')

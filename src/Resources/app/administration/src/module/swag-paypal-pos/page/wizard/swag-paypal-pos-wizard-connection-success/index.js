@@ -38,10 +38,6 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
     },
 
     computed: {
-        salesChannelRepository() {
-            return this.repositoryFactory.create('sales_channel');
-        },
-
         iZettleUser() {
             if (this.isFetchingInformation) {
                 const firstName = this.$tc('swag-paypal-pos.wizard.connectionSuccess.fakeFirstName');

@@ -18,6 +18,7 @@ use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
 use Swag\PayPal\Pos\Webhook\Exception\WebhookException;
 use Swag\PayPal\Pos\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Pos\Webhook\Exception\WebhookNotRegisteredException;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -180,8 +181,11 @@ class WebhookController extends AbstractController
      */
     private function getSalesChannel(string $salesChannelId, Context $context): SalesChannelEntity
     {
+        $criteria = new Criteria([$salesChannelId]);
+        $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
+
         /** @var SalesChannelEntity|null $salesChannel */
-        $salesChannel = $this->salesChannelRepository->search(new Criteria([$salesChannelId]), $context)->first();
+        $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
 
         if ($salesChannel === null) {
             throw new WebhookIdInvalidException($salesChannelId);

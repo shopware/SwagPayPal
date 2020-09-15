@@ -209,6 +209,7 @@ class PosSyncController extends AbstractController
         if (!$returnDisabled) {
             $criteria->addFilter(new EqualsFilter('active', true));
         }
+        $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
         $criteria->addAssociation('currency');
 
         /** @var SalesChannelEntity|null $salesChannel */

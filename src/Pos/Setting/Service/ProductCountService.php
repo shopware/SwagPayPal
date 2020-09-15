@@ -59,8 +59,11 @@ class ProductCountService
 
     public function getProductCounts(string $salesChannelId, string $cloneSalesChannelId, Context $context): ProductCount
     {
+        $criteria = new Criteria([$salesChannelId]);
+        $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
+
         /** @var SalesChannelEntity|null $salesChannel */
-        $salesChannel = $this->salesChannelRepository->search(new Criteria([$salesChannelId]), $context)->first();
+        $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
 
         if ($salesChannel === null) {
             throw new InvalidSalesChannelIdException($salesChannelId);

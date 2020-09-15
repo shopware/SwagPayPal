@@ -47,6 +47,7 @@ abstract class AbstractPosCommand extends Command
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
         $criteria->addFilter(new EqualsFilter('active', true));
+        $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
         $criteria->addAssociation('currency');
         if ($salesChannelId !== null) {
             $criteria->setIds([$salesChannelId]);

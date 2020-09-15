@@ -41,10 +41,6 @@ Component.register('swag-paypal-pos-detail-overview', {
     },
 
     computed: {
-        salesChannelRepository() {
-            return this.repositoryFactory.create('sales_channel');
-        },
-
         runRepository() {
             return this.repositoryFactory.create('swag_paypal_pos_sales_channel_run');
         }

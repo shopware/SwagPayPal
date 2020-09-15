@@ -1,3 +1,5 @@
+import { PAYPAL_POS_SALES_CHANNEL_TYPE_ID } from '../../../../constant/swag-paypal.constant';
+
 const { Component } = Shopware;
 
 Component.override('sw-sales-channel-menu', {
@@ -8,7 +10,7 @@ Component.override('sw-sales-channel-menu', {
 
             const iZettleIds = [];
             this.salesChannels.forEach((salesChannel) => {
-                if (salesChannel.extensions.hasOwnProperty('paypalPosSalesChannel')) {
+                if (salesChannel.typeId === PAYPAL_POS_SALES_CHANNEL_TYPE_ID) {
                     iZettleIds.push(salesChannel.id);
                 }
             });

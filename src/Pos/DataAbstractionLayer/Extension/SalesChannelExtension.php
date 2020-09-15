@@ -25,7 +25,7 @@ class SalesChannelExtension extends EntityExtension
                 'id',
                 'sales_channel_id',
                 PosSalesChannelDefinition::class,
-                true
+                false
             ))->addFlags(new CascadeDelete())
         );
     }

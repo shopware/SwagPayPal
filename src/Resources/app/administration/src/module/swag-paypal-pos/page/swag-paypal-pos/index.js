@@ -1,5 +1,6 @@
 import template from './swag-paypal-pos.html.twig';
 import './swag-paypal-pos.scss';
+import { PAYPAL_POS_SALES_CHANNEL_EXTENSION } from '../../../../constant/swag-paypal.constant';
 
 const { Component } = Shopware;
 const { Criteria } = Shopware.Data;
@@ -57,6 +58,7 @@ Component.register('swag-paypal-pos', {
         salesChannelCriteria() {
             const criteria = new Criteria();
 
+            criteria.addAssociation(PAYPAL_POS_SALES_CHANNEL_EXTENSION);
             criteria.addAssociation('countries');
             criteria.addAssociation('currencies');
             criteria.addAssociation('domains');
