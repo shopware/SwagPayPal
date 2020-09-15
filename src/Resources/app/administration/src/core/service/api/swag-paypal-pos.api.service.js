@@ -11,8 +11,9 @@ class SwagPayPalPosApiService extends ApiService {
     startCompleteSync(salesChannelId) {
         const headers = this.getBasicHeaders();
 
-        return this.httpClient.get(
-            `${this.getApiBasePath()}/sync/${salesChannelId}`,
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/sync/${salesChannelId}`,
+            null,
             {
                 ...this.basicConfig,
                 headers
@@ -25,8 +26,9 @@ class SwagPayPalPosApiService extends ApiService {
     startProductSync(salesChannelId) {
         const headers = this.getBasicHeaders();
 
-        return this.httpClient.get(
-            `${this.getApiBasePath()}/sync/${salesChannelId}/products`,
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/sync/${salesChannelId}/products`,
+            null,
             {
                 ...this.basicConfig,
                 headers
@@ -39,8 +41,9 @@ class SwagPayPalPosApiService extends ApiService {
     startInventorySync(salesChannelId) {
         const headers = this.getBasicHeaders();
 
-        return this.httpClient.get(
-            `${this.getApiBasePath()}/sync/${salesChannelId}/inventory`,
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/sync/${salesChannelId}/inventory`,
+            null,
             {
                 ...this.basicConfig,
                 headers
@@ -53,8 +56,9 @@ class SwagPayPalPosApiService extends ApiService {
     startImageSync(salesChannelId) {
         const headers = this.getBasicHeaders();
 
-        return this.httpClient.get(
-            `${this.getApiBasePath()}/sync/${salesChannelId}/images`,
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/sync/${salesChannelId}/images`,
+            null,
             {
                 ...this.basicConfig,
                 headers
@@ -67,8 +71,9 @@ class SwagPayPalPosApiService extends ApiService {
     startLogCleanup(salesChannelId) {
         const headers = this.getBasicHeaders();
 
-        return this.httpClient.get(
-            `${this.getApiBasePath()}/log/cleanup/${salesChannelId}`,
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/log/cleanup/${salesChannelId}`,
+            null,
             {
                 ...this.basicConfig,
                 headers
@@ -81,8 +86,9 @@ class SwagPayPalPosApiService extends ApiService {
     abortSync(runId) {
         const headers = this.getBasicHeaders();
 
-        return this.httpClient.get(
-            `${this.getApiBasePath()}/sync/abort/${runId}`,
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/sync/abort/${runId}`,
+            null,
             {
                 ...this.basicConfig,
                 headers
@@ -95,8 +101,9 @@ class SwagPayPalPosApiService extends ApiService {
     resetSync(salesChannelId) {
         const headers = this.getBasicHeaders();
 
-        return this.httpClient.get(
-            `${this.getApiBasePath()}/sync/reset/${salesChannelId}`,
+        return this.httpClient.post(
+            `_action/${this.getApiBasePath()}/sync/reset/${salesChannelId}`,
+            null,
             {
                 ...this.basicConfig,
                 headers
