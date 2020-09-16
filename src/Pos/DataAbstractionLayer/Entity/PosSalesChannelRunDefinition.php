@@ -22,9 +22,11 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 class PosSalesChannelRunDefinition extends EntityDefinition
 {
+    public const ENTITY_NAME = 'swag_paypal_pos_sales_channel_run';
+
     public function getEntityName(): string
     {
-        return 'swag_paypal_pos_sales_channel_run';
+        return self::ENTITY_NAME;
     }
 
     public function getEntityClass(): string

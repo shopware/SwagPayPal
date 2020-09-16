@@ -23,6 +23,8 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 
 class PosSalesChannelDefinition extends EntityDefinition
 {
+    public const ENTITY_NAME = 'swag_paypal_pos_sales_channel';
+
     /**
      * Limited by max. header size
      */
@@ -35,7 +37,7 @@ class PosSalesChannelDefinition extends EntityDefinition
 
     public function getEntityName(): string
     {
-        return 'swag_paypal_pos_sales_channel';
+        return self::ENTITY_NAME;
     }
 
     public function getEntityClass(): string

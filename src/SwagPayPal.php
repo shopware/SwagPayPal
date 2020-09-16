@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal;
 
+use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
@@ -87,6 +88,8 @@ class SwagPayPal extends Plugin
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->container->get(SystemConfigService::class);
+        /** @var Connection $connection */
+        $connection = $this->container->get(Connection::class);
 
         (new InstallUninstall(
             $systemConfigRepository,
@@ -96,6 +99,7 @@ class SwagPayPal extends Plugin
             $countryRepository,
             $pluginIdProvider,
             $systemConfigService,
+            $connection,
             static::class
         ))->install($installContext->getContext());
 
@@ -126,6 +130,8 @@ class SwagPayPal extends Plugin
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->container->get(SystemConfigService::class);
+        /** @var Connection $connection */
+        $connection = $this->container->get(Connection::class);
 
         (new InstallUninstall(
             $systemConfigRepository,
@@ -135,6 +141,7 @@ class SwagPayPal extends Plugin
             $countryRepository,
             $pluginIdProvider,
             $systemConfigService,
+            $connection,
             static::class
         ))->uninstall($context);
 
