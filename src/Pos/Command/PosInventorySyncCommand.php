@@ -39,9 +39,6 @@ class PosInventorySyncCommand extends AbstractPosCommand
         $this->setDescription('Sync only inventory to iZettle');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void
     {
         $this->inventoryTask->execute($salesChannel, $context);

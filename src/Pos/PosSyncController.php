@@ -188,7 +188,7 @@ class PosSyncController extends AbstractController
      */
     public function resetSync(string $salesChannelId, Context $context): Response
     {
-        $salesChannel = $this->getSalesChannel($salesChannelId, $context);
+        $salesChannel = $this->getSalesChannel($salesChannelId, $context, true);
 
         $this->syncResetter->resetSync($salesChannel, $context);
 

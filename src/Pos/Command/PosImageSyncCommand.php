@@ -39,9 +39,6 @@ class PosImageSyncCommand extends AbstractPosCommand
         $this->setDescription('Sync only images to iZettle');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void
     {
         $this->imageTask->execute($salesChannel, $context);

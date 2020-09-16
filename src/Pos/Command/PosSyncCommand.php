@@ -39,9 +39,6 @@ class PosSyncCommand extends AbstractPosCommand
         $this->setDescription('Sync to iZettle');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void
     {
         $this->completeTask->execute($salesChannel, $context);

@@ -39,11 +39,13 @@ class PosLogCleanupCommand extends AbstractPosCommand
         $this->setDescription('Cleanup iZettle sync log');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void
     {
         $this->logCleaner->cleanUpLog($salesChannel->getId(), $context);
+    }
+
+    protected function useInactiveSalesChannels(): bool
+    {
+        return true;
     }
 }

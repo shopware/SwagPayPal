@@ -46,7 +46,9 @@ abstract class AbstractPosCommand extends Command
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
-        $criteria->addFilter(new EqualsFilter('active', true));
+        if (!$this->useInactiveSalesChannels()) {
+            $criteria->addFilter(new EqualsFilter('active', true));
+        }
         $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
         $criteria->addAssociation('currency');
         if ($salesChannelId !== null) {
@@ -83,6 +85,11 @@ abstract class AbstractPosCommand extends Command
         }
 
         return 0;
+    }
+
+    protected function useInactiveSalesChannels(): bool
+    {
+        return false;
     }
 
     abstract protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void;

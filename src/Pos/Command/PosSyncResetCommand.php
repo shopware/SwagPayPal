@@ -39,11 +39,13 @@ class PosSyncResetCommand extends AbstractPosCommand
         $this->setDescription('Reset iZettle sync');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void
     {
         $this->resetSyncService->resetSync($salesChannel, $context);
+    }
+
+    protected function useInactiveSalesChannels(): bool
+    {
+        return true;
     }
 }
