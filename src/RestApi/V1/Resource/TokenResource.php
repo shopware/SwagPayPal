@@ -8,12 +8,12 @@
 namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Psr\Cache\CacheItemPoolInterface;
-use Swag\PayPal\RestApi\Client\CredentialsClientFactory;
 use Swag\PayPal\RestApi\Client\TokenClientFactory;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Api\Token;
+use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 
-class TokenResource
+class TokenResource implements TokenResourceInterface
 {
     private const CACHE_ID = 'paypal_auth_';
 
@@ -28,25 +28,25 @@ class TokenResource
     private $tokenClientFactory;
 
     /**
-     * @var CredentialsClientFactory
+     * @var TokenValidator
      */
-    private $credentialsClientFactory;
+    private $tokenValidator;
 
     public function __construct(
         CacheItemPoolInterface $cache,
         TokenClientFactory $tokenClientFactory,
-        CredentialsClientFactory $credentialsClientFactory
+        TokenValidator $tokenValidator
     ) {
         $this->cache = $cache;
         $this->tokenClientFactory = $tokenClientFactory;
-        $this->credentialsClientFactory = $credentialsClientFactory;
+        $this->tokenValidator = $tokenValidator;
     }
 
     public function getToken(OAuthCredentials $credentials, string $url): Token
     {
         $cacheId = \md5((string) $credentials);
         $token = $this->getTokenFromCache($cacheId);
-        if ($token === null || !$this->isTokenValid($token)) {
+        if ($token === null || !$this->tokenValidator->isTokenValid($token)) {
             $tokenClient = $this->tokenClientFactory->createTokenClient($credentials, $url);
 
             $token = new Token();
@@ -55,29 +55,6 @@ class TokenResource
         }
 
         return $token;
-    }
-
-    public function getClientCredentials(
-        string $authCode,
-        string $sharedId,
-        string $nonce,
-        string $url,
-        string $partnerId
-    ): array {
-        $credentialsClient = $this->credentialsClientFactory->createCredentialsClient($url);
-        $accessToken = $credentialsClient->getAccessToken($authCode, $sharedId, $nonce);
-
-        return $credentialsClient->getCredentials($accessToken, $partnerId);
-    }
-
-    public function testApiCredentials(OAuthCredentials $credentials, string $url): bool
-    {
-        $tokenClient = $this->tokenClientFactory->createTokenClient($credentials, $url);
-
-        $token = new Token();
-        $token->assign($tokenClient->getToken());
-
-        return $this->isTokenValid($token);
     }
 
     private function getTokenFromCache(string $cacheId): ?Token
@@ -95,15 +72,5 @@ class TokenResource
         $item = $this->cache->getItem(self::CACHE_ID . $cacheId);
         $item->set(\serialize($token));
         $this->cache->save($item);
-    }
-
-    private function isTokenValid(Token $token): bool
-    {
-        $dateTimeNow = new \DateTime();
-        $dateTimeExpire = $token->getExpireDateTime();
-        // Decrease expire date by one hour just to make sure, it doesn't run into an unauthorized exception.
-        $dateTimeExpire = $dateTimeExpire->sub(new \DateInterval('PT1H'));
-
-        return $dateTimeExpire > $dateTimeNow;
     }
 }

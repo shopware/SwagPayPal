@@ -13,6 +13,12 @@
             <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
         </service>
 
+        <service id="Swag\PayPal\RestApi\V1\Resource\CredentialsResource">
+            <argument type="service" id="Swag\PayPal\RestApi\Client\TokenClientFactory"/>
+            <argument type="service" id="Swag\PayPal\RestApi\Client\CredentialsClientFactory"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Service\TokenValidator"/>
+        </service>
+
         <service id="Swag\PayPal\RestApi\V1\Resource\OrdersResource">
             <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
         </service>
@@ -28,7 +34,7 @@
         <service id="Swag\PayPal\RestApi\V1\Resource\TokenResource">
             <argument type="service" id="cache.object"/>
             <argument type="service" id="Swag\PayPal\RestApi\Client\TokenClientFactory"/>
-            <argument type="service" id="Swag\PayPal\RestApi\Client\CredentialsClientFactory"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Service\TokenValidator"/>
         </service>
 
         <service id="Swag\PayPal\RestApi\V1\Resource\WebhookResource">

@@ -8,14 +8,15 @@
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\RestApi\Client\PayPalClient;
-use Swag\PayPal\RestApi\Client\PayPalClientFactory;
+use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
+use Swag\PayPal\RestApi\Client\PayPalClientInterface;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
+use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Test\Mock\CacheMock;
 
-class PayPalClientFactoryMock extends PayPalClientFactory
+class PayPalClientFactoryMock implements PayPalClientFactoryInterface
 {
     /**
      * @var PayPalClientMock|null
@@ -33,19 +34,17 @@ class PayPalClientFactoryMock extends PayPalClientFactory
     private $logger;
 
     public function __construct(
-        TokenResource $tokenResource,
         SettingsServiceInterface $settingsService,
         LoggerInterface $logger
     ) {
         $this->settingsService = $settingsService;
         $this->logger = $logger;
-        parent::__construct($tokenResource, $settingsService, $logger);
     }
 
     public function getPayPalClient(
         ?string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
-    ): PayPalClient {
+    ): PayPalClientInterface {
         $settings = $this->settingsService->getSettings($salesChannelId);
 
         if ($this->client === null) {
@@ -53,7 +52,7 @@ class PayPalClientFactoryMock extends PayPalClientFactory
                 new TokenResource(
                     new CacheMock(),
                     new TokenClientFactoryMock($this->logger),
-                    new CredentialsClientFactoryMock($this->logger)
+                    new TokenValidator()
                 ),
                 $settings,
                 $this->logger

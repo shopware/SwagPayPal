@@ -9,13 +9,13 @@ namespace Swag\PayPal\RestApi\Client;
 
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V1\Resource\TokenResource;
+use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 
-class PayPalClientFactory
+class PayPalClientFactory implements PayPalClientFactoryInterface
 {
     /**
-     * @var TokenResource
+     * @var TokenResourceInterface
      */
     private $tokenResource;
 
@@ -35,7 +35,7 @@ class PayPalClientFactory
     private $payPalClient;
 
     public function __construct(
-        TokenResource $tokenResource,
+        TokenResourceInterface $tokenResource,
         SettingsServiceInterface $settingsService,
         LoggerInterface $logger
     ) {
@@ -47,7 +47,7 @@ class PayPalClientFactory
     public function getPayPalClient(
         ?string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
-    ): PayPalClient {
+    ): PayPalClientInterface {
         $settings = $this->settingsService->getSettings($salesChannelId);
 
         if ($this->payPalClient === null) {

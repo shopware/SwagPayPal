@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V1\Resource;
 
-use Swag\PayPal\RestApi\Client\PayPalClientFactory;
+use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\Patch;
 use Swag\PayPal\RestApi\V1\Api\Payment;
@@ -17,11 +17,11 @@ use Swag\PayPal\RestApi\V1\RequestUriV1;
 class PaymentResource
 {
     /**
-     * @var PayPalClientFactory
+     * @var PayPalClientFactoryInterface
      */
     private $payPalClientFactory;
 
-    public function __construct(PayPalClientFactory $payPalClientFactory)
+    public function __construct(PayPalClientFactoryInterface $payPalClientFactory)
     {
         $this->payPalClientFactory = $payPalClientFactory;
     }

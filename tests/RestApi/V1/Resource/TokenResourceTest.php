@@ -10,12 +10,12 @@ namespace Swag\PayPal\Test\RestApi\V1\Resource;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
+use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 use Swag\PayPal\Test\Mock\CacheItemWithTokenMock;
 use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\CacheWithTokenMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateTokenResponseFixture;
-use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 
 class TokenResourceTest extends TestCase
@@ -29,13 +29,6 @@ class TokenResourceTest extends TestCase
         static::assertSame(CreateTokenResponseFixture::ACCESS_TOKEN, $token->getAccessToken());
         static::assertSame(CreateTokenResponseFixture::TOKEN_TYPE, $token->getTokenType());
         static::assertTrue($dateNow < $token->getExpireDateTime());
-    }
-
-    public function testTestApiCredentials(): void
-    {
-        $result = $this->getTokenResource()->testApiCredentials(new OAuthCredentials(), 'url');
-
-        static::assertTrue($result);
     }
 
     public function testGetTokenFromCache(): void
@@ -58,7 +51,7 @@ class TokenResourceTest extends TestCase
         return new TokenResource(
             $cacheItemPool,
             new TokenClientFactoryMock($logger),
-            new CredentialsClientFactoryMock($logger)
+            new TokenValidator()
         );
     }
 }

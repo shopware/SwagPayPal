@@ -13,14 +13,14 @@ use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
-use Swag\PayPal\RestApi\V1\Resource\TokenResource;
+use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 
-class PayPalClient extends AbstractClient
+class PayPalClient extends AbstractClient implements PayPalClientInterface
 {
     /**
-     * @var TokenResource
+     * @var TokenResourceInterface
      */
     private $tokenResource;
 
@@ -28,7 +28,7 @@ class PayPalClient extends AbstractClient
      * @throws PayPalSettingsInvalidException
      */
     public function __construct(
-        TokenResource $tokenResource,
+        TokenResourceInterface $tokenResource,
         SwagPayPalSettingStruct $settings,
         LoggerInterface $logger,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC

@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V1\Resource;
 
-use Swag\PayPal\RestApi\Client\PayPalClientFactory;
+use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Api\Refund;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
@@ -15,11 +15,11 @@ use Swag\PayPal\RestApi\V1\RequestUriV1;
 class CaptureResource
 {
     /**
-     * @var PayPalClientFactory
+     * @var PayPalClientFactoryInterface
      */
     private $payPalClientFactory;
 
-    public function __construct(PayPalClientFactory $payPalClientFactory)
+    public function __construct(PayPalClientFactoryInterface $payPalClientFactory)
     {
         $this->payPalClientFactory = $payPalClientFactory;
     }
