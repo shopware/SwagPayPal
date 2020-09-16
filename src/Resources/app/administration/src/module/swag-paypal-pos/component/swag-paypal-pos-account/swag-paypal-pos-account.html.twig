@@ -43,9 +43,10 @@
                                 {% endblock %}
 
                                 {% block swag_paypal_pos_account_grid_container_info_edit_button %}
-                                    <sw-button class="swag-paypal-pos-account__edit-connection-button"
+                                    {# ToDo PPI-109 - Implement edit connection functionality #}
+                                    <sw-button v-if="false"
+                                               class="swag-paypal-pos-account__edit-connection-button"
                                                size="small"
-                                               disabled
                                                block>
                                         {{ $tc('swag-paypal-pos.detail.overview.editConnection') }}
                                     </sw-button>
