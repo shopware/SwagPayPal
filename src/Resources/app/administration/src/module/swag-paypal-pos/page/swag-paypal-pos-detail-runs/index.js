@@ -117,6 +117,7 @@ Component.register('swag-paypal-pos-detail-runs', {
             this.isLoading = true;
 
             return this.SwagPayPalPosApiService.startLogCleanup(this.salesChannel.id).then(() => {
+                this.$emit('run-update');
                 return this.getList();
             }).catch((errorResponse) => {
                 this.catchError(null, errorResponse);

@@ -16,11 +16,11 @@ Component.register('swag-paypal-pos-status-view', {
         },
         isLoading: {
             type: Boolean,
-            required: true
+            default: false
         },
         isSyncing: {
             type: Boolean,
-            required: true
+            default: false
         },
         salesChannel: {
             type: Object,
@@ -106,16 +106,26 @@ Component.register('swag-paypal-pos-status-view', {
     },
 
     watch: {
-        lastFinishedRun() {
-            this.statusErrorLevel = this.getHighestLevel(this.lastFinishedRun);
+        lastFinishedRun: {
+            handler() {
+                this.statusErrorLevel = this.getHighestLevel(this.lastFinishedRun);
+            },
+            immediate: true
         },
-        lastCompleteRun() {
-            this.statusCompleteErrorLevel = this.getHighestLevel(this.lastCompleteRun);
+        lastCompleteRun: {
+            handler() {
+                this.statusCompleteErrorLevel = this.getHighestLevel(this.lastCompleteRun);
+            },
+            immediate: true
         }
     },
 
     methods: {
         getHighestLevel(run) {
+            if (run === null) {
+                return null;
+            }
+
             if (run.abortedByUser) {
                 return 'info';
             }

@@ -2,7 +2,6 @@ import template from './swag-paypal-pos-account.html.twig';
 import './swag-paypal-pos-account.scss';
 
 const { Component } = Shopware;
-const { Criteria } = Shopware.Data;
 
 Component.register('swag-paypal-pos-account', {
     template,
@@ -15,15 +14,18 @@ Component.register('swag-paypal-pos-account', {
     props: {
         salesChannel: {
             type: Object,
-            require: true
+            require: false
+        },
+        lastRun: {
+            type: Object,
+            require: false
         }
     },
 
     data() {
         return {
             isLoading: false,
-            merchantInfo: null,
-            lastRun: null
+            merchantInfo: null
         };
     },
 
@@ -48,34 +50,30 @@ Component.register('swag-paypal-pos-account', {
         this.createdComponent();
     },
 
+    watch: {
+        salesChannel() {
+            this.loadMerchantData().then(() => {
+                this.isLoading = false;
+            });
+        }
+    },
+
     methods: {
         createdComponent() {
-            Promise.all([
-                this.loadMerchantData(),
-                this.loadLastRun()
-            ]).then(() => {
+            this.loadMerchantData().then(() => {
                 this.isLoading = false;
             });
         },
 
         loadMerchantData() {
+            if (this.salesChannel === null) {
+                return Promise.resolve();
+            }
+
             return this.SwagPayPalPosSettingApiService.fetchInformation(this.salesChannel)
                 .then(({ merchantInformation }) => {
                     this.merchantInfo = merchantInformation;
                 });
-        },
-
-        loadLastRun() {
-            const criteria = new Criteria(1, 1);
-            criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
-            criteria.addFilter(Criteria.not('AND', [Criteria.equals('finishedAt', null)]));
-            criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
-            criteria.setLimit(1);
-
-            return this.runRepository.search(criteria, Shopware.Context.api).then((result) => {
-                this.lastRun = result.first();
-                this.$forceUpdate();
-            });
         }
     }
 });

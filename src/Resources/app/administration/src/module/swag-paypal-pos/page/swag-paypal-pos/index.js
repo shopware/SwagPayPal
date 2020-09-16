@@ -20,9 +20,10 @@ Component.register('swag-paypal-pos', {
     data() {
         return {
             isLoading: false,
-            isNewEntity: false,
             previousApiKey: null,
             salesChannel: {},
+            lastRun: null,
+            lastCompleteRun: null,
             cloneSalesChannelId: null,
             buttonConfig: []
         };
@@ -51,8 +52,8 @@ Component.register('swag-paypal-pos', {
             return this.repositoryFactory.create('sales_channel');
         },
 
-        globalDomainRepository() {
-            return this.repositoryFactory.create('sales_channel_domain');
+        runRepository() {
+            return this.repositoryFactory.create('swag_paypal_pos_sales_channel_run');
         },
 
         salesChannelCriteria() {
@@ -65,16 +66,12 @@ Component.register('swag-paypal-pos', {
             criteria.addAssociation('languages');
 
             return criteria;
-        },
-
-        showLogCleanAction() {
-            return this.$route.path.indexOf('log') !== -1 && !this.isNewEntity;
         }
     },
 
     watch: {
         '$route.params.id'() {
-            this.createdComponent();
+            this.loadSalesChannel();
         }
     },
 
@@ -84,13 +81,12 @@ Component.register('swag-paypal-pos', {
 
     methods: {
         createdComponent() {
-            this.isNewEntity = false;
             this.loadSalesChannel();
         },
 
         loadSalesChannel() {
             if (!this.$route.params.id) {
-                return;
+                return Promise.resolve();
             }
 
             if (this.salesChannel) {
@@ -98,11 +94,12 @@ Component.register('swag-paypal-pos', {
             }
 
             this.isLoading = true;
-            this.salesChannelRepository
+            return this.salesChannelRepository
                 .get(this.$route.params.id, Shopware.Context.api, this.salesChannelCriteria)
                 .then((entity) => {
                     this.salesChannel = entity;
                     this.previousApiKey = entity.extensions.paypalPosSalesChannel.apiKey;
+                    this.updateRun();
                     this.isLoading = false;
                 });
         },
@@ -126,6 +123,40 @@ Component.register('swag-paypal-pos', {
             }
 
             action.call();
+        },
+
+        updateRun() {
+            setTimeout(this.updateRun, 20000);
+            return this.loadLastRun();
+        },
+
+        loadLastRun(needComplete = false) {
+            const criteria = new Criteria(1, 1);
+            criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
+            criteria.addFilter(Criteria.not('AND', [Criteria.equals('finishedAt', null)]));
+            criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
+
+            if (needComplete) {
+                criteria.addFilter(Criteria.equals('task', 'complete'));
+            } else {
+                criteria.addAssociation('logs');
+            }
+
+            return this.runRepository.search(criteria, Shopware.Context.api).then((result) => {
+                if (needComplete) {
+                    this.lastCompleteRun = result.first();
+                    this.$forceUpdate();
+                    return;
+                }
+
+                this.lastRun = result.first();
+                if (this.lastRun !== null && this.lastRun.task !== 'complete') {
+                    this.loadLastRun(true);
+                } else {
+                    this.lastCompleteRun = this.lastRun;
+                }
+                this.$forceUpdate();
+            });
         }
     }
 });

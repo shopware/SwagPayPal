@@ -28,7 +28,7 @@
                 <sw-card-view>
 
                     {% block swag_paypal_pos_content_tabs %}
-                        <sw-tabs v-if="!isNewEntity && !isLoading" class="swag-paypal-pos__tabs">
+                        <sw-tabs v-if="!isLoading" class="swag-paypal-pos__tabs">
 
                             {%  block swag_paypal_pos_content_tab_base %}
                                 <sw-tabs-item :route="{ name: 'swag.paypal.pos.detail.overview', params: { id: $route.params.id } }"
@@ -52,16 +52,14 @@
                             {% endblock %}
 
                             {%  block swag_paypal_pos_content_tab_runs %}
-                                <sw-tabs-item v-if="!isNewEntity"
-                                              :route="{ name: 'swag.paypal.pos.detail.runs', params: { id: $route.params.id } }"
+                                <sw-tabs-item :route="{ name: 'swag.paypal.pos.detail.runs', params: { id: $route.params.id } }"
                                               :title="$tc('swag-paypal-pos.tabTitle.runs')">
                                     {{ $tc('swag-paypal-pos.tabTitle.runs') }}
                                 </sw-tabs-item>
                             {% endblock %}
 
                             {%  block swag_paypal_pos_content_tab_help %}
-                                <sw-tabs-item v-if="!isNewEntity"
-                                              href="https://www.izettle.com/help/articles/1083274-what-is-pos"
+                                <sw-tabs-item href="https://www.izettle.com/help/articles/1083274-what-is-pos"
                                               target="_blank"
                                               :title="$tc('swag-paypal-pos.tabTitle.help')">
                                     {{ $tc('swag-paypal-pos.tabTitle.help') }}
@@ -73,14 +71,22 @@
                         </sw-tabs>
                     {% endblock %}
 
+                    {% block swag_paypal_pos_content_account %}
+                        <swag-paypal-pos-account :lastRun="lastRun"
+                                                 :salesChannel="salesChannel">
+                        </swag-paypal-pos-account>
+                    {% endblock %}
+
                     {% block swag_paypal_pos_content_card %}
                         <router-view v-if="!isLoading"
                                      :key="$route.params.id"
                                      :salesChannel="salesChannel"
                                      :cloneSalesChannelId="cloneSalesChannelId"
-                                     :isNewEntity="isNewEntity"
+                                     :lastRun="lastRun"
+                                     :lastCompleteRun="lastCompleteRun"
                                      @buttons-update="updateButtons"
                                      @load-sales-channel="loadSalesChannel"
+                                     @run-update="loadLastRun"
                                      @update-clone-sales-channel="updateCloneSalesChannel">
                         </router-view>
                         <sw-loader v-if="isLoading"></sw-loader>

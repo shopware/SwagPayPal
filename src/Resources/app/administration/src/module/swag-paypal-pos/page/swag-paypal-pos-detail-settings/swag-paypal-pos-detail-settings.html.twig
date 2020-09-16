@@ -1,11 +1,6 @@
 {% block swag_paypal_pos_detail_settings %}
     <div class="swag-paypal-pos-detail-settings">
 
-        {% block swag_paypal_pos_detail_settings_account %}
-            <swag-paypal-pos-account :salesChannel="salesChannel">
-            </swag-paypal-pos-account>
-        {% endblock %}
-
         {% block swag_paypal_pos_detail_settings_alert %}
             <sw-alert class="swag-paypal-pos-detail-settings__save-alert">
                 {{ $tc('swag-paypal-pos.detail.settings.saveAlert') }}

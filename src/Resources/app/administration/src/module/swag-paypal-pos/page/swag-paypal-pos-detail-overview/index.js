@@ -22,9 +22,13 @@ Component.register('swag-paypal-pos-detail-overview', {
             type: Object,
             required: false
         },
-        isNewEntity: {
-            type: Boolean,
-            default: false
+        lastRun: {
+            type: Object,
+            required: false
+        },
+        lastCompleteRun: {
+            type: Object,
+            required: false
         }
     },
 
@@ -33,8 +37,6 @@ Component.register('swag-paypal-pos-detail-overview', {
             isSyncing: false,
             syncErrors: null,
             syncingRunId: null,
-            lastFinishedRun: null,
-            lastCompleteRun: null,
             statusErrorLevel: null,
             isLoading: false
         };
@@ -49,7 +51,9 @@ Component.register('swag-paypal-pos-detail-overview', {
     watch: {
         'salesChannel.id'() {
             this.checkForSync();
-            this.loadLastFinishedRun();
+        },
+        lastRun() {
+            this.$forceUpdate();
         }
     },
 
@@ -64,7 +68,6 @@ Component.register('swag-paypal-pos-detail-overview', {
     methods: {
         createdComponent() {
             this.checkForSync();
-            this.loadLastFinishedRun();
         },
 
         mountedComponent() {
@@ -84,10 +87,9 @@ Component.register('swag-paypal-pos-detail-overview', {
                 this.updateSync();
             }).catch((errorResponse) => {
                 this.syncErrors = errorResponse.response.data.errors;
-                this.loadLastFinishedRun().then(() => {
-                    this.isSyncing = false;
-                    this.updateButtons();
-                });
+                this.$emit('run-update');
+                this.isSyncing = false;
+                this.updateButtons();
             });
         },
 
@@ -103,10 +105,9 @@ Component.register('swag-paypal-pos-detail-overview', {
                 }
 
                 this.syncingRunId = null;
-                this.loadLastFinishedRun().then(() => {
-                    this.isSyncing = false;
-                    this.updateButtons();
-                });
+                this.$emit('run-update');
+                this.isSyncing = false;
+                this.updateButtons();
             });
         },
 
@@ -132,40 +133,6 @@ Component.register('swag-paypal-pos-detail-overview', {
                     this.updateSync();
                 });
             }
-        },
-
-        loadLastFinishedRun(needComplete = false) {
-            if (this.salesChannel === null || this.salesChannel.id === null) {
-                this.lastFinishedRun = null;
-                return Promise.resolve();
-            }
-
-            const criteria = new Criteria(1, 1);
-            criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
-            criteria.addFilter(Criteria.not('AND', [Criteria.equals('finishedAt', null)]));
-            criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
-
-            if (needComplete) {
-                criteria.addFilter(Criteria.equals('task', 'complete'));
-            } else {
-                criteria.addAssociation('logs');
-            }
-
-            return this.runRepository.search(criteria, Shopware.Context.api).then((result) => {
-                if (needComplete) {
-                    this.lastCompleteRun = result.first();
-                    this.$forceUpdate();
-                    return;
-                }
-
-                this.lastFinishedRun = result.first();
-                if (this.lastFinishedRun !== null && this.lastFinishedRun.task !== 'complete') {
-                    this.loadLastFinishedRun(true);
-                } else {
-                    this.lastCompleteRun = this.lastFinishedRun;
-                }
-                this.$forceUpdate();
-            });
         },
 
         checkForSync() {

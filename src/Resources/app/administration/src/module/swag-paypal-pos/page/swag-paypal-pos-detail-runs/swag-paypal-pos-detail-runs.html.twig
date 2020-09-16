@@ -1,10 +1,6 @@
 {% block swag_paypal_pos_detail_runs %}
     <div class="swag-paypal-pos-detail-runs">
 
-        {% block swag_paypal_pos_detail_runs_account %}
-            <swag-paypal-pos-account :salesChannel="salesChannel"></swag-paypal-pos-account>
-        {% endblock %}
-
         {% block swag_paypal_pos_detail_runs_card %}
             <sw-card :title="$tc('swag-paypal-pos.detail.runs.title')"
                      :isLoading="isLoading">

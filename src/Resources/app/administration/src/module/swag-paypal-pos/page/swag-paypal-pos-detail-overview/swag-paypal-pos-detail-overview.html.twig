@@ -1,17 +1,13 @@
 {% block swag_paypal_pos_detail_overview %}
     <div class="sw-sales-channel-detail-overview">
 
-        {% block swag_paypal_pos_detail_overview_account %}
-            <swag-paypal-pos-account :salesChannel="salesChannel"></swag-paypal-pos-account>
-        {% endblock %}
-
         {% block swag_paypal_pos_detail_overview_status %}
             <swag-paypal-pos-status-view
-                    v-if="!isNewEntity && salesChannel.active"
+                    v-if="salesChannel.active"
                     :isLoading="isLoading"
                     :isSyncing="isSyncing"
                     :lastCompleteRun="lastCompleteRun"
-                    :lastFinishedRun="lastFinishedRun"
+                    :lastFinishedRun="lastRun"
                     :salesChannel="salesChannel"
                     :syncErrors="syncErrors">
 
