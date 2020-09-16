@@ -176,14 +176,16 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $isSPBCheckout = $request->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ID);
         $isPlus = $request->query->getBoolean(self::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER);
         $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout, $isPlus);
+        $orderNumber = $transaction->getOrder()->getOrderNumber();
 
-        if ($settings->getSendOrderNumber() && ($isExpressCheckout || $isSPBCheckout || $isPlus)) {
+        if ($settings->getSendOrderNumber()
+            && $orderNumber !== null
+            && ($isExpressCheckout || $isSPBCheckout || $isPlus)
+        ) {
             try {
                 $this->paymentResource->patch(
                     [
-                        $this->orderNumberPatchBuilder->createOrderNumberPatch(
-                            $transaction->getOrder()->getOrderNumber()
-                        ),
+                        $this->orderNumberPatchBuilder->createOrderNumberPatch($orderNumber),
                     ],
                     $paymentId,
                     $salesChannelId
