@@ -5,7 +5,7 @@
         },
         "payUponInvoice": {
             "instructions": {
-                "transferRequest": "Bitte überweisen Sie %value% %currency% bis zum %date% an PayPal.",
+                "transferRequest": "Bitte überweisen Sie %value% bis zum %date% an PayPal.",
                 "table": {
                     "bank": "Bank:",
                     "iban": "IBAN:",

@@ -3,6 +3,9 @@ import './swag-image-slider.scss';
 
 const { Component } = Shopware;
 
+/**
+ * @deprecated tag:v2.0.0 will be removed, when sw-image-slider is in minimal required Shopware version (should be 6.3.3)
+ */
 Component.register('swag-image-slider', {
     template,
 
