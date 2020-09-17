@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Pos\Sync\Context;
 
+use Shopware\Core\Content\Product\ProductCollection;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaCollection;
@@ -27,11 +30,6 @@ class ProductContextFactory
      */
     private $posMediaRepository;
 
-    /**
-     * @var ProductContext[]
-     */
-    private $productContexts = [];
-
     public function __construct(
         EntityRepositoryInterface $posProductRepository,
         EntityRepositoryInterface $posMediaRepository
@@ -40,25 +38,30 @@ class ProductContextFactory
         $this->posMediaRepository = $posMediaRepository;
     }
 
-    public function getContext(SalesChannelEntity $salesChannel, Context $context): ProductContext
+    public function getContext(SalesChannelEntity $salesChannel, Context $context, ?ProductCollection $productCollection = null): ProductContext
     {
-        if (isset($this->productContexts[$salesChannel->getId()])) {
-            return $this->productContexts[$salesChannel->getId()];
-        }
+        $posProductCollection = $this->getPosProductCollection(
+            $salesChannel->getId(),
+            $context,
+            $productCollection !== null ? $productCollection->fmap(function (ProductEntity $product) {
+                return $product->getId();
+            }) : null
+        );
 
-        $posProductCollection = $this->getPosProductCollection($salesChannel->getId(), $context);
-        $posMediaCollection = $this->getPosMediaCollection($salesChannel->getId(), $context);
+        $posMediaCollection = $this->getPosMediaCollection(
+            $salesChannel->getId(),
+            $context,
+            $productCollection !== null ? $productCollection->fmap(function (ProductEntity $product) {
+                return $product->getCoverId();
+            }) : null
+        );
 
-        $inventoryContext = new ProductContext(
+        return new ProductContext(
             $salesChannel,
             $posProductCollection,
             $posMediaCollection,
             $context
         );
-
-        $this->productContexts[$salesChannel->getId()] = $inventoryContext;
-
-        return $inventoryContext;
     }
 
     public function commit(ProductContext $productContext): void
@@ -86,10 +89,13 @@ class ProductContextFactory
         );
     }
 
-    private function getPosProductCollection(string $salesChannelId, Context $context): PosSalesChannelProductCollection
+    private function getPosProductCollection(string $salesChannelId, Context $context, ?array $ids = null): PosSalesChannelProductCollection
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
+        if ($ids !== null) {
+            $criteria->addFilter(new EqualsAnyFilter('productId', $ids));
+        }
 
         /** @var PosSalesChannelProductCollection $posProductCollection */
         $posProductCollection = $this->posProductRepository->search($criteria, $context)->getEntities();
@@ -97,13 +103,18 @@ class ProductContextFactory
         return $posProductCollection;
     }
 
-    private function getPosMediaCollection(string $salesChannelId, Context $context): PosSalesChannelMediaCollection
+    private function getPosMediaCollection(string $salesChannelId, Context $context, ?array $ids = null): PosSalesChannelMediaCollection
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
+        if ($ids !== null) {
+            $criteria->addFilter(new EqualsAnyFilter('mediaId', $ids));
+        }
 
         /** @var PosSalesChannelMediaCollection $posMediaCollection */
-        $posMediaCollection = $this->posMediaRepository->search($criteria, $context)->getEntities();
+        $posMediaCollection = $context->disableCache(function (Context $context) use ($criteria) {
+            return $this->posMediaRepository->search($criteria, $context)->getEntities();
+        });
 
         return $posMediaCollection;
     }

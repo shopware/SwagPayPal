@@ -74,7 +74,7 @@ class ProductSyncer
         SalesChannelEntity $salesChannel,
         Context $context
     ): void {
-        $productContext = $this->productContextFactory->getContext($salesChannel, $context);
+        $productContext = $this->productContextFactory->getContext($salesChannel, $context, $entityCollection);
         $currency = $productContext->getPosSalesChannel()->isSyncPrices() ? $salesChannel->getCurrency() : null;
 
         $productGroupings = $this->productConverter->convertShopwareProducts($entityCollection, $currency, $productContext);

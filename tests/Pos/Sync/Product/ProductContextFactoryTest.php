@@ -147,21 +147,6 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         static::assertEmpty($posProductRepoMock->getCollection());
     }
 
-    public function testIdentical(): void
-    {
-        $context = Context::createDefaultContext();
-
-        $posProductRepoMock = new PosProductRepoMock();
-        $posMediaRepoMock = new PosMediaRepoMock();
-        $productContextFactory = new ProductContextFactory($posProductRepoMock, $posMediaRepoMock);
-        $salesChannel = $this->getSalesChannel($context);
-
-        $inventoryContextFirst = $productContextFactory->getContext($salesChannel, $context);
-        $inventoryContextSecond = $productContextFactory->getContext($salesChannel, $context);
-
-        static::assertSame($inventoryContextFirst, $inventoryContextSecond);
-    }
-
     private function createProductEntity(): SalesChannelProductEntity
     {
         $productEntity = new SalesChannelProductEntity();
