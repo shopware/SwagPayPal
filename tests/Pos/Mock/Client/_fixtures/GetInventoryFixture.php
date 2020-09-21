@@ -73,6 +73,13 @@ class GetInventoryFixture
                     'variantUuid' => '20fd7ad9-6b04-1237-9135-fe281c9c47d9',
                     'balance' => '55',
                 ],
+                [
+                    'locationUuid' => ConstantsForTesting::LOCATION_STORE,
+                    'locationType' => 'STORE',
+                    'productUuid' => ConstantsForTesting::PRODUCT_G_ID_CONVERTED,
+                    'variantUuid' => ConstantsForTesting::PRODUCT_G_ID_VARIANT,
+                    'balance' => '1',
+                ],
             ],
         ];
     }

@@ -103,9 +103,13 @@ class InventoryContext
         $productUuid = $this->uuidConverter->convertUuidToV1($productUuid);
         $variantUuid = $this->uuidConverter->convertUuidToV1($variantUuid);
 
+        if (!$ignoreTracking && !$this->isTracked($productEntity)) {
+            return null;
+        }
+
         $variant = $this->findRemoteInventory($productUuid, $variantUuid);
 
-        if ($variant === null || !($ignoreTracking || $this->isTracked($productEntity))) {
+        if ($variant === null) {
             return null;
         }
 
