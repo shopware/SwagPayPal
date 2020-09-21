@@ -8,13 +8,10 @@
 namespace Swag\PayPal\Migration;
 
 use Doctrine\DBAL\Connection;
-use Shopware\Core\Framework\Migration\InheritanceUpdaterTrait;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1589905764PosRunLog extends MigrationStep
 {
-    use InheritanceUpdaterTrait;
-
     public function getCreationTimestamp(): int
     {
         return 1589905764;

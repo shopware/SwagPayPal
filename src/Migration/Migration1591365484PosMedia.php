@@ -8,13 +8,10 @@
 namespace Swag\PayPal\Migration;
 
 use Doctrine\DBAL\Connection;
-use Shopware\Core\Framework\Migration\InheritanceUpdaterTrait;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
 class Migration1591365484PosMedia extends MigrationStep
 {
-    use InheritanceUpdaterTrait;
-
     public function getCreationTimestamp(): int
     {
         return 1591365484;
