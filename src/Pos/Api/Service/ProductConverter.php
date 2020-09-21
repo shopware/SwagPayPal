@@ -46,18 +46,25 @@ class ProductConverter
      */
     private $presentationConverter;
 
+    /**
+     * @var MetadataGenerator
+     */
+    private $metadataGenerator;
+
     public function __construct(
         UuidConverter $uuidConverter,
         CategoryConverter $categoryConverter,
         VariantConverter $variantConverter,
         OptionGroupConverter $optionGroupConverter,
-        PresentationConverter $presentationConverter
+        PresentationConverter $presentationConverter,
+        MetadataGenerator $metadataGenerator
     ) {
         $this->uuidConverter = $uuidConverter;
         $this->categoryConverter = $categoryConverter;
         $this->variantConverter = $variantConverter;
         $this->optionGroupConverter = $optionGroupConverter;
         $this->presentationConverter = $presentationConverter;
+        $this->metadataGenerator = $metadataGenerator;
     }
 
     /**
@@ -122,6 +129,8 @@ class ProductConverter
         if (\count($product->getVariants()) === 0) {
             $product->addVariant($this->variantConverter->convert($shopwareProduct, $currency, $productContext));
         }
+
+        $product->setMetadata($this->metadataGenerator->generate());
 
         return $product;
     }

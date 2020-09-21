@@ -17,6 +17,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\PresentationConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\PriceConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\VariantConverter;
+use Swag\PayPal\Pos\Api\Service\MetadataGenerator;
 use Swag\PayPal\Pos\Api\Service\ProductConverter;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContextFactory;
@@ -100,7 +101,8 @@ class ProductSyncerTest extends AbstractProductSyncTest
                 new CategoryConverter(new UuidConverter()),
                 new VariantConverter(new UuidConverter(), new PriceConverter(), new PresentationConverter()),
                 new OptionGroupConverter(),
-                new PresentationConverter()
+                new PresentationConverter(),
+                new MetadataGenerator()
             ),
             $this->productContextFactory,
             $this->newUpdater,

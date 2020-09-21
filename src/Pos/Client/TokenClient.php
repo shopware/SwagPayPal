@@ -18,6 +18,7 @@ use Swag\PayPal\Pos\Api\PosBaseURL;
 use Swag\PayPal\Pos\Api\PosRequestUri;
 use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
 use Swag\PayPal\Pos\Setting\Exception\PosInvalidApiCredentialsException;
+use Swag\PayPal\SwagPayPal;
 
 class TokenClient extends AbstractClient
 {
@@ -31,7 +32,7 @@ class TokenClient extends AbstractClient
         $client = new Client([
             'base_uri' => PosBaseURL::OAUTH,
             'headers' => [
-                'X-iZettle-Application-Id' => self::PARTNER_IDENTIFIER,
+                'X-iZettle-Application-Id' => SwagPayPal::POS_PARTNER_IDENTIFIER,
             ],
         ]);
 

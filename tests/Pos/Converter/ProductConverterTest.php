@@ -36,8 +36,10 @@ use Swag\PayPal\Pos\Api\Service\Converter\OptionGroupConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\PresentationConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\VariantConverter;
+use Swag\PayPal\Pos\Api\Service\MetadataGenerator;
 use Swag\PayPal\Pos\Api\Service\ProductConverter;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
+use Swag\PayPal\SwagPayPal;
 
 class ProductConverterTest extends TestCase
 {
@@ -186,6 +188,15 @@ class ProductConverterTest extends TestCase
         $product->setName(self::PRODUCT_NAME);
         $product->setDescription(self::PRODUCT_DESCRIPTION);
         $product->addVariant(new Variant());
+        $product->assign([
+            'metadata' => [
+                'inPos' => true,
+                'source' => [
+                    'external' => true,
+                    'name' => SwagPayPal::POS_PARTNER_IDENTIFIER,
+                ],
+            ],
+        ]);
 
         return $product;
     }
@@ -207,7 +218,8 @@ class ProductConverterTest extends TestCase
             $categoryConverter,
             $variantConverter,
             $optionGroupConverter,
-            new PresentationConverter()
+            new PresentationConverter(),
+            new MetadataGenerator()
         );
     }
 

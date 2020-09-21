@@ -36,6 +36,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\PriceConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\VariantConverter;
 use Swag\PayPal\Pos\Api\Service\MediaConverter;
+use Swag\PayPal\Pos\Api\Service\MetadataGenerator;
 use Swag\PayPal\Pos\Api\Service\ProductConverter;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductCollection;
@@ -55,6 +56,7 @@ use Swag\PayPal\Pos\Sync\Product\OutdatedUpdater;
 use Swag\PayPal\Pos\Sync\Product\UnsyncedChecker;
 use Swag\PayPal\Pos\Sync\ProductSelection;
 use Swag\PayPal\Pos\Sync\ProductSyncer;
+use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\CreateProductFixture;
@@ -98,7 +100,8 @@ class CompleteProductTest extends TestCase
                 new PresentationConverter()
             ),
             new OptionGroupConverter(),
-            new PresentationConverter()
+            new PresentationConverter(),
+            new MetadataGenerator()
         );
 
         $messageBus = new MessageBusMock();
@@ -336,6 +339,13 @@ class CompleteProductTest extends TestCase
                 'name' => $category->getName(),
             ],
             'vatPercentage' => $tax->getTaxRate(),
+            'metadata' => [
+                'inPos' => true,
+                'source' => [
+                    'external' => true,
+                    'name' => SwagPayPal::POS_PARTNER_IDENTIFIER,
+                ],
+            ],
         ]);
         if ($productEntity->getCover() !== null) {
             $product->setPresentation($presentation);

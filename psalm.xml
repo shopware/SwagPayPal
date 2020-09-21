@@ -118,6 +118,8 @@
                 <file name="src/Checkout/SPBCheckout/SPBCheckoutButtonData.php"/>
                 <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
                 <file name="tests/Checkout/SPBCheckout/SPBCheckoutSubscriberTest.php"/>
+                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
+                <file name="src/PayPal/Resource/TokenResource.php"/>
             </errorLevel>
         </DeprecatedConstant>
 

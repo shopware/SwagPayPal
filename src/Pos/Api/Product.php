@@ -9,6 +9,7 @@ namespace Swag\PayPal\Pos\Api;
 
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\Product\Category;
+use Swag\PayPal\Pos\Api\Product\Metadata;
 use Swag\PayPal\Pos\Api\Product\Presentation;
 use Swag\PayPal\Pos\Api\Product\Variant;
 use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions;
@@ -54,6 +55,11 @@ class Product extends PosStruct
      * @var Presentation
      */
     protected $presentation;
+
+    /**
+     * @var Metadata
+     */
+    protected $metadata;
 
     public function getUuid(): string
     {
@@ -121,6 +127,16 @@ class Product extends PosStruct
     public function setPresentation(Presentation $presentation): void
     {
         $this->presentation = $presentation;
+    }
+
+    public function getMetadata(): Metadata
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(Metadata $metadata): void
+    {
+        $this->metadata = $metadata;
     }
 
     /**

@@ -16,6 +16,7 @@ use Swag\PayPal\Pos\Api\Error\PosApiError;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Resource\TokenResource;
+use Swag\PayPal\SwagPayPal;
 
 class PosClient extends AbstractClient
 {
@@ -34,7 +35,7 @@ class PosClient extends AbstractClient
             'base_uri' => $baseUri,
             'headers' => [
                 'Authorization' => $authorizationHeader,
-                'X-iZettle-Application-Id' => self::PARTNER_IDENTIFIER,
+                'X-iZettle-Application-Id' => SwagPayPal::POS_PARTNER_IDENTIFIER,
             ],
         ]);
 

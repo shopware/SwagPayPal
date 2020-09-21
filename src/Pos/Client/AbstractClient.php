@@ -14,8 +14,6 @@ use Swag\PayPal\Pos\Api\Exception\PosException;
 
 abstract class AbstractClient
 {
-    protected const PARTNER_IDENTIFIER = '456dadab-3085-4fa3-bf2b-a2efd01c3593';
-
     /**
      * @var Client
      */
