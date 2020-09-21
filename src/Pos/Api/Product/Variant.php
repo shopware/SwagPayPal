@@ -116,4 +116,15 @@ class Variant extends PosStruct
     {
         $this->presentation = $presentation;
     }
+
+    public function jsonSerialize(): array
+    {
+        $data = parent::jsonSerialize();
+
+        if ($data['price'] === null) {
+            unset($data['price']);
+        }
+
+        return $data;
+    }
 }
