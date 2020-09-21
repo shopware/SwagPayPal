@@ -21,8 +21,6 @@ final class RequestUri
 
     public const WEBHOOK_RESOURCE = 'notifications/webhooks';
 
-    public const POS_TOKEN_RESOURCE = 'token';
-
     private function __construct()
     {
     }

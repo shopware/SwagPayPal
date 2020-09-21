@@ -16,18 +16,12 @@ use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Api\Exception\PosTokenException;
 use Swag\PayPal\Pos\Api\PosBaseURL;
 use Swag\PayPal\Pos\Api\PosRequestUri;
-use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
 use Swag\PayPal\Pos\Setting\Exception\PosInvalidApiCredentialsException;
 use Swag\PayPal\SwagPayPal;
 
 class TokenClient extends AbstractClient
 {
-    /**
-     * @var ApiKeyDecoder
-     */
-    protected $apiKeyDecoder;
-
-    public function __construct(LoggerInterface $logger, ApiKeyDecoder $apiKeyDecoder)
+    public function __construct(LoggerInterface $logger)
     {
         $client = new Client([
             'base_uri' => PosBaseURL::OAUTH,
@@ -36,18 +30,15 @@ class TokenClient extends AbstractClient
             ],
         ]);
 
-        $this->apiKeyDecoder = $apiKeyDecoder;
         parent::__construct($client, $logger);
     }
 
     public function getToken(OAuthCredentials $credentials): array
     {
-        $clientId = $this->apiKeyDecoder->decode($credentials->getApiKey())->getPayload()->getClientId();
-
         $data = [
             'form_params' => [
                 'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-                'client_id' => $clientId,
+                'client_id' => SwagPayPal::POS_PARTNER_IDENTIFIER,
                 'assertion' => $credentials->getApiKey(),
             ],
         ];
