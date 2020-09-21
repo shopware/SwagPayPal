@@ -1,6 +1,6 @@
 # 1.9.0
 - PPI-1 - Fixes mobile layout of checkout finish for "Pay Upon Invoice"
-- PPI-68 - Improved API struct usage for third party extensions
+- PPI-68, PPI-118 - Improved API struct usage for third party extensions
 - PPI-69 - The Express button is now hidden, when the PayPal payment method is disabled.
 - PT-11048 - Introduce iZettle integration (Point of Sales)
 

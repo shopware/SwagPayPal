@@ -37,7 +37,7 @@ class BillingInfo extends PayPalStruct
     protected $lastPayment;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $nextBillingTime;
 
@@ -82,12 +82,12 @@ class BillingInfo extends PayPalStruct
         $this->lastPayment = $lastPayment;
     }
 
-    public function getNextBillingTime(): string
+    public function getNextBillingTime(): ?string
     {
         return $this->nextBillingTime;
     }
 
-    public function setNextBillingTime(string $nextBillingTime): void
+    public function setNextBillingTime(?string $nextBillingTime): void
     {
         $this->nextBillingTime = $nextBillingTime;
     }
