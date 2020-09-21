@@ -19,7 +19,7 @@ class PayPalInvalidApiCredentialsException extends ShopwareHttpException
 
     public function getStatusCode(): int
     {
-        return Response::HTTP_NOT_FOUND;
+        return Response::HTTP_UNAUTHORIZED;
     }
 
     public function getErrorCode(): string

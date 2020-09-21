@@ -1,0 +1,32 @@
+@import "~scss/variables";
+
+.swag-paypal-pos-wizard-finish {
+    text-align: center;
+
+    .swag-paypal-pos-wizard-finish__content {
+        margin-left: 80px;
+        margin-right: 80px;
+    }
+
+    .swag-paypal-pos-wizard-finish__icon-wrapper {
+        display: inline-block;
+        margin: 16px;
+
+        background-color: $color-emerald-50;
+        border-radius: 50%;
+    }
+
+    .swag-paypal-pos-wizard-finish__icon {
+        padding: 24px;
+    }
+
+    .swag-paypal-pos-wizard-finish__content-header {
+        font-weight: $font-weight-bold;
+        font-size: $font-size-large;
+        margin-bottom: 8px;
+    }
+
+    .swag-paypal-pos-wizard-finish__first-paragraph {
+        margin-bottom: 16px;
+    }
+}

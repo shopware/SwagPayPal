@@ -1,0 +1,80 @@
+{% block swag_paypal_pos_getting_started %}
+    <sw-card :title="$tc('swag-paypal-pos.gettingStarted.cardTitle')">
+
+        {% block swag_paypal_pos_getting_started_reader %}
+            <sw-container
+                    class="swag-paypal-pos-getting-started__container-reader"
+                    columns="1fr 3fr"
+                    justify="left"
+                    align="center">
+
+                {% block swag_paypal_pos_getting_started_reader_image %}
+                    <img class="swag-paypal-pos-getting-started__image"
+                         :src="'swagpaypal/static/img/paypal-pos-reader.png' | asset"
+                         :alt="$tc('swag-paypal-pos.gettingStarted.readerImageAlt')"/>
+                {% endblock %}
+
+                {% block swag_paypal_pos_getting_started_reader_description %}
+                    <div class="swag-paypal-pos-getting-started__description">
+
+                        {% block swag_paypal_pos_getting_started_reader_description_headline %}
+                            <div class="swag-paypal-pos-getting-started__description-headline">
+                                {{ $tc('swag-paypal-pos.gettingStarted.readerHeadline') }}
+                            </div>
+                        {% endblock %}
+
+                        {% block swag_paypal_pos_getting_started_reader_description_text %}
+                            <div class="swag-paypal-pos-getting-started__description-text">
+                                {{ $tc('swag-paypal-pos.gettingStarted.readerText') }}
+
+                                {% block swag_paypal_pos_getting_started_reader_description_link %}
+                                    <a :href="$tc('swag-paypal-pos.gettingStarted.readerLinkTarget')"
+                                       target="_blank"
+                                       class="link swag-paypal-pos-getting-started__description-text-link">
+                                        {{ $tc('swag-paypal-pos.gettingStarted.readerLinkText') }}
+                                        <sw-icon class="swag-paypal-pos-getting-started__description-link-icon"
+                                                 name="default-action-external"
+                                                 size="10px">
+                                        </sw-icon>
+                                    </a>
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </sw-container>
+        {% endblock %}
+
+        {% block swag_paypal_pos_getting_started_app %}
+            <sw-container
+                    class="swag-paypal-pos-getting-started__container-app"
+                    columns="1fr 3fr"
+                    justify="left"
+                    align="center">
+
+                {% block swag_paypal_pos_getting_started_app_image %}
+                    <img class="swag-paypal-pos-getting-started__image"
+                         :src="'swagpaypal/static/img/paypal-pos-app.png' | asset"
+                         :alt="$tc('swag-paypal-pos.gettingStarted.appImageAlt')"/>
+                {% endblock %}
+
+                {% block swag_paypal_pos_getting_started_app_description %}
+                    <div class="swag-paypal-pos-getting-started__description ">
+
+                        {% block swag_paypal_pos_getting_started_app_description_headline %}
+                            <div class="swag-paypal-pos-getting-started__description-headline">
+                                {{ $tc('swag-paypal-pos.gettingStarted.appHeadline') }}
+                            </div>
+                        {% endblock %}
+
+                        {% block swag_paypal_pos_getting_started_app_description_text %}
+                            <div v-html="$tc('swag-paypal-pos.gettingStarted.appText')"
+                                 class="swag-paypal-pos-getting-started__description-text">
+                            </div>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </sw-container>
+        {% endblock %}
+    </sw-card>
+{% endblock %}

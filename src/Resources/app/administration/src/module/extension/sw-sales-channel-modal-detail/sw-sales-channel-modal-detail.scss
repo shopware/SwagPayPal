@@ -1,0 +1,24 @@
+@import "~scss/variables";
+
+.sw-sales-channel-modal-detail {
+    margin: -20px -30px;
+    padding: 20px 30px;
+    overflow: hidden;
+
+    &__screenshots {
+        margin: 36px 30px 0 30px;
+    }
+
+    .swag-paypal-pos-modal-detail {
+        &__icon {
+            width: 64px;
+            height: 64px;
+        }
+
+        &__screenshot {
+            width: 640px;
+            margin-top: 36px;
+            border-radius: $border-radius-default;
+        }
+    }
+}

@@ -1,0 +1,82 @@
+{% block swag_paypal_pos_detail_overview %}
+    <div class="sw-sales-channel-detail-overview">
+
+        {% block swag_paypal_pos_detail_overview_status %}
+            <swag-paypal-pos-status-view
+                    v-if="salesChannel.active"
+                    :isLoading="isLoading"
+                    :isSyncing="isSyncing"
+                    :lastCompleteRun="lastCompleteRun"
+                    :lastFinishedRun="lastRun"
+                    :salesChannel="salesChannel"
+                    :syncErrors="syncErrors">
+
+                {% block swag_paypal_pos_detail_overview_status_actions %}
+                    <template #actions>
+                        <sw-button-group v-if="salesChannel && salesChannel.active && !isSyncing">
+
+                            {% block swag_paypal_pos_detail_overview_status_actions_sync_button %}
+                                <sw-button class="swag-paypal-pos-detail-overview__sync-button"
+                                           variant="primary"
+                                           @click="onStartSync">
+                                    {{ $tc('swag-paypal-pos.detail.overview.buttonSync') }}
+                                </sw-button>
+                            {% endblock %}
+
+                            {% block swag_paypal_pos_detail_overview_status_actions_sync_context_menu %}
+                                <sw-context-button>
+
+                                    {% block swag_paypal_pos_detail_overview_status_actions_sync_context_menu_button %}
+                                        <template #button>
+                                            <sw-button class="swag-paypal-pos-detail-overview__sync-button-context"
+                                                       variant="primary"
+                                                       square
+                                                       :disabled="isSyncing">
+                                                <sw-icon name="small-arrow-medium-down" size="16"></sw-icon>
+                                            </sw-button>
+                                        </template>
+                                    {% endblock %}
+
+                                    {% block swag_paypal_pos_detail_overview_status_actions_sync_context_menu_item_products %}
+                                        <sw-context-menu-item @click="onStartProductSync">
+                                            {{ $tc('swag-paypal-pos.detail.overview.buttonSyncProducts') }}
+                                        </sw-context-menu-item>
+                                    {% endblock %}
+
+                                    {% block swag_paypal_pos_detail_overview_status_actions_sync_context_menu_item_image %}
+                                        <sw-context-menu-item @click="onStartImageSync">
+                                            {{ $tc('swag-paypal-pos.detail.overview.buttonSyncImages') }}
+                                        </sw-context-menu-item>
+                                    {% endblock %}
+
+                                    {% block swag_paypal_pos_detail_overview_status_actions_sync_context_menu_item_inventory %}
+                                        <sw-context-menu-item @click="onStartInventorySync">
+                                            {{ $tc('swag-paypal-pos.detail.overview.buttonSyncInventory') }}
+                                        </sw-context-menu-item>
+                                    {% endblock %}
+                                </sw-context-button>
+                            {% endblock %}
+                        </sw-button-group>
+
+                        {% block swag_paypal_pos_detail_overview_status_actions_sync_abort_button %}
+                            <sw-button v-if="isSyncing"
+                                       @click="onSyncAbort">
+                                {{ $tc('swag-paypal-pos.detail.overview.buttonSyncAbort') }}
+                            </sw-button>
+                        {% endblock %}
+                    </template>
+                {% endblock %}
+            </swag-paypal-pos-status-view>
+        {% endblock %}
+
+        {% block swag_paypal_pos_detail_overview_setup %}
+            <swag-paypal-pos-continue-setup v-else>
+            </swag-paypal-pos-continue-setup>
+        {% endblock %}
+
+        {% block swag_paypal_pos_detail_overview_getting_started %}
+            <swag-paypal-pos-getting-started>
+            </swag-paypal-pos-getting-started>
+        {% endblock %}
+    </div>
+{% endblock %}

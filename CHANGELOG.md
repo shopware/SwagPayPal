@@ -1,5 +1,6 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
+# 1.9.0
 - PPI-69 - The Express button is now hidden, when the PayPal payment method is disabled.
+- PT-11048 - Introduce iZettle (POS) integration
 
 # 1.8.3
 - PPI-70 - Order number is now correctly submitted to PayPal for payments with Express Checkout, PLUS and Smart Payment Buttons

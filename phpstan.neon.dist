@@ -19,7 +19,9 @@ parameters:
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
         -   # The API structs have many unused class elements
             message: '#is never read, only written#'
-            path: src/PayPal/Api
+            paths:
+                - src/PayPal/Api
+                - src/Pos/Api
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

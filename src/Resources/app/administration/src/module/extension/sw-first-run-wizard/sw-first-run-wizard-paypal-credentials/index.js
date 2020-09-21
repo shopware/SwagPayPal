@@ -1,5 +1,5 @@
 import template from './sw-first-run-wizard-paypal-credentials.html.twig';
-import './sw-first-run-wizard-paypal-credentials.html.scss';
+import './sw-first-run-wizard-paypal-credentials.scss';
 
 const { Component, Mixin } = Shopware;
 
@@ -152,11 +152,14 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
                 return 'error';
             }).catch((errorResponse) => {
                 if (errorResponse.response.data && errorResponse.response.data.errors) {
-                    let message = '<ul>';
-                    errorResponse.response.data.errors.forEach((error) => {
-                        message = `${message}<li>${error.detail}</li>`;
+                    const message = errorResponse.response.data.errors.map((error) => {
+                        return error.detail;
+                    }).join(' / ');
+
+                    this.createNotificationError({
+                        title: this.$tc('global.default.error'),
+                        message: message
                     });
-                    message += '</ul>';
                     this.createNotificationError({
                         title: this.$tc('swag-paypal-frw-credentials.titleTestError'),
                         message: message

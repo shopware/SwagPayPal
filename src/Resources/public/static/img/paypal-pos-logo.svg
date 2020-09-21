@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="80" height="82" viewBox="0 0 80 82">
+  <defs>
+    <rect id="pos-a" width="80" height="80" x="0" y="0" rx="4"/>
+  </defs>
+  <g fill="none" fill-rule="evenodd" transform="translate(0 1)">
+    <mask id="pos-b" fill="#fff">
+      <use xlink:href="#pos-a"/>
+    </mask>
+    <use fill="#1B3264" xlink:href="#pos-a"/>
+    <g fill-rule="nonzero" mask="url(#pos-b)">
+      <g transform="translate(24 19)">
+        <polygon fill="#A391E0" points="21.785 7.194 .083 34.931 9.797 34.931 31.105 7.194"/>
+        <path fill="#FFF" d="M31.1056893,42.0004078 L31.1056893,34.9297282 L0.083184466,34.9297282 L0.083184466,42.0004078 L31.1056893,42.0004078 Z M31.1056893,7.19341748 L31.1056893,0.130485437 L0.645495146,0.130485437 L0.645495146,7.20157282 L31.1056893,7.19341748 Z"/>
+      </g>
+    </g>
+  </g>
+</svg>

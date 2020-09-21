@@ -1,0 +1,11 @@
+.swag-paypal-pos-detail-runs {
+    .swag-paypal-pos-detail-runs__empty-state {
+        position: static;
+    }
+
+    &__modal {
+        .sw-modal__body {
+            padding: 0;
+        }
+    }
+}

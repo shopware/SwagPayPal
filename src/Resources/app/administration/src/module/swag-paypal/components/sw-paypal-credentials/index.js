@@ -130,14 +130,13 @@ Component.register('sw-paypal-credentials', {
                 }
             }).catch((errorResponse) => {
                 if (errorResponse.response.data && errorResponse.response.data.errors) {
-                    let message = `${this.$tc('swag-paypal.settingForm.messageTestError')}<br><br><ul>`;
-                    errorResponse.response.data.errors.forEach((error) => {
-                        message = `${message}<li>${error.detail}</li>`;
-                    });
+                    let message = `<b>${this.$tc('swag-paypal.settingForm.messageTestError')}</b> `;
+                    message += errorResponse.response.data.errors.map((error) => {
+                        return error.detail;
+                    }).join(' / ');
 
-                    message += '</li>';
                     this.createNotificationError({
-                        title: this.$tc('swag-paypal.settingForm.titleError'),
+                        title: this.$tc('global.default.error'),
                         message: message
                     });
 

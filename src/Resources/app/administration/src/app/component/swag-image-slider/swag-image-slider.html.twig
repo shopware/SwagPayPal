@@ -1,0 +1,44 @@
+{% block swag_image_slider %}
+    <div class="swag-image-slider" :style="componentStyles">
+
+        {% block swag_image_slider_image_container %}
+            <div class="swag-image-slider__image-container"
+                 :style="containerStyles">
+
+                {% block swag_image_slider_image_container_scrollable %}
+                    <div class="swag-image-slider__image-container-scrollable"
+                         :style="scrollableContainerStyles">
+
+                        {% block swag_image_slider_images %}
+                            <div v-for="(image, index) in images"
+                                 class="swag-image-slider__image-container-element"
+                                 :style="elementStyles(index)">
+
+                                {% block swag_image_slider_image %}
+                                    <img class="swag-image-slider__image-container-element-image"
+                                         :src="image"
+                                         :alt="imageAlt(index)">
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    </div>
+                {% endblock %}
+            </div>
+        {% endblock %}
+
+        {% block swag_image_slider_button_container %}
+            <div v-if="images.length >= 2"
+                 class="swag-image-slider__buttons">
+
+                {% block swag_image_slider_buttons %}
+                    <button v-for="(image, index) in images"
+                            class="swag-image-slider__buttons-element"
+                            :class="{ 'is--active': index == currentPageNumber }"
+                            @click="onButtonClick(index)">
+                        {{ imageAlt(index) }}
+                    </button>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}

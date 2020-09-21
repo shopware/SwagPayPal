@@ -1,0 +1,130 @@
+{% block swag_paypal_pos %}
+    <sw-page class="swag-paypal-pos">
+
+        {% block swag_paypal_pos_header %}
+            <template #smart-bar-header>
+                <h2>
+                    {{ $tc('swag-paypal-pos.header') }}
+                </h2>
+            </template>
+        {% endblock %}
+
+        {% block swag_paypal_pos_actions %}
+            <template #smart-bar-actions>
+                <sw-button v-for="button in buttonConfig"
+                           size="small"
+                           :key="button.key"
+                           :disabled="button.disabled"
+                           :isLoading="button.isLoading || isLoading"
+                           :variant="button.variant"
+                           @click="onButtonClick(button.action)">
+                    {{ button.label }}
+                </sw-button>
+            </template>
+        {% endblock %}
+
+        {% block swag_paypal_pos_content %}
+            <template #content>
+                <sw-card-view>
+
+                    {% block swag_paypal_pos_content_tabs %}
+                        <sw-tabs v-if="!isLoading" class="swag-paypal-pos__tabs">
+
+                            {%  block swag_paypal_pos_content_tab_base %}
+                                <sw-tabs-item :route="{ name: 'swag.paypal.pos.detail.overview', params: { id: $route.params.id } }"
+                                              :title="$tc('swag-paypal-pos.tabTitle.overview')">
+                                    {{ $tc('swag-paypal-pos.tabTitle.overview') }}
+                                </sw-tabs-item>
+                            {% endblock %}
+
+                            {%  block swag_paypal_pos_content_tab_synced_products %}
+                                <sw-tabs-item :route="{ name: 'swag.paypal.pos.detail.syncedProducts', params: { id: $route.params.id } }"
+                                              :title="$tc('swag-paypal-pos.tabTitle.syncedProducts')">
+                                    {{ $tc('swag-paypal-pos.tabTitle.syncedProducts') }}
+                                </sw-tabs-item>
+                            {% endblock %}
+
+                            {%  block swag_paypal_pos_content_tab_settings %}
+                                <sw-tabs-item :route="{ name: 'swag.paypal.pos.detail.settings', params: { id: $route.params.id } }"
+                                              :title="$tc('swag-paypal-pos.tabTitle.settings')">
+                                    {{ $tc('swag-paypal-pos.tabTitle.settings') }}
+                                </sw-tabs-item>
+                            {% endblock %}
+
+                            {%  block swag_paypal_pos_content_tab_runs %}
+                                <sw-tabs-item :route="{ name: 'swag.paypal.pos.detail.runs', params: { id: $route.params.id } }"
+                                              :title="$tc('swag-paypal-pos.tabTitle.runs')">
+                                    {{ $tc('swag-paypal-pos.tabTitle.runs') }}
+                                </sw-tabs-item>
+                            {% endblock %}
+
+                            {%  block swag_paypal_pos_content_tab_help %}
+                                <sw-tabs-item href="https://www.izettle.com/help/articles/1083274-what-is-pos"
+                                              target="_blank"
+                                              :title="$tc('swag-paypal-pos.tabTitle.help')">
+                                    {{ $tc('swag-paypal-pos.tabTitle.help') }}
+                                    <sw-icon name="default-action-external"
+                                             size="8px">
+                                    </sw-icon>
+                                </sw-tabs-item>
+                            {% endblock %}
+                        </sw-tabs>
+                    {% endblock %}
+
+                    {% block swag_paypal_pos_content_account %}
+                        <swag-paypal-pos-account :lastRun="lastRun"
+                                                 :salesChannel="salesChannel">
+                        </swag-paypal-pos-account>
+                    {% endblock %}
+
+                    {% block swag_paypal_pos_content_card %}
+                        <router-view v-if="!isLoading"
+                                     :key="$route.params.id"
+                                     :salesChannel="salesChannel"
+                                     :cloneSalesChannelId="cloneSalesChannelId"
+                                     :lastRun="lastRun"
+                                     :lastCompleteRun="lastCompleteRun"
+                                     @buttons-update="updateButtons"
+                                     @load-sales-channel="loadSalesChannel"
+                                     @run-update="loadLastRun"
+                                     @update-clone-sales-channel="updateCloneSalesChannel">
+                        </router-view>
+                        <sw-loader v-if="isLoading"></sw-loader>
+                    {% endblock %}
+
+                    {% block swag_paypal_pos_disclaimer_hero %}
+                        <sw-card v-show="!isLoading"
+                                 class="swag-paypal-pos__disclaimer-card"
+                                 :hero="true">
+
+                            {% block swag_paypal_pos_disclaimer_container %}
+                                <div class="swag-paypal-pos__disclaimer">
+
+                                    {% block swag_paypal_pos_disclaimer_title %}
+                                        <div class="swag-paypal-pos__disclaimer-title disclaimer-content">
+                                            {{ $tc('swag-paypal-pos.detail.disclaimer.headline') }}
+                                        </div>
+                                    {% endblock %}
+
+                                    {% block swag_paypal_pos_disclaimer_subtitle %}
+                                        <div class="swag-paypal-pos__disclaimer-subtitle disclaimer-content">
+                                            {{ $tc('swag-paypal-pos.detail.disclaimer.subheadline') }}
+                                        </div>
+                                    {% endblock %}
+
+                                    {% block swag_paypal_pos_disclaimer_link %}
+                                        <a :href="$tc('swag-paypal-pos.detail.disclaimer.linkTarget')"
+                                           class="link swag-paypal-pos__disclaimer-link disclaimer-content"
+                                           target="_blank">
+                                            {{ $tc('swag-paypal-pos.detail.disclaimer.linkText') }}
+                                        </a>
+                                    {% endblock %}
+                                </div>
+                            {% endblock %}
+                        </sw-card>
+                    {% endblock %}
+                </sw-card-view>
+            </template>
+        {% endblock %}
+    </sw-page>
+{% endblock %}

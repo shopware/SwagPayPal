@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal;
 
+use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
@@ -31,6 +32,11 @@ class SwagPayPal extends Plugin
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID = 'swag_paypal_transaction_id';
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TOKEN = 'swag_paypal_token';
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION = 'swag_paypal_pui_payment_instruction';
+    public const SALES_CHANNEL_TYPE_POS = '1ce0868f406d47d98cfe4b281e62f099';
+    public const SALES_CHANNEL_POS_EXTENSION = 'paypalPosSalesChannel';
+    public const PRODUCT_LOG_POS_EXTENSION = 'paypalPosLog';
+    public const PRODUCT_SYNC_POS_EXTENSION = 'paypalPosSync';
+    public const POS_PARTNER_IDENTIFIER = '456dadab-3085-4fa3-bf2b-a2efd01c3593';
 
     /**
      * @var ActivateDeactivate
@@ -83,6 +89,8 @@ class SwagPayPal extends Plugin
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->container->get(SystemConfigService::class);
+        /** @var Connection $connection */
+        $connection = $this->container->get(Connection::class);
 
         (new InstallUninstall(
             $systemConfigRepository,
@@ -92,6 +100,7 @@ class SwagPayPal extends Plugin
             $countryRepository,
             $pluginIdProvider,
             $systemConfigService,
+            $connection,
             static::class
         ))->install($installContext->getContext());
 
@@ -122,6 +131,8 @@ class SwagPayPal extends Plugin
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->container->get(SystemConfigService::class);
+        /** @var Connection $connection */
+        $connection = $this->container->get(Connection::class);
 
         (new InstallUninstall(
             $systemConfigRepository,
@@ -131,6 +142,7 @@ class SwagPayPal extends Plugin
             $countryRepository,
             $pluginIdProvider,
             $systemConfigService,
+            $connection,
             static::class
         ))->uninstall($context);
 

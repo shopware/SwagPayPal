@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Util\Lifecycle;
 
+use Doctrine\DBAL\Connection;
 use Shopware\Core\Checkout\Cart\Rule\CartAmountRule;
 use Shopware\Core\Checkout\Customer\Rule\BillingCountryRule;
 use Shopware\Core\Checkout\Customer\Rule\IsCompanyRule;
@@ -25,6 +26,12 @@ use Shopware\Core\System\Country\Exception\CountryNotFoundException;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelDefinition;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryDefinition;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaDefinition;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductDefinition;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogDefinition;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -75,6 +82,11 @@ class InstallUninstall
      */
     private $systemConfig;
 
+    /**
+     * @var Connection
+     */
+    private $connection;
+
     public function __construct(
         EntityRepositoryInterface $systemConfigRepository,
         EntityRepositoryInterface $paymentRepository,
@@ -83,6 +95,7 @@ class InstallUninstall
         EntityRepositoryInterface $countryRepository,
         PluginIdProvider $pluginIdProvider,
         SystemConfigService $systemConfig,
+        Connection $connection,
         string $className
     ) {
         $this->systemConfigRepository = $systemConfigRepository;
@@ -93,6 +106,7 @@ class InstallUninstall
         $this->pluginIdProvider = $pluginIdProvider;
         $this->className = $className;
         $this->systemConfig = $systemConfig;
+        $this->connection = $connection;
     }
 
     public function install(Context $context): void
@@ -105,6 +119,7 @@ class InstallUninstall
     {
         $this->removeConfiguration($context);
         $this->removePuiAvailabilityRule($context);
+        $this->removePosTables();
     }
 
     private function addDefaultConfiguration(): void
@@ -332,5 +347,21 @@ class InstallUninstall
         }
 
         return true;
+    }
+
+    private function removePosTables(): void
+    {
+        $classNames = [
+            PosSalesChannelInventoryDefinition::ENTITY_NAME,
+            PosSalesChannelMediaDefinition::ENTITY_NAME,
+            PosSalesChannelProductDefinition::ENTITY_NAME,
+            PosSalesChannelRunLogDefinition::ENTITY_NAME,
+            PosSalesChannelRunDefinition::ENTITY_NAME,
+            PosSalesChannelDefinition::ENTITY_NAME,
+        ];
+
+        foreach ($classNames as $className) {
+            $this->connection->executeUpdate(\sprintf('DROP TABLE IF EXISTS `%s`', $className));
+        }
     }
 }

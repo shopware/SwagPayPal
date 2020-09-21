@@ -34,17 +34,50 @@
             </errorLevel>
         </DeprecatedClass>
 
+        <MoreSpecificImplementedParamType>
+            <errorLevel type="info">
+                <file name="src/Pos/Sync/Product/Util/ProductGroupingCollection.php"/>
+                <file name="src/Pos/DataAbstractionLayer/Entity/*Collection.php"/>
+                <file name="src/Pos/MessageQueue/Handler/Sync/*Handler.php"/>
+                <file name="src/Pos/Sync/*Syncer.php"/>
+                <file name="src/Pos/Webhook/Handler/*Handler.php"/>
+            </errorLevel>
+        </MoreSpecificImplementedParamType>
+
+        <UnusedMethodCall>
+            <errorLevel type="info">
+                <file name="src/Setting/SwagPayPalSettingStructValidator.php"/>
+            </errorLevel>
+        </UnusedMethodCall>
+
         <InvalidReturnType>
             <errorLevel type="info">
                 <directory name="tests/Mock"/>
+                <directory name="tests/Pos/Mock"/>
             </errorLevel>
         </InvalidReturnType>
 
+        <DocblockTypeContradiction>
+            <errorLevel type="info">
+                <file name="src/Pos/Sync/Product/Util/ProductGrouping.php"/>
+                <file name="src/Pos/Api/Common/PosStruct.php"/>
+                <file name="src/PayPal/Api/Common/PayPalStruct.php"/>
+            </errorLevel>
+        </DocblockTypeContradiction>
+
         <InternalMethod>
             <errorLevel type="info">
+                <file name="src/Pos/Command/*Command.php"/>
+                <file name="src/Pos/Schedule/*Handler.php"/>
                 <directory name="tests"/>
             </errorLevel>
         </InternalMethod>
+
+        <DeprecatedInterface>
+            <errorLevel type="info">
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\EntityExtensionInterface"/>
+            </errorLevel>
+        </DeprecatedInterface>
 
         <DeprecatedTrait>
             <errorLevel type="info">
@@ -54,6 +87,9 @@
 
         <DeprecatedMethod>
             <errorLevel type="info">
+                <!-- ToDo PPI-65: Change for 6.4 to PurchasePrice collection -->
+                <referencedMethod name="Shopware\Core\Content\Product\ProductEntity::getPurchasePrice"/>
+                <referencedMethod name="Shopware\Core\Content\Product\ProductEntity::setPurchasePrice"/>
                 <referencedMethod name="Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour::silentAssertArraySubset"/>
                 <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
                 <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBMarksData::isUseAlternativePaymentMethods"/>
@@ -64,12 +100,26 @@
             </errorLevel>
         </DeprecatedMethod>
 
+        <PossiblyInvalidArgument>
+            <errorLevel type="info">
+                <file name="tests/Pos/Sync/Product/*Test.php"/>
+            </errorLevel>
+        </PossiblyInvalidArgument>
+
+        <PossiblyUndefinedMethod>
+            <errorLevel type="info">
+                <file name="tests/Pos/Sync/Product/*Test.php"/>
+            </errorLevel>
+        </PossiblyUndefinedMethod>
+
         <DeprecatedConstant>
             <errorLevel type="info">
                 <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
                 <file name="src/Checkout/SPBCheckout/SPBCheckoutButtonData.php"/>
                 <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
                 <file name="tests/Checkout/SPBCheckout/SPBCheckoutSubscriberTest.php"/>
+                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
+                <file name="src/PayPal/Resource/TokenResource.php"/>
             </errorLevel>
         </DeprecatedConstant>
 

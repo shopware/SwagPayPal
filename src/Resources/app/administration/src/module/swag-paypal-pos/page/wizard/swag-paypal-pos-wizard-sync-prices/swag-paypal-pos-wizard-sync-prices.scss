@@ -1,0 +1,13 @@
+@import "~scss/variables";
+
+.swag-paypal-pos-wizard-sync-prices {
+    .swag-paypal-pos-wizard-sync-prices__headline {
+        margin: 0 0 18px 0;
+        font-weight: bold;
+    }
+
+    .swag-paypal-pos-wizard-sync-prices__disclaimer {
+        color: $color-gray-500;
+        font-size: $font-size-small;
+    }
+}

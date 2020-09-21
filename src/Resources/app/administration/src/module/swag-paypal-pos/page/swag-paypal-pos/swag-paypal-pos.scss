@@ -1,0 +1,20 @@
+@import "~scss/variables";
+
+.swag-paypal-pos {
+    &__disclaimer {
+        color: $color-gray-500;
+        font-size: $font-size-extra-small;
+
+        &-card > .sw-card__content {
+            padding: 0;
+        }
+
+        & > a {
+            font-size: $font-size-small;
+        }
+
+        .disclaimer-content {
+            margin-bottom: 5px;
+        }
+    }
+}
