@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Pos\Mock\Client;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
 use Swag\PayPal\Pos\Client\TokenClient;
 use Swag\PayPal\Pos\Client\TokenClientFactory;
 
@@ -20,20 +19,14 @@ class TokenClientFactoryMock extends TokenClientFactory
      */
     private $logger;
 
-    /**
-     * @var ApiKeyDecoder
-     */
-    private $apiKeyDecoder;
-
     public function __construct()
     {
         $this->logger = new NullLogger();
-        $this->apiKeyDecoder = new ApiKeyDecoder();
-        parent::__construct($this->logger, $this->apiKeyDecoder);
+        parent::__construct($this->logger);
     }
 
     public function createTokenClient(): TokenClient
     {
-        return new TokenClientMock($this->logger, $this->apiKeyDecoder);
+        return new TokenClientMock($this->logger);
     }
 }

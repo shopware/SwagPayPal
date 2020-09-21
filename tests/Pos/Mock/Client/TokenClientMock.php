@@ -9,14 +9,13 @@ namespace Swag\PayPal\Test\Pos\Mock\Client;
 
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\Pos\Api\PosBaseURL;
-use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
 use Swag\PayPal\Pos\Client\TokenClient;
 
 class TokenClientMock extends TokenClient
 {
-    public function __construct(LoggerInterface $logger, ApiKeyDecoder $apiKeyDecoder)
+    public function __construct(LoggerInterface $logger)
     {
-        parent::__construct($logger, $apiKeyDecoder);
+        parent::__construct($logger);
         $this->client = new GuzzleClientMock([
             'base_uri' => PosBaseURL::OAUTH,
         ]);

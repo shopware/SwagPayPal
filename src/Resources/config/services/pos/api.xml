@@ -37,7 +37,6 @@
 
         <service id="Swag\PayPal\Pos\Client\TokenClientFactory">
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
-            <argument type="service" id="Swag\PayPal\Pos\Api\Service\ApiKeyDecoder"/>
         </service>
 
         <service id="Swag\PayPal\Pos\Client\PosClientFactory">

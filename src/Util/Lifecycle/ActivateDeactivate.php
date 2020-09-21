@@ -109,6 +109,10 @@ class ActivateDeactivate
                     'swagpaypal/static/img/paypal-pos-sales-channel-type-description-reader.png',
                     'swagpaypal/static/img/paypal-pos-sales-channel-type-description-tap-payment.png',
                 ],
+                'name' => 'Point of Sale – iZettle',
+                'manufacturer' => 'Shopware',
+                'description' => 'Tools to build your business',
+                'descriptionLong' => 'iZettle’s point-of-sale system allows you to accept cash, card or contactless payments. Connect Shopware to iZettle to keep products, stocks and sales in sync – all in one place.',
                 'translations' => [
                     'en-GB' => [
                         'name' => 'Point of Sale – iZettle',
