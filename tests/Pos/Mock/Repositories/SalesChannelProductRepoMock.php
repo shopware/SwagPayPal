@@ -205,9 +205,11 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
         $entity->setCalculatedPrice($shopwarePrice);
         $entity->setPurchasePrice(ConstantsForTesting::PRODUCT_PRICE * 2);
         if ($mediaEntity) {
-            $media = new ProductMediaEntity();
-            $media->setMedia($mediaEntity);
-            $entity->setCover($media);
+            $productMedia = new ProductMediaEntity();
+            $productMedia->setId(Uuid::randomHex());
+            $productMedia->setMedia($mediaEntity);
+            $productMedia->setMediaId($mediaEntity->getId());
+            $entity->setCover($productMedia);
         }
 
         $entity->addTranslated('name', $name);
