@@ -25,20 +25,50 @@ Component.register('swag-paypal-pos-account', {
     data() {
         return {
             isLoading: false,
+            isError: false,
             merchantInfo: null
         };
     },
 
     computed: {
         accountName() {
-            if (!this.merchantInfo) {
-                const firstName = this.$tc('swag-paypal-pos.wizard.connectionSuccess.fakeFirstName');
-                const lastName = this.$tc('swag-paypal-pos.wizard.connectionSuccess.fakeLastName');
+            if (this.isError) {
+                return this.$tc('swag-paypal-pos.account.errorName');
+            }
 
-                return `${firstName} ${lastName}`;
+            if (!this.merchantInfo) {
+                return this.$tc('swag-paypal-pos.account.loadingName');
             }
 
             return this.merchantInfo.name;
+        },
+
+        accountEmail() {
+            if (this.isError) {
+                return this.$tc('swag-paypal-pos.account.errorEmail');
+            }
+
+            if (!this.merchantInfo) {
+                return this.$tc('swag-paypal-pos.account.loadingEmail');
+            }
+
+            return this.merchantInfo.contactEmail;
+        },
+
+        connectionStatusText() {
+            if (this.isError) {
+                return this.$tc('swag-paypal-pos.account.noConnectionStatus');
+            }
+
+            return this.$tc('swag-paypal-pos.account.connectedStatus');
+        },
+
+        connectionStatusVariant() {
+            if (this.isError) {
+                return 'danger';
+            }
+
+            return 'success';
         },
 
         runRepository() {
@@ -52,20 +82,19 @@ Component.register('swag-paypal-pos-account', {
 
     watch: {
         salesChannel() {
-            this.loadMerchantData().then(() => {
-                this.isLoading = false;
-            });
+            this.loadMerchantData();
         }
     },
 
     methods: {
         createdComponent() {
-            this.loadMerchantData().then(() => {
-                this.isLoading = false;
-            });
+            this.loadMerchantData();
         },
 
         loadMerchantData() {
+            this.isError = false;
+            this.isLoading = true;
+
             if (this.salesChannel === null) {
                 return Promise.resolve();
             }
@@ -73,6 +102,12 @@ Component.register('swag-paypal-pos-account', {
             return this.SwagPayPalPosSettingApiService.fetchInformation(this.salesChannel)
                 .then(({ merchantInformation }) => {
                     this.merchantInfo = merchantInformation;
+                    this.isError = false;
+                }).catch(() => {
+                    this.merchantInfo = null;
+                    this.isError = true;
+                }).finally(() => {
+                    this.isLoading = false;
                 });
         }
     }
