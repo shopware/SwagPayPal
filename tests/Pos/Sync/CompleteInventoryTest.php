@@ -114,6 +114,7 @@ class CompleteInventoryTest extends TestCase
             ConstantsForTesting::PRODUCT_C_ID,
             ConstantsForTesting::PRODUCT_D_ID,
             ConstantsForTesting::PRODUCT_E_ID,
+            ConstantsForTesting::PRODUCT_G_ID,
         ];
 
         $inventoryContext = $inventoryContextFactory->getContext($salesChannel, $context);
@@ -126,6 +127,7 @@ class CompleteInventoryTest extends TestCase
          * C - changed online
          * D - changed local
          * E - changed both sides
+         * G - disabled tracking online afterwards
          */
         $productA = $productRepository->createMockEntity('productA', 2, 1, ConstantsForTesting::PRODUCT_A_ID);
         $salesChannelProductRepository->addMockEntity($productA);
@@ -137,11 +139,14 @@ class CompleteInventoryTest extends TestCase
         $salesChannelProductRepository->addMockEntity($productD);
         $productE = $productRepository->createMockEntity('productE', 3, 3, ConstantsForTesting::PRODUCT_E_ID);
         $salesChannelProductRepository->addMockEntity($productE);
+        $productG = $productRepository->createMockEntity('productG', 3, 3, ConstantsForTesting::PRODUCT_G_ID);
+        $salesChannelProductRepository->addMockEntity($productG);
 
         $inventoryRepository->createMockEntity($productA, Defaults::SALES_CHANNEL, 1);
         $inventoryRepository->createMockEntity($productC, Defaults::SALES_CHANNEL, 1);
         $inventoryRepository->createMockEntity($productD, Defaults::SALES_CHANNEL, 3);
         $inventoryRepository->createMockEntity($productE, Defaults::SALES_CHANNEL, 4);
+        $inventoryRepository->createMockEntity($productG, Defaults::SALES_CHANNEL, 3);
 
         $inventorySyncManager->buildMessages(
             $salesChannel,
@@ -151,7 +156,7 @@ class CompleteInventoryTest extends TestCase
         $messageBus->execute([$inventorySyncHandler]);
 
         // product B added
-        static::assertSame(5, $inventoryRepository->search(new Criteria(), $context)->getTotal());
+        static::assertSame(6, $inventoryRepository->search(new Criteria(), $context)->getTotal());
 
         // inventories saved correctly
         $inventory = $inventoryRepository->filterByProduct($productA);
@@ -169,6 +174,9 @@ class CompleteInventoryTest extends TestCase
         $inventory = $inventoryRepository->filterByProduct($productE);
         static::assertNotNull($inventory);
         static::assertSame(2, $inventory->getStock());
+        $inventory = $inventoryRepository->filterByProduct($productG);
+        static::assertNotNull($inventory);
+        static::assertSame(3, $inventory->getStock());
 
         // stock updated in product
         static::assertSame(2, $productA->getStock());
@@ -176,6 +184,7 @@ class CompleteInventoryTest extends TestCase
         static::assertSame(2, $productC->getStock());
         static::assertSame(3, $productD->getStock());
         static::assertSame(2, $productE->getStock());
+        static::assertSame(3, $productG->getStock());
 
         // inventory updated online
         static::assertTrue(ChangeBulkInventoryFixture::$called);

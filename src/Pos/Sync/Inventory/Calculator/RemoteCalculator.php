@@ -29,8 +29,16 @@ class RemoteCalculator
         ProductEntity $productEntity,
         InventoryContext $inventoryContext
     ): ?ProductChange {
-        $difference = $this->getChangeAmount($productEntity, $inventoryContext);
+        $currentStock = $productEntity->getAvailableStock();
+        $previousStock = $inventoryContext->getLocalInventory($productEntity);
+
         $isTracked = $inventoryContext->isTracked($productEntity);
+
+        if ($previousStock === null || !$isTracked) {
+            $previousStock = $inventoryContext->getSingleRemoteInventory($productEntity, true);
+        }
+
+        $difference = $currentStock - $previousStock;
 
         if ($difference === 0 && $isTracked) {
             return null;
@@ -66,19 +74,5 @@ class RemoteCalculator
         $productChange->addVariantChange($variantChange);
 
         return $productChange;
-    }
-
-    public function getChangeAmount(
-        ProductEntity $productEntity,
-        InventoryContext $inventoryContext
-    ): int {
-        $currentStock = $productEntity->getAvailableStock();
-        $previousStock = $inventoryContext->getLocalInventory($productEntity);
-
-        if ($previousStock === null || !$inventoryContext->isTracked($productEntity)) {
-            $previousStock = $inventoryContext->getSingleRemoteInventory($productEntity);
-        }
-
-        return $currentStock - $previousStock;
     }
 }

@@ -60,6 +60,17 @@ class ChangeBulkInventoryFixture
         $productChange->setProductUuid(ConstantsForTesting::PRODUCT_E_ID_CONVERTED);
         $productChange->setVariantChanges([$variantChange]);
         $expected->addProductChange($productChange);
+        $variantChange = new VariantChange();
+        $variantChange->setProductUuid(ConstantsForTesting::PRODUCT_G_ID_CONVERTED);
+        $variantChange->setVariantUuid(ConstantsForTesting::PRODUCT_G_ID_VARIANT);
+        $variantChange->setFromLocationUuid(ConstantsForTesting::LOCATION_SUPPLIER);
+        $variantChange->setToLocationUuid(ConstantsForTesting::LOCATION_STORE);
+        $variantChange->setChange(2);
+        $productChange = new ProductChange();
+        $productChange->setTrackingStatusChange(ProductChange::TRACKING_START);
+        $productChange->setProductUuid(ConstantsForTesting::PRODUCT_G_ID_CONVERTED);
+        $productChange->setVariantChanges([$variantChange]);
+        $expected->addProductChange($productChange);
 
         TestCase::assertEquals($expected, $changes);
         self::$called = true;
@@ -87,6 +98,13 @@ class ChangeBulkInventoryFixture
                     'productUuid' => ConstantsForTesting::PRODUCT_E_ID_CONVERTED,
                     'variantUuid' => ConstantsForTesting::PRODUCT_E_ID_VARIANT,
                     'balance' => '2',
+                ],
+                [
+                    'locationUuid' => ConstantsForTesting::LOCATION_STORE,
+                    'locationType' => 'STORE',
+                    'productUuid' => ConstantsForTesting::PRODUCT_G_ID_CONVERTED,
+                    'variantUuid' => ConstantsForTesting::PRODUCT_G_ID_VARIANT,
+                    'balance' => '3',
                 ],
             ],
         ];
