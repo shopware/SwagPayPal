@@ -145,6 +145,13 @@
             </errorLevel>
         </PossiblyNullReference>
 
+        <RedundantCondition>
+            <errorLevel type="info">
+                <!-- Needs to be ignored, because \Shopware\Core\Checkout\Order\OrderEntity::getOrderNumber returns `null` with Shopware 6.3.2.0. Could be removed once this is the minimum version -->
+                <file name="src/Payment/PayPalPaymentHandler.php"/>
+            </errorLevel>
+        </RedundantCondition>
+
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>
         <MissingConstructor errorLevel="info"/>
