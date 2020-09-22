@@ -39,7 +39,6 @@
                 <file name="src/Pos/Sync/Product/Util/ProductGroupingCollection.php"/>
                 <file name="src/Pos/DataAbstractionLayer/Entity/*Collection.php"/>
                 <file name="src/Pos/MessageQueue/Handler/Sync/*Handler.php"/>
-                <file name="src/Pos/Sync/*Syncer.php"/>
                 <file name="src/Pos/Webhook/Handler/*Handler.php"/>
             </errorLevel>
         </MoreSpecificImplementedParamType>
@@ -56,14 +55,6 @@
                 <directory name="tests/Pos/Mock"/>
             </errorLevel>
         </InvalidReturnType>
-
-        <DocblockTypeContradiction>
-            <errorLevel type="info">
-                <file name="src/Pos/Sync/Product/Util/ProductGrouping.php"/>
-                <file name="src/Pos/Api/Common/PosStruct.php"/>
-                <file name="src/PayPal/Api/Common/PayPalStruct.php"/>
-            </errorLevel>
-        </DocblockTypeContradiction>
 
         <InternalMethod>
             <errorLevel type="info">

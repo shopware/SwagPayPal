@@ -9,7 +9,10 @@ namespace Swag\PayPal\Pos\Api\Common;
 
 abstract class PosStruct implements \JsonSerializable
 {
-    public function assign(array $arrayData): self
+    /**
+     * @return static
+     */
+    public function assign(array $arrayData)
     {
         foreach ($arrayData as $key => $value) {
             $camelCaseKey = $this->toCamelCase($key);
@@ -29,7 +32,7 @@ abstract class PosStruct implements \JsonSerializable
             }
 
             $namespace = $this->getNamespaceOfAssociation();
-            if ($this->isAssociativeArray($value)) {
+            if ($value !== [] && $this->isAssociativeArray($value)) {
                 /** @var class-string<PosStruct> $className */
                 $className = $namespace . $camelCaseKey;
                 if (!\class_exists($className)) {
@@ -45,9 +48,13 @@ abstract class PosStruct implements \JsonSerializable
             /** @var class-string<PosStruct> $className */
             $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
             if (!\class_exists($className)) {
-                $arrayData = \array_filter($value, static function ($var) {
-                    return $var !== null;
-                });
+                $arrayData = \array_filter(
+                    $value,
+                    /** @param string|array|null $var */
+                    static function ($var) {
+                        return $var !== null;
+                    }
+                );
                 $this->$setterMethod($arrayData);
 
                 continue;
@@ -89,10 +96,6 @@ abstract class PosStruct implements \JsonSerializable
 
     private function isAssociativeArray(array $value): bool
     {
-        if ($value === []) {
-            return false;
-        }
-
         return \array_keys($value) !== \range(0, \count($value) - 1);
     }
 
@@ -119,9 +122,7 @@ abstract class PosStruct implements \JsonSerializable
 
     private function toCamelCase(string $string): string
     {
-        $string = \str_replace('-', ' ', $string);
-        $string = \str_replace('_', ' ', $string);
-        $string = \ucwords($string);
+        $string = \ucwords(\str_replace(['-', '_'], ' ', $string));
         $string = \str_replace(' ', '', $string);
 
         return $string;
