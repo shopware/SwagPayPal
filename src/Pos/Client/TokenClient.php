@@ -10,7 +10,7 @@ namespace Swag\PayPal\Pos\Client;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\Pos\Api\Authentification\OAuthCredentials;
+use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Api\Error\PosTokenError;
 use Swag\PayPal\Pos\Api\Exception\PosException;
 use Swag\PayPal\Pos\Api\Exception\PosTokenException;

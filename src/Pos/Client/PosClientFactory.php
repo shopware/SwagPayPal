@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Client;
 
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\Pos\Api\Authentification\OAuthCredentials;
+use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Resource\TokenResource;
 
 class PosClientFactory

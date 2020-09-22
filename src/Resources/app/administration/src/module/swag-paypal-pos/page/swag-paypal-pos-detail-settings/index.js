@@ -114,7 +114,7 @@ Component.register('swag-paypal-pos-detail-settings', {
                 .fetchInformation(this.salesChannel)
                 .then(this.save)
                 .catch((errorResponse) => {
-                    this.catchAuthentificationError((errorResponse));
+                    this.catchAuthenticationError((errorResponse));
                     this.isLoading = false;
                     this.updateButtons();
                     throw errorResponse;
@@ -171,13 +171,13 @@ Component.register('swag-paypal-pos-detail-settings', {
                 this.isTestingCredentials = false;
                 this.isTestCredentialsSuccessful = credentialsValid;
             }).catch((errorResponse) => {
-                this.catchAuthentificationError(errorResponse);
+                this.catchAuthenticationError(errorResponse);
                 this.isTestingCredentials = false;
             });
         },
 
-        catchAuthentificationError(errorResponse) {
-            this.catchError('swag-paypal-pos.authentification.messageTestError', errorResponse);
+        catchAuthenticationError(errorResponse) {
+            this.catchError('swag-paypal-pos.authentication.messageTestError', errorResponse);
 
             this.isTestingCredentials = false;
             this.isTestCredentialsSuccessful = false;

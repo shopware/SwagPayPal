@@ -215,7 +215,7 @@
                 "secondParagraph": "If you need to update your products, we recommend you do this in Shopware and they'll synchronise to your iZettle app automatically."
             }
         },
-        "authentification": {
+        "authentication": {
             "messageTestError": "The credentials could not be validated.",
             "labelApiKey": "API key",
             "placeholderApiKey": "Enter API key...",

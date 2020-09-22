@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Pos\Api\Service;
 
-use Swag\PayPal\Pos\Api\Authentification\ApiKey;
+use Swag\PayPal\Pos\Api\Authentication\ApiKey;
 use Swag\PayPal\Pos\Api\Exception\InvalidApiKeyException;
 
 class ApiKeyDecoder
