@@ -102,8 +102,8 @@
                         <sw-password-field v-model="swagPaypalPosSalesChannel.apiKey"
                                            class="swag-paypal-pos-detail-settings__apikey-field"
                                            required
-                                           :label="$tc('swag-paypal-pos.authentification.labelApiKey')"
-                                           :placeholder="$tc('swag-paypal-pos.authentification.placeholderApiKey')"
+                                           :label="$tc('swag-paypal-pos.authentication.labelApiKey')"
+                                           :placeholder="$tc('swag-paypal-pos.authentication.placeholderApiKey')"
                                            @input="forceUpdate">
                             <template #suffix>
 
@@ -122,7 +122,7 @@
 
                             {% block swag_paypal_pos_detail_settings_credentials_apikey_description_text %}
                                 <div class="swag-paypal-pos-detail-settings__apikey-description-text">
-                                    {{ $tc('swag-paypal-pos.authentification.apiKeyDescription') }}
+                                    {{ $tc('swag-paypal-pos.authentication.apiKeyDescription') }}
                                 </div>
                             {% endblock %}
 
@@ -132,7 +132,7 @@
                                    class="link swag-paypal-pos-detail-settings__apikey-description-link">
 
                                     {% block swag_paypal_pos_detail_settings_credentials_apikey_description_link_text %}
-                                        {{ $tc('swag-paypal-pos.authentification.buttonGenerateKey') }}
+                                        {{ $tc('swag-paypal-pos.authentication.buttonGenerateKey') }}
                                         <sw-icon class="swag-paypal-pos-detail-settings__link-icon"
                                                  name="default-action-external"
                                                  size="10px">

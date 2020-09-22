@@ -5,10 +5,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Pos\Api\Authentification;
+namespace Swag\PayPal\Pos\Api\Authentication;
 
-use Swag\PayPal\Pos\Api\Authentification\ApiKey\Header;
-use Swag\PayPal\Pos\Api\Authentification\ApiKey\Payload;
+use Swag\PayPal\Pos\Api\Authentication\ApiKey\Header;
+use Swag\PayPal\Pos\Api\Authentication\ApiKey\Payload;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class ApiKey extends PosStruct

@@ -9,7 +9,7 @@ namespace Swag\PayPal\Test\Pos\Mock\Client;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Swag\PayPal\Pos\Api\Authentification\OAuthCredentials;
+use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Client\PosClient;
 use Swag\PayPal\Pos\Client\PosClientFactory;
 use Swag\PayPal\Pos\Resource\TokenResource;

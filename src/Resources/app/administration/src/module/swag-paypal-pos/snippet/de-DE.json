@@ -215,7 +215,7 @@
                 "secondParagraph": "Wenn Du Deine Produkte aktualisieren möchtest, empfehlen wir Dir, dies in Shopware zu tun, um sie automatisch mit Deiner iZettle-Anwendung zu synchronisieren."
             }
         },
-        "authentification": {
+        "authentication": {
             "messageTestError": "Die Zugangsdaten konnten nicht validiert werden.",
             "labelApiKey": "API-Schlüssel",
             "placeholderApiKey": "API-Schüssel eingeben ...",

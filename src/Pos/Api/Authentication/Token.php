@@ -5,11 +5,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Pos\Api\Authentification;
+namespace Swag\PayPal\Pos\Api\Authentication;
 
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
-class Token extends PosStruct
+final class Token extends PosStruct
 {
     /**
      * The access token issued by iZettle. After the access token
@@ -38,9 +38,8 @@ class Token extends PosStruct
      */
     private $expireDateTime;
 
-    public function assign(array $arrayDataWithSnakeCaseKeys): PosStruct
+    public function assign(array $arrayDataWithSnakeCaseKeys): Token
     {
-        /** @var Token $newToken */
         $newToken = parent::assign($arrayDataWithSnakeCaseKeys);
 
         //Calculate the expiration date manually

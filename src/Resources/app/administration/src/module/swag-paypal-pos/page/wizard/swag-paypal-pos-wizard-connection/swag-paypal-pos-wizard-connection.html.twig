@@ -12,8 +12,8 @@
                     v-model="salesChannel.extensions.paypalPosSalesChannel.apiKey"
                     class="swag-paypal-pos-wizard-connection__apikey-field"
                     required
-                    :label="$tc('swag-paypal-pos.authentification.labelApiKey')"
-                    :placeholder="$tc('swag-paypal-pos.authentification.placeholderApiKey')"
+                    :label="$tc('swag-paypal-pos.authentication.labelApiKey')"
+                    :placeholder="$tc('swag-paypal-pos.authentication.placeholderApiKey')"
                     @input="forceUpdate">
                 <template #suffix>
 
@@ -32,7 +32,7 @@
 
                 {% block swag_paypal_pos_wizard_connection_apikey_description_text %}
                     <div class="swag-paypal-pos-wizard-connection__apikey-description-text">
-                        {{ $tc('swag-paypal-pos.authentification.apiKeyDescription') }}
+                        {{ $tc('swag-paypal-pos.authentication.apiKeyDescription') }}
                     </div>
                 {% endblock %}
 
@@ -42,7 +42,7 @@
                        class="link swag-paypal-pos-wizard-connection__apikey-description-link">
 
                         {% block swag_paypal_pos_wizard_connection_apikey_description_link_text %}
-                            {{ $tc('swag-paypal-pos.authentification.buttonGenerateKey') }}
+                            {{ $tc('swag-paypal-pos.authentication.buttonGenerateKey') }}
                             <sw-icon class="swag-paypal-pos-wizard-connection__link-icon"
                                      name="default-action-external"
                                      size="10px">

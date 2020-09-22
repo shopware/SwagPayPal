@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Pos\Setting\Service;
 
-use Swag\PayPal\Pos\Api\Authentification\OAuthCredentials;
+use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Resource\TokenResource;
 
 class ApiCredentialService

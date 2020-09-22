@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Pos\Api\Authentification\ApiKey\Payload;
+namespace Swag\PayPal\Pos\Api\Authentication\ApiKey\Payload;
 
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 

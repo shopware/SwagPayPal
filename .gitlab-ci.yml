@@ -1,11 +1,13 @@
 variables:
     DOCKER_DRIVER: overlay2
-    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_HOST: 'tcp://docker:2375'
     MYSQL_ROOT_PASSWORD: app
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
-    DEVELOPMENT_BRANCH: "master"
-    PLATFORM_BRANCH: "master"
-    CMS_EXTENSION_BRANCH: "master"
+    DEVELOPMENT_BRANCH: 'master'
+    PLATFORM_BRANCH: 'master'
+    CMS_EXTENSION_BRANCH: 'master'
+    RUN_IN_MR: 'true'
+    INSTALL_CMS: 'true'
 
 stages:
     - Static analysis
@@ -26,12 +28,15 @@ default:
         - /entrypoint supervisord > /dev/null 2>&1 &
 
 # Stage: Static analysis
-.static_analyze_base:
+Static analyze:
     stage: Static analysis
     services:
         -   name: mysql:5.7
             alias: mysql
     script:
+        - echo matrix config
+        - echo DEVELOPMENT_BRANCH $DEVELOPMENT_BRANCH
+        - echo PLATFORM_BRANCH $PLATFORM_BRANCH
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
@@ -42,39 +47,44 @@ default:
         - ./psh.phar administration:init --APP_ENV="dev"
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - ./../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint --ignore-path .eslintignore --config ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/.eslintrc.js --ext .js,.vue .
-
-Static analyze (6.3.x.x dev):
-    extends: .static_analyze_base
-
-Static analyze (6.3.0.0)):
-    extends: .static_analyze_base
-    only:
-        - master
-    variables:
-        PLATFORM_BRANCH: "6.3.0.0"
-
-Static analyze (6.3.0.1)):
-    extends: .static_analyze_base
-    only:
-        - master
-    variables:
-        PLATFORM_BRANCH: "6.3.0.1"
-
-Static analyze (6.3.0.2)):
-    extends: .static_analyze_base
-    only:
-        - master
-    variables:
-        PLATFORM_BRANCH: "6.3.0.2"
+    rules:
+        -   if: '$CI_COMMIT_BRANCH == "master"'
+        -   if: '$RUN_IN_MR == "true" && $CI_PIPELINE_SOURCE == "merge_request_event"'
+    parallel:
+        matrix:
+            -   PLATFORM_BRANCH: '6.3.0.0'
+                DEVELOPMENT_BRANCH: 'master'
+            -   PLATFORM_BRANCH: '6.3.0.1'
+                DEVELOPMENT_BRANCH: 'master'
+                RUN_IN_MR: 'false'
+            -   PLATFORM_BRANCH: '6.3.0.2'
+                DEVELOPMENT_BRANCH: 'master'
+                RUN_IN_MR: 'false'
+            -   PLATFORM_BRANCH: '6.3.1.0'
+                DEVELOPMENT_BRANCH: 'master'
+                RUN_IN_MR: 'false'
+            -   PLATFORM_BRANCH: '6.3.1.1'
+                DEVELOPMENT_BRANCH: 'master'
+                RUN_IN_MR: 'false'
+            -   PLATFORM_BRANCH: 'master'
+                DEVELOPMENT_BRANCH: 'master'
 
 ToDos resolved:
+    only:
+        refs:
+            - merge_requests
+            - master
     stage: Static analysis
     allow_failure: true
     script:
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        - bin/check-todos.sh $CI_COMMIT_BRANCH
+        - bin/check-todos.sh $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
 
-PHPUnit Covarge (6.3.x.x dev):
+PHPUnit Coverage (6.3.x.x dev):
+    only:
+        refs:
+            - merge_requests
+            - master
     stage: Testing
     services:
         -   name: mariadb:10.3
@@ -100,50 +110,44 @@ PHPUnit Covarge (6.3.x.x dev):
         reports:
             junit: development/build/artifacts/phpunit.junit.xml
 
-.phpunit_base:
+PHPUnit:
     stage: Testing
     services:
         -   name: mysql:5.7
             alias: mysql
     script:
+        - echo matrix config
+        - echo DEVELOPMENT_BRANCH $DEVELOPMENT_BRANCH
+        - echo PLATFORM_BRANCH $PLATFORM_BRANCH
+        - echo INSTALL_CMS $INSTALL_CMS
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal
-        - php bin/console plugin:install --activate SwagCmsExtensions
+        - if [[ $INSTALL_CMS = "true" ]]; then php bin/console plugin:install --activate SwagCmsExtensions; fi
         - ./psh.phar init-test-databases
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - bin/phpunit.sh
-
-PHPUnit (latest 6.2):
-    extends: .phpunit_base
-    only:
-        - master
-    script:
-        - ./psh.phar init
-        - php bin/console plugin:install --activate SwagPayPal
-        - ./psh.phar init-test-databases
-        - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        - bin/phpunit.sh
-    variables:
-        DEVELOPMENT_BRANCH: "6.2"
-        PLATFORM_BRANCH: "6.2"
-
-PHPUnit (6.3.0.0):
-    extends: .phpunit_base
-    only:
-        - master
-    variables:
-        PLATFORM_BRANCH: "6.3.0.0"
-
-PHPUnit (6.3.0.1):
-    extends: .phpunit_base
-    only:
-        - master
-    variables:
-        PLATFORM_BRANCH: "6.3.0.1"
-
-PHPUnit (6.3.0.2):
-    extends: .phpunit_base
-    only:
-        - master
-    variables:
-        PLATFORM_BRANCH: "6.3.0.2"
+    rules:
+        -   if: '$CI_COMMIT_BRANCH == "master"'
+        -   if: '$RUN_IN_MR == "true" && $CI_PIPELINE_SOURCE == "merge_request_event"'
+    parallel:
+        matrix:
+            -   PLATFORM_BRANCH: '6.2'
+                DEVELOPMENT_BRANCH: '6.2'
+                INSTALL_CMS: 'false'
+            -   PLATFORM_BRANCH: '6.3.0.0'
+                DEVELOPMENT_BRANCH: 'master'
+                RUN_IN_MR: 'false'
+            -   PLATFORM_BRANCH: '6.3.0.1'
+                DEVELOPMENT_BRANCH: 'master'
+                RUN_IN_MR: 'false'
+            -   PLATFORM_BRANCH: '6.3.0.2'
+                DEVELOPMENT_BRANCH: 'master'
+                RUN_IN_MR: 'false'
+            -   PLATFORM_BRANCH: '6.3.1.0'
+                DEVELOPMENT_BRANCH: 'master'
+                RUN_IN_MR: 'false'
+            -   PLATFORM_BRANCH: '6.3.1.1'
+                DEVELOPMENT_BRANCH: 'master'
+                RUN_IN_MR: 'false'
+            -   PLATFORM_BRANCH: 'master'
+                DEVELOPMENT_BRANCH: 'master'
