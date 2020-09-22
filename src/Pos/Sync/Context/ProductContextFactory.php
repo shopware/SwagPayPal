@@ -52,7 +52,9 @@ class ProductContextFactory
             $salesChannel->getId(),
             $context,
             $productCollection !== null ? $productCollection->fmap(function (ProductEntity $product) {
-                return $product->getCoverId();
+                $cover = $product->getCover();
+
+                return $cover !== null ? $cover->getMediaId() : null;
             }) : null
         );
 
