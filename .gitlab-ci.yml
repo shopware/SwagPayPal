@@ -34,9 +34,6 @@ Static analyze:
         -   name: mysql:5.7
             alias: mysql
     script:
-        - echo matrix config
-        - echo DEVELOPMENT_BRANCH $DEVELOPMENT_BRANCH
-        - echo PLATFORM_BRANCH $PLATFORM_BRANCH
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
@@ -78,7 +75,7 @@ ToDos resolved:
     allow_failure: true
     script:
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        - bin/check-todos.sh $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+        - if [[ -n $CI_COMMIT_BRANCH ]]; then bin/check-todos.sh $CI_COMMIT_BRANCH; else bin/check-todos.sh $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME; fi
 
 PHPUnit Coverage (6.3.x.x dev):
     only:
@@ -116,10 +113,6 @@ PHPUnit:
         -   name: mysql:5.7
             alias: mysql
     script:
-        - echo matrix config
-        - echo DEVELOPMENT_BRANCH $DEVELOPMENT_BRANCH
-        - echo PLATFORM_BRANCH $PLATFORM_BRANCH
-        - echo INSTALL_CMS $INSTALL_CMS
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal
         - if [[ $INSTALL_CMS = "true" ]]; then php bin/console plugin:install --activate SwagCmsExtensions; fi
