@@ -1,0 +1,20 @@
+.swag-paypal-checkout-finish-pui-instructions-content {
+    .instruction-title, .instruction-description {
+        @extend .m-sm-0;
+        @extend .py-1;
+        @extend .p-sm-3;
+        @extend .col-sm-6;
+    }
+
+    dt:nth-of-type(#{$table-striped-order}), dd:nth-of-type(#{$table-striped-order}) {
+        background-color: $table-accent-bg;
+    }
+
+    .instruction-title {
+        font-weight: normal;
+    }
+
+    .instruction-description {
+        font-weight: bold;
+    }
+}
