@@ -30,10 +30,6 @@
                 "buttonSyncInventory": "Bestand synchronisieren",
                 "buttonSyncAbort": "Synchronisation abbrechen",
                 "syncErrorTitle": "Synchronisations-Fehler",
-                "manageAccount": "iZettle-Konto verwalten",
-                "editConnection": "Verbindung bearbeiten",
-                "lastUpdated": "Zuletzt aktualisiert",
-                "connected": "Verbunden",
                 "status": {
                     "disabled": "Die Synchronisation ist nicht aktiv, da dieser Verkaufskanal deaktiviert ist.",
                     "message": {
@@ -162,8 +158,8 @@
                 "info": "Befolge zum Abschluss die nächsten Schritte zur Einrichtung der Produktsynchronisation.",
                 "disconnectButton": "Verbindung trennen",
                 "disclaimer": "Alle Änderungen, die Du an Deinen Shopware-Produkten vornimmst, werden jetzt automatisch in Deinem verbundenen iZettle-Konto aktualisiert.",
-                "fakeFirstName": "Im",
-                "fakeLastName": "Ladeprozess",
+                "fakeFirstName": "Wird",
+                "fakeLastName": "geladen ...",
                 "fakeMail": "pos@example.com"
             },
             "connectionDisconnect": {
@@ -221,6 +217,17 @@
             "placeholderApiKey": "API-Schüssel eingeben ...",
             "apiKeyDescription": "Ein API-Schlüssel funktioniert wie ein Passwort. Shopware verwendet Deinen iZettle-API-Schlüssel, um eine sichere Verbindung zu Deinem iZettle-Konto herzustellen.",
             "buttonGenerateKey": "API-Key generieren"
+        },
+        "account": {
+            "loadingName": "Wird geladen ...",
+            "loadingEmail": "pos@example.com",
+            "errorName": "Fehler bei der Authentifikation",
+            "errorEmail": "Dein API-Key konnte nicht verifiziert werden",
+            "connectedStatus": "Verbunden",
+            "noConnectionStatus": "Keine Verbindung",
+            "manageAccount": "iZettle-Konto verwalten",
+            "editConnection": "Verbindung bearbeiten",
+            "lastUpdated": "Zuletzt aktualisiert"
         },
         "gettingStarted": {
             "cardTitle": "Erste Schritte mit iZettle",

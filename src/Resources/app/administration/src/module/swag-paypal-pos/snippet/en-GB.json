@@ -30,10 +30,6 @@
                 "buttonSyncInventory": "Synchronise inventory",
                 "buttonSyncAbort": "Abort synchronisation",
                 "syncErrorTitle": "Synchronisation error",
-                "manageAccount": "Manage account",
-                "editConnection": "Edit connection",
-                "lastUpdated": "Last updated",
-                "connected": "Connected",
                 "status": {
                     "disabled": "Synchronisation is not enabled, because your Sales Channel is disabled.",
                     "message": {
@@ -163,7 +159,7 @@
                 "disconnectButton": "Disconnect",
                 "disclaimer": "Any changes you make to your Shopware products will now automatically be updated in your connected iZettle account.",
                 "fakeFirstName": "Currently",
-                "fakeLastName": "Loading",
+                "fakeLastName": "loading...",
                 "fakeMail": "pos@example.com"
             },
             "connectionDisconnect": {
@@ -221,6 +217,17 @@
             "placeholderApiKey": "Enter API key...",
             "apiKeyDescription": "API keys function like passwords. Shopware will use your iZettle API key to establish a secure connection to your iZettle account.",
             "buttonGenerateKey": "Generate API key"
+        },
+        "account": {
+            "loadingName": "Currently loading...",
+            "loadingEmail": "pos@example.com",
+            "errorName": "Error during authentication",
+            "errorEmail": "Your API key could not be verified",
+            "connectedStatus": "Connected",
+            "noConnectionStatus": "No connection",
+            "manageAccount": "Manage account",
+            "editConnection": "Edit connection",
+            "lastUpdated": "Last updated"
         },
         "gettingStarted": {
             "cardTitle": "Get started with iZettle",

@@ -24,13 +24,19 @@
                                     </div>
                                 {% endblock %}
 
+                                {% block swag_paypal_pos_account_grid_container_info_email %}
+                                    <div class="swag-paypal-pos-account__email">
+                                        {{ accountEmail }}
+                                    </div>
+                                {% endblock %}
+
                                 {% block swag_paypal_pos_account_grid_container_info_link %}
                                     <a href="https://my.izettle.com"
                                        target="_blank"
                                        class="link swag-paypal-pos-account__manage-link">
 
                                         {% block swag_paypal_pos_account_grid_container_info_link_text %}
-                                            {{ $tc('swag-paypal-pos.detail.overview.manageAccount') }}
+                                            {{ $tc('swag-paypal-pos.account.manageAccount') }}
                                         {% endblock %}
 
                                         {% block swag_paypal_pos_account_grid_container_info_link_icon %}
@@ -48,7 +54,7 @@
                                                class="swag-paypal-pos-account__edit-connection-button"
                                                size="small"
                                                block>
-                                        {{ $tc('swag-paypal-pos.detail.overview.editConnection') }}
+                                        {{ $tc('swag-paypal-pos.account.editConnection') }}
                                     </sw-button>
                                 {% endblock %}
                             </div>
@@ -59,22 +65,22 @@
 
                                 {% block swag_paypal_pos_account_grid_container_status_label %}
                                     <sw-label class="swag-paypal-pos-account__status-label"
-                                              variant="success"
                                               size="medium"
                                               appearance="pill"
+                                              :variant="connectionStatusVariant"
                                               :ghost="false"
                                               :caps="false">
 
                                         {% block swag_paypal_pos_account_grid_container_status_label_badge %}
                                             <sw-color-badge class="swag-paypal-pos-account__status-color-badge"
-                                                            color="#37d046"
-                                                            rounded>
+                                                            rounded
+                                                            :variant="connectionStatusVariant">
                                             </sw-color-badge>
                                         {% endblock %}
 
                                         {% block swag_paypal_pos_account_grid_container_status_label_text %}
                                             <span class="swag-paypal-pos-account__status-text">
-                                                {{ $tc('swag-paypal-pos.detail.overview.connected') }}
+                                                {{ connectionStatusText }}
                                             </span>
                                         {% endblock %}
                                     </sw-label>
@@ -83,7 +89,7 @@
                                 {% block swag_paypal_pos_account_grid_container_status_updated %}
                                     <div v-if="lastRun"
                                          class="swag-paypal-pos-account__status-updated">
-                                        {{ $tc('swag-paypal-pos.detail.overview.lastUpdated') }} {{ lastRun.updatedAt | date({
+                                        {{ $tc('swag-paypal-pos.account.lastUpdated') }} {{ lastRun.updatedAt | date({
                                             hour: '2-digit',
                                             minute: '2-digit',
                                             second: '2-digit',
