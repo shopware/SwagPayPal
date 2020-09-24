@@ -1,3 +1,6 @@
+# 1.8.4
+- PPI-125 - Shopware 6.3.2.0 compatibility
+
 # 1.8.3
 - PPI-70 - Order number is now correctly submitted to PayPal for payments with Express Checkout, PLUS and Smart Payment Buttons
 
