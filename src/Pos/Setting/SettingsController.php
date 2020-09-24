@@ -9,6 +9,7 @@ namespace Swag\PayPal\Pos\Setting;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Swag\PayPal\Pos\Exception\ExistingPosAccountException;
 use Swag\PayPal\Pos\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Setting\Service\InformationFetchService;
@@ -72,11 +73,18 @@ class SettingsController extends AbstractController
      *     methods={"POST"}
      * )
      */
-    public function validateApiCredentials(Request $request): JsonResponse
+    public function validateApiCredentials(Request $request, Context $context): JsonResponse
     {
         $apiKey = $request->request->get('apiKey');
+        $salesChannelId = $request->request->getAlnum('salesChannelId');
 
         $credentialsValid = $this->apiCredentialService->testApiCredentials($apiKey);
+        $duplicates = $this->apiCredentialService->checkForDuplicates($apiKey, $context);
+        if (\count($duplicates) > 0
+            && ($salesChannelId === '' || \count($duplicates) > 1 || !isset($duplicates[$salesChannelId]))
+        ) {
+            throw new ExistingPosAccountException($duplicates);
+        }
 
         return new JsonResponse(['credentialsValid' => $credentialsValid]);
     }

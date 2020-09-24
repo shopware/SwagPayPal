@@ -21,6 +21,8 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Swag\PayPal\Pos\Api\Exception\PosTokenException;
+use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
+use Swag\PayPal\Pos\Exception\ExistingPosAccountException;
 use Swag\PayPal\Pos\MessageQueue\Handler\CloneVisiblityHandler;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Resource\TokenResource;
@@ -75,18 +77,39 @@ class SettingsControllerTest extends TestCase
 
     public function testValidateCredentialsValid(): void
     {
-        $response = $this->getSettingsController()->validateApiCredentials(new Request([], [
+        $response = $this->getSettingsController(false)->validateApiCredentials(new Request([], [
             'apiKey' => ConstantsForTesting::VALID_API_KEY,
-        ]));
+        ]), Context::createDefaultContext());
         static::assertSame($response->getContent(), \json_encode(['credentialsValid' => true]));
     }
 
     public function testValidateCredentialsInvalid(): void
     {
         $this->expectException(PosTokenException::class);
-        $this->getSettingsController()->validateApiCredentials(new Request([], [
+        $this->getSettingsController(false)->validateApiCredentials(new Request([], [
             'apiKey' => ConstantsForTesting::INVALID_API_KEY,
-        ]));
+        ]), Context::createDefaultContext());
+    }
+
+    public function testValidateCredentialsDuplicate(): void
+    {
+        $this->expectException(ExistingPosAccountException::class);
+        $this->getSettingsController()->validateApiCredentials(new Request([], [
+            'apiKey' => ConstantsForTesting::VALID_API_KEY,
+        ]), Context::createDefaultContext());
+    }
+
+    public function testValidateCredentialsDuplicateSameSalesChannel(): void
+    {
+        $settingsController = $this->getSettingsController();
+        $this->salesChannelRepository->getCollection()->remove($this->salesChannelRepository->getMockEntityWithNoTypeId()->getId());
+        $this->salesChannelRepository->getCollection()->remove($this->salesChannelRepository->getMockInactiveEntity()->getId());
+
+        $response = $settingsController->validateApiCredentials(new Request([], [
+            'apiKey' => ConstantsForTesting::VALID_API_KEY,
+            'salesChannelId' => $this->salesChannelRepository->getMockEntity()->getId(),
+        ]), Context::createDefaultContext());
+        static::assertSame($response->getContent(), \json_encode(['credentialsValid' => true]));
     }
 
     public function testFetchInformation(): void
@@ -174,7 +197,7 @@ class SettingsControllerTest extends TestCase
         static::assertSame(\json_encode($expected), $response->getContent());
     }
 
-    private function getSettingsController(): SettingsController
+    private function getSettingsController(bool $withSalesChannels = true): SettingsController
     {
         /** @var EntityRepositoryInterface $countryRepository */
         $countryRepository = $this->getContainer()->get('country.repository');
@@ -195,7 +218,7 @@ class SettingsControllerTest extends TestCase
         /** @var EntityRepositoryInterface $ruleRepository */
         $ruleRepository = $this->getContainer()->get('rule.repository');
         /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->getContainer()->get('Shopware\Core\Framework\Plugin\Util\PluginIdProvider');
+        $pluginIdProvider = $this->getContainer()->get(PluginIdProvider::class);
 
         $this->productVisibilityRepository = new ProductVisibilityRepoMock();
         $this->messageBus = new MessageBusMock();
@@ -203,14 +226,22 @@ class SettingsControllerTest extends TestCase
         $this->salesChannelProductRepository = new SalesChannelProductRepoMock();
         $this->salesChannelRepository = new SalesChannelRepoMock();
 
+        if (!$withSalesChannels) {
+            $this->salesChannelRepository->getCollection()->clear();
+        }
+
         /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get('Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory');
+        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
 
         return new SettingsController(
-            new ApiCredentialService(new TokenResource(
-                new CacheMock(),
-                new TokenClientFactoryMock()
-            )),
+            new ApiCredentialService(
+                new TokenResource(
+                    new CacheMock(),
+                    new TokenClientFactoryMock()
+                ),
+                $this->salesChannelRepository,
+                new ApiKeyDecoder()
+            ),
             new InformationFetchService(
                 new UserResource(new PosClientFactoryMock()),
                 $countryRepository,

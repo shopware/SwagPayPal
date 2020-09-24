@@ -31,22 +31,42 @@ class User extends PosStruct
      */
     private $userRole;
 
-    protected function setUserType(string $userType): void
+    public function getUserType(): string
+    {
+        return $this->userType;
+    }
+
+    public function setUserType(string $userType): void
     {
         $this->userType = $userType;
     }
 
-    protected function setUuid(string $uuid): void
+    public function getUuid(): string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
     }
 
-    protected function setOrgUuid(string $orgUuid): void
+    public function getOrgUuid(): string
+    {
+        return $this->orgUuid;
+    }
+
+    public function setOrgUuid(string $orgUuid): void
     {
         $this->orgUuid = $orgUuid;
     }
 
-    protected function setUserRole(string $userRole): void
+    public function getUserRole(): string
+    {
+        return $this->userRole;
+    }
+
+    public function setUserRole(string $userRole): void
     {
         $this->userRole = $userRole;
     }

@@ -111,7 +111,10 @@ Component.register('swag-paypal-pos-detail-settings', {
             }
 
             return this.SwagPayPalPosSettingApiService
-                .fetchInformation(this.salesChannel)
+                .validateApiCredentials(this.swagPaypalPosSalesChannel.apiKey, this.salesChannel.id)
+                .then(() => {
+                    return this.SwagPayPalPosSettingApiService.fetchInformation(this.salesChannel);
+                })
                 .then(this.save)
                 .catch((errorResponse) => {
                     this.catchAuthenticationError((errorResponse));
@@ -160,7 +163,7 @@ Component.register('swag-paypal-pos-detail-settings', {
                 });
         },
 
-        onTestCredentials() {
+        testCredentials() {
             const apiKey = this.swagPaypalPosSalesChannel.apiKey;
 
             this.isTestingCredentials = true;
