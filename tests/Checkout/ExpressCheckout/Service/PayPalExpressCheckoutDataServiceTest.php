@@ -19,6 +19,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -176,8 +177,14 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame('EUR', $expressCheckoutButtonData->getCurrency());
         static::assertSame(PaymentIntent::SALE, $expressCheckoutButtonData->getIntent());
         static::assertFalse($expressCheckoutButtonData->getAddProductToCart());
-        static::assertSame('/sales-channel-api/v2/_action/paypal/create-payment', $expressCheckoutButtonData->getCreatePaymentUrl());
-        static::assertSame('/sales-channel-api/v2/_action/paypal/create-new-cart', $expressCheckoutButtonData->getCreateNewCartUrl());
+        static::assertSame(
+            \sprintf('/sales-channel-api/v%s/_action/paypal/create-payment', PlatformRequest::API_VERSION),
+            $expressCheckoutButtonData->getCreatePaymentUrl()
+        );
+        static::assertSame(
+            \sprintf('/sales-channel-api/v%s/_action/paypal/create-new-cart', PlatformRequest::API_VERSION),
+            $expressCheckoutButtonData->getCreateNewCartUrl()
+        );
         /**
          * @deprecated tag:v2.0.0 - PayPal uses the core add to cart button
          */

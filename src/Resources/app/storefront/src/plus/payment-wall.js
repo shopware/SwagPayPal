@@ -134,6 +134,13 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         setPaymentRouteUrl: '',
 
         /**
+         * URL for updating the context, in this case setting the right language
+         *
+         * @type string
+         */
+        contextSwitchUrl: '',
+
+        /**
          * Request parameter name which identifies a PLUS checkout
          *
          * @type string
@@ -198,20 +205,17 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         ElementLoadingIndicatorUtil.create(document.body);
 
         const orderId = this.options.orderId;
-        const request = new XMLHttpRequest();
-        let callback = null;
-        if (orderId !== null) {
-            formData.set('orderId', orderId);
-            request.open('POST', this.options.setPaymentRouteUrl);
-            callback = this.afterSetPayment.bind(this);
-        } else {
-            request.open('POST', this.options.checkoutOrderUrl);
-            callback = this.afterCreateOrder.bind(this);
-        }
-        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        request.setRequestHeader('sw-language-id', this.options.languageId);
+        this._client.patch(this.options.contextSwitchUrl, JSON.stringify({ languageId: this.options.languageId }), () => {
+            if (orderId !== null) {
+                formData.set('orderId', orderId);
 
-        this._client._sendRequest(request, formData, callback);
+                this._client.post(this.options.setPaymentRouteUrl, formData, this.afterSetPayment.bind(this));
+
+                return;
+            }
+
+            this._client.post(this.options.checkoutOrderUrl, formData, this.afterCreateOrder.bind(this));
+        });
     }
 
     /**

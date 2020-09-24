@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Payment\PayPalPaymentHandler;
@@ -72,8 +73,8 @@ class PayPalExpressCheckoutDataService
             'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
             'intent' => $settings->getIntent(),
             'addProductToCart' => $addProductToCart,
-            'createPaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.create_payment', ['version' => 2]),
-            'createNewCartUrl' => $this->router->generate('sales-channel-api.action.paypal.create_new_cart', ['version' => 2]),
+            'createPaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.create_payment', ['version' => PlatformRequest::API_VERSION]),
+            'createNewCartUrl' => $this->router->generate('sales-channel-api.action.paypal.create_new_cart', ['version' => PlatformRequest::API_VERSION]),
             'addLineItemUrl' => $this->router->generate('frontend.checkout.line-item.add'),
             'approvePaymentUrl' => $this->router->generate('payment.paypal.approve_payment'),
             'checkoutConfirmUrl' => $this->router->generate(

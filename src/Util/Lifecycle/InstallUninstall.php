@@ -294,6 +294,10 @@ class InstallUninstall
     {
         $paymentMethodUtil = new PaymentMethodUtil($this->paymentRepository, $this->salesChannelRepository);
         $payPalPuiPaymentMethodId = $paymentMethodUtil->getPayPalPuiPaymentMethodId($context);
+        if ($payPalPuiPaymentMethodId === null) {
+            return;
+        }
+
         $criteria = new Criteria([$payPalPuiPaymentMethodId]);
         $criteria->addAssociation('availabilityRuleId');
 
