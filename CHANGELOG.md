@@ -1,6 +1,7 @@
 # 1.9.0
 - PPI-1 - Fixes mobile layout of checkout finish for "Pay Upon Invoice"
 - PPI-69 - The Express button is now hidden, when the PayPal payment method is disabled.
+- PPI-125 - Shopware 6.3.2.0 compatibility
 - PT-11048 - Introduce iZettle integration (Point of Sales)
 
 # 1.8.3

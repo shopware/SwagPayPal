@@ -1,6 +1,7 @@
 # 1.9.0
 - PPI-1 - Korrigiert mobiles Layout der Bestellabschlussseite bei "Kauf auf Rechnung"
 - PPI-69 - Der Express-Button wird nun ausgeblendet, wenn die PayPal-Zahlungsmethode deaktiviert ist.
+- PPI-125 - Shopware 6.3.2.0 Kompatibilität
 - PT-11048 - iZettle-Integration (Point of Sales) hinzugefügt
 
 # 1.8.3
