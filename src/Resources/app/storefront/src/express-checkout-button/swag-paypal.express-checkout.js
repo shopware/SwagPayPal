@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unresolved */
 
+import HttpClient from 'src/service/http-client.service';
 import StoreApiClient from 'src/service/store-api-client.service';
 import DomAccess from 'src/helper/dom-access.helper';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
@@ -122,7 +123,10 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     };
 
     init() {
+        /* @deprecated tag:v2.0.0 - Will be removed. Use _storeApiClient instead */
         this._client = new StoreApiClient();
+        this._storeApiClient = new StoreApiClient();
+        this._httpClient = new HttpClient();
         this.paypal = null;
         this.createButton();
     }
@@ -260,7 +264,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
      */
     _createOrder() {
         return new Promise(resolve => {
-            this._client.get(this.options.createPaymentUrl, responseText => {
+            this._storeApiClient.get(this.options.createPaymentUrl, responseText => {
                 const response = JSON.parse(responseText);
                 resolve(response.token);
             });
@@ -272,7 +276,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         const plugin = window.PluginManager.getPluginInstanceFromElement(DomAccess.querySelector(document, '[data-add-to-cart]'), 'AddToCart');
 
         return new Promise(resolve => {
-            this._client.get(this.options.createNewCartUrl, () => {
+            this._storeApiClient.get(this.options.createNewCartUrl, () => {
                 plugin.$emitter.subscribe('openOffCanvasCart', () => {
                     resolve();
                 });
@@ -291,7 +295,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         // Add a loading indicator to the body to prevent the user breaking the checkout process
         ElementLoadingIndicatorUtil.create(document.body);
 
-        this._client.post(
+        this._httpClient.post(
             this.options.approvePaymentUrl,
             JSON.stringify(requestPayload),
             () => {
