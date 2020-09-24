@@ -1,5 +1,6 @@
 # 1.9.0
 - PPI-1 - Korrigiert mobiles Layout der Bestellabschlussseite bei "Kauf auf Rechnung"
+- PPI-68 - API-Objekt-Nutzung für Dritt-Erweiterungen verbessert
 - PPI-69 - Der Express-Button wird nun ausgeblendet, wenn die PayPal-Zahlungsmethode deaktiviert ist.
 - PT-11048 - iZettle-Integration (Point of Sales) hinzugefügt
 

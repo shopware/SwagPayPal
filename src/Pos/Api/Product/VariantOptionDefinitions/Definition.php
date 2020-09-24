@@ -35,7 +35,7 @@ class Definition extends PosStruct
     /**
      * @param Property[] $properties
      */
-    protected function setPropertys(array $properties): void
+    public function setPropertys(array $properties): void
     {
         $this->properties = $properties;
     }

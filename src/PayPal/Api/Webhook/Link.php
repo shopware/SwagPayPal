@@ -14,9 +14,14 @@ class Link extends CommonLink
     /**
      * @var string
      */
-    private $encType;
+    protected $encType;
 
-    protected function setEncType(string $encType): void
+    public function getEncType(): string
+    {
+        return $this->encType;
+    }
+
+    public function setEncType(string $encType): void
     {
         $this->encType = $encType;
     }

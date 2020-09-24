@@ -21,67 +21,105 @@ class DoVoid extends PayPalStruct
     /**
      * @var Amount
      */
-    private $amount;
+    protected $amount;
 
     /**
      * @var string
      */
-    private $state;
+    protected $state;
 
     /**
      * @var string
      */
-    private $parentPayment;
+    protected $parentPayment;
 
     /**
      * @var string
      */
-    private $createTime;
+    protected $createTime;
 
     /**
      * @var string
      */
-    private $updateTime;
+    protected $updateTime;
 
     /**
      * @var Link[]
      */
-    private $links;
+    protected $links;
 
-    protected function setId(string $id): void
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
 
-    protected function setAmount(Amount $amount): void
+    public function getAmount(): Amount
+    {
+        return $this->amount;
+    }
+
+    public function setAmount(Amount $amount): void
     {
         $this->amount = $amount;
     }
 
-    protected function setState(string $state): void
+    public function getState(): string
+    {
+        return $this->state;
+    }
+
+    public function setState(string $state): void
     {
         $this->state = $state;
     }
 
-    protected function setParentPayment(string $parentPayment): void
+    public function getParentPayment(): string
+    {
+        return $this->parentPayment;
+    }
+
+    public function setParentPayment(string $parentPayment): void
     {
         $this->parentPayment = $parentPayment;
     }
 
-    protected function setCreateTime(string $createTime): void
+    public function getCreateTime(): string
+    {
+        return $this->createTime;
+    }
+
+    public function setCreateTime(string $createTime): void
     {
         $this->createTime = $createTime;
     }
 
-    protected function setUpdateTime(string $updateTime): void
+    public function getUpdateTime(): string
+    {
+        return $this->updateTime;
+    }
+
+    public function setUpdateTime(string $updateTime): void
     {
         $this->updateTime = $updateTime;
     }
 
     /**
+     * @return Link[]
+     */
+    public function getLinks(): array
+    {
+        return $this->links;
+    }
+
+    /**
      * @param Link[] $links
      */
-    protected function setLinks(array $links): void
+    public function setLinks(array $links): void
     {
         $this->links = $links;
     }

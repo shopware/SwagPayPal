@@ -21,9 +21,19 @@ class RedirectUrls extends PayPalStruct
      */
     protected $cancelUrl;
 
+    public function getReturnUrl(): string
+    {
+        return $this->returnUrl;
+    }
+
     public function setReturnUrl(string $returnUrl): void
     {
         $this->returnUrl = $returnUrl;
+    }
+
+    public function getCancelUrl(): string
+    {
+        return $this->cancelUrl;
     }
 
     public function setCancelUrl(string $cancelUrl): void

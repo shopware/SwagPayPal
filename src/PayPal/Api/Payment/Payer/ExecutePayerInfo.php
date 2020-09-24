@@ -16,13 +16,13 @@ class ExecutePayerInfo extends PayPalStruct
      */
     protected $payerId;
 
-    public function setPayerId(string $payerId): void
-    {
-        $this->payerId = $payerId;
-    }
-
     public function getPayerId(): string
     {
         return $this->payerId;
+    }
+
+    public function setPayerId(string $payerId): void
+    {
+        $this->payerId = $payerId;
     }
 }

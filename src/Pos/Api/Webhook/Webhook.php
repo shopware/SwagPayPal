@@ -36,9 +36,34 @@ class Webhook extends PosStruct
      */
     protected $timestamp;
 
+    public function getOrganizationUuid(): string
+    {
+        return $this->organizationUuid;
+    }
+
+    public function setOrganizationUuid(string $organizationUuid): void
+    {
+        $this->organizationUuid = $organizationUuid;
+    }
+
+    public function getMessageUuid(): string
+    {
+        return $this->messageUuid;
+    }
+
+    public function setMessageUuid(string $messageUuid): void
+    {
+        $this->messageUuid = $messageUuid;
+    }
+
     public function getEventName(): string
     {
         return $this->eventName;
+    }
+
+    public function setEventName(string $eventName): void
+    {
+        $this->eventName = $eventName;
     }
 
     public function getPayload(): string
@@ -46,32 +71,17 @@ class Webhook extends PosStruct
         return $this->payload;
     }
 
+    public function setPayload(string $payload): void
+    {
+        $this->payload = $payload;
+    }
+
     public function getTimestamp(): string
     {
         return $this->timestamp;
     }
 
-    protected function setOrganizationUuid(string $organizationUuid): void
-    {
-        $this->organizationUuid = $organizationUuid;
-    }
-
-    protected function setMessageUuid(string $messageUuid): void
-    {
-        $this->messageUuid = $messageUuid;
-    }
-
-    protected function setEventName(string $eventName): void
-    {
-        $this->eventName = $eventName;
-    }
-
-    protected function setPayload(string $payload): void
-    {
-        $this->payload = $payload;
-    }
-
-    protected function setTimestamp(string $timestamp): void
+    public function setTimestamp(string $timestamp): void
     {
         $this->timestamp = $timestamp;
     }

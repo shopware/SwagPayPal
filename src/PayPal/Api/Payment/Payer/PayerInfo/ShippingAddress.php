@@ -14,9 +14,14 @@ class ShippingAddress extends Address
     /**
      * @var string
      */
-    private $recipientName;
+    protected $recipientName;
 
-    protected function setRecipientName(string $recipientName): void
+    public function getRecipientName(): string
+    {
+        return $this->recipientName;
+    }
+
+    public function setRecipientName(string $recipientName): void
     {
         $this->recipientName = $recipientName;
     }

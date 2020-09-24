@@ -17,11 +17,6 @@ parameters:
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
-        -   # The API structs have many unused class elements
-            message: '#is never read, only written#'
-            paths:
-                - src/PayPal/Api
-                - src/Pos/Api
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

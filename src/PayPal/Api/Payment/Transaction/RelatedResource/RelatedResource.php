@@ -46,31 +46,46 @@ abstract class RelatedResource extends PayPalStruct
     /**
      * @var string
      */
-    private $protectionEligibility;
+    protected $protectionEligibility;
 
     /**
      * @var string
      */
-    private $protectionEligibilityType;
+    protected $protectionEligibilityType;
 
     /**
      * @var string
      */
-    private $receiptId;
+    protected $receiptId;
 
     /**
      * @var string
      */
-    private $parentPayment;
+    protected $parentPayment;
 
     /**
      * @var Link[]
      */
-    private $links;
+    protected $links;
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
 
     public function getState(): string
     {
         return $this->state;
+    }
+
+    public function setState(string $state): void
+    {
+        $this->state = \mb_strtolower($state);
     }
 
     public function getAmount(): Amount
@@ -78,60 +93,93 @@ abstract class RelatedResource extends PayPalStruct
         return $this->amount;
     }
 
-    protected function setId(string $id): void
-    {
-        $this->id = $id;
-    }
-
-    protected function setState(string $state): void
-    {
-        $this->state = \mb_strtolower($state);
-    }
-
-    protected function setAmount(Amount $amount): void
+    public function setAmount(Amount $amount): void
     {
         $this->amount = $amount;
     }
 
-    protected function setPaymentMode(string $paymentMode): void
+    public function getPaymentMode(): string
+    {
+        return $this->paymentMode;
+    }
+
+    public function setPaymentMode(string $paymentMode): void
     {
         $this->paymentMode = $paymentMode;
     }
 
-    protected function setCreateTime(string $createTime): void
+    public function getCreateTime(): string
+    {
+        return $this->createTime;
+    }
+
+    public function setCreateTime(string $createTime): void
     {
         $this->createTime = $createTime;
     }
 
-    protected function setUpdateTime(string $updateTime): void
+    public function getUpdateTime(): string
+    {
+        return $this->updateTime;
+    }
+
+    public function setUpdateTime(string $updateTime): void
     {
         $this->updateTime = $updateTime;
     }
 
-    protected function setProtectionEligibility(string $protectionEligibility): void
+    public function getProtectionEligibility(): string
+    {
+        return $this->protectionEligibility;
+    }
+
+    public function setProtectionEligibility(string $protectionEligibility): void
     {
         $this->protectionEligibility = $protectionEligibility;
     }
 
-    protected function setProtectionEligibilityType(string $protectionEligibilityType): void
+    public function getProtectionEligibilityType(): string
+    {
+        return $this->protectionEligibilityType;
+    }
+
+    public function setProtectionEligibilityType(string $protectionEligibilityType): void
     {
         $this->protectionEligibilityType = $protectionEligibilityType;
     }
 
-    protected function setReceiptId(string $receiptId): void
+    public function getReceiptId(): string
+    {
+        return $this->receiptId;
+    }
+
+    public function setReceiptId(string $receiptId): void
     {
         $this->receiptId = $receiptId;
     }
 
-    protected function setParentPayment(string $parentPayment): void
+    public function getParentPayment(): string
+    {
+        return $this->parentPayment;
+    }
+
+    public function setParentPayment(string $parentPayment): void
     {
         $this->parentPayment = $parentPayment;
     }
 
     /**
+     * @return Link[]
+     */
+    public function getLinks(): array
+    {
+        return $this->links;
+    }
+
+    /**
      * @param Link[] $links
      */
-    protected function setLinks(array $links): void
+    public function setLinks(array $links): void
     {
         $this->links = $links;
     }

@@ -14,29 +14,44 @@ class Capture extends RelatedResource
     /**
      * @var string
      */
-    private $custom;
+    protected $custom;
 
     /**
      * @var TransactionFee
      */
-    private $transactionFee;
+    protected $transactionFee;
 
     /**
      * @var string
      */
-    private $invoiceNumber;
+    protected $invoiceNumber;
 
-    protected function setCustom(string $custom): void
+    public function getCustom(): string
+    {
+        return $this->custom;
+    }
+
+    public function setCustom(string $custom): void
     {
         $this->custom = $custom;
     }
 
-    protected function setTransactionFee(TransactionFee $transactionFee): void
+    public function getTransactionFee(): TransactionFee
+    {
+        return $this->transactionFee;
+    }
+
+    public function setTransactionFee(TransactionFee $transactionFee): void
     {
         $this->transactionFee = $transactionFee;
     }
 
-    protected function setInvoiceNumber(string $invoiceNumber): void
+    public function getInvoiceNumber(): string
+    {
+        return $this->invoiceNumber;
+    }
+
+    public function setInvoiceNumber(string $invoiceNumber): void
     {
         $this->invoiceNumber = $invoiceNumber;
     }

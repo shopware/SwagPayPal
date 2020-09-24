@@ -43,12 +43,42 @@ class Transaction extends PayPalStruct
     /**
      * @var string
      */
-    private $softDescriptor;
+    protected $softDescriptor;
 
     /**
      * @var string
      */
-    private $description;
+    protected $description;
+
+    public function getAmount(): Amount
+    {
+        return $this->amount;
+    }
+
+    public function setAmount(Amount $amount): void
+    {
+        $this->amount = $amount;
+    }
+
+    public function getPayee(): Payee
+    {
+        return $this->payee;
+    }
+
+    public function setPayee(Payee $payee): void
+    {
+        $this->payee = $payee;
+    }
+
+    public function getItemList(): ?ItemList
+    {
+        return $this->itemList;
+    }
+
+    public function setItemList(?ItemList $itemList): void
+    {
+        $this->itemList = $itemList;
+    }
 
     /**
      * @return RelatedResource[]
@@ -58,24 +88,17 @@ class Transaction extends PayPalStruct
         return $this->relatedResources;
     }
 
-    public function getAmount(): Amount
+    /**
+     * @param RelatedResource[] $relatedResources
+     */
+    public function setRelatedResources(array $relatedResources): void
     {
-        return $this->amount;
+        $this->relatedResources = $relatedResources;
     }
 
-    public function getItemList(): ?ItemList
+    public function getInvoiceNumber(): string
     {
-        return $this->itemList;
-    }
-
-    public function setAmount(Amount $amount): void
-    {
-        $this->amount = $amount;
-    }
-
-    public function setItemList(?ItemList $itemList): void
-    {
-        $this->itemList = $itemList;
+        return $this->invoiceNumber;
     }
 
     public function setInvoiceNumber(string $invoiceNumber): void
@@ -83,26 +106,23 @@ class Transaction extends PayPalStruct
         $this->invoiceNumber = $invoiceNumber;
     }
 
-    protected function setSoftDescriptor(string $softDescriptor): void
+    public function getSoftDescriptor(): string
+    {
+        return $this->softDescriptor;
+    }
+
+    public function setSoftDescriptor(string $softDescriptor): void
     {
         $this->softDescriptor = $softDescriptor;
     }
 
-    protected function setPayee(Payee $payee): void
+    public function getDescription(): string
     {
-        $this->payee = $payee;
+        return $this->description;
     }
 
-    protected function setDescription(string $description): void
+    public function setDescription(string $description): void
     {
         $this->description = $description;
-    }
-
-    /**
-     * @param RelatedResource[] $relatedResources
-     */
-    protected function setRelatedResources(array $relatedResources): void
-    {
-        $this->relatedResources = $relatedResources;
     }
 }

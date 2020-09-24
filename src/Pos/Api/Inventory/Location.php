@@ -41,32 +41,47 @@ class Location extends PosStruct
         return $this->uuid;
     }
 
+    public function setUuid(string $uuid): void
+    {
+        $this->uuid = $uuid;
+    }
+
     public function getType(): string
     {
         return $this->type;
     }
 
-    protected function setUuid(string $uuid): void
-    {
-        $this->uuid = $uuid;
-    }
-
-    protected function setType(string $type): void
+    public function setType(string $type): void
     {
         $this->type = $type;
     }
 
-    protected function setName(string $name): void
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    protected function setDescription(string $description): void
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
 
-    protected function setDefault(bool $default): void
+    public function isDefault(): bool
+    {
+        return $this->default;
+    }
+
+    public function setDefault(bool $default): void
     {
         $this->default = $default;
     }

@@ -53,9 +53,19 @@ class RelatedResource extends PayPalStruct
         return $this->sale;
     }
 
+    public function setSale(?Sale $sale): void
+    {
+        $this->sale = $sale;
+    }
+
     public function getAuthorization(): ?Authorization
     {
         return $this->authorization;
+    }
+
+    public function setAuthorization(?Authorization $authorization): void
+    {
+        $this->authorization = $authorization;
     }
 
     public function getOrder(): ?Order
@@ -63,12 +73,17 @@ class RelatedResource extends PayPalStruct
         return $this->order;
     }
 
+    public function setOrder(?Order $order): void
+    {
+        $this->order = $order;
+    }
+
     public function getRefund(): ?Refund
     {
         return $this->refund;
     }
 
-    public function setRefund(Refund $refund): void
+    public function setRefund(?Refund $refund): void
     {
         $this->refund = $refund;
     }
@@ -78,23 +93,8 @@ class RelatedResource extends PayPalStruct
         return $this->capture;
     }
 
-    public function setCapture(Capture $capture): void
+    public function setCapture(?Capture $capture): void
     {
         $this->capture = $capture;
-    }
-
-    protected function setSale(Sale $sale): void
-    {
-        $this->sale = $sale;
-    }
-
-    protected function setAuthorization(Authorization $authorization): void
-    {
-        $this->authorization = $authorization;
-    }
-
-    protected function setOrder(Order $order): void
-    {
-        $this->order = $order;
     }
 }

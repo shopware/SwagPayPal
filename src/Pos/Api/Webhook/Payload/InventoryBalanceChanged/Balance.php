@@ -36,9 +36,24 @@ abstract class Balance extends PosStruct
      */
     protected $balance;
 
+    public function getOrganizationUuid(): string
+    {
+        return $this->organizationUuid;
+    }
+
+    public function setOrganizationUuid(string $organizationUuid): void
+    {
+        $this->organizationUuid = $organizationUuid;
+    }
+
     public function getLocationUuid(): string
     {
         return $this->locationUuid;
+    }
+
+    public function setLocationUuid(string $locationUuid): void
+    {
+        $this->locationUuid = $locationUuid;
     }
 
     public function getProductUuid(): string
@@ -46,9 +61,19 @@ abstract class Balance extends PosStruct
         return $this->productUuid;
     }
 
+    public function setProductUuid(string $productUuid): void
+    {
+        $this->productUuid = $productUuid;
+    }
+
     public function getVariantUuid(): string
     {
         return $this->variantUuid;
+    }
+
+    public function setVariantUuid(string $variantUuid): void
+    {
+        $this->variantUuid = $variantUuid;
     }
 
     public function getBalance(): int
@@ -56,27 +81,7 @@ abstract class Balance extends PosStruct
         return $this->balance;
     }
 
-    protected function setOrganizationUuid(string $organizationUuid): void
-    {
-        $this->organizationUuid = $organizationUuid;
-    }
-
-    protected function setLocationUuid(string $locationUuid): void
-    {
-        $this->locationUuid = $locationUuid;
-    }
-
-    protected function setProductUuid(string $productUuid): void
-    {
-        $this->productUuid = $productUuid;
-    }
-
-    protected function setVariantUuid(string $variantUuid): void
-    {
-        $this->variantUuid = $variantUuid;
-    }
-
-    protected function setBalance(string $balance): void
+    public function setBalance(string $balance): void
     {
         $this->balance = (int) $balance;
     }

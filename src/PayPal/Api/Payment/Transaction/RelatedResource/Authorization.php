@@ -12,19 +12,29 @@ class Authorization extends RelatedResource
     /**
      * @var string
      */
-    private $reasonCode;
+    protected $reasonCode;
 
     /**
      * @var string
      */
-    private $validUntil;
+    protected $validUntil;
 
-    protected function setReasonCode(string $reasonCode): void
+    public function getReasonCode(): string
+    {
+        return $this->reasonCode;
+    }
+
+    public function setReasonCode(string $reasonCode): void
     {
         $this->reasonCode = $reasonCode;
     }
 
-    protected function setValidUntil(string $validUntil): void
+    public function getValidUntil(): string
+    {
+        return $this->validUntil;
+    }
+
+    public function setValidUntil(string $validUntil): void
     {
         $this->validUntil = $validUntil;
     }

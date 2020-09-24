@@ -81,9 +81,19 @@ class Product extends PosStruct
         $this->name = $name;
     }
 
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    public function getCategory(): Category
+    {
+        return $this->category;
     }
 
     public function setCategory(Category $category): void
@@ -91,9 +101,20 @@ class Product extends PosStruct
         $this->category = $category;
     }
 
+    /**
+     * @return Variant[]
+     */
     public function getVariants(): array
     {
         return $this->variants;
+    }
+
+    /**
+     * @param Variant[] $variants
+     */
+    public function setVariants(array $variants): void
+    {
+        $this->variants = $variants;
     }
 
     public function addVariant(Variant ...$variants): void
@@ -109,6 +130,11 @@ class Product extends PosStruct
     public function setVariantOptionDefinitions(?VariantOptionDefinitions $variantOptionDefinitions): void
     {
         $this->variantOptionDefinitions = $variantOptionDefinitions;
+    }
+
+    public function getVatPercentage(): float
+    {
+        return $this->vatPercentage;
     }
 
     /**

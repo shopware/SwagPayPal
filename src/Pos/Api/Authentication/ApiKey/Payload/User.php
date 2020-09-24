@@ -14,22 +14,22 @@ class User extends PosStruct
     /**
      * @var string
      */
-    private $userType;
+    protected $userType;
 
     /**
      * @var string
      */
-    private $uuid;
+    protected $uuid;
 
     /**
      * @var string
      */
-    private $orgUuid;
+    protected $orgUuid;
 
     /**
      * @var string
      */
-    private $userRole;
+    protected $userRole;
 
     public function getUserType(): string
     {

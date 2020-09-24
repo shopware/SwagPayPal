@@ -31,22 +31,42 @@ class RecipientBankingInstruction extends PayPalStruct
      */
     protected $bankIdentifierCode;
 
-    protected function setBankName(string $bankName): void
+    public function getBankName(): string
+    {
+        return $this->bankName;
+    }
+
+    public function setBankName(string $bankName): void
     {
         $this->bankName = $bankName;
     }
 
-    protected function setAccountHolderName(string $accountHolderName): void
+    public function getAccountHolderName(): string
+    {
+        return $this->accountHolderName;
+    }
+
+    public function setAccountHolderName(string $accountHolderName): void
     {
         $this->accountHolderName = $accountHolderName;
     }
 
-    protected function setInternationalBankAccountNumber(string $internationalBankAccountNumber): void
+    public function getInternationalBankAccountNumber(): string
+    {
+        return $this->internationalBankAccountNumber;
+    }
+
+    public function setInternationalBankAccountNumber(string $internationalBankAccountNumber): void
     {
         $this->internationalBankAccountNumber = $internationalBankAccountNumber;
     }
 
-    protected function setBankIdentifierCode(string $bankIdentifierCode): void
+    public function getBankIdentifierCode(): string
+    {
+        return $this->bankIdentifierCode;
+    }
+
+    public function setBankIdentifierCode(string $bankIdentifierCode): void
     {
         $this->bankIdentifierCode = $bankIdentifierCode;
     }

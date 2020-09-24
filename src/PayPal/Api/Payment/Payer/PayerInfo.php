@@ -35,17 +35,17 @@ class PayerInfo extends ExecutePayerInfo
     /**
      * @var ShippingAddress
      */
-    private $shippingAddress;
+    protected $shippingAddress;
 
     /**
      * @var string
      */
-    private $phone;
+    protected $phone;
 
     /**
      * @var string
      */
-    private $countryCode;
+    protected $countryCode;
 
     public function getEmail(): string
     {
@@ -77,33 +77,43 @@ class PayerInfo extends ExecutePayerInfo
         $this->lastName = $lastName;
     }
 
-    public function getShippingAddress(): ShippingAddress
-    {
-        return $this->shippingAddress;
-    }
-
     public function getBillingAddress(): ?BillingAddress
     {
         return $this->billingAddress;
     }
 
-    public function setBillingAddress(BillingAddress $billingAddress): void
+    public function setBillingAddress(?BillingAddress $billingAddress): void
     {
         $this->billingAddress = $billingAddress;
     }
 
-    protected function setShippingAddress(ShippingAddress $shippingAddress): void
+    public function getShippingAddress(): ShippingAddress
+    {
+        return $this->shippingAddress;
+    }
+
+    public function setShippingAddress(ShippingAddress $shippingAddress): void
     {
         $this->shippingAddress = $shippingAddress;
     }
 
-    protected function setCountryCode(string $countryCode): void
+    public function getPhone(): string
     {
-        $this->countryCode = $countryCode;
+        return $this->phone;
     }
 
-    protected function setPhone(string $phone): void
+    public function setPhone(string $phone): void
     {
         $this->phone = $phone;
+    }
+
+    public function getCountryCode(): string
+    {
+        return $this->countryCode;
+    }
+
+    public function setCountryCode(string $countryCode): void
+    {
+        $this->countryCode = $countryCode;
     }
 }

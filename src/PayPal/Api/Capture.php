@@ -27,42 +27,47 @@ class Capture extends PayPalStruct
     /**
      * @var string
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $state;
+    protected $state;
 
     /**
      * @var string
      */
-    private $reasonCode;
+    protected $reasonCode;
 
     /**
      * @var string
      */
-    private $parentPayment;
+    protected $parentPayment;
 
     /**
      * @var TransactionFee
      */
-    private $transactionFee;
+    protected $transactionFee;
 
     /**
      * @var string
      */
-    private $createTime;
+    protected $createTime;
 
     /**
      * @var string
      */
-    private $updateTime;
+    protected $updateTime;
 
     /**
      * @var Link[]
      */
-    private $links;
+    protected $links;
+
+    public function getAmount(): Amount
+    {
+        return $this->amount;
+    }
 
     public function setAmount(Amount $amount): void
     {
@@ -79,45 +84,88 @@ class Capture extends PayPalStruct
         $this->isFinalCapture = $isFinalCapture;
     }
 
-    protected function setId(string $id): void
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function setId(string $id): void
     {
         $this->id = $id;
     }
 
-    protected function setState(string $state): void
+    public function getState(): string
+    {
+        return $this->state;
+    }
+
+    public function setState(string $state): void
     {
         $this->state = $state;
     }
 
-    protected function setReasonCode(string $reasonCode): void
+    public function getReasonCode(): string
+    {
+        return $this->reasonCode;
+    }
+
+    public function setReasonCode(string $reasonCode): void
     {
         $this->reasonCode = $reasonCode;
     }
 
-    protected function setParentPayment(string $parentPayment): void
+    public function getParentPayment(): string
+    {
+        return $this->parentPayment;
+    }
+
+    public function setParentPayment(string $parentPayment): void
     {
         $this->parentPayment = $parentPayment;
     }
 
-    protected function setTransactionFee(TransactionFee $transactionFee): void
+    public function getTransactionFee(): TransactionFee
+    {
+        return $this->transactionFee;
+    }
+
+    public function setTransactionFee(TransactionFee $transactionFee): void
     {
         $this->transactionFee = $transactionFee;
     }
 
-    protected function setCreateTime(string $createTime): void
+    public function getCreateTime(): string
+    {
+        return $this->createTime;
+    }
+
+    public function setCreateTime(string $createTime): void
     {
         $this->createTime = $createTime;
     }
 
-    protected function setUpdateTime(string $updateTime): void
+    public function getUpdateTime(): string
+    {
+        return $this->updateTime;
+    }
+
+    public function setUpdateTime(string $updateTime): void
     {
         $this->updateTime = $updateTime;
     }
 
     /**
+     * @return Link[]
+     */
+    public function getLinks(): array
+    {
+        return $this->links;
+    }
+
+    /**
      * @param Link[] $links
      */
-    protected function setLinks(array $links): void
+    public function setLinks(array $links): void
     {
         $this->links = $links;
     }

@@ -14,19 +14,29 @@ class Payee extends PayPalStruct
     /**
      * @var string
      */
-    private $merchantId;
+    protected $merchantId;
 
     /**
      * @var string
      */
-    private $email;
+    protected $email;
 
-    protected function setMerchantId(string $merchantId): void
+    public function getMerchantId(): string
+    {
+        return $this->merchantId;
+    }
+
+    public function setMerchantId(string $merchantId): void
     {
         $this->merchantId = $merchantId;
     }
 
-    protected function setEmail(string $email): void
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }
