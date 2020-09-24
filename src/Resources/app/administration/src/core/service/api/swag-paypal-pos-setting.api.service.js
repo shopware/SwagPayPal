@@ -9,13 +9,14 @@ class SwagPayPalPosSettingApiService extends ApiService {
      * Checks, if an access token for this user data can be created
      *
      * @param {string} apiKey
+     * @param {string|null} salesChannelId
      * @returns {Promise|Object}
      */
-    validateApiCredentials(apiKey) {
+    validateApiCredentials(apiKey, salesChannelId = null) {
         const headers = this.getBasicHeaders();
 
         return this.httpClient
-            .post(`_action/${this.getApiBasePath()}/validate-api-credentials`, { apiKey }, { headers })
+            .post(`_action/${this.getApiBasePath()}/validate-api-credentials`, { apiKey, salesChannelId }, { headers })
             .then((response) => {
                 return ApiService.handleResponse(response);
             });

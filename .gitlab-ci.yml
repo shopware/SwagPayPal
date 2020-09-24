@@ -99,6 +99,7 @@ PHPUnit Coverage (6.3.x.x dev):
             --colors=never
             --coverage-clover build/artifacts/phpunit.clover.xml
             --coverage-html build/artifacts/phpunit-coverage-html
+            --coverage-text
 
     coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
     artifacts:

@@ -75,57 +75,102 @@ class Payload extends PosStruct
      */
     private $clientId;
 
+    public function getIss(): string
+    {
+        return $this->iss;
+    }
+
+    public function setIss(string $iss): void
+    {
+        $this->iss = $iss;
+    }
+
+    public function getAud(): string
+    {
+        return $this->aud;
+    }
+
+    public function setAud(string $aud): void
+    {
+        $this->aud = $aud;
+    }
+
+    public function getExp(): int
+    {
+        return $this->exp;
+    }
+
+    public function setExp(int $exp): void
+    {
+        $this->exp = $exp;
+    }
+
+    public function getSub(): string
+    {
+        return $this->sub;
+    }
+
+    public function setSub(string $sub): void
+    {
+        $this->sub = $sub;
+    }
+
+    public function getIat(): int
+    {
+        return $this->iat;
+    }
+
+    public function setIat(int $iat): void
+    {
+        $this->iat = $iat;
+    }
+
+    public function isRenewed(): bool
+    {
+        return $this->renewed;
+    }
+
+    public function setRenewed(bool $renewed): void
+    {
+        $this->renewed = $renewed;
+    }
+
+    public function getScope(): array
+    {
+        return $this->scope;
+    }
+
+    public function setScope(array $scope): void
+    {
+        $this->scope = $scope;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): void
+    {
+        $this->user = $user;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
     public function getClientId(): string
     {
         return $this->clientId;
     }
 
-    protected function setIss(string $iss): void
-    {
-        $this->iss = $iss;
-    }
-
-    protected function setAud(string $aud): void
-    {
-        $this->aud = $aud;
-    }
-
-    protected function setExp(int $exp): void
-    {
-        $this->exp = $exp;
-    }
-
-    protected function setSub(string $sub): void
-    {
-        $this->sub = $sub;
-    }
-
-    protected function setIat(int $iat): void
-    {
-        $this->iat = $iat;
-    }
-
-    protected function setRenewed(bool $renewed): void
-    {
-        $this->renewed = $renewed;
-    }
-
-    protected function setScope(array $scope): void
-    {
-        $this->scope = $scope;
-    }
-
-    protected function setUser(User $user): void
-    {
-        $this->user = $user;
-    }
-
-    protected function setType(string $type): void
-    {
-        $this->type = $type;
-    }
-
-    protected function setClientId(string $clientId): void
+    public function setClientId(string $clientId): void
     {
         $this->clientId = $clientId;
     }
