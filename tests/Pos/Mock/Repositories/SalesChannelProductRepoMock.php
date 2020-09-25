@@ -79,7 +79,15 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
 
     public function searchIds(Criteria $criteria, SalesChannelContext $salesChannelContext): IdSearchResult
     {
-        return $this->searchCollectionIds($this->entityCollection, $criteria, $salesChannelContext->getContext());
+        if ($criteria->getIds() === []) {
+            return $this->searchCollectionIds($this->entityCollection, $criteria, $salesChannelContext->getContext());
+        }
+
+        $collection = $this->entityCollection->filter(function (ProductEntity $product) use ($criteria) {
+            return \in_array($product->getId(), $criteria->getIds(), true);
+        });
+
+        return $this->searchCollectionIds($collection, $criteria, $salesChannelContext->getContext());
     }
 
     public function search(Criteria $criteria, SalesChannelContext $salesChannelContext): EntitySearchResult

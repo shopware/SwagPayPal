@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Pos\Sync;
+namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
@@ -57,7 +57,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 
-class InventoryUpdateTest extends TestCase
+class StockSubscriberTest extends TestCase
 {
     use KernelTestBehaviour;
     use SalesChannelTrait;
@@ -83,15 +83,9 @@ class InventoryUpdateTest extends TestCase
             $event = new EntityWrittenEvent(OrderLineItemDefinition::ENTITY_NAME, [
                 new EntityWriteResult(
                     Uuid::randomHex(),
-                    [],
+                    ['orderId' => $order->getId(), 'type' => LineItem::PRODUCT_LINE_ITEM_TYPE, 'referencedId' => ConstantsForTesting::PRODUCT_A_ID, 'quantity' => 1],
                     OrderLineItemDefinition::ENTITY_NAME,
-                    EntityWriteResult::OPERATION_INSERT,
-                    null,
-                    new ChangeSet(
-                        ['order_id' => $order->getId(), 'type' => LineItem::PRODUCT_LINE_ITEM_TYPE, 'referenced_id' => ConstantsForTesting::PRODUCT_C_ID, 'quantity' => 1],
-                        ['order_id' => $order->getId(), 'type' => LineItem::PRODUCT_LINE_ITEM_TYPE, 'referenced_id' => ConstantsForTesting::PRODUCT_C_ID, 'quantity' => 1],
-                        false
-                    )
+                    EntityWriteResult::OPERATION_INSERT
                 ),
                 new EntityWriteResult(
                     Uuid::randomHex(),

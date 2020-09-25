@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Pos\Sync;
+namespace Swag\PayPal\Test\Pos\Run;
 
 use Monolog\Logger;
 use PHPUnit\Framework\Constraint\IsType;
