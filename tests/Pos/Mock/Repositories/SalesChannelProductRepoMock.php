@@ -46,20 +46,20 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
         return new ProductDefinition();
     }
 
-    public function aggregate(Criteria $criteria, SalesChannelContext $context): AggregationResultCollection
+    public function aggregate(Criteria $criteria, SalesChannelContext $salesChannelContext): AggregationResultCollection
     {
         $result = new AggregationResultCollection();
 
         $count = $criteria->getAggregation('count');
         if ($count !== null) {
-            $result->add(new CountResult('count', $this->search($criteria, $context)->getTotal()));
+            $result->add(new CountResult('count', $this->search($criteria, $salesChannelContext)->getTotal()));
         }
 
         $parentIds = $criteria->getAggregation('ids');
         if ($parentIds !== null) {
             $buckets = [];
             /** @var ProductEntity $product */
-            foreach ($this->search($criteria, $context)->getElements() as $product) {
+            foreach ($this->search($criteria, $salesChannelContext)->getElements() as $product) {
                 $childCount = $product->getChildCount();
 
                 if ($childCount === null || $childCount <= 0) {
@@ -77,17 +77,17 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
         return $result;
     }
 
-    public function searchIds(Criteria $criteria, SalesChannelContext $context): IdSearchResult
+    public function searchIds(Criteria $criteria, SalesChannelContext $salesChannelContext): IdSearchResult
     {
-        return $this->searchCollectionIds($this->entityCollection, $criteria, $context->getContext());
+        return $this->searchCollectionIds($this->entityCollection, $criteria, $salesChannelContext->getContext());
     }
 
-    public function search(Criteria $criteria, SalesChannelContext $context): EntitySearchResult
+    public function search(Criteria $criteria, SalesChannelContext $salesChannelContext): EntitySearchResult
     {
         $firstFilter = \current($criteria->getFilters());
 
         if ($firstFilter === false) {
-            return $this->searchCollection($this->entityCollection, $criteria, $context->getContext());
+            return $this->searchCollection($this->entityCollection, $criteria, $salesChannelContext->getContext());
         }
 
         if ($firstFilter instanceof EqualsFilter
@@ -101,7 +101,7 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
                 }
             }
 
-            return $this->searchCollection($collection, $criteria, $context->getContext());
+            return $this->searchCollection($collection, $criteria, $salesChannelContext->getContext());
         }
 
         if ($firstFilter instanceof MultiFilter) {
@@ -119,7 +119,7 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
                     }
                 }
 
-                return $this->searchCollection($collection, $criteria, $context->getContext());
+                return $this->searchCollection($collection, $criteria, $salesChannelContext->getContext());
             }
 
             if ($subFilter instanceof EqualsAnyFilter
@@ -133,7 +133,7 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
                     }
                 }
 
-                return $this->searchCollection($collection, $criteria, $context->getContext());
+                return $this->searchCollection($collection, $criteria, $salesChannelContext->getContext());
             }
         }
 
@@ -147,10 +147,10 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
                 }
             }
 
-            return $this->searchCollection($collection, $criteria, $context->getContext());
+            return $this->searchCollection($collection, $criteria, $salesChannelContext->getContext());
         }
 
-        return $this->searchCollection($this->entityCollection, $criteria, $context->getContext());
+        return $this->searchCollection($this->entityCollection, $criteria, $salesChannelContext->getContext());
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
