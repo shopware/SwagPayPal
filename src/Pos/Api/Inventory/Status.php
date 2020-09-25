@@ -27,12 +27,14 @@ class Status extends PosStruct
      */
     protected $variants = [];
 
-    /**
-     * @return Variant[]
-     */
-    public function getVariants(): array
+    public function getLocationUuid(): string
     {
-        return $this->variants;
+        return $this->locationUuid;
+    }
+
+    public function setLocationUuid(string $locationUuid): void
+    {
+        $this->locationUuid = $locationUuid;
     }
 
     /**
@@ -41,13 +43,6 @@ class Status extends PosStruct
     public function getTrackedProducts(): array
     {
         return $this->trackedProducts;
-    }
-
-    public function addVariant(Variant ...$variants): void
-    {
-        foreach ($variants as $variant) {
-            $this->variants[] = $variant;
-        }
     }
 
     /**
@@ -59,6 +54,14 @@ class Status extends PosStruct
     }
 
     /**
+     * @return Variant[]
+     */
+    public function getVariants(): array
+    {
+        return $this->variants;
+    }
+
+    /**
      * @param Variant[] $variants
      */
     public function setVariants(array $variants): void
@@ -66,8 +69,10 @@ class Status extends PosStruct
         $this->variants = $variants;
     }
 
-    protected function setLocationUuid(string $locationUuid): void
+    public function addVariant(Variant ...$variants): void
     {
-        $this->locationUuid = $locationUuid;
+        foreach ($variants as $variant) {
+            $this->variants[] = $variant;
+        }
     }
 }

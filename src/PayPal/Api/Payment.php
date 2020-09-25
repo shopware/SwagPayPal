@@ -75,11 +75,56 @@ class Payment extends PayPalStruct
     /**
      * @var PaymentInstruction|null
      */
-    private $paymentInstruction;
+    protected $paymentInstruction;
 
     public function getId(): string
     {
         return $this->id;
+    }
+
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getIntent(): string
+    {
+        return $this->intent;
+    }
+
+    public function setIntent(string $intent): void
+    {
+        $this->intent = $intent;
+    }
+
+    public function getState(): string
+    {
+        return $this->state;
+    }
+
+    public function setState(string $state): void
+    {
+        $this->state = $state;
+    }
+
+    public function getCart(): string
+    {
+        return $this->cart;
+    }
+
+    public function setCart(string $cart): void
+    {
+        $this->cart = $cart;
+    }
+
+    public function getPayer(): Payer
+    {
+        return $this->payer;
+    }
+
+    public function setPayer(Payer $payer): void
+    {
+        $this->payer = $payer;
     }
 
     /**
@@ -98,6 +143,26 @@ class Payment extends PayPalStruct
         $this->transactions = $transactions;
     }
 
+    public function getCreateTime(): string
+    {
+        return $this->createTime;
+    }
+
+    public function setCreateTime(string $createTime): void
+    {
+        $this->createTime = $createTime;
+    }
+
+    public function getUpdateTime(): string
+    {
+        return $this->updateTime;
+    }
+
+    public function setUpdateTime(string $updateTime): void
+    {
+        $this->updateTime = $updateTime;
+    }
+
     /**
      * @return Link[]
      */
@@ -106,24 +171,17 @@ class Payment extends PayPalStruct
         return $this->links;
     }
 
-    public function getIntent(): string
+    /**
+     * @param Link[] $links
+     */
+    public function setLinks(array $links): void
     {
-        return $this->intent;
+        $this->links = $links;
     }
 
-    public function setIntent(string $intent): void
+    public function getRedirectUrls(): RedirectUrls
     {
-        $this->intent = $intent;
-    }
-
-    public function getPayer(): Payer
-    {
-        return $this->payer;
-    }
-
-    public function setPayer(Payer $payer): void
-    {
-        $this->payer = $payer;
+        return $this->redirectUrls;
     }
 
     public function setRedirectUrls(RedirectUrls $redirectUrls): void
@@ -146,41 +204,17 @@ class Payment extends PayPalStruct
         return $this->paymentInstruction;
     }
 
-    protected function setId(string $id): void
-    {
-        $this->id = $id;
-    }
-
-    protected function setState(string $state): void
-    {
-        $this->state = $state;
-    }
-
-    protected function setCart(string $cart): void
-    {
-        $this->cart = $cart;
-    }
-
-    protected function setCreateTime(string $createTime): void
-    {
-        $this->createTime = $createTime;
-    }
-
-    protected function setUpdateTime(string $updateTime): void
-    {
-        $this->updateTime = $updateTime;
-    }
-
-    /**
-     * @param Link[] $links
-     */
-    protected function setLinks(array $links): void
-    {
-        $this->links = $links;
-    }
-
-    protected function setPaymentInstruction(PaymentInstruction $paymentInstruction): void
+    public function setPaymentInstruction(?PaymentInstruction $paymentInstruction): void
     {
         $this->paymentInstruction = $paymentInstruction;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = parent::jsonSerialize();
+
+        unset($data['payment_instruction']);
+
+        return $data;
     }
 }

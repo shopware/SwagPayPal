@@ -12,21 +12,26 @@ abstract class Link extends PayPalStruct
     /**
      * @var string
      */
-    private $href;
+    protected $href;
 
     /**
      * @var string
      */
-    private $rel;
+    protected $rel;
 
     /**
      * @var string
      */
-    private $method;
+    protected $method;
 
     public function getHref(): string
     {
         return $this->href;
+    }
+
+    public function setHref(string $href): void
+    {
+        $this->href = $href;
     }
 
     public function getRel(): string
@@ -34,17 +39,17 @@ abstract class Link extends PayPalStruct
         return $this->rel;
     }
 
-    protected function setHref(string $href): void
-    {
-        $this->href = $href;
-    }
-
-    protected function setRel(string $rel): void
+    public function setRel(string $rel): void
     {
         $this->rel = $rel;
     }
 
-    protected function setMethod(string $method): void
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    public function setMethod(string $method): void
     {
         $this->method = $method;
     }

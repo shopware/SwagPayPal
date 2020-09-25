@@ -16,6 +16,11 @@ class Presentation extends PosStruct
      */
     protected $imageUrl;
 
+    public function getImageUrl(): string
+    {
+        return $this->imageUrl;
+    }
+
     public function setImageUrl(string $imageUrl): void
     {
         $this->imageUrl = $imageUrl;

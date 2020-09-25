@@ -56,14 +56,29 @@ class VariantChange extends PosStruct
         $this->variantUuid = $variantUuid;
     }
 
+    public function getFromLocationUuid(): string
+    {
+        return $this->fromLocationUuid;
+    }
+
     public function setFromLocationUuid(string $fromLocationUuid): void
     {
         $this->fromLocationUuid = $fromLocationUuid;
     }
 
+    public function getToLocationUuid(): string
+    {
+        return $this->toLocationUuid;
+    }
+
     public function setToLocationUuid(string $toLocationUuid): void
     {
         $this->toLocationUuid = $toLocationUuid;
+    }
+
+    public function getChange(): int
+    {
+        return $this->change;
     }
 
     public function setChange(int $change): void

@@ -22,17 +22,22 @@ abstract class AbstractPayload extends PosStruct
      */
     protected $updated;
 
+    public function getOrganizationUuid(): string
+    {
+        return $this->organizationUuid;
+    }
+
+    public function setOrganizationUuid(string $organizationUuid): void
+    {
+        $this->organizationUuid = $organizationUuid;
+    }
+
     public function getUpdated(): AbstractUpdated
     {
         return $this->updated;
     }
 
-    protected function setOrganizationUuid(string $organizationUuid): void
-    {
-        $this->organizationUuid = $organizationUuid;
-    }
-
-    protected function setUpdated(AbstractUpdated $updated): void
+    public function setUpdated(AbstractUpdated $updated): void
     {
         $this->updated = $updated;
     }

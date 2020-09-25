@@ -22,15 +22,28 @@ class CreateWebhooks extends PayPalStruct
      */
     protected $eventTypes;
 
-    protected function setUrl(string $url): void
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(string $url): void
     {
         $this->url = $url;
     }
 
     /**
+     * @return EventType[]
+     */
+    public function getEventTypes(): array
+    {
+        return $this->eventTypes;
+    }
+
+    /**
      * @param EventType[] $eventTypes
      */
-    protected function setEventTypes(array $eventTypes): void
+    public function setEventTypes(array $eventTypes): void
     {
         $this->eventTypes = $eventTypes;
     }

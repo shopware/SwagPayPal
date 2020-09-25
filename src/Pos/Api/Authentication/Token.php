@@ -17,26 +17,26 @@ final class Token extends PosStruct
      *
      * @var string
      */
-    private $accessToken;
+    protected $accessToken;
 
     /**
      * @var string
      */
-    private $refreshToken;
+    protected $refreshToken;
 
     /**
      * The lifetime of the access token, in seconds.
      *
      * @var int
      */
-    private $expiresIn;
+    protected $expiresIn;
 
     /**
      * Calculated expiration date
      *
      * @var \DateTime
      */
-    private $expireDateTime;
+    protected $expireDateTime;
 
     public function assign(array $arrayDataWithSnakeCaseKeys): Token
     {
@@ -57,32 +57,37 @@ final class Token extends PosStruct
         return $this->accessToken;
     }
 
+    public function setAccessToken(string $accessToken): void
+    {
+        $this->accessToken = $accessToken;
+    }
+
+    public function getRefreshToken(): string
+    {
+        return $this->refreshToken;
+    }
+
+    public function setRefreshToken(string $refreshToken): void
+    {
+        $this->refreshToken = $refreshToken;
+    }
+
+    public function getExpiresIn(): int
+    {
+        return $this->expiresIn;
+    }
+
+    public function setExpiresIn(int $expiresIn): void
+    {
+        $this->expiresIn = $expiresIn;
+    }
+
     public function getExpireDateTime(): \DateTime
     {
         return $this->expireDateTime;
     }
 
-    protected function setAccessToken(string $accessToken): void
-    {
-        $this->accessToken = $accessToken;
-    }
-
-    protected function setRefreshToken(string $refreshToken): void
-    {
-        $this->refreshToken = $refreshToken;
-    }
-
-    protected function setExpiresIn(int $expiresIn): void
-    {
-        $this->expiresIn = $expiresIn;
-    }
-
-    private function getExpiresIn(): int
-    {
-        return $this->expiresIn;
-    }
-
-    private function setExpireDateTime(\DateTime $expireDateTime): void
+    public function setExpireDateTime(\DateTime $expireDateTime): void
     {
         $this->expireDateTime = $expireDateTime;
     }

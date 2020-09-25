@@ -32,7 +32,7 @@ class BulkImageUpload extends PosStruct
         }
     }
 
-    protected function setImageUploads(array $imageUploads): void
+    public function setImageUploads(array $imageUploads): void
     {
         $this->imageUploads = $imageUploads;
     }

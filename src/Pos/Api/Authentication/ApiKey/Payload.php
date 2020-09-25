@@ -20,60 +20,60 @@ class Payload extends PosStruct
      *
      * @var string
      */
-    private $iss;
+    protected $iss;
 
     /**
      * Audience
      *
      * @var string
      */
-    private $aud;
+    protected $aud;
 
     /**
      * Expiration time
      *
      * @var int
      */
-    private $exp;
+    protected $exp;
 
     /**
      * Subject
      *
      * @var string
      */
-    private $sub;
+    protected $sub;
 
     /**
      * Issued At
      *
      * @var int
      */
-    private $iat;
+    protected $iat;
 
     /**
      * @var bool
      */
-    private $renewed;
+    protected $renewed;
 
     /**
      * @var string[]
      */
-    private $scope;
+    protected $scope;
 
     /**
      * @var User
      */
-    private $user;
+    protected $user;
 
     /**
      * @var string
      */
-    private $type;
+    protected $type;
 
     /**
      * @var string
      */
-    private $clientId;
+    protected $clientId;
 
     public function getIss(): string
     {

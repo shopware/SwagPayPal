@@ -30,6 +30,14 @@ class InventoryBalanceChanged extends AbstractPayload
     }
 
     /**
+     * @param Balance[] $balanceBefore
+     */
+    public function setBalanceBefore(array $balanceBefore): void
+    {
+        $this->balanceBefore = $balanceBefore;
+    }
+
+    /**
      * @return Balance[]
      */
     public function getBalanceAfter(): array
@@ -38,17 +46,9 @@ class InventoryBalanceChanged extends AbstractPayload
     }
 
     /**
-     * @param Balance[] $balanceBefore
-     */
-    protected function setBalanceBefore(array $balanceBefore): void
-    {
-        $this->balanceBefore = $balanceBefore;
-    }
-
-    /**
      * @param Balance[] $balanceAfter
      */
-    protected function setBalanceAfter(array $balanceAfter): void
+    public function setBalanceAfter(array $balanceAfter): void
     {
         $this->balanceAfter = $balanceAfter;
     }

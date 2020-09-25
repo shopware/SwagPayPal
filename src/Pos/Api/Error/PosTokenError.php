@@ -14,16 +14,21 @@ class PosTokenError extends PosStruct
     /**
      * @var string
      */
-    private $error;
+    protected $error;
 
     /**
      * @var string
      */
-    private $errorDescription;
+    protected $errorDescription;
 
     public function getError(): string
     {
         return $this->error;
+    }
+
+    public function setError(string $error): void
+    {
+        $this->error = $error;
     }
 
     public function getErrorDescription(): string
@@ -31,12 +36,7 @@ class PosTokenError extends PosStruct
         return $this->errorDescription;
     }
 
-    protected function setError(string $error): void
-    {
-        $this->error = $error;
-    }
-
-    protected function setErrorDescription(string $errorDescription): void
+    public function setErrorDescription(string $errorDescription): void
     {
         $this->errorDescription = $errorDescription;
     }

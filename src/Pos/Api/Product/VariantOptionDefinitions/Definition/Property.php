@@ -21,9 +21,19 @@ class Property extends PosStruct
      */
     protected $imageUrl;
 
+    public function getValue(): string
+    {
+        return $this->value;
+    }
+
     public function setValue(string $value): void
     {
         $this->value = $value;
+    }
+
+    public function getImageUrl(): string
+    {
+        return $this->imageUrl;
     }
 
     public function setImageUrl(string $imageUrl): void

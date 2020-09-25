@@ -76,9 +76,34 @@ use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
         return $newToken;
     }
 
+    public function getScope(): string
+    {
+        return $this->scope;
+    }
+
+    public function setScope(string $scope): void
+    {
+        $this->scope = $scope;
+    }
+
+    public function getNonce(): string
+    {
+        return $this->nonce;
+    }
+
+    public function setNonce(string $nonce): void
+    {
+        $this->nonce = $nonce;
+    }
+
     public function getAccessToken(): string
     {
         return $this->accessToken;
+    }
+
+    public function setAccessToken(string $accessToken): void
+    {
+        $this->accessToken = $accessToken;
     }
 
     public function getTokenType(): string
@@ -86,47 +111,37 @@ use Swag\PayPal\PayPal\Api\Common\PayPalStruct;
         return $this->tokenType;
     }
 
+    public function setTokenType(string $tokenType): void
+    {
+        $this->tokenType = $tokenType;
+    }
+
+    public function getAppId(): string
+    {
+        return $this->appId;
+    }
+
+    public function setAppId(string $appId): void
+    {
+        $this->appId = $appId;
+    }
+
+    public function getExpiresIn(): int
+    {
+        return $this->expiresIn;
+    }
+
+    public function setExpiresIn(int $expiresIn): void
+    {
+        $this->expiresIn = $expiresIn;
+    }
+
     public function getExpireDateTime(): \DateTime
     {
         return $this->expireDateTime;
     }
 
-    protected function setScope(string $scope): void
-    {
-        $this->scope = $scope;
-    }
-
-    protected function setAccessToken(string $accessToken): void
-    {
-        $this->accessToken = $accessToken;
-    }
-
-    protected function setTokenType(string $tokenType): void
-    {
-        $this->tokenType = $tokenType;
-    }
-
-    protected function setExpiresIn(int $expiresIn): void
-    {
-        $this->expiresIn = $expiresIn;
-    }
-
-    protected function setNonce(string $nonce): void
-    {
-        $this->nonce = $nonce;
-    }
-
-    protected function setAppId(string $appId): void
-    {
-        $this->appId = $appId;
-    }
-
-    private function getExpiresIn(): int
-    {
-        return $this->expiresIn;
-    }
-
-    private function setExpireDateTime(\DateTime $expireDateTime): void
+    public function setExpireDateTime(\DateTime $expireDateTime): void
     {
         $this->expireDateTime = $expireDateTime;
     }

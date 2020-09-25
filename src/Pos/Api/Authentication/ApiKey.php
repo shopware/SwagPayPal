@@ -16,17 +16,17 @@ class ApiKey extends PosStruct
     /**
      * @var Header
      */
-    private $header;
+    protected $header;
 
     /**
      * @var Payload
      */
-    private $payload;
+    protected $payload;
 
     /**
      * @var string
      */
-    private $signature;
+    protected $signature;
 
     public function getHeader(): Header
     {

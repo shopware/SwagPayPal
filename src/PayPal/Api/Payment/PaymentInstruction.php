@@ -39,47 +39,75 @@ class PaymentInstruction extends PayPalStruct
     /**
      * @var string
      */
-    private $instructionType;
+    protected $instructionType;
 
     /**
      * @var Link[]
      */
-    private $links;
+    protected $links;
+
+    public function getReferenceNumber(): string
+    {
+        return $this->referenceNumber;
+    }
+
+    public function setReferenceNumber(string $referenceNumber): void
+    {
+        $this->referenceNumber = $referenceNumber;
+    }
+
+    public function getRecipientBankingInstruction(): RecipientBankingInstruction
+    {
+        return $this->recipientBankingInstruction;
+    }
+
+    public function setRecipientBankingInstruction(RecipientBankingInstruction $recipientBankingInstruction): void
+    {
+        $this->recipientBankingInstruction = $recipientBankingInstruction;
+    }
+
+    public function getAmount(): Amount
+    {
+        return $this->amount;
+    }
+
+    public function setAmount(Amount $amount): void
+    {
+        $this->amount = $amount;
+    }
+
+    public function getPaymentDueDate(): string
+    {
+        return $this->paymentDueDate;
+    }
+
+    public function setPaymentDueDate(string $paymentDueDate): void
+    {
+        $this->paymentDueDate = $paymentDueDate;
+    }
 
     public function getInstructionType(): string
     {
         return $this->instructionType;
     }
 
-    protected function setReferenceNumber(string $referenceNumber): void
-    {
-        $this->referenceNumber = $referenceNumber;
-    }
-
-    protected function setInstructionType(string $instructionType): void
+    public function setInstructionType(string $instructionType): void
     {
         $this->instructionType = $instructionType;
     }
 
-    protected function setRecipientBankingInstruction(RecipientBankingInstruction $recipientBankingInstruction): void
+    /**
+     * @return Link[]
+     */
+    public function getLinks(): array
     {
-        $this->recipientBankingInstruction = $recipientBankingInstruction;
-    }
-
-    protected function setAmount(Amount $amount): void
-    {
-        $this->amount = $amount;
-    }
-
-    protected function setPaymentDueDate(string $paymentDueDate): void
-    {
-        $this->paymentDueDate = $paymentDueDate;
+        return $this->links;
     }
 
     /**
      * @param Link[] $links
      */
-    protected function setLinks(array $links): void
+    public function setLinks(array $links): void
     {
         $this->links = $links;
     }

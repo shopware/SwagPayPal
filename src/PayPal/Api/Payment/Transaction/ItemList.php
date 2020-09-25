@@ -34,6 +34,16 @@ class ItemList extends PayPalStruct
      */
     protected $shippingPhoneNumber;
 
+    public function getShippingAddress(): ShippingAddress
+    {
+        return $this->shippingAddress;
+    }
+
+    public function setShippingAddress(ShippingAddress $shippingAddress): void
+    {
+        $this->shippingAddress = $shippingAddress;
+    }
+
     /**
      * @return Item[]
      */
@@ -50,20 +60,28 @@ class ItemList extends PayPalStruct
         $this->items = $items;
     }
 
-    protected function setShippingAddress(ShippingAddress $shippingAddress): void
+    /**
+     * @return ShippingOption[]
+     */
+    public function getShippingOptions(): array
     {
-        $this->shippingAddress = $shippingAddress;
+        return $this->shippingOptions;
     }
 
     /**
      * @param ShippingOption[] $shippingOptions
      */
-    protected function setShippingOptions(array $shippingOptions): void
+    public function setShippingOptions(array $shippingOptions): void
     {
         $this->shippingOptions = $shippingOptions;
     }
 
-    protected function setShippingPhoneNumber(string $shippingPhoneNumber): void
+    public function getShippingPhoneNumber(): string
+    {
+        return $this->shippingPhoneNumber;
+    }
+
+    public function setShippingPhoneNumber(string $shippingPhoneNumber): void
     {
         $this->shippingPhoneNumber = $shippingPhoneNumber;
     }

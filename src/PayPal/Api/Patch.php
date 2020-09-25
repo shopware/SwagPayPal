@@ -29,17 +29,24 @@ class Patch extends PayPalStruct
      */
     protected $value;
 
-    /**
-     * @param array|string $value
-     */
-    public function setValue($value): void
+    public function getOp(): string
     {
-        $this->value = $value;
+        return $this->op;
+    }
+
+    public function setOp(string $op): void
+    {
+        $this->op = $op;
     }
 
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    public function setPath(string $path): void
+    {
+        $this->path = $path;
     }
 
     /**
@@ -50,13 +57,11 @@ class Patch extends PayPalStruct
         return $this->value;
     }
 
-    protected function setOp(string $op): void
+    /**
+     * @param array|string $value
+     */
+    public function setValue($value): void
     {
-        $this->op = $op;
-    }
-
-    protected function setPath(string $path): void
-    {
-        $this->path = $path;
+        $this->value = $value;
     }
 }

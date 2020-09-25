@@ -31,6 +31,11 @@ class Uploaded extends PosStruct
         return $this->imageLookupKey;
     }
 
+    public function setImageLookupKey(string $imageLookupKey): void
+    {
+        $this->imageLookupKey = $imageLookupKey;
+    }
+
     /**
      * @return string[]
      */
@@ -39,25 +44,20 @@ class Uploaded extends PosStruct
         return $this->imageUrls;
     }
 
+    /**
+     * @param string[] $imageUrls
+     */
+    public function setImageUrls(array $imageUrls): void
+    {
+        $this->imageUrls = $imageUrls;
+    }
+
     public function getSource(): string
     {
         return $this->source;
     }
 
-    protected function setImageLookupKey(string $imageLookupKey): void
-    {
-        $this->imageLookupKey = $imageLookupKey;
-    }
-
-    /**
-     * @param string[] $imageUrls
-     */
-    protected function setImageUrls(array $imageUrls): void
-    {
-        $this->imageUrls = $imageUrls;
-    }
-
-    protected function setSource(string $source): void
+    public function setSource(string $source): void
     {
         $this->source = $source;
     }

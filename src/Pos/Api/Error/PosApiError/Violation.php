@@ -14,34 +14,49 @@ class Violation extends PosStruct
     /**
      * @var string
      */
-    private $propertyName;
+    protected $propertyName;
 
     /**
      * @var string
      */
-    private $developerMessage;
+    protected $developerMessage;
 
     /**
      * @var string
      */
-    private $constraintType;
+    protected $constraintType;
 
     public function toString(): string
     {
         return \sprintf('The property "%s" %s', $this->propertyName, $this->developerMessage);
     }
 
-    protected function setPropertyName(string $propertyName): void
+    public function getPropertyName(): string
+    {
+        return $this->propertyName;
+    }
+
+    public function setPropertyName(string $propertyName): void
     {
         $this->propertyName = $propertyName;
     }
 
-    protected function setDeveloperMessage(string $developerMessage): void
+    public function getDeveloperMessage(): string
+    {
+        return $this->developerMessage;
+    }
+
+    public function setDeveloperMessage(string $developerMessage): void
     {
         $this->developerMessage = $developerMessage;
     }
 
-    protected function setConstraintType(string $constraintType): void
+    public function getConstraintType(): string
+    {
+        return $this->constraintType;
+    }
+
+    public function setConstraintType(string $constraintType): void
     {
         $this->constraintType = $constraintType;
     }

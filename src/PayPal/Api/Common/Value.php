@@ -19,12 +19,22 @@ abstract class Value extends PayPalStruct
      */
     protected $value;
 
-    protected function setCurrency(string $currency): void
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    public function setCurrency(string $currency): void
     {
         $this->currency = $currency;
     }
 
-    protected function setValue(string $value): void
+    public function getValue(): string
+    {
+        return $this->value;
+    }
+
+    public function setValue(string $value): void
     {
         $this->value = $value;
     }

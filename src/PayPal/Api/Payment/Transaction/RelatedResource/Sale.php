@@ -16,7 +16,12 @@ class Sale extends RelatedResource
      */
     protected $transactionFee;
 
-    protected function setTransactionFee(TransactionFee $transactionFee): void
+    public function getTransactionFee(): TransactionFee
+    {
+        return $this->transactionFee;
+    }
+
+    public function setTransactionFee(TransactionFee $transactionFee): void
     {
         $this->transactionFee = $transactionFee;
     }

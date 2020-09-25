@@ -14,156 +14,151 @@ class MerchantInformation extends PosStruct
     /**
      * @var string
      */
-    private $uuid;
+    protected $uuid;
 
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      */
-    private $receiptName;
+    protected $receiptName;
 
     /**
      * @var string
      */
-    private $city;
+    protected $city;
 
     /**
      * @var string
      */
-    private $zipCode;
+    protected $zipCode;
 
     /**
      * @var string
      */
-    private $address;
+    protected $address;
 
     /**
      * @var string
      */
-    private $addressLine2;
+    protected $addressLine2;
 
     /**
      * @var string
      */
-    private $legalName;
+    protected $legalName;
 
     /**
      * @var string
      */
-    private $legalAddress;
+    protected $legalAddress;
 
     /**
      * @var string
      */
-    private $legalZipCode;
+    protected $legalZipCode;
 
     /**
      * @var string
      */
-    private $legalCity;
+    protected $legalCity;
 
     /**
      * @var string
      */
-    private $legalState;
+    protected $legalState;
 
     /**
      * @var string
      */
-    private $phoneNumber;
+    protected $phoneNumber;
 
     /**
      * @var string
      */
-    private $contactEmail;
+    protected $contactEmail;
 
     /**
      * @var string
      */
-    private $receiptEmail;
+    protected $receiptEmail;
 
     /**
      * @var string
      */
-    private $legalEntityType;
+    protected $legalEntityType;
 
     /**
      * @var string
      */
-    private $legalEntityNr;
+    protected $legalEntityNr;
 
     /**
      * @var float
      */
-    private $vatPercentage;
+    protected $vatPercentage;
 
     /**
      * @var string
      */
-    private $country;
+    protected $country;
 
     /**
      * @var string
      */
-    private $language;
+    protected $language;
 
     /**
      * @var string
      */
-    private $currency;
+    protected $currency;
 
     /**
      * @var string
      */
-    private $created;
+    protected $created;
 
     /**
      * @var string
      */
-    private $ownerUuid;
+    protected $ownerUuid;
 
     /**
      * @var int
      */
-    private $organizationId;
+    protected $organizationId;
 
     /**
      * @var string
      */
-    private $customerStatus;
+    protected $customerStatus;
 
     /**
      * @var bool
      */
-    private $usesVat;
+    protected $usesVat;
 
     /**
      * @var string
      */
-    private $customerType;
+    protected $customerType;
 
     /**
      * @var string
      */
-    private $timeZone;
+    protected $timeZone;
 
-    public function getCountry(): string
+    public function getUuid(): string
     {
-        return $this->country;
+        return $this->uuid;
     }
 
-    public function getCurrency(): string
+    public function setUuid(string $uuid): void
     {
-        return $this->currency;
-    }
-
-    public function getLanguage(): string
-    {
-        return $this->language;
+        $this->uuid = $uuid;
     }
 
     public function getName(): string
@@ -171,147 +166,267 @@ class MerchantInformation extends PosStruct
         return $this->name;
     }
 
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    public function getReceiptName(): string
+    {
+        return $this->receiptName;
+    }
+
+    public function setReceiptName(string $receiptName): void
+    {
+        $this->receiptName = $receiptName;
+    }
+
+    public function getCity(): string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): void
+    {
+        $this->city = $city;
+    }
+
+    public function getZipCode(): string
+    {
+        return $this->zipCode;
+    }
+
+    public function setZipCode(string $zipCode): void
+    {
+        $this->zipCode = $zipCode;
+    }
+
+    public function getAddress(): string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(string $address): void
+    {
+        $this->address = $address;
+    }
+
+    public function getAddressLine2(): string
+    {
+        return $this->addressLine2;
+    }
+
+    public function setAddressLine2(string $addressLine2): void
+    {
+        $this->addressLine2 = $addressLine2;
+    }
+
+    public function getLegalName(): string
+    {
+        return $this->legalName;
+    }
+
+    public function setLegalName(string $legalName): void
+    {
+        $this->legalName = $legalName;
+    }
+
+    public function getLegalAddress(): string
+    {
+        return $this->legalAddress;
+    }
+
+    public function setLegalAddress(string $legalAddress): void
+    {
+        $this->legalAddress = $legalAddress;
+    }
+
+    public function getLegalZipCode(): string
+    {
+        return $this->legalZipCode;
+    }
+
+    public function setLegalZipCode(string $legalZipCode): void
+    {
+        $this->legalZipCode = $legalZipCode;
+    }
+
+    public function getLegalCity(): string
+    {
+        return $this->legalCity;
+    }
+
+    public function setLegalCity(string $legalCity): void
+    {
+        $this->legalCity = $legalCity;
+    }
+
+    public function getLegalState(): string
+    {
+        return $this->legalState;
+    }
+
+    public function setLegalState(string $legalState): void
+    {
+        $this->legalState = $legalState;
+    }
+
+    public function getPhoneNumber(): string
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(string $phoneNumber): void
+    {
+        $this->phoneNumber = $phoneNumber;
+    }
+
     public function getContactEmail(): string
     {
         return $this->contactEmail;
     }
 
-    protected function setUuid(string $uuid): void
-    {
-        $this->uuid = $uuid;
-    }
-
-    protected function setName(string $name): void
-    {
-        $this->name = $name;
-    }
-
-    protected function setReceiptName(string $receiptName): void
-    {
-        $this->receiptName = $receiptName;
-    }
-
-    protected function setCity(string $city): void
-    {
-        $this->city = $city;
-    }
-
-    protected function setZipCode(string $zipCode): void
-    {
-        $this->zipCode = $zipCode;
-    }
-
-    protected function setAddress(string $address): void
-    {
-        $this->address = $address;
-    }
-
-    protected function setAddressLine2(string $addressLine2): void
-    {
-        $this->addressLine2 = $addressLine2;
-    }
-
-    protected function setLegalName(string $legalName): void
-    {
-        $this->legalName = $legalName;
-    }
-
-    protected function setLegalAddress(string $legalAddress): void
-    {
-        $this->legalAddress = $legalAddress;
-    }
-
-    protected function setLegalZipCode(string $legalZipCode): void
-    {
-        $this->legalZipCode = $legalZipCode;
-    }
-
-    protected function setLegalCity(string $legalCity): void
-    {
-        $this->legalCity = $legalCity;
-    }
-
-    protected function setLegalState(string $legalState): void
-    {
-        $this->legalState = $legalState;
-    }
-
-    protected function setPhoneNumber(string $phoneNumber): void
-    {
-        $this->phoneNumber = $phoneNumber;
-    }
-
-    protected function setContactEmail(string $contactEmail): void
+    public function setContactEmail(string $contactEmail): void
     {
         $this->contactEmail = $contactEmail;
     }
 
-    protected function setReceiptEmail(string $receiptEmail): void
+    public function getReceiptEmail(): string
+    {
+        return $this->receiptEmail;
+    }
+
+    public function setReceiptEmail(string $receiptEmail): void
     {
         $this->receiptEmail = $receiptEmail;
     }
 
-    protected function setLegalEntityType(string $legalEntityType): void
+    public function getLegalEntityType(): string
+    {
+        return $this->legalEntityType;
+    }
+
+    public function setLegalEntityType(string $legalEntityType): void
     {
         $this->legalEntityType = $legalEntityType;
     }
 
-    protected function setLegalEntityNr(string $legalEntityNr): void
+    public function getLegalEntityNr(): string
+    {
+        return $this->legalEntityNr;
+    }
+
+    public function setLegalEntityNr(string $legalEntityNr): void
     {
         $this->legalEntityNr = $legalEntityNr;
     }
 
-    protected function setVatPercentage(float $vatPercentage): void
+    public function getVatPercentage(): float
+    {
+        return $this->vatPercentage;
+    }
+
+    public function setVatPercentage(float $vatPercentage): void
     {
         $this->vatPercentage = $vatPercentage;
     }
 
-    protected function setCountry(string $country): void
+    public function getCountry(): string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(string $country): void
     {
         $this->country = $country;
     }
 
-    protected function setLanguage(string $language): void
+    public function getLanguage(): string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(string $language): void
     {
         $this->language = $language;
     }
 
-    protected function setCurrency(string $currency): void
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    public function setCurrency(string $currency): void
     {
         $this->currency = $currency;
     }
 
-    protected function setCreated(string $created): void
+    public function getCreated(): string
+    {
+        return $this->created;
+    }
+
+    public function setCreated(string $created): void
     {
         $this->created = $created;
     }
 
-    protected function setOwnerUuid(string $ownerUuid): void
+    public function getOwnerUuid(): string
+    {
+        return $this->ownerUuid;
+    }
+
+    public function setOwnerUuid(string $ownerUuid): void
     {
         $this->ownerUuid = $ownerUuid;
     }
 
-    protected function setOrganizationId(int $organizationId): void
+    public function getOrganizationId(): int
+    {
+        return $this->organizationId;
+    }
+
+    public function setOrganizationId(int $organizationId): void
     {
         $this->organizationId = $organizationId;
     }
 
-    protected function setCustomerStatus(string $customerStatus): void
+    public function getCustomerStatus(): string
+    {
+        return $this->customerStatus;
+    }
+
+    public function setCustomerStatus(string $customerStatus): void
     {
         $this->customerStatus = $customerStatus;
     }
 
-    protected function setUsesVat(bool $usesVat): void
+    public function isUsesVat(): bool
+    {
+        return $this->usesVat;
+    }
+
+    public function setUsesVat(bool $usesVat): void
     {
         $this->usesVat = $usesVat;
     }
 
-    protected function setCustomerType(string $customerType): void
+    public function getCustomerType(): string
+    {
+        return $this->customerType;
+    }
+
+    public function setCustomerType(string $customerType): void
     {
         $this->customerType = $customerType;
     }
 
-    protected function setTimeZone(string $timeZone): void
+    public function getTimeZone(): string
+    {
+        return $this->timeZone;
+    }
+
+    public function setTimeZone(string $timeZone): void
     {
         $this->timeZone = $timeZone;
     }

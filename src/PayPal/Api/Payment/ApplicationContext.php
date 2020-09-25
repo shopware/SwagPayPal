@@ -42,9 +42,19 @@ class ApplicationContext extends PayPalStruct
      */
     protected $userAction = self::USER_ACTION_TYPE_COMMIT;
 
+    public function getBrandName(): string
+    {
+        return $this->brandName;
+    }
+
     public function setBrandName(string $brandName): void
     {
         $this->brandName = $brandName;
+    }
+
+    public function getLocale(): string
+    {
+        return $this->locale;
     }
 
     public function setLocale(string $locale): void
@@ -52,18 +62,33 @@ class ApplicationContext extends PayPalStruct
         $this->locale = $locale;
     }
 
-    public function setLandingPage(string $landingPageType): void
+    public function getLandingPage(): string
     {
-        $this->landingPage = $landingPageType;
+        return $this->landingPage;
+    }
+
+    public function setLandingPage(string $landingPage): void
+    {
+        $this->landingPage = $landingPage;
+    }
+
+    public function getShippingPreference(): string
+    {
+        return $this->shippingPreference;
+    }
+
+    public function setShippingPreference(string $shippingPreference): void
+    {
+        $this->shippingPreference = $shippingPreference;
+    }
+
+    public function getUserAction(): string
+    {
+        return $this->userAction;
     }
 
     public function setUserAction(string $userAction): void
     {
         $this->userAction = $userAction;
-    }
-
-    protected function setShippingPreference(string $shippingPreference): void
-    {
-        $this->shippingPreference = $shippingPreference;
     }
 }

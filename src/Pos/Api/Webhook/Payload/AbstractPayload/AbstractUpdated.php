@@ -31,27 +31,42 @@ abstract class AbstractUpdated extends PosStruct
      */
     protected $clientUuid;
 
+    public function getUuid(): string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid): void
+    {
+        $this->uuid = $uuid;
+    }
+
+    public function getTimestamp(): string
+    {
+        return $this->timestamp;
+    }
+
+    public function setTimestamp(string $timestamp): void
+    {
+        $this->timestamp = $timestamp;
+    }
+
+    public function getUserType(): string
+    {
+        return $this->userType;
+    }
+
+    public function setUserType(string $userType): void
+    {
+        $this->userType = $userType;
+    }
+
     public function getClientUuid(): string
     {
         return $this->clientUuid;
     }
 
-    protected function setUuid(string $uuid): void
-    {
-        $this->uuid = $uuid;
-    }
-
-    protected function setTimestamp(string $timestamp): void
-    {
-        $this->timestamp = $timestamp;
-    }
-
-    protected function setUserType(string $userType): void
-    {
-        $this->userType = $userType;
-    }
-
-    protected function setClientUuid(string $clientUuid): void
+    public function setClientUuid(string $clientUuid): void
     {
         $this->clientUuid = $clientUuid;
     }

@@ -14,94 +14,134 @@ class SubscriptionResponse extends PosStruct
     /**
      * @var string
      */
-    private $uuid;
+    protected $uuid;
 
     /**
      * @var string
      */
-    private $transportName;
+    protected $transportName;
 
     /**
      * @var string[]
      */
-    private $eventNames;
+    protected $eventNames;
 
     /**
      * @var string
      */
-    private $updated;
+    protected $updated;
 
     /**
      * @var string
      */
-    private $destination;
+    protected $destination;
 
     /**
      * @var string
      */
-    private $contactEmail;
+    protected $contactEmail;
 
     /**
      * @var string
      */
-    private $status;
+    protected $status;
 
     /**
      * @var string
      */
-    private $signingKey;
+    protected $signingKey;
 
     /**
      * @var string
      */
-    private $clientId;
+    protected $clientId;
+
+    public function getUuid(): string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid): void
+    {
+        $this->uuid = $uuid;
+    }
+
+    public function getTransportName(): string
+    {
+        return $this->transportName;
+    }
+
+    public function setTransportName(string $transportName): void
+    {
+        $this->transportName = $transportName;
+    }
+
+    public function getEventNames(): array
+    {
+        return $this->eventNames;
+    }
+
+    public function setEventNames(array $eventNames): void
+    {
+        $this->eventNames = $eventNames;
+    }
+
+    public function getUpdated(): string
+    {
+        return $this->updated;
+    }
+
+    public function setUpdated(string $updated): void
+    {
+        $this->updated = $updated;
+    }
+
+    public function getDestination(): string
+    {
+        return $this->destination;
+    }
+
+    public function setDestination(string $destination): void
+    {
+        $this->destination = $destination;
+    }
+
+    public function getContactEmail(): string
+    {
+        return $this->contactEmail;
+    }
+
+    public function setContactEmail(string $contactEmail): void
+    {
+        $this->contactEmail = $contactEmail;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): void
+    {
+        $this->status = $status;
+    }
 
     public function getSigningKey(): string
     {
         return $this->signingKey;
     }
 
-    protected function setUuid(string $uuid): void
-    {
-        $this->uuid = $uuid;
-    }
-
-    protected function setTransportName(string $transportName): void
-    {
-        $this->transportName = $transportName;
-    }
-
-    protected function setEventNames(array $eventNames): void
-    {
-        $this->eventNames = $eventNames;
-    }
-
-    protected function setUpdated(string $updated): void
-    {
-        $this->updated = $updated;
-    }
-
-    protected function setDestination(string $destination): void
-    {
-        $this->destination = $destination;
-    }
-
-    protected function setContactEmail(string $contactEmail): void
-    {
-        $this->contactEmail = $contactEmail;
-    }
-
-    protected function setStatus(string $status): void
-    {
-        $this->status = $status;
-    }
-
-    protected function setSigningKey(string $signingKey): void
+    public function setSigningKey(string $signingKey): void
     {
         $this->signingKey = $signingKey;
     }
 
-    protected function setClientId(string $clientId): void
+    public function getClientId(): string
+    {
+        return $this->clientId;
+    }
+
+    public function setClientId(string $clientId): void
     {
         $this->clientId = $clientId;
     }

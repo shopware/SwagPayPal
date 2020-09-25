@@ -12,9 +12,14 @@ class Order extends RelatedResource
     /**
      * @var string
      */
-    private $reasonCode;
+    protected $reasonCode;
 
-    protected function setReasonCode(string $reasonCode): void
+    public function getReasonCode(): string
+    {
+        return $this->reasonCode;
+    }
+
+    public function setReasonCode(string $reasonCode): void
     {
         $this->reasonCode = $reasonCode;
     }

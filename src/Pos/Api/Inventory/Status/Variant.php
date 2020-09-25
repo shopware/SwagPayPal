@@ -36,14 +36,44 @@ class Variant extends PosStruct
      */
     protected $balance;
 
+    public function getLocationUuid(): string
+    {
+        return $this->locationUuid;
+    }
+
+    public function setLocationUuid(string $locationUuid): void
+    {
+        $this->locationUuid = $locationUuid;
+    }
+
+    public function getLocationType(): string
+    {
+        return $this->locationType;
+    }
+
+    public function setLocationType(string $locationType): void
+    {
+        $this->locationType = $locationType;
+    }
+
     public function getProductUuid(): string
     {
         return $this->productUuid;
     }
 
+    public function setProductUuid(string $productUuid): void
+    {
+        $this->productUuid = $productUuid;
+    }
+
     public function getVariantUuid(): string
     {
         return $this->variantUuid;
+    }
+
+    public function setVariantUuid(string $variantUuid): void
+    {
+        $this->variantUuid = $variantUuid;
     }
 
     public function getBalance(): int
@@ -54,25 +84,5 @@ class Variant extends PosStruct
     public function setBalance(string $balance): void
     {
         $this->balance = (int) $balance;
-    }
-
-    protected function setLocationUuid(string $locationUuid): void
-    {
-        $this->locationUuid = $locationUuid;
-    }
-
-    protected function setLocationType(string $locationType): void
-    {
-        $this->locationType = $locationType;
-    }
-
-    protected function setProductUuid(string $productUuid): void
-    {
-        $this->productUuid = $productUuid;
-    }
-
-    protected function setVariantUuid(string $variantUuid): void
-    {
-        $this->variantUuid = $variantUuid;
     }
 }

@@ -31,6 +31,14 @@ class BulkImageUploadResponse extends PosStruct
     }
 
     /**
+     * @param Uploaded[] $uploaded
+     */
+    public function setUploaded(array $uploaded): void
+    {
+        $this->uploaded = $uploaded;
+    }
+
+    /**
      * @return string[]
      */
     public function getInvalid(): array
@@ -39,17 +47,9 @@ class BulkImageUploadResponse extends PosStruct
     }
 
     /**
-     * @param Uploaded[] $uploaded
-     */
-    protected function setUploaded(array $uploaded): void
-    {
-        $this->uploaded = $uploaded;
-    }
-
-    /**
      * @param string[] $invalid
      */
-    protected function setInvalid(array $invalid): void
+    public function setInvalid(array $invalid): void
     {
         $this->invalid = $invalid;
     }

@@ -59,9 +59,19 @@ class Variant extends PosStruct
      */
     protected $presentation;
 
+    public function getUuid(): string
+    {
+        return $this->uuid;
+    }
+
     public function setUuid(string $uuid): void
     {
         $this->uuid = $uuid;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     public function setName(string $name): void
@@ -69,9 +79,19 @@ class Variant extends PosStruct
         $this->name = $name;
     }
 
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    public function getSku(): string
+    {
+        return $this->sku;
     }
 
     public function setSku(string $sku): void
@@ -79,9 +99,19 @@ class Variant extends PosStruct
         $this->sku = $sku;
     }
 
+    public function getBarcode(): string
+    {
+        return $this->barcode;
+    }
+
     public function setBarcode(string $barcode): void
     {
         $this->barcode = $barcode;
+    }
+
+    public function getPrice(): Price
+    {
+        return $this->price;
     }
 
     public function setPrice(Price $price): void
@@ -89,20 +119,28 @@ class Variant extends PosStruct
         $this->price = $price;
     }
 
+    public function getCostPrice(): CostPrice
+    {
+        return $this->costPrice;
+    }
+
     public function setCostPrice(CostPrice $costPrice): void
     {
         $this->costPrice = $costPrice;
     }
 
+    /**
+     * @return Option[]|null
+     */
     public function getOptions(): ?array
     {
         return $this->options;
     }
 
     /**
-     * @param Option[] $options
+     * @param Option[]|null $options
      */
-    public function setOptions(array $options): void
+    public function setOptions(?array $options): void
     {
         $this->options = $options;
     }
@@ -110,6 +148,11 @@ class Variant extends PosStruct
     public function addOption(Option ...$options): void
     {
         $this->options = \array_merge($this->options ?? [], $options);
+    }
+
+    public function getPresentation(): Presentation
+    {
+        return $this->presentation;
     }
 
     public function setPresentation(Presentation $presentation): void

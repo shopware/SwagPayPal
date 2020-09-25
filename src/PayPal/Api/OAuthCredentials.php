@@ -12,21 +12,31 @@ class OAuthCredentials
     /**
      * @var string
      */
-    private $restId;
+    protected $restId;
 
     /**
      * @var string
      */
-    private $restSecret;
+    protected $restSecret;
 
     public function __toString(): string
     {
         return 'Basic ' . \base64_encode($this->restId . ':' . $this->restSecret);
     }
 
+    public function getRestId(): string
+    {
+        return $this->restId;
+    }
+
     public function setRestId(string $restId): void
     {
         $this->restId = $restId;
+    }
+
+    public function getRestSecret(): string
+    {
+        return $this->restSecret;
     }
 
     public function setRestSecret(string $restSecret): void

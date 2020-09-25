@@ -21,17 +21,17 @@ class PosApiError extends PosStruct
     /**
      * @var string
      */
-    private $developerMessage;
+    protected $developerMessage;
 
     /**
      * @var string|null
      */
-    private $errorType;
+    protected $errorType;
 
     /**
      * @var Violation[]|null
      */
-    private $violations;
+    protected $violations;
 
     public function getViolationsAsString(): string
     {
@@ -52,22 +52,27 @@ class PosApiError extends PosStruct
         return $this->developerMessage;
     }
 
+    public function setDeveloperMessage(string $developerMessage): void
+    {
+        $this->developerMessage = $developerMessage;
+    }
+
     public function getErrorType(): ?string
     {
         return $this->errorType;
     }
 
-    protected function setDeveloperMessage(string $developerMessage): void
-    {
-        $this->developerMessage = $developerMessage;
-    }
-
-    protected function setErrorType(?string $errorType): void
+    public function setErrorType(?string $errorType): void
     {
         $this->errorType = $errorType;
     }
 
-    protected function setViolations(array $violations): void
+    public function getViolations(): ?array
+    {
+        return $this->violations;
+    }
+
+    public function setViolations(?array $violations): void
     {
         $this->violations = $violations;
     }

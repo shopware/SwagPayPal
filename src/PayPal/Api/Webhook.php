@@ -40,21 +40,56 @@ class Webhook extends PayPalStruct
     /**
      * @var string
      */
-    private $createTime;
+    protected $createTime;
 
     /**
      * @var Link[]
      */
-    private $links;
+    protected $links;
 
     /**
      * @var string
      */
-    private $eventVersion;
+    protected $eventVersion;
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getResourceType(): string
+    {
+        return $this->resourceType;
+    }
+
+    public function setResourceType(string $resourceType): void
+    {
+        $this->resourceType = $resourceType;
+    }
 
     public function getEventType(): string
     {
         return $this->eventType;
+    }
+
+    public function setEventType(string $eventType): void
+    {
+        $this->eventType = $eventType;
+    }
+
+    public function getSummary(): string
+    {
+        return $this->summary;
+    }
+
+    public function setSummary(string $summary): void
+    {
+        $this->summary = $summary;
     }
 
     public function getResource(): Webhook\Resource
@@ -62,45 +97,43 @@ class Webhook extends PayPalStruct
         return $this->resource;
     }
 
-    protected function setId(string $id): void
+    public function setResource(Webhook\Resource $resource): void
     {
-        $this->id = $id;
+        $this->resource = $resource;
     }
 
-    protected function setCreateTime(string $createTime): void
+    public function getCreateTime(): string
+    {
+        return $this->createTime;
+    }
+
+    public function setCreateTime(string $createTime): void
     {
         $this->createTime = $createTime;
     }
 
-    protected function setResourceType(string $resourceType): void
+    /**
+     * @return Link[]
+     */
+    public function getLinks(): array
     {
-        $this->resourceType = $resourceType;
-    }
-
-    protected function setEventType(string $eventType): void
-    {
-        $this->eventType = $eventType;
-    }
-
-    protected function setSummary(string $summary): void
-    {
-        $this->summary = $summary;
-    }
-
-    protected function setResource(Webhook\Resource $resource): void
-    {
-        $this->resource = $resource;
+        return $this->links;
     }
 
     /**
      * @param Link[] $links
      */
-    protected function setLinks(array $links): void
+    public function setLinks(array $links): void
     {
         $this->links = $links;
     }
 
-    protected function setEventVersion(string $eventVersion): void
+    public function getEventVersion(): string
+    {
+        return $this->eventVersion;
+    }
+
+    public function setEventVersion(string $eventVersion): void
     {
         $this->eventVersion = $eventVersion;
     }

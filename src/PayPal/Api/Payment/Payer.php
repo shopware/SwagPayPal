@@ -32,9 +32,24 @@ class Payer extends PayPalStruct
      */
     protected $externalSelectedFundingInstrumentType;
 
+    public function getPaymentMethod(): string
+    {
+        return $this->paymentMethod;
+    }
+
     public function setPaymentMethod(string $paymentMethod): void
     {
         $this->paymentMethod = $paymentMethod;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): void
+    {
+        $this->status = $status;
     }
 
     public function getPayerInfo(): PayerInfo
@@ -42,18 +57,18 @@ class Payer extends PayPalStruct
         return $this->payerInfo;
     }
 
-    public function setExternalSelectedFundingInstrumentType(string $externalSelectedFundingInstrumentType): void
-    {
-        $this->externalSelectedFundingInstrumentType = $externalSelectedFundingInstrumentType;
-    }
-
     public function setPayerInfo(PayerInfo $payerInfo): void
     {
         $this->payerInfo = $payerInfo;
     }
 
-    protected function setStatus(string $status): void
+    public function getExternalSelectedFundingInstrumentType(): string
     {
-        $this->status = $status;
+        return $this->externalSelectedFundingInstrumentType;
+    }
+
+    public function setExternalSelectedFundingInstrumentType(string $externalSelectedFundingInstrumentType): void
+    {
+        $this->externalSelectedFundingInstrumentType = $externalSelectedFundingInstrumentType;
     }
 }

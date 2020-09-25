@@ -44,19 +44,14 @@ abstract class Details extends PayPalStruct
         return $this->subtotal;
     }
 
-    public function getShipping(): string
-    {
-        return $this->shipping;
-    }
-
-    public function getTax(): string
-    {
-        return $this->tax;
-    }
-
     public function setSubtotal(string $subtotal): void
     {
         $this->subtotal = $subtotal;
+    }
+
+    public function getShipping(): string
+    {
+        return $this->shipping;
     }
 
     public function setShipping(string $shipping): void
@@ -64,22 +59,42 @@ abstract class Details extends PayPalStruct
         $this->shipping = $shipping;
     }
 
+    public function getTax(): string
+    {
+        return $this->tax;
+    }
+
     public function setTax(string $tax): void
     {
         $this->tax = $tax;
     }
 
-    protected function setHandlingFee(string $handlingFee): void
+    public function getHandlingFee(): string
+    {
+        return $this->handlingFee;
+    }
+
+    public function setHandlingFee(string $handlingFee): void
     {
         $this->handlingFee = $handlingFee;
     }
 
-    protected function setShippingDiscount(string $shippingDiscount): void
+    public function getShippingDiscount(): string
+    {
+        return $this->shippingDiscount;
+    }
+
+    public function setShippingDiscount(string $shippingDiscount): void
     {
         $this->shippingDiscount = $shippingDiscount;
     }
 
-    protected function setInsurance(string $insurance): void
+    public function getInsurance(): string
+    {
+        return $this->insurance;
+    }
+
+    public function setInsurance(string $insurance): void
     {
         $this->insurance = $insurance;
     }

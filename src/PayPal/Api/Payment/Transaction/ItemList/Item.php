@@ -41,19 +41,9 @@ class Item extends PayPalStruct
      */
     protected $tax;
 
-    public function getPrice(): string
+    public function getName(): string
     {
-        return $this->price;
-    }
-
-    public function getQuantity(): int
-    {
-        return $this->quantity;
-    }
-
-    public function getTax(): string
-    {
-        return $this->tax;
+        return $this->name;
     }
 
     public function setName(string $name): void
@@ -61,9 +51,19 @@ class Item extends PayPalStruct
         $this->name = $name;
     }
 
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
     public function setCurrency(string $currency): void
     {
         $this->currency = $currency;
+    }
+
+    public function getPrice(): string
+    {
+        return $this->price;
     }
 
     public function setPrice(string $price): void
@@ -71,14 +71,29 @@ class Item extends PayPalStruct
         $this->price = $price;
     }
 
+    public function getQuantity(): int
+    {
+        return $this->quantity;
+    }
+
     public function setQuantity(int $quantity): void
     {
         $this->quantity = $quantity;
     }
 
+    public function getSku(): string
+    {
+        return $this->sku;
+    }
+
     public function setSku(string $sku): void
     {
         $this->sku = $sku;
+    }
+
+    public function getTax(): string
+    {
+        return $this->tax;
     }
 
     public function setTax(string $tax): void

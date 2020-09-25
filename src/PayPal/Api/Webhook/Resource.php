@@ -32,61 +32,66 @@ class Resource extends PayPalStruct
     /**
      * @var string
      */
-    private $updateTime;
+    protected $updateTime;
 
     /**
      * @var Amount
      */
-    private $amount;
+    protected $amount;
 
     /**
      * @var string
      */
-    private $paymentMode;
+    protected $paymentMode;
 
     /**
      * @var string
      */
-    private $createTime;
+    protected $createTime;
 
     /**
      * @var string
      */
-    private $clearingTime;
+    protected $clearingTime;
 
     /**
      * @var string
      */
-    private $protectionEligibilityType;
+    protected $protectionEligibilityType;
 
     /**
      * @var string
      */
-    private $protectionEligibility;
+    protected $protectionEligibility;
 
     /**
      * @var TransactionFee
      */
-    private $transactionFee;
+    protected $transactionFee;
 
     /**
      * @var string
      */
-    private $invoiceNumber;
+    protected $invoiceNumber;
 
     /**
      * @var Link[]
      */
-    private $links;
+    protected $links;
 
     /**
      * @var string
      */
-    private $state;
+    protected $state;
 
     public function getId(): string
     {
         return $this->id;
+    }
+
+    public function setId(string $id): void
+    {
+        $this->id = $id;
     }
 
     public function getParentPayment(): ?string
@@ -94,80 +99,133 @@ class Resource extends PayPalStruct
         return $this->parentPayment;
     }
 
+    public function setParentPayment(?string $parentPayment): void
+    {
+        $this->parentPayment = $parentPayment;
+    }
+
     public function getBillingAgreementId(): ?string
     {
         return $this->billingAgreementId;
     }
 
-    protected function setParentPayment(?string $parentPayment): void
-    {
-        $this->parentPayment = $parentPayment;
-    }
-
-    protected function setBillingAgreementId(?string $billingAgreementId): void
+    public function setBillingAgreementId(?string $billingAgreementId): void
     {
         $this->billingAgreementId = $billingAgreementId;
     }
 
-    protected function setUpdateTime(string $updateTime): void
+    public function getUpdateTime(): string
+    {
+        return $this->updateTime;
+    }
+
+    public function setUpdateTime(string $updateTime): void
     {
         $this->updateTime = $updateTime;
     }
 
-    protected function setAmount(Amount $amount): void
+    public function getAmount(): Amount
+    {
+        return $this->amount;
+    }
+
+    public function setAmount(Amount $amount): void
     {
         $this->amount = $amount;
     }
 
-    protected function setPaymentMode(string $paymentMode): void
+    public function getPaymentMode(): string
+    {
+        return $this->paymentMode;
+    }
+
+    public function setPaymentMode(string $paymentMode): void
     {
         $this->paymentMode = $paymentMode;
     }
 
-    protected function setCreateTime(string $createTime): void
+    public function getCreateTime(): string
+    {
+        return $this->createTime;
+    }
+
+    public function setCreateTime(string $createTime): void
     {
         $this->createTime = $createTime;
     }
 
-    protected function setClearingTime(string $clearingTime): void
+    public function getClearingTime(): string
+    {
+        return $this->clearingTime;
+    }
+
+    public function setClearingTime(string $clearingTime): void
     {
         $this->clearingTime = $clearingTime;
     }
 
-    protected function setProtectionEligibilityType(string $protectionEligibilityType): void
+    public function getProtectionEligibilityType(): string
+    {
+        return $this->protectionEligibilityType;
+    }
+
+    public function setProtectionEligibilityType(string $protectionEligibilityType): void
     {
         $this->protectionEligibilityType = $protectionEligibilityType;
     }
 
-    protected function setProtectionEligibility(string $protectionEligibility): void
+    public function getProtectionEligibility(): string
+    {
+        return $this->protectionEligibility;
+    }
+
+    public function setProtectionEligibility(string $protectionEligibility): void
     {
         $this->protectionEligibility = $protectionEligibility;
     }
 
-    protected function setTransactionFee(TransactionFee $transactionFee): void
+    public function getTransactionFee(): TransactionFee
+    {
+        return $this->transactionFee;
+    }
+
+    public function setTransactionFee(TransactionFee $transactionFee): void
     {
         $this->transactionFee = $transactionFee;
     }
 
-    protected function setInvoiceNumber(string $invoiceNumber): void
+    public function getInvoiceNumber(): string
+    {
+        return $this->invoiceNumber;
+    }
+
+    public function setInvoiceNumber(string $invoiceNumber): void
     {
         $this->invoiceNumber = $invoiceNumber;
     }
 
     /**
+     * @return Link[]
+     */
+    public function getLinks(): array
+    {
+        return $this->links;
+    }
+
+    /**
      * @param Link[] $links
      */
-    protected function setLinks(array $links): void
+    public function setLinks(array $links): void
     {
         $this->links = $links;
     }
 
-    protected function setId(string $id): void
+    public function getState(): string
     {
-        $this->id = $id;
+        return $this->state;
     }
 
-    protected function setState(string $state): void
+    public function setState(string $state): void
     {
         $this->state = $state;
     }

@@ -39,61 +39,71 @@ class Refund extends PayPalStruct
     /**
      * @var string
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $createTime;
+    protected $createTime;
 
     /**
      * @var string
      */
-    private $updateTime;
+    protected $updateTime;
 
     /**
      * @var string
      */
-    private $state;
+    protected $state;
 
     /**
      * @var RefundFromTransactionFee
      */
-    private $refundFromTransactionFee;
+    protected $refundFromTransactionFee;
 
     /**
      * @var TotalRefundedAmount
      */
-    private $totalRefundedAmount;
+    protected $totalRefundedAmount;
 
     /**
      * @var RefundFromReceivedAmount
      */
-    private $refundFromReceivedAmount;
+    protected $refundFromReceivedAmount;
 
     /**
      * @var string
      */
-    private $saleId;
+    protected $saleId;
 
     /**
      * @var string
      */
-    private $captureId;
+    protected $captureId;
 
     /**
      * @var string
      */
-    private $parentPayment;
+    protected $parentPayment;
 
     /**
      * @var Link[]
      */
-    private $links;
+    protected $links;
+
+    public function getAmount(): Amount
+    {
+        return $this->amount;
+    }
 
     public function setAmount(Amount $amount): void
     {
         $this->amount = $amount;
+    }
+
+    public function getInvoiceNumber(): string
+    {
+        return $this->invoiceNumber;
     }
 
     public function setInvoiceNumber(string $invoiceNumber): void
@@ -101,9 +111,9 @@ class Refund extends PayPalStruct
         $this->invoiceNumber = $invoiceNumber;
     }
 
-    public function getState(): string
+    public function getDescription(): string
     {
-        return $this->state;
+        return $this->description;
     }
 
     public function setDescription(string $description): void
@@ -111,9 +121,64 @@ class Refund extends PayPalStruct
         $this->description = $description;
     }
 
+    public function getReason(): string
+    {
+        return $this->reason;
+    }
+
     public function setReason(string $reason): void
     {
         $this->reason = $reason;
+    }
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+    public function getCreateTime(): string
+    {
+        return $this->createTime;
+    }
+
+    public function setCreateTime(string $createTime): void
+    {
+        $this->createTime = $createTime;
+    }
+
+    public function getUpdateTime(): string
+    {
+        return $this->updateTime;
+    }
+
+    public function setUpdateTime(string $updateTime): void
+    {
+        $this->updateTime = $updateTime;
+    }
+
+    public function getState(): string
+    {
+        return $this->state;
+    }
+
+    public function setState(string $state): void
+    {
+        $this->state = $state;
+    }
+
+    public function getRefundFromTransactionFee(): RefundFromTransactionFee
+    {
+        return $this->refundFromTransactionFee;
+    }
+
+    public function setRefundFromTransactionFee(RefundFromTransactionFee $refundFromTransactionFee): void
+    {
+        $this->refundFromTransactionFee = $refundFromTransactionFee;
     }
 
     public function getTotalRefundedAmount(): TotalRefundedAmount
@@ -121,65 +186,63 @@ class Refund extends PayPalStruct
         return $this->totalRefundedAmount;
     }
 
+    public function setTotalRefundedAmount(TotalRefundedAmount $totalRefundedAmount): void
+    {
+        $this->totalRefundedAmount = $totalRefundedAmount;
+    }
+
+    public function getRefundFromReceivedAmount(): RefundFromReceivedAmount
+    {
+        return $this->refundFromReceivedAmount;
+    }
+
+    public function setRefundFromReceivedAmount(RefundFromReceivedAmount $refundFromReceivedAmount): void
+    {
+        $this->refundFromReceivedAmount = $refundFromReceivedAmount;
+    }
+
+    public function getSaleId(): string
+    {
+        return $this->saleId;
+    }
+
+    public function setSaleId(string $saleId): void
+    {
+        $this->saleId = $saleId;
+    }
+
+    public function getCaptureId(): string
+    {
+        return $this->captureId;
+    }
+
+    public function setCaptureId(string $captureId): void
+    {
+        $this->captureId = $captureId;
+    }
+
     public function getParentPayment(): string
     {
         return $this->parentPayment;
     }
 
-    protected function setId(string $id): void
-    {
-        $this->id = $id;
-    }
-
-    protected function setCreateTime(string $createTime): void
-    {
-        $this->createTime = $createTime;
-    }
-
-    protected function setUpdateTime(string $updateTime): void
-    {
-        $this->updateTime = $updateTime;
-    }
-
-    protected function setState(string $state): void
-    {
-        $this->state = $state;
-    }
-
-    protected function setRefundFromTransactionFee(RefundFromTransactionFee $refundFromTransactionFee): void
-    {
-        $this->refundFromTransactionFee = $refundFromTransactionFee;
-    }
-
-    protected function setTotalRefundedAmount(TotalRefundedAmount $totalRefundedAmount): void
-    {
-        $this->totalRefundedAmount = $totalRefundedAmount;
-    }
-
-    protected function setRefundFromReceivedAmount(RefundFromReceivedAmount $refundFromReceivedAmount): void
-    {
-        $this->refundFromReceivedAmount = $refundFromReceivedAmount;
-    }
-
-    protected function setSaleId(string $saleId): void
-    {
-        $this->saleId = $saleId;
-    }
-
-    protected function setCaptureId(string $captureId): void
-    {
-        $this->captureId = $captureId;
-    }
-
-    protected function setParentPayment(string $parentPayment): void
+    public function setParentPayment(string $parentPayment): void
     {
         $this->parentPayment = $parentPayment;
     }
 
     /**
+     * @return Link[]
+     */
+    public function getLinks(): array
+    {
+        return $this->links;
+    }
+
+    /**
      * @param Link[] $links
      */
-    protected function setLinks(array $links): void
+    public function setLinks(array $links): void
     {
         $this->links = $links;
     }

@@ -17,16 +17,18 @@ class VariantOptionDefinitions extends PosStruct
      */
     protected $definitions = [];
 
+    public function getDefinitions(): array
+    {
+        return $this->definitions;
+    }
+
+    public function setDefinitions(array $definitions): void
+    {
+        $this->definitions = $definitions;
+    }
+
     public function addDefinition(Definition ...$definitions): void
     {
         $this->definitions = \array_merge($this->definitions, $definitions);
-    }
-
-    /**
-     * @param Definition[] $definitions
-     */
-    protected function setDefinitions(array $definitions): void
-    {
-        $this->definitions = $definitions;
     }
 }
