@@ -30,7 +30,10 @@ use Symfony\Component\Messenger\Stamp\DelayStamp;
 
 class StockSubscriber implements EventSubscriberInterface
 {
-    private const DELAY = 2000;
+    /**
+     * Needed for letting the StockUpdater first recalculate availableStock
+     */
+    private const DELAY = 10000;
 
     /**
      * @var EntityRepositoryInterface
@@ -69,6 +72,11 @@ class StockSubscriber implements EventSubscriberInterface
         $ids = [];
 
         foreach ($event->getWriteResults() as $result) {
+            // TODO: PPI-65: Change method "getPayload" to "getProperty" if Shopware minVersion > 6.3.2
+            if ($result->hasPayload('referencedId') && $result->getPayload()['type'] === LineItem::PRODUCT_LINE_ITEM_TYPE) {
+                $ids[] = $result->getPayload()['referencedId'];
+            }
+
             if ($result->getOperation() === EntityWriteResult::OPERATION_INSERT) {
                 continue;
             }
@@ -150,6 +158,10 @@ class StockSubscriber implements EventSubscriberInterface
     private function startSync(array $productIds, Context $context): void
     {
         if (empty($productIds)) {
+            return;
+        }
+
+        if ($context->getVersionId() !== Defaults::LIVE_VERSION) {
             return;
         }
 
