@@ -16,7 +16,7 @@
 
                                 {% block swag_image_slider_image %}
                                     <img class="swag-image-slider__image-container-element-image"
-                                         :src="image"
+                                         :src="image | asset"
                                          :alt="imageAlt(index)">
                                 {% endblock %}
                             </div>
