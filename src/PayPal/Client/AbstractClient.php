@@ -97,6 +97,9 @@ abstract class AbstractClient
                 if (isset($detail['field'])) {
                     $message .= ' (' . $detail['field'] . ') ';
                 }
+                if (isset($detail['description'])) {
+                    $message .= ' (' . $detail['description'] . ') ';
+                }
             }
         }
 
