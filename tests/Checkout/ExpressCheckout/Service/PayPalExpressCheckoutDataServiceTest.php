@@ -105,6 +105,8 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     {
         $country = new CountryEntity();
         $country->setId(Uuid::randomHex());
+        $country->setActive(true);
+        $country->setShippingAvailable(true);
 
         $activeBillingAddress = new CustomerAddressEntity();
         $activeBillingAddress->setCountry($country);
