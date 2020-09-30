@@ -67,6 +67,9 @@ class ExpressCheckoutSubscriberTest extends TestCase
             CmsPageLoadedEvent::class => 'addExpressCheckoutDataToCmsPage',
 
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
+
+            'framework.validation.address.create' => 'disableAddressValidation',
+            'framework.validation.customer.create' => 'disableCustomerValidation',
         ];
 
         static::assertSame($expectedEvents, $subscribedEvents);

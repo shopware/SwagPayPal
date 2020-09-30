@@ -12,7 +12,7 @@
         </service>
 
         <service id="Swag\PayPal\Checkout\ExpressCheckout\Route\ExpressApprovePaymentRoute">
-            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\AccountRegistrationService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
             <argument type="service" id="country.repository"/>
             <argument type="service" id="salutation.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\AccountService"/>

@@ -9,15 +9,17 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Route;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Checkout\Customer\SalesChannel\AccountRegistrationService;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
+use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateCollection;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
@@ -37,10 +39,12 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
 {
+    public const EXPRESS_CHECKOUT_ACTIVE = 'payPalExpressCheckoutActive';
+
     /**
-     * @var AccountRegistrationService
+     * @var RegisterRoute
      */
-    private $accountRegistrationService;
+    private $registerRoute;
 
     /**
      * @var EntityRepositoryInterface
@@ -83,7 +87,7 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
     private $cartService;
 
     public function __construct(
-        AccountRegistrationService $accountRegistrationService,
+        RegisterRoute $registerRoute,
         EntityRepositoryInterface $countryRepo,
         EntityRepositoryInterface $salutationRepo,
         AccountService $accountService,
@@ -93,7 +97,7 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
         PaymentResource $paymentResource,
         CartService $cartService
     ) {
-        $this->accountRegistrationService = $accountRegistrationService;
+        $this->registerRoute = $registerRoute;
         $this->countryRepo = $countryRepo;
         $this->salutationRepo = $salutationRepo;
         $this->accountService = $accountService;
@@ -139,9 +143,11 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
         $paypalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext());
 
         //Create and login a new guest customer
+        $salesChannelContext->getContext()->addExtension(self::EXPRESS_CHECKOUT_ACTIVE, new ArrayStruct());
         $customerDataBag = $this->getCustomerDataBagFromPayment($payment, $salesChannelContext->getContext());
-        $this->accountRegistrationService->register($customerDataBag, true, $salesChannelContext);
+        $this->registerRoute->register($customerDataBag, $salesChannelContext, false);
         $newContextToken = $this->accountService->login($customerDataBag->get('email'), $salesChannelContext, true);
+        $salesChannelContext->getContext()->removeExtension(self::EXPRESS_CHECKOUT_ACTIVE);
 
         // Since a new customer was logged in, the context changed in the system,
         // but this doesn't effect the current context given as parameter.
@@ -168,7 +174,7 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
         return new ContextTokenResponse($cart->getToken());
     }
 
-    private function getCustomerDataBagFromPayment(Payment $payment, Context $context): DataBag
+    private function getCustomerDataBagFromPayment(Payment $payment, Context $context): RequestDataBag
     {
         $payerInfo = $payment->getPayer()->getPayerInfo();
         $billingAddress = $payerInfo->getBillingAddress() ?? $payerInfo->getShippingAddress();
@@ -190,7 +196,8 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
             );
         }
 
-        return new DataBag([
+        return new RequestDataBag([
+            'guest' => true,
             'salutationId' => $salutationId,
             'email' => $payerInfo->getEmail(),
             'firstName' => $firstName,

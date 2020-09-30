@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\ExpressCheckout;
 
 use Shopware\Core\Content\Cms\CmsPageCollection;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
+use Shopware\Core\Framework\Validation\BuildValidationEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
@@ -17,6 +18,7 @@ use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
+use Swag\PayPal\Checkout\ExpressCheckout\Route\ExpressApprovePaymentRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -65,6 +67,9 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             CmsPageLoadedEvent::class => 'addExpressCheckoutDataToCmsPage',
 
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
+
+            'framework.validation.address.create' => 'disableAddressValidation',
+            'framework.validation.customer.create' => 'disableCustomerValidation',
         ];
     }
 
@@ -125,6 +130,28 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
             $expressCheckoutButtonData
         );
+    }
+
+    public function disableAddressValidation(BuildValidationEvent $event): void
+    {
+        if (!$event->getContext()->hasExtension(ExpressApprovePaymentRoute::EXPRESS_CHECKOUT_ACTIVE)) {
+            return;
+        }
+
+        $event->getDefinition()->set('additionalAddressLine1')
+                               ->set('additionalAddressLine2')
+                               ->set('phoneNumber');
+    }
+
+    public function disableCustomerValidation(BuildValidationEvent $event): void
+    {
+        if (!$event->getContext()->hasExtension(ExpressApprovePaymentRoute::EXPRESS_CHECKOUT_ACTIVE)) {
+            return;
+        }
+
+        $event->getDefinition()->set('birthdayDay')
+                               ->set('birthdayMonth')
+                               ->set('birthdayYear');
     }
 
     private function getExpressCheckoutButtonData(
