@@ -4,6 +4,7 @@
 - PPI-69 - The Express button is now hidden, when the PayPal payment method is disabled.
 - PPI-97 - Fixes error during Express Checkout, if required fields are not sent by PayPal
 - PPI-124 - Fixes error display during communication with PayPal
+- PPI-130 - Adds new event, which is emitted when the Plus iFrame is loaded
 - PT-11048 - Introduce iZettle integration (Point of Sales)
 
 # 1.8.4
