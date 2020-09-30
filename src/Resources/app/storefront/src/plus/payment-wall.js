@@ -181,13 +181,14 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
             useraction: this.options.userAction,
             surcharging: this.options.surcharging,
             showLoadingIndicator: this.options.showLoadingIndicator,
-            showPuiOnSandbox: this.options.showPuiOnSandbox
+            showPuiOnSandbox: this.options.showPuiOnSandbox,
+            onLoad: this.onPaymentSelectionLoad
         });
     }
 
     /**
      * Will be triggered when the confirm form was submitted.
-     * In this case, the order will be patched and the PayPal
+     * In this case, the order will be created and the PayPal
      * checkout process will be triggered afterwards
      *
      * @param {Event} event
@@ -250,5 +251,12 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         if (data.paymentUrl === 'plusPatched') {
             this.paypal.apps.PPP.doCheckout();
         }
+    }
+
+    /**
+     * Will be emitted once the PayPal Plus iFrame is loaded
+     */
+    onPaymentSelectionLoad() {
+        document.$emitter.publish('paypalPlusSelectionLoaded');
     }
 }
