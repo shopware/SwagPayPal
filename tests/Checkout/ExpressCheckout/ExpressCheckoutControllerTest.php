@@ -10,8 +10,8 @@ namespace Swag\PayPal\Test\Checkout\ExpressCheckout;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Customer\SalesChannel\AccountRegistrationService;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
+use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Defaults;
@@ -236,8 +236,8 @@ class ExpressCheckoutControllerTest extends TestCase
             /** @var CartService $cartService */
             $cartService = $this->getContainer()->get(CartService::class);
         }
-        /** @var AccountRegistrationService $accountRegistrationService */
-        $accountRegistrationService = $this->getContainer()->get(AccountRegistrationService::class);
+        /** @var RegisterRoute $registerRoute */
+        $registerRoute = $this->getContainer()->get(RegisterRoute::class);
         /** @var EntityRepositoryInterface $countryRepo */
         $countryRepo = $this->getContainer()->get('country.repository');
         /** @var EntityRepositoryInterface $salutationRepo */
@@ -253,7 +253,7 @@ class ExpressCheckoutControllerTest extends TestCase
 
         $paymentResource = $this->createPaymentResource($settings);
         $route = new ExpressApprovePaymentRoute(
-            $accountRegistrationService,
+            $registerRoute,
             $countryRepo,
             $salutationRepo,
             $accountService,
