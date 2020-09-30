@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <psalm
+    cacheDirectory="var/cache/psalm"
     autoloader="bin/static-analyze-autoloader.php"
     findUnusedVariablesAndParams="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

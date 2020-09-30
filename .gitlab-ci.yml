@@ -38,7 +38,7 @@ Static analyze:
         - php bin/console plugin:install --activate SwagPayPal
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.yml .
-        - php ../../../dev-ops/analyze/vendor/bin/php-cs-fixer fix --config=.php_cs.dist --dry-run -vvv
+        - php ../../../dev-ops/analyze/vendor/bin/ecs check --config=easy-coding-standard.yml
         - bin/static-analyze.sh
         - cd $CI_PROJECT_DIR/development
         - ./psh.phar administration:init --APP_ENV="dev"
