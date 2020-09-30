@@ -26,7 +26,7 @@ class TokenClient extends AbstractClient
         $client = new Client([
             'base_uri' => PosBaseURL::OAUTH,
             'headers' => [
-                'X-iZettle-Application-Id' => SwagPayPal::POS_PARTNER_IDENTIFIER,
+                'X-iZettle-Application-Id' => SwagPayPal::POS_PARTNER_CLIENT_ID,
             ],
         ]);
 
@@ -38,7 +38,7 @@ class TokenClient extends AbstractClient
         $data = [
             'form_params' => [
                 'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-                'client_id' => SwagPayPal::POS_PARTNER_IDENTIFIER,
+                'client_id' => SwagPayPal::POS_PARTNER_CLIENT_ID,
                 'assertion' => $credentials->getApiKey(),
             ],
         ];

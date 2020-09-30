@@ -35,7 +35,7 @@ class PosClient extends AbstractClient
             'base_uri' => $baseUri,
             'headers' => [
                 'Authorization' => $authorizationHeader,
-                'X-iZettle-Application-Id' => SwagPayPal::POS_PARTNER_IDENTIFIER,
+                'X-iZettle-Application-Id' => SwagPayPal::POS_PARTNER_CLIENT_ID,
             ],
         ]);
 
