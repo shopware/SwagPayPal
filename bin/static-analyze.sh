@@ -10,4 +10,4 @@ then
   exit 1
 fi
 
-php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.xml --show-info=false --threads=$(nproc)
+php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.xml --threads=$(nproc) --diff --show-info=false
