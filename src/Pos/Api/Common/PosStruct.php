@@ -10,6 +10,14 @@ namespace Swag\PayPal\Pos\Api\Common;
 abstract class PosStruct implements \JsonSerializable
 {
     /**
+     * @deprecated tag:v2.0.0 - This constructor will be final in version 2.0.0. Do not change it
+     */
+    /*final */
+    public function __construct()
+    {
+    }
+
+    /**
      * @return static
      */
     public function assign(array $arrayData)

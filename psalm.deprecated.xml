@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<!-- Only use in CI for older Shopware versions -->
 <psalm
     cacheDirectory="var/cache/psalm"
     autoloader="bin/static-analyze-autoloader.php"
@@ -137,16 +138,6 @@
                 <file name="tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php"/>
             </errorLevel>
         </PossiblyNullReference>
-
-        <UnsafeInstantiation>
-            <errorLevel type="info">
-                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove once the constructor is final -->
-                <file name="src/PayPal/Api/Common/PayPalStruct.php"/>
-                <file name="src/Pos/Api/Common/PosStruct.php"/>
-                <file name="src/Pos/Webhook/Handler/AbstractWebhookHandler.php"/>
-            </errorLevel>
-        </UnsafeInstantiation>
 
         <RedundantCondition>
             <errorLevel type="info">
