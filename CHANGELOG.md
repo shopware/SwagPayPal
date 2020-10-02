@@ -1,6 +1,6 @@
 # 1.9.0
 - PPI-1 - Fixes mobile layout of checkout finish for "Pay Upon Invoice"
-- PPI-68, PPI-118 - Improved API struct usage for third party extensions
+- PPI-68, PPI-118, PPI-136 - Improved API struct usage for third party extensions
 - PPI-69 - The Express button is now hidden, when the PayPal payment method is disabled.
 - PPI-97 - Fixes error during Express Checkout, if required fields are not sent by PayPal
 - PPI-124 - Fixes error display during communication with PayPal

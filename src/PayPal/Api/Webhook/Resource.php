@@ -30,6 +30,16 @@ class Resource extends PayPalStruct
     protected $billingAgreementId;
 
     /**
+     * @var string|null
+     */
+    protected $saleId;
+
+    /**
+     * @var string|null
+     */
+    protected $refundReasonCode;
+
+    /**
      * @var string
      */
     protected $updateTime;
@@ -112,6 +122,26 @@ class Resource extends PayPalStruct
     public function setBillingAgreementId(?string $billingAgreementId): void
     {
         $this->billingAgreementId = $billingAgreementId;
+    }
+
+    public function getSaleId(): ?string
+    {
+        return $this->saleId;
+    }
+
+    public function setSaleId(?string $saleId): void
+    {
+        $this->saleId = $saleId;
+    }
+
+    public function getRefundReasonCode(): ?string
+    {
+        return $this->refundReasonCode;
+    }
+
+    public function setRefundReasonCode(?string $refundReasonCode): void
+    {
+        $this->refundReasonCode = $refundReasonCode;
     }
 
     public function getUpdateTime(): string
