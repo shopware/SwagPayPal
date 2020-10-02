@@ -8,6 +8,7 @@ variables:
     CMS_EXTENSION_BRANCH: 'master'
     RUN_IN_MR: 'true'
     INSTALL_CMS: 'true'
+    USE_DEPRECATED_PSALM_CONFIG: 'false'
 
 stages:
     - Static analysis
@@ -37,9 +38,24 @@ Static analyze:
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        - php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.yml .
+        - >
+            if [ -f "../../../vendor/shopware/platform/easy-coding-standard.php" ];
+            then
+                php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.php src tests
+            else
+                php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.yml src tests
+            fi;
         - php ../../../dev-ops/analyze/vendor/bin/ecs check --config=easy-coding-standard.yml
-        - bin/static-analyze.sh
+        - composer dump-autoload
+        - php bin/phpstan-config-generator.php
+        - php ../../../dev-ops/analyze/vendor/bin/phpstan analyze --configuration phpstan.neon src tests
+        - >
+            if [[ $USE_DEPRECATED_PSALM_CONFIG = "false" ]];
+            then
+                php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.xml --threads=$(nproc) --diff --show-info=false
+            else
+                php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.deprecated.xml --threads=$(nproc) --diff --show-info=false
+            fi;
         - cd $CI_PROJECT_DIR/development
         - ./psh.phar administration:init --APP_ENV="dev"
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
@@ -50,18 +66,27 @@ Static analyze:
     parallel:
         matrix:
             -   PLATFORM_BRANCH: '6.3.0.0'
-                DEVELOPMENT_BRANCH: 'master'
+                DEVELOPMENT_BRANCH: '6.3.2.0'
+                USE_DEPRECATED_PSALM_CONFIG: 'true'
             -   PLATFORM_BRANCH: '6.3.0.1'
-                DEVELOPMENT_BRANCH: 'master'
+                DEVELOPMENT_BRANCH: '6.3.2.0'
+                USE_DEPRECATED_PSALM_CONFIG: 'true'
                 RUN_IN_MR: 'false'
             -   PLATFORM_BRANCH: '6.3.0.2'
-                DEVELOPMENT_BRANCH: 'master'
+                DEVELOPMENT_BRANCH: '6.3.2.0'
+                USE_DEPRECATED_PSALM_CONFIG: 'true'
                 RUN_IN_MR: 'false'
             -   PLATFORM_BRANCH: '6.3.1.0'
-                DEVELOPMENT_BRANCH: 'master'
+                DEVELOPMENT_BRANCH: '6.3.2.0'
+                USE_DEPRECATED_PSALM_CONFIG: 'true'
                 RUN_IN_MR: 'false'
             -   PLATFORM_BRANCH: '6.3.1.1'
-                DEVELOPMENT_BRANCH: 'master'
+                DEVELOPMENT_BRANCH: '6.3.2.0'
+                USE_DEPRECATED_PSALM_CONFIG: 'true'
+                RUN_IN_MR: 'false'
+            -   PLATFORM_BRANCH: '6.3.2.0'
+                DEVELOPMENT_BRANCH: '6.3.2.0'
+                USE_DEPRECATED_PSALM_CONFIG: 'true'
                 RUN_IN_MR: 'false'
             -   PLATFORM_BRANCH: 'master'
                 DEVELOPMENT_BRANCH: 'master'
@@ -142,6 +167,9 @@ PHPUnit:
                 RUN_IN_MR: 'false'
             -   PLATFORM_BRANCH: '6.3.1.1'
                 DEVELOPMENT_BRANCH: 'master'
+                RUN_IN_MR: 'false'
+            -   PLATFORM_BRANCH: '6.3.2.0'
+                DEVELOPMENT_BRANCH: '6.3.2.0'
                 RUN_IN_MR: 'false'
             -   PLATFORM_BRANCH: 'master'
                 DEVELOPMENT_BRANCH: 'master'
