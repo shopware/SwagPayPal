@@ -1,6 +1,6 @@
 # 1.9.0
 - PPI-1 - Korrigiert mobiles Layout der Bestellabschlussseite bei "Kauf auf Rechnung"
-- PPI-68, PPI-118 - API-Objekt-Nutzung für Dritt-Erweiterungen verbessert
+- PPI-68, PPI-118, PPI-136 - API-Objekt-Nutzung für Dritt-Erweiterungen verbessert
 - PPI-69 - Der Express-Button wird nun ausgeblendet, wenn die PayPal-Zahlungsmethode deaktiviert ist.
 - PPI-97 - Korrigiert Fehler beim Express Checkout, wenn erforderliche Felder nicht von PayPal gesendet werden
 - PPI-124 - Korrigiert Weitergabe von Fehlern während der Kommunikation mit PayPal 
