@@ -10,6 +10,7 @@ namespace Swag\PayPal\Pos\Sync\Product;
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 
@@ -45,7 +46,7 @@ class UnsyncedChecker
      */
     public function checkForUnsynced(array $productIds, ProductContext $productContext): void
     {
-        if (!$productContext->getPosSalesChannel()->isReplace()) {
+        if ($productContext->getPosSalesChannel()->getReplace() === PosSalesChannelEntity::REPLACE_OFF) {
             return;
         }
 

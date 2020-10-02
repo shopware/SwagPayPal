@@ -268,7 +268,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
                     imageDomain: '',
                     productStreamId: null,
                     syncPrices: true,
-                    replace: false
+                    replace: 0
                 }
             );
 

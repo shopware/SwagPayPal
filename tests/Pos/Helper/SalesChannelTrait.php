@@ -34,7 +34,7 @@ trait SalesChannelTrait
         $posSalesChannel->setSalesChannelId($salesChannel->getId());
         $posSalesChannel->setMediaDomain(ConstantsForTesting::DOMAIN);
         $posSalesChannel->setApiKey(ConstantsForTesting::VALID_API_KEY);
-        $posSalesChannel->setReplace(true);
+        $posSalesChannel->setReplace(PosSalesChannelEntity::REPLACE_PERMANENTLY);
         $posSalesChannel->setSyncPrices(true);
         $posSalesChannel->setProductStreamId(null);
         $posSalesChannel->setWebhookSigningKey(ConstantsForTesting::WEBHOOK_SIGNING_KEY);

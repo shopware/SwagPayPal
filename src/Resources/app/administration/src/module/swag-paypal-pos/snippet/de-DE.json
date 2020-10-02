@@ -188,10 +188,12 @@
                 "shopwareProducts": "keine Shopware-Produkte | ein Shopware-Produkt | {n} Shopware-Produkte",
                 "iZettleProducts": "keine iZettle-Produkte | ein iZettle-Produkt | {n} iZettle-Produkte",
                 "description": "Alle Produkte werden aus dem neuen Shopware-Verkaufskanal synchronisiert. Wie möchtest Du Deine iZettle-Produktbibliothek einrichten?",
-                "optionReplaceLabel": "iZettle-Produktbibliothek ersetzen",
-                "optionReplaceDescription": "Ersetze die bestehende iZettle-Produktbibliothek mit den Produkten und Beständen aus Shopware.",
-                "optionAddLabel": "Shopware-Produkte hinzufügen",
-                "optionAddDescription": "Deine Produkte und Bestände werden Deiner iZettle-Produktbibliothek hinzugefügt.",
+                "optionReplacePermanentlyLabel": "Nur Shopware-Produkte verwenden",
+                "optionReplacePermanentlyDescription": "In Deiner iZettle-Produktbibliothek werden ausschließlich Deine Shopware-Produkte und -Bestände gepflegt.",
+                "optionReplaceOneTimeLabel": "iZettle-Produktbibliothek ersetzen",
+                "optionReplaceOneTimeDescription": "Ersetze die bestehende iZettle-Produktbibliothek einmalig mit den Produkten und Beständen aus Shopware.",
+                "optionReplaceNotLabel": "Shopware-Produkte hinzufügen",
+                "optionReplaceNotDescription": "Deine Shopware-Produkte und -Bestände werden Deiner iZettle-Produktbibliothek neben bereits bestehenden Produkten hinzugefügt.",
                 "disclaimer": "Du kannst diese Einstellung jederzeit ändern."
             },
             "syncPrices": {

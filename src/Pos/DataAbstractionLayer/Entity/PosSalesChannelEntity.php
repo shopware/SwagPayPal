@@ -9,10 +9,21 @@ namespace Swag\PayPal\Pos\DataAbstractionLayer\Entity;
 
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 
 class PosSalesChannelEntity extends Entity
 {
     use EntityIdTrait;
+
+    public const REPLACE_PERMANENTLY = 2;
+    public const REPLACE_ONE_TIME = 1;
+    public const REPLACE_OFF = 0;
+
+    private const REPLACE_VALID_VALUES = [
+        self::REPLACE_PERMANENTLY,
+        self::REPLACE_ONE_TIME,
+        self::REPLACE_OFF,
+    ];
 
     /**
      * @var string
@@ -45,7 +56,7 @@ class PosSalesChannelEntity extends Entity
     protected $syncPrices;
 
     /**
-     * @var bool
+     * @var int
      */
     protected $replace;
 
@@ -109,13 +120,20 @@ class PosSalesChannelEntity extends Entity
         $this->syncPrices = $syncPrices;
     }
 
-    public function isReplace(): bool
+    public function getReplace(): int
     {
         return $this->replace;
     }
 
-    public function setReplace(bool $replace): void
+    public function setReplace(int $replace): void
     {
+        if (!\in_array($replace, self::REPLACE_VALID_VALUES, true)) {
+            throw new ConstraintDefinitionException(\sprintf(
+                'Replace must be one of these values: %s',
+                \implode(', ', self::REPLACE_VALID_VALUES)
+            ));
+        }
+
         $this->replace = $replace;
     }
 }

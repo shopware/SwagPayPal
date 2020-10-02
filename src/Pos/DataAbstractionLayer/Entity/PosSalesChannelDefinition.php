@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\RestrictDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\ManyToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToOneAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
@@ -63,7 +64,7 @@ class PosSalesChannelDefinition extends EntityDefinition
             (new StringField('webhook_signing_key', 'webhookSigningKey', self::MAX_WEBHOOK_KEY_SIZE)),
 
             (new BoolField('sync_prices', 'syncPrices')),
-            (new BoolField('replace', 'replace')),
+            (new IntField('replace', 'replace', 0, 2)),
 
             (new OneToOneAssociationField('salesChannel', 'sales_channel_id', 'id', SalesChannelDefinition::class, false))->addFlags(new RestrictDelete()),
             new ManyToOneAssociationField('productStream', 'product_stream_id', ProductStreamDefinition::class),

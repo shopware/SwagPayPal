@@ -188,10 +188,12 @@
                 "shopwareProducts": "no Shopware products | one Shopware product | {n} Shopware products",
                 "iZettleProducts": "no iZettle products | one iZettle product | {n} iZettle products",
                 "description": "All products are synchronised from your newly created Sales Channel in Shopware. How would you like to setup your iZettle library?",
-                "optionReplaceLabel": "Replace iZettle library",
-                "optionReplaceDescription": "Replace your existing iZettle library with products and stock quantities from Shopware.",
-                "optionAddLabel": "Add Shopware products",
-                "optionAddDescription": "Your products and stock quantities will be added to existing iZettle library.",
+                "optionReplacePermanentlyLabel": "Use only Shopware products",
+                "optionReplacePermanentlyDescription": "Only your Shopware products and stock quantities will exist in your iZettle library.",
+                "optionReplaceOneTimeLabel": "Replace iZettle library",
+                "optionReplaceOneTimeDescription": "Replace your existing iZettle library with products and stock quantities from Shopware once.",
+                "optionReplaceNotLabel": "Add Shopware products",
+                "optionReplaceNotDescription": "Your Shopware products and stock quantities will be added to your existing iZettle library.",
                 "disclaimer": "You can change these settings later at any time."
             },
             "syncPrices": {
