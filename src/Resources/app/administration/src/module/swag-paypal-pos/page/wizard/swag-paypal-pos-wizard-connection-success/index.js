@@ -1,7 +1,7 @@
 import template from './swag-paypal-pos-wizard-connection-success.html.twig';
 import './swag-paypal-pos-wizard-connection-success.scss';
 
-const { Component } = Shopware;
+const { Component, Context } = Shopware;
 
 Component.register('swag-paypal-pos-wizard-connection-success', {
     template,
@@ -72,8 +72,15 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
             this.updateButtons();
             this.setTitle();
 
-            return this.SwagPayPalPosSettingApiService.fetchInformation(this.salesChannel).then((response) => {
+            return this.SwagPayPalPosSettingApiService.fetchInformation(this.salesChannel, true).then((response) => {
                 this.iZettleData = response;
+
+                if (this.salesChannel.languageId === null) {
+                    this.salesChannel.languageId = Context.api.systemLanguageId;
+                    this.salesChannel.languages.push({
+                        id: Context.api.systemLanguageId
+                    });
+                }
 
                 return this.saveSalesChannel(false, true);
             }).finally(() => {

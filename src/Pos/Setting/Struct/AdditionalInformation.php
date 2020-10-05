@@ -22,7 +22,7 @@ class AdditionalInformation extends Struct
     protected $currencyId;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $languageId;
 
@@ -61,7 +61,7 @@ class AdditionalInformation extends Struct
         $this->currencyId = $currencyId;
     }
 
-    public function setLanguageId(string $languageId): void
+    public function setLanguageId(?string $languageId): void
     {
         $this->languageId = $languageId;
     }

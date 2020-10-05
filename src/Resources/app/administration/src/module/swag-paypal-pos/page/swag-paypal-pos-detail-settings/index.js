@@ -117,7 +117,7 @@ Component.register('swag-paypal-pos-detail-settings', {
             return this.SwagPayPalPosSettingApiService
                 .validateApiCredentials(this.swagPaypalPosSalesChannel.apiKey, this.salesChannel.id)
                 .then(() => {
-                    return this.SwagPayPalPosSettingApiService.fetchInformation(this.salesChannel);
+                    return this.SwagPayPalPosSettingApiService.fetchInformation(this.salesChannel, true);
                 })
                 .then(this.save)
                 .catch((errorResponse) => {
@@ -229,6 +229,16 @@ Component.register('swag-paypal-pos-detail-settings', {
                 this.SwagPayPalPosApiService.resetSync(this.salesChannel.id).then(() => {
                     this.$router.push({ name: 'swag.paypal.pos.detail.overview', params: { id: this.salesChannel.id } });
                 });
+            });
+        },
+
+        changeLanguage() {
+            this.$nextTick(() => {
+                this.salesChannel.languages.length = 0;
+                this.salesChannel.languages.push({
+                    id: this.salesChannel.languageId
+                });
+                this.$forceUpdate();
             });
         }
     }

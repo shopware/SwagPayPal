@@ -34,13 +34,22 @@
 
                 {% block swag_paypal_pos_detail_settings_input_media_domain %}
                     <swag-paypal-pos-url-field v-model="swagPaypalPosSalesChannel.mediaDomain"
-                                                   required
-                                                   validation="required"
-                                                   :error="swagPaypalPosSalesChannelMediaDomainError"
-                                                   :label="$tc('swag-paypal-pos.detail.settings.domain')"
-                                                   :helpText="$tc('swag-paypal-pos.detail.settings.domainHelpText')"
-                                                   @input="forceUpdate">
+                                               required
+                                               validation="required"
+                                               :error="swagPaypalPosSalesChannelMediaDomainError"
+                                               :label="$tc('swag-paypal-pos.detail.settings.domain')"
+                                               :helpText="$tc('swag-paypal-pos.detail.settings.domainHelpText')"
+                                               @input="forceUpdate">
                     </swag-paypal-pos-url-field>
+                {% endblock %}
+
+                {% block swag_paypal_pos_detail_settings_input_language %}
+                    <sw-entity-single-select v-model="salesChannel.languageId"
+                                             entity="language"
+                                             required
+                                             :label="$tc('global.entities.language')"
+                                             @change="changeLanguage">
+                    </sw-entity-single-select>
                 {% endblock %}
 
                 {% block swag_paypal_pos_detail_settings_input_product_stream %}
@@ -49,7 +58,7 @@
                                              v-model="swagPaypalPosSalesChannel.productStreamId"
                                              entity="product_stream"
                                              :label="$tc('swag-paypal-pos.detail.settings.productStream')"
-                                             @input="forceUpdate">
+                                             @change="forceUpdate">
                     </sw-entity-single-select>
                 {% endblock %}
 
