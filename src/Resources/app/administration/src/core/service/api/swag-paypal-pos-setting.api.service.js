@@ -27,9 +27,10 @@ class SwagPayPalPosSettingApiService extends ApiService {
      * and insert into salesChannel Object
      *
      * @param {Object} salesChannel
+     * @param {Boolean} forceLanguage
      * @returns {Promise|Object}
      */
-    fetchInformation(salesChannel) {
+    fetchInformation(salesChannel, forceLanguage = false) {
         const headers = this.getBasicHeaders();
         const apiKey = salesChannel.extensions.paypalPosSalesChannel.apiKey;
 
@@ -39,16 +40,20 @@ class SwagPayPalPosSettingApiService extends ApiService {
                 const data = ApiService.handleResponse(response);
                 delete data.extensions;
 
+                if (data.languageId !== null && (salesChannel.id === null || forceLanguage)) {
+                    salesChannel.languages.length = 0;
+                    salesChannel.languages.push({
+                        id: data.languageId
+                    });
+                } else {
+                    delete data.languageId;
+                }
+
                 Object.assign(salesChannel, data);
 
                 salesChannel.currencies.length = 0;
                 salesChannel.currencies.push({
                     id: data.currencyId
-                });
-
-                salesChannel.languages.length = 0;
-                salesChannel.languages.push({
-                    id: data.languageId
                 });
 
                 salesChannel.countries.length = 0;

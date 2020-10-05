@@ -46,6 +46,7 @@ Component.register('swag-paypal-pos-wizard-customization', {
         createdComponent() {
             this.updateButtons();
             this.setTitle();
+            this.changeLanguage();
         },
 
         setTitle() {
@@ -77,6 +78,7 @@ Component.register('swag-paypal-pos-wizard-customization', {
         nextButtonDisabled() {
             return this.isLoading
                 || !(this.salesChannel.name)
+                || !(this.salesChannel.languageId)
                 || !(this.salesChannel.extensions.paypalPosSalesChannel.mediaDomain);
         },
 
@@ -99,6 +101,14 @@ Component.register('swag-paypal-pos-wizard-customization', {
             this.$nextTick().then(() => {
                 this.updateButtons();
             });
+        },
+
+        changeLanguage() {
+            this.salesChannel.languages.length = 0;
+            this.salesChannel.languages.push({
+                id: this.salesChannel.languageId
+            });
+            this.$forceUpdate();
         },
 
         toggleLoadingState(state) {

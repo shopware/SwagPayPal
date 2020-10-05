@@ -20,7 +20,6 @@ use Swag\PayPal\Pos\Client\PosClientFactory;
 use Swag\PayPal\Pos\Resource\UserResource;
 use Swag\PayPal\Pos\Setting\Exception\CountryNotFoundException;
 use Swag\PayPal\Pos\Setting\Exception\CurrencyNotFoundException;
-use Swag\PayPal\Pos\Setting\Exception\LanguageNotFoundException;
 use Swag\PayPal\Pos\Setting\Service\InformationFetchService;
 use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;
 
@@ -80,9 +79,13 @@ class InformationFetchServiceTest extends TestCase
         $informationFetchService = $this->getInformationFetchService(
             $this->createUserResource(self::COUNTRY_CODE, self::CURRENCY_CODE, self::INVALID_LANGUAGE_CODE)
         );
+        $information = new AdditionalInformation();
+        $informationFetchService->addInformation($information, self::TEST_API_KEY, $context);
 
-        $this->expectException(LanguageNotFoundException::class);
-        $informationFetchService->addInformation(new AdditionalInformation(), self::TEST_API_KEY, $context);
+        $expected = $this->createExpected(self::COUNTRY_CODE, $context);
+        $expected->setLanguageId(null);
+
+        static::assertEquals($expected, $information);
     }
 
     public function testAmbiguousLanguageCountry(): void

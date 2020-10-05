@@ -19,7 +19,6 @@ use Swag\PayPal\Pos\Api\MerchantInformation;
 use Swag\PayPal\Pos\Resource\UserResource;
 use Swag\PayPal\Pos\Setting\Exception\CountryNotFoundException;
 use Swag\PayPal\Pos\Setting\Exception\CurrencyNotFoundException;
-use Swag\PayPal\Pos\Setting\Exception\LanguageNotFoundException;
 use Swag\PayPal\Pos\Setting\Exception\PosInvalidApiCredentialsException;
 use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;
 
@@ -112,7 +111,7 @@ class InformationFetchService
         return $currency->getId();
     }
 
-    private function getLanguageId(MerchantInformation $merchantInformation, Context $context): string
+    private function getLanguageId(MerchantInformation $merchantInformation, Context $context): ?string
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('locale.code', $merchantInformation->getLanguage() . '-' . $merchantInformation->getCountry()));
@@ -131,7 +130,7 @@ class InformationFetchService
         $language = $this->languageRepository->search($criteria, $context)->first();
 
         if ($language === null) {
-            throw new LanguageNotFoundException($merchantInformation->getLanguage());
+            return null;
         }
 
         return $language->getId();

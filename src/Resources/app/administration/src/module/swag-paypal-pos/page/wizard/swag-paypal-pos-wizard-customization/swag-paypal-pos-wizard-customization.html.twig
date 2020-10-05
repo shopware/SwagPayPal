@@ -13,6 +13,15 @@
             </sw-text-field>
         {% endblock %}
 
+        {% block swag_paypal_pos_wizard_customization_language %}
+            <sw-entity-single-select v-model="salesChannel.languageId"
+                                     entity="language"
+                                     required
+                                     :label="$tc('global.entities.language')"
+                                     @change="changeLanguage">
+            </sw-entity-single-select>
+        {% endblock %}
+
         {% block swag_paypal_pos_wizard_customization_media_domain %}
             <sw-url-field v-model="salesChannel.extensions.paypalPosSalesChannel.mediaDomain"
                           class="swag-paypal-pos-wizard-customization__domain-field"
