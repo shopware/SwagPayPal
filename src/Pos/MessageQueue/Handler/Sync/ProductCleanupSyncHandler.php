@@ -83,7 +83,7 @@ class ProductCleanupSyncHandler extends AbstractSyncHandler
 
         $this->posSalesChannelRepository->update([[
             'id' => $posSalesChannel->getId(),
-            'replace' => false,
+            'replace' => PosSalesChannelEntity::REPLACE_OFF,
         ]], $message->getContext());
     }
 

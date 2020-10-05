@@ -150,7 +150,7 @@
                 "headerConnect": "Connect your iZettle account",
                 "headerNewCustomer": "New to iZettle?",
                 "buttonCreateAccount": "Create iZettle account",
-                "buttonCreateAccountLink": "https://register.izettle.com/"
+                "buttonCreateAccountLink": "https://www.izettle.com/gb/integrations/e-commerce/shopware?utm_source=local_partnership&utm_medium=ecommerce&utm_campaign=shopware"
             },
             "connectionSuccess": {
                 "modalTitle": "Connection established",
