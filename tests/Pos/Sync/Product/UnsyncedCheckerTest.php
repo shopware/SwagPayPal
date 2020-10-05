@@ -15,6 +15,7 @@ use Swag\PayPal\Pos\Api\Error\PosApiError;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductEntity;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Product\UnsyncedChecker;
@@ -63,7 +64,7 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
         $this->posProduct->setUuid((new UuidConverter())->convertUuidToV1($this->posProductEntity->getProductId()));
 
         $this->productContext = new ProductContextMock($salesChannel, $context, null);
-        $this->productContext->getPosSalesChannel()->setReplace(true);
+        $this->productContext->getPosSalesChannel()->setReplace(PosSalesChannelEntity::REPLACE_ONE_TIME);
 
         $this->productResource = $this->createMock(ProductResource::class);
         $this->logger = $this->createMock(LoggerInterface::class);
@@ -104,7 +105,7 @@ class UnsyncedCheckerTest extends AbstractProductSyncTest
     public function testUnsyncedProductWithReplaceDisabled(): void
     {
         $this->productResource->method('getProducts')->willReturn([$this->posProduct]);
-        $this->productContext->getPosSalesChannel()->setReplace(false);
+        $this->productContext->getPosSalesChannel()->setReplace(PosSalesChannelEntity::REPLACE_OFF);
 
         $updater = new UnsyncedChecker($this->productResource, $this->logger, new UuidConverter());
 

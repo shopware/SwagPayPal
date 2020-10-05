@@ -33,18 +33,22 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
     },
 
     computed: {
-        optionReplace() {
-            return {
-                name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceLabel'),
-                description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceDescription')
-            };
-        },
-
-        optionAdd() {
-            return {
-                name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionAddLabel'),
-                description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionAddDescription')
-            };
+        options() {
+            return [
+                {
+                    value: 2,
+                    name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyLabel'),
+                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyDescription')
+                }, {
+                    value: 1,
+                    name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeLabel'),
+                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeDescription')
+                }, {
+                    value: 0,
+                    name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotLabel'),
+                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotDescription')
+                }
+            ];
         }
     },
 

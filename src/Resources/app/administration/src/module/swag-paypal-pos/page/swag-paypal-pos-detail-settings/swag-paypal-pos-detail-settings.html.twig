@@ -61,14 +61,14 @@
                 <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-pos.detail.settings.titleSync')">
 
                     {% block swag_paypal_pos_detail_settings_sync_input %}
-                        <swag-paypal-pos-boolean-radio
-                            v-model="swagPaypalPosSalesChannel.replace"
-                            class="swag-paypal-pos-detail-settings__sync-replace-input"
+                        <sw-radio-field
+                            v-model="salesChannel.extensions.paypalPosSalesChannel.replace"
                             :label="$tc('swag-paypal-pos.wizard.syncLibrary.description')"
-                            :optionTrue="optionReplace"
-                            :optionFalse="optionAdd"
+                            class="swag-paypal-pos-boolean-radio"
+                            :name="name"
+                            :options="optionsReplace"
                             @input="forceUpdate">
-                        </swag-paypal-pos-boolean-radio>
+                        </sw-radio-field>
                     {% endblock %}
 
                 </sw-card>

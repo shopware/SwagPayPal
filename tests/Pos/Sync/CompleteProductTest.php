@@ -70,6 +70,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\ProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
+use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 
 class CompleteProductTest extends TestCase
 {
@@ -177,7 +178,8 @@ class CompleteProductTest extends TestCase
             new NullLogger(),
             $productSelection,
             $salesChannelProductRepository,
-            $productSyncer
+            $productSyncer,
+            new SalesChannelRepoMock()
         );
 
         $context = Context::createDefaultContext();

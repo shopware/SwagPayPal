@@ -72,6 +72,7 @@
             <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSelection"/>
             <argument type="service" id="sales_channel.product.repository"/>
             <argument type="service" id="Swag\PayPal\Pos\Sync\ProductSyncer"/>
+            <argument type="service" id="swag_paypal_pos_sales_channel.repository"/>
             <tag name="messenger.message_handler" />
         </service>
 

@@ -8,7 +8,9 @@
 namespace Swag\PayPal\Pos\MessageQueue\Handler\Sync;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductCleanupSyncMessage;
 use Swag\PayPal\Pos\Run\RunService;
@@ -35,17 +37,24 @@ class ProductCleanupSyncHandler extends AbstractSyncHandler
      */
     private $productSyncer;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $posSalesChannelRepository;
+
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,
         ProductSelection $productSelection,
         SalesChannelRepositoryInterface $productRepository,
-        ProductSyncer $productSyncer
+        ProductSyncer $productSyncer,
+        EntityRepositoryInterface $posSalesChannelRepository
     ) {
         parent::__construct($runService, $logger);
         $this->productSelection = $productSelection;
         $this->productRepository = $productRepository;
         $this->productSyncer = $productSyncer;
+        $this->posSalesChannelRepository = $posSalesChannelRepository;
     }
 
     /**
@@ -66,6 +75,16 @@ class ProductCleanupSyncHandler extends AbstractSyncHandler
         );
 
         $this->productSyncer->cleanUp($productIds, $message->getSalesChannel(), $message->getContext());
+
+        $posSalesChannel = $this->getPosSalesChannel($message->getSalesChannel());
+        if ($posSalesChannel->getReplace() !== PosSalesChannelEntity::REPLACE_ONE_TIME) {
+            return;
+        }
+
+        $this->posSalesChannelRepository->update([[
+            'id' => $posSalesChannel->getId(),
+            'replace' => false,
+        ]], $message->getContext());
     }
 
     public static function getHandledMessages(): iterable
