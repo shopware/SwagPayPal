@@ -1,5 +1,7 @@
 {% block swag_image_slider %}
-    <div class="swag-image-slider" :style="componentStyles">
+    <div v-if="hasImages"
+         class="swag-image-slider"
+         :style="componentStyles">
 
         {% block swag_image_slider_image_container %}
             <div class="swag-image-slider__image-container"
