@@ -78,7 +78,7 @@
             "settings": {
                 "titleGeneralSettings": "General settings",
                 "domain": "Your Shop-Domain",
-                "domainHelpText": "iZettle will use this domain to download media associated with your synchronised products.",
+                "domainHelpText": "iZettle will use this domain to download media associated with your synchronised products. iZettle will only accept secure URLs (https).",
                 "productStream": "Dynamic product group",
                 "titleCredentials": "Credentials",
                 "titleSync": "Synchronisation",

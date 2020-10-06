@@ -72,9 +72,9 @@ class ImageSyncer
     ): void {
         $posSalesChannel = $this->getPosSalesChannel($salesChannel);
 
-        $domain = $posSalesChannel->getMediaDomain();
+        $domain = \rtrim($posSalesChannel->getMediaDomain() ?? '', '/');
 
-        if ($domain === null || $domain === '') {
+        if ($domain === '') {
             throw new MediaDomainNotSetException($salesChannel->getId());
         }
 

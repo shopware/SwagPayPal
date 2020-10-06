@@ -173,7 +173,7 @@
                 "salesChannelLabel": "Name des Verkaufskanals",
                 "modalTitle": "Verkaufskanal-Details",
                 "labelDomain": "Deine Shop-Domain",
-                "subtitle": "iZettle wird diese Domain nutzen, um Mediendaten Deiner synchronisierten Produkte herunterzuladen.",
+                "subtitle": "iZettle wird diese Domain nutzen, um Mediendaten Deiner synchronisierten Produkte herunterzuladen. iZettle akzeptiert ausschließlich gesicherte URLs (https).",
                 "placeholderDomain": "www.mein-store.shopware.com"
             },
             "productSelection": {

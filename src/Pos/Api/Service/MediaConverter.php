@@ -29,10 +29,11 @@ class MediaConverter
         $mime = $mediaEntity->getMimeType();
         $format = $this->matchMimeType($mime);
         $mediaUrl = $this->urlGenerator->getRelativeMediaUrl($mediaEntity);
+        $encodedMediaUrl = \implode('/', \array_map('rawurlencode', \explode('/', $mediaUrl)));
 
         $imageUpload = new ImageUpload();
         $imageUpload->setImageFormat($format);
-        $imageUpload->setImageUrl($domain . '/' . $mediaUrl);
+        $imageUpload->setImageUrl($domain . '/' . $encodedMediaUrl);
 
         if ($lookupKey !== null) {
             $imageUpload->setImageLookupKey($lookupKey);

@@ -25,5 +25,21 @@ Component.extend('swag-paypal-pos-url-field', 'sw-url-field', {
                 this.errorUrl = this.error;
             }
         }
+    },
+
+    methods: {
+        checkInput(inputValue) {
+            this.currentValue = inputValue;
+            const urlPattern = /^\s*https?:\/\//;
+            if (urlPattern.test(inputValue)) {
+                this.currentValue = this.currentValue.replace(urlPattern, '');
+            }
+
+            this.validateCurrentValue();
+        },
+
+        changeMode() {
+            // override, so no disabling of SSL is possible
+        }
     }
 });
