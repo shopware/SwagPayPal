@@ -51,7 +51,8 @@ class ImageSyncerTest extends TestCase
     private const MEDIA_ID_3 = 'mediaId3';
     private const MEDIA_ID_4 = 'mediaId4';
     private const MEDIA_URL_VALID = 'validUrl.jpg';
-    private const MEDIA_URL_INVALID = 'invalidUrl.jpg';
+    private const MEDIA_URL_INVALID = 'test/invalid Url.jpg';
+    private const MEDIA_URL_INVALID_ENCODED = 'test/invalid%20Url.jpg';
     private const MEDIA_URL_EXISTING = 'existingUrl.jpg';
     private const POS_IMAGE_URL = 'https://image.izettle.com/product/BJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ.jpeg';
     private const POS_IMAGE_URL_EXISTING = 'https://image.izettle.com/product/CJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ.jpeg';
@@ -61,7 +62,10 @@ class ImageSyncerTest extends TestCase
     private const POS_IMAGE_LOOKUP_KEY_INVALID = 'AJfd5OBOEemBrw-6zpwgaA-F1EGGBqgEeq0Zcced6LHlQ';
     private const INVALID_SOURCE_URL = 'https://media3.giphy.com/media/3oeSAF90T9N04MyefS/giphy.gif';
 
-    public function testImageSync(): void
+    /**
+     * @dataProvider dataProviderImageSync
+     */
+    public function testImageSync(string $mediaDomain): void
     {
         $context = Context::createDefaultContext();
         $imageResource = $this->createImageResource();
@@ -104,7 +108,7 @@ class ImageSyncerTest extends TestCase
         $salesChannel = $this->getSalesChannel($context);
         $posSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
         static::assertInstanceOf(PosSalesChannelEntity::class, $posSalesChannel);
-        $posSalesChannel->setMediaDomain(self::DOMAIN_URL);
+        $posSalesChannel->setMediaDomain($mediaDomain);
 
         $runId = $runService->startRun(Defaults::SALES_CHANNEL, 'image', $context);
 
@@ -119,6 +123,14 @@ class ImageSyncerTest extends TestCase
         static::assertNull($mediaC->getLookupKey());
         static::assertSame(self::POS_IMAGE_URL_EXISTING, $mediaD->getUrl());
         static::assertSame(self::POS_IMAGE_LOOKUP_KEY_EXISTING, $mediaD->getLookupKey());
+    }
+
+    public function dataProviderImageSync(): array
+    {
+        return [
+            [self::DOMAIN_URL],
+            [self::DOMAIN_URL . '/'],
+        ];
     }
 
     public function testNoMediaUrl(): void
@@ -203,7 +215,7 @@ class ImageSyncerTest extends TestCase
             ],
             [
                 'Upload was not accepted by iZettle (is the URL publicly available?): {invalid}',
-                ['invalid' => self::DOMAIN_URL . self::MEDIA_URL_INVALID],
+                ['invalid' => self::DOMAIN_URL . self::MEDIA_URL_INVALID_ENCODED],
             ]
         );
 
@@ -222,7 +234,7 @@ class ImageSyncerTest extends TestCase
                 ],
                 [
                     'imageFormat' => 'JPEG',
-                    'imageUrl' => self::DOMAIN_URL . '/' . self::MEDIA_URL_INVALID,
+                    'imageUrl' => self::DOMAIN_URL . '/' . self::MEDIA_URL_INVALID_ENCODED,
                 ],
                 [
                     'imageFormat' => 'JPEG',
@@ -231,7 +243,7 @@ class ImageSyncerTest extends TestCase
                 ],
             ]])
         )->willReturn([
-            'invalid' => [self::DOMAIN_URL . self::MEDIA_URL_INVALID],
+            'invalid' => [self::DOMAIN_URL . self::MEDIA_URL_INVALID_ENCODED],
             'uploaded' => [
                 [
                     'imageLookupKey' => self::POS_IMAGE_LOOKUP_KEY,
