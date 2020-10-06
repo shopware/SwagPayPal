@@ -12,7 +12,8 @@ Component.register('swag-image-slider', {
     props: {
         images: {
             type: Array,
-            required: true
+            required: false,
+            default: []
         },
 
         canvasWidth: {
@@ -48,6 +49,10 @@ Component.register('swag-image-slider', {
     },
 
     computed: {
+        hasImages() {
+            return this.images && this.images.length > 0;
+        },
+
         componentStyles() {
             return {
                 width: `${this.canvasWidth}px`
