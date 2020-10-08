@@ -15,6 +15,10 @@ class ApplicationContext extends PayPalApiStruct
     public const LANDING_PAGE_TYPE_BILLING = 'BILLING';
     public const LANDING_PAGE_TYPE_NO_PREFERENCE = 'NO_PREFERENCE';
 
+    public const SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS = 'SET_PROVIDED_ADDRESS';
+    public const SHIPPING_PREFERENCE_NO_SHIPPING = 'NO_SHIPPING';
+    public const SHIPPING_PREFERENCE_GET_FROM_FILE = 'GET_FROM_FILE';
+
     public const USER_ACTION_CONTINUE = 'CONTINUE';
     public const USER_ACTION_PAY_NOW = 'PAY_NOW';
 
@@ -31,7 +35,7 @@ class ApplicationContext extends PayPalApiStruct
     /**
      * @var string
      */
-    protected $shippingPreference = 'SET_PROVIDED_ADDRESS';
+    protected $shippingPreference = self::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS;
 
     /**
      * @var string

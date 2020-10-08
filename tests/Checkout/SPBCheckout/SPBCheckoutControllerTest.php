@@ -14,22 +14,20 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutController;
-use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder;
-use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
-use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
-use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
+use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
+use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
-use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,7 +58,7 @@ class SPBCheckoutControllerTest extends TestCase
         static::assertNotFalse($content);
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        static::assertStringContainsString('{"token":"EC-', $content);
+        static::assertStringContainsString('{"token":"' . CreateOrderCapture::ID, $content);
     }
 
     public function testCreatePaymentWithoutCustomer(): void
@@ -82,7 +80,7 @@ class SPBCheckoutControllerTest extends TestCase
         static::assertNotFalse($content);
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        static::assertStringContainsString('{"token":"EC-', $content);
+        static::assertStringContainsString('{"token":"' . CreateOrderCapture::ID, $content);
     }
 
     public function testCreatePaymentWithoutOrder(): void
@@ -125,41 +123,30 @@ class SPBCheckoutControllerTest extends TestCase
 
     private function createController(): SPBCheckoutController
     {
-        $container = $this->getContainer();
         /** @var CartService $cartService */
-        $cartService = $container->get(CartService::class);
+        $cartService = $this->getContainer()->get(CartService::class);
 
         $settings = new SwagPayPalSettingStruct();
         $settings->setClientId('testClientId');
         $settings->setClientSecret('testClientSecret');
 
         $settingsService = new SettingsServiceMock($settings);
-        /** @var LocaleCodeProvider $localeCodeProvider */
-        $localeCodeProvider = $container->get(LocaleCodeProvider::class);
-        /** @var EntityRepositoryInterface $currencyRepo */
-        $currencyRepo = $container->get('currency.repository');
 
-        $cartPaymentBuilder = new CartPaymentBuilder(
-            $settingsService,
-            $localeCodeProvider,
-            new PriceFormatter()
-        );
+        $priceFormatter = new PriceFormatter();
+        $amountProvider = new AmountProvider($priceFormatter);
 
-        $orderPaymentBuilder = new OrderPaymentBuilder(
+        $orderFromCartBuilder = new OrderFromCartBuilder(
             $settingsService,
-            $localeCodeProvider,
-            $currencyRepo,
-            new PriceFormatter()
+            $priceFormatter,
+            $amountProvider
         );
 
         return new SPBCheckoutController(
-            $cartPaymentBuilder,
-            $orderPaymentBuilder,
             $cartService,
-            $this->createPaymentResource(),
-            new PayerInfoPatchBuilder(),
-            new ShippingAddressPatchBuilder(),
-            new OrderRepositoryMock()
+            new OrderRepositoryMock(),
+            $this->createOrderBuilder($settings),
+            $orderFromCartBuilder,
+            new OrderResource($this->createPayPalClientFactory())
         );
     }
 }

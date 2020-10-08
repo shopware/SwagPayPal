@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\PaymentsApi\Builder;
 
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -16,11 +19,11 @@ use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\PaymentsApi\Builder\Util\AmountProvider;
-use Swag\PayPal\PaymentsApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\PaymentsApi\Service\TransactionValidator;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
@@ -100,9 +103,9 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 
         $itemListValid = true;
         if ($this->settings->getSubmitCart()) {
-            $items = (new ItemListProvider($this->priceFormatter))->getItemList($order, $currency);
+            $items = $this->getItemList($order, $currency);
 
-            if (!empty($items)) {
+            if ($items !== []) {
                 $itemList = new ItemList();
                 $itemList->setItems($items);
                 $transaction->setItemList($itemList);
@@ -133,5 +136,52 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         }
 
         return $currency;
+    }
+
+    /**
+     * @return Item[]
+     */
+    private function getItemList(
+        OrderEntity $order,
+        string $currency
+    ): array {
+        $items = [];
+        $lineItems = $order->getLineItems();
+        if ($lineItems === null) {
+            return [];
+        }
+
+        foreach ($lineItems->getElements() as $lineItem) {
+            $price = $lineItem->getPrice();
+
+            if ($price === null) {
+                return [];
+            }
+
+            $items[] = $this->createItemFromLineItem($lineItem, $currency, $price);
+        }
+
+        return $items;
+    }
+
+    private function createItemFromLineItem(
+        OrderLineItemEntity $lineItem,
+        string $currency,
+        CalculatedPrice $price
+    ): Item {
+        $item = new Item();
+        $item->setName($lineItem->getLabel());
+
+        $payload = $lineItem->getPayload();
+        if ($payload !== null && \array_key_exists('productNumber', $payload)) {
+            $item->setSku($payload['productNumber']);
+        }
+
+        $item->setCurrency($currency);
+        $item->setQuantity($lineItem->getQuantity());
+        $item->setTax($this->priceFormatter->formatPrice(0));
+        $item->setPrice($this->priceFormatter->formatPrice($price->getTotalPrice() / $lineItem->getQuantity()));
+
+        return $item;
     }
 }

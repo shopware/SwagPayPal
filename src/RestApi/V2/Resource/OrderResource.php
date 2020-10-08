@@ -9,6 +9,7 @@ namespace Swag\PayPal\RestApi\V2\Resource;
 
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Api\Patch;
 use Swag\PayPal\RestApi\V2\RequestUriV2;
 
 class OrderResource
@@ -23,22 +24,6 @@ class OrderResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
-    public function create(Order $order, string $salesChannelId, bool $minimalResponse = true): Order
-    {
-        $headers = [];
-        if ($minimalResponse === false) {
-            $headers['Prefer'] = 'return=representation';
-        }
-
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
-            RequestUriV2::ORDERS_RESOURCE,
-            $order,
-            $headers
-        );
-
-        return $order->assign($response);
-    }
-
     public function get(string $orderId, string $salesChannelId): Order
     {
         $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
@@ -48,14 +33,49 @@ class OrderResource
         return (new Order())->assign($response);
     }
 
-    public function capture(string $orderId, string $salesChannelId, bool $minimalResponse = true): Order
-    {
+    public function create(
+        Order $order,
+        string $salesChannelId,
+        string $partnerAttributionId,
+        bool $minimalResponse = true
+    ): Order {
         $headers = [];
         if ($minimalResponse === false) {
             $headers['Prefer'] = 'return=representation';
         }
 
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
+            RequestUriV2::ORDERS_RESOURCE,
+            $order,
+            $headers
+        );
+
+        return $order->assign($response);
+    }
+
+    /**
+     * @param Patch[] $patches
+     */
+    public function update(array $patches, string $orderId, string $salesChannelId, string $partnerAttributionId): void
+    {
+        $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPatchRequest(
+            \sprintf('%s/%s', RequestUriV2::ORDERS_RESOURCE, $orderId),
+            $patches
+        );
+    }
+
+    public function capture(
+        string $orderId,
+        string $salesChannelId,
+        string $partnerAttributionId,
+        bool $minimalResponse = true
+    ): Order {
+        $headers = [];
+        if ($minimalResponse === false) {
+            $headers['Prefer'] = 'return=representation';
+        }
+
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
             \sprintf('%s/%s/capture', RequestUriV2::ORDERS_RESOURCE, $orderId),
             null,
             $headers
@@ -64,14 +84,18 @@ class OrderResource
         return (new Order())->assign($response);
     }
 
-    public function authorize(string $orderId, string $salesChannelId, bool $minimalResponse = true): Order
-    {
+    public function authorize(
+        string $orderId,
+        string $salesChannelId,
+        string $partnerAttributionId,
+        bool $minimalResponse = true
+    ): Order {
         $headers = [];
         if ($minimalResponse === false) {
             $headers['Prefer'] = 'return=representation';
         }
 
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
             \sprintf('%s/%s/authorize', RequestUriV2::ORDERS_RESOURCE, $orderId),
             null,
             $headers

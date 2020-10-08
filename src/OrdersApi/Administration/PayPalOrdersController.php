@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\Amount as CaptureAmount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
@@ -40,6 +41,7 @@ class PayPalOrdersController extends AbstractController
     public const REQUEST_PARAMETER_AMOUNT = 'amount';
     public const REQUEST_PARAMETER_INVOICE_NUMBER = 'invoiceNumber';
     public const REQUEST_PARAMETER_NOTE_TO_PAYER = 'noteToPayer';
+    public const REQUEST_PARAMETER_PARTNER_ATTRIBUTION_ID = 'partnerAttributionId';
 
     /**
      * @var OrderResource
@@ -128,12 +130,12 @@ class PayPalOrdersController extends AbstractController
      */
     public function orderDetails(string $orderTransactionId, string $paypalOrderId, Context $context): JsonResponse
     {
-        $payment = $this->orderResource->get(
+        $paypalOrder = $this->orderResource->get(
             $paypalOrderId,
             $this->getSalesChannelId($orderTransactionId, $context)
         );
 
-        return new JsonResponse($payment);
+        return new JsonResponse($paypalOrder);
     }
 
     /**
@@ -310,11 +312,16 @@ class PayPalOrdersController extends AbstractController
     ): JsonResponse {
         $refund = $this->createRefund($request);
         $salesChannelId = $this->getSalesChannelId($orderTransactionId, $context);
+        $partnerAttributionId = $request->request->get(
+            self::REQUEST_PARAMETER_PARTNER_ATTRIBUTION_ID,
+            PartnerAttributionId::PAYPAL_CLASSIC
+        );
 
         $refundResponse = $this->captureResource->refund(
             $captureId,
             $refund,
             $salesChannelId,
+            $partnerAttributionId,
             false
         );
 
@@ -364,11 +371,16 @@ class PayPalOrdersController extends AbstractController
         Request $request
     ): JsonResponse {
         $capture = $this->createCapture($request);
+        $partnerAttributionId = $request->request->get(
+            self::REQUEST_PARAMETER_PARTNER_ATTRIBUTION_ID,
+            PartnerAttributionId::PAYPAL_CLASSIC
+        );
 
         $captureResponse = $this->authorizationResource->capture(
             $authorizationId,
             $capture,
             $this->getSalesChannelId($orderTransactionId, $context),
+            $partnerAttributionId,
             false
         );
 
@@ -415,16 +427,18 @@ class PayPalOrdersController extends AbstractController
     public function voidAuthorization(
         string $orderTransactionId,
         string $authorizationId,
-        Context $context
+        Context $context,
+        Request $request
     ): Response {
-        $voidResponse = $this->authorizationResource->void(
-            $authorizationId,
-            $this->getSalesChannelId($orderTransactionId, $context)
+        $partnerAttributionId = $request->request->get(
+            self::REQUEST_PARAMETER_PARTNER_ATTRIBUTION_ID,
+            PartnerAttributionId::PAYPAL_CLASSIC
         );
-
-        if ($voidResponse === false) {
-            return new Response('', Response::HTTP_BAD_REQUEST);
-        }
+        $this->authorizationResource->void(
+            $authorizationId,
+            $this->getSalesChannelId($orderTransactionId, $context),
+            $partnerAttributionId
+        );
 
         $this->paymentStatusUtil->applyVoidState($orderTransactionId, $context);
 

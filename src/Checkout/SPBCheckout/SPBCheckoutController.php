@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\SPBCheckout;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
@@ -18,15 +19,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilderInterface;
-use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilderInterface;
-use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
-use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
+use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
+use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V1\Api\Payment;
-use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
-use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
-use Swag\PayPal\Util\PaymentTokenExtractor;
+use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,14 +34,14 @@ class SPBCheckoutController extends AbstractController
     private const FAKE_URL = 'https://www.example.com/';
 
     /**
-     * @var CartPaymentBuilderInterface
+     * @var OrderFromCartBuilder
      */
-    private $cartPaymentBuilder;
+    private $orderFromCartBuilder;
 
     /**
-     * @var OrderPaymentBuilderInterface
+     * @var OrderFromOrderBuilder
      */
-    private $orderPaymentBuilder;
+    private $orderFromOrderBuilder;
 
     /**
      * @var CartService
@@ -52,46 +49,36 @@ class SPBCheckoutController extends AbstractController
     private $cartService;
 
     /**
-     * @var PaymentResource
-     */
-    private $paymentResource;
-
-    /**
-     * @var PayerInfoPatchBuilder
-     */
-    private $payerInfoPatchBuilder;
-
-    /**
-     * @var ShippingAddressPatchBuilder
-     */
-    private $shippingAddressPatchBuilder;
-
-    /**
      * @var EntityRepositoryInterface
      */
     private $orderRepository;
 
+    /**
+     * @var OrderResource
+     */
+    private $orderResource;
+
     public function __construct(
-        CartPaymentBuilderInterface $cartPaymentBuilder,
-        OrderPaymentBuilderInterface $orderPaymentBuilder,
         CartService $cartService,
-        PaymentResource $paymentResource,
-        PayerInfoPatchBuilder $payerInfoPatchBuilder,
-        ShippingAddressPatchBuilder $shippingAddressPatchBuilder,
-        EntityRepositoryInterface $orderRepository
+        EntityRepositoryInterface $orderRepository,
+        OrderFromOrderBuilder $orderFromOrderBuilder,
+        OrderFromCartBuilder $orderFromCartBuilder,
+        OrderResource $orderResource
     ) {
-        $this->cartPaymentBuilder = $cartPaymentBuilder;
-        $this->orderPaymentBuilder = $orderPaymentBuilder;
         $this->cartService = $cartService;
-        $this->paymentResource = $paymentResource;
-        $this->payerInfoPatchBuilder = $payerInfoPatchBuilder;
-        $this->shippingAddressPatchBuilder = $shippingAddressPatchBuilder;
         $this->orderRepository = $orderRepository;
+        $this->orderFromOrderBuilder = $orderFromOrderBuilder;
+        $this->orderFromCartBuilder = $orderFromCartBuilder;
+        $this->orderResource = $orderResource;
     }
 
     /**
      * @RouteScope(scopes={"sales-channel-api"})
-     * @Route("/sales-channel-api/v{version}/_action/paypal/spb/create-payment", name="sales-channel-api.action.paypal.spb.create_payment", methods={"POST"})
+     * @Route(
+     *     "/sales-channel-api/v{version}/_action/paypal/spb/create-payment",
+     *      name="sales-channel-api.action.paypal.spb.create_payment",
+     *      methods={"POST"}
+     * )
      *
      * @throws CustomerNotLoggedInException
      */
@@ -104,44 +91,31 @@ class SPBCheckoutController extends AbstractController
 
         $orderId = $request->request->get('orderId');
         if ($orderId === null) {
-            $payment = $this->getPaymentFromCart($salesChannelContext);
+            $paypalOrder = $this->getOrderFromCart($salesChannelContext, $customer);
         } else {
-            $payment = $this->getPaymentFromOrder($orderId, $salesChannelContext);
+            $paypalOrder = $this->getOrderFromOrder($orderId, $salesChannelContext, $customer);
         }
-        $payment->getApplicationContext()->setUserAction(ApplicationContext::USER_ACTION_TYPE_CONTINUE);
 
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-        $response = $this->paymentResource->create(
-            $payment,
-            $salesChannelId,
-            PartnerAttributionId::SMART_PAYMENT_BUTTONS
-        );
-
-        $patches = [
-            $this->shippingAddressPatchBuilder->createShippingAddressPatch($customer),
-            $this->payerInfoPatchBuilder->createPayerInfoPatch($customer),
-        ];
-        $this->paymentResource->patch($patches, $response->getId(), $salesChannelId);
+        $response = $this->orderResource->create($paypalOrder, $salesChannelId, PartnerAttributionId::SMART_PAYMENT_BUTTONS);
 
         return new JsonResponse([
-            'token' => PaymentTokenExtractor::extract($response),
+            'token' => $response->getId(),
         ]);
     }
 
-    private function getPaymentFromCart(SalesChannelContext $salesChannelContext): Payment
+    private function getOrderFromCart(SalesChannelContext $salesChannelContext, CustomerEntity $customer): Order
     {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
-        return $this->cartPaymentBuilder->getPayment(
-            $cart,
-            $salesChannelContext,
-            self::FAKE_URL,
-            false
-        );
+        return $this->orderFromCartBuilder->getOrder($cart, $salesChannelContext, $customer);
     }
 
-    private function getPaymentFromOrder(string $orderId, SalesChannelContext $salesChannelContext): Payment
-    {
+    private function getOrderFromOrder(
+        string $orderId,
+        SalesChannelContext $salesChannelContext,
+        CustomerEntity $customer
+    ): Order {
         $criteria = new Criteria([$orderId]);
         $criteria->addAssociation('transactions');
         $criteria->addAssociation('lineItems');
@@ -163,8 +137,10 @@ class SPBCheckoutController extends AbstractController
             throw new InvalidOrderException($orderId);
         }
 
-        $paymentTransaction = new AsyncPaymentTransactionStruct($transaction, $order, self::FAKE_URL);
-
-        return $this->orderPaymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
+        return $this->orderFromOrderBuilder->getOrder(
+            new AsyncPaymentTransactionStruct($transaction, $order, self::FAKE_URL),
+            $salesChannelContext,
+            $customer
+        );
     }
 }

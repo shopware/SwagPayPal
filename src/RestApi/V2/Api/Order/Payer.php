@@ -30,7 +30,7 @@ class Payer extends PayPalApiStruct
     protected $payerId;
 
     /**
-     * @var Phone
+     * @var Phone|null
      */
     protected $phone;
 
@@ -79,12 +79,12 @@ class Payer extends PayPalApiStruct
         $this->payerId = $payerId;
     }
 
-    public function getPhone(): Phone
+    public function getPhone(): ?Phone
     {
         return $this->phone;
     }
 
-    public function setPhone(Phone $phone): void
+    public function setPhone(?Phone $phone): void
     {
         $this->phone = $phone;
     }

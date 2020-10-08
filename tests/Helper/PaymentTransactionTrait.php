@@ -36,7 +36,7 @@ trait PaymentTransactionTrait
         return new AsyncPaymentTransactionStruct(
             $orderTransaction,
             $order,
-            'http://www.test.de/'
+            ConstantsForTesting::PAYMENT_TRANSACTION_DOMAIN
         );
     }
 

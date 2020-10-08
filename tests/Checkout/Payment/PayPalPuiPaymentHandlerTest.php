@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\Payment;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -20,9 +21,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
+use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -34,6 +36,7 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPuiPaymentHandlerTest extends TestCase
@@ -133,14 +136,21 @@ Customer is not logged in.');
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
         $paymentResource = $this->createPaymentResource($settings);
+        $payerInfoPatchBuilder = new PayerInfoPatchBuilder();
+        $shippingAddressPatchBuilder = new ShippingAddressPatchBuilder();
+        $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
 
         return new PayPalPuiPaymentHandler(
-            new PayPalHandler(
+            new PlusPuiHandler(
                 $paymentResource,
                 $this->orderTransactionRepo,
                 $this->createPaymentBuilder($settings),
-                new PayerInfoPatchBuilder(),
-                new ShippingAddressPatchBuilder()
+                $payerInfoPatchBuilder,
+                new OrderNumberPatchBuilder(),
+                $shippingAddressPatchBuilder,
+                new SettingsServiceMock($settings),
+                $orderTransactionStateHandler,
+                new NullLogger()
             ),
             $paymentResource,
             new OrderTransactionStateHandler($this->stateMachineRegistry),

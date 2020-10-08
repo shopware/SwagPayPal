@@ -200,8 +200,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     onApprove(data, actions) {
         const params = new URLSearchParams();
         let url = this.options.checkoutConfirmUrl;
-        params.append('paypalPayerId', data.payerID);
-        params.append('paypalPaymentId', data.paymentID);
+        params.append('paypalOrderId', data.orderID);
 
         if (this.options.accountOrderEditUrl !== null) {
             url = this.options.accountOrderEditUrl;

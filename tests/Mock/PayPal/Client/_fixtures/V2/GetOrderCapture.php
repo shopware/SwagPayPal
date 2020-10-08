@@ -10,6 +10,11 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 class GetOrderCapture
 {
     public const ID = '9XG87361JT539825B';
+    public const PAYER_EMAIL_ADDRESS = 'customer-de@shopware.com';
+    public const PAYER_NAME_GIVEN_NAME = 'Test given name';
+    public const PAYER_NAME_SURNAME = 'Test surname';
+    public const PAYER_ADDRESS_ADDRESS_LINE_1 = 'Ebbinghoff 10';
+    public const PAYER_ADDRESS_ADMIN_AREA_2 = 'Schöppingen';
 
     public static function get(): array
     {
@@ -66,16 +71,17 @@ class GetOrderCapture
             ],
             'payer' => [
                 'name' => [
-                    'given_name' => 'Test',
-                    'surname' => 'Test',
+                    'given_name' => self::PAYER_NAME_GIVEN_NAME,
+                    'surname' => self::PAYER_NAME_SURNAME,
                 ],
-                'email_address' => 'customer-de@shopware.com',
+                'email_address' => self::PAYER_EMAIL_ADDRESS,
                 'payer_id' => 'XTW5U37QPXKJE',
                 'address' => [
-                    'address_line_1' => 'Ebbinghoff 10',
-                    'admin_area_2' => 'Schöppingen',
+                    'address_line_1' => self::PAYER_ADDRESS_ADDRESS_LINE_1,
+                    'admin_area_1' => 'NY',
+                    'admin_area_2' => self::PAYER_ADDRESS_ADMIN_AREA_2,
                     'postal_code' => '48624',
-                    'country_code' => 'DE',
+                    'country_code' => 'US',
                 ],
             ],
             'create_time' => '2020-08-17T12:33:59Z',

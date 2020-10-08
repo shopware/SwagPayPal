@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -65,7 +66,7 @@ class OrderResourceTest extends TestCase
 
     public function testCapture(): void
     {
-        $order = $this->createResource()->capture('orderId', Defaults::SALES_CHANNEL);
+        $order = $this->createResource()->capture('orderId', Defaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
 
         static::assertSame(CaptureOrderCapture::ID, $order->getId());
         $payments = $order->getPurchaseUnits()[0]->getPayments();
@@ -78,16 +79,22 @@ class OrderResourceTest extends TestCase
 
     public function testCreate(): void
     {
-        $orderBuilder = $this->createOrderBuilder();
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setSubmitCart(true);
+        $orderBuilder = $this->createOrderBuilder($settings);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $customer = $salesChannelContext->getCustomer();
         static::assertNotNull($customer);
-        $order = $orderBuilder->getOrder($paymentTransaction, $salesChannelContext, $customer);
+        $order = $orderBuilder->getOrder(
+            $paymentTransaction,
+            $salesChannelContext,
+            $customer
+        );
 
         static::assertNotNull($order->getPurchaseUnits()[0]->getItems());
 
-        $orderResponse = $this->createResource()->create($order, Defaults::SALES_CHANNEL);
+        $orderResponse = $this->createResource()->create($order, Defaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
 
         static::assertSame(CreateOrderCapture::ID, $orderResponse->getId());
         static::assertStringContainsString('token=' . CreateOrderCapture::ID, $orderResponse->getLinks()[1]->getHref());
@@ -95,7 +102,7 @@ class OrderResourceTest extends TestCase
 
     public function testAuthorize(): void
     {
-        $order = $this->createResource()->authorize('orderId', Defaults::SALES_CHANNEL);
+        $order = $this->createResource()->authorize('orderId', Defaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
 
         static::assertSame(AuthorizeOrderAuthorization::ID, $order->getId());
         $payments = $order->getPurchaseUnits()[0]->getPayments();

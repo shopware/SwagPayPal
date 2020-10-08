@@ -288,7 +288,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
     onApprove(data, actions) {
         const requestPayload = {
-            paymentId: data.paymentID,
+            token: data.orderID,
             _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-express-button-approve-payment-token')
         };
 

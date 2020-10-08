@@ -14,26 +14,15 @@ class ExpressCheckoutData extends Struct
     /**
      * @var string
      */
-    private $payerId;
+    private $paypalOrderId;
 
-    /**
-     * @var string
-     */
-    private $paymentId;
-
-    public function __construct(string $paymentId, string $payerId)
+    public function __construct(string $paypalOrderId)
     {
-        $this->paymentId = $paymentId;
-        $this->payerId = $payerId;
+        $this->paypalOrderId = $paypalOrderId;
     }
 
-    public function getPaymentId(): string
+    public function getPaypalOrderId(): string
     {
-        return $this->paymentId;
-    }
-
-    public function getPayerId(): string
-    {
-        return $this->payerId;
+        return $this->paypalOrderId;
     }
 }

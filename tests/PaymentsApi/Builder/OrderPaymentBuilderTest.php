@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\PaymentsApi\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
@@ -135,16 +134,14 @@ class OrderPaymentBuilderTest extends TestCase
     {
         $settings = $this->createDefaultSettingStruct();
         $settings->setSubmitCart(true);
-        $settings->setLandingPage('Foo');
         $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $context = Context::createDefaultContext();
         $salesChannelContext = Generator::createSalesChannelContext($context);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);
 
-        $this->expectException(InvalidOrderException::class);
-        $this->expectExceptionMessage('The order with id order-id-missing-line-items is invalid or could not be found.');
-        $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
+        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
+        static::assertNull($payment->getTransactions()[0]->getItemList());
     }
 
     /**
@@ -213,10 +210,7 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = \json_decode($payment, true);
 
-        static::assertSame(
-            self::TEST_ORDER_NUMBER,
-            $payment['transactions'][0]['invoice_number']
-        );
+        static::assertSame(self::TEST_ORDER_NUMBER, $payment['transactions'][0]['invoice_number']);
     }
 
     public function testGetPaymentWithOrderNumberWithoutPrefix(): void

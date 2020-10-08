@@ -148,7 +148,7 @@ class Update
         }
 
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('handlerIdentifier', 'Swag\PayPal\Payment\PayPalPaymentHandler'));
+        $criteria->addFilter(new EqualsFilter('handlerIdentifier', 'Swag\PayPal\Payment\PayPalPuiPaymentHandler'));
 
         $payPalPuiPaymentMethodId = $this->paymentRepository->searchIds($criteria, $context)->firstId();
         $payPalPuiData = null;

@@ -5,37 +5,39 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\PaymentsApi\Patch;
+namespace Swag\PayPal\OrdersApi\Patch;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Swag\PayPal\PaymentsApi\Builder\Util\AmountProvider;
-use Swag\PayPal\RestApi\V1\Api\Patch;
-use Swag\PayPal\Util\PriceFormatter;
+use Shopware\Core\System\Currency\CurrencyEntity;
+use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
+use Swag\PayPal\RestApi\V2\Api\Patch;
 
 class AmountPatchBuilder
 {
     /**
-     * @var PriceFormatter
+     * @var AmountProvider
      */
-    private $priceFormatter;
+    private $amountProvider;
 
-    public function __construct(PriceFormatter $priceFormatter)
+    public function __construct(AmountProvider $amountProvider)
     {
-        $this->priceFormatter = $priceFormatter;
+        $this->amountProvider = $amountProvider;
     }
 
     public function createAmountPatch(
         CalculatedPrice $orderTransactionAmount,
-        float $shippingCosts,
-        string $currency
+        CalculatedPrice $shippingCosts,
+        CurrencyEntity $currency,
+        PurchaseUnit $purchaseUnit
     ): Patch {
-        $amount = (new AmountProvider($this->priceFormatter))->createAmount($orderTransactionAmount, $shippingCosts, $currency);
+        $amount = $this->amountProvider->createAmount($orderTransactionAmount, $shippingCosts, $currency, $purchaseUnit);
         $amountArray = \json_decode((string) \json_encode($amount), true);
 
         $amountPatch = new Patch();
         $amountPatch->assign([
             'op' => Patch::OPERATION_REPLACE,
-            'path' => '/transactions/0/amount',
+            'path' => "/purchase_units/@reference_id=='default'/amount",
         ]);
         $amountPatch->setValue($amountArray);
 

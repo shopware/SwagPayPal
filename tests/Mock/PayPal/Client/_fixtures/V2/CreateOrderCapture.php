@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 class CreateOrderCapture
 {
     public const ID = '9XG87361JT539825A';
+    public const APPROVE_URL = 'https://www.sandbox.paypal.com/checkoutnow?token=' . self::ID;
 
     public static function get(): array
     {
@@ -23,7 +24,7 @@ class CreateOrderCapture
                     'method' => 'GET',
                 ],
                 1 => [
-                    'href' => 'https://www.sandbox.paypal.com/checkoutnow?token=' . self::ID,
+                    'href' => self::APPROVE_URL,
                     'rel' => 'approve',
                     'method' => 'GET',
                 ],

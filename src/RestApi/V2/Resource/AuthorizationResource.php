@@ -37,6 +37,7 @@ class AuthorizationResource
         string $authorizationId,
         Capture $capture,
         string $salesChannelId,
+        string $partnerAttributionId,
         bool $minimalResponse = true
     ): Capture {
         $headers = [];
@@ -44,7 +45,7 @@ class AuthorizationResource
             $headers['Prefer'] = 'return=representation';
         }
 
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
             \sprintf('%s/%s/capture', RequestUriV2::AUTHORIZATIONS_RESOURCE, $authorizationId),
             $capture,
             $headers
@@ -53,13 +54,11 @@ class AuthorizationResource
         return $capture->assign($response);
     }
 
-    public function void(string $authorizationId, string $salesChannelId): bool
+    public function void(string $authorizationId, string $salesChannelId, string $partnerAttributionId): void
     {
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
+        $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
             \sprintf('%s/%s/void', RequestUriV2::AUTHORIZATIONS_RESOURCE, $authorizationId),
             null
         );
-
-        return $response === [];
     }
 }

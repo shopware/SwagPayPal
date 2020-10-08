@@ -11,10 +11,13 @@ use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\System\SystemConfig\Util\ConfigReader;
-use Swag\PayPal\OrdersApi\Builder\OrderOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\DIContainerMock;
@@ -29,7 +32,7 @@ use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
-use Swag\PayPal\Test\Payment\Builder\OrderPaymentBuilderTest;
+use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Swag\PayPal\Webhook\WebhookRegistry;
@@ -62,6 +65,11 @@ trait ServicesTrait
         return new PaymentResource($this->createPayPalClientFactory($settings));
     }
 
+    protected function createOrderResource(?SwagPayPalSettingStruct $settings = null): OrderResource
+    {
+        return new OrderResource($this->createPayPalClientFactory($settings));
+    }
+
     protected function createDefaultSettingStruct(): SwagPayPalSettingStruct
     {
         $settingsStruct = new SwagPayPalSettingStruct();
@@ -92,13 +100,19 @@ trait ServicesTrait
         );
     }
 
-    protected function createOrderBuilder(?SwagPayPalSettingStruct $settings = null): OrderOrderBuilder
+    protected function createOrderBuilder(?SwagPayPalSettingStruct $settings = null): OrderFromOrderBuilder
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
 
         $settingsService = new SettingsServiceMock($settings);
+        $priceFormatter = new PriceFormatter();
 
-        return new OrderOrderBuilder($settingsService, new PriceFormatter());
+        return new OrderFromOrderBuilder(
+            $settingsService,
+            $priceFormatter,
+            new AmountProvider($priceFormatter),
+            new ItemListProvider($priceFormatter)
+        );
     }
 
     protected function createWebhookRegistry(?OrderTransactionRepoMock $orderTransactionRepo = null): WebhookRegistry

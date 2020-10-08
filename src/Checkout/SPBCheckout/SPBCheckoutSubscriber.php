@@ -165,12 +165,8 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             $storefrontRequest->request->get(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID)
         );
         $storeApiRequest->request->set(
-            AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME,
-            $storefrontRequest->request->get(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
-        );
-        $storeApiRequest->request->set(
-            EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME,
-            $storefrontRequest->request->get(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
+            AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME,
+            $storefrontRequest->request->get(AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)
         );
     }
 
@@ -198,9 +194,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     private function addSuccessMessage(Request $request): bool
     {
         $requestQuery = $request->query;
-        if ($requestQuery->has(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
-            && $requestQuery->has(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
-        ) {
+        if ($requestQuery->has(EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
             $this->session->getFlashBag()->add('success', $this->translator->trans('paypal.smartPaymentButtons.confirmPageHint'));
 
             return true;

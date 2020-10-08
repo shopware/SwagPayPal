@@ -16,6 +16,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Api\Payment\Payer\ExecutePayerInfo;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\RequestUriV2;
 use Swag\PayPal\Test\Checkout\ExpressCheckout\ExpressCheckoutControllerTest;
 use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
@@ -133,20 +134,7 @@ class GuzzleClientMock extends Client
         }
 
         if (\strpos($resourceUri, RequestUriV1::PAYMENT_RESOURCE) !== false) {
-            $response = $this->handlePaymentGetRequests($resourceUri);
-            if (\mb_strpos($resourceUri, ExpressCheckoutControllerTest::TEST_PAYMENT_ID_WITHOUT_STATE) !== false) {
-                $response['payer']['payer_info']['shipping_address']['state'] = null;
-            }
-
-            if (\mb_strpos($resourceUri, ExpressCheckoutControllerTest::TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES) !== false) {
-                $response['payer']['payer_info']['shipping_address']['country_code'] = 'NL';
-            }
-
-            if (\mb_strpos($resourceUri, ExpressCheckoutControllerTest::TEST_PAYMENT_ID_WITH_STATE_NOT_FOUND) !== false) {
-                $response['payer']['payer_info']['shipping_address']['state'] = 'XY';
-            }
-
-            return $response;
+            return $this->handlePaymentGetRequests($resourceUri);
         }
 
         if (\strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false) {
@@ -186,7 +174,20 @@ class GuzzleClientMock extends Client
                 return GetRefundedOrderCapture::get();
             }
 
-            return GetOrderCapture::get();
+            $orderCapture = GetOrderCapture::get();
+            if (\mb_strpos($resourceUri, ExpressCheckoutControllerTest::TEST_PAYMENT_ID_WITHOUT_STATE) !== false) {
+                $orderCapture['payer']['address']['admin_area_1'] = null;
+            }
+
+            if (\mb_strpos($resourceUri, ExpressCheckoutControllerTest::TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES) !== false) {
+                $orderCapture['payer']['address']['country_code'] = 'NL';
+            }
+
+            if (\mb_strpos($resourceUri, ExpressCheckoutControllerTest::TEST_PAYMENT_ID_WITH_STATE_NOT_FOUND) !== false) {
+                $orderCapture['payer']['address']['admin_area_1'] = 'XY';
+            }
+
+            return $orderCapture;
         }
 
         if (\strpos($resourceUri, RequestUriV2::CAPTURES_RESOURCE) !== false) {
@@ -250,7 +251,7 @@ class GuzzleClientMock extends Client
         if (\strpos($resourceUri, 'v1') === 0) {
             $response = $this->handleApiV1PostRequests($resourceUri, $data);
         } elseif (\strpos($resourceUri, 'v2') === 0) {
-            $response = $this->handleApiV2PostRequests($resourceUri);
+            $response = $this->handleApiV2PostRequests($resourceUri, $data);
         }
 
         if (!isset($response)) {
@@ -336,9 +337,13 @@ class GuzzleClientMock extends Client
         throw new \RuntimeException('No fixture defined for ' . $resourceUri);
     }
 
-    private function handleApiV2PostRequests(string $resourceUri): array
+    private function handleApiV2PostRequests(string $resourceUri, ?PayPalApiStruct $data): array
     {
         if (\strpos($resourceUri, RequestUriV2::ORDERS_RESOURCE) !== false) {
+            if ($data instanceof Order && $data->getPurchaseUnits()[0]->getInvoiceId() === ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION) {
+                throw new \RuntimeException('A PayPal test error occurred.');
+            }
+
             if (\mb_substr($resourceUri, -8) === '/capture') {
                 return CaptureOrderCapture::get();
             }
@@ -347,7 +352,15 @@ class GuzzleClientMock extends Client
                 return AuthorizeOrderAuthorization::get();
             }
 
-            return CreateOrderCapture::get();
+            $response = CreateOrderCapture::get();
+            if ($data instanceof Order && $data->getPurchaseUnits()[0]->getInvoiceId() === ConstantsForTesting::PAYPAL_RESPONSE_HAS_NO_APPROVAL_URL) {
+                $links = $response['links'];
+                unset($links[1]);
+                $links = \array_values($links);
+                $response['links'] = $links;
+            }
+
+            return $response;
         }
 
         if (\strpos($resourceUri, RequestUriV2::CAPTURES_RESOURCE) !== false) {
@@ -426,6 +439,10 @@ class GuzzleClientMock extends Client
         }
 
         if (\mb_strpos($resourceUri, self::TEST_WEBHOOK_ID) !== false) {
+            throw $this->createClientExceptionWithResponse();
+        }
+
+        if (\mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_PATCH_THROWS_EXCEPTION) !== false) {
             throw $this->createClientExceptionWithResponse();
         }
 

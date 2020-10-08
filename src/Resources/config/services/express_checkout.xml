@@ -19,15 +19,15 @@
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\SalesChannelContextSwitcher"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\PaymentResource"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController" public="true">
-            <argument type="service" id="Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\PaymentResource"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\Route\ExpressApprovePaymentRoute"/>
         </service>
 

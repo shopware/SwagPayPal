@@ -7,73 +7,36 @@
 
 namespace Swag\PayPal\Checkout\Payment\Handler;
 
-use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Swag\PayPal\RestApi\V1\Api\Patch;
-use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\SwagPayPal;
 
 abstract class AbstractPaymentHandler
 {
-    public const PAYPAL_PAYMENT_ID_INPUT_NAME = 'paypalPaymentId';
-    public const PAYPAL_PAYMENT_TOKEN_INPUT_NAME = 'paypalToken';
-
-    /**
-     * @var PaymentResource
-     */
-    protected $paymentResource;
+    public const PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME = 'paypalOrderId';
 
     /**
      * @var EntityRepositoryInterface
      */
-    private $orderTransactionRepo;
+    protected $orderTransactionRepo;
 
-    public function __construct(PaymentResource $paymentResource, EntityRepositoryInterface $orderTransactionRepo)
+    public function __construct(EntityRepositoryInterface $orderTransactionRepo)
     {
-        $this->paymentResource = $paymentResource;
         $this->orderTransactionRepo = $orderTransactionRepo;
     }
 
-    /**
-     * @param Patch[] $patches
-     *
-     * @throws AsyncPaymentProcessException
-     */
-    protected function patchPayPalPayment(
-        array $patches,
-        string $paypalPaymentId,
-        string $salesChannelId,
-        string $orderTransactionId
+    protected function addPayPalOrderId(
+        string $orderTransactionId,
+        string $paypalOrderId,
+        string $partnerAttributionId,
+        Context $context
     ): void {
-        try {
-            $this->paymentResource->patch($patches, $paypalPaymentId, $salesChannelId);
-        } catch (\Exception $e) {
-            throw new AsyncPaymentProcessException(
-                $orderTransactionId,
-                \sprintf('An error occurred during the communication with PayPal%s%s', PHP_EOL, $e->getMessage())
-            );
-        }
-    }
-
-    protected function addPayPalTransactionId(
-        AsyncPaymentTransactionStruct $transaction,
-        string $paypalPaymentId,
-        Context $context,
-        ?string $paypalToken = null
-    ): void {
-        $customFields = [
-            SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID => $paypalPaymentId,
-        ];
-
-        if ($paypalToken !== null) {
-            $customFields[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TOKEN] = $paypalToken;
-        }
-
         $data = [
-            'id' => $transaction->getOrderTransaction()->getId(),
-            'customFields' => $customFields,
+            'id' => $orderTransactionId,
+            'customFields' => [
+                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => $paypalOrderId,
+                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PARTNER_ATTRIBUTION_ID => $partnerAttributionId,
+            ],
         ];
         $this->orderTransactionRepo->update([$data], $context);
     }

@@ -18,7 +18,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
+use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
@@ -30,9 +30,9 @@ use Symfony\Component\HttpFoundation\Request;
 class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
 {
     /**
-     * @var PayPalHandler
+     * @var PlusPuiHandler
      */
-    private $payPalHandler;
+    private $plusPuiHandler;
 
     /**
      * @var PaymentResource
@@ -50,12 +50,12 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
     private $orderTransactionRepo;
 
     public function __construct(
-        PayPalHandler $payPalHandler,
+        PlusPuiHandler $plusPuiHandler,
         PaymentResource $paymentResource,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         EntityRepositoryInterface $orderTransactionRepo
     ) {
-        $this->payPalHandler = $payPalHandler;
+        $this->plusPuiHandler = $plusPuiHandler;
         $this->paymentResource = $paymentResource;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->orderTransactionRepo = $orderTransactionRepo;
@@ -81,7 +81,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
 
         try {
-            $response = $this->payPalHandler->handlePayPalPayment($transaction, $salesChannelContext, $customer, true);
+            $response = $this->plusPuiHandler->handlePuiPayment($transaction, $salesChannelContext, $customer);
         } catch (\Exception $e) {
             throw new AsyncPaymentProcessException($transactionId, $e->getMessage());
         }

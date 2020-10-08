@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
+use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\Resource\CaptureResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -31,7 +32,13 @@ class CaptureResourceTest extends TestCase
     public function testRefund(): void
     {
         $refund = new Refund();
-        $refund = $this->createResource()->refund('captureId', $refund, Defaults::SALES_CHANNEL, false);
+        $refund = $this->createResource()->refund(
+            'captureId',
+            $refund,
+            Defaults::SALES_CHANNEL,
+            PartnerAttributionId::PAYPAL_CLASSIC,
+            false
+        );
 
         static::assertSame(RefundCapture::TOTAL_REFUNDED_AMOUNT_VALUE, $refund->getSellerPayableBreakdown()->getTotalRefundedAmount()->getValue());
     }

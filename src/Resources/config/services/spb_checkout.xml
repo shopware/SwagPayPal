@@ -12,13 +12,11 @@
         </service>
 
         <service id="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutController" public="true">
-            <argument type="service" id="Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder"/>
-            <argument type="service" id="Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\PaymentResource"/>
-            <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder"/>
-            <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder"/>
             <argument type="service" id="order.repository"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber">

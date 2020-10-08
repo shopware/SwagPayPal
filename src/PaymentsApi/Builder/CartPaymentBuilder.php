@@ -70,15 +70,15 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         CurrencyEntity $currencyEntity,
         bool $isExpressCheckoutProcess
     ): Transaction {
-        $transaction = $cart->getTransactions()->first();
-        if ($transaction === null) {
+        $cartTransaction = $cart->getTransactions()->first();
+        if ($cartTransaction === null) {
             throw new InvalidTransactionException('');
         }
-        $transactionAmount = $transaction->getAmount();
+        $transactionAmount = $cartTransaction->getAmount();
         $currency = $currencyEntity->getIsoCode();
 
         $transaction = new Transaction();
-        $shippingCostsTotal = $cart->getDeliveries()->getShippingCosts()->sum()->getTotalPrice();
+        $shippingCostsTotal = $cart->getShippingCosts()->getTotalPrice();
         $amount = (new AmountProvider($this->priceFormatter))->createAmount($transactionAmount, $shippingCostsTotal, $currency);
         $transaction->setAmount($amount);
 

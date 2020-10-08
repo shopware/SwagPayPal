@@ -11,6 +11,7 @@ use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEnt
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
@@ -36,10 +37,19 @@ abstract class AbstractOrderBuilder
      */
     protected $settingsService;
 
-    public function __construct(SettingsServiceInterface $settingsService, PriceFormatter $priceFormatter)
-    {
+    /**
+     * @var AmountProvider
+     */
+    protected $amountProvider;
+
+    public function __construct(
+        SettingsServiceInterface $settingsService,
+        PriceFormatter $priceFormatter,
+        AmountProvider $amountProvider
+    ) {
         $this->settingsService = $settingsService;
         $this->priceFormatter = $priceFormatter;
+        $this->amountProvider = $amountProvider;
     }
 
     protected function getIntent(): string
@@ -126,6 +136,7 @@ abstract class AbstractOrderBuilder
 
     private function getLandingPageType(SwagPayPalSettingStruct $settings): string
     {
+        // TODO PPI-4 - Add no preference
         $landingPageType = \strtoupper($settings->getLandingPage());
         if ($landingPageType !== ApplicationContext::LANDING_PAGE_TYPE_BILLING) {
             $landingPageType = ApplicationContext::LANDING_PAGE_TYPE_LOGIN;

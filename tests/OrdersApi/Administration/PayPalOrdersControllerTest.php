@@ -172,7 +172,8 @@ class PayPalOrdersControllerTest extends TestCase
         $response = $this->createController()->voidAuthorization(
             'orderTransactionId',
             'authorizationId',
-            Context::createDefaultContext()
+            Context::createDefaultContext(),
+            new Request()
         );
 
         static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());

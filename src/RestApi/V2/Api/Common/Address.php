@@ -15,21 +15,21 @@ abstract class Address extends PayPalApiStruct
      * The first line of the address. For example, number or street. For example, 173 Drury Lane.
      * Required for data entry and compliance and risk checks. Must contain the full address.
      *
-     * @var string
+     * @var string|null
      */
     protected $addressLine_1;
 
     /**
      * The second line of the address. For example, suite or apartment number.
      *
-     * @var string
+     * @var string|null
      */
     protected $addressLine_2;
 
     /**
      * A city, town, or village. Smaller than $adminArea1
      *
-     * @var string
+     * @var string|null
      */
     protected $adminArea_2;
 
@@ -37,12 +37,12 @@ abstract class Address extends PayPalApiStruct
      * The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision.
      * Format for postal delivery. For example, CA and not California.
      *
-     * @var string
+     * @var string|null
      */
     protected $adminArea_1;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $postalCode;
 
@@ -51,52 +51,52 @@ abstract class Address extends PayPalApiStruct
      */
     protected $countryCode;
 
-    public function getAddressLine1(): string
+    public function getAddressLine1(): ?string
     {
         return $this->addressLine_1;
     }
 
-    public function setAddressLine1(string $addressLine_1): void
+    public function setAddressLine1(?string $addressLine_1): void
     {
         $this->addressLine_1 = $addressLine_1;
     }
 
-    public function getAddressLine2(): string
+    public function getAddressLine2(): ?string
     {
         return $this->addressLine_2;
     }
 
-    public function setAddressLine2(string $addressLine_2): void
+    public function setAddressLine2(?string $addressLine_2): void
     {
         $this->addressLine_2 = $addressLine_2;
     }
 
-    public function getAdminArea2(): string
+    public function getAdminArea2(): ?string
     {
         return $this->adminArea_2;
     }
 
-    public function setAdminArea2(string $adminArea_2): void
+    public function setAdminArea2(?string $adminArea_2): void
     {
         $this->adminArea_2 = $adminArea_2;
     }
 
-    public function getAdminArea1(): string
+    public function getAdminArea1(): ?string
     {
         return $this->adminArea_1;
     }
 
-    public function setAdminArea1(string $adminArea_1): void
+    public function setAdminArea1(?string $adminArea_1): void
     {
         $this->adminArea_1 = $adminArea_1;
     }
 
-    public function getPostalCode(): string
+    public function getPostalCode(): ?string
     {
         return $this->postalCode;
     }
 
-    public function setPostalCode(string $postalCode): void
+    public function setPostalCode(?string $postalCode): void
     {
         $this->postalCode = $postalCode;
     }

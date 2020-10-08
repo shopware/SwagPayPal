@@ -33,14 +33,19 @@ class CaptureResource
         return (new Capture())->assign($response);
     }
 
-    public function refund(string $captureId, Refund $refund, string $salesChannelId, bool $minimalResponse = true): Refund
-    {
+    public function refund(
+        string $captureId,
+        Refund $refund,
+        string $salesChannelId,
+        string $partnerAttributionId,
+        bool $minimalResponse = true
+    ): Refund {
         $headers = [];
         if ($minimalResponse === false) {
             $headers['Prefer'] = 'return=representation';
         }
 
-        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(
             \sprintf('%s/%s/refund', RequestUriV2::CAPTURES_RESOURCE, $captureId),
             $refund,
             $headers

@@ -33,8 +33,8 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\RestApi\V1\Api\Payment;
-use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
+use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -79,9 +79,9 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
     private $salesChannelContextSwitcher;
 
     /**
-     * @var PaymentResource
+     * @var OrderResource
      */
-    private $paymentResource;
+    private $orderResource;
 
     /**
      * @var CartService
@@ -101,7 +101,7 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
         SalesChannelContextFactory $salesChannelContextFactory,
         PaymentMethodUtil $paymentMethodUtil,
         SalesChannelContextSwitcher $salesChannelContextSwitcher,
-        PaymentResource $paymentResource,
+        OrderResource $orderResource,
         CartService $cartService,
         SystemConfigService $systemConfigService
     ) {
@@ -112,7 +112,7 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
         $this->salesChannelContextFactory = $salesChannelContextFactory;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->salesChannelContextSwitcher = $salesChannelContextSwitcher;
-        $this->paymentResource = $paymentResource;
+        $this->orderResource = $orderResource;
         $this->cartService = $cartService;
         $this->systemConfigService = $systemConfigService;
     }
@@ -129,13 +129,12 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
      *     operationId="approvePayPalExpressPayment",
      *     tags={"Store API", "PayPal"},
      *     @OA\Parameter(
-     *         parameter="paymentId",
-     *         name="categoryId",
+     *         parameter="orderId",
+     *         name="orderId",
      *         in="body",
-     *         description="Id of the paypal payment",
+     *         description="Id of the paypal order",
      *         @OA\Schema(type="string"),
      *     ),
-     *     @OA\Parameter(name="Api-Basic-Parameters"),
      *     @OA\Response(
      *         response="200",
      *         description="The new context token"
@@ -147,13 +146,14 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
      */
     public function approve(SalesChannelContext $salesChannelContext, Request $request): ContextTokenResponse
     {
-        $paymentId = $request->request->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
-        $payment = $this->paymentResource->get($paymentId, $salesChannelContext->getSalesChannel()->getId());
+        $paypalOrderId = $request->request->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
+        $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannel()->getId());
+
         $paypalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext());
 
         //Create and login a new guest customer
         $salesChannelContext->getContext()->addExtension(self::EXPRESS_CHECKOUT_ACTIVE, new ArrayStruct());
-        $customerDataBag = $this->getCustomerDataBagFromPayment($payment, $salesChannelContext);
+        $customerDataBag = $this->getCustomerDataBag($paypalOrder, $salesChannelContext);
         $this->registerRoute->register($customerDataBag, $salesChannelContext, false);
         $newContextToken = $this->accountService->login($customerDataBag->get('email'), $salesChannelContext, true);
         $salesChannelContext->getContext()->removeExtension(self::EXPRESS_CHECKOUT_ACTIVE);
@@ -174,7 +174,7 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
 
         $cart = $this->cartService->getCart($newSalesChannelContext->getToken(), $salesChannelContext);
 
-        $expressCheckoutData = new ExpressCheckoutData($paymentId, $payment->getPayer()->getPayerInfo()->getPayerId());
+        $expressCheckoutData = new ExpressCheckoutData($paypalOrderId);
         $cart->addExtension(ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID, $expressCheckoutData);
 
         // The cart needs to be saved.
@@ -183,64 +183,52 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
         return new ContextTokenResponse($cart->getToken());
     }
 
-    private function getCustomerDataBagFromPayment(Payment $payment, SalesChannelContext $context): RequestDataBag
+    private function getCustomerDataBag(Order $paypalOrder, SalesChannelContext $salesChannelContext): RequestDataBag
     {
-        $payerInfo = $payment->getPayer()->getPayerInfo();
-        $billingAddress = $payerInfo->getBillingAddress() ?? $payerInfo->getShippingAddress();
-        $firstName = $payerInfo->getFirstName();
-        $lastName = $payerInfo->getLastName();
-        $salutationId = $this->getSalutationId($context->getContext());
+        $context = $salesChannelContext->getContext();
+        $payer = $paypalOrder->getPayer();
+        $address = $payer->getAddress();
+        if ($address->getAddressLine1() === null && $address->getPostalCode() === null) {
+            $address = $paypalOrder->getPurchaseUnits()[0]->getShipping()->getAddress();
+        }
+
+        $firstName = $payer->getName()->getGivenName();
+        $lastName = $payer->getName()->getSurname();
+        $salutationId = $this->getSalutationId($context);
 
         $countryId = null;
         $countryStateId = null;
 
-        $countryCode = $billingAddress->getCountryCode();
-        $country = $this->getCountryByCode($countryCode, $context->getContext());
+        $countryCode = $address->getCountryCode();
+        $country = $this->getCountryByCode($countryCode, $context);
         if ($country !== null) {
             $countryId = $country->getId();
             $countryStateId = $this->getCountryStateId(
-                $billingAddress->getState(),
+                $address->getAdminArea1(),
                 $country->getStates(),
                 $countryCode
             );
         }
-
-        /** @var string $domainUrl */
-        $domainUrl = $this->systemConfigService
-            ->get('core.loginRegistration.doubleOptInDomain', $context->getSalesChannel()->getId());
-
-        if (!$domainUrl) {
-            $domains = $context->getSalesChannel()->getDomains();
-            if ($domains === null) {
-                throw new SalesChannelDomainNotFoundException($context->getSalesChannel());
-            }
-
-            $domain = $domains->first();
-            if ($domain === null) {
-                throw new SalesChannelDomainNotFoundException($context->getSalesChannel());
-            }
-
-            $domainUrl = $domain->getUrl();
-        }
+        $phone = $payer->getPhone();
 
         return new RequestDataBag([
             'guest' => true,
-            'storefrontUrl' => $domainUrl,
+            'storefrontUrl' => $this->getStorefrontUrl($salesChannelContext),
             'salutationId' => $salutationId,
-            'email' => $payerInfo->getEmail(),
+            'email' => $payer->getEmailAddress(),
             'firstName' => $firstName,
             'lastName' => $lastName,
             'billingAddress' => [
                 'firstName' => $firstName,
                 'lastName' => $lastName,
                 'salutationId' => $salutationId,
-                'street' => $billingAddress->getLine1(),
-                'zipcode' => $billingAddress->getPostalCode(),
+                'street' => $address->getAddressLine1(),
+                'zipcode' => $address->getPostalCode(),
                 'countryId' => $countryId,
                 'countryStateId' => $countryStateId,
-                'phone' => $billingAddress->getPhone(),
-                'city' => $billingAddress->getCity(),
-                'additionalAddressLine1' => $billingAddress->getLine2(),
+                'phone' => $phone !== null ? $phone->getPhoneNumber() : null,
+                'city' => $address->getAdminArea2(),
+                'additionalAddressLine1' => $address->getAddressLine2(),
             ],
         ]);
     }
@@ -297,5 +285,27 @@ class ExpressApprovePaymentRoute extends AbstractExpressApprovePaymentRoute
         }
 
         return $countryState->getId();
+    }
+
+    private function getStorefrontUrl(SalesChannelContext $salesChannelContext): string
+    {
+        $salesChannel = $salesChannelContext->getSalesChannel();
+        $domainUrl = $this->systemConfigService->get('core.loginRegistration.doubleOptInDomain', $salesChannel->getId());
+
+        if (\is_string($domainUrl) && $domainUrl !== '') {
+            return $domainUrl;
+        }
+
+        $domains = $salesChannel->getDomains();
+        if ($domains === null) {
+            throw new SalesChannelDomainNotFoundException($salesChannel);
+        }
+
+        $domain = $domains->first();
+        if ($domain === null) {
+            throw new SalesChannelDomainNotFoundException($salesChannel);
+        }
+
+        return $domain->getUrl();
     }
 }

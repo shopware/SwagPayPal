@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\Payment\Handler;
 
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -18,31 +19,27 @@ use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\PaymentsApi\Patch\AmountPatchBuilder;
-use Swag\PayPal\PaymentsApi\Patch\ItemListPatchBuilder;
-use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
-use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
+use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
+use Swag\PayPal\OrdersApi\Patch\AmountPatchBuilder;
+use Swag\PayPal\OrdersApi\Patch\ShippingAddressPatchBuilder;
+use Swag\PayPal\OrdersApi\Patch\ShippingNamePatchBuilder;
+use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class EcsSpbHandler extends AbstractPaymentHandler
 {
-    public const PAYPAL_PAYER_ID_INPUT_NAME = 'paypalPayerId';
-
     /**
      * @var SettingsServiceInterface
      */
     private $settingsService;
 
     /**
-     * @var AmountPatchBuilder
+     * @var EntityRepositoryInterface
      */
-    private $amountPatchBuilder;
-
-    /**
-     * @var ItemListPatchBuilder
-     */
-    private $itemListPatchBuilder;
+    private $currencyRepository;
 
     /**
      * @var ShippingAddressPatchBuilder
@@ -50,25 +47,43 @@ class EcsSpbHandler extends AbstractPaymentHandler
     private $shippingAddressPatchBuilder;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var ShippingNamePatchBuilder
      */
-    private $currencyRepository;
+    private $shippingNamePatchBuilder;
+
+    /**
+     * @var AmountPatchBuilder
+     */
+    private $amountPatchBuilder;
+
+    /**
+     * @var OrderResource
+     */
+    private $orderResource;
+
+    /**
+     * @var ItemListProvider
+     */
+    private $itemListProvider;
 
     public function __construct(
-        PaymentResource $paymentResource,
         EntityRepositoryInterface $orderTransactionRepo,
         SettingsServiceInterface $settingsService,
-        AmountPatchBuilder $amountPatchBuilder,
-        ItemListPatchBuilder $itemListPatchBuilder,
+        EntityRepositoryInterface $currencyRepository,
         ShippingAddressPatchBuilder $shippingAddressPatchBuilder,
-        EntityRepositoryInterface $currencyRepository
+        ShippingNamePatchBuilder $shippingNamePatchBuilder,
+        AmountPatchBuilder $amountPatchBuilder,
+        OrderResource $orderResource,
+        ItemListProvider $itemListProvider
     ) {
-        parent::__construct($paymentResource, $orderTransactionRepo);
+        parent::__construct($orderTransactionRepo);
         $this->settingsService = $settingsService;
-        $this->amountPatchBuilder = $amountPatchBuilder;
-        $this->itemListPatchBuilder = $itemListPatchBuilder;
-        $this->shippingAddressPatchBuilder = $shippingAddressPatchBuilder;
         $this->currencyRepository = $currencyRepository;
+        $this->shippingAddressPatchBuilder = $shippingAddressPatchBuilder;
+        $this->shippingNamePatchBuilder = $shippingNamePatchBuilder;
+        $this->amountPatchBuilder = $amountPatchBuilder;
+        $this->orderResource = $orderResource;
+        $this->itemListProvider = $itemListProvider;
     }
 
     public function handleEcsPayment(
@@ -77,40 +92,52 @@ class EcsSpbHandler extends AbstractPaymentHandler
         SalesChannelContext $salesChannelContext,
         CustomerEntity $customer
     ): RedirectResponse {
-        $paypalPaymentId = $dataBag->get(self::PAYPAL_PAYMENT_ID_INPUT_NAME);
-        $payerId = $dataBag->get(self::PAYPAL_PAYER_ID_INPUT_NAME);
+        $paypalOrderId = $dataBag->get(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        $orderTransaction = $transaction->getOrderTransaction();
+        $orderTransactionId = $orderTransaction->getId();
 
-        $this->addPayPalTransactionId($transaction, $paypalPaymentId, $salesChannelContext->getContext());
+        $this->addPayPalOrderId(
+            $orderTransactionId,
+            $paypalOrderId,
+            PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT,
+            $salesChannelContext->getContext()
+        );
 
         $order = $transaction->getOrder();
-        $currencyEntity = $order->getCurrency();
-        if ($currencyEntity === null) {
-            $currencyEntity = $this->getCurrency($order->getCurrencyId(), $salesChannelContext->getContext());
+        $currency = $order->getCurrency();
+        if ($currency === null) {
+            $currency = $this->getCurrency($order->getCurrencyId(), $salesChannelContext->getContext());
         }
 
-        $currency = $currencyEntity->getIsoCode();
-        $orderTransaction = $transaction->getOrderTransaction();
+        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
+        $submitCart = $this->settingsService->getSettings($salesChannelId)->getEcsSubmitCart();
+        $purchaseUnit = new PurchaseUnit();
+        if ($submitCart) {
+            $purchaseUnit->setItems($this->itemListProvider->getItemList($currency, $order));
+        }
 
         $patches = [
             $this->shippingAddressPatchBuilder->createShippingAddressPatch($customer),
+            $this->shippingNamePatchBuilder->createShippingNamePatch($customer),
             $this->amountPatchBuilder->createAmountPatch(
                 $orderTransaction->getAmount(),
-                $order->getShippingCosts()->getTotalPrice(),
-                $currency
+                $order->getShippingCosts(),
+                $currency,
+                $purchaseUnit
             ),
         ];
 
-        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-        if ($this->settingsService->getSettings($salesChannelId)->getEcsSubmitCart()) {
-            $patches[] = $this->itemListPatchBuilder->createItemListPatch($order, $currency);
-        }
-
-        $this->patchPayPalPayment($patches, $paypalPaymentId, $salesChannelId, $orderTransaction->getId());
+        $this->patchPaypalOrder(
+            $patches,
+            $paypalOrderId,
+            $salesChannelId,
+            $orderTransactionId,
+            PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT
+        );
 
         return $this->createResponse(
             $transaction->getReturnUrl(),
-            $paypalPaymentId,
-            $payerId,
+            $paypalOrderId,
             PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID
         );
     }
@@ -120,27 +147,28 @@ class EcsSpbHandler extends AbstractPaymentHandler
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
-        $paypalPaymentId = $dataBag->get(self::PAYPAL_PAYMENT_ID_INPUT_NAME);
-        $payerId = $dataBag->get(self::PAYPAL_PAYER_ID_INPUT_NAME);
-        $this->addPayPalTransactionId($transaction, $paypalPaymentId, $salesChannelContext->getContext());
+        $paypalOrderId = $dataBag->get(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        $this->addPayPalOrderId(
+            $transaction->getOrderTransaction()->getId(),
+            $paypalOrderId,
+            PartnerAttributionId::SMART_PAYMENT_BUTTONS,
+            $salesChannelContext->getContext()
+        );
 
         return $this->createResponse(
             $transaction->getReturnUrl(),
-            $paypalPaymentId,
-            $payerId,
+            $paypalOrderId,
             PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID
         );
     }
 
     private function createResponse(
         string $returnUrl,
-        string $paypalPaymentId,
-        string $payerId,
+        string $paypalOrderId,
         string $payPalType
     ): RedirectResponse {
         $parameters = \http_build_query([
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID => $paypalPaymentId,
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID => $payerId,
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => $paypalOrderId,
             $payPalType => true,
         ]);
 
@@ -163,5 +191,27 @@ class EcsSpbHandler extends AbstractPaymentHandler
         }
 
         return $currency;
+    }
+
+    private function patchPaypalOrder(
+        array $patches,
+        string $paypalOrderId,
+        string $salesChannelId,
+        string $orderTransactionId,
+        string $partnerAttributionId
+    ): void {
+        try {
+            $this->orderResource->update(
+                $patches,
+                $paypalOrderId,
+                $salesChannelId,
+                $partnerAttributionId
+            );
+        } catch (\Exception $e) {
+            throw new AsyncPaymentProcessException(
+                $orderTransactionId,
+                \sprintf('An error occurred during the communication with PayPal%s%s', PHP_EOL, $e->getMessage())
+            );
+        }
     }
 }

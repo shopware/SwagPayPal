@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
@@ -24,6 +25,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
+use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksSubscriber;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -142,6 +144,18 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
         static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+    }
+
+    public function testOnCheckoutConfirmPageLoadedSPBNotEnabledExpressCheckoutActive(): void
+    {
+        $subscriber = $this->createSubscriber();
+        $event = $this->createCheckoutConfirmEvent();
+        $event->getPage()->getCart()->addExtension(ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID, new ArrayStruct());
+        $subscriber->addMarksExtension($event);
+
+        static::assertNull(
+            $event->getPage()->getExtension(SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID)
+        );
     }
 
     private function createSubscriber(

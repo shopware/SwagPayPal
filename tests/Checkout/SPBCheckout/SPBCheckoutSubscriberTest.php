@@ -30,7 +30,6 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler;
-use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
@@ -165,8 +164,7 @@ class SPBCheckoutSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createConfirmPageLoadedEvent();
-        $event->getRequest()->query->set(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME, 'testPaymentId');
-        $event->getRequest()->query->set(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME, 'testPayerId');
+        $event->getRequest()->query->set(AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME, 'testOrderId');
         $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
@@ -226,12 +224,10 @@ class SPBCheckoutSubscriberTest extends TestCase
         $subscriber = $this->createSubscriber();
 
         $testButtonId = 'testButtonId';
-        $testPaymentId = 'testPaymentId';
-        $testPayerId = 'testPayerId';
+        $testOrderId = 'testOrderId';
         $storefrontRequest = new Request([], [
             PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID => $testButtonId,
-            AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME => $testPaymentId,
-            EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME => $testPayerId,
+            AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $testOrderId,
         ], [
             '_route' => 'frontend.account.edit-order.update-order',
         ]);
@@ -241,13 +237,11 @@ class SPBCheckoutSubscriberTest extends TestCase
         $subscriber->addNecessaryRequestParameter($event);
 
         $requestParameters = $storeApiRequest->request;
-        static::assertCount(3, $requestParameters);
+        static::assertCount(2, $requestParameters);
         static::assertTrue($requestParameters->has(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID));
-        static::assertTrue($requestParameters->has(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME));
-        static::assertTrue($requestParameters->has(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME));
+        static::assertTrue($requestParameters->has(AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME));
         static::assertSame($testButtonId, $requestParameters->get(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID));
-        static::assertSame($testPaymentId, $requestParameters->get(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME));
-        static::assertSame($testPayerId, $requestParameters->get(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME));
+        static::assertSame($testOrderId, $requestParameters->get(AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME));
     }
 
     public function testAddNecessaryRequestParameterWrongRoute(): void

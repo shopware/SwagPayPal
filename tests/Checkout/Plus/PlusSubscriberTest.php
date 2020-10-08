@@ -609,6 +609,7 @@ class PlusSubscriberTest extends TestCase
             \sprintf('/sales-channel-api/v%s/checkout/order', PlatformRequest::API_VERSION),
             $plusExtension->getCheckoutOrderUrl()
         );
+        static::assertSame(\sprintf('/store-api/v%s/context', PlatformRequest::API_VERSION), $plusExtension->getContextSwitchUrl());
         static::assertSame(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, $plusExtension->getIsEnabledParameterName());
         static::assertSame($event->getContext()->getLanguageId(), $plusExtension->getLanguageId());
 

@@ -37,7 +37,7 @@ class PurchaseUnit extends PayPalApiStruct
     protected $description;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $invoiceId;
 
@@ -96,12 +96,12 @@ class PurchaseUnit extends PayPalApiStruct
         $this->description = $description;
     }
 
-    public function getInvoiceId(): string
+    public function getInvoiceId(): ?string
     {
         return $this->invoiceId;
     }
 
-    public function setInvoiceId(string $invoiceId): void
+    public function setInvoiceId(?string $invoiceId): void
     {
         $this->invoiceId = $invoiceId;
     }
