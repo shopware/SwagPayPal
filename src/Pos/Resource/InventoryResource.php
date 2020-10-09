@@ -33,7 +33,7 @@ class InventoryResource
     public function getLocations(PosSalesChannelEntity $salesChannelEntity): array
     {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::INVENTORY, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::INVENTORY, $apiKey);
 
         $response = $client->sendGetRequest(PosRequestUri::INVENTORY_RESOURCE_LOCATIONS);
 
@@ -54,7 +54,7 @@ class InventoryResource
     public function getInventory(PosSalesChannelEntity $salesChannelEntity, string $locationUuid): Status
     {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::INVENTORY, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::INVENTORY, $apiKey);
 
         $url = \sprintf(PosRequestUri::INVENTORY_RESOURCE_GET, $locationUuid);
 
@@ -71,7 +71,7 @@ class InventoryResource
     public function changeInventoryBulk(PosSalesChannelEntity $salesChannelEntity, BulkChanges $bulkChanges): ?Status
     {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::INVENTORY, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::INVENTORY, $apiKey);
 
         $response = $client->sendPostRequest(PosRequestUri::INVENTORY_RESOURCE_BULK, $bulkChanges);
 

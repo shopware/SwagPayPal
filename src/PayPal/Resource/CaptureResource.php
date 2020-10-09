@@ -26,7 +26,7 @@ class CaptureResource
 
     public function get(string $captureId, string $salesChannelId): Capture
     {
-        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
             \sprintf('%s/%s', RequestUri::CAPTURE_RESOURCE, $captureId)
         );
 
@@ -35,7 +35,7 @@ class CaptureResource
 
     public function refund(string $captureId, Refund $refund, string $salesChannelId): Refund
     {
-        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
             \sprintf('%s/%s/refund', RequestUri::CAPTURE_RESOURCE, $captureId),
             $refund
         );

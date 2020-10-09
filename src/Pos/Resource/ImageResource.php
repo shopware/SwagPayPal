@@ -31,7 +31,7 @@ class ImageResource
         BulkImageUpload $bulkProductImageUpload
     ): ?BulkImageUploadResponse {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::IMAGE, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::IMAGE, $apiKey);
 
         $response = $client->sendPostRequest(PosRequestUri::IMAGE_RESOURCE_BULK, $bulkProductImageUpload);
 

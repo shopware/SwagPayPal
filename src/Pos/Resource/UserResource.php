@@ -26,7 +26,7 @@ class UserResource
 
     public function getMerchantInformation(string $apiKey): ?MerchantInformation
     {
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::SECURE, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::SECURE, $apiKey);
 
         $response = $client->sendGetRequest(PosRequestUri::MERCHANT_INFORMATION);
 

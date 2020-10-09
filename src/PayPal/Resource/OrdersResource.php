@@ -27,7 +27,7 @@ class OrdersResource
 
     public function get(string $orderId, string $salesChannelId): Order
     {
-        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
             \sprintf('%s/%s', RequestUri::ORDERS_RESOURCE, $orderId)
         );
 
@@ -36,7 +36,7 @@ class OrdersResource
 
     public function capture(string $orderId, Capture $capture, string $salesChannelId): Capture
     {
-        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
             \sprintf('%s/%s/capture', RequestUri::ORDERS_RESOURCE, $orderId),
             $capture
         );
@@ -49,7 +49,7 @@ class OrdersResource
     public function void(string $orderId, string $salesChannelId): DoVoid
     {
         $doVoid = new DoVoid();
-        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
             \sprintf('%s/%s/do-void', RequestUri::ORDERS_RESOURCE, $orderId),
             $doVoid
         );

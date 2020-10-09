@@ -27,6 +27,11 @@ class PosClientFactoryMock extends PosClientFactory
      */
     private $tokenResource;
 
+    /**
+     * @var PosClientMock|null
+     */
+    private $posClient;
+
     public function __construct()
     {
         $this->logger = new NullLogger();
@@ -37,11 +42,15 @@ class PosClientFactoryMock extends PosClientFactory
         parent::__construct($this->tokenResource, new NullLogger());
     }
 
-    public function createPosClient(string $baseUri, string $apiKey): PosClient
+    public function getPosClient(string $baseUri, string $apiKey): PosClient
     {
         $credentials = new OAuthCredentials();
         $credentials->setApiKey($apiKey);
 
-        return new PosClientMock($baseUri, $this->tokenResource, $credentials, $this->logger);
+        if ($this->posClient === null) {
+            $this->posClient = new PosClientMock($baseUri, $this->tokenResource, $credentials, $this->logger);
+        }
+
+        return $this->posClient;
     }
 }
