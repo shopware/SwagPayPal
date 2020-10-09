@@ -37,7 +37,7 @@ class WebhookResource
     public function createWebhook(string $webhookUrl, CreateWebhooks $createWebhooks, ?string $salesChannelId): string
     {
         try {
-            $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
+            $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
                 RequestUri::WEBHOOK_RESOURCE,
                 $createWebhooks
             );
@@ -59,7 +59,7 @@ class WebhookResource
     public function getWebhookUrl(string $webhookId, ?string $salesChannelId): string
     {
         try {
-            $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
+            $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
                 \sprintf('%s/%s', RequestUri::WEBHOOK_RESOURCE, $webhookId)
             );
 
@@ -90,7 +90,7 @@ class WebhookResource
         $requestData[] = $patch;
 
         try {
-            $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPatchRequest(
+            $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPatchRequest(
                 \sprintf('%s/%s', RequestUri::WEBHOOK_RESOURCE, $webhookId),
                 $requestData
             );

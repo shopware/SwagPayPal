@@ -30,7 +30,7 @@ class SubscriptionResource
 
     public function getMerchantInformation(string $apiKey): ?MerchantInformation
     {
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::SECURE, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::SECURE, $apiKey);
 
         $response = $client->sendGetRequest(PosRequestUri::MERCHANT_INFORMATION);
 
@@ -47,7 +47,7 @@ class SubscriptionResource
     public function createWebhook(PosSalesChannelEntity $salesChannelEntity, CreateSubscription $createSubscription): ?SubscriptionResponse
     {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::PUSHER, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::PUSHER, $apiKey);
 
         $response = $client->sendPostRequest(PosRequestUri::SUBSCRIPTION_RESOURCE, $createSubscription);
 
@@ -64,7 +64,7 @@ class SubscriptionResource
     public function updateWebhook(PosSalesChannelEntity $salesChannelEntity, string $subscriptionUuid, UpdateSubscription $updateSubscription): void
     {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::PUSHER, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::PUSHER, $apiKey);
 
         $url = \sprintf(PosRequestUri::SUBSCRIPTION_RESOURCE . '%s/', $subscriptionUuid);
 
@@ -74,7 +74,7 @@ class SubscriptionResource
     public function removeWebhook(PosSalesChannelEntity $salesChannelEntity, string $subscriptionUuid): void
     {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::PUSHER, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::PUSHER, $apiKey);
 
         $url = \sprintf(PosRequestUri::SUBSCRIPTION_RESOURCE_DELETE . '%s/', $subscriptionUuid);
 

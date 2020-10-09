@@ -18,7 +18,7 @@ use Swag\PayPal\Test\Mock\CacheMock;
 class PayPalClientFactoryMock extends PayPalClientFactory
 {
     /**
-     * @var PayPalClientMock
+     * @var PayPalClientMock|null
      */
     private $client;
 
@@ -42,27 +42,33 @@ class PayPalClientFactoryMock extends PayPalClientFactory
         parent::__construct($tokenResource, $settingsService, $logger);
     }
 
-    public function createPaymentClient(
+    public function getPayPalClient(
         ?string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ): PayPalClient {
         $settings = $this->settingsService->getSettings($salesChannelId);
 
-        $this->client = new PayPalClientMock(
-            new TokenResource(
-                new CacheMock(),
-                new TokenClientFactoryMock($this->logger),
-                new CredentialsClientFactoryMock($this->logger)
-            ),
-            $settings,
-            $this->logger
-        );
+        if ($this->client === null) {
+            $this->client = new PayPalClientMock(
+                new TokenResource(
+                    new CacheMock(),
+                    new TokenClientFactoryMock($this->logger),
+                    new CredentialsClientFactoryMock($this->logger)
+                ),
+                $settings,
+                $this->logger
+            );
+        }
 
         return $this->client;
     }
 
     public function getClient(): PayPalClientMock
     {
+        if ($this->client === null) {
+            throw new \RuntimeException('Something went wrong. There is no client');
+        }
+
         return $this->client;
     }
 }

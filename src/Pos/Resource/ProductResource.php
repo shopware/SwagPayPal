@@ -34,7 +34,7 @@ class ProductResource
     public function getProducts(PosSalesChannelEntity $salesChannelEntity): array
     {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::PRODUCTS, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::PRODUCTS, $apiKey);
 
         $response = $client->sendGetRequest(PosRequestUri::PRODUCT_RESOURCE);
 
@@ -55,7 +55,7 @@ class ProductResource
     public function createProduct(PosSalesChannelEntity $salesChannelEntity, Product $product): ?array
     {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::PRODUCTS, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::PRODUCTS, $apiKey);
 
         return $client->sendPostRequest(PosRequestUri::PRODUCT_RESOURCE, $product);
     }
@@ -63,7 +63,7 @@ class ProductResource
     public function updateProduct(PosSalesChannelEntity $salesChannelEntity, Product $product): ?array
     {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::PRODUCTS, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::PRODUCTS, $apiKey);
 
         return $client->sendPutRequest(PosRequestUri::PRODUCT_RESOURCE_V2 . $product->getUuid(), $product);
     }
@@ -74,7 +74,7 @@ class ProductResource
     public function deleteProducts(PosSalesChannelEntity $salesChannelEntity, array $productUuids): ?array
     {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::PRODUCTS, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::PRODUCTS, $apiKey);
 
         // limited by GET request length
         $offset = 0;
@@ -94,7 +94,7 @@ class ProductResource
     public function getProductCount(PosSalesChannelEntity $salesChannelEntity): ProductCountResponse
     {
         $apiKey = $salesChannelEntity->getApiKey();
-        $client = $this->posClientFactory->createPosClient(PosBaseURL::PRODUCTS, $apiKey);
+        $client = $this->posClientFactory->getPosClient(PosBaseURL::PRODUCTS, $apiKey);
 
         $response = $client->sendGetRequest(PosRequestUri::PRODUCT_RESOURCE_COUNT);
 

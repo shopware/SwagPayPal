@@ -143,7 +143,7 @@ class InformationFetchServiceTest extends TestCase
             ]);
 
         $clientFactory = $this->createMock(PosClientFactory::class);
-        $clientFactory->method('createPosClient')->willReturn($client);
+        $clientFactory->method('getPosClient')->willReturn($client);
 
         return new UserResource($clientFactory);
     }

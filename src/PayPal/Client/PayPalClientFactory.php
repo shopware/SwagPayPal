@@ -29,6 +29,11 @@ class PayPalClientFactory
      */
     private $logger;
 
+    /**
+     * @var PayPalClient|null
+     */
+    private $payPalClient;
+
     public function __construct(
         TokenResource $tokenResource,
         SettingsServiceInterface $settingsService,
@@ -39,12 +44,40 @@ class PayPalClientFactory
         $this->logger = $logger;
     }
 
-    public function createPaymentClient(
+    public function getPayPalClient(
         ?string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ): PayPalClient {
         $settings = $this->settingsService->getSettings($salesChannelId);
 
-        return new PayPalClient($this->tokenResource, $settings, $this->logger, $partnerAttributionId);
+        if ($this->payPalClient === null) {
+            $this->payPalClient = new PayPalClient(
+                $this->tokenResource,
+                $settings,
+                $this->logger,
+                $partnerAttributionId
+            );
+        }
+
+        return $this->payPalClient;
+    }
+
+    /**
+     * @deprecated tag:v2.0.0 - Will be removed. Use PayPalClientFactory::getPayPalClient instead
+     */
+    public function createPaymentClient(
+        ?string $salesChannelId,
+        string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
+    ): PayPalClient {
+        $this->logger->error(
+            \sprintf(
+                '%s::%s is deprecated. Use %s::getPayPalClient instead',
+                static::class,
+                __METHOD__,
+                static::class
+            )
+        );
+
+        return $this->getPayPalClient($salesChannelId, $partnerAttributionId);
     }
 }

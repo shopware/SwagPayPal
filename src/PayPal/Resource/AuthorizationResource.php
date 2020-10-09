@@ -27,7 +27,7 @@ class AuthorizationResource
 
     public function get(string $authorizationId, string $salesChannelId): Authorization
     {
-        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
             \sprintf('%s/%s', RequestUri::AUTHORIZATION_RESOURCE, $authorizationId)
         );
 
@@ -36,7 +36,7 @@ class AuthorizationResource
 
     public function capture(string $authorizationId, Capture $capture, string $salesChannelId): Capture
     {
-        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
             \sprintf('%s/%s/capture', RequestUri::AUTHORIZATION_RESOURCE, $authorizationId),
             $capture
         );
@@ -49,7 +49,7 @@ class AuthorizationResource
     public function void(string $authorizationId, string $salesChannelId): DoVoid
     {
         $doVoid = new DoVoid();
-        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPostRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
             \sprintf('%s/%s/void', RequestUri::AUTHORIZATION_RESOURCE, $authorizationId),
             $doVoid
         );

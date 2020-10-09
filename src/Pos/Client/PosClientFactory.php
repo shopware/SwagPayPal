@@ -23,17 +23,43 @@ class PosClientFactory
      */
     private $logger;
 
+    /**
+     * @var PosClient|null
+     */
+    private $posClient;
+
     public function __construct(TokenResource $tokenResource, LoggerInterface $logger)
     {
         $this->tokenResource = $tokenResource;
         $this->logger = $logger;
     }
 
-    public function createPosClient(string $baseUri, string $apiKey): PosClient
+    public function getPosClient(string $baseUri, string $apiKey): PosClient
     {
         $credentials = new OAuthCredentials();
         $credentials->setApiKey($apiKey);
 
-        return new PosClient($baseUri, $this->tokenResource, $credentials, $this->logger);
+        if ($this->posClient === null) {
+            $this->posClient = new PosClient($baseUri, $this->tokenResource, $credentials, $this->logger);
+        }
+
+        return $this->posClient;
+    }
+
+    /**
+     * @deprecated tag:v2.0.0 - Will be removed. Use PosClientFactory::getPosClient instead
+     */
+    public function createPosClient(string $baseUri, string $apiKey): PosClient
+    {
+        $this->logger->error(
+            \sprintf(
+                '%s::%s is deprecated. Use %s::getPayPalClient instead',
+                static::class,
+                __METHOD__,
+                static::class
+            )
+        );
+
+        return $this->getPosClient($baseUri, $apiKey);
     }
 }

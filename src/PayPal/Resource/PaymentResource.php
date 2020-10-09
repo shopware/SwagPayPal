@@ -28,7 +28,7 @@ class PaymentResource
 
     public function create(Payment $payment, string $salesChannelId, string $partnerAttributionId): Payment
     {
-        $paypalClient = $this->payPalClientFactory->createPaymentClient($salesChannelId, $partnerAttributionId);
+        $paypalClient = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId);
         $response = $paypalClient->sendPostRequest(RequestUri::PAYMENT_RESOURCE, $payment);
 
         $payment->assign($response);
@@ -44,7 +44,7 @@ class PaymentResource
     ): Payment {
         $payerInfo = new ExecutePayerInfo();
         $payerInfo->setPayerId($payerId);
-        $paypalClient = $this->payPalClientFactory->createPaymentClient($salesChannelId, $partnerAttributionId);
+        $paypalClient = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId);
         $response = $paypalClient->sendPostRequest(
             \sprintf('%s/%s/execute', RequestUri::PAYMENT_RESOURCE, $paymentId),
             $payerInfo
@@ -55,7 +55,7 @@ class PaymentResource
 
     public function get(string $paymentId, string $salesChannelId): Payment
     {
-        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendGetRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
             \sprintf('%s/%s', RequestUri::PAYMENT_RESOURCE, $paymentId)
         );
 
@@ -67,7 +67,7 @@ class PaymentResource
      */
     public function patch(array $patches, string $paymentId, string $salesChannelId): Payment
     {
-        $response = $this->payPalClientFactory->createPaymentClient($salesChannelId)->sendPatchRequest(
+        $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPatchRequest(
             \sprintf('%s/%s', RequestUri::PAYMENT_RESOURCE, $paymentId),
             $patches
         );
