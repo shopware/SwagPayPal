@@ -119,7 +119,8 @@ class SwagPayPalPosSettingApiService extends ApiService {
             'WRITE:PRODUCT'
         ];
 
-        return `https://my.izettle.com/apps/api-keys?name=Shopware%20integration&scopes=${scopes.join('%20')}`;
+        // eslint-disable-next-line max-len
+        return `https://my.izettle.com/apps/api-keys?name=Shopware%20integration&scopes=${scopes.join('%20')}&utm_source=local_partnership&utm_medium=ecommerce&utm_campaign=shopware`;
     }
 }
 

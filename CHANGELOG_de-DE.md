@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEW_VERSION
+# 1.9.1
 - PPI-141 - Performance der API zu PayPal verbessert
 
 # 1.9.0
