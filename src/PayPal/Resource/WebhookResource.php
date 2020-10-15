@@ -102,4 +102,23 @@ class WebhookResource
             throw $e;
         }
     }
+
+    /**
+     * @throws PayPalApiException
+     * @throws WebhookIdInvalidException
+     */
+    public function deleteWebhook(string $webhookId, ?string $salesChannelId): void
+    {
+        try {
+            $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendDeleteRequest(
+                \sprintf('%s/%s', RequestUri::WEBHOOK_RESOURCE, $webhookId)
+            );
+        } catch (PayPalApiException $e) {
+            if ($e->getParameters()['name'] === self::INVALID_WEBHOOK_ID_ERROR_NAME) {
+                throw new WebhookIdInvalidException($webhookId);
+            }
+
+            throw $e;
+        }
+    }
 }

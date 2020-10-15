@@ -9,17 +9,49 @@ namespace Swag\PayPal\Test\Mock\Webhook;
 
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\Webhook\WebhookControllerTest;
 use Swag\PayPal\Webhook\Exception\WebhookException;
+use Swag\PayPal\Webhook\WebhookDeregistrationServiceInterface;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
-class WebhookServiceMock implements WebhookServiceInterface
+/**
+ * @deprecated tag:v2.0.0 - will not extend WebhookSerivce but implement WebhookServiceInterface and WebhookDeregistrationServiceInterface
+ */
+class WebhookServiceMock extends WebhookService
 {
+    /**
+     * @var string[]
+     */
+    private $registrations = [];
+
+    /**
+     * @var string[]
+     */
+    private $deregistrations = [];
+
+    public function __construct()
+    {
+    }
+
     public function registerWebhook(?string $salesChannelId): string
     {
+        $this->registrations[] = $salesChannelId ?? 'null';
+
         return WebhookService::WEBHOOK_CREATED;
+    }
+
+    public function deregisterWebhook(?string $salesChannelId, ?SwagPayPalSettingStruct $settings = null): string
+    {
+        if ($settings === null || $settings->getWebhookId() === null) {
+            return WebhookService::NO_WEBHOOK_ACTION_REQUIRED;
+        }
+
+        $this->deregistrations[] = $salesChannelId ?? 'null';
+
+        return WebhookService::WEBHOOK_DELETED;
     }
 
     public function executeWebhook(Webhook $webhook, Context $context): void
@@ -31,5 +63,21 @@ class WebhookServiceMock implements WebhookServiceInterface
         if ($context->hasExtension(WebhookControllerTest::THROW_GENERAL_EXCEPTION)) {
             throw new \RuntimeException('testGeneralExceptionMessage');
         }
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRegistrations(): array
+    {
+        return $this->registrations;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDeregistrations(): array
+    {
+        return $this->deregistrations;
     }
 }

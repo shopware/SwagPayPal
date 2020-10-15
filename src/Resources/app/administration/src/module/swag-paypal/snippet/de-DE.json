@@ -170,8 +170,6 @@
                     "detail": "Der von Ihnen angegebene Ländercode entspricht nicht dem von PayPal geforderten Format. Ein gültiges Format ist \"en_GB\"."
                 }
             },
-            "titleSuccess": "Erfolg",
-            "titleError": "Fehler",
             "messageSaveSuccess": "Die PayPal-Einstellungen wurden gespeichert.",
             "messageTestSuccess": "Die API-Zugangsdaten wurden validiert.",
             "messageTestError": "Die API-Zugangsdaten konnten nicht validiert werden.",

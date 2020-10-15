@@ -11,7 +11,7 @@
             <argument type="service" id="system_config.repository"/>
         </service>
 
-        <service id="Swag\PayPal\Webhook\WebhookService" public="true">
+        <service id="Swag\PayPal\Webhook\WebhookService">
             <argument type="service" id="Swag\PayPal\PayPal\Resource\WebhookResource"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookRegistry"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
@@ -50,6 +50,26 @@
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition"/>
             <tag name="swag.paypal.webhook.handler"/>
+        </service>
+
+        <!-- registration -->
+        <service id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigController" decorates="Shopware\Core\System\SystemConfig\Api\SystemConfigController" public="true">
+            <argument type="service" id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigController.inner"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper">
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
+        </service>
+
+        <service id="Swag\PayPal\Webhook\Registration\WebhookSubscriber">
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
+            <tag name="kernel.event_subscriber"/>
         </service>
     </services>
 </container>

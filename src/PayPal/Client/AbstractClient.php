@@ -63,6 +63,17 @@ abstract class AbstractClient
         return $this->decodeJsonResponse($response);
     }
 
+    protected function delete(string $uri, array $options = []): array
+    {
+        try {
+            $response = $this->client->delete($uri, $options)->getBody()->getContents();
+        } catch (RequestException $requestException) {
+            throw $this->handleRequestException($requestException, $options);
+        }
+
+        return $this->decodeJsonResponse($response);
+    }
+
     private function decodeJsonResponse(string $response): array
     {
         return \json_decode($response, true) ?? [];
