@@ -1,3 +1,6 @@
+# 1.9.2
+- PPI-149 - Fixes error during communication with iZettle
+
 # 1.9.1
 - PPI-141 - Improve performance of API to PayPal
 

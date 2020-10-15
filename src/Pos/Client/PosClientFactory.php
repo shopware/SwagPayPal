@@ -23,11 +23,6 @@ class PosClientFactory
      */
     private $logger;
 
-    /**
-     * @var PosClient|null
-     */
-    private $posClient;
-
     public function __construct(TokenResource $tokenResource, LoggerInterface $logger)
     {
         $this->tokenResource = $tokenResource;
@@ -39,11 +34,7 @@ class PosClientFactory
         $credentials = new OAuthCredentials();
         $credentials->setApiKey($apiKey);
 
-        if ($this->posClient === null) {
-            $this->posClient = new PosClient($baseUri, $this->tokenResource, $credentials, $this->logger);
-        }
-
-        return $this->posClient;
+        return new PosClient($baseUri, $this->tokenResource, $credentials, $this->logger);
     }
 
     /**
