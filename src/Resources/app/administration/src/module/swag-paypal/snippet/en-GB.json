@@ -3,7 +3,7 @@
         "header": "PayPal",
         "saleschannelCard": {
             "button": {
-                "description": "Click this button to enable PayPal and select it as default in the selected Saleschannel",
+                "description": "Click this button to enable PayPal and select it as default in the selected Sales Channel",
                 "label": "Set PayPal as default"
             }
         },

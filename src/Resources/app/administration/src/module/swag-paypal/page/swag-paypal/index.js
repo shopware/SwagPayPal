@@ -33,16 +33,13 @@ Shopware.Component.register('swag-paypal', {
             sandboxChecked: false,
             salesChannels: [],
             config: null,
-            clientIdErrorState: null,
-            clientSecretErrorState: null,
-            clientIdSandboxErrorState: null,
-            clientSecretSandboxErrorState: null,
             isSetDefaultPaymentSuccessful: false,
             isSettingDefaultPaymentMethods: false,
             savingDisabled: false,
             initialConfigValueSandbox: false,
             initialConfigValueWebhookId: null,
             initialConfigValueWebhookExecuteToken: null,
+            messageBlankErrorState: null,
             ...constants
         };
     },
@@ -80,6 +77,43 @@ Shopware.Component.register('swag-paypal', {
 
         salesChannelRepository() {
             return this.repositoryFactory.create('sales_channel');
+        },
+
+        clientIdErrorState() {
+            if (this.sandboxChecked || this.clientIdFilled) {
+                return null;
+            }
+
+            return this.messageBlankErrorState;
+        },
+
+        clientSecretErrorState() {
+            if (this.sandboxChecked || this.clientSecretFilled) {
+                return null;
+            }
+
+            return this.messageBlankErrorState;
+        },
+
+        clientIdSandboxErrorState() {
+            if (!this.sandboxChecked || this.clientIdSandboxFilled) {
+                return null;
+            }
+
+            return this.messageBlankErrorState;
+        },
+
+        clientSecretSandboxErrorState() {
+            if (!this.sandboxChecked || this.clientSecretSandboxFilled) {
+                return null;
+            }
+
+            return this.messageBlankErrorState;
+        },
+
+        hasError() {
+            return (!this.sandboxChecked && !(this.clientIdFilled && this.clientSecretFilled)) ||
+                (this.sandboxChecked && !(this.clientIdSandboxFilled && this.clientSecretSandboxFilled));
         }
     },
 
@@ -129,6 +163,7 @@ Shopware.Component.register('swag-paypal', {
     methods: {
         createdComponent() {
             this.isLoading = true;
+
             const criteria = new Criteria();
             criteria.addFilter(Criteria.equalsAny('typeId', [
                 Defaults.storefrontSalesChannelTypeId,
@@ -147,12 +182,15 @@ Shopware.Component.register('swag-paypal', {
             }).finally(() => {
                 this.isLoading = false;
             });
+
+            this.messageBlankErrorState = {
+                code: 1,
+                detail: this.$tc('swag-paypal.messageNotBlank')
+            };
         },
 
         onSave() {
-            if ((!this.sandboxChecked && (!this.clientIdFilled || !this.clientSecretFilled)) ||
-                (this.sandboxChecked && (!this.clientIdSandboxFilled || !this.clientSecretSandboxFilled))) {
-                this.setErrorStates();
+            if (this.hasError) {
                 return;
             }
 
@@ -223,35 +261,10 @@ Shopware.Component.register('swag-paypal', {
                 });
         },
 
+        /**
+         * @deprecated tag:v2.0.0 - will be removed
+         */
         setErrorStates() {
-            const messageNotBlankErrorState = {
-                code: 1,
-                detail: this.$tc('swag-paypal.messageNotBlank')
-            };
-
-            if (!this.sandboxChecked) {
-                this.clientIdErrorState = null;
-                this.clientSecretErrorState = null;
-
-                if (!this.clientIdFilled) {
-                    this.clientIdErrorState = messageNotBlankErrorState;
-                }
-
-                if (!this.clientSecretFilled) {
-                    this.clientSecretErrorState = messageNotBlankErrorState;
-                }
-            } else {
-                this.clientIdSandboxErrorState = null;
-                this.clientSecretSandboxErrorState = null;
-
-                if (!this.clientIdSandboxFilled) {
-                    this.clientIdSandboxErrorState = messageNotBlankErrorState;
-                }
-
-                if (!this.clientSecretSandboxFilled) {
-                    this.clientSecretSandboxErrorState = messageNotBlankErrorState;
-                }
-            }
         },
 
         onSetPaymentMethodDefault() {

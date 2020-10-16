@@ -9,8 +9,8 @@ namespace Swag\PayPal\PayPal;
 
 final class PartnerId
 {
-    public const SANDBOX = 'J425NKDMLL4YA';
-    public const LIVE = 'W8HDQ6LB42CJW';
+    public const SANDBOX = '45KXQA7PULGAG';
+    public const LIVE = 'DYKPBPEAW5JNA';
 
     private function __construct()
     {

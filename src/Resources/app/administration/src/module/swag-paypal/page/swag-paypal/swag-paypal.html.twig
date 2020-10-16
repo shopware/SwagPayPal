@@ -23,7 +23,7 @@
                                        class="sw-settings-login-registration__save-action"
                                        variant="primary"
                                        :isLoading="isLoading"
-                                       :disabled="isLoading || savingDisabled"
+                                       :disabled="isLoading || savingDisabled || hasError"
                                        @click="onSave">
                         {{ $tc('swag-paypal.settingForm.save') }}
                     </sw-button-process>

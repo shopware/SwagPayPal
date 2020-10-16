@@ -4,7 +4,7 @@ function resolve(dir) {
     return path.join(__dirname, '..', dir);
 }
 
-module.exports = function (baseConf) {
+module.exports = (baseConf) => {
     // Exclude the plugin's icons from being loaded via a url-loader
     baseConf.config.module.rules.forEach((rule) => {
         if (rule.loader === 'url-loader') {
