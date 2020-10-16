@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEW_VERSION
+- PPI-114 - Kleine Verbesserungen beim Onboarding-Prozess
+
 # 1.9.2
 - PPI-149 - Korrigiert auftretende Fehler bei der Kommunikation mit iZettle
 

@@ -3,7 +3,7 @@
         "header": "PayPal",
         "saleschannelCard": {
             "button": {
-                "description": "Klicken, um PayPal im ausgewählten Saleschannel zu aktivieren und als Standardzahlungsart zu setzen",
+                "description": "Klicken, um PayPal im ausgewählten Sales Channel zu aktivieren und als Standardzahlungsart zu setzen",
                 "label": "Setze PayPal als Standard"
             }
         },
