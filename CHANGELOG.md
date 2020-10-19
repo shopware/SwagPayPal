@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEW_VERSION
 - PPI-67 - Reimplemented activation of webhooks
+- PPI-110 - Added restrictions set by PayPal for Alternative Payment Methods
 - PPI-114 - Minor onboarding process improvements
 - PPI-158 - Fixes error during update to versions 1.7.0 or higher, if no configuration is available
 

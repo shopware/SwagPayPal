@@ -103,6 +103,18 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             $editOrderPage->getOrder()->getId()
         );
 
+        $currency = $editOrderPage->getOrder()->getCurrency();
+        if ($currency === null) {
+            $currency = $event->getSalesChannelContext()->getCurrency();
+        }
+
+        $buttonData->setDisabledAlternativePaymentMethods(
+            $this->spbCheckoutDataService->getDisabledAlternativePaymentMethods(
+                $editOrderPage->getOrder()->getAmountTotal(),
+                $currency->getIsoCode()
+            )
+        );
+
         $this->changePaymentMethodDescription($editOrderPage->getPaymentMethods(), $event->getContext());
 
         $editOrderPage->addExtension(self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID, $buttonData);
@@ -128,6 +140,13 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         $buttonData = $this->spbCheckoutDataService->getCheckoutData(
             $event->getSalesChannelContext(),
             $settings
+        );
+
+        $buttonData->setDisabledAlternativePaymentMethods(
+            $this->spbCheckoutDataService->getDisabledAlternativePaymentMethods(
+                $confirmPage->getCart()->getPrice()->getTotalPrice(),
+                $event->getSalesChannelContext()->getCurrency()->getIsoCode()
+            )
         );
 
         $this->changePaymentMethodDescription($confirmPage->getPaymentMethods(), $event->getContext());

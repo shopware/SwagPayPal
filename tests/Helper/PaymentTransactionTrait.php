@@ -85,6 +85,8 @@ trait PaymentTransactionTrait
             ]),
             CartPrice::TAX_STATE_NET
         ));
+        $order->setAmountNet(722.69);
+        $order->setAmountTotal(860.0);
 
         switch ($orderId) {
             case ConstantsForTesting::VALID_ORDER_ID:

@@ -24,8 +24,8 @@ export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
 
     createMarks() {
         this.createScript(() => {
-            this.paypal = window.paypal;
-            this.paypal.Marks().render(this.el);
+            const paypal = window.paypal;
+            paypal.Marks().render(this.el);
         });
     }
 }
