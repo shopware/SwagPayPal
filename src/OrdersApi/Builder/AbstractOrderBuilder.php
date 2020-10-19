@@ -54,7 +54,7 @@ abstract class AbstractOrderBuilder
 
     protected function getIntent(): string
     {
-        // TODO PPI-4 - Get intent from settings
+        // TODO PPI-144 - Get intent from settings
         // $intent = $this->settings->getIntentV2();
         $intent = PaymentIntentV2::CAPTURE;
         $this->validateIntent($intent);
@@ -136,7 +136,7 @@ abstract class AbstractOrderBuilder
 
     private function getLandingPageType(SwagPayPalSettingStruct $settings): string
     {
-        // TODO PPI-4 - Add no preference
+        // TODO PPI-144 - Add no preference
         $landingPageType = \strtoupper($settings->getLandingPage());
         if ($landingPageType !== ApplicationContext::LANDING_PAGE_TYPE_BILLING) {
             $landingPageType = ApplicationContext::LANDING_PAGE_TYPE_LOGIN;

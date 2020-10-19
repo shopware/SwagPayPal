@@ -10,6 +10,8 @@ import SwagPayPalPosWebhookRegisterService
     from '../core/service/api/swag-paypal-pos-webhook-register.service';
 import SwagPayPalPaymentService
     from '../core/service/api/swag-paypal-payment.service';
+import SwagPayPalOrderService
+    from '../core/service/api/swag-paypal-order.service';
 import SwagPaypalPaymentMethodServiceService
     from '../core/service/api/swag-paypal-payment-method.service';
 
@@ -45,6 +47,11 @@ Application.addServiceProvider(
 Application.addServiceProvider(
     'SwagPayPalPaymentService',
     (container) => new SwagPayPalPaymentService(initContainer.httpClient, container.loginService)
+);
+
+Application.addServiceProvider(
+    'SwagPayPalOrderService',
+    (container) => new SwagPayPalOrderService(initContainer.httpClient, container.loginService)
 );
 
 Application.addServiceProvider(

@@ -12,7 +12,11 @@
                 "heading": "Rechnungsbetrag",
                 "totalAmount": "Gesamtbetrag:",
                 "subTotal": "Zwischensumme:",
-                "shipping": "Versandkosten:"
+                "shipping": "Versandkosten:",
+                "discount": "Rabatt:",
+                "handling": "Bearbeitungsgebühr:",
+                "insurance": "Versicherung:",
+                "shipping_discount": "Versandkostenrabatt:"
             },
             "payment": {
                 "heading": "Zahlungsdetails",
@@ -111,9 +115,10 @@
             }
         },
         "errorPage": {
-            "title": "Zahlungsdetails nicht länger verfügbar",
+            "title": "Zahlungsdetails nicht verfügbar",
             "canceledPaymentContent": "Beim Abrufen der Zahlungsdaten von PayPal ist ein Fehler aufgetreten (INVALID_RESOURCE_ID). Wenn du diese Nachricht siehst, handelt es sich vermutlich um eine Zahlung, die vom Kunden abgebrochen wurde. Abgebrochene Zahlungen werden nach einiger Zeit von PayPal gelöscht und sind dann nicht länger abrufbar.",
-            "sandboxLiveContent": "Beim Abrufen der Zahlungsdaten von PayPal ist ein Fehler aufgetreten (INVALID_RESOURCE_ID). Wenn du diese Nachricht siehst, handelt es sich vermutlich um eine Zahlung, die mit aktivierter Sandbox angelegt wurde und nun mit Live-Daten abgerufen wurde, oder umgekehrt. Korrigiere deine PayPal-Einstellungen oder lösche Test-Bestellungen aus dem System."
+            "sandboxLiveContent": "Beim Abrufen der Zahlungsdaten von PayPal ist ein Fehler aufgetreten (INVALID_RESOURCE_ID). Wenn du diese Nachricht siehst, handelt es sich vermutlich um eine Zahlung, die mit aktivierter Sandbox angelegt wurde und nun mit Live-Daten abgerufen wurde, oder umgekehrt. Korrigiere deine PayPal-Einstellungen oder lösche Test-Bestellungen aus dem System.",
+            "other": "Beim Abrufen der Zahlungsdaten von PayPal ist ein Fehler aufgetreten."
         }
     }
 }

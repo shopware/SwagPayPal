@@ -67,7 +67,9 @@
                     "hint": "Note: PayPal PLUS only works with the payment acquisition \"Sale\". It will be set automatically, regardless of the selected option.",
                     "sale": "Complete payment immediately (Sale)",
                     "authorize": "Delayed payment collection (Auth-Capture)",
-                    "order": "Delayed payment collection (Order-Auth-Capture)"
+                    "order": "Delayed payment collection (Order-Auth-Capture)",
+                    "CAPTURE": "Complete payment immediately (CAPTURE)",
+                    "AUTHORIZE": "Delayed payment collection (AUTHORIZE)"
                 },
                 "submitCart": {
                     "label": "Submit cart",
