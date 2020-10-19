@@ -14,17 +14,20 @@ use Swag\PayPal\PayPal\Api\CreateWebhooks;
 use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\PayPal\Resource\WebhookResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class WebhookService implements WebhookServiceInterface
+class WebhookService implements WebhookServiceInterface, WebhookDeregistrationServiceInterface
 {
     public const WEBHOOK_TOKEN_CONFIG_KEY = 'webhookExecuteToken';
+    public const WEBHOOK_ID_KEY = 'webhookId';
 
     public const WEBHOOK_CREATED = 'created';
     public const WEBHOOK_UPDATED = 'updated';
+    public const WEBHOOK_DELETED = 'deleted';
     public const NO_WEBHOOK_ACTION_REQUIRED = 'nothing';
 
     /**
@@ -112,6 +115,36 @@ class WebhookService implements WebhookServiceInterface
         $webhookHandler->invoke($webhook, $context);
     }
 
+    public function deregisterWebhook(?string $salesChannelId, ?SwagPayPalSettingStruct $settings = null): string
+    {
+        if ($settings === null) {
+            $settings = $this->settingsService->getSettings($salesChannelId);
+        }
+
+        $webhookId = $settings->getWebhookId();
+
+        if ($webhookId === null) {
+            return WebhookService::NO_WEBHOOK_ACTION_REQUIRED;
+        }
+
+        try {
+            $this->webhookResource->deleteWebhook($webhookId, $salesChannelId);
+            $deleted = true;
+        } catch (WebhookIdInvalidException $e) {
+            $deleted = false;
+        }
+
+        $this->settingsService->updateSettings(
+            [
+                WebhookService::WEBHOOK_TOKEN_CONFIG_KEY => null,
+                WebhookService::WEBHOOK_ID_KEY => null,
+            ],
+            $salesChannelId
+        );
+
+        return $deleted ? WebhookService::WEBHOOK_DELETED : WebhookService::NO_WEBHOOK_ACTION_REQUIRED;
+    }
+
     private function createWebhook(
         ?string $salesChannelId,
         string $webhookUrl,
@@ -135,7 +168,7 @@ class WebhookService implements WebhookServiceInterface
             $this->settingsService->updateSettings(
                 [
                     self::WEBHOOK_TOKEN_CONFIG_KEY => $webhookExecuteToken,
-                    'webhookId' => $webhookId,
+                    self::WEBHOOK_ID_KEY => $webhookId,
                 ],
                 $salesChannelId
             );

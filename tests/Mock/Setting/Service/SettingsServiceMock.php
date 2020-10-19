@@ -8,11 +8,11 @@
 namespace Swag\PayPal\Test\Mock\Setting\Service;
 
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Setting\SwagPayPalSettingStructValidator;
 
-class SettingsServiceMock implements SettingsServiceInterface
+class SettingsServiceMock extends SettingsService
 {
     /**
      * @var SwagPayPalSettingStruct|null
@@ -24,7 +24,7 @@ class SettingsServiceMock implements SettingsServiceInterface
         $this->settings = $settings;
     }
 
-    public function getSettings(?string $salesChannelId = null): SwagPayPalSettingStruct
+    public function getSettings(?string $salesChannelId = null, bool $inherited = true): SwagPayPalSettingStruct
     {
         if ($this->settings === null) {
             throw new PayPalSettingsInvalidException('clientId');

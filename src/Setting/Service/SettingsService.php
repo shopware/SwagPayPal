@@ -25,12 +25,12 @@ class SettingsService implements SettingsServiceInterface
         $this->systemConfigService = $systemConfigService;
     }
 
-    public function getSettings(?string $salesChannelId = null): SwagPayPalSettingStruct
+    public function getSettings(?string $salesChannelId = null, bool $inherited = true): SwagPayPalSettingStruct
     {
         $values = $this->systemConfigService->getDomain(
             self::SYSTEM_CONFIG_DOMAIN,
             $salesChannelId,
-            true
+            $inherited
         );
 
         $propertyValuePairs = [];
@@ -46,7 +46,9 @@ class SettingsService implements SettingsServiceInterface
 
         $settingsEntity = new SwagPayPalSettingStruct();
         $settingsEntity->assign($propertyValuePairs);
-        SwagPayPalSettingStructValidator::validate($settingsEntity);
+        if ($inherited) {
+            SwagPayPalSettingStructValidator::validate($settingsEntity);
+        }
 
         return $settingsEntity;
     }

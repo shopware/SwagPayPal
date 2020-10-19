@@ -18,6 +18,17 @@ parameters:
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
+        -   # The SettingsServiceInterface will be extended in v2.0.0
+            message: '#invoked with 2 parameters, 0-1 required#'
+            paths:
+                - src/Webhook/Registration/WebhookSubscriber.php
+                - src/Webhook/Registration/WebhookSystemConfigController.php
+                - src/Webhook/Registration/WebhookSystemConfigHelper.php
+        -   # The WebhookDeregistrationServiceInterface and WebhookServiceInterface will be merged in v2.0.0
+            message: '#Call to an undefined method .+WebhookDeregistrationServiceInterface.+WebhookServiceInterface#'
+            paths:
+                - src/Webhook/WebhookController.php
+                - src/Webhook/Registration/WebhookSystemConfigHelper.php
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

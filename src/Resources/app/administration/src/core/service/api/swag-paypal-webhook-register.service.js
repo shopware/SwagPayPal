@@ -1,5 +1,8 @@
 const ApiService = Shopware.Classes.ApiService;
 
+/**
+ * @deprecated tag:v2.0.0 - will be removed
+ */
 class SwagPayPalWebhookRegisterService extends ApiService {
     constructor(httpClient, loginService, apiEndpoint = 'paypal') {
         super(httpClient, loginService, apiEndpoint);

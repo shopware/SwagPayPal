@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEW_VERSION
+- PPI-67 - Aktivierung der Webhooks überarbeitet
 - PPI-114 - Kleine Verbesserungen beim Onboarding-Prozess
 
 # 1.9.2

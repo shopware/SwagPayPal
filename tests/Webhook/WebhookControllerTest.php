@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Struct\ArrayStruct;
-use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -28,7 +27,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class WebhookControllerTest extends TestCase
 {
-    use AssertArraySubsetBehaviour;
     use DatabaseTransactionBehaviour;
     use ServicesTrait;
 
@@ -44,7 +42,19 @@ class WebhookControllerTest extends TestCase
 
         $result = \json_decode($content, true);
 
-        $this->silentAssertArraySubset(['result' => WebhookService::WEBHOOK_CREATED], $result);
+        static::assertEqualsCanonicalizing(['result' => WebhookService::WEBHOOK_CREATED], $result);
+    }
+
+    public function testDeregisterWebhook(): void
+    {
+        $jsonResponse = $this->createWebhookController()->deregisterWebhook(Defaults::SALES_CHANNEL);
+        $content = $jsonResponse->getContent();
+        static::assertNotFalse($content);
+
+        $result = \json_decode($content, true);
+
+        // no action because no Webhook ID is defined by default
+        static::assertEqualsCanonicalizing(['result' => WebhookService::NO_WEBHOOK_ACTION_REQUIRED], $result);
     }
 
     public function testExecuteWebhook(): void

@@ -245,7 +245,7 @@ class SwagPayPalSettingStruct extends Struct
         return $this->webhookId;
     }
 
-    public function setWebhookId(string $webhookId): void
+    public function setWebhookId(?string $webhookId): void
     {
         $this->webhookId = $webhookId;
     }
@@ -255,7 +255,7 @@ class SwagPayPalSettingStruct extends Struct
         return $this->webhookExecuteToken;
     }
 
-    public function setWebhookExecuteToken(string $webhookExecuteToken): void
+    public function setWebhookExecuteToken(?string $webhookExecuteToken): void
     {
         $this->webhookExecuteToken = $webhookExecuteToken;
     }

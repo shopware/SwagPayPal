@@ -14,8 +14,10 @@ interface SettingsServiceInterface
 {
     /**
      * @throws PayPalSettingsInvalidException
+     *
+     * @deprecated tag:v2.0.0 - The parameter $inherited will be added
      */
-    public function getSettings(?string $salesChannelId = null): SwagPayPalSettingStruct;
+    public function getSettings(?string $salesChannelId = null/* , bool $inherited = true */): SwagPayPalSettingStruct;
 
     public function updateSettings(array $settings, ?string $salesChannelId = null): void;
 }

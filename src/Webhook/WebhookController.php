@@ -35,7 +35,7 @@ class WebhookController extends AbstractController
     private $logger;
 
     /**
-     * @var WebhookServiceInterface
+     * @var WebhookServiceInterface|WebhookDeregistrationServiceInterface
      */
     private $webhookService;
 
@@ -64,6 +64,24 @@ class WebhookController extends AbstractController
     public function registerWebhook(string $salesChannelId): JsonResponse
     {
         $result = $this->webhookService->registerWebhook($salesChannelId !== 'null' ? $salesChannelId : null);
+
+        return new JsonResponse(['result' => $result]);
+    }
+
+    /**
+     * @Route(
+     *     "/api/v{version}/_action/paypal/webhook/deregister/{salesChannelId}",
+     *     name="api.action.paypal.webhook.deregister",
+     *     methods={"DELETE"}
+     * )
+     */
+    public function deregisterWebhook(string $salesChannelId): JsonResponse
+    {
+        if ($this->deleteableWebhook()) {
+            $result = $this->webhookService->deregisterWebhook($salesChannelId !== 'null' ? $salesChannelId : null);
+        } else {
+            $result = WebhookService::NO_WEBHOOK_ACTION_REQUIRED;
+        }
 
         return new JsonResponse(['result' => $result]);
     }
@@ -177,5 +195,20 @@ class WebhookController extends AbstractController
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         }
+    }
+
+    /**
+     * @deprecated tag:v2.0.0 - will be removed
+     */
+    private function deleteableWebhook(): bool
+    {
+        try {
+            new \ReflectionMethod($this->webhookService, 'deregisterWebhook');
+        } catch (\ReflectionException $e) {
+            // if deregister not exists
+            return false;
+        }
+
+        return true;
     }
 }

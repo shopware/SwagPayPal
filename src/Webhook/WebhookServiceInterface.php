@@ -11,6 +11,9 @@ use Shopware\Core\Framework\Context;
 use Swag\PayPal\PayPal\Api\Webhook;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 
+/**
+ * @deprecated tag:v2.0.0 - Method deregisterWebhook from WebhookDeregisterServiceInterface will be added
+ */
 interface WebhookServiceInterface
 {
     public function registerWebhook(?string $salesChannelId): string;

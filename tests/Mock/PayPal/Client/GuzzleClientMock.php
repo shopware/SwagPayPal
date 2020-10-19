@@ -81,6 +81,16 @@ class GuzzleClientMock extends Client
         return new Response(200, [], $this->handlePatchRequests($uri, $options['json']));
     }
 
+    /**
+     * @throws ClientException
+     */
+    public function delete(string $uri, array $options = []): ResponseInterface
+    {
+        $this->handleDeleteRequests($uri);
+
+        return new Response(204);
+    }
+
     public function getData(): array
     {
         return $this->data;
@@ -313,6 +323,16 @@ class GuzzleClientMock extends Client
         $this->data = $data;
 
         return $this->ensureValidJson($response);
+    }
+
+    /**
+     * @throws ClientException
+     */
+    private function handleDeleteRequests(string $resourceUri): void
+    {
+        if (\mb_strpos($resourceUri, WebhookResourceTest::THROW_EXCEPTION_INVALID_ID) !== false) {
+            throw $this->createClientExceptionWithInvalidId();
+        }
     }
 
     private function getAuthenticationHeader(string $restId, string $restSecret): string
