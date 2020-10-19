@@ -71,18 +71,16 @@ class WebhookSystemConfigController extends SystemConfigController
     {
         $oldSettings = [];
 
-        if ($this->deleteableWebhook()) {
-            foreach ($request->request->all() as $salesChannelId => $kvs) {
-                if (!$this->webhookSystemConfigHelper->configHasPayPalSettings($kvs)) {
-                    continue;
-                }
-
-                if ($salesChannelId === 'null' || !\is_string($salesChannelId)) {
-                    $salesChannelId = null;
-                }
-
-                $oldSettings[$salesChannelId ?? ''] = $this->settingsService->getSettings($salesChannelId, false);
+        foreach ($request->request->all() as $salesChannelId => $kvs) {
+            if (!$this->webhookSystemConfigHelper->configHasPayPalSettings($kvs)) {
+                continue;
             }
+
+            if ($salesChannelId === 'null' || !\is_string($salesChannelId)) {
+                $salesChannelId = null;
+            }
+
+            $oldSettings[$salesChannelId ?? ''] = $this->settingsService->getSettings($salesChannelId, false);
         }
 
         $response = parent::batchSaveConfiguration($request);
@@ -108,15 +106,5 @@ class WebhookSystemConfigController extends SystemConfigController
         return new JsonResponse([self::WEBHOOK_ERRORS_KEY => \array_map(static function (\Throwable $e) {
             return $e->getMessage();
         }, $errors)]);
-    }
-
-    /**
-     * @deprecated tag:v2.0.0 - will be removed
-     */
-    private function deleteableWebhook(): bool
-    {
-        $reflection = new \ReflectionMethod($this->settingsService, 'getSettings');
-
-        return $reflection->getNumberOfParameters() >= 2;
     }
 }

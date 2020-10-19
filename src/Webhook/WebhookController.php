@@ -36,7 +36,7 @@ class WebhookController extends AbstractController
     private $logger;
 
     /**
-     * @var WebhookServiceInterface|WebhookDeregistrationServiceInterface
+     * @var WebhookServiceInterface
      */
     private $webhookService;
 
@@ -80,11 +80,7 @@ class WebhookController extends AbstractController
      */
     public function deregisterWebhook(string $salesChannelId): JsonResponse
     {
-        if ($this->deleteableWebhook()) {
-            $result = $this->webhookService->deregisterWebhook($salesChannelId !== 'null' ? $salesChannelId : null);
-        } else {
-            $result = WebhookService::NO_WEBHOOK_ACTION_REQUIRED;
-        }
+        $result = $this->webhookService->deregisterWebhook($salesChannelId !== 'null' ? $salesChannelId : null);
 
         return new JsonResponse(['result' => $result]);
     }
@@ -179,20 +175,5 @@ class WebhookController extends AbstractController
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         }
-    }
-
-    /**
-     * @deprecated tag:v2.0.0 - will be removed
-     */
-    private function deleteableWebhook(): bool
-    {
-        try {
-            new \ReflectionMethod($this->webhookService, 'deregisterWebhook');
-        } catch (\ReflectionException $e) {
-            // if deregister not exists
-            return false;
-        }
-
-        return true;
     }
 }

@@ -111,7 +111,7 @@ class WebhookResource
     {
         try {
             $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendDeleteRequest(
-                \sprintf('%s/%s', RequestUri::WEBHOOK_RESOURCE, $webhookId)
+                \sprintf('%s/%s', RequestUriV1::WEBHOOK_RESOURCE, $webhookId)
             );
         } catch (PayPalApiException $e) {
             if ($e->getParameters()['name'] === self::INVALID_WEBHOOK_ID_ERROR_NAME) {

@@ -26,6 +26,7 @@ use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\RestApi\V1\Resource\WebhookResourceTest;
 use Swag\PayPal\Webhook\WebhookService;
+use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 class WebhookServiceTest extends TestCase
 {
@@ -174,7 +175,7 @@ class WebhookServiceTest extends TestCase
         return new SettingsServiceMock($settings);
     }
 
-    private function createWebhookService(SettingsServiceMock $settingsService): WebhookService
+    private function createWebhookService(SettingsServiceMock $settingsService): WebhookServiceInterface
     {
         /** @var OrderTransactionRepoMock $orderTransactionRepo */
         $orderTransactionRepo = $this->orderTransactionRepo;

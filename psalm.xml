@@ -17,17 +17,6 @@
     </projectFiles>
 
     <issueHandlers>
-        <DeprecatedClass>
-            <errorLevel type="info">
-                <!-- <deprecated> tag:v2.0.0 - Remove once the interface has been extended -->
-                <referencedClass name="Swag\PayPal\Webhook\WebhookServiceInterface"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove once the WebhookDeregistrationServiceInterface is merged with WebhookServiceInterface -->
-                <referencedClass name="Swag\PayPal\Test\Mock\Webhook\WebhookServiceMock"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove once the WebhookDeregistrationServiceInterface is merged with WebhookServiceInterface -->
-                <referencedClass name="Swag\PayPal\Webhook\WebhookDeregistrationServiceInterface"/>
-            </errorLevel>
-        </DeprecatedClass>
-
         <MoreSpecificImplementedParamType>
             <errorLevel type="info">
                 <file name="src/Pos/Sync/Product/Util/ProductGroupingCollection.php"/>
@@ -61,10 +50,6 @@
         <DeprecatedInterface>
             <errorLevel type="info">
                 <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\EntityExtensionInterface"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove once the interface has been extended -->
-                <referencedClass name="Swag\PayPal\Webhook\WebhookServiceInterface"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove once the WebhookDeregistrationServiceInterface is merged with WebhookServiceInterface -->
-                <referencedClass name="Swag\PayPal\Webhook\WebhookDeregistrationServiceInterface"/>
             </errorLevel>
         </DeprecatedInterface>
 
@@ -80,12 +65,6 @@
                 <referencedMethod name="Shopware\Core\Content\Product\ProductEntity::getPurchasePrice"/>
                 <referencedMethod name="Shopware\Core\Content\Product\ProductEntity::setPurchasePrice"/>
                 <referencedMethod name="Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour::silentAssertArraySubset"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove once the interface has been extended -->
-                <referencedMethod name="Swag\PayPal\Setting\Service\SettingsServiceInterface::getSettings"/>
-                <referencedMethod name="Swag\PayPal\Webhook\WebhookController::deleteableWebhook"/>
-                <referencedMethod name="Swag\PayPal\Webhook\Registration\WebhookSubscriber::deleteableWebhook"/>
-                <referencedMethod name="Swag\PayPal\Webhook\Registration\WebhookSystemConfigController::deleteableWebhook"/>
-                <referencedMethod name="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper::deleteableWebhook"/>
             </errorLevel>
         </DeprecatedMethod>
 
@@ -98,19 +77,8 @@
         <PossiblyUndefinedMethod>
             <errorLevel type="info">
                 <file name="tests/Pos/Sync/Product/*Test.php"/>
-                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
-                <referencedMethod name="Swag\PayPal\Webhook\WebhookServiceInterface::deregisterWebhook"/>
-                <referencedMethod name="Swag\PayPal\Webhook\WebhookDeregistrationServiceInterface::registerWebhook"/>
-                <referencedMethod name="Swag\PayPal\Webhook\WebhookDeregistrationServiceInterface::executeWebhook"/>
             </errorLevel>
         </PossiblyUndefinedMethod>
-
-        <DeprecatedProperty>
-            <errorLevel type="info">
-                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
-                <referencedProperty name="Swag\PayPal\Webhook\Registration\WebhookSubscriber::$webhookService"/>
-            </errorLevel>
-        </DeprecatedProperty>
 
         <UnresolvableInclude>
             <errorLevel type="info">
@@ -130,13 +98,6 @@
                 <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
             </errorLevel>
         </UnsafeInstantiation>
-
-        <TooManyArguments>
-            <errorLevel type="info">
-                <!-- <deprecated> tag:v2.0.0 - Remove with 2.0.0 -->
-                <referencedFunction name="Swag\PayPal\Setting\Service\SettingsServiceInterface::getSettings"/>
-            </errorLevel>
-        </TooManyArguments>
 
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>

@@ -1,5 +1,3 @@
-import SwagPayPalWebhookRegisterService
-    from '../core/service/api/swag-paypal-webhook-register.service';
 import SwagPayPalApiCredentialsService
     from '../core/service/api/swag-paypal-api-credentials.service';
 import SwagPayPalPosSettingApiService
@@ -18,11 +16,6 @@ import SwagPaypalPaymentMethodServiceService
 const { Application } = Shopware;
 
 const initContainer = Application.getContainer('init');
-
-Application.addServiceProvider(
-    'SwagPayPalWebhookRegisterService',
-    (container) => new SwagPayPalWebhookRegisterService(initContainer.httpClient, container.loginService)
-);
 
 Application.addServiceProvider(
     'SwagPayPalApiCredentialsService',

@@ -20,7 +20,7 @@ use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class WebhookService implements WebhookServiceInterface, WebhookDeregistrationServiceInterface
+class WebhookService implements WebhookServiceInterface
 {
     public const WEBHOOK_TOKEN_CONFIG_KEY = 'webhookExecuteToken';
     public const WEBHOOK_ID_KEY = 'webhookId';

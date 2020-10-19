@@ -10,7 +10,6 @@ Component.register('swag-paypal', {
     template,
 
     inject: [
-        'SwagPayPalWebhookRegisterService',
         'SwagPayPalApiCredentialsService',
         'SwagPaypalPaymentMethodServiceService',
         'repositoryFactory',
@@ -202,50 +201,6 @@ Component.register('swag-paypal', {
             }).finally(() => {
                 this.isLoading = false;
             });
-        },
-
-        /**
-         * @deprecated tag:v2.0.0 - will be removed
-         */
-        registerWebhook() {
-            this.SwagPayPalWebhookRegisterService.registerWebhook(this.$refs.configComponent.selectedSalesChannelId)
-                .then((response) => {
-                    const result = response.result;
-
-                    if (result === this.WEBHOOK_RESULT_NOTHING) {
-                        return;
-                    }
-
-                    if (result === this.WEBHOOK_RESULT_CREATED) {
-                        this.createNotificationSuccess({
-                            title: this.$tc('global.default.success'),
-                            message: this.$tc('swag-paypal.settingForm.messageWebhookCreated')
-                        });
-
-                        return;
-                    }
-
-                    if (result === this.WEBHOOK_RESULT_UPDATED) {
-                        this.createNotificationSuccess({
-                            title: this.$tc('global.default.success'),
-                            message: this.$tc('swag-paypal.settingForm.messageWebhookUpdated')
-                        });
-                    }
-                    this.isLoading = false;
-                }).catch((errorResponse) => {
-                    if (errorResponse.response.data && errorResponse.response.data.errors) {
-                        let message = `${this.$tc('swag-paypal.settingForm.messageWebhookError')}<br><br><ul>`;
-                        errorResponse.response.data.errors.forEach((error) => {
-                            message = `${message}<li>${error.detail}</li>`;
-                        });
-                        message += '</li>';
-                        this.createNotificationError({
-                            title: this.$tc('swag-paypal.settingForm.titleError'),
-                            message: message
-                        });
-                    }
-                    this.isLoading = false;
-                });
         },
 
         onSetPaymentMethodDefault() {

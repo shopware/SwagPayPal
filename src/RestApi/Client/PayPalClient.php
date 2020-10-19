@@ -96,9 +96,13 @@ class PayPalClient extends AbstractClient implements PayPalClientInterface
         return $this->patch($resourceUri, $options);
     }
 
-    public function sendDeleteRequest(string $resourceUri): array
+    public function sendDeleteRequest(string $resourceUri, array $headers = []): array
     {
-        return $this->delete($resourceUri);
+        $options = [
+            'headers' => $headers,
+        ];
+
+        return $this->delete($resourceUri, $options);
     }
 
     private function createCredentialsObject(string $clientId, string $clientSecret): OAuthCredentials
