@@ -45,7 +45,7 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
     ): Order {
         $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
 
-        $intent = $this->getIntent();
+        $intent = $this->getIntent($settings);
         $payer = $this->createPayer($customer);
         $purchaseUnit = $this->createPurchaseUnit(
             $salesChannelContext,

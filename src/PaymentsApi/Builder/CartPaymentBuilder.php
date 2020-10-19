@@ -42,7 +42,6 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
     ): Payment {
         $this->settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
 
-        $intent = $this->getIntent();
         $payer = $this->createPayer();
         $redirectUrls = $this->createRedirectUrls($finishUrl);
         $transaction = $this->createTransactionFromCart(
@@ -53,7 +52,6 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         $applicationContext = $this->getApplicationContext($salesChannelContext);
 
         $requestPayment = new Payment();
-        $requestPayment->setIntent($intent);
         $requestPayment->setPayer($payer);
         $requestPayment->setRedirectUrls($redirectUrls);
         $requestPayment->setTransactions([$transaction]);

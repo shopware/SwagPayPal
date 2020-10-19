@@ -11,8 +11,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
 use Swag\PayPal\RestApi\V1\Api\Payment\Payer;
 use Swag\PayPal\RestApi\V1\Api\Payment\RedirectUrls;
-use Swag\PayPal\RestApi\V1\PaymentIntentV1;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -50,14 +48,6 @@ abstract class AbstractPaymentBuilder
         $this->priceFormatter = $priceFormatter;
     }
 
-    protected function getIntent(): string
-    {
-        $intent = $this->settings->getIntent();
-        $this->validateIntent($intent);
-
-        return $intent;
-    }
-
     protected function createPayer(): Payer
     {
         $payer = new Payer();
@@ -87,16 +77,6 @@ abstract class AbstractPaymentBuilder
         $applicationContext->setLandingPage($this->getLandingPageType());
 
         return $applicationContext;
-    }
-
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
-    private function validateIntent(string $intent): void
-    {
-        if (!\in_array($intent, PaymentIntentV1::INTENTS, true)) {
-            throw new PayPalSettingsInvalidException('intent');
-        }
     }
 
     private function getBrandName(SalesChannelContext $salesChannelContext): string

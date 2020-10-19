@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Setting;
 
 use Shopware\Core\Framework\Struct\Struct;
-use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
-use Swag\PayPal\RestApi\V1\PaymentIntentV1;
+use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
+use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 
 class SwagPayPalSettingStruct extends Struct
 {
@@ -48,7 +48,7 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var string
      */
-    protected $intent = PaymentIntentV1::SALE;
+    protected $intent = PaymentIntentV2::CAPTURE;
 
     /**
      * @var bool
@@ -73,7 +73,7 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var string
      */
-    protected $landingPage = ApplicationContext::LANDING_PAGE_TYPE_LOGIN;
+    protected $landingPage = ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE;
 
     /**
      * @var bool

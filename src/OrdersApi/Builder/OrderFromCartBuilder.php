@@ -29,7 +29,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
         $order = new Order();
 
-        $intent = $this->getIntent();
+        $intent = $this->getIntent($settings);
         if ($customer !== null) {
             $payer = $this->createPayer($customer);
             $order->setPayer($payer);

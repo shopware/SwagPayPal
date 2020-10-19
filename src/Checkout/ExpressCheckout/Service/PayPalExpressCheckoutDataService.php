@@ -71,7 +71,7 @@ class PayPalExpressCheckoutDataService
             'clientId' => $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
             'languageIso' => $this->getInContextButtonLanguage($settings, $salesChannelContext),
             'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
-            'intent' => $settings->getIntent(),
+            'intent' => \strtolower($settings->getIntent()),
             'addProductToCart' => $addProductToCart,
             'createPaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.create_payment', ['version' => PlatformRequest::API_VERSION]),
             'createNewCartUrl' => $this->router->generate('sales-channel-api.action.paypal.create_new_cart', ['version' => PlatformRequest::API_VERSION]),

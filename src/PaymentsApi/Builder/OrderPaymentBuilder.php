@@ -54,14 +54,12 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
     ): Payment {
         $this->settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
 
-        $intent = $this->getIntent();
         $payer = $this->createPayer();
         $redirectUrls = $this->createRedirectUrls($paymentTransaction->getReturnUrl());
         $transaction = $this->createTransaction($paymentTransaction, $salesChannelContext->getContext());
         $applicationContext = $this->getApplicationContext($salesChannelContext);
 
         $requestPayment = new Payment();
-        $requestPayment->setIntent($intent);
         $requestPayment->setPayer($payer);
         $requestPayment->setRedirectUrls($redirectUrls);
         $requestPayment->setTransactions([$transaction]);

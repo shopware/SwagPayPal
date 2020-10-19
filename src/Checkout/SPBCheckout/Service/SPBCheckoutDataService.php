@@ -59,7 +59,7 @@ class SPBCheckoutDataService
             'clientId' => $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
             'languageIso' => $this->getButtonLanguage($settings, $context),
             'currency' => $context->getCurrency()->getIsoCode(),
-            'intent' => $settings->getIntent(),
+            'intent' => \strtolower($settings->getIntent()),
             'buttonShape' => $settings->getSpbButtonShape(),
             'buttonColor' => $settings->getSpbButtonColor(),
             'paymentMethodId' => $paymentMethodId,

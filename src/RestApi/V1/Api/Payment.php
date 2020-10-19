@@ -14,6 +14,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Payer;
 use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction;
 use Swag\PayPal\RestApi\V1\Api\Payment\RedirectUrls;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
+use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 
 class Payment extends PayPalApiStruct
 {
@@ -25,7 +26,7 @@ class Payment extends PayPalApiStruct
     /**
      * @var string
      */
-    protected $intent;
+    protected $intent = PaymentIntentV1::SALE;
 
     /**
      * @var string

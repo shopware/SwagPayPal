@@ -15,6 +15,10 @@ use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV1;
+use Swag\PayPal\RestApi\V1\PaymentIntentV1;
+use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext as ApplicationContextV2;
+use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\SwagPayPal;
@@ -42,16 +46,23 @@ class Update
      */
     private $paymentRepository;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $salesChannelRepository;
+
     public function __construct(
         SystemConfigService $systemConfig,
         EntityRepositoryInterface $paymentRepository,
         EntityRepositoryInterface $customFieldRepository,
-        ?WebhookServiceInterface $webhookService
+        ?WebhookServiceInterface $webhookService,
+        EntityRepositoryInterface $salesChannelRepository
     ) {
         $this->systemConfig = $systemConfig;
         $this->customFieldRepository = $customFieldRepository;
         $this->webhookService = $webhookService;
         $this->paymentRepository = $paymentRepository;
+        $this->salesChannelRepository = $salesChannelRepository;
     }
 
     public function update(UpdateContext $updateContext): void
@@ -135,6 +146,13 @@ class Update
 
     private function updateTo200(Context $context): void
     {
+        $this->changePaymentHandlerIdentifier($context);
+        $this->migrateIntentSetting($context);
+        $this->migrateLandingPageSetting($context);
+    }
+
+    private function changePaymentHandlerIdentifier(Context $context): void
+    {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('handlerIdentifier', 'Swag\PayPal\Payment\PayPalPaymentHandler'));
 
@@ -173,5 +191,77 @@ class Update
         }
 
         $this->paymentRepository->upsert($data, $context);
+    }
+
+    private function migrateIntentSetting(Context $context): void
+    {
+        $salesChannelIds = $this->getSalesChannelIds($context);
+        $settingKey = SettingsService::SYSTEM_CONFIG_DOMAIN . 'intent';
+
+        foreach ($salesChannelIds as $salesChannelId) {
+            $intent = $this->getConfigValue($salesChannelId, $settingKey);
+            if ($intent === null) {
+                continue;
+            }
+
+            if (!\in_array($intent, PaymentIntentV1::INTENTS, true)) {
+                throw new \RuntimeException('Invalid value for "' . $settingKey . '" setting');
+            }
+
+            if ($intent === PaymentIntentV1::SALE) {
+                $this->systemConfig->set($settingKey, PaymentIntentV2::CAPTURE, $salesChannelId);
+
+                continue;
+            }
+
+            $this->systemConfig->set($settingKey, PaymentIntentV2::AUTHORIZE, $salesChannelId);
+        }
+    }
+
+    private function migrateLandingPageSetting(Context $context): void
+    {
+        $salesChannelIds = $this->getSalesChannelIds($context);
+        $settingKey = SettingsService::SYSTEM_CONFIG_DOMAIN . 'landingPage';
+
+        foreach ($salesChannelIds as $salesChannelId) {
+            $landingPage = $this->getConfigValue($salesChannelId, $settingKey);
+            if ($landingPage === null) {
+                continue;
+            }
+
+            if (!\in_array($landingPage, ApplicationContextV1::LANDING_PAGE_TYPES, true)) {
+                throw new \RuntimeException('Invalid value for "' . $settingKey . '" setting');
+            }
+
+            if ($landingPage === ApplicationContextV1::LANDING_PAGE_TYPE_LOGIN) {
+                $this->systemConfig->set($settingKey, ApplicationContextV2::LANDING_PAGE_TYPE_LOGIN, $salesChannelId);
+
+                continue;
+            }
+
+            $this->systemConfig->set($settingKey, ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, $salesChannelId);
+        }
+    }
+
+    private function getSalesChannelIds(Context $context): array
+    {
+        $salesChannelIds = $this->salesChannelRepository->searchIds(new Criteria(), $context)->getIds();
+        $salesChannelIds[] = null; // Global config for all sales channels
+
+        return $salesChannelIds;
+    }
+
+    private function getConfigValue(?string $salesChannelId, string $settingKey): ?string
+    {
+        $settings = $this->systemConfig->getDomain(SettingsService::SYSTEM_CONFIG_DOMAIN, $salesChannelId);
+        if ($settings === []) {
+            return null; // Config for this sales channel is inherited, so no need to update
+        }
+
+        if (!\array_key_exists($settingKey, $settings)) {
+            return null; // Sales channel specific config does not contain $settingKey
+        }
+
+        return $settings[$settingKey];
     }
 }

@@ -14,6 +14,11 @@ class ApplicationContext extends PayPalApiStruct
     public const LANDING_PAGE_TYPE_LOGIN = 'LOGIN';
     public const LANDING_PAGE_TYPE_BILLING = 'BILLING';
     public const LANDING_PAGE_TYPE_NO_PREFERENCE = 'NO_PREFERENCE';
+    public const LANDING_PAGE_TYPES = [
+        self::LANDING_PAGE_TYPE_LOGIN,
+        self::LANDING_PAGE_TYPE_BILLING,
+        self::LANDING_PAGE_TYPE_NO_PREFERENCE,
+    ];
 
     public const SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS = 'SET_PROVIDED_ADDRESS';
     public const SHIPPING_PREFERENCE_NO_SHIPPING = 'NO_SHIPPING';

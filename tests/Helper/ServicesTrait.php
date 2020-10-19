@@ -15,8 +15,9 @@ use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
-use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
+use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
+use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -76,12 +77,12 @@ trait ServicesTrait
 
         $settingsStruct->setClientId('TestClientId');
         $settingsStruct->setClientSecret('TestClientSecret');
-        $settingsStruct->setIntent(PaymentIntentV1::SALE);
+        $settingsStruct->setIntent(PaymentIntentV2::CAPTURE);
         $settingsStruct->setSubmitCart(false);
         $settingsStruct->setSendOrderNumber(true);
         $settingsStruct->setOrderNumberPrefix(OrderPaymentBuilderTest::TEST_ORDER_NUMBER_PREFIX);
         $settingsStruct->setBrandName('Test Brand');
-        $settingsStruct->setLandingPage('Login');
+        $settingsStruct->setLandingPage(ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE);
 
         return $settingsStruct;
     }

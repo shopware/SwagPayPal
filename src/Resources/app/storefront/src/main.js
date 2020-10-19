@@ -1,4 +1,4 @@
-// Import all necessary Storefront plugins and scss files
+// Import all necessary Storefront plugins
 import SwagPayPalExpressCheckoutButton from './express-checkout-button/swag-paypal.express-checkout';
 import SwagPayPalSmartPaymentButtons from './smart-payment-buttons/swag-paypal.smart-payment-buttons';
 import SwagPayPalMarks from './smart-payment-buttons/swag-paypal.marks';

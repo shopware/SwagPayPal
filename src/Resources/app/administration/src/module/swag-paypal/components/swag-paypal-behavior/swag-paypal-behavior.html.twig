@@ -38,15 +38,6 @@
                                               :value="props.currentValue"
                                               @change="props.updateCurrentValue">
                             </sw-single-select>
-
-                            {% block swag_paypal_content_card_channel_config_behavior_settings_intent_hint %}
-                            {% block swag_paypal_content_card_channel_config_behaviour_settings_intent_hint %}
-                                {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
-                                <p class="sw-paypal-behavior__intent-hint">
-                                    {{ $tc('swag-paypal.settingForm.behavior.intent.hint') }}
-                                </p>
-                            {% endblock %}
-                            {% endblock %}
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
@@ -101,6 +92,10 @@
                                               :value="props.currentValue"
                                               @change="props.updateCurrentValue">
                             </sw-single-select>
+
+                            {% block swag_paypal_content_card_channel_config_behaviour_settings_landing_page_hint %}
+                                <swag-paypal-settings-hint :hintText="landingPageHint"></swag-paypal-settings-hint>
+                            {% endblock %}
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}

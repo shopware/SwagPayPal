@@ -13,6 +13,10 @@ class ApplicationContext extends PayPalApiStruct
 {
     public const LANDING_PAGE_TYPE_LOGIN = 'Login';
     public const LANDING_PAGE_TYPE_BILLING = 'Billing';
+    public const LANDING_PAGE_TYPES = [
+        self::LANDING_PAGE_TYPE_LOGIN,
+        self::LANDING_PAGE_TYPE_BILLING,
+    ];
 
     public const USER_ACTION_TYPE_COMMIT = 'commit';
     public const USER_ACTION_TYPE_CONTINUE = 'continue';

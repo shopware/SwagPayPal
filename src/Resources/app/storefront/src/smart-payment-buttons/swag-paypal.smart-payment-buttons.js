@@ -36,18 +36,25 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         languageIso: 'en_GB',
 
         /**
-         * This option specifies the currency of the cart
+         * This option holds the client id specified in the settings
+         *
+         * @type string
+         */
+        clientId: '',
+
+        /**
+         * This options specifies the currency of the PayPal button
          *
          * @type string
          */
         currency: 'EUR',
 
         /**
-         * This option holds the client id specified in the settings
+         * This options defines the payment intent
          *
          * @type string
          */
-        clientId: '',
+        intent: 'capture',
 
         /**
          * This option toggles the PayNow/Login text at PayPal

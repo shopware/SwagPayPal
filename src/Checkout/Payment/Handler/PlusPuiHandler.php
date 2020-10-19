@@ -139,7 +139,6 @@ class PlusPuiHandler
         CustomerEntity $customer
     ): Payment {
         $payment = $this->paymentBuilder->getPayment($transaction, $salesChannelContext);
-        $payment->setIntent(PaymentIntentV1::SALE);
         $payment->getPayer()->setExternalSelectedFundingInstrumentType(PaymentInstruction::TYPE_INVOICE);
         $payment->getApplicationContext()->setLocale('de_DE');
 

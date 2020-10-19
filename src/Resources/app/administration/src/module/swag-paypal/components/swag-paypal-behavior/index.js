@@ -1,6 +1,5 @@
 import template from './swag-paypal-behavior.html.twig';
 import constants from './../../page/swag-paypal/swag-paypal-consts';
-import './swag-paypal-behavior.scss';
 
 const { Component } = Shopware;
 
@@ -35,19 +34,16 @@ Component.register('swag-paypal-behavior', {
         intentOptions() {
             return [
                 {
-                    id: 'sale',
-                    name: this.$tc('swag-paypal.settingForm.behavior.intent.sale')
+                    id: 'CAPTURE',
+                    name: this.$tc('swag-paypal.settingForm.behavior.intent.CAPTURE')
                 },
                 {
-                    id: 'authorize',
-                    name: this.$tc('swag-paypal.settingForm.behavior.intent.authorize')
-                },
-                {
-                    id: 'order',
-                    name: this.$tc('swag-paypal.settingForm.behavior.intent.order')
+                    id: 'AUTHORIZE',
+                    name: this.$tc('swag-paypal.settingForm.behavior.intent.AUTHORIZE')
                 }
             ];
         },
+
         merchantLocationOptions() {
             return [
                 {
@@ -60,17 +56,28 @@ Component.register('swag-paypal-behavior', {
                 }
             ];
         },
+
         landingPageOptions() {
             return [
                 {
-                    id: 'Login',
-                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.Login')
+                    id: 'LOGIN',
+                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.login')
                 },
                 {
-                    id: 'Billing',
-                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.Billing')
+                    id: 'BILLING',
+                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.billing')
+                },
+                {
+                    id: 'NO_PREFERENCE',
+                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.no_preference')
                 }
             ];
+        },
+
+        landingPageHint() {
+            const landingPageOption = this.actualConfigData['SwagPayPal.settings.landingPage'].toLowerCase();
+            const translationKey = `swag-paypal.settingForm.behaviour.landingPage.helpText.${landingPageOption}`;
+            return this.$tc(translationKey);
         }
     },
 

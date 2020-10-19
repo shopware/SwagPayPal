@@ -52,18 +52,25 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         languageIso: 'en_GB',
 
         /**
-         * This option specifies if the PayPal button appears on the checkout/register page
-         *
-         * @type boolean
-         */
-        loginEnabled: false,
-
-        /**
          * This option holds the client id specified in the settings
          *
          * @type string
          */
         clientId: '',
+
+        /**
+         * This options specifies the currency of the PayPal button
+         *
+         * @type string
+         */
+        currency: 'EUR',
+
+        /**
+         * This options defines the payment intent
+         *
+         * @type string
+         */
+        intent: 'capture',
 
         /**
          * This option toggles the PayNow/Login text at PayPal

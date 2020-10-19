@@ -13,7 +13,6 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
-use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
@@ -53,20 +52,6 @@ class OrderPaymentBuilderTest extends TestCase
 
         static::assertArrayHasKey('invoice_number', $transactionArray);
         static::assertSame(self::TEST_ORDER_NUMBER, $transactionArray['invoice_number']);
-    }
-
-    public function testGetPaymentInvalidIntentThrowsException(): void
-    {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setIntent('invalid');
-        $paymentBuilder = $this->createPaymentBuilder($settings);
-
-        $paymentTransaction = $this->createPaymentTransactionStruct();
-        $salesChannelContext = Generator::createSalesChannelContext();
-
-        $this->expectException(PayPalSettingsInvalidException::class);
-        $this->expectExceptionMessage('Required setting "intent" is missing or invalid');
-        $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
     }
 
     public function testGetPaymentWithoutBrandName(): void

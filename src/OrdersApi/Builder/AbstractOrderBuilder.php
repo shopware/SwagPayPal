@@ -52,12 +52,15 @@ abstract class AbstractOrderBuilder
         $this->amountProvider = $amountProvider;
     }
 
-    protected function getIntent(): string
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
+    protected function getIntent(SwagPayPalSettingStruct $settings): string
     {
-        // TODO PPI-144 - Get intent from settings
-        // $intent = $this->settings->getIntentV2();
-        $intent = PaymentIntentV2::CAPTURE;
-        $this->validateIntent($intent);
+        $intent = $settings->getIntent();
+        if (!\in_array($intent, PaymentIntentV2::INTENTS, true)) {
+            throw new PayPalSettingsInvalidException('intent');
+        }
 
         return $intent;
     }
@@ -113,16 +116,6 @@ abstract class AbstractOrderBuilder
         return $shipping;
     }
 
-    /**
-     * @throws PayPalSettingsInvalidException
-     */
-    private function validateIntent(string $intent): void
-    {
-        if (!\in_array($intent, PaymentIntentV2::INTENTS, true)) {
-            throw new PayPalSettingsInvalidException('intentV2');
-        }
-    }
-
     private function getBrandName(SalesChannelContext $salesChannelContext, SwagPayPalSettingStruct $settings): string
     {
         $brandName = $settings->getBrandName();
@@ -134,12 +127,14 @@ abstract class AbstractOrderBuilder
         return $brandName;
     }
 
+    /**
+     * @throws PayPalSettingsInvalidException
+     */
     private function getLandingPageType(SwagPayPalSettingStruct $settings): string
     {
-        // TODO PPI-144 - Add no preference
-        $landingPageType = \strtoupper($settings->getLandingPage());
-        if ($landingPageType !== ApplicationContext::LANDING_PAGE_TYPE_BILLING) {
-            $landingPageType = ApplicationContext::LANDING_PAGE_TYPE_LOGIN;
+        $landingPageType = $settings->getLandingPage();
+        if (!\in_array($landingPageType, ApplicationContext::LANDING_PAGE_TYPES, true)) {
+            throw new PayPalSettingsInvalidException('landingPage');
         }
 
         return $landingPageType;

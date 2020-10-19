@@ -21,7 +21,6 @@ use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilderInterface;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilderInterface;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\Payment;
-use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -146,8 +145,6 @@ class PlusDataService
         CustomerEntity $customer,
         bool $useSandbox
     ): ?PlusData {
-        $payment->setIntent(PaymentIntentV1::SALE);
-
         try {
             $response = $this->paymentResource->create(
                 $payment,

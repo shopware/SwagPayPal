@@ -21,9 +21,6 @@ Component.register('swag-paypal-payment-detail', {
             order: {},
             orderTransaction: {},
             paypalOrder: {},
-            /**
-             * @deprecated tag:v3.0.0 - Will be removed. Only used for old orders done with "Payments-v1"-API
-             */
             paymentResource: {},
             isLoading: true,
             orderTransactionState: null,
@@ -115,9 +112,6 @@ Component.register('swag-paypal-payment-detail', {
             }).catch(this.handleError);
         },
 
-        /**
-         * @deprecated tag:v3.0.0 - Will be removed. Only used for old orders done with "Payments-v1"-API
-         */
         handlePayPalPayment(paypalPaymentId) {
             this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId).then((payment) => {
                 this.paymentResource = payment;

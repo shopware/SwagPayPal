@@ -157,11 +157,18 @@ class SwagPayPal extends Plugin
         $customFieldRepository = $this->container->get(\sprintf('%s.repository', (new CustomFieldDefinition())->getEntityName()));
         /** @var EntityRepositoryInterface $paymentRepository */
         $paymentRepository = $this->container->get('payment_method.repository');
-
         /** @var WebhookService|null $webhookService */
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        /** @var EntityRepositoryInterface $salesChannelRepository */
+        $salesChannelRepository = $this->container->get('sales_channel.repository');
 
-        (new Update($systemConfigService, $paymentRepository, $customFieldRepository, $webhookService))->update($updateContext);
+        (new Update(
+            $systemConfigService,
+            $paymentRepository,
+            $customFieldRepository,
+            $webhookService,
+            $salesChannelRepository
+        ))->update($updateContext);
 
         $this->addCustomPrivileges();
 

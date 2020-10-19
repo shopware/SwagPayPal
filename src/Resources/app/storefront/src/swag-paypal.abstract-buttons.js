@@ -70,7 +70,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             config += `&currency=${this.options.currency}`;
         }
 
-        if (this.options.intent && this.options.intent !== 'sale') {
+        if (this.options.intent) {
             config += `&intent=${this.options.intent}`;
         }
 

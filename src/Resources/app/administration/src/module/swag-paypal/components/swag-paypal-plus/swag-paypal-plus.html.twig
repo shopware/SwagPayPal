@@ -22,6 +22,11 @@
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
+
+                            {% block swag_paypal_content_card_channel_config_behaviour_settings_intent_hint %}
+                                <swag-paypal-settings-hint :hintText="$tc('swag-paypal.settingForm.plus.hint')">
+                                </swag-paypal-settings-hint>
+                            {% endblock %}
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}

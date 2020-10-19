@@ -2,9 +2,6 @@ import template from './swag-paypal-payment-details-v1.html.twig';
 
 const { Component, Filter } = Shopware;
 
-/**
- * @deprecated tag:v3.0.0 - Will be removed. Only used for old orders done with "Payments-v1"-API
- */
 Component.register('swag-paypal-payment-details-v1', {
     template,
 

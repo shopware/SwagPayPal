@@ -8,13 +8,6 @@
 namespace Swag\PayPal\Test\Checkout\SPBCheckout;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
-use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
-use Shopware\Core\Checkout\Cart\Transaction\Struct\Transaction;
-use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
@@ -34,8 +27,9 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber;
-use Swag\PayPal\RestApi\V1\PaymentIntentV1;
+use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
@@ -50,6 +44,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SPBCheckoutSubscriberTest extends TestCase
 {
+    use CartTrait;
     use DatabaseTransactionBehaviour;
     use KernelTestBehaviour;
     use PaymentMethodTrait;
@@ -190,7 +185,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('en_GB', $spbExtension->getLanguageIso());
         static::assertSame($this->paypalPaymentMethodId, $spbExtension->getPaymentMethodId());
-        static::assertSame(PaymentIntentV1::SALE, $spbExtension->getIntent());
+        static::assertSame(\strtolower(PaymentIntentV2::CAPTURE), $spbExtension->getIntent());
         static::assertSame('gold', $spbExtension->getButtonColor());
         static::assertSame('rect', $spbExtension->getButtonShape());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
@@ -199,16 +194,9 @@ class SPBCheckoutSubscriberTest extends TestCase
 
     public function testOnCheckoutConfirmLoadedSPBWithDisabledAPM(): void
     {
-        $subscriber = $this->createSubscriber(true, true);
+        $subscriber = $this->createSubscriber();
         $event = $this->createConfirmPageLoadedEvent();
-        $event->getPage()->getCart()->setPrice(new CartPrice(
-            0.1,
-            0.12,
-            0.1,
-            new CalculatedTaxCollection(),
-            new TaxRuleCollection(),
-            CartPrice::TAX_STATE_GROSS
-        ));
+        $event->getPage()->getCart()->setPrice($this->createCartPrice(0.1, 0.12, 0.1));
         $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
@@ -324,26 +312,7 @@ class SPBCheckoutSubscriberTest extends TestCase
             new ShippingMethodCollection([])
         );
 
-        $cart = new Cart('test', 'token');
-        $transaction = new Transaction(
-            new CalculatedPrice(
-                10.9,
-                10.9,
-                new CalculatedTaxCollection(),
-                new TaxRuleCollection()
-            ),
-            $this->paypalPaymentMethodId
-        );
-        $cart->setTransactions(new TransactionCollection([$transaction]));
-        $cart->setPrice(new CartPrice(
-            9.0,
-            10.9,
-            9.0,
-            new CalculatedTaxCollection(),
-            new TaxRuleCollection(),
-            CartPrice::TAX_STATE_GROSS
-        ));
-        $page->setCart($cart);
+        $page->setCart($this->createCart($this->paypalPaymentMethodId));
 
         return new CheckoutConfirmPageLoadedEvent(
             $page,
@@ -388,7 +357,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('de_DE', $spbExtension->getLanguageIso());
         static::assertSame($this->paypalPaymentMethodId, $spbExtension->getPaymentMethodId());
-        static::assertSame(PaymentIntentV1::SALE, $spbExtension->getIntent());
+        static::assertSame(\strtolower(PaymentIntentV2::CAPTURE), $spbExtension->getIntent());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
         static::assertSame(
             \sprintf('/sales-channel-api/v%s/_action/paypal/spb/create-payment', PlatformRequest::API_VERSION),

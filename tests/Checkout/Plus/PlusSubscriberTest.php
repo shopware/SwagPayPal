@@ -8,12 +8,6 @@
 namespace Swag\PayPal\Test\Checkout\Plus;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
-use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
-use Shopware\Core\Checkout\Cart\Transaction\Struct\Transaction;
-use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -45,6 +39,7 @@ use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
 use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
@@ -62,6 +57,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PlusSubscriberTest extends TestCase
 {
+    use CartTrait;
     use DatabaseTransactionBehaviour;
     use PaymentMethodTrait;
     use PaymentTransactionTrait;
@@ -424,18 +420,7 @@ class PlusSubscriberTest extends TestCase
             new ShippingMethodCollection([])
         );
 
-        $cart = new Cart('test', 'token');
-        $transaction = new Transaction(
-            new CalculatedPrice(
-                10.9,
-                10.9,
-                new CalculatedTaxCollection(),
-                new TaxRuleCollection()
-            ),
-            $this->paypalPaymentMethodId
-        );
-        $cart->setTransactions(new TransactionCollection([$transaction]));
-        $page->setCart($cart);
+        $page->setCart($this->createCart($this->paypalPaymentMethodId));
 
         $request = $this->createRequest($salesChannelContext->getContext());
 
