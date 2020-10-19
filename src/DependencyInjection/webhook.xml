@@ -11,7 +11,7 @@
             <argument type="service" id="system_config.repository"/>
         </service>
 
-        <service id="Swag\PayPal\Webhook\WebhookService">
+        <service id="Swag\PayPal\Webhook\WebhookService" public="true">
             <argument type="service" id="Swag\PayPal\PayPal\Resource\WebhookResource"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookRegistry"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
