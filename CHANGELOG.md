@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEW_VERSION
 - PPI-67 - Reimplemented activation of webhooks
 - PPI-114 - Minor onboarding process improvements
+- PPI-158 - Fixes error during update to versions 1.7.0 or higher, if no configuration is available
 
 # 1.9.2
 - PPI-149 - Fixes error during communication with iZettle

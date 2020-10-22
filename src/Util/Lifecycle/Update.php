@@ -13,6 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Webhook\WebhookService;
@@ -95,7 +96,11 @@ class Update
             return;
         }
 
-        $this->webhookService->registerWebhook(null);
+        try {
+            $this->webhookService->registerWebhook(null);
+        } catch (PayPalSettingsInvalidException $exception) {
+            // do nothing, if the plugin is not correctly configured
+        }
     }
 
     private function updateTo172(Context $context): void

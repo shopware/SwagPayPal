@@ -17,11 +17,16 @@ use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
+use Swag\PayPal\PayPal\Resource\WebhookResource;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
+use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Test\Mock\RouterMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\Lifecycle\Update;
+use Swag\PayPal\Webhook\WebhookService;
 
 class UpdateTest extends TestCase
 {
@@ -91,7 +96,29 @@ class UpdateTest extends TestCase
         static::assertSame(self::OTHER_CLIENT_SECRET, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'));
     }
 
-    public function testUpdateTo180(): void
+    public function testUpdateTo170(): void
+    {
+        $systemConfigService = $this->createSystemConfigServiceMock([
+            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox' => self::OTHER_CLIENT_ID,
+            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox' => self::OTHER_CLIENT_SECRET,
+            SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => true,
+        ]);
+        $updateContext = $this->createUpdateContext('1.6.9', '1.7.0');
+        $update = $this->createUpdateService($systemConfigService, $this->createWebhookService($systemConfigService));
+        $update->update($updateContext);
+        static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'webhookId'));
+    }
+
+    public function testUpdateTo170WithMissingSettings(): void
+    {
+        $systemConfigService = $this->createSystemConfigServiceMock();
+        $updateContext = $this->createUpdateContext('1.6.9', '1.7.0');
+        $update = $this->createUpdateService($systemConfigService, $this->createWebhookService($systemConfigService));
+        $update->update($updateContext);
+        static::assertNull($systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'webhookId'));
+    }
+
+    public function testUpdateTo172(): void
     {
         $context = Context::createDefaultContext();
 
@@ -142,11 +169,23 @@ class UpdateTest extends TestCase
         );
     }
 
-    private function createUpdateService(SystemConfigServiceMock $systemConfigService): Update
+    private function createUpdateService(SystemConfigServiceMock $systemConfigService, ?WebhookService $webhookService = null): Update
     {
         /** @var EntityRepositoryInterface $customFieldRepository */
         $customFieldRepository = $this->getContainer()->get((new CustomFieldDefinition())->getEntityName() . '.repository');
 
-        return new Update($systemConfigService, $customFieldRepository, null);
+        return new Update($systemConfigService, $customFieldRepository, $webhookService);
+    }
+
+    private function createWebhookService(SystemConfigServiceMock $systemConfigService): WebhookService
+    {
+        $settingsService = new SettingsService($systemConfigService);
+
+        return new WebhookService(
+            new WebhookResource($this->createPayPalClientFactoryWithService($settingsService)),
+            $this->createWebhookRegistry(new OrderTransactionRepoMock()),
+            $settingsService,
+            new RouterMock()
+        );
     }
 }
