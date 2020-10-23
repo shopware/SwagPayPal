@@ -7,6 +7,21 @@ let loadingScript = false;
 let scriptLoaded = false;
 const callbacks = [];
 
+const availableAPMs = [
+    'card',
+    'credit',
+    'bancontact',
+    'blik',
+    'eps',
+    'giropay',
+    'ideal',
+    'mybank',
+    'p24',
+    'sepa',
+    'sofort',
+    'venmo'
+];
+
 export default class SwagPaypalAbstractButtons extends Plugin {
     createScript(callback) {
         callbacks.push(callback);
@@ -41,7 +56,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
      * @return {string}
      */
     getScriptUrlOptions() {
-        let config = '';
+        let config = '&components=marks,buttons,messages';
 
         if (typeof this.options.commit !== 'undefined') {
             config += `&commit=${this.options.commit}`;
@@ -60,10 +75,12 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         }
 
         if (this.options.useAlternativePaymentMethods !== undefined && !this.options.useAlternativePaymentMethods) {
-            config += '&disable-funding=credit,card,sepa,bancontact,eps,giropay,ideal,mybank,sofort';
+            config += `&disable-funding=${availableAPMs.join(',')}`;
+        } else if (this.options.disabledAlternativePaymentMethods !== undefined
+                && this.options.disabledAlternativePaymentMethods.length > 0
+        ) {
+            config += `&disable-funding=${this.options.disabledAlternativePaymentMethods.join(',')}`;
         }
-
-        config += '&components=marks,buttons,messages';
 
         return config;
     }
@@ -75,7 +92,10 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         }
 
         const addErrorUrl = this.options.addErrorUrl;
-        if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && (typeof addErrorUrl === 'undefined' || addErrorUrl === null)) {
+        if (process.env.NODE_ENV !== 'production'
+            && typeof console !== 'undefined'
+            && (typeof addErrorUrl === 'undefined' || addErrorUrl === null)
+        ) {
             console.error('No "addErrorUrl" defined in child plugin class');
             return;
         }
@@ -85,7 +105,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         };
 
         this._client.post(addErrorUrl, JSON.stringify(requestPayload), () => {
-            window.onbeforeunload = function () {
+            window.onbeforeunload = () => {
                 window.scrollTo(0, 0);
             };
             window.location.reload();

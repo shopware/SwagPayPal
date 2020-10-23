@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Checkout\SPBCheckout;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Cart\Transaction\Struct\Transaction;
@@ -195,6 +196,29 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame('gold', $spbExtension->getButtonColor());
         static::assertSame('rect', $spbExtension->getButtonShape());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
+        static::assertNotContains('sofort', $spbExtension->getDisabledAlternativePaymentMethods());
+    }
+
+    public function testOnCheckoutConfirmLoadedSPBWithDisabledAPM(): void
+    {
+        $subscriber = $this->createSubscriber(true, true);
+        $event = $this->createConfirmPageLoadedEvent();
+        $event->getPage()->getCart()->setPrice(new CartPrice(
+            0.1,
+            0.12,
+            0.1,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection(),
+            CartPrice::TAX_STATE_GROSS
+        ));
+        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $subscriber->onCheckoutConfirmLoaded($event);
+
+        /** @var SPBCheckoutButtonData|null $spbExtension */
+        $spbExtension = $event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID);
+
+        static::assertNotNull($spbExtension);
+        static::assertContains('sofort', $spbExtension->getDisabledAlternativePaymentMethods());
     }
 
     public function testAddNecessaryRequestParameter(): void
@@ -317,6 +341,14 @@ class SPBCheckoutSubscriberTest extends TestCase
             $this->paypalPaymentMethodId
         );
         $cart->setTransactions(new TransactionCollection([$transaction]));
+        $cart->setPrice(new CartPrice(
+            9.0,
+            10.9,
+            9.0,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection(),
+            CartPrice::TAX_STATE_GROSS
+        ));
         $page->setCart($cart);
 
         return new CheckoutConfirmPageLoadedEvent(

@@ -127,19 +127,18 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         this._client = new StoreApiClient();
         this._storeApiClient = new StoreApiClient();
         this._httpClient = new HttpClient();
-        this.paypal = null;
         this.createButton();
     }
 
     createButton() {
         this.createScript(() => {
-            this.paypal = window.paypal;
-            this.renderButton();
+            const paypal = window.paypal;
+            this.renderButton(paypal);
         });
     }
 
-    renderButton() {
-        return this.paypal.Buttons(this.getButtonConfig()).render(this.el);
+    renderButton(paypal) {
+        return paypal.Buttons(this.getButtonConfig()).render(this.el);
     }
 
     getBuyButtonState() {
@@ -273,7 +272,10 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
     addProductToCart() {
         const buyButton = DomAccess.querySelector(this.el.closest('form'), this.options.buyButtonSelector);
-        const plugin = window.PluginManager.getPluginInstanceFromElement(DomAccess.querySelector(document, '[data-add-to-cart]'), 'AddToCart');
+        const plugin = window.PluginManager.getPluginInstanceFromElement(
+            DomAccess.querySelector(document, '[data-add-to-cart]'),
+            'AddToCart'
+        );
 
         return new Promise(resolve => {
             this._storeApiClient.get(this.options.createNewCartUrl, () => {

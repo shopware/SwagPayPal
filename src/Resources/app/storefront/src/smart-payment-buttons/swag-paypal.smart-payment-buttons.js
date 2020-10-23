@@ -36,6 +36,13 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         languageIso: 'en_GB',
 
         /**
+         * This option specifies the currency of the cart
+         *
+         * @type string
+         */
+        currency: 'EUR',
+
+        /**
          * This option holds the client id specified in the settings
          *
          * @type string
@@ -55,6 +62,13 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          * @type boolean
          */
         useAlternativePaymentMethods: true,
+
+        /**
+         * This option specifies if selected APMs should be hidden
+         *
+         * @type string[]
+         */
+        disabledAlternativePaymentMethods: [],
 
         /**
          * URL to create a new PayPal payment
@@ -114,7 +128,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     };
 
     init() {
-        this.paypal = null;
         this._client = new StoreApiClient();
 
         this.createButton();
@@ -122,17 +135,17 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
 
     createButton() {
         this.createScript(() => {
-            this.paypal = window.paypal;
-            this.renderButton();
+            const paypal = window.paypal;
+            this.renderButton(paypal);
         });
     }
 
-    renderButton() {
+    renderButton(paypal) {
         this.confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
 
         DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
 
-        return this.paypal.Buttons(this.getButtonConfig()).render(this.el);
+        return paypal.Buttons(this.getButtonConfig()).render(this.el);
     }
 
     getButtonConfig() {

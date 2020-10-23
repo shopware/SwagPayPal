@@ -52,6 +52,11 @@ class SPBCheckoutButtonData extends Struct
     protected $useAlternativePaymentMethods;
 
     /**
+     * @var string[]
+     */
+    protected $disabledAlternativePaymentMethods;
+
+    /**
      * @var string
      */
     protected $createPaymentUrl;
@@ -121,6 +126,22 @@ class SPBCheckoutButtonData extends Struct
     public function getUseAlternativePaymentMethods(): bool
     {
         return $this->useAlternativePaymentMethods;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDisabledAlternativePaymentMethods(): array
+    {
+        return $this->disabledAlternativePaymentMethods;
+    }
+
+    /**
+     * @param string[] $disabledAlternativePaymentMethods
+     */
+    public function setDisabledAlternativePaymentMethods(array $disabledAlternativePaymentMethods): void
+    {
+        $this->disabledAlternativePaymentMethods = $disabledAlternativePaymentMethods;
     }
 
     public function getCreatePaymentUrl(): string
