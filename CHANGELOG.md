@@ -2,6 +2,7 @@
 - PPI-67 - Reimplemented activation of webhooks
 - PPI-110 - Added restrictions set by PayPal for Alternative Payment Methods
 - PPI-114 - Minor onboarding process improvements
+- PPI-145 - Minor adjustments to settings page
 - PPI-158 - Fixes error during update to versions 1.7.0 or higher, if no configuration is available
 
 # 1.9.2

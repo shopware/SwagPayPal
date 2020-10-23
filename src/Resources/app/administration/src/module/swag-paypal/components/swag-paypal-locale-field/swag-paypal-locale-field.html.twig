@@ -1,8 +1,12 @@
 {% block sw_text_field %}
+    {% block swag_paypal_locale_field %}
     {% block sw_paypal_locale_field %}
-        <div class="sw-paypal-locale-field">
+        {# @deprecated tag:v2.0.0 - Use outer swag-block instead #}
+        <div class="swag-paypal-locale-field">
 
+            {% block swag_paypal_locale_field_contextual_field %}
             {% block sw_paypal_locale_field_contextual_field %}
+                {# @deprecated tag:v2.0.0 - Use outer swag-block instead #}
                 <sw-contextual-field class="sw-field--text"
                                      v-bind="$attrs"
                                      :name="formFieldName"
@@ -25,30 +29,44 @@
                     </template>
                 </sw-contextual-field>
             {% endblock %}
+            {% endblock %}
 
+            {% block swag_paypal_locale_field_information %}
             {% block sw_paypal_locale_field_information %}
-                <p class="sw-paypal-locale-field__text">
+                {# @deprecated tag:v2.0.0 - Use outer swag-block instead #}
+                <p class="swag-paypal-locale-field__text">
 
+                    {% block swag_paypal_locale_field_information_text %}
                     {% block sw_paypal_locale_field_information_text %}
+                        {# @deprecated tag:v2.0.0 - Use outer swag-block instead #}
                         {{ $tc('swag-paypal.settingForm.locale-field.infobox.text') }}
                     {% endblock %}
+                    {% endblock %}
 
+                    {% block swag_paypal_locale_field_information_href %}
                     {% block sw_paypal_locale_field_information_href %}
-                        <a class="sw-paypal-locale-field__text-href"
+                        {# @deprecated tag:v2.0.0 - Use outer swag-block instead #}
+                        <a class="swag-paypal-locale-field__text-href"
                            href="https://developer.paypal.com/docs/api/reference/locale-codes/"
                            target="_blank">
                             {{ $tc('swag-paypal.settingForm.locale-field.infobox.href') }}
                         </a>
                     {% endblock %}
+                    {% endblock %}
 
+                    {% block swag_paypal_locale_field_information_icon %}
                     {% block sw_paypal_locale_field_information_icon %}
-                        <sw-icon class="sw-paypal-locale-field__text-icon"
+                        {# @deprecated tag:v2.0.0 - Use outer swag-block instead #}
+                        <sw-icon class="swag-paypal-locale-field__text-icon"
                                  name="default-action-external"
                                  size="7.5">
                         </sw-icon>
                     {% endblock %}
+                    {% endblock %}
                 </p>
             {% endblock %}
+            {% endblock %}
         </div>
+    {% endblock %}
     {% endblock %}
 {% endblock %}
