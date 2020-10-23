@@ -1,37 +1,7 @@
-import template from './swag-paypal-installment.html.twig';
-
 const { Component } = Shopware;
 
-Component.register('sw-paypal-installment', {
-    template,
-
-    name: 'SwagPaypalInstallment',
-
-    props: {
-        actualConfigData: {
-            type: Object,
-            required: true
-        },
-        allConfigs: {
-            type: Object,
-            required: true
-        },
-        selectedSalesChannelId: {
-            required: true
-        }
-    },
-
-    methods: {
-        checkTextFieldInheritance(value) {
-            if (typeof value !== 'string') {
-                return true;
-            }
-
-            return value.length <= 0;
-        },
-
-        checkBoolFieldInheritance(value) {
-            return typeof value !== 'boolean';
-        }
-    }
+/**
+ * @deprecated tag:v2.0.0 - Component will be removed - use swag-paypal-installment instead
+ */
+Component.extend('sw-paypal-installment', 'swag-paypal-installment', {
 });

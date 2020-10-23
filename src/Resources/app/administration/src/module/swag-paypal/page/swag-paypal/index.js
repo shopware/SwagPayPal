@@ -2,11 +2,11 @@ import template from './swag-paypal.html.twig';
 import './swag-paypal.scss';
 import constants from './swag-paypal-consts';
 
-const { Mixin, Defaults } = Shopware;
+const { Component, Defaults } = Shopware;
 const { Criteria } = Shopware.Data;
 const { hasOwnProperty } = Shopware.Utils.object;
 
-Shopware.Component.register('swag-paypal', {
+Component.register('swag-paypal', {
     template,
 
     inject: [
@@ -17,7 +17,7 @@ Shopware.Component.register('swag-paypal', {
     ],
 
     mixins: [
-        Mixin.getByName('notification')
+        'notification'
     ],
 
     data() {

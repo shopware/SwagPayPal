@@ -1,6 +1,13 @@
 import './page/swag-paypal';
 import './extension/sw-plugin';
-import './extension/sw-settings-index';
+import './components/swag-paypal-behaviour';
+import './components/swag-paypal-credentials';
+import './components/swag-paypal-express';
+import './components/swag-paypal-installment';
+import './components/swag-paypal-plus';
+import './components/swag-paypal-settings-icon';
+import './components/swag-paypal-spb';
+import './components/swag-paypal-locale-field';
 import './components/sw-paypal-behaviour';
 import './components/sw-paypal-credentials';
 import './components/sw-paypal-express';
@@ -37,5 +44,13 @@ Module.register('swag-paypal', {
                 parentPath: 'sw.settings.index'
             }
         }
+    },
+
+    settingsItem: {
+        // TODO PPI-159 - Add privilege
+        group: 'plugins',
+        to: 'swag.paypal.index',
+        iconComponent: 'swag-paypal-settings-icon',
+        backgroundEnabled: true
     }
 });
