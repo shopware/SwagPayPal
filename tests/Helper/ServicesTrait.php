@@ -32,6 +32,7 @@ use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
+use Swag\PayPal\Test\Payment\Builder\OrderPaymentBuilderTest;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Webhook\WebhookRegistry;
 
@@ -77,6 +78,7 @@ trait ServicesTrait
         $settingsStruct->setIntent(PaymentIntent::SALE);
         $settingsStruct->setSubmitCart(false);
         $settingsStruct->setSendOrderNumber(true);
+        $settingsStruct->setOrderNumberPrefix(OrderPaymentBuilderTest::TEST_ORDER_NUMBER_PREFIX);
         $settingsStruct->setBrandName('Test Brand');
         $settingsStruct->setLandingPage('Login');
 

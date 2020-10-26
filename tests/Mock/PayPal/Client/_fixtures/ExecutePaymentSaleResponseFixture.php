@@ -9,6 +9,21 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures;
 
 class ExecutePaymentSaleResponseFixture
 {
+    /**
+     * @var bool
+     */
+    private static $duplicateTransaction = false;
+
+    public static function setDuplicateTransaction(bool $duplicateTransaction): void
+    {
+        self::$duplicateTransaction = $duplicateTransaction;
+    }
+
+    public static function isDuplicateTransaction(): bool
+    {
+        return self::$duplicateTransaction;
+    }
+
     public static function get(): array
     {
         return [

@@ -212,7 +212,7 @@ class GuzzleClientMock extends Client
         if (\strncmp($resourceUri, RequestUri::PAYMENT_RESOURCE, 16) === 0) {
             $dataJson = $this->ensureValidJson($data);
             $dataArray = \json_decode($dataJson, true);
-            if (isset($dataArray['transactions'][0]['invoice_number']) && $dataArray['transactions'][0]['invoice_number'] === ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION) {
+            if (isset($dataArray['transactions'][0]['invoice_number']) && $dataArray['transactions'][0]['invoice_number'] === ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION_WITH_PREFIX) {
                 throw new \RuntimeException('A PayPal test error occurred.');
             }
 
@@ -277,6 +277,12 @@ class GuzzleClientMock extends Client
 
         if ($payerInfo->getPayerId() === ConstantsForTesting::PAYER_ID_PAYMENT_PUI) {
             return ExecutePuiResponseFixture::get();
+        }
+
+        if (ExecutePaymentSaleResponseFixture::isDuplicateTransaction()) {
+            ExecutePaymentSaleResponseFixture::setDuplicateTransaction(false);
+
+            throw $this->createClientExceptionDuplicateTransaction();
         }
 
         $response = ExecutePaymentSaleResponseFixture::get();
@@ -349,6 +355,13 @@ class GuzzleClientMock extends Client
         $jsonString = (string) \json_encode(['name' => 'TEST', 'message' => self::GENERAL_CLIENT_EXCEPTION_MESSAGE]);
 
         return $this->createClientExceptionFromResponseString($jsonString, $errorCode);
+    }
+
+    private function createClientExceptionDuplicateTransaction(): ClientException
+    {
+        $jsonString = $this->ensureValidJson(['name' => 'DUPLICATE_TRANSACTION', 'message' => 'Duplicate invoice Id detected.']);
+
+        return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_BAD_REQUEST);
     }
 
     private function createClientExceptionWithInvalidId(): ClientException

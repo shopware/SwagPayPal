@@ -27,7 +27,9 @@ class OrderPaymentBuilderTest extends TestCase
     use PaymentTransactionTrait;
     use ServicesTrait;
 
-    public const TEST_ORDER_NUMBER = 'SW1234';
+    public const TEST_ORDER_NUMBER = 'TEST_12345';
+    public const TEST_ORDER_NUMBER_WITHOUT_PREFIX = '12345';
+    public const TEST_ORDER_NUMBER_PREFIX = 'TEST_';
     public const TEST_ORDER_ID = 'test-order-id';
     public const EXPECTED_ITEM_NAME = 'Aerodynamic Paper Ginger Vitro';
     public const EXPECTED_PRODUCT_NUMBER = '0716562764cd43389abe16faad1838b8';
@@ -197,11 +199,8 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithOrderNumber(): void
     {
-        $orderNumberPrefix = 'TEST_';
-
         $settings = $this->createDefaultSettingStruct();
         $settings->setSendOrderNumber(true);
-        $settings->setOrderNumberPrefix($orderNumberPrefix);
 
         $paymentBuilder = $this->createPaymentBuilder($settings);
 
@@ -215,7 +214,7 @@ class OrderPaymentBuilderTest extends TestCase
         $payment = \json_decode($payment, true);
 
         static::assertSame(
-            $orderNumberPrefix . self::TEST_ORDER_NUMBER,
+            self::TEST_ORDER_NUMBER,
             $payment['transactions'][0]['invoice_number']
         );
     }
@@ -224,6 +223,7 @@ class OrderPaymentBuilderTest extends TestCase
     {
         $settings = $this->createDefaultSettingStruct();
         $settings->setSendOrderNumber(true);
+        $settings->setOrderNumberPrefix('');
 
         $paymentBuilder = $this->createPaymentBuilder($settings);
 
@@ -236,7 +236,7 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = \json_decode($payment, true);
 
-        static::assertSame(self::TEST_ORDER_NUMBER, $payment['transactions'][0]['invoice_number']);
+        static::assertSame(self::TEST_ORDER_NUMBER_WITHOUT_PREFIX, $payment['transactions'][0]['invoice_number']);
     }
 
     private function createContextWithoutSalesChannel(): Context

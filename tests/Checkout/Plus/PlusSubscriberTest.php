@@ -164,7 +164,7 @@ class PlusSubscriberTest extends TestCase
     public function testOnAccountEditOrderLoadedCreatePaymentThrowsException(): void
     {
         $subscriber = $this->createSubscriber();
-        $event = $this->createAccountEditOrderEvent(true, ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION);
+        $event = $this->createAccountEditOrderEvent(true, ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION_WITH_PREFIX);
         $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onAccountEditOrderLoaded($event);
 

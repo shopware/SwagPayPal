@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Payment;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
@@ -18,6 +19,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\Payment\Exception\PayPalApiException;
 use Swag\PayPal\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Payment\Handler\PlusHandler;
@@ -82,6 +84,11 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
      */
     private $settingsService;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         PaymentResource $paymentResource,
         OrderTransactionStateHandler $orderTransactionStateHandler,
@@ -90,7 +97,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         PayPalHandler $payPalHandler,
         PlusHandler $plusHandler,
         OrderNumberPatchBuilder $orderNumberPatchBuilder,
-        SettingsServiceInterface $settingsService
+        SettingsServiceInterface $settingsService,
+        LoggerInterface $logger
     ) {
         $this->paymentResource = $paymentResource;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
@@ -100,6 +108,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->plusHandler = $plusHandler;
         $this->orderNumberPatchBuilder = $orderNumberPatchBuilder;
         $this->settingsService = $settingsService;
+        $this->logger = $logger;
     }
 
     /**
@@ -182,6 +191,9 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             && $orderNumber !== null
             && ($isExpressCheckout || $isSPBCheckout || $isPlus)
         ) {
+            $orderNumberPrefix = (string) $settings->getOrderNumberPrefix();
+            $orderNumber = $orderNumberPrefix . $orderNumber;
+
             try {
                 $this->paymentResource->patch(
                     [
@@ -199,6 +211,28 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         }
 
         try {
+            $response = $this->paymentResource->execute(
+                $payerId,
+                $paymentId,
+                $salesChannelId,
+                $partnerAttributionId
+            );
+        } catch (PayPalApiException $e) {
+            $parameters = $e->getParameters();
+            if (!isset($parameters['name']) || $parameters['name'] !== PayPalApiException::ERROR_CODE_DUPLICATE_ORDER_NUMBER) {
+                throw $e;
+            }
+
+            $this->logger->warning($e->getMessage());
+
+            $this->paymentResource->patch(
+                [
+                    $this->orderNumberPatchBuilder->createOrderNumberPatch(null),
+                ],
+                $paymentId,
+                $salesChannelId
+            );
+
             $response = $this->paymentResource->execute(
                 $payerId,
                 $paymentId,
