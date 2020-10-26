@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PayPalApiException extends ShopwareHttpException
 {
+    public const ERROR_CODE_DUPLICATE_ORDER_NUMBER = 'DUPLICATE_TRANSACTION';
+
     /**
      * @var int|null
      */

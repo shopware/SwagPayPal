@@ -11,7 +11,7 @@ use Swag\PayPal\PayPal\Api\Patch;
 
 class OrderNumberPatchBuilder
 {
-    public function createOrderNumberPatch(string $orderNumber): Patch
+    public function createOrderNumberPatch(?string $orderNumber): Patch
     {
         return (new Patch())->assign([
             'op' => Patch::OPERATION_ADD,

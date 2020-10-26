@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Payment;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -42,10 +43,12 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\ExecutePaymentSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Test\Payment\Builder\OrderPaymentBuilderTest;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPaymentHandlerTest extends TestCase
@@ -59,6 +62,7 @@ class PayPalPaymentHandlerTest extends TestCase
     use SalesChannelContextTrait;
 
     public const PAYER_ID_PAYMENT_INCOMPLETE = 'testPayerIdIncomplete';
+    public const PAYER_ID_DUPLICATE_TRANSACTION = 'testPayerIdDuplicateTransaction';
     private const TEST_CUSTOMER_STREET = 'Ebbinghoff 10';
     private const TEST_CUSTOMER_FIRST_NAME = 'Max';
 
@@ -230,6 +234,14 @@ Customer is not logged in.');
         $this->assertFinalizeRequest($request);
     }
 
+    public function testFinalizeEcsWithDuplicateTransaction(): void
+    {
+        ExecutePaymentSaleResponseFixture::setDuplicateTransaction(true);
+        $request = $this->createRequest(self::PAYER_ID_DUPLICATE_TRANSACTION);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, true);
+        $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_PAID, true);
+    }
+
     public function testFinalizeSpb(): void
     {
         $request = $this->createRequest();
@@ -237,11 +249,27 @@ Customer is not logged in.');
         $this->assertFinalizeRequest($request);
     }
 
+    public function testFinalizeSpbWithDuplicateTransaction(): void
+    {
+        ExecutePaymentSaleResponseFixture::setDuplicateTransaction(true);
+        $request = $this->createRequest(self::PAYER_ID_DUPLICATE_TRANSACTION);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID, true);
+        $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_PAID, true);
+    }
+
     public function testFinalizePlus(): void
     {
         $request = $this->createRequest();
         $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, true);
         $this->assertFinalizeRequest($request);
+    }
+
+    public function testFinalizePlusWithDuplicateTransaction(): void
+    {
+        ExecutePaymentSaleResponseFixture::setDuplicateTransaction(true);
+        $request = $this->createRequest(self::PAYER_ID_DUPLICATE_TRANSACTION);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, true);
+        $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_PAID, true);
     }
 
     public function testFinalizeAuthorization(): void
@@ -331,21 +359,23 @@ An error occurred during the communication with PayPal');
                 $shippingAddressPatchBuilder
             ),
             $orderNumberPatchBuilder ?? new OrderNumberPatchBuilder(),
-            new SettingsServiceMock($settings)
+            new SettingsServiceMock($settings),
+            new NullLogger()
         );
     }
 
-    private function createRequest(): Request
+    private function createRequest(?string $payerId = null): Request
     {
         return new Request([
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID => 'testPayerId',
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID => $payerId ?? 'testPayerId',
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID => 'testPaymentId',
         ]);
     }
 
     private function assertFinalizeRequest(
         Request $request,
-        string $state = OrderTransactionStates::STATE_PAID
+        string $state = OrderTransactionStates::STATE_PAID,
+        bool $isDuplicateTransaction = false
     ): void {
         $orderNumberPatchActions = [
             PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID,
@@ -366,8 +396,9 @@ An error occurred during the communication with PayPal');
             $handler = $this->createPayPalPaymentHandler();
         } else {
             $orderNumberPatchMock = $this->getMockBuilder(OrderNumberPatchBuilder::class)->getMock();
-            $orderNumberPatchMock->expects(static::once())
+            $orderNumberPatchMock->expects(static::exactly($isDuplicateTransaction ? 2 : 1))
                 ->method('createOrderNumberPatch')
+                ->withConsecutive([OrderPaymentBuilderTest::TEST_ORDER_NUMBER], [null])
                 ->willReturn(new Patch());
 
             $handler = $this->createPayPalPaymentHandler(null, $orderNumberPatchMock);

@@ -3,6 +3,7 @@
 - PPI-110 - Added restrictions set by PayPal for Alternative Payment Methods
 - PPI-114 - Minor onboarding process improvements
 - PPI-145 - Minor adjustments to settings page
+- PPI-151 - Fixes error with payments with already existing order numbers
 - PPI-158 - Fixes error during update to versions 1.7.0 or higher, if no configuration is available
 
 # 1.9.2

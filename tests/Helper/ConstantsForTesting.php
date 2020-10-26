@@ -33,4 +33,5 @@ final class ConstantsForTesting
     public const PAYER_ID_PAYMENT_PUI = 'testPayerIdPui';
 
     public const PAYPAL_RESOURCE_THROWS_EXCEPTION = 'createRequestThrowsException';
+    public const PAYPAL_RESOURCE_THROWS_EXCEPTION_WITH_PREFIX = 'TEST_createRequestThrowsException';
 }
