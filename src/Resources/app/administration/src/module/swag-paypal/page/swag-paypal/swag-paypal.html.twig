@@ -28,6 +28,7 @@
                         {{ $tc('swag-paypal.settingForm.save') }}
                     </sw-button-process>
                 {% endblock %}
+
             </template>
         {% endblock %}
 
@@ -76,12 +77,16 @@
                                                                     {{ $tc('swag-paypal.saleschannelCard.button.label') }}
                                                                 </sw-button-process>
                                                             {% endblock %}
+
                                                         </sw-container>
                                                         {% endblock %}
+
                                                     </template>
                                                 {% endblock %}
+
                                             </sw-card>
                                         {% endblock %}
+
                                     </template>
                                 {% endblock %}
 
@@ -105,11 +110,14 @@
                                                 </swag-paypal-credentials>
                                             {% endblock %}
 
+                                            {% block swag_paypal_content_card_channel_config_behavior %}
                                             {% block swag_paypal_content_card_channel_config_behaviour %}
-                                                <swag-paypal-behaviour :actualConfigData="actualConfigData"
+                                                {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
+                                                <swag-paypal-behavior :actualConfigData="actualConfigData"
                                                                      :allConfigs="allConfigs"
                                                                      :selectedSalesChannelId="selectedSalesChannelId">
-                                                </swag-paypal-behaviour>
+                                                </swag-paypal-behavior>
+                                            {% endblock %}
                                             {% endblock %}
 
                                             {% block swag_paypal_content_card_channel_config_express %}
@@ -143,18 +151,23 @@
                                                                 :selectedSalesChannelId="selectedSalesChannelId">
                                                 </swag-paypal-plus>
                                             {% endblock %}
+
                                         </div>
                                     </template>
                                 {% endblock %}
+
                             </sw-sales-channel-config>
                         {% endblock %}
 
                         {% block swag_paypal_content_card_loading %}
                             <sw-loader v-if="isLoading"></sw-loader>
                         {% endblock %}
+
                     </sw-card-view>
                 {% endblock %}
+
             </template>
         {% endblock %}
+
     </sw-page>
 {% endblock %}

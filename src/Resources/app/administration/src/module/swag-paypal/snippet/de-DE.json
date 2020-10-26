@@ -45,7 +45,7 @@
                     "titleFetchedError": "Es ist ein Fehler aufgetreten"
                 }
             },
-            "behaviour": {
+            "behavior": {
                 "cardTitle": "Verhalten",
                 "merchantLocation": {
                     "label": "Händlerstandort",

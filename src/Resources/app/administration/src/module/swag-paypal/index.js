@@ -1,6 +1,6 @@
 import './page/swag-paypal';
 import './extension/sw-plugin';
-import './components/swag-paypal-behaviour';
+import './components/swag-paypal-behavior';
 import './components/swag-paypal-credentials';
 import './components/swag-paypal-express';
 import './components/swag-paypal-installment';

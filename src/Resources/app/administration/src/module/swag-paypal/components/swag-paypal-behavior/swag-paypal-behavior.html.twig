@@ -1,14 +1,20 @@
+{% block swag_paypal_content_card_channel_config_behavior %}
 {% block swag_paypal_content_card_channel_config_behaviour %}
-    <sw-card :title="$tc('swag-paypal.settingForm.behaviour.cardTitle')">
+    {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
+    <sw-card :title="$tc('swag-paypal.settingForm.behavior.cardTitle')">
 
+        {% block swag_paypal_content_card_channel_config_behavior_settings %}
         {% block swag_paypal_content_card_channel_config_behaviour_settings %}
-            <div v-if="actualConfigData" class="swag-paypal-settings-behaviour-field">
+            {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
+            <div v-if="actualConfigData" class="swag-paypal-settings-behavior-field">
 
+                {% block swag_paypal_content_card_channel_config_behavior_settings_merchant_location %}
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_merchant_location %}
+                    {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.merchantLocation']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.merchantLocation']"
                                         :customInheritationCheckFunction="checkTextFieldInheritance"
-                                        :label="$tc('swag-paypal.settingForm.behaviour.merchantLocation.label')">
+                                        :label="$tc('swag-paypal.settingForm.behavior.merchantLocation.label')">
                         <template #content="props">
                             <sw-single-select name="SwagPayPal.settings.merchantLocation"
                                               labelProperty="name"
@@ -22,12 +28,15 @@
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
+                {% endblock %}
 
+                {% block swag_paypal_content_card_channel_config_behavior_settings_intent %}
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_intent %}
+                    {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.intent']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.intent']"
                                         :customInheritationCheckFunction="checkTextFieldInheritance"
-                                        :label="$tc('swag-paypal.settingForm.behaviour.intent.label')">
+                                        :label="$tc('swag-paypal.settingForm.behavior.intent.label')">
                         <template #content="props">
                             <sw-single-select name="SwagPayPal.settings.intent"
                                               labelProperty="name"
@@ -39,16 +48,22 @@
                                               @change="props.updateCurrentValue">
                             </sw-single-select>
 
+                            {% block swag_paypal_content_card_channel_config_behavior_settings_intent_hint %}
                             {% block swag_paypal_content_card_channel_config_behaviour_settings_intent_hint %}
-                                <p class="sw-paypal-behaviour__intent-hint">
-                                    {{ $tc('swag-paypal.settingForm.behaviour.intent.hint') }}
+                                {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
+                                <p class="sw-paypal-behavior__intent-hint">
+                                    {{ $tc('swag-paypal.settingForm.behavior.intent.hint') }}
                                 </p>
+                            {% endblock %}
                             {% endblock %}
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
+                {% endblock %}
 
+                {% block swag_paypal_content_card_channel_config_behavior_settings_submit_cart %}
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_submit_cart %}
+                    {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.submitCart']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.submitCart']"
                                         :customInheritationCheckFunction="checkBoolFieldInheritance">
@@ -56,8 +71,8 @@
                             <sw-switch-field name="SwagPayPal.settings.submitCart"
                                              bordered
                                              :mapInheritance="props"
-                                             :label="$tc('swag-paypal.settingForm.behaviour.submitCart.label')"
-                                             :helpText="$tc('swag-paypal.settingForm.behaviour.submitCart.helpText')"
+                                             :label="$tc('swag-paypal.settingForm.behavior.submitCart.label')"
+                                             :helpText="$tc('swag-paypal.settingForm.behavior.submitCart.helpText')"
                                              :disabled="props.isInherited"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
@@ -65,16 +80,19 @@
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
+                {% endblock %}
 
+                {% block swag_paypal_content_card_channel_config_behavior_settings_brand_name %}
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_bran_name %}
+                    {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.brandName']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.brandName']"
                                         :customInheritationCheckFunction="checkTextFieldInheritance">
                         <template #content="props">
                             <sw-text-field name="SwagPayPal.settings.brandName"
                                            :mapInheritance="props"
-                                           :label="$tc('swag-paypal.settingForm.behaviour.brandName.label')"
-                                           :helpText="$tc('swag-paypal.settingForm.behaviour.brandName.tooltipText')"
+                                           :label="$tc('swag-paypal.settingForm.behavior.brandName.label')"
+                                           :helpText="$tc('swag-paypal.settingForm.behavior.brandName.tooltipText')"
                                            :disabled="props.isInherited"
                                            :value="props.currentValue"
                                            @change="props.updateCurrentValue">
@@ -82,12 +100,15 @@
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
+                {% endblock %}
 
+                {% block swag_paypal_content_card_channel_config_behavior_settings_landing_page %}
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_landing_page %}
+                    {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.landingPage']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.landingPage']"
                                         :customInheritationCheckFunction="checkTextFieldInheritance"
-                                        :label="$tc('swag-paypal.settingForm.behaviour.landingPage.label')">
+                                        :label="$tc('swag-paypal.settingForm.behavior.landingPage.label')">
                         <template #content="props">
                             <sw-single-select name="SwagPayPal.settings.landingPage"
                                               labelProperty="name"
@@ -101,8 +122,11 @@
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
+                {% endblock %}
 
+                {% block swag_paypal_content_card_channel_config_behavior_settings_send_order_number %}
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_send_order_number %}
+                    {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.sendOrderNumber']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.sendOrderNumber']"
                                         :customInheritationCheckFunction="checkBoolFieldInheritance">
@@ -110,8 +134,8 @@
                             <sw-switch-field name="SwagPayPal.settings.sendOrderNumber"
                                              bordered
                                              :mapInheritance="props"
-                                             :label="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.label')"
-                                             :helpText="$tc('swag-paypal.settingForm.behaviour.sendOrderNumber.helpText')"
+                                             :label="$tc('swag-paypal.settingForm.behavior.sendOrderNumber.label')"
+                                             :helpText="$tc('swag-paypal.settingForm.behavior.sendOrderNumber.helpText')"
                                              :disabled="props.isInherited"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
@@ -119,16 +143,19 @@
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
+                {% endblock %}
 
+                {% block swag_paypal_content_card_channel_config_behavior_settings_order_number_prefix %}
                 {% block swag_paypal_content_card_channel_config_behaviour_settings_order_number_prefix %}
+                    {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.orderNumberPrefix']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.orderNumberPrefix']"
                                         :customInheritationCheckFunction="checkTextFieldInheritance">
                         <template #content="props">
                             <sw-text-field name="SwagPayPal.settings.orderNumberPrefix"
                                            :mapInheritance="props"
-                                           :label="$tc('swag-paypal.settingForm.behaviour.orderNumberPrefix.label')"
-                                           :helpText="$tc('swag-paypal.settingForm.behaviour.orderNumberPrefix.tooltipText')"
+                                           :label="$tc('swag-paypal.settingForm.behavior.orderNumberPrefix.label')"
+                                           :helpText="$tc('swag-paypal.settingForm.behavior.orderNumberPrefix.tooltipText')"
                                            :disabled="props.isInherited"
                                            :value="props.currentValue"
                                            @change="props.updateCurrentValue">
@@ -136,7 +163,12 @@
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
+                {% endblock %}
+
             </div>
         {% endblock %}
+        {% endblock %}
+
     </sw-card>
+{% endblock %}
 {% endblock %}

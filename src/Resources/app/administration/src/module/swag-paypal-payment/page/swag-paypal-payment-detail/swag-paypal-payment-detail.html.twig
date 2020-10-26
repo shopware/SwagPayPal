@@ -46,7 +46,7 @@
                                     {% block swag_paypal_payment_detail_payment_list %}
                                         <sw-description-list class="swag-paypal-payment-detail__data">
                                             <dt>{{ $tc('swag-paypal-payment.paymentDetails.payment.intent') }}</dt>
-                                            <dd>{{ $tc(`swag-paypal.settingForm.behaviour.intent.${paymentResource.intent}`) }}</dd>
+                                            <dd>{{ $tc(`swag-paypal.settingForm.behavior.intent.${paymentResource.intent}`) }}</dd>
 
                                             <dt>{{ $tc('swag-paypal-payment.paymentDetails.payment.paymentId') }}</dt>
                                             <dd>{{ paymentResource.id }}</dd>
@@ -81,6 +81,7 @@
                                     {% endblock %}
                                 {% endblock %}
                             {% endblock %}
+
                         </sw-container>
                     </sw-card-section>
                 </template>
@@ -97,9 +98,11 @@
                                           :showSelection="false">
                             </sw-data-grid>
                         {% endblock %}
+
                     </template>
                 </sw-card>
             {% endblock %}
+
         </div>
 
         {% block swag_paypal_payment_detail_error_page %}
