@@ -1,10 +1,10 @@
-import template from './swag-paypal-behaviour.html.twig';
+import template from './swag-paypal-behavior.html.twig';
 import constants from './../../page/swag-paypal/swag-paypal-consts';
-import './swag-paypal-behaviour.scss';
+import './swag-paypal-behavior.scss';
 
 const { Component } = Shopware;
 
-Component.register('swag-paypal-behaviour', {
+Component.register('swag-paypal-behavior', {
     template,
 
     props: {
@@ -32,15 +32,15 @@ Component.register('swag-paypal-behaviour', {
             return [
                 {
                     id: 'sale',
-                    name: this.$tc('swag-paypal.settingForm.behaviour.intent.sale')
+                    name: this.$tc('swag-paypal.settingForm.behavior.intent.sale')
                 },
                 {
                     id: 'authorize',
-                    name: this.$tc('swag-paypal.settingForm.behaviour.intent.authorize')
+                    name: this.$tc('swag-paypal.settingForm.behavior.intent.authorize')
                 },
                 {
                     id: 'order',
-                    name: this.$tc('swag-paypal.settingForm.behaviour.intent.order')
+                    name: this.$tc('swag-paypal.settingForm.behavior.intent.order')
                 }
             ];
         },
@@ -48,11 +48,11 @@ Component.register('swag-paypal-behaviour', {
             return [
                 {
                     id: this.MERCHANT_LOCATION_GERMANY,
-                    name: this.$tc('swag-paypal.settingForm.behaviour.merchantLocation.germany')
+                    name: this.$tc('swag-paypal.settingForm.behavior.merchantLocation.germany')
                 },
                 {
                     id: this.MERCHANT_LOCATION_OTHER,
-                    name: this.$tc('swag-paypal.settingForm.behaviour.merchantLocation.other')
+                    name: this.$tc('swag-paypal.settingForm.behavior.merchantLocation.other')
                 }
             ];
         },
@@ -60,11 +60,11 @@ Component.register('swag-paypal-behaviour', {
             return [
                 {
                     id: 'Login',
-                    name: this.$tc('swag-paypal.settingForm.behaviour.landingPage.options.Login')
+                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.Login')
                 },
                 {
                     id: 'Billing',
-                    name: this.$tc('swag-paypal.settingForm.behaviour.landingPage.options.Billing')
+                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.Billing')
                 }
             ];
         }

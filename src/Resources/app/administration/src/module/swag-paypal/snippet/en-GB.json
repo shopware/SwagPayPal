@@ -45,7 +45,7 @@
                     "titleFetchedError": "An error occurred"
                 }
             },
-            "behaviour": {
+            "behavior": {
                 "cardTitle": "Behaviour",
                 "merchantLocation": {
                     "label": "Merchant location",
