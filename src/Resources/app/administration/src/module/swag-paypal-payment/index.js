@@ -30,7 +30,8 @@ Module.register('swag-paypal-payment', {
                 isChildren: true,
                 path: '/sw/order/paypal/detail/:id',
                 meta: {
-                    parentPath: 'sw.order.index'
+                    parentPath: 'sw.order.index',
+                    privilege: 'order.viewer'
                 }
             });
         }

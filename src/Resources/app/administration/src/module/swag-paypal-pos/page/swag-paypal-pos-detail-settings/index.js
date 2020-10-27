@@ -14,7 +14,8 @@ Component.register('swag-paypal-pos-detail-settings', {
         'SwagPayPalPosSettingApiService',
         'SwagPayPalPosWebhookRegisterService',
         'salesChannelService',
-        'repositoryFactory'
+        'repositoryFactory',
+        'acl'
     ],
 
     mixins: [

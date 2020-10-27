@@ -13,7 +13,8 @@ Component.register('swag-paypal', {
         'SwagPayPalWebhookRegisterService',
         'SwagPayPalApiCredentialsService',
         'SwagPaypalPaymentMethodServiceService',
-        'repositoryFactory'
+        'repositoryFactory',
+        'acl'
     ],
 
     mixins: [

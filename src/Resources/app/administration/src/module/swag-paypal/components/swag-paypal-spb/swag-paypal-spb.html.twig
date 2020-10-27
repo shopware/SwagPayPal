@@ -14,7 +14,7 @@
                                              bordered
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.spb.spbCheckoutEnabled.label')"
-                                             :disabled="props.isInherited"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
@@ -33,7 +33,7 @@
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.spb.spbAlternativePaymentMethodsEnabled.label')"
                                              :helpText="$tc('swag-paypal.settingForm.spb.spbAlternativePaymentMethodsEnabled.helpText')"
-                                             :disabled="props.isInherited"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
@@ -53,7 +53,7 @@
                                               valueProperty="id"
                                               :options="buttonColorOptions"
                                               :isInherited="props.isInherited"
-                                              :disabled="props.isInherited"
+                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                               :value="props.currentValue"
                                               @change="props.updateCurrentValue">
                             </sw-single-select>
@@ -73,7 +73,7 @@
                                               valueProperty="id"
                                               :options="buttonShapeOptions"
                                               :isInherited="props.isInherited"
-                                              :disabled="props.isInherited"
+                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                               :value="props.currentValue"
                                               @change="props.updateCurrentValue">
                             </sw-single-select>
@@ -91,7 +91,7 @@
                                                     :mapInheritance="props"
                                                     :label="$tc('swag-paypal.settingForm.spb.spbButtonLanguageIso.label')"
                                                     :helpText="$tc('swag-paypal.settingForm.spb.spbButtonLanguageIso.helpText')"
-                                                    :disabled="props.isInherited"
+                                                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                                     :value="props.currentValue"
                                                     @change="props.updateCurrentValue"
                                                     @preventSave="preventSave">

@@ -12,6 +12,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Swag\PayPal\PayPal\Api\Webhook;
@@ -60,6 +61,7 @@ class WebhookController extends AbstractController
      *     name="api.action.paypal.webhook.register",
      *     methods={"POST"}
      * )
+     * @Acl({"swag_paypal.editor"})
      */
     public function registerWebhook(string $salesChannelId): JsonResponse
     {
@@ -74,6 +76,7 @@ class WebhookController extends AbstractController
      *     name="api.action.paypal.webhook.deregister",
      *     methods={"DELETE"}
      * )
+     * @Acl({"swag_paypal.editor"})
      */
     public function deregisterWebhook(string $salesChannelId): JsonResponse
     {

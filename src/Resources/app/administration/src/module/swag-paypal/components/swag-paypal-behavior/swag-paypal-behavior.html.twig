@@ -21,7 +21,7 @@
                                               valueProperty="id"
                                               :options="merchantLocationOptions"
                                               :isInherited="props.isInherited"
-                                              :disabled="props.isInherited"
+                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                               :value="props.currentValue"
                                               @change="props.updateCurrentValue">
                             </sw-single-select>
@@ -43,7 +43,7 @@
                                               valueProperty="id"
                                               :options="intentOptions"
                                               :isInherited="props.isInherited"
-                                              :disabled="props.isInherited"
+                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                               :value="props.currentValue"
                                               @change="props.updateCurrentValue">
                             </sw-single-select>
@@ -73,7 +73,7 @@
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.behavior.submitCart.label')"
                                              :helpText="$tc('swag-paypal.settingForm.behavior.submitCart.helpText')"
-                                             :disabled="props.isInherited"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
@@ -93,7 +93,7 @@
                                            :mapInheritance="props"
                                            :label="$tc('swag-paypal.settingForm.behavior.brandName.label')"
                                            :helpText="$tc('swag-paypal.settingForm.behavior.brandName.tooltipText')"
-                                           :disabled="props.isInherited"
+                                           :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                            :value="props.currentValue"
                                            @change="props.updateCurrentValue">
                             </sw-text-field>
@@ -115,7 +115,7 @@
                                               valueProperty="id"
                                               :options="landingPageOptions"
                                               :isInherited="props.isInherited"
-                                              :disabled="props.isInherited"
+                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                               :value="props.currentValue"
                                               @change="props.updateCurrentValue">
                             </sw-single-select>
@@ -136,7 +136,7 @@
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.behavior.sendOrderNumber.label')"
                                              :helpText="$tc('swag-paypal.settingForm.behavior.sendOrderNumber.helpText')"
-                                             :disabled="props.isInherited"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
@@ -156,7 +156,7 @@
                                            :mapInheritance="props"
                                            :label="$tc('swag-paypal.settingForm.behavior.orderNumberPrefix.label')"
                                            :helpText="$tc('swag-paypal.settingForm.behavior.orderNumberPrefix.tooltipText')"
-                                           :disabled="props.isInherited"
+                                           :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                            :value="props.currentValue"
                                            @change="props.updateCurrentValue">
                             </sw-text-field>

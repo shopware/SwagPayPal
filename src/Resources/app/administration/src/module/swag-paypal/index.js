@@ -1,3 +1,4 @@
+import './acl';
 import './page/swag-paypal';
 import './extension/sw-plugin';
 import './components/swag-paypal-behavior';
@@ -41,16 +42,17 @@ Module.register('swag-paypal', {
             component: 'swag-paypal',
             path: 'index',
             meta: {
-                parentPath: 'sw.settings.index'
+                parentPath: 'sw.settings.index',
+                privilege: 'swag_paypal.viewer'
             }
         }
     },
 
     settingsItem: {
-        // TODO PPI-159 - Add privilege
         group: 'plugins',
         to: 'swag.paypal.index',
         iconComponent: 'swag-paypal-settings-icon',
-        backgroundEnabled: true
+        backgroundEnabled: true,
+        privilege: 'swag_paypal.viewer'
     }
 });

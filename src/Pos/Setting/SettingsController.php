@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Pos\Setting;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Swag\PayPal\Pos\Exception\ExistingPosAccountException;
 use Swag\PayPal\Pos\Setting\Service\ApiCredentialService;
@@ -72,6 +73,7 @@ class SettingsController extends AbstractController
      *     name="api.action.paypal.pos.validate.api.credentials",
      *     methods={"POST"}
      * )
+     * @Acl({"sales_channel.editor"})
      */
     public function validateApiCredentials(Request $request, Context $context): JsonResponse
     {
@@ -95,6 +97,7 @@ class SettingsController extends AbstractController
      *     name="api.paypal.pos.fetch.information",
      *     methods={"POST"}
      * )
+     * @Acl({"sales_channel.viewer"})
      */
     public function fetchInformation(Request $request, Context $context): JsonResponse
     {
@@ -113,6 +116,7 @@ class SettingsController extends AbstractController
      *     name="api.action.paypal.pos.clone.product.visibility",
      *     methods={"POST"}
      * )
+     * @Acl({"sales_channel.editor"})
      */
     public function cloneProductVisibility(Request $request, Context $context): Response
     {
@@ -130,6 +134,7 @@ class SettingsController extends AbstractController
      *     name="api.paypal.pos.product.count",
      *     methods={"GET"}
      * )
+     * @Acl({"sales_channel.viewer"})
      */
     public function getProductCounts(Request $request, Context $context): JsonResponse
     {

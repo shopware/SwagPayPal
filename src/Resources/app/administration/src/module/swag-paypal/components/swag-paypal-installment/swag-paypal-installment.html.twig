@@ -14,7 +14,7 @@
                                              bordered
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.installment.installmentBannerEnabled.label')"
-                                             :disabled="props.isInherited"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>

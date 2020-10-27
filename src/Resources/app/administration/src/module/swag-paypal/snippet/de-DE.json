@@ -1,4 +1,14 @@
 {
+    "sw-privileges": {
+        "permissions": {
+            "parents": {
+                "swag_paypal": "PayPal"
+            },
+            "swag_paypal": {
+                "label": "PayPal-Einstellungen"
+            }
+        }
+    },
     "swag-paypal": {
         "header": "PayPal",
         "saleschannelCard": {
@@ -39,8 +49,8 @@
                     "tooltipText": "Aktiviere diese Option, um die Integration zu testen."
                 },
                 "button": {
-                    "title": "Hole API Zugangsdaten",
-                    "titleSandbox": "Hole Sandbox API Zugangsdaten",
+                    "title": "Hole API-Zugangsdaten",
+                    "titleSandbox": "Hole Sandbox-API-Zugangsdaten",
                     "messageFetchedError": " Bitte versuche es erneut oder gebe die Zugangsdaten manuell ein.",
                     "titleFetchedError": "Es ist ein Fehler aufgetreten"
                 }

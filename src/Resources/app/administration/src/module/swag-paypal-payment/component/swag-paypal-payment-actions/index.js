@@ -16,6 +16,10 @@ const { Component } = Shopware;
 Component.register('swag-paypal-payment-actions', {
     template,
 
+    inject: [
+        'acl'
+    ],
+
     props: {
         paymentResource: {
             type: Object,

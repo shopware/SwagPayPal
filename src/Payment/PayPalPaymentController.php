@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Swag\PayPal\Payment\Builder\Util\PriceFormatter;
 use Swag\PayPal\Payment\Exception\RequiredParameterInvalidException;
@@ -131,6 +132,7 @@ class PayPalPaymentController extends AbstractController
      *     )
      * )
      * @Route("/api/v{version}/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"})
+     * @Acl({"swag_paypal.viewer"})
      */
     public function paymentDetails(string $orderId, string $paymentId, Context $context): JsonResponse
     {
@@ -173,6 +175,7 @@ class PayPalPaymentController extends AbstractController
      *     )
      * )
      * @Route("/api/v{version}/paypal/resource-details/{resourceType}/{resourceId}/{orderId}", name="api.paypal.resource_details", methods={"GET"})
+     * @Acl({"swag_paypal.viewer"})
      */
     public function resourceDetails(Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
     {
@@ -203,6 +206,7 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Route("/api/v{version}/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"})
+     * @Acl({"swag_paypal.editor"})
      *
      * @throws RequiredParameterInvalidException
      */
@@ -245,6 +249,7 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Route("/api/v{version}/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"})
+     * @Acl({"swag_paypal.editor"})
      *
      * @throws RequiredParameterInvalidException
      */
@@ -282,6 +287,7 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Route("/api/v{version}/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"})
+     * @Acl({"swag_paypal.editor"})
      *
      * @throws RequiredParameterInvalidException
      */

@@ -15,7 +15,7 @@
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.express.ecsDetailEnabled.label')"
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsDetailEnabled.helpText')"
-                                             :disabled="props.isInherited"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
@@ -34,7 +34,7 @@
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.express.ecsCartEnabled.label')"
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsCartEnabled.helpText')"
-                                             :disabled="props.isInherited"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
@@ -53,7 +53,7 @@
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.express.ecsOffCanvasEnabled.label')"
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsOffCanvasEnabled.helpText')"
-                                             :disabled="props.isInherited"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
@@ -73,7 +73,7 @@
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.express.ecsLoginEnabled.label')"
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsLoginEnabled.helpText')"
-                                             :disabled="props.isInherited"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
@@ -92,7 +92,7 @@
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.express.ecsListingEnabled.label')"
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsListingEnabled.helpText')"
-                                             :disabled="props.isInherited"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
@@ -112,7 +112,7 @@
                                               valueProperty="id"
                                               :options="buttonColorOptions"
                                               :isInherited="props.isInherited"
-                                              :disabled="props.isInherited"
+                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                               :value="props.currentValue"
                                               @change="props.updateCurrentValue">
                             </sw-single-select>
@@ -132,7 +132,7 @@
                                               valueProperty="id"
                                               :options="buttonShapeOptions"
                                               :isInherited="props.isInherited"
-                                              :disabled="props.isInherited"
+                                              :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                               :value="props.currentValue"
                                               @change="props.updateCurrentValue">
                             </sw-single-select>
@@ -151,7 +151,7 @@
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.express.ecsSubmitCart.label')"
                                              :helpText="$tc('swag-paypal.settingForm.express.ecsSubmitCart.helpText')"
-                                             :disabled="props.isInherited"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
@@ -169,7 +169,7 @@
                                                     :mapInheritance="props"
                                                     :label="$tc('swag-paypal.settingForm.express.ecsButtonLanguageIso.label')"
                                                     :helpText="$tc('swag-paypal.settingForm.express.ecsButtonLanguageIso.helpText')"
-                                                    :disabled="props.isInherited"
+                                                    :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
                                                     :value="props.currentValue"
                                                     @change="props.updateCurrentValue"
                                                     @preventSave="preventSave">

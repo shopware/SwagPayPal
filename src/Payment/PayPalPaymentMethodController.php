@@ -9,6 +9,7 @@ namespace Swag\PayPal\Payment;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,6 +50,7 @@ class PayPalPaymentMethodController extends AbstractController
      * )
      *
      * @Route("/api/v{version}/_action/paypal/saleschannel-default", name="api.action.paypal.saleschannel_default", methods={"POST"})
+     * @Acl({"swag_paypal.editor"})
      */
     public function setPayPalPaymentMethodAsSalesChannelDefault(Request $request, Context $context): Response
     {

@@ -23,7 +23,7 @@
                                        class="sw-settings-login-registration__save-action"
                                        variant="primary"
                                        :isLoading="isLoading"
-                                       :disabled="isLoading || savingDisabled || hasError"
+                                       :disabled="isLoading || savingDisabled || hasError || !acl.can('swag_paypal.editor')"
                                        @click="onSave">
                         {{ $tc('swag-paypal.settingForm.save') }}
                     </sw-button-process>
@@ -55,6 +55,7 @@
                                                                       valueProperty="id"
                                                                       :isLoading="isLoading"
                                                                       :options="salesChannels"
+                                                                      :disabled="!acl.can('swag_paypal.editor')"
                                                                       @change="onInput">
                                                     </sw-single-select>
                                                 {% endblock %}
@@ -73,6 +74,7 @@
                                                             {% block swag_paypal_content_card_channel_config_sales_channel_card_footer_container_button %}
                                                                 <sw-button-process v-model="isSetDefaultPaymentSuccessful"
                                                                                    :isLoading="isSettingDefaultPaymentMethods"
+                                                                                   :disabled="!acl.can('swag_paypal.editor')"
                                                                                    @click="onSetPaymentMethodDefault">
                                                                     {{ $tc('swag-paypal.saleschannelCard.button.label') }}
                                                                 </sw-button-process>

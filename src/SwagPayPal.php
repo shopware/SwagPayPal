@@ -39,6 +39,28 @@ class SwagPayPal extends Plugin
     public const POS_PARTNER_CLIENT_ID = '456dadab-3085-4fa3-bf2b-a2efd01c3593';
     public const POS_PARTNER_IDENTIFIER = 'shopware';
 
+    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_READ = 'swag_paypal_pos_sales_channel:read';
+    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_UPDATE = 'swag_paypal_pos_sales_channel:update';
+    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_CREATE = 'swag_paypal_pos_sales_channel:create';
+    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_DELETE = 'swag_paypal_pos_sales_channel:delete';
+    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_READ = 'swag_paypal_pos_sales_channel_run:read';
+    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_UPDATE = 'swag_paypal_pos_sales_channel_run:update';
+    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_CREATE = 'swag_paypal_pos_sales_channel_run:create';
+    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_DELETE = 'swag_paypal_pos_sales_channel_run:delete';
+    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_LOG_READ = 'swag_paypal_pos_sales_channel_run_log:read';
+
+    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGES = [
+        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_READ,
+        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_UPDATE,
+        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_CREATE,
+        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_DELETE,
+        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_READ,
+        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_UPDATE,
+        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_CREATE,
+        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_DELETE,
+        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_LOG_READ,
+    ];
+
     /**
      * @var ActivateDeactivate
      */
@@ -161,12 +183,15 @@ class SwagPayPal extends Plugin
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
 
         (new Update($systemConfigService, $customFieldRepository, $webhookService))->update($updateContext);
+
+        $this->addCustomPrivileges();
         parent::update($updateContext);
     }
 
     public function activate(ActivateContext $activateContext): void
     {
         $this->activateDeactivate->activate($activateContext->getContext());
+        $this->addCustomPrivileges();
 
         parent::activate($activateContext);
     }
@@ -174,7 +199,56 @@ class SwagPayPal extends Plugin
     public function deactivate(DeactivateContext $deactivateContext): void
     {
         $this->activateDeactivate->deactivate($deactivateContext->getContext());
+        $this->removeCustomPrivileges();
 
         parent::deactivate($deactivateContext);
+    }
+
+    private function addCustomPrivileges(): void
+    {
+        if (!\method_exists($this, 'addPrivileges')) {
+            return;
+        }
+
+        foreach ($this->getAddRoles() as $role => $privileges) {
+            $this->addPrivileges($role, $privileges);
+        }
+    }
+
+    private function removeCustomPrivileges(): void
+    {
+        if (!\method_exists($this, 'removePrivileges')) {
+            return;
+        }
+
+        $this->removePrivileges(self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGES);
+    }
+
+    private function getAddRoles(): array
+    {
+        return [
+            'sales_channel.viewer' => [
+                self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_READ,
+                self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_READ,
+                self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_UPDATE,
+                self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_CREATE,
+                self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_LOG_READ,
+                'sales_channel_payment_method:read',
+            ],
+            'sales_channel.editor' => [
+                self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_UPDATE,
+                self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_DELETE,
+                'payment_method:update',
+            ],
+            'sales_channel.creator' => [
+                self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_CREATE,
+                'payment_method:create',
+                'shipping_method:create',
+                'delivery_time:create',
+            ],
+            'sales_channel.deleter' => [
+                self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_DELETE,
+            ],
+        ];
     }
 }

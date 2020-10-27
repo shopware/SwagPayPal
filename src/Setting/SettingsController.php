@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Setting;
 
+use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Swag\PayPal\Setting\Service\ApiCredentialServiceInterface;
@@ -32,6 +33,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/api/v{version}/_action/paypal/validate-api-credentials", name="api.action.paypal.validate.api.credentials", methods={"GET"})
+     * @Acl({"swag_paypal.viewer"})
      */
     public function validateApiCredentials(Request $request): JsonResponse
     {
@@ -46,6 +48,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/api/v{version}/_action/paypal/get-api-credentials", name="api.action.paypal.get.api.credentials", methods={"POST"})
+     * @Acl({"swag_paypal.editor"})
      */
     public function getApiCredentials(RequestDataBag $requestDataBag): JsonResponse
     {
