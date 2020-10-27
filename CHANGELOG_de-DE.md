@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEW_VERSION
+# 1.9.3
 - PPI-67 - Aktivierung der Webhooks überarbeitet
 - PPI-110 - Einschränkungen für Alternative Zahlungsarten, welche durch PayPal festgelegt sind, hinzugefügt
 - PPI-114 - Kleine Verbesserungen beim Onboarding-Prozess
