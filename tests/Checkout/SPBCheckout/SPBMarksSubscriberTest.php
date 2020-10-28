@@ -25,7 +25,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
-use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksSubscriber;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -150,7 +150,7 @@ class SPBMarksSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createCheckoutConfirmEvent();
-        $event->getPage()->getCart()->addExtension(ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID, new ArrayStruct());
+        $event->getPage()->getCart()->addExtension(ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID, new ArrayStruct());
         $subscriber->addMarksExtension($event);
 
         static::assertNull(

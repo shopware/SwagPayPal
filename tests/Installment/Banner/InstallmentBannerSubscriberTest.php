@@ -14,11 +14,13 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
-use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
-use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -34,6 +36,7 @@ use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
@@ -74,6 +77,11 @@ class InstallmentBannerSubscriberTest extends TestCase
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->context = Context::createDefaultContext();
         $this->payPalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($this->context);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->removePayPalFromDefaultsSalesChannel($this->payPalPaymentMethodId);
     }
 
     public function testGetSubscribedEvents(): void
@@ -322,24 +330,45 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     private function createSalesChannelContext(bool $withPayPalInContext = true): SalesChannelContext
     {
+        if (!$withPayPalInContext) {
+            $this->removePayPalFromDefaultsSalesChannel($this->payPalPaymentMethodId);
+        }
+
+        /** @var EntityRepositoryInterface $repository */
+        $repository = $this->getContainer()->get('payment_method.repository');
+
+        $criteria = (new Criteria())
+            ->setLimit(1)
+            ->addFilter(new EqualsFilter('active', true))
+            ->addFilter(new NotFilter(NotFilter::CONNECTION_OR, [
+                new EqualsFilter('handlerIdentifier', PayPalPaymentHandler::class),
+            ]));
+
+        $otherPaymentMethodId = $repository->searchIds($criteria, Context::createDefaultContext())->firstId();
+        static::assertNotNull($otherPaymentMethodId);
+
+        $paymentMethodsArray = [['id' => $otherPaymentMethodId]];
+        if ($withPayPalInContext) {
+            $paymentMethodsArray[] = ['id' => $this->payPalPaymentMethodId];
+        }
+
+        /** @var EntityRepositoryInterface $salesChannelRepo */
+        $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
+        $salesChannelRepo->update([
+            [
+                'id' => Defaults::SALES_CHANNEL,
+                'paymentMethodId' => $otherPaymentMethodId,
+                'paymentMethods' => $paymentMethodsArray,
+            ],
+        ], Context::createDefaultContext());
+
         /** @var SalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        $salesChannelContext = $salesChannelContextFactory->create(
+
+        return $salesChannelContextFactory->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL
         );
-
-        $paymentMethodsArray = [$salesChannelContext->getPaymentMethod()];
-        if ($withPayPalInContext) {
-            $payPalPaymentMethod = new PaymentMethodEntity();
-            $payPalPaymentMethod->setId($this->payPalPaymentMethodId);
-            $paymentMethodsArray[] = $payPalPaymentMethod;
-            $this->addPayPalToDefaultsSalesChannel($this->payPalPaymentMethodId, $this->context);
-        }
-
-        $salesChannelContext->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection($paymentMethodsArray));
-
-        return $salesChannelContext;
     }
 
     private function createRequest(): Request

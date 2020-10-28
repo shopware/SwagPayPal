@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Checkout\SPBCheckout;
+namespace Swag\PayPal\Test\Checkout\SPBCheckout\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
@@ -17,7 +17,7 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
-use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutController;
+use Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -32,7 +32,7 @@ use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class SPBCheckoutControllerTest extends TestCase
+class SPBCreateOrderRouteTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
     use BasicTestDataBehaviour;
@@ -53,12 +53,10 @@ class SPBCheckoutControllerTest extends TestCase
             $withCartLineItems
         );
 
-        $response = $this->createController()->createPayment($salesChannelContext, new Request());
-        $content = $response->getContent();
-        static::assertNotFalse($content);
+        $response = $this->createRoute()->createPayPalOrder($salesChannelContext, new Request());
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        static::assertStringContainsString('{"token":"' . CreateOrderCapture::ID, $content);
+        static::assertSame(CreateOrderCapture::ID, $response->getToken());
     }
 
     public function testCreatePaymentWithoutCustomer(): void
@@ -67,7 +65,7 @@ class SPBCheckoutControllerTest extends TestCase
         $salesChannelContext->assign(['customer' => null]);
 
         $this->expectException(CustomerNotLoggedInException::class);
-        $this->createController()->createPayment($salesChannelContext, new Request());
+        $this->createRoute()->createPayPalOrder($salesChannelContext, new Request());
     }
 
     public function testCreatePaymentWithOrder(): void
@@ -75,12 +73,10 @@ class SPBCheckoutControllerTest extends TestCase
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $request = new Request([], ['orderId' => ConstantsForTesting::VALID_ORDER_ID]);
 
-        $response = $this->createController()->createPayment($salesChannelContext, $request);
-        $content = $response->getContent();
-        static::assertNotFalse($content);
+        $response = $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        static::assertStringContainsString('{"token":"' . CreateOrderCapture::ID, $content);
+        static::assertSame(CreateOrderCapture::ID, $response->getToken());
     }
 
     public function testCreatePaymentWithoutOrder(): void
@@ -91,7 +87,7 @@ class SPBCheckoutControllerTest extends TestCase
 
         $this->expectException(OrderNotFoundException::class);
         $this->expectExceptionMessage('Order with id "no-order-id" not found.');
-        $this->createController()->createPayment($salesChannelContext, $request);
+        $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
     }
 
     public function testCreatePaymentWithOrderWithoutTransactions(): void
@@ -102,7 +98,7 @@ class SPBCheckoutControllerTest extends TestCase
 
         $this->expectException(InvalidOrderException::class);
         $this->expectExceptionMessage('The order with id no-order-transactions-id is invalid or could not be found.');
-        $this->createController()->createPayment($salesChannelContext, $request);
+        $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
     }
 
     public function testCreatePaymentWithOrderWithoutTransaction(): void
@@ -113,7 +109,7 @@ class SPBCheckoutControllerTest extends TestCase
 
         $this->expectException(InvalidOrderException::class);
         $this->expectExceptionMessage('The order with id no-order-transaction-id is invalid or could not be found.');
-        $this->createController()->createPayment($salesChannelContext, $request);
+        $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
     }
 
     public function dataProviderTestCreatePayment(): array
@@ -121,7 +117,7 @@ class SPBCheckoutControllerTest extends TestCase
         return [[true], [false]];
     }
 
-    private function createController(): SPBCheckoutController
+    private function createRoute(): SPBCreateOrderRoute
     {
         /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
@@ -141,7 +137,7 @@ class SPBCheckoutControllerTest extends TestCase
             $amountProvider
         );
 
-        return new SPBCheckoutController(
+        return new SPBCreateOrderRoute(
             $cartService,
             new OrderRepositoryMock(),
             $this->createOrderBuilder($settings),

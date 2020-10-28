@@ -54,6 +54,11 @@ class PlusData extends Struct
     /**
      * @var string
      */
+    protected $handlePaymentUrl;
+
+    /**
+     * @var string
+     */
     protected $setPaymentRouteUrl;
 
     /**
@@ -114,6 +119,11 @@ class PlusData extends Struct
     public function getCheckoutOrderUrl(): string
     {
         return $this->checkoutOrderUrl;
+    }
+
+    public function getHandlePaymentUrl(): string
+    {
+        return $this->handlePaymentUrl;
     }
 
     public function getSetPaymentRouteUrl(): string

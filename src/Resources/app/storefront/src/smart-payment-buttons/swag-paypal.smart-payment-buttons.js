@@ -80,9 +80,18 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         /**
          * URL to create a new PayPal payment
          *
+         * @deprecated tag:v3.0.0 - will be removed. Use createOrderUrl instead
+         *
          * @type string
          */
         createPaymentUrl: '',
+
+        /**
+         * URL to create a new PayPal order
+         *
+         * @type string
+         */
+        createOrderUrl: '',
 
         /**
          * URL to the checkout confirm page
@@ -194,7 +203,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
 
         return new Promise(resolve => {
             this._client.post(
-                this.options.createPaymentUrl,
+                this.options.createOrderUrl,
                 formData,
                 responseText => {
                     const response = JSON.parse(responseText);

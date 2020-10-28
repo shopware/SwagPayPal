@@ -96,23 +96,50 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         /**
          * URL to create a new PayPal payment
          *
+         * @deprecated tag:v3.0.0 - will be removed. Use createOrderUrl instead
+         *
          * @type string
          */
         createPaymentUrl: '',
 
         /**
+         * URL to create a new PayPal order
+         *
+         * @type string
+         */
+        createOrderUrl: '',
+
+        /**
          * URL to create a new cart in Shopware
+         *
+         * @deprecated tag:v3.0.0 - will be removed. Use deleteCartUrl instead
          *
          * @type string
          */
         createNewCartUrl: '',
 
         /**
+         * URL to delete an existing cart in Shopware
+         *
+         * @type string
+         */
+        deleteCartUrl: '',
+
+        /**
          * URL for the payment approval
+         *
+         * @deprecated tag:v3.0.0 - will be removed. Use prepareCheckoutUrl instead
          *
          * @type string
          */
         approvePaymentUrl: '',
+
+        /**
+         * URL for creating and logging in guest customer
+         *
+         * @type string
+         */
+        prepareCheckoutUrl: '',
 
         /**
          * URL to the checkout confirm page
@@ -130,7 +157,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     };
 
     init() {
-        this._storeApiClient = new StoreApiClient();
+        this._client = new StoreApiClient();
         this._httpClient = new HttpClient();
         this.createButton();
     }
@@ -268,7 +295,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
      */
     _createOrder() {
         return new Promise(resolve => {
-            this._storeApiClient.get(this.options.createPaymentUrl, responseText => {
+            this._client.post(this.options.createOrderUrl, new FormData(), responseText => {
                 const response = JSON.parse(responseText);
                 resolve(response.token);
             });
@@ -283,7 +310,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         );
 
         return new Promise(resolve => {
-            this._storeApiClient.get(this.options.createNewCartUrl, () => {
+            this._client.delete(this.options.deleteCartUrl, null, () => {
                 plugin.$emitter.subscribe('openOffCanvasCart', () => {
                     resolve();
                 });
@@ -295,15 +322,14 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
     onApprove(data, actions) {
         const requestPayload = {
-            token: data.orderID,
-            _csrf_token: DomAccess.getDataAttribute(this.el, 'swag-pay-pal-express-button-approve-payment-token')
+            token: data.orderID
         };
 
         // Add a loading indicator to the body to prevent the user breaking the checkout process
         ElementLoadingIndicatorUtil.create(document.body);
 
-        this._httpClient.post(
-            this.options.approvePaymentUrl,
+        this._client.post(
+            this.options.prepareCheckoutUrl,
             JSON.stringify(requestPayload),
             () => {
                 actions.redirect(this.options.checkoutConfirmUrl);

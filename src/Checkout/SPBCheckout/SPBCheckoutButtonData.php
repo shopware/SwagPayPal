@@ -57,9 +57,16 @@ class SPBCheckoutButtonData extends Struct
     protected $disabledAlternativePaymentMethods;
 
     /**
+     * @deprecated tag:v3.0.0 - will be removed. Use createOrderUrl instead
+     *
      * @var string
      */
     protected $createPaymentUrl;
+
+    /**
+     * @var string
+     */
+    protected $createOrderUrl;
 
     /**
      * @var string
@@ -137,9 +144,17 @@ class SPBCheckoutButtonData extends Struct
         $this->disabledAlternativePaymentMethods = $disabledAlternativePaymentMethods;
     }
 
+    /**
+     * @deprecated tag:v3.0.0 - will be removed. Use getCreateOrderUrl instead
+     */
     public function getCreatePaymentUrl(): string
     {
         return $this->createPaymentUrl;
+    }
+
+    public function getCreateOrderUrl(): string
+    {
+        return $this->createOrderUrl;
     }
 
     public function getCheckoutConfirmUrl(): string

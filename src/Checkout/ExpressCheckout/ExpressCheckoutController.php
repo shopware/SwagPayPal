@@ -7,57 +7,63 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
-use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Cart\SalesChannel\AbstractCartDeleteRoute;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Checkout\ExpressCheckout\Route\AbstractExpressApprovePaymentRoute;
-use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
-use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
-use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressCreateOrderRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\AbstractExpressPrepareCheckoutRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @deprecated tag:v3.0.0 - will be removed
+ */
 class ExpressCheckoutController extends AbstractController
 {
-    public const PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID = 'payPalEcsCartData';
+    /**
+     * @deprecated tag:v3.0.0 - will be removed, use ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID instead
+     */
+    public const PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID = ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID;
 
     /**
-     * @var OrderFromCartBuilder
+     * @var AbstractCartDeleteRoute
      */
-    private $orderFromCartBuilder;
+    private $cartDeleteRoute;
 
     /**
-     * @var CartService
+     * @var AbstractExpressCreateOrderRoute
      */
-    private $cartService;
+    private $createOrderRoute;
 
     /**
-     * @var OrderResource
+     * @var AbstractExpressPrepareCheckoutRoute
      */
-    private $orderResource;
+    private $prepareCheckoutRoute;
 
     /**
-     * @var AbstractExpressApprovePaymentRoute
+     * @var LoggerInterface
      */
-    private $approvePaymentRoute;
+    private $logger;
 
     public function __construct(
-        OrderFromCartBuilder $orderFromCartBuilder,
-        CartService $cartService,
-        OrderResource $orderResource,
-        AbstractExpressApprovePaymentRoute $route
+        AbstractCartDeleteRoute $cartDeleteRoute,
+        AbstractExpressCreateOrderRoute $createOrderRoute,
+        AbstractExpressPrepareCheckoutRoute $prepareCheckoutRoute,
+        LoggerInterface $logger
     ) {
-        $this->orderFromCartBuilder = $orderFromCartBuilder;
-        $this->cartService = $cartService;
-        $this->orderResource = $orderResource;
-        $this->approvePaymentRoute = $route;
+        $this->cartDeleteRoute = $cartDeleteRoute;
+        $this->createOrderRoute = $createOrderRoute;
+        $this->prepareCheckoutRoute = $prepareCheckoutRoute;
+        $this->logger = $logger;
     }
 
     /**
+     * @deprecated tag:v3.0.0 - Will be removed. Use CartDeleteRoute::delete instead
      * @RouteScope(scopes={"sales-channel-api"})
      * @Route(
      *     "/sales-channel-api/v{version}/_action/paypal/create-new-cart",
@@ -67,13 +73,15 @@ class ExpressCheckoutController extends AbstractController
      */
     public function createNewCart(SalesChannelContext $context): Response
     {
-        $cart = $this->cartService->createNew($context->getToken());
-        $this->cartService->recalculate($cart, $context);
+        $this->logger->error(
+            'Route "sales-channel-api.action.paypal.create_new_cart" is deprecated. Use "store-api.checkout.cart.delete" instead'
+        );
 
-        return new Response(null, Response::HTTP_NO_CONTENT);
+        return $this->cartDeleteRoute->delete($context);
     }
 
     /**
+     * @deprecated tag:v3.0.0 - Will be removed. Use ExpressCreateOrderRoute::createPayPalOrder instead
      * @RouteScope(scopes={"sales-channel-api"})
      * @Route(
      *     "/sales-channel-api/v{version}/_action/paypal/create-payment",
@@ -83,22 +91,17 @@ class ExpressCheckoutController extends AbstractController
      */
     public function createPayment(SalesChannelContext $context): JsonResponse
     {
-        $cart = $this->cartService->getCart($context->getToken(), $context);
-        $order = $this->orderFromCartBuilder->getOrder($cart, $context, null, true);
-        $order->getApplicationContext()->setShippingPreference(ApplicationContext::SHIPPING_PREFERENCE_GET_FROM_FILE);
-
-        $orderResponse = $this->orderResource->create(
-            $order,
-            $context->getSalesChannel()->getId(),
-            PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT
+        $this->logger->error(
+            'Route "sales-channel-api.action.paypal.create_payment" is deprecated. Use "store-api.paypal.express.create_order" instead'
         );
 
-        return new JsonResponse([
-            'token' => $orderResponse->getId(),
-        ]);
+        $response = $this->createOrderRoute->createPayPalOrder($context);
+
+        return new JsonResponse($response->getObject());
     }
 
     /**
+     * @deprecated tag:v3.0.0 - Will be removed. Use ExpressPrepareCheckoutRoute::prepareCheckout instead
      * @RouteScope(scopes={"storefront"})
      * @Route(
      *     "/paypal/approve-payment",
@@ -109,9 +112,13 @@ class ExpressCheckoutController extends AbstractController
      */
     public function onApprove(SalesChannelContext $salesChannelContext, Request $request): JsonResponse
     {
+        $this->logger->error(
+            'Route "payment.paypal.approve_payment" is deprecated. Use "store-api.paypal.express.prepare_checkout" instead'
+        );
+
         return new JsonResponse(
             [
-                'cart_token' => $this->approvePaymentRoute->approve($salesChannelContext, $request)->getToken(),
+                'cart_token' => $this->prepareCheckoutRoute->prepareCheckout($salesChannelContext, $request)->getToken(),
             ]
         );
     }

@@ -72,6 +72,11 @@ class SPBCheckoutSubscriberTest extends TestCase
         $this->paypalPaymentMethodId = (string) $paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
     }
 
+    protected function tearDown(): void
+    {
+        $this->removePayPalFromDefaultsSalesChannel($this->paypalPaymentMethodId);
+    }
+
     public function testGetSubscribedEvents(): void
     {
         $events = SPBCheckoutSubscriber::getSubscribedEvents();
@@ -360,8 +365,8 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame(\strtolower(PaymentIntentV2::CAPTURE), $spbExtension->getIntent());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
         static::assertSame(
-            \sprintf('/sales-channel-api/v%s/_action/paypal/spb/create-payment', PlatformRequest::API_VERSION),
-            $spbExtension->getCreatePaymentUrl()
+            \sprintf('/store-api/v%s/paypal/spb/create-order', PlatformRequest::API_VERSION),
+            $spbExtension->getCreateOrderUrl()
         );
         static::assertStringContainsString('/checkout/confirm', $spbExtension->getCheckoutConfirmUrl());
         static::assertStringContainsString('/paypal/add-error', $spbExtension->getAddErrorUrl());

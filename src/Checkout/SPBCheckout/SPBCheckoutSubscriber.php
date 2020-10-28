@@ -13,7 +13,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
-use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -125,7 +125,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         }
 
         $confirmPage = $event->getPage();
-        if ($confirmPage->getCart()->getExtension(ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID) !== null) {
+        if ($confirmPage->getCart()->getExtension(ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID) !== null) {
             return;
         }
 

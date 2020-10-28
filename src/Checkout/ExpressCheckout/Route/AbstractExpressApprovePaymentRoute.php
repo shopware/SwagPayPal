@@ -11,6 +11,9 @@ use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @deprecated tag:v3.0.0 - Will be removed. Use AbstractExpressPrepareCheckoutRoute instead
+ */
 abstract class AbstractExpressApprovePaymentRoute
 {
     abstract public function getDecorated(): AbstractExpressApprovePaymentRoute;

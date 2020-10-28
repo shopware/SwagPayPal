@@ -86,6 +86,11 @@ class PlusSubscriberTest extends TestCase
         $this->paypalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
     }
 
+    protected function tearDown(): void
+    {
+        $this->removePayPalFromDefaultsSalesChannel($this->paypalPaymentMethodId);
+    }
+
     public function testGetSubscribedEvents(): void
     {
         $events = PlusSubscriber::getSubscribedEvents();
@@ -591,8 +596,12 @@ class PlusSubscriberTest extends TestCase
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $plusExtension->getPaypalPaymentId());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_TOKEN, $plusExtension->getPaypalToken());
         static::assertSame(
-            \sprintf('/sales-channel-api/v%s/checkout/order', PlatformRequest::API_VERSION),
+            \sprintf('/store-api/v%s/checkout/order', PlatformRequest::API_VERSION),
             $plusExtension->getCheckoutOrderUrl()
+        );
+        static::assertSame(
+            \sprintf('/store-api/v%s/handle-payment', PlatformRequest::API_VERSION),
+            $plusExtension->getHandlePaymentUrl()
         );
         static::assertSame(\sprintf('/store-api/v%s/context', PlatformRequest::API_VERSION), $plusExtension->getContextSwitchUrl());
         static::assertSame(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, $plusExtension->getIsEnabledParameterName());

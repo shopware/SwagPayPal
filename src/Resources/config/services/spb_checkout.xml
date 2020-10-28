@@ -11,12 +11,18 @@
             <argument type="service" id="router"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutController" public="true">
+        <service id="Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute" public="true">
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
             <argument type="service" id="order.repository"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutController" public="true">
+            <deprecated>tag:v3.0.0 - The "%service_id%" is deprecated will be removed with 3.0.0. Use SPBCreateOrderRoute instead.</deprecated>
+            <argument type="service" id="Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber">

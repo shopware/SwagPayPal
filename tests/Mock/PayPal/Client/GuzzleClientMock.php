@@ -19,7 +19,7 @@ use Swag\PayPal\RestApi\V1\RequestUriV1;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\RequestUriV2;
-use Swag\PayPal\Test\Checkout\ExpressCheckout\ExpressCheckoutControllerTest;
+use Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRouteTest;
 use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CaptureAuthorizationResponseFixture;
@@ -176,15 +176,15 @@ class GuzzleClientMock extends Client
             }
 
             $orderCapture = GetOrderCapture::get();
-            if (\mb_strpos($resourceUri, ExpressCheckoutControllerTest::TEST_PAYMENT_ID_WITHOUT_STATE) !== false) {
+            if (\mb_strpos($resourceUri, ExpressPrepareCheckoutRouteTest::TEST_PAYMENT_ID_WITHOUT_STATE) !== false) {
                 $orderCapture['payer']['address']['admin_area_1'] = null;
             }
 
-            if (\mb_strpos($resourceUri, ExpressCheckoutControllerTest::TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES) !== false) {
+            if (\mb_strpos($resourceUri, ExpressPrepareCheckoutRouteTest::TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES) !== false) {
                 $orderCapture['payer']['address']['country_code'] = 'NL';
             }
 
-            if (\mb_strpos($resourceUri, ExpressCheckoutControllerTest::TEST_PAYMENT_ID_WITH_STATE_NOT_FOUND) !== false) {
+            if (\mb_strpos($resourceUri, ExpressPrepareCheckoutRouteTest::TEST_PAYMENT_ID_WITH_STATE_NOT_FOUND) !== false) {
                 $orderCapture['payer']['address']['admin_area_1'] = 'XY';
             }
 
