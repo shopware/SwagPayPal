@@ -39,17 +39,17 @@ class SwagPayPal extends Plugin
     public const POS_PARTNER_CLIENT_ID = '456dadab-3085-4fa3-bf2b-a2efd01c3593';
     public const POS_PARTNER_IDENTIFIER = 'shopware';
 
-    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_READ = 'swag_paypal_pos_sales_channel:read';
-    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_UPDATE = 'swag_paypal_pos_sales_channel:update';
-    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_CREATE = 'swag_paypal_pos_sales_channel:create';
-    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_DELETE = 'swag_paypal_pos_sales_channel:delete';
-    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_READ = 'swag_paypal_pos_sales_channel_run:read';
-    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_UPDATE = 'swag_paypal_pos_sales_channel_run:update';
-    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_CREATE = 'swag_paypal_pos_sales_channel_run:create';
-    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_DELETE = 'swag_paypal_pos_sales_channel_run:delete';
-    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_LOG_READ = 'swag_paypal_pos_sales_channel_run_log:read';
+    private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_READ = 'swag_paypal_pos_sales_channel:read';
+    private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_UPDATE = 'swag_paypal_pos_sales_channel:update';
+    private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_CREATE = 'swag_paypal_pos_sales_channel:create';
+    private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_DELETE = 'swag_paypal_pos_sales_channel:delete';
+    private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_READ = 'swag_paypal_pos_sales_channel_run:read';
+    private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_UPDATE = 'swag_paypal_pos_sales_channel_run:update';
+    private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_CREATE = 'swag_paypal_pos_sales_channel_run:create';
+    private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_DELETE = 'swag_paypal_pos_sales_channel_run:delete';
+    private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_LOG_READ = 'swag_paypal_pos_sales_channel_run_log:read';
 
-    public const PAYPAL_POS_SALES_CHANNEL_PRIVILEGES = [
+    private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGES = [
         self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_READ,
         self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_UPDATE,
         self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_CREATE,
