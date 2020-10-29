@@ -28,7 +28,34 @@ default:
         - cp -v dev-ops/gitlab/.psh.yaml.override .
         - /entrypoint supervisord > /dev/null 2>&1 &
 
-# Stage: Static analysis
+Check built JS files:
+    only:
+        refs:
+            - merge_requests
+            - master
+    stage: Static analysis
+    services:
+        -   name: mysql:5.7
+            alias: mysql
+    script:
+        - ./psh.phar init
+        - php bin/console plugin:install --activate SwagPayPal
+        - ./psh.phar storefront:install-dependencies
+        - ./psh.phar administration:build
+        - ./psh.phar storefront:build
+        - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
+        # Somehow the administration images are copied to storefront
+        - rm -rf src/Resources/app/storefront/dist/static
+        - >
+            if ! git diff --quiet --ignore-submodules HEAD --; then
+                echo "Built Javascript files differ. Update the dependencies and execute 'administration:build' and 'storefront:build' again";
+                git status;
+                exit 1;
+            else
+                echo "Everything ok"
+                exit 0;
+            fi
+
 Static analyze:
     stage: Static analysis
     services:
