@@ -150,12 +150,8 @@ PHPUnit:
         -   if: '$RUN_IN_MR == "true" && $CI_PIPELINE_SOURCE == "merge_request_event"'
     parallel:
         matrix:
-            -   PLATFORM_BRANCH: '6.2'
-                DEVELOPMENT_BRANCH: '6.2'
-                INSTALL_CMS: 'false'
             -   PLATFORM_BRANCH: '6.3.0.0'
                 DEVELOPMENT_BRANCH: 'master'
-                RUN_IN_MR: 'false'
             -   PLATFORM_BRANCH: '6.3.0.1'
                 DEVELOPMENT_BRANCH: 'master'
                 RUN_IN_MR: 'false'

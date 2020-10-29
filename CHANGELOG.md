@@ -1,3 +1,6 @@
+# REPLACE-GLOBALLY-WITH-NEXT-VERSION
+- PPI-159 - Added ACL privileges to the PayPal modules
+
 # 1.9.3
 - PPI-67 - Reimplemented activation of webhooks
 - PPI-110 - Added restrictions set by PayPal for Alternative Payment Methods

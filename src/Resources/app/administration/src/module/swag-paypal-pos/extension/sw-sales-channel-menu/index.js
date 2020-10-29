@@ -3,7 +3,6 @@ import { PAYPAL_POS_SALES_CHANNEL_TYPE_ID } from '../../../../constant/swag-payp
 const { Component } = Shopware;
 
 Component.override('sw-sales-channel-menu', {
-
     methods: {
         createMenuTree() {
             this.$super('createMenuTree');

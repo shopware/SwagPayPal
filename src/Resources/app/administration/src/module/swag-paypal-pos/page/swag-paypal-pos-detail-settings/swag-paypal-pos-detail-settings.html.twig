@@ -17,6 +17,7 @@
                                        type="text"
                                        validation="required"
                                        :error="salesChannelNameError"
+                                       :disabled="!acl.can('sales_channel.editor')"
                                        :label="$tc('sw-sales-channel.detail.labelInputName')"
                                        :placeholder="placeholder(salesChannel, 'name', $tc('sw-sales-channel.detail.placeholderName'))">
                         </sw-text-field>
@@ -25,6 +26,7 @@
                     {% block swag_paypal_pos_detail_settings_input_active %}
                         <sw-switch-field v-model="salesChannel.active"
                                          bordered
+                                         :disabled="!acl.can('sales_channel.editor')"
                                          :label="$tc('sw-sales-channel.detail.labelInputActive')"
                                          :helpText="$tc('swag-paypal-pos.detail.settings.activeHelpText')">
                         </sw-switch-field>
@@ -37,6 +39,7 @@
                                                required
                                                validation="required"
                                                :error="swagPaypalPosSalesChannelMediaDomainError"
+                                               :disabled="!acl.can('sales_channel.editor')"
                                                :label="$tc('swag-paypal-pos.detail.settings.domain')"
                                                :helpText="$tc('swag-paypal-pos.detail.settings.domainHelpText')"
                                                @input="forceUpdate">
@@ -47,16 +50,18 @@
                     <sw-entity-single-select v-model="salesChannel.languageId"
                                              entity="language"
                                              required
+                                             :disabled="!acl.can('sales_channel.editor')"
                                              :label="$tc('global.entities.language')"
                                              @change="changeLanguage">
                     </sw-entity-single-select>
                 {% endblock %}
 
                 {% block swag_paypal_pos_detail_settings_input_product_stream %}
-                    {# ToDo PPI-56 implement support for product streams #}
+                    {# ToDo PPI-56 - implement support for product streams #}
                     <sw-entity-single-select v-if="false"
                                              v-model="swagPaypalPosSalesChannel.productStreamId"
                                              entity="product_stream"
+                                             :disabled="!acl.can('sales_channel.editor')"
                                              :label="$tc('swag-paypal-pos.detail.settings.productStream')"
                                              @change="forceUpdate">
                     </sw-entity-single-select>
@@ -76,6 +81,7 @@
                             class="swag-paypal-pos-boolean-radio"
                             :name="name"
                             :options="optionsReplace"
+                            :disabled="!acl.can('sales_channel.editor')"
                             @input="forceUpdate">
                         </sw-radio-field>
                     {% endblock %}
@@ -95,6 +101,7 @@
                             :label="$tc('swag-paypal-pos.wizard.syncPrices.description')"
                             :optionTrue="optionSyncPrices"
                             :optionFalse="optionNotSyncPrices"
+                            :disabled="!acl.can('sales_channel.editor')"
                             @input="forceUpdate">
                         </swag-paypal-pos-boolean-radio>
                     {% endblock %}
@@ -112,6 +119,7 @@
                                            class="swag-paypal-pos-detail-settings__apikey-field"
                                            required
                                            :label="$tc('swag-paypal-pos.authentication.labelApiKey')"
+                                           :disabled="!acl.can('sales_channel.editor')"
                                            :placeholder="$tc('swag-paypal-pos.authentication.placeholderApiKey')"
                                            @input="forceUpdate">
                             <template #suffix>
@@ -136,7 +144,8 @@
                             {% endblock %}
 
                             {% block swag_paypal_pos_detail_settings_credentials_apikey_description_link %}
-                                <a :href="apiKeyUrl"
+                                <a v-if="acl.can('sales_channel.editor')"
+                                   :href="apiKeyUrl"
                                    target="_blank"
                                    class="link swag-paypal-pos-detail-settings__apikey-description-link">
 
@@ -174,6 +183,7 @@
                                     {% block sw_sales_channel_detail_base_options_reset_button %}
                                         <div class="swag-paypal-pos-detail-settings__options-button">
                                             <sw-button size="small"
+                                                       :disabled="!acl.can('sales_channel.editor')"
                                                        @click="showResetModal = true">
                                                 {{ $tc('swag-paypal-pos.detail.settings.reset.buttonTitle') }}
                                             </sw-button>
@@ -200,6 +210,7 @@
                                             <sw-button
                                                 variant="danger"
                                                 size="small"
+                                                :disabled="!acl.can('sales_channel.deleter')"
                                                 @click="showDeleteModal = true">
                                                 {{ $tc('sw-sales-channel.detail.buttonDelete') }}
                                             </sw-button>

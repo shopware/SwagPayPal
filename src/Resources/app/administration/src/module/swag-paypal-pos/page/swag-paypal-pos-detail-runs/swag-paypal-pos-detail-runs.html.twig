@@ -107,7 +107,9 @@
                                 {% endblock %}
 
                                 {% block swag_paypal_pos_detail_runs_card_toolbar_container_button %}
-                                    <sw-button @click="onClearLogs">
+                                    <sw-button
+                                            :disabled="!acl.can('sales_channel.editor')"
+                                            @click="onClearLogs">
                                         {{ $tc('swag-paypal-pos.detail.cleanLog') }}
                                     </sw-button>
                                 {% endblock %}

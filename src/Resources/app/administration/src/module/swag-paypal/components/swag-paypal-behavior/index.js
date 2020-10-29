@@ -7,6 +7,10 @@ const { Component } = Shopware;
 Component.register('swag-paypal-behavior', {
     template,
 
+    inject: [
+        'acl'
+    ],
+
     props: {
         actualConfigData: {
             type: Object,

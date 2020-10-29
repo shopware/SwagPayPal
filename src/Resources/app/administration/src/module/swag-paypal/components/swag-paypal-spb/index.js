@@ -5,6 +5,10 @@ const { Component } = Shopware;
 Component.register('swag-paypal-spb', {
     template,
 
+    inject: [
+        'acl'
+    ],
+
     props: {
         actualConfigData: {
             type: Object,

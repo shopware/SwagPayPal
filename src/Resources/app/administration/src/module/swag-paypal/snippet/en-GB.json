@@ -1,4 +1,14 @@
 {
+    "sw-privileges": {
+        "permissions": {
+            "parents": {
+                "swag_paypal": "PayPal"
+            },
+            "swag_paypal": {
+                "label": "PayPal settings"
+            }
+        }
+    },
     "swag-paypal": {
         "header": "PayPal",
         "saleschannelCard": {

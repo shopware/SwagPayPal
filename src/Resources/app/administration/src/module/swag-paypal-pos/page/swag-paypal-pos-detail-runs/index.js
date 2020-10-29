@@ -9,7 +9,8 @@ Component.register('swag-paypal-pos-detail-runs', {
 
     inject: [
         'SwagPayPalPosApiService',
-        'repositoryFactory'
+        'repositoryFactory',
+        'acl'
     ],
 
     mixins: [

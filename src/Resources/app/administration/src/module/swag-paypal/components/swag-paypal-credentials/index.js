@@ -5,6 +5,10 @@ const { Component } = Shopware;
 Component.register('swag-paypal-credentials', {
     template,
 
+    inject: [
+        'acl'
+    ],
+
     mixins: [
         'notification',
         'swag-paypal-credentials-loader'
