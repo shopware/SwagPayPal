@@ -40,7 +40,7 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 
 class InstallUninstall
 {
-    private const PAYPAL_PUI_AVAILABILITY_RULE_NAME = 'PayPalPuiAvailabilityRule';
+    public const PAYPAL_PUI_AVAILABILITY_RULE_NAME = 'PayPalPuiAvailabilityRule';
 
     /**
      * @var EntityRepositoryInterface
