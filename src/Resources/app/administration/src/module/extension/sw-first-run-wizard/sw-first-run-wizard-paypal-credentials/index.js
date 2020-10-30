@@ -16,6 +16,11 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
     data() {
         return {
             config: {},
+            clientIdFilled: false,
+            clientSecretFilled: false,
+            clientIdSandboxFilled: false,
+            clientSecretSandboxFilled: false,
+            sandboxChecked: false,
             isLoading: false
         };
     },
@@ -46,20 +51,30 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         },
 
         credentialsProvided() {
-            const sandbox = this.config['SwagPayPal.settings.sandbox'];
-
-            return (!sandbox && this.credentialsProvidedLive)
-                || (sandbox && this.credentialsProvidedSandbox);
+            return (!this.sandboxChecked && this.credentialsProvidedLive)
+                || (this.sandboxChecked && this.credentialsProvidedSandbox);
         },
 
         credentialsProvidedLive() {
-            return !!this.config['SwagPayPal.settings.clientIdSandbox']
-                || !!this.config['SwagPayPal.settings.clientSecretSandbox'];
+            return this.clientIdFilled && this.clientSecretFilled;
         },
 
         credentialsProvidedSandbox() {
-            return !!this.config['SwagPayPal.settings.clientId']
-                || !!this.config['SwagPayPal.settings.clientSecret'];
+            return this.clientIdSandboxFilled && this.clientSecretSandboxFilled;
+        }
+    },
+
+    watch: {
+        config: {
+            handler() {
+                this.clientIdFilled = !!this.config['SwagPayPal.settings.clientId'];
+                this.clientSecretFilled = !!this.config['SwagPayPal.settings.clientSecret'];
+                this.clientIdSandboxFilled = !!this.config['SwagPayPal.settings.clientIdSandbox'];
+                this.clientSecretSandboxFilled = !!this.config['SwagPayPal.settings.clientSecretSandbox'];
+                this.sandboxChecked = !!this.config['SwagPayPal.settings.sandbox'];
+            },
+            deep: true,
+            immediately: true
         }
     },
 
