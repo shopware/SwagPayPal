@@ -284,7 +284,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
         loadSalesChannel() {
             const salesChannelId = this.$route.params.id || this.salesChannel.id;
             if (!salesChannelId) {
-                return new Promise();
+                return new Promise((resolve) => { resolve(); });
             }
 
             this.isLoading = true;
