@@ -6,7 +6,8 @@ Shopware.Service('privileges').addPrivilegeMappingEntry({
         viewer: {
             privileges: [
                 'sales_channel:read',
-                'sales_channel_payment_method:read'
+                'sales_channel_payment_method:read',
+                'system_config:read'
             ],
             dependencies: []
         },
@@ -14,7 +15,10 @@ Shopware.Service('privileges').addPrivilegeMappingEntry({
             privileges: [
                 'sales_channel:update',
                 'sales_channel_payment_method:create',
-                'sales_channel_payment_method:update'
+                'sales_channel_payment_method:update',
+                'system_config:update',
+                'system_config:create',
+                'system_config:delete'
             ],
             dependencies: [
                 'swag_paypal.viewer'
