@@ -86,6 +86,10 @@
                 "label": "Begründung",
                 "placeholder": "Begründung eintragen"
             },
+            "refundNoteToPayer": {
+                "label": "Verwendungszweck",
+                "placeholder": "Verwendungszweck eintragen"
+            },
             "refundInvoiceNumber": {
                 "label": "Rechnungsnummer",
                 "placeholder": "Rechnungsnummer eintragen"
@@ -98,6 +102,14 @@
             "successMessage": "Die Autorisierung war erfolgreich.",
             "maxAmount": "Maximalbetrag",
             "currentAmount": "Betrag",
+            "captureInvoiceNumber": {
+                "label": "Rechnungsnummer",
+                "placeholder": "Rechnungsnummer eintragen"
+            },
+            "captureNoteToPayer": {
+                "label": "Verwendungszweck",
+                "placeholder": "Verwendungszweck eintragen"
+            },
             "isFinal": "Kein erneuter Einzug möglich",
             "isFinalHint": "Hinweis: Als letzter Einzug markiert, obwohl nicht der ganze Betrag eingezogen werden soll.",
             "button": {

@@ -64,7 +64,11 @@ class PaymentStatusUtilV2
         $captures = $payPalOrder->getPurchaseUnits()[0]->getPayments()->getCaptures();
         if ($captures !== null) {
             foreach ($captures as $capture) {
-                $capturedAmount += (float) $capture->getAmount()->getValue();
+                $amount = $capture->getAmount();
+                if ($amount === null) {
+                    continue;
+                }
+                $capturedAmount += (float) $amount->getValue();
             }
         }
 
@@ -89,7 +93,9 @@ class PaymentStatusUtilV2
         if ($captureResponse->isFinalCapture()) {
             $this->reopenTransaction($stateMachineState, $transactionId, $context);
             // If the previous state is "paid_partially", "paid" is currently not allowed as direct transition
-            $this->orderTransactionStateHandler->process($transactionId, $context);
+            if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_IN_PROGRESS) {
+                $this->orderTransactionStateHandler->process($transactionId, $context);
+            }
             $this->orderTransactionStateHandler->paid($transactionId, $context);
 
             return;

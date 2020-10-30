@@ -86,6 +86,10 @@
                 "label": "Reason",
                 "placeholder": "Enter a reason"
             },
+            "refundNoteToPayer": {
+                "label": "Note to payer",
+                "placeholder": "Enter a note to payer"
+            },
             "refundInvoiceNumber": {
                 "label": "Invoice number",
                 "placeholder": "Enter an invoice number"
@@ -98,7 +102,15 @@
             "successMessage": "Your capture was successful.",
             "maxAmount": "Maximum amount",
             "currentAmount": "Amount",
-            "isFinal": "This is final capture",
+            "captureInvoiceNumber": {
+                "label": "Invoice number",
+                "placeholder": "Enter an invoice number"
+            },
+            "captureNoteToPayer": {
+                "label": "Note to payer",
+                "placeholder": "Enter a note to payer"
+            },
+            "isFinal": "This is the final capture",
             "isFinalHint": "Hint: Marked as final capture, although not the entire amount is to be captured.",
             "button": {
                 "text": "Capture payment"

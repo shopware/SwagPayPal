@@ -1,46 +1,54 @@
-import template from './swag-paypal-payment-action-capture.html.twig';
+import template from './swag-paypal-payment-action-v2-capture.html.twig';
 
 const { Component } = Shopware;
 const utils = Shopware.Utils;
 
-Component.register('swag-paypal-payment-action-capture', {
+Component.register('swag-paypal-payment-action-v2-capture', {
     template,
 
-    inject: ['SwagPayPalPaymentService'],
+    inject: ['SwagPayPalOrderService'],
 
     mixins: [
         'notification'
     ],
 
     props: {
-        paymentResource: {
+        paypalOrder: {
             type: Object,
             required: true
         },
 
-        maxCaptureValue: {
-            type: Number,
+        orderTransactionId: {
+            type: String,
             required: true
         },
 
-        orderId: {
+        paypalPartnerAttributionId: {
             type: String,
+            required: true
+        },
+
+        captureableAmount: {
+            type: Number,
             required: true
         }
     },
 
     data() {
         return {
+            authorization: {},
             isFinalCapture: true,
-            captureValue: this.maxCaptureValue,
-            isLoading: true,
-            currency: this.paymentResource.transactions[0].amount.currency
+            captureAmount: this.captureableAmount,
+            captureInvoiceNumber: '',
+            captureNoteToPayer: '',
+            currencyCode: '',
+            isLoading: true
         };
     },
 
     computed: {
         showHint() {
-            return this.isFinalCapture && this.captureValue !== this.maxCaptureValue;
+            return this.isFinalCapture && this.captureAmount !== this.captureableAmount;
         }
     },
 
@@ -50,24 +58,28 @@ Component.register('swag-paypal-payment-action-capture', {
 
     methods: {
         createdComponent() {
+            this.authorization = this.paypalOrder.purchase_units[0].payments.authorizations[0];
+            this.currencyCode = this.authorization.amount.currency_code;
             this.isLoading = false;
         },
 
         capture() {
-            const captureAmount = this.captureValue;
-            const currency = this.currency;
-            const isFinalCapture = this.isFinalCapture;
-            const resourceType = this.paymentResource.intent;
-            const resourceId = this.getResourceId(this.paymentResource);
-
             this.isLoading = true;
-            this.SwagPayPalPaymentService.capturePayment(
-                this.orderId,
-                resourceType,
-                resourceId,
+
+            let captureAmount = this.captureAmount;
+            if (captureAmount === 0) {
+                captureAmount = this.captureableAmount;
+            }
+
+            this.SwagPayPalOrderService.captureAuthorization(
+                this.orderTransactionId,
+                this.authorization.id,
+                this.currencyCode,
                 captureAmount,
-                currency,
-                isFinalCapture
+                this.captureInvoiceNumber,
+                this.captureNoteToPayer,
+                this.paypalPartnerAttributionId,
+                this.isFinalCapture
             ).then(() => {
                 this.createNotificationSuccess({
                     message: this.$tc('swag-paypal-payment.captureAction.successMessage')
@@ -92,19 +104,6 @@ Component.register('swag-paypal-payment-action-capture', {
                     this.isLoading = false;
                 }
             });
-        },
-
-        getResourceId(paymentResource) {
-            let relatedResourceId = null;
-            paymentResource.transactions[0].related_resources.forEach((relatedResource) => {
-                if (relatedResource.authorization) {
-                    relatedResourceId = relatedResource.authorization.id;
-                }
-                if (relatedResource.order) {
-                    relatedResourceId = relatedResource.order.id;
-                }
-            });
-            return relatedResourceId;
         }
     }
 });

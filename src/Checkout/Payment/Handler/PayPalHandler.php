@@ -157,7 +157,7 @@ class PayPalHandler extends AbstractPaymentHandler
         try {
             if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {
                 $response = $this->orderResource->capture($paypalOrderId, $salesChannelId, $partnerAttributionId);
-                if ($response->getStatus() === PaymentStatusV2::ORDERS_COMPLETED) {
+                if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
                     $this->orderTransactionStateHandler->paid($transactionId, $context);
                 }
             } else {
@@ -180,7 +180,7 @@ class PayPalHandler extends AbstractPaymentHandler
 
             if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {
                 $response = $this->orderResource->capture($paypalOrderId, $salesChannelId, $partnerAttributionId);
-                if ($response->getStatus() === PaymentStatusV2::ORDERS_COMPLETED) {
+                if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
                     $this->orderTransactionStateHandler->paid($transactionId, $context);
                 }
             } else {

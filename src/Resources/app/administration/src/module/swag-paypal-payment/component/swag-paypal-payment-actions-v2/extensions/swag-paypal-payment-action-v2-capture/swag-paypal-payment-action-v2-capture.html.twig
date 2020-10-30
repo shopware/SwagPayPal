@@ -1,0 +1,69 @@
+{% block swag_paypal_payment_action_capture_v2 %}
+    <sw-modal variant="small"
+              :title="$tc(`swag-paypal-payment.modal.title.capture`)"
+              @modal-close="$emit('modal-close')">
+
+        {% block swag_paypal_payment_action_capture_v2_max_amount %}
+            <sw-text-field v-model="captureableAmount"
+                           :label="$tc('swag-paypal-payment.captureAction.maxAmount')"
+                           :disabled="true">
+                <template #suffix v-if="currencyCode">
+                    {{ currencyCode }}
+                </template>
+            </sw-text-field>
+        {% endblock %}
+
+        {% block swag_paypal_payment_action_capture_v2_amount %}
+            <sw-number-field v-model="captureAmount"
+                             :max="captureableAmount"
+                             :min="0"
+                             :label="$tc('swag-paypal-payment.captureAction.currentAmount')">
+                <template #suffix v-if="currencyCode">
+                    {{ currencyCode }}
+                </template>
+            </sw-number-field>
+        {% endblock %}
+
+        {% block swag_paypal_payment_action_capture_v2_invoice_number %}
+            <swag-paypal-text-field
+                    v-model="captureInvoiceNumber"
+                    maxLength="127"
+                    :label="$tc('swag-paypal-payment.captureAction.captureInvoiceNumber.label')"
+                    :placeholder="$tc('swag-paypal-payment.captureAction.captureInvoiceNumber.placeholder')">
+            </swag-paypal-text-field>
+        {% endblock %}
+
+        {% block swag_paypal_payment_action_capture_v2_note_to_payer %}
+            <swag-paypal-textarea-field
+                    v-model="captureNoteToPayer"
+                    maxLength="255"
+                    :placeholder="$tc('swag-paypal-payment.captureAction.captureNoteToPayer.placeholder')"
+                    :label="$tc('swag-paypal-payment.captureAction.captureNoteToPayer.label')">
+            </swag-paypal-textarea-field>
+        {% endblock %}
+
+        {% block swag_paypal_payment_action_capture_v2_is_final_capture %}
+            <sw-checkbox-field
+                    v-model="isFinalCapture"
+                    :label="$tc('swag-paypal-payment.captureAction.isFinal')">
+            </sw-checkbox-field>
+        {% endblock %}
+
+        {% block swag_paypal_payment_action_capture_v2_hint %}
+            <sw-alert v-if="showHint">
+                {{ $tc('swag-paypal-payment.captureAction.isFinalHint') }}
+            </sw-alert>
+        {% endblock %}
+
+        {% block swag_paypal_payment_action_capture_v2_confirm_button %}
+            <template #modal-footer>
+                <sw-button variant="primary"
+                           @click="capture">
+                    {{ $tc('swag-paypal-payment.captureAction.button.text') }}
+                </sw-button>
+            </template>
+        {% endblock %}
+
+        <sw-loader v-if="isLoading"></sw-loader>
+    </sw-modal>
+{% endblock %}

@@ -24,7 +24,6 @@ Mixin.register('swag-paypal-pos-catch-error', {
             } finally {
                 this.createNotification({
                     variant: 'error',
-                    title: this.$root.$tc('global.default.error'),
                     message
                 });
             }

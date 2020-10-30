@@ -11,7 +11,8 @@
             <component v-if="!isLoading && showPayPalOrder"
                        :is="'swag-paypal-payment-details-v2'"
                        :paypalOrder="paypalOrder"
-                       :orderId="order.id">
+                       :orderTransactionId="orderTransaction.id"
+                       :paypalPartnerAttributionId="orderTransaction.customFields.swag_paypal_partner_attribution_id">
             </component>
         {% endblock %}
 
@@ -19,10 +20,10 @@
             {% block swag_paypal_payment_detail_error_page_canceled %}
                 <div v-if="showCanceledPaymentError">
                     <sw-empty-state
-                        :title="$tc('swag-paypal-payment.errorPage.title')"
-                        :subline="$tc('swag-paypal-payment.errorPage.canceledPaymentContent')"
-                        icon="default-shopping-paper-bag"
-                        color="#A092F0">
+                            :title="$tc('swag-paypal-payment.errorPage.title')"
+                            :subline="$tc('swag-paypal-payment.errorPage.canceledPaymentContent')"
+                            icon="default-shopping-paper-bag"
+                            color="#A092F0">
                     </sw-empty-state>
                 </div>
             {% endblock %}
@@ -30,10 +31,10 @@
             {% block swag_paypal_payment_detail_error_page_sandbox_live %}
                 <div v-if="showSandboxLiveError">
                     <sw-empty-state
-                        :title="$tc('swag-paypal-payment.errorPage.title')"
-                        :subline="$tc('swag-paypal-payment.errorPage.sandboxLiveContent')"
-                        icon="default-shopping-paper-bag"
-                        color="#A092F0">
+                            :title="$tc('swag-paypal-payment.errorPage.title')"
+                            :subline="$tc('swag-paypal-payment.errorPage.sandboxLiveContent')"
+                            icon="default-shopping-paper-bag"
+                            color="#A092F0">
                     </sw-empty-state>
                 </div>
             {% endblock %}
@@ -41,10 +42,10 @@
             {% block swag_paypal_payment_detail_error_page_other %}
                 <div v-if="!isLoading && !showPayPalPayment && !showPayPalOrder">
                     <sw-empty-state
-                        :title="$tc('swag-paypal-payment.errorPage.title')"
-                        :subline="$tc('swag-paypal-payment.errorPage.other')"
-                        icon="default-shopping-paper-bag"
-                        color="#A092F0">
+                            :title="$tc('swag-paypal-payment.errorPage.title')"
+                            :subline="$tc('swag-paypal-payment.errorPage.other')"
+                            icon="default-shopping-paper-bag"
+                            color="#A092F0">
                     </sw-empty-state>
                 </div>
             {% endblock %}

@@ -5,7 +5,7 @@ import {
     CAPTURE_RESOURCE_TYPE
 } from '../../swag-paypal-payment-consts';
 
-const { Component, Mixin, Filter } = Shopware;
+const { Component, Filter } = Shopware;
 const utils = Shopware.Utils;
 
 Component.register('swag-paypal-payment-action-refund', {
@@ -14,7 +14,7 @@ Component.register('swag-paypal-payment-action-refund', {
     inject: ['SwagPayPalPaymentService'],
 
     mixins: [
-        Mixin.getByName('notification')
+        'notification'
     ],
 
     props: {
@@ -164,7 +164,6 @@ Component.register('swag-paypal-payment-action-refund', {
                 invoiceNumber
             ).then(() => {
                 this.createNotificationSuccess({
-                    title: this.$tc('global.default.success'),
                     message: this.$tc('swag-paypal-payment.refundAction.successMessage')
                 });
                 this.isLoading = false;
@@ -175,14 +174,12 @@ Component.register('swag-paypal-payment-action-refund', {
             }).catch((errorResponse) => {
                 try {
                     this.createNotificationError({
-                        title: errorResponse.response.data.errors[0].title,
-                        message: errorResponse.response.data.errors[0].detail,
+                        message: `${errorResponse.response.data.errors[0].title}: ${errorResponse.response.data.errors[0].detail}`,
                         autoClose: false
                     });
                 } catch (e) {
                     this.createNotificationError({
-                        title: errorResponse.title,
-                        message: errorResponse.message,
+                        message: `${errorResponse.title}: ${errorResponse.message}`,
                         autoClose: false
                     });
                 } finally {

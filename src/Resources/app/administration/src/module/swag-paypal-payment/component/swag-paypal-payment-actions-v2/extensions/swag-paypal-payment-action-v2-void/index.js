@@ -1,24 +1,29 @@
-import template from './swag-paypal-payment-action-void.html.twig';
+import template from './swag-paypal-payment-action-v2-void.html.twig';
 
 const { Component } = Shopware;
 const utils = Shopware.Utils;
 
-Component.register('swag-paypal-payment-action-void', {
+Component.register('swag-paypal-payment-action-v2-void', {
     template,
 
-    inject: ['SwagPayPalPaymentService'],
+    inject: ['SwagPayPalOrderService'],
 
     mixins: [
         'notification'
     ],
 
     props: {
-        paymentResource: {
+        paypalOrder: {
             type: Object,
             required: true
         },
 
-        orderId: {
+        orderTransactionId: {
+            type: String,
+            required: true
+        },
+
+        paypalPartnerAttributionId: {
             type: String,
             required: true
         }
@@ -33,11 +38,13 @@ Component.register('swag-paypal-payment-action-void', {
     methods: {
         voidPayment() {
             this.isLoading = true;
-            const resourceType = this.paymentResource.intent;
-            const resourceId = this.getResourceId();
-            const orderId = this.$route.params.id;
+            const authorization = this.paypalOrder.purchase_units[0].payments.authorizations[0];
 
-            this.SwagPayPalPaymentService.voidPayment(this.orderId, resourceType, resourceId, orderId).then(() => {
+            this.SwagPayPalOrderService.voidAuthorization(
+                this.orderTransactionId,
+                authorization.id,
+                this.paypalPartnerAttributionId
+            ).then(() => {
                 this.createNotificationSuccess({
                     message: this.$tc('swag-paypal-payment.voidAction.successMessage')
                 });
@@ -61,16 +68,6 @@ Component.register('swag-paypal-payment-action-void', {
                     this.isLoading = false;
                 }
             });
-        },
-
-        getResourceId() {
-            const firstRelatedResource = this.paymentResource.transactions[0].related_resources[0];
-
-            if (firstRelatedResource.order) {
-                return firstRelatedResource.order.id;
-            }
-
-            return firstRelatedResource.authorization.id;
         },
 
         closeModal() {

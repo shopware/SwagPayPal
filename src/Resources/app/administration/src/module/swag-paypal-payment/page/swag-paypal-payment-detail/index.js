@@ -59,6 +59,7 @@ Component.register('swag-paypal-payment-detail', {
 
     watch: {
         '$route'() {
+            this.resetDataAttributes();
             this.createdComponent();
         },
 
@@ -131,14 +132,12 @@ Component.register('swag-paypal-payment-detail', {
 
             try {
                 this.createNotificationError({
-                    title: this.$tc('swag-paypal-payment.paymentDetails.error.title'),
-                    message: errorResponse.response.data.errors[0].detail,
+                    message: `${this.$tc('swag-paypal-payment.paymentDetails.error.title')}: ${errorResponse.response.data.errors[0].detail}`,
                     autoClose: false
                 });
             } catch (e) {
                 this.createNotificationError({
-                    title: this.$tc('swag-paypal-payment.paymentDetails.error.title'),
-                    message: errorResponse.message,
+                    message: `${this.$tc('swag-paypal-payment.paymentDetails.error.title')}: ${errorResponse.message}`,
                     autoClose: false
                 });
             } finally {
@@ -149,6 +148,11 @@ Component.register('swag-paypal-payment-detail', {
         emitIdentifier() {
             const orderNumber = this.order !== null ? this.order.orderNumber : '';
             this.$emit('identifier-change', orderNumber);
+        },
+
+        resetDataAttributes() {
+            this.isLoading = true;
+            this.paypalOrder = {};
         }
     }
 });

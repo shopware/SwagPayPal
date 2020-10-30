@@ -1,4 +1,9 @@
 import template from './swag-paypal-payment-details-v2.html.twig';
+import {
+    ORDER_AUTHORIZATION_CREATED,
+    ORDER_AUTHORIZATION_PARTIALLY_CAPTURED,
+    ORDER_AUTHORIZATION_PENDING
+} from './swag-paypal-order-consts';
 
 const { Component, Filter } = Shopware;
 
@@ -11,7 +16,12 @@ Component.register('swag-paypal-payment-details-v2', {
             required: true
         },
 
-        orderId: {
+        orderTransactionId: {
+            type: String,
+            required: true
+        },
+
+        paypalPartnerAttributionId: {
             type: String,
             required: true
         }
@@ -24,7 +34,10 @@ Component.register('swag-paypal-payment-details-v2', {
             updateDateTime: '',
             currency: '',
             amount: {},
-            payerId: ''
+            payerId: '',
+            refundableAmount: 0,
+            captureableAmount: 0,
+            showVoidButton: false
         };
     },
 
@@ -38,6 +51,11 @@ Component.register('swag-paypal-payment-details-v2', {
                 {
                     property: 'type',
                     label: this.$tc('swag-paypal-payment.transactionHistory.types.type'),
+                    rawData: true
+                },
+                {
+                    property: 'id',
+                    label: this.$tc('swag-paypal-payment.transactionHistory.types.trackingId'),
                     rawData: true
                 },
                 {
@@ -92,27 +110,46 @@ Component.register('swag-paypal-payment-details-v2', {
             if (rawAuthorizations !== null) {
                 rawAuthorizations.forEach((authorization) => {
                     this.pushPayment('authorization', authorization);
+                    const authStatus = authorization.status;
+                    if (authStatus === ORDER_AUTHORIZATION_CREATED
+                        || authStatus === ORDER_AUTHORIZATION_PARTIALLY_CAPTURED
+                    ) {
+                        this.captureableAmount += Number(authorization.amount.value);
+                        this.showVoidButton = true;
+                    }
+                    if (authStatus === ORDER_AUTHORIZATION_PENDING) {
+                        this.showVoidButton = true;
+                    }
                 });
             }
 
             if (rawCaptures !== null) {
                 rawCaptures.forEach((capture) => {
                     this.pushPayment('capture', capture);
+                    const captureAmount = Number(capture.amount.value);
+                    this.refundableAmount += captureAmount;
+                    this.captureableAmount -= captureAmount;
                 });
             }
 
             if (rawRefunds !== null) {
                 rawRefunds.forEach((refund) => {
                     this.pushPayment('refund', refund);
+                    this.refundableAmount -= Number(refund.amount.value);
                 });
             }
+
+            this.refundableAmount = this.formatAmount(this.refundableAmount);
         },
 
         pushPayment(type, payment) {
             let transactionFee = null;
-            if (payment.seller_receivable_breakdown.paypal_fee) {
+            if (type === 'capture' && payment.seller_receivable_breakdown.paypal_fee) {
                 const currencyCode = payment.seller_receivable_breakdown.paypal_fee.currency_code;
                 transactionFee = `${payment.seller_receivable_breakdown.paypal_fee.value} ${currencyCode}`;
+            } else if (type === 'refund' && payment.seller_payable_breakdown.paypal_fee) {
+                const currencyCode = payment.seller_payable_breakdown.paypal_fee.currency_code;
+                transactionFee = `${payment.seller_payable_breakdown.paypal_fee.value} ${currencyCode}`;
             }
 
             this.payments.push({
@@ -140,6 +177,10 @@ Component.register('swag-paypal-payment-details-v2', {
                 minute: '2-digit',
                 second: '2-digit'
             });
+        },
+
+        formatAmount(value) {
+            return Number(`${Math.round(`${value}e2`)}e-2`);
         }
     }
 });

@@ -1,9 +1,12 @@
 {% block sw_text_field %}
-    <sw-contextual-field v-on="$listeners"
-                         class="sw-field--text"
-                         :name="formFieldName"
-                         @inheritance-restore="$emit('inheritance-restore', $event)"
-                         @inheritance-remove="$emit('inheritance-remove', $event)">
+    <sw-contextual-field
+            v-bind="$attrs"
+            v-on="$listeners"
+            class="sw-field--text"
+            :name="formFieldName"
+            @inheritance-restore="$emit('inheritance-restore', $event)"
+            @inheritance-remove="$emit('inheritance-remove', $event)">
+
         <template v-if="hasPrefix" #sw-contextual-field-prefix="{ disabled, identification }">
             <slot name="prefix" v-bind="{disabled, identification}"></slot>
         </template>

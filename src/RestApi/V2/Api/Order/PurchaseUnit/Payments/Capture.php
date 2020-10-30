@@ -26,7 +26,7 @@ class Capture extends PayPalApiStruct
     protected $id;
 
     /**
-     * @var Amount
+     * @var Amount|null
      */
     protected $amount;
 
@@ -95,12 +95,12 @@ class Capture extends PayPalApiStruct
         $this->id = $id;
     }
 
-    public function getAmount(): Amount
+    public function getAmount(): ?Amount
     {
         return $this->amount;
     }
 
-    public function setAmount(Amount $amount): void
+    public function setAmount(?Amount $amount): void
     {
         $this->amount = $amount;
     }

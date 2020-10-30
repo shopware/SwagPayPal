@@ -51,8 +51,7 @@
                 "button": {
                     "title": "Get API credentials",
                     "titleSandbox": "Get sandbox API credentials",
-                    "messageFetchedError": "Try again or enter your credentials manually.",
-                    "titleFetchedError": "An error occurred"
+                    "messageFetchedError": "Try again or enter your credentials manually."
                 }
             },
             "behavior": {

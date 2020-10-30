@@ -17,6 +17,7 @@ use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Api\Payment\Payer\ExecutePayerInfo;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\RequestUriV2;
 use Swag\PayPal\Test\Checkout\ExpressCheckout\ExpressCheckoutControllerTest;
 use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
@@ -364,7 +365,25 @@ class GuzzleClientMock extends Client
         }
 
         if (\strpos($resourceUri, RequestUriV2::CAPTURES_RESOURCE) !== false) {
-            return RefundCapture::get();
+            $refundedCapture = RefundCapture::get();
+            if ($data instanceof Refund) {
+                $amount = $data->getAmount();
+                if ($amount !== null) {
+                    $refundedCapture['seller_payable_breakdown']['total_refunded_amount']['value'] = $amount->getValue();
+                }
+
+                $refundedCapture['invoice_id'] = null;
+                if ($data->getInvoiceId() !== null) {
+                    $refundedCapture['invoice_id'] = $data->getInvoiceId();
+                }
+
+                $refundedCapture['note_to_payer'] = null;
+                if ($data->getNoteToPayer() !== null) {
+                    $refundedCapture['note_to_payer'] = $data->getNoteToPayer();
+                }
+            }
+
+            return $refundedCapture;
         }
 
         if (\strpos($resourceUri, RequestUriV2::AUTHORIZATIONS_RESOURCE) !== false) {

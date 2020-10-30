@@ -8,24 +8,20 @@
 namespace Swag\PayPal\OrdersApi\Administration;
 
 use OpenApi\Annotations as OA;
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\Amount as CaptureAmount;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\Amount as RefundAmount;
 use Swag\PayPal\RestApi\V2\Resource\AuthorizationResource;
 use Swag\PayPal\RestApi\V2\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\RestApi\V2\Resource\RefundResource;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
-use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,6 +38,7 @@ class PayPalOrdersController extends AbstractController
     public const REQUEST_PARAMETER_INVOICE_NUMBER = 'invoiceNumber';
     public const REQUEST_PARAMETER_NOTE_TO_PAYER = 'noteToPayer';
     public const REQUEST_PARAMETER_PARTNER_ATTRIBUTION_ID = 'partnerAttributionId';
+    public const REQUEST_PARAMETER_IS_FINAL = 'isFinal';
 
     /**
      * @var OrderResource
@@ -74,9 +71,9 @@ class PayPalOrdersController extends AbstractController
     private $paymentStatusUtil;
 
     /**
-     * @var PriceFormatter
+     * @var CaptureRefundCreator
      */
-    private $priceFormatter;
+    private $captureRefundCreator;
 
     public function __construct(
         OrderResource $orderResource,
@@ -85,7 +82,7 @@ class PayPalOrdersController extends AbstractController
         RefundResource $refundResource,
         EntityRepositoryInterface $orderTransactionRepository,
         PaymentStatusUtilV2 $paymentStatusUtil,
-        PriceFormatter $priceFormatter
+        CaptureRefundCreator $captureRefundCreator
     ) {
         $this->orderResource = $orderResource;
         $this->authorizationResource = $authorizationResource;
@@ -93,7 +90,7 @@ class PayPalOrdersController extends AbstractController
         $this->refundResource = $refundResource;
         $this->orderTransactionRepository = $orderTransactionRepository;
         $this->paymentStatusUtil = $paymentStatusUtil;
-        $this->priceFormatter = $priceFormatter;
+        $this->captureRefundCreator = $captureRefundCreator;
     }
 
     /**
@@ -127,6 +124,7 @@ class PayPalOrdersController extends AbstractController
      *      name="api.paypal_v2.order_details",
      *      methods={"GET"}
      * )
+     * @Acl({"order.viewer"})
      */
     public function orderDetails(string $orderTransactionId, string $paypalOrderId, Context $context): JsonResponse
     {
@@ -169,6 +167,7 @@ class PayPalOrdersController extends AbstractController
      *      name="api.paypal_v2.authorization_details",
      *      methods={"GET"}
      * )
+     * @Acl({"order.viewer"})
      */
     public function authorizationDetails(string $orderTransactionId, string $authorizationId, Context $context): JsonResponse
     {
@@ -211,6 +210,7 @@ class PayPalOrdersController extends AbstractController
      *      name="api.paypal_v2.capture_details",
      *      methods={"GET"}
      * )
+     * @Acl({"order.viewer"})
      */
     public function captureDetails(string $orderTransactionId, string $captureId, Context $context): JsonResponse
     {
@@ -253,6 +253,7 @@ class PayPalOrdersController extends AbstractController
      *      name="api.paypal_v2.refund_details",
      *      methods={"GET"}
      * )
+     * @Acl({"order.viewer"})
      */
     public function refundDetails(string $orderTransactionId, string $refundId, Context $context): JsonResponse
     {
@@ -291,6 +292,41 @@ class PayPalOrdersController extends AbstractController
      *         description="ID of the PayPal order",
      *         @OA\Schema(type="string")
      *     ),
+     *     @OA\Parameter(
+     *         parameter="partnerAttributionId",
+     *         name="partnerAttributionId",
+     *         in="body",
+     *         description="Partner Attribution ID. See Swag\PayPal\RestApi\PartnerAttributionId",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="amount",
+     *         name="amount",
+     *         in="body",
+     *         description="Amount which should be refunded",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="currency",
+     *         name="currency",
+     *         in="body",
+     *         description="Currency of the refund",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="invoiceNumber",
+     *         name="invoiceNumber",
+     *         in="body",
+     *         description="Invoice number of the refund",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="noteToPayer",
+     *         name="noteToPayer",
+     *         in="body",
+     *         description="A note to the payer sent with the refund",
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal refund",
@@ -302,6 +338,7 @@ class PayPalOrdersController extends AbstractController
      *     name="api.action.paypal_v2.refund_capture",
      *     methods={"POST"}
      * )
+     * @Acl({"order.editor"})
      */
     public function refundCapture(
         string $orderTransactionId,
@@ -310,18 +347,14 @@ class PayPalOrdersController extends AbstractController
         Context $context,
         Request $request
     ): JsonResponse {
-        $refund = $this->createRefund($request);
+        $refund = $this->captureRefundCreator->createRefund($request);
         $salesChannelId = $this->getSalesChannelId($orderTransactionId, $context);
-        $partnerAttributionId = $request->request->get(
-            self::REQUEST_PARAMETER_PARTNER_ATTRIBUTION_ID,
-            PartnerAttributionId::PAYPAL_CLASSIC
-        );
 
         $refundResponse = $this->captureResource->refund(
             $captureId,
             $refund,
             $salesChannelId,
-            $partnerAttributionId,
+            $this->getPartnerAttributionId($request),
             false
         );
 
@@ -352,6 +385,48 @@ class PayPalOrdersController extends AbstractController
      *         description="ID of the PayPal authorization",
      *         @OA\Schema(type="string")
      *     ),
+     *     @OA\Parameter(
+     *         parameter="partnerAttributionId",
+     *         name="partnerAttributionId",
+     *         in="body",
+     *         description="Partner Attribution ID. See Swag\PayPal\RestApi\PartnerAttributionId",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="amount",
+     *         name="amount",
+     *         in="body",
+     *         description="Amount which should be captured",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="currency",
+     *         name="currency",
+     *         in="body",
+     *         description="Currency of the capture",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="invoiceNumber",
+     *         name="invoiceNumber",
+     *         in="body",
+     *         description="Invoice number of the capture",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="noteToPayer",
+     *         name="noteToPayer",
+     *         in="body",
+     *         description="A note to the payer sent with the capture",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         parameter="isFinal",
+     *         name="isFinal",
+     *         in="body",
+     *         description="Define if this is the final capture",
+     *         @OA\Schema(type="boolean")
+     *     ),
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal capture",
@@ -363,6 +438,7 @@ class PayPalOrdersController extends AbstractController
      *     name="api.action.paypal_v2.capture_authorization",
      *     methods={"POST"}
      * )
+     * @Acl({"order.editor"})
      */
     public function captureAuthorization(
         string $orderTransactionId,
@@ -370,17 +446,13 @@ class PayPalOrdersController extends AbstractController
         Context $context,
         Request $request
     ): JsonResponse {
-        $capture = $this->createCapture($request);
-        $partnerAttributionId = $request->request->get(
-            self::REQUEST_PARAMETER_PARTNER_ATTRIBUTION_ID,
-            PartnerAttributionId::PAYPAL_CLASSIC
-        );
+        $capture = $this->captureRefundCreator->createCapture($request);
 
         $captureResponse = $this->authorizationResource->capture(
             $authorizationId,
             $capture,
             $this->getSalesChannelId($orderTransactionId, $context),
-            $partnerAttributionId,
+            $this->getPartnerAttributionId($request),
             false
         );
 
@@ -409,13 +481,16 @@ class PayPalOrdersController extends AbstractController
      *         description="ID of the PayPal authorization",
      *         @OA\Schema(type="string")
      *     ),
+     *     @OA\Parameter(
+     *         parameter="partnerAttributionId",
+     *         name="partnerAttributionId",
+     *         in="body",
+     *         description="Partner Attribution ID. See Swag\PayPal\RestApi\PartnerAttributionId",
+     *         @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
      *         response="204",
      *         description="Returns status 204 if the voidance was succesful",
-     *     ),
-     *     @OA\Response(
-     *         response="400",
-     *         description="Returns status 400 if the voidance was not succesful",
      *     )
      * )
      * @Route(
@@ -423,6 +498,7 @@ class PayPalOrdersController extends AbstractController
      *     name="api.action.paypal_v2.void_authorization",
      *     methods={"POST"}
      * )
+     * @Acl({"order.editor"})
      */
     public function voidAuthorization(
         string $orderTransactionId,
@@ -430,14 +506,10 @@ class PayPalOrdersController extends AbstractController
         Context $context,
         Request $request
     ): Response {
-        $partnerAttributionId = $request->request->get(
-            self::REQUEST_PARAMETER_PARTNER_ATTRIBUTION_ID,
-            PartnerAttributionId::PAYPAL_CLASSIC
-        );
         $this->authorizationResource->void(
             $authorizationId,
             $this->getSalesChannelId($orderTransactionId, $context),
-            $partnerAttributionId
+            $this->getPartnerAttributionId($request)
         );
 
         $this->paymentStatusUtil->applyVoidState($orderTransactionId, $context);
@@ -445,9 +517,6 @@ class PayPalOrdersController extends AbstractController
         return new Response('', Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @throws OrderNotFoundException
-     */
     private function getSalesChannelId(string $orderTransactionId, Context $context): string
     {
         $criteria = new Criteria([$orderTransactionId]);
@@ -468,55 +537,11 @@ class PayPalOrdersController extends AbstractController
         return $order->getSalesChannelId();
     }
 
-    private function createRefund(Request $request): Refund
+    private function getPartnerAttributionId(Request $request): string
     {
-        $refundAmount = $this->priceFormatter->formatPrice((float) $request->request->get(self::REQUEST_PARAMETER_AMOUNT));
-        $currency = $request->request->getAlpha(self::REQUEST_PARAMETER_CURRENCY);
-        $invoiceId = (string) $request->request->get(self::REQUEST_PARAMETER_INVOICE_NUMBER, '');
-        $noteToPayer = (string) $request->request->get(self::REQUEST_PARAMETER_NOTE_TO_PAYER, '');
-
-        $refund = new Refund();
-
-        if ($refundAmount !== '0.00') {
-            $amount = new RefundAmount();
-            $amount->setValue($refundAmount);
-            $amount->setCurrencyCode($currency);
-            $refund->setAmount($amount);
-        }
-
-        if ($noteToPayer !== '') {
-            $refund->setNoteToPayer($noteToPayer);
-        }
-        if ($invoiceId !== '') {
-            $refund->setInvoiceId($invoiceId);
-        }
-
-        return $refund;
-    }
-
-    private function createCapture(Request $request): Capture
-    {
-        $captureAmount = $this->priceFormatter->formatPrice((float) $request->request->get(self::REQUEST_PARAMETER_AMOUNT));
-        $currency = $request->request->getAlpha(self::REQUEST_PARAMETER_CURRENCY);
-        $invoiceId = (string) $request->request->get(self::REQUEST_PARAMETER_INVOICE_NUMBER, '');
-        $noteToPayer = (string) $request->request->get(self::REQUEST_PARAMETER_NOTE_TO_PAYER, '');
-
-        $capture = new Capture();
-
-        if ($captureAmount !== '0.00') {
-            $amount = new CaptureAmount();
-            $amount->setValue($captureAmount);
-            $amount->setCurrencyCode($currency);
-            $capture->setAmount($amount);
-        }
-
-        if ($noteToPayer !== '') {
-            $capture->setNoteToPayer($noteToPayer);
-        }
-        if ($invoiceId !== '') {
-            $capture->setInvoiceId($invoiceId);
-        }
-
-        return $capture;
+        return (string) $request->request->get(
+            self::REQUEST_PARAMETER_PARTNER_ATTRIBUTION_ID,
+            PartnerAttributionId::PAYPAL_CLASSIC
+        );
     }
 }

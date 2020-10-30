@@ -4,9 +4,14 @@
             <template #grid>
 
                 {% block swag_paypal_payment_actions_section %}
-                    {# TODO PPI-143 - Implment payment actions v2 #}
                     <sw-card-section secondary slim>
-                        <swag-paypal-payment-actions-v2 :orderId="orderId" :paypalOrder="paypalOrder">
+                        <swag-paypal-payment-actions-v2
+                                :orderTransactionId="orderTransactionId"
+                                :paypalOrder="paypalOrder"
+                                :paypalPartnerAttributionId="paypalPartnerAttributionId"
+                                :refundableAmount="refundableAmount"
+                                :captureableAmount="captureableAmount"
+                                :showVoidButton="showVoidButton">
                         </swag-paypal-payment-actions-v2>
                     </sw-card-section>
                 {% endblock %}
@@ -35,18 +40,24 @@
                                     {% endblock %}
 
                                     {% block swag_paypal_payment_detail_invoice_list_discount %}
-                                        <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.discount') }}</dt>
-                                        <dd> {{ amount.breakdown.discount.value }} {{ currency }}</dd>
+                                        <div v-if="amount.breakdown.discount">
+                                            <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.discount') }}</dt>
+                                            <dd> {{ amount.breakdown.discount.value }} {{ currency }}</dd>
+                                        </div>
                                     {% endblock %}
 
                                     {% block swag_paypal_payment_detail_invoice_list_handling %}
-                                        <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.handling') }}</dt>
-                                        <dd> {{ amount.breakdown.handling.value }} {{ currency }}</dd>
+                                        <div v-if="amount.breakdown.handling">
+                                            <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.handling') }}</dt>
+                                            <dd> {{ amount.breakdown.handling.value }} {{ currency }}</dd>
+                                        </div>
                                     {% endblock %}
 
                                     {% block swag_paypal_payment_detail_invoice_list_insurance %}
-                                        <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.insurance') }}</dt>
-                                        <dd> {{ amount.breakdown.insurance.value }} {{ currency }}</dd>
+                                        <div v-if="amount.breakdown.insurance">
+                                            <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.insurance') }}</dt>
+                                            <dd> {{ amount.breakdown.insurance.value }} {{ currency }}</dd>
+                                        </div>
                                     {% endblock %}
 
                                     {% block swag_paypal_payment_detail_invoice_list_shipping %}
@@ -55,8 +66,10 @@
                                     {% endblock %}
 
                                     {% block swag_paypal_payment_detail_invoice_list_shipping_discount %}
-                                        <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.shipping_discount') }}</dt>
-                                        <dd> {{ amount.breakdown.shipping_discount.value }} {{ currency }}</dd>
+                                        <div v-if="amount.breakdown.insurance">
+                                            <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.shipping_discount') }}</dt>
+                                            <dd> {{ amount.breakdown.shipping_discount.value }} {{ currency }}</dd>
+                                        </div>
                                     {% endblock %}
 
                                 </sw-description-list>

@@ -95,7 +95,6 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         onPayPalCredentialsLoadFailed(sandbox) {
             this.setConfig('', '', sandbox);
             this.createNotificationError({
-                title: this.$tc('swag-paypal-frw-credentials.titleFetchedError'),
                 message: this.$tc('swag-paypal-frw-credentials.messageFetchedError'),
                 duration: 10000
             });
@@ -114,7 +113,6 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         onClickNext() {
             if (!this.credentialsProvided) {
                 this.createNotificationError({
-                    title: this.$tc('swag-paypal-frw-credentials.titleNoCredentials'),
                     message: this.$tc('swag-paypal-frw-credentials.messageNoCredentials')
                 });
                 return Promise.resolve(true);
@@ -189,11 +187,9 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
                         }).join(' / ');
 
                         this.createNotificationError({
-                            title: this.$tc('global.default.error'),
                             message: message
                         });
                         this.createNotificationError({
-                            title: this.$tc('swag-paypal-frw-credentials.titleTestError'),
                             message: message
                         });
                         this.isLoading = false;

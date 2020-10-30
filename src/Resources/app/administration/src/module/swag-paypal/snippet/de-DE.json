@@ -51,8 +51,7 @@
                 "button": {
                     "title": "Hole API-Zugangsdaten",
                     "titleSandbox": "Hole Sandbox-API-Zugangsdaten",
-                    "messageFetchedError": " Bitte versuche es erneut oder gebe die Zugangsdaten manuell ein.",
-                    "titleFetchedError": "Es ist ein Fehler aufgetreten"
+                    "messageFetchedError": " Bitte versuche es erneut oder gebe die Zugangsdaten manuell ein."
                 }
             },
             "behavior": {

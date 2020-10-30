@@ -1,0 +1,69 @@
+{% block swag_paypal_payment_actions_v2 %}
+    <div>
+        <div class="swag-paypal-payment-actions-v2__button-container">
+            <div>
+                {% block swag_paypal_payment_actions_v2_void %}
+                    <sw-button v-if="showVoidButton"
+                               size="small"
+                               :disabled="!acl.can('order.editor')"
+                               @click="spawnModal('void')">
+                        {{ $tc('swag-paypal-payment.buttons.label.void') }}
+                    </sw-button>
+                {% endblock %}
+
+                {% block swag_paypal_payment_actions_v2_capture %}
+                    <sw-button v-if="captureableAmount > 0"
+                               size="small"
+                               :disabled="!acl.can('order.editor')"
+                               @click="spawnModal('capture')">
+                        {{ $tc('swag-paypal-payment.buttons.label.capture') }}
+                    </sw-button>
+                {% endblock %}
+            </div>
+
+            {% block swag_paypal_payment_actions_v2_refund %}
+                <sw-button variant="primary"
+                           size="small"
+                           :disabled="refundableAmount <= 0 || !acl.can('order.editor')"
+                           @click="spawnModal('refund')">
+                    {{ $tc('swag-paypal-payment.buttons.label.refund') }}
+                </sw-button>
+            {% endblock %}
+
+        </div>
+
+        {% block swag_paypal_payment_actions_v2_modal %}
+            {% block swag_paypal_payment_actions_v2_modal_refund %}
+                <swag-paypal-payment-action-v2-refund
+                        v-if="modalType === 'refund'"
+                        :orderTransactionId="orderTransactionId"
+                        :paypalOrder="paypalOrder"
+                        :paypalPartnerAttributionId="paypalPartnerAttributionId"
+                        @modal-close="closeModal">
+                </swag-paypal-payment-action-v2-refund>
+            {% endblock %}
+
+            {% block swag_paypal_payment_actions_v2_modal_capture %}
+                <swag-paypal-payment-action-v2-capture
+                        v-if="modalType === 'capture'"
+                        :orderTransactionId="orderTransactionId"
+                        :paypalOrder="paypalOrder"
+                        :paypalPartnerAttributionId="paypalPartnerAttributionId"
+                        :captureableAmount="captureableAmount"
+                        @modal-close="closeModal">
+                </swag-paypal-payment-action-v2-capture>
+            {% endblock %}
+
+            {% block swag_paypal_payment_actions_v2_modal_void %}
+                <swag-paypal-payment-action-v2-void
+                        v-if="modalType === 'void'"
+                        :orderTransactionId="orderTransactionId"
+                        :paypalOrder="paypalOrder"
+                        :paypalPartnerAttributionId="paypalPartnerAttributionId"
+                        @modal-close="closeModal">
+                </swag-paypal-payment-action-v2-void>
+            {% endblock %}
+        {% endblock %}
+
+    </div>
+{% endblock %}

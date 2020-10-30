@@ -25,17 +25,17 @@ class Refund extends PayPalApiStruct
     protected $id;
 
     /**
-     * @var Amount
+     * @var Amount|null
      */
     protected $amount;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $invoiceId;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $noteToPayer;
 
@@ -79,32 +79,32 @@ class Refund extends PayPalApiStruct
         $this->id = $id;
     }
 
-    public function getAmount(): Amount
+    public function getAmount(): ?Amount
     {
         return $this->amount;
     }
 
-    public function setAmount(Amount $amount): void
+    public function setAmount(?Amount $amount): void
     {
         $this->amount = $amount;
     }
 
-    public function getInvoiceId(): string
+    public function getInvoiceId(): ?string
     {
         return $this->invoiceId;
     }
 
-    public function setInvoiceId(string $invoiceId): void
+    public function setInvoiceId(?string $invoiceId): void
     {
         $this->invoiceId = $invoiceId;
     }
 
-    public function getNoteToPayer(): string
+    public function getNoteToPayer(): ?string
     {
         return $this->noteToPayer;
     }
 
-    public function setNoteToPayer(string $noteToPayer): void
+    public function setNoteToPayer(?string $noteToPayer): void
     {
         $this->noteToPayer = $noteToPayer;
     }
