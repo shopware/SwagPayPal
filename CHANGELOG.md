@@ -1,5 +1,6 @@
 # REPLACE-GLOBALLY-WITH-NEXT-VERSION
 - PPI-159 - Added ACL privileges to the PayPal modules
+- PPI-161 - Fix credentials form in first run wizard
 
 # 1.9.3
 - PPI-67 - Reimplemented activation of webhooks
