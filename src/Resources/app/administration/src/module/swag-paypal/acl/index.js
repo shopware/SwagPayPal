@@ -26,3 +26,41 @@ Shopware.Service('privileges').addPrivilegeMappingEntry({
         }
     }
 });
+
+Shopware.Service('privileges').addPrivilegeMappingEntry({
+    category: 'permissions',
+    parent: null,
+    key: 'sales_channel',
+    roles: {
+        viewer: {
+            privileges: [
+                'swag_paypal_pos_sales_channel:read',
+                'swag_paypal_pos_sales_channel_run:read',
+                'swag_paypal_pos_sales_channel_run:update',
+                'swag_paypal_pos_sales_channel_run:create',
+                'swag_paypal_pos_sales_channel_run_log:read',
+                'sales_channel_payment_method:read'
+            ]
+        },
+        editor: {
+            privileges: [
+                'swag_paypal_pos_sales_channel:update',
+                'swag_paypal_pos_sales_channel_run:delete',
+                'payment_method:update'
+            ]
+        },
+        creator: {
+            privileges: [
+                'swag_paypal_pos_sales_channel:create',
+                'payment_method:create',
+                'shipping_method:create',
+                'delivery_time:create'
+            ]
+        },
+        deleter: {
+            privileges: [
+                'swag_paypal_pos_sales_channel:delete'
+            ]
+        }
+    }
+});
