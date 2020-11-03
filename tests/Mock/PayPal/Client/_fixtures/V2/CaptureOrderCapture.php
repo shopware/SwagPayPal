@@ -11,6 +11,21 @@ class CaptureOrderCapture
 {
     public const ID = '9XG87361JT539825C';
 
+    /**
+     * @var bool
+     */
+    private static $duplicateOrderNumber = false;
+
+    public static function setDuplicateOrderNumber(bool $duplicateOrderNumber): void
+    {
+        self::$duplicateOrderNumber = $duplicateOrderNumber;
+    }
+
+    public static function isDuplicateOrderNumber(): bool
+    {
+        return self::$duplicateOrderNumber;
+    }
+
     public static function get(): array
     {
         return [

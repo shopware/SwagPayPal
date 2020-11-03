@@ -13,6 +13,7 @@ class Patch extends PayPalApiStruct
 {
     public const OPERATION_ADD = 'add';
     public const OPERATION_REPLACE = 'replace';
+    public const OPERATION_REMOVE = 'remove';
 
     /**
      * @var string

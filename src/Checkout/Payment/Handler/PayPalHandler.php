@@ -26,6 +26,7 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class PayPalHandler extends AbstractPaymentHandler
 {
@@ -164,15 +165,15 @@ class PayPalHandler extends AbstractPaymentHandler
                 $this->orderResource->authorize($paypalOrderId, $salesChannelId, $partnerAttributionId);
             }
         } catch (PayPalApiException $e) {
-            $parameters = $e->getParameters();
-            if (!isset($parameters['name']) || $parameters['name'] !== PayPalApiException::ERROR_CODE_DUPLICATE_ORDER_NUMBER) {
+            if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
+                || (\strpos($e->getMessage(), PayPalApiException::ERROR_CODE_DUPLICATE_INVOICE_ID) === false)) {
                 throw $e;
             }
 
             $this->logger->warning($e->getMessage());
 
             $this->orderResource->update(
-                [$this->orderNumberPatchBuilder->createOrderNumberPatch(null)],
+                [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
                 $paypalOrderId,
                 $salesChannelId,
                 $partnerAttributionId

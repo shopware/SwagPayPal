@@ -11,12 +11,20 @@ use Swag\PayPal\RestApi\V2\Api\Patch;
 
 class OrderNumberPatchBuilder
 {
-    public function createOrderNumberPatch(?string $orderNumber): Patch
+    public function createOrderNumberPatch(string $orderNumber): Patch
     {
         return (new Patch())->assign([
             'op' => Patch::OPERATION_ADD,
             'path' => "/purchase_units/@reference_id=='default'/invoice_id",
             'value' => $orderNumber,
+        ]);
+    }
+
+    public function createRemoveOrderNumberPatch(): Patch
+    {
+        return (new Patch())->assign([
+            'op' => Patch::OPERATION_REMOVE,
+            'path' => "/purchase_units/@reference_id=='default'/invoice_id",
         ]);
     }
 }

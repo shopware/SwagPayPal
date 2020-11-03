@@ -18,6 +18,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Payer\ExecutePayerInfo;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
+use Swag\PayPal\RestApi\V2\Api\Patch;
 use Swag\PayPal\RestApi\V2\RequestUriV2;
 use Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRouteTest;
 use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
@@ -345,6 +346,13 @@ class GuzzleClientMock extends Client
                 throw new \RuntimeException('A PayPal test error occurred.');
             }
 
+            if (\mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER) !== false
+                && CaptureOrderCapture::isDuplicateOrderNumber()) {
+                CaptureOrderCapture::setDuplicateOrderNumber(false);
+
+                throw $this->createClientExceptionDuplicateOrderNumber();
+            }
+
             if (\mb_substr($resourceUri, -8) === '/capture') {
                 return CaptureOrderCapture::get();
             }
@@ -501,6 +509,13 @@ class GuzzleClientMock extends Client
         $jsonString = $this->ensureValidJson(['name' => 'DUPLICATE_TRANSACTION', 'message' => 'Duplicate invoice Id detected.']);
 
         return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_BAD_REQUEST);
+    }
+
+    private function createClientExceptionDuplicateOrderNumber(): ClientException
+    {
+        $jsonString = $this->ensureValidJson(['name' => 'UNPROCESSABLE_ENTITY', 'message' => 'The requested action could not be performed, semantically incorrect, or failed business validation.: Duplicate Invoice ID detected. To avoid a potential duplicate transaction your account setting requires that Invoice Id be unique for each transaction. DUPLICATE_INVOICE_ID']);
+
+        return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     private function createClientExceptionWithInvalidId(): ClientException

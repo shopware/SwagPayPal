@@ -52,6 +52,7 @@ use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentSaleResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
@@ -74,6 +75,7 @@ class PayPalPaymentHandlerTest extends TestCase
     public const PAYER_ID_PAYMENT_INCOMPLETE = 'testPayerIdIncomplete';
     public const PAYER_ID_DUPLICATE_TRANSACTION = 'testPayerIdDuplicateTransaction';
     public const PAYPAL_PATCH_THROWS_EXCEPTION = 'invalidId';
+    public const PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER = 'paypalOrderIdDuplicateOrderNumber';
     private const TEST_CUSTOMER_STREET = 'Ebbinghoff 10';
     private const TEST_CUSTOMER_FIRST_NAME = 'Max';
     private const TEST_CUSTOMER_LAST_NAME = 'Mustermann';
@@ -537,6 +539,26 @@ An error occurred during the communication with PayPal');
             if ($patch->getPath() === "/purchase_units/@reference_id=='default'/invoice_id") {
                 $patchValue = $patch->getValue();
                 static::assertSame(OrderPaymentBuilderTest::TEST_ORDER_NUMBER, $patchValue);
+                static::assertSame(PatchV2::OPERATION_ADD, $patch->getOp());
+            }
+        }
+    }
+
+    public function testFinalizePayPalOrderPatchOrderNumberDuplicate(): void
+    {
+        $request = new Request([
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => self::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER,
+            PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
+        ]);
+        CaptureOrderCapture::setDuplicateOrderNumber(true);
+        $this->assertFinalizeRequest($request);
+
+        $patchData = $this->clientFactory->getClient()->getData();
+        static::assertCount(1, $patchData);
+        foreach ($patchData as $patch) {
+            static::assertInstanceOf(PatchV2::class, $patch);
+            if ($patch->getPath() === "/purchase_units/@reference_id=='default'/invoice_id") {
+                static::assertSame(PatchV2::OPERATION_REMOVE, $patch->getOp());
             }
         }
     }
