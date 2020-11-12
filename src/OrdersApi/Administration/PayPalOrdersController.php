@@ -104,14 +104,16 @@ class PayPalOrdersController extends AbstractController
      *         name="orderTransactionId",
      *         in="path",
      *         description="ID of the order transaction which contains the PayPal payment",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Parameter(
      *         parameter="paypalOrderId",
      *         name="paypalOrderId",
      *         in="path",
      *         description="ID of the PayPal order",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -147,14 +149,16 @@ class PayPalOrdersController extends AbstractController
      *         name="orderTransactionId",
      *         in="path",
      *         description="ID of the order transaction which contains the PayPal payment",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Parameter(
      *         parameter="authorizationId",
      *         name="authorizationId",
      *         in="path",
      *         description="ID of the PayPal authorization",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -190,14 +194,16 @@ class PayPalOrdersController extends AbstractController
      *         name="orderTransactionId",
      *         in="path",
      *         description="ID of the order transaction which contains the PayPal payment",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Parameter(
      *         parameter="captureId",
      *         name="captureId",
      *         in="path",
      *         description="ID of the PayPal capture",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -233,14 +239,16 @@ class PayPalOrdersController extends AbstractController
      *         name="orderTransactionId",
      *         in="path",
      *         description="ID of the order transaction which contains the PayPal payment",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Parameter(
      *         parameter="refundId",
      *         name="refundId",
      *         in="path",
      *         description="ID of the PayPal refund",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -276,56 +284,33 @@ class PayPalOrdersController extends AbstractController
      *         name="orderTransactionId",
      *         in="path",
      *         description="ID of the order transaction which contains the PayPal payment",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Parameter(
      *         parameter="captureId",
      *         name="captureId",
      *         in="path",
      *         description="ID of the PayPal capture",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Parameter(
      *         parameter="paypalOrderId",
      *         name="paypalOrderId",
      *         in="path",
      *         description="ID of the PayPal order",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
-     *     @OA\Parameter(
-     *         parameter="partnerAttributionId",
-     *         name="partnerAttributionId",
-     *         in="body",
-     *         description="Partner Attribution ID. See Swag\PayPal\RestApi\PartnerAttributionId",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         parameter="amount",
-     *         name="amount",
-     *         in="body",
-     *         description="Amount which should be refunded",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         parameter="currency",
-     *         name="currency",
-     *         in="body",
-     *         description="Currency of the refund",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         parameter="invoiceNumber",
-     *         name="invoiceNumber",
-     *         in="body",
-     *         description="Invoice number of the refund",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         parameter="noteToPayer",
-     *         name="noteToPayer",
-     *         in="body",
-     *         description="A note to the payer sent with the refund",
-     *         @OA\Schema(type="string")
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             @OA\Property(property="partnerAttributionId", description="Partner Attribution ID. See Swag\PayPal\RestApi\PartnerAttributionId", type="string"),
+     *             @OA\Property(property="amount", description="Amount which should be refunded", type="string"),
+     *             @OA\Property(property="currency", description="Currency of the refund", type="string"),
+     *             @OA\Property(property="invoiceNumber", description="Invoice number of the refund", type="string"),
+     *             @OA\Property(property="noteToPayer", description="A note to the payer sent with the refund", type="string")
+     *         )
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -376,56 +361,26 @@ class PayPalOrdersController extends AbstractController
      *         name="orderTransactionId",
      *         in="path",
      *         description="ID of the order transaction which contains the PayPal payment",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Parameter(
      *         parameter="authorizationId",
      *         name="authorizationId",
      *         in="path",
      *         description="ID of the PayPal authorization",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
-     *     @OA\Parameter(
-     *         parameter="partnerAttributionId",
-     *         name="partnerAttributionId",
-     *         in="body",
-     *         description="Partner Attribution ID. See Swag\PayPal\RestApi\PartnerAttributionId",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         parameter="amount",
-     *         name="amount",
-     *         in="body",
-     *         description="Amount which should be captured",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         parameter="currency",
-     *         name="currency",
-     *         in="body",
-     *         description="Currency of the capture",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         parameter="invoiceNumber",
-     *         name="invoiceNumber",
-     *         in="body",
-     *         description="Invoice number of the capture",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         parameter="noteToPayer",
-     *         name="noteToPayer",
-     *         in="body",
-     *         description="A note to the payer sent with the capture",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         parameter="isFinal",
-     *         name="isFinal",
-     *         in="body",
-     *         description="Define if this is the final capture",
-     *         @OA\Schema(type="boolean")
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             @OA\Property(property="partnerAttributionId", description="Partner Attribution ID. See Swag\PayPal\RestApi\PartnerAttributionId", type="string"),
+     *             @OA\Property(property="amount", description="Amount which should be captured", type="string"),
+     *             @OA\Property(property="currency", description="Currency of the capture", type="string"),
+     *             @OA\Property(property="invoiceNumber", description="Invoice number of the capture", type="string"),
+     *             @OA\Property(property="noteToPayer", description="A note to the payer sent with the capture", type="string"),
+     *             @OA\Property(property="isFinal", description="Define if this is the final capture", type="boolean")
+     *         )
      *     ),
      *     @OA\Response(
      *         response="200",
@@ -472,21 +427,21 @@ class PayPalOrdersController extends AbstractController
      *         name="orderTransactionId",
      *         in="path",
      *         description="ID of the order transaction which contains the PayPal payment",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
      *     @OA\Parameter(
      *         parameter="authorizationId",
      *         name="authorizationId",
      *         in="path",
      *         description="ID of the PayPal authorization",
-     *         @OA\Schema(type="string")
+     *         @OA\Schema(type="string"),
+     *         required=true
      *     ),
-     *     @OA\Parameter(
-     *         parameter="partnerAttributionId",
-     *         name="partnerAttributionId",
-     *         in="body",
-     *         description="Partner Attribution ID. See Swag\PayPal\RestApi\PartnerAttributionId",
-     *         @OA\Schema(type="string")
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             @OA\Property(property="partnerAttributionId", description="Partner Attribution ID. See Swag\PayPal\RestApi\PartnerAttributionId", type="string")
+     *         )
      *     ),
      *     @OA\Response(
      *         response="204",

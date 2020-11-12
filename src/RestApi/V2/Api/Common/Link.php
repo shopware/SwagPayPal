@@ -12,6 +12,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 abstract class Link extends PayPalApiStruct
 {
     public const RELATION_APPROVE = 'approve';
+    public const RELATION_UP = 'up';
 
     /**
      * @var string
@@ -27,6 +28,11 @@ abstract class Link extends PayPalApiStruct
      * @var string
      */
     protected $method;
+
+    /**
+     * @var string|null
+     */
+    protected $encType;
 
     public function getHref(): string
     {
@@ -56,5 +62,15 @@ abstract class Link extends PayPalApiStruct
     public function setMethod(string $method): void
     {
         $this->method = $method;
+    }
+
+    public function getEncType(): ?string
+    {
+        return $this->encType;
+    }
+
+    public function setEncType(?string $encType): void
+    {
+        $this->encType = $encType;
     }
 }

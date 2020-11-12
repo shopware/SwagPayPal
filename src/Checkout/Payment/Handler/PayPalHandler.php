@@ -17,6 +17,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
+use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
@@ -56,6 +57,11 @@ class PayPalHandler extends AbstractPaymentHandler
     private $orderNumberPatchBuilder;
 
     /**
+     * @var CustomIdPatchBuilder
+     */
+    private $customIdPatchBuilder;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -67,6 +73,7 @@ class PayPalHandler extends AbstractPaymentHandler
         OrderTransactionStateHandler $orderTransactionStateHandler,
         SettingsServiceInterface $settingsService,
         OrderNumberPatchBuilder $orderNumberPatchBuilder,
+        CustomIdPatchBuilder $customIdPatchBuilder,
         LoggerInterface $logger
     ) {
         parent::__construct($orderTransactionRepo);
@@ -75,6 +82,7 @@ class PayPalHandler extends AbstractPaymentHandler
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->settingsService = $settingsService;
         $this->orderNumberPatchBuilder = $orderNumberPatchBuilder;
+        $this->customIdPatchBuilder = $customIdPatchBuilder;
         $this->logger = $logger;
     }
 
@@ -128,19 +136,24 @@ class PayPalHandler extends AbstractPaymentHandler
         string $salesChannelId,
         Context $context,
         string $partnerAttributionId,
-        bool $orderNumberSendNeeded
+        bool $orderDataPatchNeeded
     ): void {
         $transactionId = $transaction->getOrderTransaction()->getId();
-        $settings = $this->settingsService->getSettings($salesChannelId);
         $orderNumber = $transaction->getOrder()->getOrderNumber();
 
-        if ($orderNumberSendNeeded && $orderNumber !== null && $settings->getSendOrderNumber()) {
-            $orderNumberPrefix = (string) $settings->getOrderNumberPrefix();
-            $orderNumber = $orderNumberPrefix . $orderNumber;
+        if ($orderDataPatchNeeded) {
+            $patches = [$this->customIdPatchBuilder->createCustomIdPatch($transactionId)];
+
+            $settings = $this->settingsService->getSettings($salesChannelId);
+            if ($orderNumber !== null && $settings->getSendOrderNumber()) {
+                $orderNumberPrefix = (string) $settings->getOrderNumberPrefix();
+                $orderNumber = $orderNumberPrefix . $orderNumber;
+                $patches[] = $this->orderNumberPatchBuilder->createOrderNumberPatch($orderNumber);
+            }
 
             try {
                 $this->orderResource->update(
-                    [$this->orderNumberPatchBuilder->createOrderNumberPatch($orderNumber)],
+                    $patches,
                     $paypalOrderId,
                     $salesChannelId,
                     $partnerAttributionId
@@ -170,7 +183,7 @@ class PayPalHandler extends AbstractPaymentHandler
                 throw $e;
             }
 
-            $this->logger->warning($e->getMessage());
+            $this->logger->warning($e->getMessage(), ['orderNumber' => $orderNumber]);
 
             $this->orderResource->update(
                 [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],

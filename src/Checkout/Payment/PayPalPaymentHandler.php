@@ -149,7 +149,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $isPlus = $request->query->getBoolean(self::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER);
 
         $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout, $isPlus);
-        $orderNumberSendNeeded = $isExpressCheckout || $isSPBCheckout || $isPlus;
+        $orderDataPatchNeeded = $isExpressCheckout || $isSPBCheckout || $isPlus;
 
         if ($paymentId) {
             $this->plusPuiHandler->handleFinalizePayment(
@@ -159,7 +159,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
                 $paymentId,
                 $payerId,
                 $partnerAttributionId,
-                $orderNumberSendNeeded
+                $orderDataPatchNeeded
             );
 
             return;
@@ -171,7 +171,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             $salesChannelId,
             $context,
             $partnerAttributionId,
-            $orderNumberSendNeeded
+            $orderDataPatchNeeded
         );
     }
 

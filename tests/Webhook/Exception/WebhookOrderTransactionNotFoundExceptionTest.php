@@ -16,14 +16,14 @@ class WebhookOrderTransactionNotFoundExceptionTest extends TestCase
     public function testGetStatusCode(): void
     {
         $webhookType = 'testType';
-        $payPalTransactionId = 'testPayPalTransactionId';
-        $exception = new WebhookOrderTransactionNotFoundException($payPalTransactionId, $webhookType);
+        $reason = 'with the PayPal ID "testPayPalTransactionId"';
+        $exception = new WebhookOrderTransactionNotFoundException($reason, $webhookType);
 
         static::assertSame(
             \sprintf(
-                '[PayPal %s Webhook] Could not find associated order with the PayPal ID "%s"',
+                '[PayPal %s Webhook] Could not find associated order transaction with the PayPal ID "%s"',
                 $webhookType,
-                $payPalTransactionId
+                'testPayPalTransactionId'
             ),
             $exception->getMessage()
         );

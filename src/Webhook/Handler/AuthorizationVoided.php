@@ -8,25 +8,35 @@
 namespace Swag\PayPal\Webhook\Handler;
 
 use Shopware\Core\Framework\Context;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
+use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
+use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
 class AuthorizationVoided extends AbstractWebhookHandler
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getEventType(): string
     {
         return WebhookEventTypes::PAYMENT_AUTHORIZATION_VOIDED;
     }
 
     /**
-     * {@inheritdoc}
+     * @param WebhookV1|WebhookV2 $webhook
      */
-    public function invoke(Webhook $webhook, Context $context): void
+    public function invoke(PayPalApiStruct $webhook, Context $context): void
     {
-        $orderTransaction = $this->getOrderTransaction($webhook, $context);
+        if ($webhook instanceof WebhookV1) {
+            $orderTransaction = $this->getOrderTransaction($webhook, $context);
+        } else {
+            /** @var Authorization|null $authorization */
+            $authorization = $webhook->getResource();
+            if ($authorization === null) {
+                throw new WebhookException($this->getEventType(), 'Given webhook does not have needed resource data');
+            }
+            $orderTransaction = $this->getOrderTransactionV2($authorization, $context);
+        }
 
         $this->orderTransactionStateHandler->cancel($orderTransaction->getId(), $context);
     }

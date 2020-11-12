@@ -19,6 +19,7 @@
     <issueHandlers>
         <MoreSpecificImplementedParamType>
             <errorLevel type="info">
+                <file name="src/Webhook/Handler/*.php"/>
                 <file name="src/Pos/Sync/Product/Util/ProductGroupingCollection.php"/>
                 <file name="src/Pos/DataAbstractionLayer/Entity/*Collection.php"/>
                 <file name="src/Pos/MessageQueue/Handler/Sync/*Handler.php"/>

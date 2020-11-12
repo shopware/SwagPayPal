@@ -16,6 +16,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -114,6 +115,7 @@ trait OrderTransactionTrait
         if ($withCustomField) {
             $orderTransactionData['customFields'] = [
                 SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID => OrderTransactionRepoMock::WEBHOOK_PAYMENT_ID,
+                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID => GetCapturedOrderCapture::ID,
             ];
         }
 

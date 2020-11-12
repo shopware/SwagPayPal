@@ -9,11 +9,13 @@ namespace Swag\PayPal\Test\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
-use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\RestApi\V2\Api\Webhook;
+use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Webhook\Handler\AuthorizationVoided;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
-class AuthorizationVoidedTest extends AbstractWebhookHandlerTestCase
+class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
 {
     public function testGetEventType(): void
     {
@@ -22,19 +24,25 @@ class AuthorizationVoidedTest extends AbstractWebhookHandlerTestCase
 
     public function testInvoke(): void
     {
-        $webhook = $this->createWebhookV1();
+        $webhook = $this->createWebhookV2(WebhookV2::RESOURCE_TYPE_AUTHORIZATION);
         $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook);
     }
 
-    public function testInvokeWithoutParentPayment(): void
+    public function testInvokeWithoutResource(): void
     {
-        $this->assertInvokeWithoutParentPayment(WebhookEventTypes::PAYMENT_AUTHORIZATION_VOIDED);
+        $this->assertInvokeWithoutResource();
+    }
+
+    public function testInvokeWithoutCustomId(): void
+    {
+        $this->assertInvokeWithoutCustomId(Webhook::RESOURCE_TYPE_AUTHORIZATION);
     }
 
     public function testInvokeWithoutTransaction(): void
     {
-        $webhook = $this->createWebhookV1(OrderTransactionRepoMock::WEBHOOK_WITHOUT_TRANSACTION);
-        $reason = \sprintf('with the PayPal ID "%s"', OrderTransactionRepoMock::WEBHOOK_WITHOUT_TRANSACTION);
+        $orderTransactionId = Uuid::randomHex();
+        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_AUTHORIZATION, $orderTransactionId);
+        $reason = \sprintf('with custom ID "%s" (order transaction ID)', $orderTransactionId);
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_AUTHORIZATION_VOIDED, $webhook, $reason);
     }
 

@@ -30,6 +30,7 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Patch\AmountPatchBuilder;
+use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder as OrderNumberPatchBuilderV2;
 use Swag\PayPal\OrdersApi\Patch\ShippingAddressPatchBuilder as ShippingAddressPatchBuilderV2;
 use Swag\PayPal\OrdersApi\Patch\ShippingNamePatchBuilder;
@@ -530,15 +531,21 @@ An error occurred during the communication with PayPal');
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => 'paypalOrderId',
             PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
         ]);
-        $this->assertFinalizeRequest($request);
+        $orderTransactionId = $this->assertFinalizeRequest($request);
 
         $patchData = $this->clientFactory->getClient()->getData();
-        static::assertCount(1, $patchData);
+        static::assertCount(2, $patchData);
         foreach ($patchData as $patch) {
             static::assertInstanceOf(PatchV2::class, $patch);
             if ($patch->getPath() === "/purchase_units/@reference_id=='default'/invoice_id") {
                 $patchValue = $patch->getValue();
                 static::assertSame(OrderPaymentBuilderTest::TEST_ORDER_NUMBER, $patchValue);
+                static::assertSame(PatchV2::OPERATION_ADD, $patch->getOp());
+            }
+
+            if ($patch->getPath() === "/purchase_units/@reference_id=='default'/custom_id") {
+                $patchValue = $patch->getValue();
+                static::assertSame($orderTransactionId, $patchValue);
                 static::assertSame(PatchV2::OPERATION_ADD, $patch->getOp());
             }
         }
@@ -594,6 +601,7 @@ An error occurred during the communication with PayPal');
                 $orderTransactionStateHandler,
                 $settingsService,
                 new OrderNumberPatchBuilderV2(),
+                new CustomIdPatchBuilder(),
                 $logger
             ),
             new PlusPuiHandler(
@@ -621,7 +629,7 @@ An error occurred during the communication with PayPal');
     private function assertFinalizeRequest(
         Request $request,
         string $state = OrderTransactionStates::STATE_PAID
-    ): void {
+    ): string {
         $handler = $this->createPayPalPaymentHandler();
 
         $salesChannelContext = Generator::createSalesChannelContext();
@@ -635,5 +643,7 @@ An error occurred during the communication with PayPal');
         );
 
         $this->assertOrderTransactionState($state, $transactionId, $salesChannelContext->getContext());
+
+        return $transactionId;
     }
 }

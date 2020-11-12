@@ -37,7 +37,6 @@ Check built JS files:
     services:
         -   name: mysql:5.7
             alias: mysql
-    allow_failure: true
     script:
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal

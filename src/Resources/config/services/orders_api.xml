@@ -44,6 +44,8 @@
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
         </service>
 
+        <service id="Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder"/>
+
         <service id="Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder"/>
 
         <service id="Swag\PayPal\OrdersApi\Patch\ShippingAddressPatchBuilder"/>

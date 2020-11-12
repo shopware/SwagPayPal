@@ -7,28 +7,10 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 
-use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\Amount;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\Link;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown;
 
-class Refund extends PayPalApiStruct
+class Refund extends Payment
 {
-    /**
-     * @var string
-     */
-    protected $status;
-
-    /**
-     * @var string
-     */
-    protected $id;
-
-    /**
-     * @var Amount|null
-     */
-    protected $amount;
-
     /**
      * @var string|null
      */
@@ -43,51 +25,6 @@ class Refund extends PayPalApiStruct
      * @var SellerPayableBreakdown
      */
     protected $sellerPayableBreakdown;
-
-    /**
-     * @var Link[]
-     */
-    protected $links;
-
-    /**
-     * @var string
-     */
-    protected $createTime;
-
-    /**
-     * @var string
-     */
-    protected $updateTime;
-
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(string $status): void
-    {
-        $this->status = $status;
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getAmount(): ?Amount
-    {
-        return $this->amount;
-    }
-
-    public function setAmount(?Amount $amount): void
-    {
-        $this->amount = $amount;
-    }
 
     public function getInvoiceId(): ?string
     {
@@ -117,41 +54,5 @@ class Refund extends PayPalApiStruct
     public function setSellerPayableBreakdown(SellerPayableBreakdown $sellerPayableBreakdown): void
     {
         $this->sellerPayableBreakdown = $sellerPayableBreakdown;
-    }
-
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
-    {
-        return $this->links;
-    }
-
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
-    {
-        $this->links = $links;
-    }
-
-    public function getCreateTime(): string
-    {
-        return $this->createTime;
-    }
-
-    public function setCreateTime(string $createTime): void
-    {
-        $this->createTime = $createTime;
-    }
-
-    public function getUpdateTime(): string
-    {
-        return $this->updateTime;
-    }
-
-    public function setUpdateTime(string $updateTime): void
-    {
-        $this->updateTime = $updateTime;
     }
 }

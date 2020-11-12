@@ -30,7 +30,7 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
 
     public const WEBHOOK_PAYMENT_ID = 'webhookIdWithTransaction';
 
-    public const WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION = 'webhookIdWithoutTransaction';
+    public const WEBHOOK_WITHOUT_TRANSACTION = 'webhookIdWithoutTransaction';
 
     /**
      * @var array
@@ -58,7 +58,7 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
             $filter = $filters[0];
         }
 
-        if ($filter instanceof EqualsFilter && $filter->getValue() === self::WEBHOOK_PAYMENT_ID_WITHOUT_TRANSACTION) {
+        if ($filter instanceof EqualsFilter && $filter->getValue() === self::WEBHOOK_WITHOUT_TRANSACTION) {
             return $this->createEntitySearchResultWithoutTransaction($criteria, $context);
         }
 

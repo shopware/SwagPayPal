@@ -8,7 +8,9 @@
 namespace Swag\PayPal\Test\Mock\Webhook\Handler;
 
 use Shopware\Core\Framework\Context;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
+use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Webhook\WebhookHandler;
 
@@ -30,7 +32,10 @@ class DummyWebhook implements WebhookHandler
         return self::EVENT_TYPE;
     }
 
-    public function invoke(Webhook $webhook, Context $context): void
+    /**
+     * @param WebhookV1|WebhookV2 $webhook
+     */
+    public function invoke(PayPalApiStruct $webhook, Context $context): void
     {
         $this->orderTransactionRepo->update([[self::ORDER_TRANSACTION_UPDATE_DATA_KEY => true]], $context);
     }

@@ -38,11 +38,14 @@ class PayPalPaymentMethodController extends AbstractController
      *     description="Sets PayPal as the default payment method for a given Saleschannel, or all.",
      *     operationId="setPayPalAsDefault",
      *     tags={"Admin Api", "SwagPayPalPaymentMethod"},
-     *     @OA\Parameter(
-     *         name="salesChannelId",
-     *         in="body",
-     *         description="The id of the Saleschannel where PayPal should be set as the default payment method. Set to null to set PayPal as default for every Saleschannel.",
-     *         @OA\Schema(type="string"),
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="salesChannelId",
+     *                 description="The id of the Saleschannel where PayPal should be set as the default payment method. Set to null to set PayPal as default for every Saleschannel.",
+     *                 type="string"
+     *             )
+     *         )
      *     ),
      *     @OA\Response(
      *         response="204"

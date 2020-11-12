@@ -221,7 +221,7 @@ class PlusPuiHandler
                 throw $e;
             }
 
-            $this->logger->warning($e->getMessage());
+            $this->logger->warning($e->getMessage(), ['orderNumber' => $orderNumber]);
 
             $this->paymentResource->patch(
                 [

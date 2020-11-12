@@ -7,9 +7,9 @@
 
 namespace Swag\PayPal\Test\Webhook\Handler;
 
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Webhook\Handler\SaleComplete;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
@@ -22,20 +22,27 @@ class SaleCompleteTest extends AbstractWebhookHandlerTestCase
 
     public function testInvoke(): void
     {
-        $this->assertInvoke(OrderTransactionStates::STATE_PAID);
+        $webhook = $this->createWebhookV1();
+        $this->assertInvoke(OrderTransactionStates::STATE_PAID, $webhook);
+    }
+
+    public function testInvokeWithoutParentPayment(): void
+    {
+        $this->assertInvokeWithoutParentPayment(WebhookEventTypes::PAYMENT_SALE_COMPLETED);
     }
 
     public function testInvokeWithoutTransaction(): void
     {
-        $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_SALE_COMPLETED);
+        $webhook = $this->createWebhookV1(OrderTransactionRepoMock::WEBHOOK_WITHOUT_TRANSACTION);
+        $reason = \sprintf('with the PayPal ID "%s"', OrderTransactionRepoMock::WEBHOOK_WITHOUT_TRANSACTION);
+        $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_SALE_COMPLETED, $webhook, $reason);
     }
 
     protected function createWebhookHandler(): SaleComplete
     {
         return new SaleComplete(
-            $this->definitionRegistry,
-            new OrderTransactionStateHandler($this->stateMachineRegistry),
-            new OrderTransactionDefinition()
+            $this->orderTransactionRepository,
+            new OrderTransactionStateHandler($this->stateMachineRegistry)
         );
     }
 }

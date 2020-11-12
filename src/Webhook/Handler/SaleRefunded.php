@@ -8,23 +8,21 @@
 namespace Swag\PayPal\Webhook\Handler;
 
 use Shopware\Core\Framework\Context;
-use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
 class SaleRefunded extends AbstractWebhookHandler
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getEventType(): string
     {
         return WebhookEventTypes::PAYMENT_SALE_REFUNDED;
     }
 
     /**
-     * {@inheritdoc}
+     * @param WebhookV1 $webhook
      */
-    public function invoke(Webhook $webhook, Context $context): void
+    public function invoke(PayPalApiStruct $webhook, Context $context): void
     {
         $orderTransaction = $this->getOrderTransaction($webhook, $context);
 

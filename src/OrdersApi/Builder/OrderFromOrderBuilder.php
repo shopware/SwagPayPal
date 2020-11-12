@@ -91,6 +91,7 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
 
         $purchaseUnit->setAmount($amount);
         $purchaseUnit->setShipping($shipping);
+        $purchaseUnit->setCustomId($orderTransaction->getId());
         $orderNumber = $order->getOrderNumber();
         if ($orderNumber !== null) {
             $purchaseUnit->setInvoiceId($orderNumber);
