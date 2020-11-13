@@ -7,26 +7,20 @@
 
 namespace Swag\PayPal\Webhook\Registration;
 
-use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
+use Shopware\Core\System\SystemConfig\Service\ConfigurationService;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @RouteScope(scopes={"api"})
  */
-class WebhookSystemConfigController
+class WebhookSystemConfigController extends SystemConfigController
 {
     public const WEBHOOK_ERRORS_KEY = 'payPalWebhookErrors';
-
-    /**
-     * @var SystemConfigController
-     */
-    private $inner;
 
     /**
      * @var SettingsServiceInterface
@@ -39,48 +33,16 @@ class WebhookSystemConfigController
     private $webhookSystemConfigHelper;
 
     public function __construct(
-        SystemConfigController $inner,
+        ConfigurationService $configurationService,
+        SystemConfigService $systemConfig,
         SettingsServiceInterface $settingsService,
         WebhookSystemConfigHelper $webhookSystemConfigHelper
     ) {
-        $this->inner = $inner;
+        parent::__construct($configurationService, $systemConfig);
         $this->settingsService = $settingsService;
         $this->webhookSystemConfigHelper = $webhookSystemConfigHelper;
     }
 
-    /**
-     * @Route("/api/v{version}/_action/system-config/check", name="api.action.core.system-config.check", methods={"GET"})
-     * @Acl({"system_config:read"})
-     */
-    public function checkConfiguration(Request $request): JsonResponse
-    {
-        return $this->inner->checkConfiguration($request);
-    }
-
-    /**
-     * @Route("/api/v{version}/_action/system-config/schema", name="api.action.core.system-config", methods={"GET"})
-     * @Acl({"system_config:read"})
-     *
-     * @throws MissingRequestParameterException
-     */
-    public function getConfiguration(Request $request): JsonResponse
-    {
-        return $this->inner->getConfiguration($request);
-    }
-
-    /**
-     * @Route("/api/v{version}/_action/system-config", name="api.action.core.system-config.value", methods={"GET"})
-     * @Acl({"system_config:read"})
-     */
-    public function getConfigurationValues(Request $request): JsonResponse
-    {
-        return $this->inner->getConfigurationValues($request);
-    }
-
-    /**
-     * @Route("/api/v{version}/_action/system-config", name="api.action.core.save.system-config", methods={"POST"})
-     * @Acl({"system_config:update", "system_config:create", "system_config:delete"})
-     */
     public function saveConfiguration(Request $request): JsonResponse
     {
         $salesChannelId = $request->query->get('salesChannelId');
@@ -88,7 +50,7 @@ class WebhookSystemConfigController
         $oldSettings = $this->settingsService->getSettings($salesChannelId, false);
         $kvs = $request->request->all();
 
-        $response = $this->inner->saveConfiguration($request);
+        $response = parent::saveConfiguration($request);
 
         if (!$this->webhookSystemConfigHelper->configHasPayPalSettings($kvs)) {
             return $response;
@@ -105,10 +67,6 @@ class WebhookSystemConfigController
         }, $errors)]);
     }
 
-    /**
-     * @Route("/api/v{version}/_action/system-config/batch", name="api.action.core.save.system-config.batch", methods={"POST"})
-     * @Acl({"system_config:update", "system_config:create", "system_config:delete"})
-     */
     public function batchSaveConfiguration(Request $request): JsonResponse
     {
         $oldSettings = [];
@@ -127,7 +85,7 @@ class WebhookSystemConfigController
             }
         }
 
-        $response = $this->inner->batchSaveConfiguration($request);
+        $response = parent::batchSaveConfiguration($request);
 
         if (empty($oldSettings)) {
             return $response;

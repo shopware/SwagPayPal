@@ -53,8 +53,11 @@
         </service>
 
         <!-- registration -->
-        <service id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigController" decorates="Shopware\Core\System\SystemConfig\Api\SystemConfigController" public="true">
-            <argument type="service" id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigController.inner"/>
+        <service id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigController"
+                 decorates="Shopware\Core\System\SystemConfig\Api\SystemConfigController"
+                 public="true">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\Service\ConfigurationService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper"/>
         </service>

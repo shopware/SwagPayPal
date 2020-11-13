@@ -31,14 +31,19 @@ class WebhookSystemConfigControllerTest extends TestCase
     private const OTHER_CLIENT_SECRET = 'otherClientSecret';
 
     /**
-     * @var SystemConfigController
+     * @var ConfigurationService
      */
-    private $innerController;
+    private $configurationService;
 
     /**
      * @var SystemConfigService
      */
     private $systemConfigService;
+
+    /**
+     * @var SystemConfigController
+     */
+    private $undecoratedController;
 
     /**
      * @var WebhookServiceMock
@@ -47,14 +52,15 @@ class WebhookSystemConfigControllerTest extends TestCase
 
     protected function setUp(): void
     {
+        /** @var ConfigurationService $configurationService */
+        $configurationService = $this->getContainer()->get(ConfigurationService::class);
+        $this->configurationService = $configurationService;
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
         $this->systemConfigService = $systemConfigService;
-        /** @var ConfigurationService $configurationService */
-        $configurationService = $this->getContainer()->get(ConfigurationService::class);
 
-        // creating new instance to avoid decoration
-        $this->innerController = new SystemConfigController($configurationService, $systemConfigService);
+        // creating new instance without decoration
+        $this->undecoratedController = new SystemConfigController($configurationService, $systemConfigService);
 
         $this->webhookService = new WebhookServiceMock();
     }
@@ -67,7 +73,7 @@ class WebhookSystemConfigControllerTest extends TestCase
         $newConfig['null'][SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox'] = false;
         $newConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox'] = false;
 
-        $this->innerController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
 
         $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
 
@@ -88,7 +94,7 @@ class WebhookSystemConfigControllerTest extends TestCase
         $newConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSecret'] = self::OTHER_CLIENT_ID;
         $newConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'] = self::OTHER_CLIENT_SECRET;
 
-        $this->innerController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
 
         $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
 
@@ -112,7 +118,7 @@ class WebhookSystemConfigControllerTest extends TestCase
         $newConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId'] = self::OTHER_CLIENT_ID;
         $newConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret'] = self::OTHER_CLIENT_SECRET;
 
-        $this->innerController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
 
         $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
 
@@ -130,7 +136,7 @@ class WebhookSystemConfigControllerTest extends TestCase
         $oldConfig = $this->getDefaultConfig();
         $newConfig = $this->getDefaultConfig();
 
-        $this->innerController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
 
         $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
 
@@ -144,7 +150,7 @@ class WebhookSystemConfigControllerTest extends TestCase
         $newConfig = $this->getDefaultConfig()[Defaults::SALES_CHANNEL];
         $newConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox'] = false;
 
-        $this->innerController->saveConfiguration($this->createSingleRequest($oldConfig, Defaults::SALES_CHANNEL));
+        $this->undecoratedController->saveConfiguration($this->createSingleRequest($oldConfig, Defaults::SALES_CHANNEL));
         $this->createWebhookSystemConfigController()->saveConfiguration($this->createSingleRequest($newConfig, Defaults::SALES_CHANNEL));
 
         static::assertFalse($this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox', Defaults::SALES_CHANNEL));
@@ -161,7 +167,7 @@ class WebhookSystemConfigControllerTest extends TestCase
         $newConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSecret'] = self::OTHER_CLIENT_ID;
         $newConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'] = self::OTHER_CLIENT_SECRET;
 
-        $this->innerController->saveConfiguration($this->createSingleRequest($oldConfig, null));
+        $this->undecoratedController->saveConfiguration($this->createSingleRequest($oldConfig, null));
         $this->createWebhookSystemConfigController()->saveConfiguration($this->createSingleRequest($newConfig, null));
 
         static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSecret'));
@@ -179,7 +185,7 @@ class WebhookSystemConfigControllerTest extends TestCase
         $newConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId'] = self::OTHER_CLIENT_ID;
         $newConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret'] = self::OTHER_CLIENT_SECRET;
 
-        $this->innerController->saveConfiguration($this->createSingleRequest($oldConfig, Defaults::SALES_CHANNEL));
+        $this->undecoratedController->saveConfiguration($this->createSingleRequest($oldConfig, Defaults::SALES_CHANNEL));
         $this->createWebhookSystemConfigController()->saveConfiguration($this->createSingleRequest($newConfig, Defaults::SALES_CHANNEL));
 
         static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId', Defaults::SALES_CHANNEL));
@@ -194,7 +200,7 @@ class WebhookSystemConfigControllerTest extends TestCase
         $oldConfig = $this->getDefaultConfig()['null'];
         $newConfig = $this->getDefaultConfig()['null'];
 
-        $this->innerController->saveConfiguration($this->createSingleRequest($oldConfig, null));
+        $this->undecoratedController->saveConfiguration($this->createSingleRequest($oldConfig, null));
         $this->createWebhookSystemConfigController()->saveConfiguration($this->createSingleRequest($newConfig, null));
 
         static::assertEmpty($this->webhookService->getDeregistrations());
@@ -207,7 +213,8 @@ class WebhookSystemConfigControllerTest extends TestCase
         $settingsService = $this->getContainer()->get(SettingsService::class);
 
         return new WebhookSystemConfigController(
-            $this->innerController,
+            $this->configurationService,
+            $this->systemConfigService,
             $settingsService,
             new WebhookSystemConfigHelper(
                 new NullLogger(),
