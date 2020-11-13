@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-182 - Webhook-Registrierung verbessert
+
 # 1.10.0
 - PPI-159 - ACL-Privilegien zu den PayPal-Modulen hinzugefügt
 - PPI-161 - Korrigiert Fehler bei Eingabe von Zugangsdaten im First-Run-Wizard
