@@ -1,7 +1,8 @@
 import template from './swag-paypal-payment-detail.html.twig';
 import './swag-paypal-payment-detail.scss';
 
-const { Component, Mixin, Filter, Context } = Shopware;
+const { Component, Filter, Context } = Shopware;
+const { isEmpty } = Shopware.Utils.types;
 const Criteria = Shopware.Data.Criteria;
 
 Component.register('swag-paypal-payment-detail', {
@@ -9,26 +10,21 @@ Component.register('swag-paypal-payment-detail', {
 
     inject: [
         'SwagPayPalPaymentService',
+        'SwagPayPalOrderService',
         'repositoryFactory'
     ],
 
-    mixins: [
-        Mixin.getByName('notification')
-    ],
+    mixins: ['notification'],
 
     data() {
         return {
             order: {},
+            orderTransaction: {},
+            paypalOrder: {},
             paymentResource: {},
-            relatedResources: [],
             isLoading: true,
-            createDateTime: '',
-            updateDateTime: '',
-            currency: '',
-            amount: { details: { subtotal: 0 } },
-            payerId: '',
             orderTransactionState: null,
-            showPaymentDetails: true
+            invalidResourceError: false
         };
     },
 
@@ -37,59 +33,27 @@ Component.register('swag-paypal-payment-detail', {
             return Filter.getByName('date');
         },
 
-        relatedResourceColumns() {
-            return [
-                {
-                    property: 'type',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.type'),
-                    rawData: true
-                },
-                {
-                    property: 'total',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.amount'),
-                    rawData: true
-                },
-                {
-                    property: 'id',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.trackingId'),
-                    rawData: true
-                },
-                {
-                    property: 'status',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.state'),
-                    rawData: true
-                },
-                {
-                    property: 'transactionFee',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.transactionFee'),
-                    rawData: true
-                },
-                {
-                    property: 'paymentMode',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.paymentMode'),
-                    rawData: true
-                },
-                {
-                    property: 'create',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.createTime'),
-                    rawData: true
-                },
-                {
-                    property: 'update',
-                    label: this.$tc('swag-paypal-payment.transactionHistory.types.updateTime'),
-                    rawData: true
-                }
-            ];
-        },
         showCanceledPaymentError() {
             return this.isLoading === false
-                && this.showPaymentDetails === false
+                && this.showPayPalPayment === false
+                && this.showPayPalOrder === false
                 && this.orderTransactionState === 'failed';
         },
+
         showSandboxLiveError() {
             return this.isLoading === false
-                && this.showPaymentDetails === false
+                && this.showPayPalPayment === false
+                && this.showPayPalOrder === false
+                && this.invalidResourceError === true
                 && this.orderTransactionState !== 'failed';
+        },
+
+        showPayPalPayment() {
+            return isEmpty(this.paymentResource) === false;
+        },
+
+        showPayPalOrder() {
+            return isEmpty(this.paypalOrder) === false;
         }
     },
 
@@ -118,130 +82,77 @@ Component.register('swag-paypal-payment-detail', {
 
             orderRepository.get(orderId, Context.api, orderCriteria).then((order) => {
                 this.order = order;
-                const lastTransactionIndex = order.transactions.length - 1;
-                this.orderTransactionState = order.transactions[lastTransactionIndex].stateMachineState.technicalName;
+                this.orderTransaction = order.transactions[order.transactions.length - 1];
+                this.orderTransactionState = this.orderTransaction.stateMachineState.technicalName;
 
-                if (order.transactions[lastTransactionIndex].customFields === null) {
+                if (this.orderTransaction.customFields === null) {
                     this.isLoading = false;
-                    this.showPaymentDetails = false;
 
                     return;
                 }
-                const paypalPaymentId = order.transactions[lastTransactionIndex].customFields.swag_paypal_transaction_id;
-                this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId).then((payment) => {
-                    this.paymentResource = payment;
-                    this.setRelatedResources();
-                    this.createDateTime = this.formatDate(this.paymentResource.create_time);
-                    this.updateDateTime = this.formatDate(this.paymentResource.update_time);
-                    this.currency = this.paymentResource.transactions[0].amount.currency;
-                    this.amount = this.paymentResource.transactions[0].amount;
-                    if (this.paymentResource.payer && this.paymentResource.payer.payer_info) {
-                        this.payerId = this.paymentResource.payer.payer_info.payer_id;
-                    }
+
+                const paypalPaymentId = this.orderTransaction.customFields.swag_paypal_transaction_id;
+                if (paypalPaymentId) {
+                    this.handlePayPalPayment(paypalPaymentId);
+                }
+                const paypalOrderId = this.orderTransaction.customFields.swag_paypal_order_id;
+                if (!paypalOrderId) {
                     this.isLoading = false;
-                }).catch((errorResponse) => {
-                    if (errorResponse.response.data.errors[0].meta.parameters.name
-                        && errorResponse.response.data.errors[0].meta.parameters.name === 'INVALID_RESOURCE_ID'
-                    ) {
-                        this.isLoading = false;
-                        this.showPaymentDetails = false;
 
-                        return;
-                    }
+                    return;
+                }
 
-                    try {
-                        this.createNotificationError({
-                            title: this.$tc('swag-paypal-payment.paymentDetails.error.title'),
-                            message: errorResponse.response.data.errors[0].detail,
-                            autoClose: false
-                        });
-                    } catch (e) {
-                        this.createNotificationError({
-                            title: this.$tc('swag-paypal-payment.paymentDetails.error.title'),
-                            message: errorResponse.message,
-                            autoClose: false
-                        });
-                    } finally {
-                        this.isLoading = false;
-                    }
-                });
+                this.handlePayPalOrder(paypalOrderId);
             });
         },
 
-        formatDate(dateTime) {
-            return this.dateFilter(dateTime, {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+        handlePayPalOrder(paypalOrderId) {
+            this.SwagPayPalOrderService.getOrderDetails(this.orderTransaction.id, paypalOrderId).then((paypalOrder) => {
+                this.paypalOrder = paypalOrder;
+                this.isLoading = false;
+            }).catch(this.handleError);
         },
 
-        setRelatedResources() {
-            const rawRelatedResources = this.paymentResource.transactions[0].related_resources;
-
-            rawRelatedResources.forEach((relatedResource) => {
-                if (relatedResource.sale) {
-                    this.pushRelatedResource('sale', relatedResource.sale);
-                }
-
-                if (relatedResource.authorization) {
-                    this.pushRelatedResource('authorization', relatedResource.authorization);
-                }
-
-                if (relatedResource.order) {
-                    this.pushRelatedResource('order', relatedResource.order);
-                }
-
-                if (relatedResource.refund) {
-                    this.pushRelatedResource('refund', relatedResource.refund);
-                }
-
-                if (relatedResource.capture) {
-                    this.pushRelatedResource('capture', relatedResource.capture);
-                }
-            });
+        handlePayPalPayment(paypalPaymentId) {
+            this.SwagPayPalPaymentService.getPaymentDetails(this.order.id, paypalPaymentId).then((payment) => {
+                this.paymentResource = payment;
+                this.isLoading = false;
+            }).catch(this.handleError);
         },
 
-        pushRelatedResource(type, relatedResource) {
-            let transactionFee = null;
-            const currency = relatedResource.amount.currency;
-            if (relatedResource.transaction_fee) {
-                transactionFee = `${relatedResource.transaction_fee.value} ${currency}`;
+        handleError(errorResponse) {
+            if (errorResponse.response.data.errors[0].meta.parameters.name
+                && errorResponse.response.data.errors[0].meta.parameters.name === 'INVALID_RESOURCE_ID'
+            ) {
+                this.invalidResourceError = true;
+                this.isLoading = false;
+
+                return;
             }
 
-            this.relatedResources.push({
-                id: relatedResource.id,
-                type: this.$tc(`swag-paypal-payment.transactionHistory.states.${type}`),
-                total: `${relatedResource.amount.total} ${currency}`,
-                create: this.formatDate(relatedResource.create_time),
-                createRaw: relatedResource.create_time,
-                update: this.formatDate(relatedResource.update_time),
-                transactionFee: transactionFee,
-                status: relatedResource.state,
-                paymentMode: relatedResource.payment_mode
-            });
-
-            this.relatedResources.sort((a, b) => {
-                const dateA = new Date(a.createRaw);
-                const dateB = new Date(b.createRaw);
-
-                return dateA - dateB;
-            });
-        },
-
-        resetDataAttributes() {
-            this.paymentResource = {};
-            this.relatedResources = [];
-            this.isLoading = true;
-            this.createDateTime = '';
-            this.updateDateTime = '';
-            this.currency = '';
-            this.amount = {};
+            try {
+                this.createNotificationError({
+                    message: `${this.$tc('swag-paypal-payment.paymentDetails.error.title')}: ${errorResponse.response.data.errors[0].detail}`,
+                    autoClose: false
+                });
+            } catch (e) {
+                this.createNotificationError({
+                    message: `${this.$tc('swag-paypal-payment.paymentDetails.error.title')}: ${errorResponse.message}`,
+                    autoClose: false
+                });
+            } finally {
+                this.isLoading = false;
+            }
         },
 
         emitIdentifier() {
             const orderNumber = this.order !== null ? this.order.orderNumber : '';
             this.$emit('identifier-change', orderNumber);
+        },
+
+        resetDataAttributes() {
+            this.isLoading = true;
+            this.paypalOrder = {};
         }
     }
 });

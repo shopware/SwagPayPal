@@ -33,4 +33,20 @@ trait PaymentMethodTrait
             ],
         ], $context);
     }
+
+    protected function removePayPalFromDefaultsSalesChannel(string $paypalPaymentMethodId, ?Context $context = null): void
+    {
+        if ($context === null) {
+            $context = Context::createDefaultContext();
+        }
+
+        /** @var EntityRepositoryInterface $salesChannelPaymentRepo */
+        $salesChannelPaymentRepo = $this->getContainer()->get('sales_channel_payment_method.repository');
+        $salesChannelPaymentRepo->delete([
+            [
+                'salesChannelId' => Defaults::SALES_CHANNEL,
+                'paymentMethodId' => $paypalPaymentMethodId,
+            ],
+        ], $context);
+    }
 }

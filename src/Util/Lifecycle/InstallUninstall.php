@@ -24,8 +24,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Country\Exception\CountryNotFoundException;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaDefinition;
@@ -40,7 +40,7 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 
 class InstallUninstall
 {
-    private const PAYPAL_PUI_AVAILABILITY_RULE_NAME = 'PayPalPuiAvailabilityRule';
+    public const PAYPAL_PUI_AVAILABILITY_RULE_NAME = 'PayPalPuiAvailabilityRule';
 
     /**
      * @var EntityRepositoryInterface

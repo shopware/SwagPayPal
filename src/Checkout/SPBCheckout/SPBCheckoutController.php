@@ -7,164 +7,55 @@
 
 namespace Swag\PayPal\Checkout\SPBCheckout;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
-use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
-use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Payment\Builder\CartPaymentBuilderInterface;
-use Swag\PayPal\Payment\Builder\OrderPaymentBuilderInterface;
-use Swag\PayPal\Payment\Patch\PayerInfoPatchBuilder;
-use Swag\PayPal\Payment\Patch\ShippingAddressPatchBuilder;
-use Swag\PayPal\PayPal\Api\Payment;
-use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
-use Swag\PayPal\PayPal\PartnerAttributionId;
-use Swag\PayPal\PayPal\Resource\PaymentResource;
-use Swag\PayPal\Util\PaymentTokenExtractor;
+use Swag\PayPal\Checkout\SPBCheckout\SalesChannel\AbstractSPBCreateOrderRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @deprecated tag:v3.0.0 - Will be removed. Use SPBCreateOrderRoute instead
+ */
 class SPBCheckoutController extends AbstractController
 {
-    private const FAKE_URL = 'https://www.example.com/';
+    /**
+     * @var AbstractSPBCreateOrderRoute
+     */
+    private $createOrderRoute;
 
     /**
-     * @var CartPaymentBuilderInterface
+     * @var LoggerInterface
      */
-    private $cartPaymentBuilder;
+    private $logger;
 
-    /**
-     * @var OrderPaymentBuilderInterface
-     */
-    private $orderPaymentBuilder;
-
-    /**
-     * @var CartService
-     */
-    private $cartService;
-
-    /**
-     * @var PaymentResource
-     */
-    private $paymentResource;
-
-    /**
-     * @var PayerInfoPatchBuilder
-     */
-    private $payerInfoPatchBuilder;
-
-    /**
-     * @var ShippingAddressPatchBuilder
-     */
-    private $shippingAddressPatchBuilder;
-
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderRepository;
-
-    public function __construct(
-        CartPaymentBuilderInterface $cartPaymentBuilder,
-        OrderPaymentBuilderInterface $orderPaymentBuilder,
-        CartService $cartService,
-        PaymentResource $paymentResource,
-        PayerInfoPatchBuilder $payerInfoPatchBuilder,
-        ShippingAddressPatchBuilder $shippingAddressPatchBuilder,
-        EntityRepositoryInterface $orderRepository
-    ) {
-        $this->cartPaymentBuilder = $cartPaymentBuilder;
-        $this->orderPaymentBuilder = $orderPaymentBuilder;
-        $this->cartService = $cartService;
-        $this->paymentResource = $paymentResource;
-        $this->payerInfoPatchBuilder = $payerInfoPatchBuilder;
-        $this->shippingAddressPatchBuilder = $shippingAddressPatchBuilder;
-        $this->orderRepository = $orderRepository;
+    public function __construct(AbstractSPBCreateOrderRoute $createPaymentRoute, LoggerInterface $logger)
+    {
+        $this->createOrderRoute = $createPaymentRoute;
+        $this->logger = $logger;
     }
 
     /**
      * @RouteScope(scopes={"sales-channel-api"})
-     * @Route("/sales-channel-api/v{version}/_action/paypal/spb/create-payment", name="sales-channel-api.action.paypal.spb.create_payment", methods={"POST"})
+     * @Route(
+     *     "/sales-channel-api/v{version}/_action/paypal/spb/create-payment",
+     *      name="sales-channel-api.action.paypal.spb.create_payment",
+     *      methods={"POST"}
+     * )
      *
      * @throws CustomerNotLoggedInException
      */
     public function createPayment(SalesChannelContext $salesChannelContext, Request $request): JsonResponse
     {
-        $customer = $salesChannelContext->getCustomer();
-        if ($customer === null) {
-            throw new CustomerNotLoggedInException();
-        }
-
-        $orderId = $request->request->get('orderId');
-        if ($orderId === null) {
-            $payment = $this->getPaymentFromCart($salesChannelContext);
-        } else {
-            $payment = $this->getPaymentFromOrder($orderId, $salesChannelContext);
-        }
-        $payment->getApplicationContext()->setUserAction(ApplicationContext::USER_ACTION_TYPE_CONTINUE);
-
-        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-        $response = $this->paymentResource->create(
-            $payment,
-            $salesChannelId,
-            PartnerAttributionId::SMART_PAYMENT_BUTTONS
+        $this->logger->error(
+            'Route "sales-channel-api.action.paypal.spb.create_payment" is deprecated. Use "store-api.paypal.spb.create_order" instead'
         );
 
-        $patches = [
-            $this->shippingAddressPatchBuilder->createShippingAddressPatch($customer),
-            $this->payerInfoPatchBuilder->createPayerInfoPatch($customer),
-        ];
-        $this->paymentResource->patch($patches, $response->getId(), $salesChannelId);
+        $response = $this->createOrderRoute->createPayPalOrder($salesChannelContext, $request);
 
-        return new JsonResponse([
-            'token' => PaymentTokenExtractor::extract($response),
-        ]);
-    }
-
-    private function getPaymentFromCart(SalesChannelContext $salesChannelContext): Payment
-    {
-        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
-
-        return $this->cartPaymentBuilder->getPayment(
-            $cart,
-            $salesChannelContext,
-            self::FAKE_URL,
-            false
-        );
-    }
-
-    private function getPaymentFromOrder(string $orderId, SalesChannelContext $salesChannelContext): Payment
-    {
-        $criteria = new Criteria([$orderId]);
-        $criteria->addAssociation('transactions');
-        $criteria->addAssociation('lineItems');
-        $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
-        /** @var OrderEntity|null $order */
-        $order = $this->orderRepository->search($criteria, $salesChannelContext->getContext())->first();
-
-        if ($order === null) {
-            throw new OrderNotFoundException($orderId);
-        }
-
-        $transactionCollection = $order->getTransactions();
-        if ($transactionCollection === null) {
-            throw new InvalidOrderException($orderId);
-        }
-
-        $transaction = $transactionCollection->first();
-        if ($transaction === null) {
-            throw new InvalidOrderException($orderId);
-        }
-
-        $paymentTransaction = new AsyncPaymentTransactionStruct($transaction, $order, self::FAKE_URL);
-
-        return $this->orderPaymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
+        return new JsonResponse($response->getObject());
     }
 }

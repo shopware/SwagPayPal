@@ -1,5 +1,3 @@
-import SwagPayPalWebhookRegisterService
-    from '../core/service/api/swag-paypal-webhook-register.service';
 import SwagPayPalApiCredentialsService
     from '../core/service/api/swag-paypal-api-credentials.service';
 import SwagPayPalPosSettingApiService
@@ -10,17 +8,14 @@ import SwagPayPalPosWebhookRegisterService
     from '../core/service/api/swag-paypal-pos-webhook-register.service';
 import SwagPayPalPaymentService
     from '../core/service/api/swag-paypal-payment.service';
+import SwagPayPalOrderService
+    from '../core/service/api/swag-paypal-order.service';
 import SwagPaypalPaymentMethodServiceService
     from '../core/service/api/swag-paypal-payment-method.service';
 
 const { Application } = Shopware;
 
 const initContainer = Application.getContainer('init');
-
-Application.addServiceProvider(
-    'SwagPayPalWebhookRegisterService',
-    (container) => new SwagPayPalWebhookRegisterService(initContainer.httpClient, container.loginService)
-);
 
 Application.addServiceProvider(
     'SwagPayPalApiCredentialsService',
@@ -45,6 +40,11 @@ Application.addServiceProvider(
 Application.addServiceProvider(
     'SwagPayPalPaymentService',
     (container) => new SwagPayPalPaymentService(initContainer.httpClient, container.loginService)
+);
+
+Application.addServiceProvider(
+    'SwagPayPalOrderService',
+    (container) => new SwagPayPalOrderService(initContainer.httpClient, container.loginService)
 );
 
 Application.addServiceProvider(

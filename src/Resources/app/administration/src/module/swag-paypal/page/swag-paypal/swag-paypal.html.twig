@@ -13,11 +13,6 @@
 
         {% block swag_paypal_actions %}
             <template #smart-bar-actions>
-
-                {% block swag_paypal_actions_test %}
-                    {# @deprecated tag:v2.0.0 will be removed without replacement #}
-                {% endblock %}
-
                 {% block swag_paypal_actions_save %}
                     <sw-button-process v-model="isSaveSuccessful"
                                        class="sw-settings-login-registration__save-action"
@@ -113,13 +108,10 @@
                                             {% endblock %}
 
                                             {% block swag_paypal_content_card_channel_config_behavior %}
-                                            {% block swag_paypal_content_card_channel_config_behaviour %}
-                                                {# @deprecated tag:v2.0.0 - Use outer behavior-block instead #}
                                                 <swag-paypal-behavior :actualConfigData="actualConfigData"
                                                                      :allConfigs="allConfigs"
                                                                      :selectedSalesChannelId="selectedSalesChannelId">
                                                 </swag-paypal-behavior>
-                                            {% endblock %}
                                             {% endblock %}
 
                                             {% block swag_paypal_content_card_channel_config_express %}

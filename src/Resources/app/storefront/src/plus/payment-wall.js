@@ -120,11 +120,18 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         showPuiOnSandbox: true,
 
         /**
-         * URL for creating and paying the Shopware order
+         * URL for creating the Shopware order
          *
          * @type string
          */
         checkoutOrderUrl: '',
+
+        /**
+         * URL for paying the Shopware order
+         *
+         * @type string
+         */
+        handlePaymentUrl: '',
 
         /**
          * URL for setting the payment method to the order
@@ -224,31 +231,27 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
      */
     afterCreateOrder(response) {
         const order = JSON.parse(response);
-        const orderId = order.data.id;
         const params = {
+            orderId: order.id,
             paypalPaymentId: this.options.paypalPaymentId,
             paypalToken: this.options.paypalToken
         };
         params[this.options.isEnabledParameterName] = true;
 
-        this._client.post(
-            `${this.options.checkoutOrderUrl}/${orderId}/pay`,
-            JSON.stringify(params),
-            this.afterPayOrder.bind(this)
-        );
+        this._client.post(this.options.handlePaymentUrl, JSON.stringify(params), this.afterPayOrder.bind(this));
     }
 
     afterSetPayment(response) {
         const responseObject = JSON.parse(response);
         if (responseObject.success === true) {
-            this.afterCreateOrder(JSON.stringify({ data: { id: this.options.orderId } }));
+            this.afterCreateOrder(JSON.stringify({ id: this.options.orderId }));
         }
     }
 
     afterPayOrder(response) {
         const data = JSON.parse(response);
 
-        if (data.paymentUrl === 'plusPatched') {
+        if (data.redirectUrl === 'plusPatched') {
             this.paypal.apps.PPP.doCheckout();
         }
     }

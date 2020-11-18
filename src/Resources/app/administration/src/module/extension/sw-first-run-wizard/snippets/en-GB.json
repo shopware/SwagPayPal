@@ -10,11 +10,8 @@
         "tooltipSandbox": "Depending on activation of the sandbox, separate credentials are saved.",
         "textSettingsHeader": "Advanced settings",
         "messageFetchedError": "Try again or use the advanced settings to provide your credentials.",
-        "titleFetchedError": "An error occurred",
         "textFetchedSuccessful": "Credentials have been fetched.",
-        "titleNoCredentials": "Error",
         "messageNoCredentials": "No credentials provided.",
-        "messageTestSuccess": "Credentials are valid.",
-        "titleTestError": "An error occurred"
+        "messageTestSuccess": "Credentials are valid."
     }
 }

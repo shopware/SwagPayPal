@@ -1,0 +1,21 @@
+{% block sw_block_field %}
+    <sw-block-field
+            v-bind="$attrs"
+            class="sw-field--textarea"
+            :name="formFieldName">
+
+        <template #sw-field-input="{identification, helpText, error, disabled, setFocusClass, removeFocusClass }">
+            <textarea v-bind="$attrs"
+                      :id="identification"
+                      :name="identification"
+                      :placeholder="placeholder"
+                      :disabled="disabled"
+                      :value="currentValue"
+                      @change="onChange"
+                      @input="onInput"
+                      @focus="setFocusClass"
+                      @blur="removeFocusClass">
+            </textarea>
+        </template>
+    </sw-block-field>
+{% endblock %}

@@ -8,18 +8,22 @@
 namespace Swag\PayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
-use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
+use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
+use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 
-/**
- * @deprecated tag:v2.0.0 - Method deregisterWebhook from WebhookDeregisterServiceInterface will be added
- */
 interface WebhookServiceInterface
 {
     public function registerWebhook(?string $salesChannelId): string;
 
+    public function deregisterWebhook(?string $salesChannelId, ?SwagPayPalSettingStruct $settings = null): string;
+
     /**
+     * @param WebhookV1|WebhookV2 $webhook
+     *
      * @throws WebhookException if no transaction could be found to the given Webhook
      */
-    public function executeWebhook(Webhook $webhook, Context $context): void;
+    public function executeWebhook(PayPalApiStruct $webhook, Context $context): void;
 }

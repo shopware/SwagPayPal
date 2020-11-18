@@ -12,8 +12,8 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefi
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Swag\PayPal\PayPal\Api\Webhook;
-use Swag\PayPal\PayPal\Resource\WebhookResource;
+use Swag\PayPal\RestApi\V1\Api\Webhook;
+use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -24,8 +24,9 @@ use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\RouterMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
-use Swag\PayPal\Test\PayPal\Resource\WebhookResourceTest;
+use Swag\PayPal\Test\RestApi\V1\Resource\WebhookResourceTest;
 use Swag\PayPal\Webhook\WebhookService;
+use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 class WebhookServiceTest extends TestCase
 {
@@ -174,7 +175,7 @@ class WebhookServiceTest extends TestCase
         return new SettingsServiceMock($settings);
     }
 
-    private function createWebhookService(SettingsServiceMock $settingsService): WebhookService
+    private function createWebhookService(SettingsServiceMock $settingsService): WebhookServiceInterface
     {
         /** @var OrderTransactionRepoMock $orderTransactionRepo */
         $orderTransactionRepo = $this->orderTransactionRepo;

@@ -72,6 +72,8 @@ class ExpressCheckoutButtonData extends Struct
     protected $addProductToCart;
 
     /**
+     * @deprecated tag:v3.0.0 - will be removed. Use createOrderUrl instead
+     *
      * @var string
      */
     protected $createPaymentUrl;
@@ -79,19 +81,31 @@ class ExpressCheckoutButtonData extends Struct
     /**
      * @var string
      */
-    protected $createNewCartUrl;
+    protected $createOrderUrl;
 
     /**
-     * @deprecated tag:v2.0.0 - PayPal uses the core add to cart button
+     * @deprecated tag:v3.0.0 - will be removed. Use deleteCartUrl instead
      *
      * @var string
      */
-    protected $addLineItemUrl;
+    protected $createNewCartUrl;
 
     /**
      * @var string
      */
+    protected $deleteCartUrl;
+
+    /**
+     * @deprecated tag:v3.0.0 - will be removed. Use prepareCheckoutUrl instead
+     *
+     * @var string
+     */
     protected $approvePaymentUrl;
+
+    /**
+     * @var string
+     */
+    protected $prepareCheckoutUrl;
 
     /**
      * @var string
@@ -163,27 +177,43 @@ class ExpressCheckoutButtonData extends Struct
         return $this->addProductToCart;
     }
 
+    /**
+     * @deprecated tag:v3.0.0 - will be removed. Use getCreateOrderUrl instead
+     */
     public function getCreatePaymentUrl(): string
     {
         return $this->createPaymentUrl;
     }
 
+    public function getCreateOrderUrl(): string
+    {
+        return $this->createOrderUrl;
+    }
+
+    /**
+     * @deprecated tag:v3.0.0 - will be removed. Use getDeleteCartUrl instead
+     */
     public function getCreateNewCartUrl(): string
     {
         return $this->createNewCartUrl;
     }
 
-    /**
-     * @deprecated tag:v2.0.0 - PayPal uses the core add to cart button
-     */
-    public function getAddLineItemUrl(): string
+    public function getDeleteCartUrl(): string
     {
-        return $this->addLineItemUrl;
+        return $this->deleteCartUrl;
     }
 
+    /**
+     * @deprecated tag:v3.0.0 - will be removed. Use getCheckoutConfirmUrl instead
+     */
     public function getApprovePaymentUrl(): string
     {
         return $this->approvePaymentUrl;
+    }
+
+    public function getPrepareCheckoutUrl(): string
+    {
+        return $this->prepareCheckoutUrl;
     }
 
     public function getCheckoutConfirmUrl(): string

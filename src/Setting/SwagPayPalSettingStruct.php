@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Setting;
 
 use Shopware\Core\Framework\Struct\Struct;
-use Swag\PayPal\PayPal\Api\Payment\ApplicationContext;
-use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
+use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 
 class SwagPayPalSettingStruct extends Struct
 {
@@ -48,7 +48,7 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var string
      */
-    protected $intent = PaymentIntent::SALE;
+    protected $intent = PaymentIntentV2::CAPTURE;
 
     /**
      * @var bool
@@ -73,7 +73,7 @@ class SwagPayPalSettingStruct extends Struct
     /**
      * @var string
      */
-    protected $landingPage = ApplicationContext::LANDING_PAGE_TYPE_LOGIN;
+    protected $landingPage = ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE;
 
     /**
      * @var bool
@@ -169,6 +169,11 @@ class SwagPayPalSettingStruct extends Struct
      * @var bool
      */
     protected $installmentBannerEnabled = true;
+
+    /**
+     * @var string
+     */
+    protected $merchantPayerId;
 
     public function getClientId(): string
     {
@@ -473,5 +478,15 @@ class SwagPayPalSettingStruct extends Struct
     public function setInstallmentBannerEnabled(bool $installmentBannerEnabled): void
     {
         $this->installmentBannerEnabled = $installmentBannerEnabled;
+    }
+
+    public function getMerchantPayerId(): string
+    {
+        return $this->merchantPayerId;
+    }
+
+    public function setMerchantPayerId(string $merchantPayerId): void
+    {
+        $this->merchantPayerId = $merchantPayerId;
     }
 }

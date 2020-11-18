@@ -36,18 +36,25 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         languageIso: 'en_GB',
 
         /**
-         * This option specifies the currency of the cart
+         * This option holds the client id specified in the settings
+         *
+         * @type string
+         */
+        clientId: '',
+
+        /**
+         * This options specifies the currency of the PayPal button
          *
          * @type string
          */
         currency: 'EUR',
 
         /**
-         * This option holds the client id specified in the settings
+         * This options defines the payment intent
          *
          * @type string
          */
-        clientId: '',
+        intent: 'capture',
 
         /**
          * This option toggles the PayNow/Login text at PayPal
@@ -73,9 +80,18 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         /**
          * URL to create a new PayPal payment
          *
+         * @deprecated tag:v3.0.0 - will be removed. Use createOrderUrl instead
+         *
          * @type string
          */
         createPaymentUrl: '',
+
+        /**
+         * URL to create a new PayPal order
+         *
+         * @type string
+         */
+        createOrderUrl: '',
 
         /**
          * URL to the checkout confirm page
@@ -187,7 +203,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
 
         return new Promise(resolve => {
             this._client.post(
-                this.options.createPaymentUrl,
+                this.options.createOrderUrl,
                 formData,
                 responseText => {
                     const response = JSON.parse(responseText);
@@ -200,8 +216,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     onApprove(data, actions) {
         const params = new URLSearchParams();
         let url = this.options.checkoutConfirmUrl;
-        params.append('paypalPayerId', data.payerID);
-        params.append('paypalPaymentId', data.paymentID);
+        params.append('paypalOrderId', data.orderID);
 
         if (this.options.accountOrderEditUrl !== null) {
             url = this.options.accountOrderEditUrl;

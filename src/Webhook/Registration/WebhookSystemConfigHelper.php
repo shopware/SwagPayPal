@@ -11,7 +11,6 @@ use Psr\Log\LoggerInterface;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
-use Swag\PayPal\Webhook\WebhookDeregistrationServiceInterface;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 class WebhookSystemConfigHelper
@@ -35,7 +34,7 @@ class WebhookSystemConfigHelper
     private $settingsService;
 
     /**
-     * @var WebhookServiceInterface|WebhookDeregistrationServiceInterface
+     * @var WebhookServiceInterface
      */
     private $webhookService;
 
@@ -57,17 +56,14 @@ class WebhookSystemConfigHelper
     public function checkWebhook(SwagPayPalSettingStruct $oldSettings, ?string $salesChannelId): array
     {
         $errors = [];
+        $newSettings = $this->settingsService->getSettings($salesChannelId, false);
 
-        if ($this->deleteableWebhook()) {
-            $newSettings = $this->settingsService->getSettings($salesChannelId, false);
-
-            if ($this->isWebhookChanged($oldSettings, $newSettings)) {
-                try {
-                    $this->webhookService->deregisterWebhook($salesChannelId, $oldSettings);
-                } catch (\Throwable $e) {
-                    $errors[] = $e;
-                    $this->logger->error('[PayPal Webhook Deregistration] ' . $e->getMessage(), ['error' => $e]);
-                }
+        if ($this->isWebhookChanged($oldSettings, $newSettings)) {
+            try {
+                $this->webhookService->deregisterWebhook($salesChannelId, $oldSettings);
+            } catch (\Throwable $e) {
+                $errors[] = $e;
+                $this->logger->error('[PayPal Webhook Deregistration] ' . $e->getMessage(), ['error' => $e]);
             }
         }
 
@@ -100,22 +96,5 @@ class WebhookSystemConfigHelper
         );
 
         return !empty(\array_diff_assoc($oldSettingsFiltered, $newSettingsFiltered));
-    }
-
-    /**
-     * @deprecated tag:v2.0.0 - will be removed
-     */
-    private function deleteableWebhook(): bool
-    {
-        try {
-            new \ReflectionMethod($this->webhookService, 'deregisterWebhook');
-        } catch (\ReflectionException $e) {
-            // if deregister not exists
-            return false;
-        }
-
-        $reflection = new \ReflectionMethod($this->settingsService, 'getSettings');
-
-        return $reflection->getNumberOfParameters() >= 2;
     }
 }

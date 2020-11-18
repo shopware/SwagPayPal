@@ -77,6 +77,8 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
          * Available values:
          *  - black
          *  - white
+         *
+         * @type string
          */
         textColor: 'black',
 

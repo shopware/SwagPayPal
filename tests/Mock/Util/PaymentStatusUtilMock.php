@@ -10,14 +10,15 @@ namespace Swag\PayPal\Test\Mock\Util;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use Swag\PayPal\PayPal\Api\Capture;
-use Swag\PayPal\PayPal\Api\Payment;
-use Swag\PayPal\PayPal\Api\Refund;
+use Swag\PayPal\RestApi\V1\Api\Capture;
+use Swag\PayPal\RestApi\V1\Api\Payment;
+use Swag\PayPal\RestApi\V1\Api\Refund;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\EntityRepositoryMock;
 use Swag\PayPal\Util\PaymentStatusUtil;
+use Swag\PayPal\Util\PriceFormatter;
 
 class PaymentStatusUtilMock extends PaymentStatusUtil
 {
@@ -34,7 +35,8 @@ class PaymentStatusUtilMock extends PaymentStatusUtil
 
         parent::__construct(
             $entityRepository,
-            new OrderTransactionStateHandler($stateMachineRegistry)
+            new OrderTransactionStateHandler($stateMachineRegistry),
+            new PriceFormatter()
         );
     }
 

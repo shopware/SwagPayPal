@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\RestApi\Client\PayPalClientFactory">
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\TokenResource"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\Client\CredentialsClientFactory">
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\Client\TokenClientFactory">
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+        </service>
+    </services>
+</container>

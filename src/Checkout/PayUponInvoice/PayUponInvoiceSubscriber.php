@@ -10,7 +10,7 @@ namespace Swag\PayPal\Checkout\PayUponInvoice;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntitySearchResultLoadedEvent;
-use Swag\PayPal\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

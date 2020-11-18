@@ -3,15 +3,13 @@
     {% set expressCheckoutData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData spbCheckoutButtonData #}
     {% set spbCheckoutButtonData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
-    {% set payPalPayerId = app.request.query.get(constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME')) %}
-    {% set payPalPaymentId = app.request.query.get(constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ID_INPUT_NAME')) %}
+    {% set payPalOrderId = app.request.query.get(constant('Swag\\PayPal\\Checkout\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME')) %}
 
     {% if expressCheckoutData %}
 
         {% block swag_paypal_ecs_spb_data_express_checkout_input %}
-            <input hidden name="{{ constant('Swag\\PayPal\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}" value="1">
-            <input hidden name="{{ constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.paymentId }}">
-            <input hidden name="{{ constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.payerId }}">
+            <input hidden name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}" value="1">
+            <input hidden name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.paypalOrderId }}">
         {% endblock %}
 
     {% elseif spbCheckoutButtonData and spbCheckoutButtonData.paymentMethodId is same as(context.paymentMethod.id) %}
@@ -23,12 +21,11 @@
             </div>
         {% endblock %}
 
-    {% elseif payPalPayerId and payPalPaymentId %}
+    {% elseif payPalOrderId %}
 
         {% block swag_paypal_ecs_spb_data_input %}
-            <input hidden name="{{ constant('Swag\\PayPal\\Payment\\PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID') }}" value="1">
-            <input hidden name="{{ constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ID_INPUT_NAME') }}" value="{{ payPalPaymentId }}">
-            <input hidden name="{{ constant('Swag\\PayPal\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME') }}" value="{{ payPalPayerId }}">
+            <input hidden name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID') }}" value="1">
+            <input hidden name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME') }}" value="{{ payPalOrderId }}">
         {% endblock %}
 
     {% endif %}

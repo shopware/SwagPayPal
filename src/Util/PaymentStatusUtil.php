@@ -19,11 +19,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
-use Swag\PayPal\Payment\Builder\Util\PriceFormatter;
-use Swag\PayPal\PayPal\Api\Capture;
-use Swag\PayPal\PayPal\Api\Payment;
-use Swag\PayPal\PayPal\Api\Refund;
-use Symfony\Component\HttpFoundation\Request;
+use Swag\PayPal\RestApi\V1\Api\Capture;
+use Swag\PayPal\RestApi\V1\Api\Payment;
+use Swag\PayPal\RestApi\V1\Api\Refund;
 
 class PaymentStatusUtil
 {
@@ -44,11 +42,12 @@ class PaymentStatusUtil
 
     public function __construct(
         EntityRepositoryInterface $orderRepository,
-        OrderTransactionStateHandler $orderTransactionStateHandler
+        OrderTransactionStateHandler $orderTransactionStateHandler,
+        PriceFormatter $priceFormatter
     ) {
         $this->orderRepository = $orderRepository;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
-        $this->priceFormatter = new PriceFormatter();
+        $this->priceFormatter = $priceFormatter;
     }
 
     public function applyVoidStateToOrder(string $orderId, Context $context): void
@@ -56,14 +55,6 @@ class PaymentStatusUtil
         $transaction = $this->getOrderTransaction($orderId, $context);
 
         $this->orderTransactionStateHandler->cancel($transaction->getId(), $context);
-    }
-
-    /**
-     * @deprecated tag:v2.0.0 - Deprecated since version 1.5.1 and will be removed in 2.0.0. Use "applyCaptureState" instead
-     */
-    public function applyCaptureStateToPayment(string $orderId, Request $request, Capture $captureResponse, Context $context): void
-    {
-        $this->applyCaptureState($orderId, $captureResponse, $context);
     }
 
     public function applyCaptureState(string $orderId, Capture $captureResponse, Context $context): void

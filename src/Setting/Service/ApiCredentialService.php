@@ -7,24 +7,24 @@
 
 namespace Swag\PayPal\Setting\Service;
 
-use Swag\PayPal\Payment\Exception\PayPalApiException;
-use Swag\PayPal\PayPal\Api\OAuthCredentials;
-use Swag\PayPal\PayPal\BaseURL;
-use Swag\PayPal\PayPal\PartnerId;
-use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\RestApi\BaseURL;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\PartnerId;
+use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
+use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Symfony\Component\HttpFoundation\Response;
 
 class ApiCredentialService implements ApiCredentialServiceInterface
 {
     /**
-     * @var TokenResource
+     * @var CredentialsResource
      */
-    private $tokenResource;
+    private $credentialsResource;
 
-    public function __construct(TokenResource $tokenResource)
+    public function __construct(CredentialsResource $credentialsResource)
     {
-        $this->tokenResource = $tokenResource;
+        $this->credentialsResource = $credentialsResource;
     }
 
     /**
@@ -38,7 +38,7 @@ class ApiCredentialService implements ApiCredentialServiceInterface
         $url = $sandboxActive ? BaseURL::SANDBOX : BaseURL::LIVE;
 
         try {
-            return $this->tokenResource->testApiCredentials($credentials, $url);
+            return $this->credentialsResource->testApiCredentials($credentials, $url);
         } catch (PayPalApiException $payPalApiException) {
             if ($payPalApiException->getStatusCode() === Response::HTTP_UNAUTHORIZED) {
                 throw new PayPalInvalidApiCredentialsException();
@@ -53,6 +53,6 @@ class ApiCredentialService implements ApiCredentialServiceInterface
         $url = $sandboxActive ? BaseURL::SANDBOX : BaseURL::LIVE;
         $partnerId = $sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE;
 
-        return $this->tokenResource->getClientCredentials($authCode, $sharedId, $nonce, $url, $partnerId);
+        return $this->credentialsResource->getClientCredentials($authCode, $sharedId, $nonce, $url, $partnerId);
     }
 }

@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\OrdersApi\Administration\PayPalOrdersController" public="true">
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\AuthorizationResource"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\CaptureResource"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\RefundResource"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentStatusUtilV2"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator"/>
+        </service>
+
+        <service id="Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator">
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
+        </service>
+
+        <service id="Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder">
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
+        </service>
+
+        <service id="Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder">
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider"/>
+        </service>
+
+        <service id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider">
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
+        </service>
+
+        <service id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider">
+            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
+        </service>
+
+        <service id="Swag\PayPal\OrdersApi\Patch\AmountPatchBuilder">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
+        </service>
+
+        <service id="Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder"/>
+
+        <service id="Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder"/>
+
+        <service id="Swag\PayPal\OrdersApi\Patch\ShippingAddressPatchBuilder"/>
+
+        <service id="Swag\PayPal\OrdersApi\Patch\ShippingNamePatchBuilder"/>
+    </services>
+</container>

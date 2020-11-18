@@ -36,21 +36,4 @@ class PosClientFactory
 
         return new PosClient($baseUri, $this->tokenResource, $credentials, $this->logger);
     }
-
-    /**
-     * @deprecated tag:v2.0.0 - Will be removed. Use PosClientFactory::getPosClient instead
-     */
-    public function createPosClient(string $baseUri, string $apiKey): PosClient
-    {
-        $this->logger->error(
-            \sprintf(
-                '%s::%s is deprecated. Use %s::getPayPalClient instead',
-                static::class,
-                __METHOD__,
-                static::class
-            )
-        );
-
-        return $this->getPosClient($baseUri, $apiKey);
-    }
 }

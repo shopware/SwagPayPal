@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
-use Swag\PayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\Routing\RouterInterface;
@@ -71,12 +71,11 @@ class PayPalExpressCheckoutDataService
             'clientId' => $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
             'languageIso' => $this->getInContextButtonLanguage($settings, $salesChannelContext),
             'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
-            'intent' => $settings->getIntent(),
+            'intent' => \strtolower($settings->getIntent()),
             'addProductToCart' => $addProductToCart,
-            'createPaymentUrl' => $this->router->generate('sales-channel-api.action.paypal.create_payment', ['version' => PlatformRequest::API_VERSION]),
-            'createNewCartUrl' => $this->router->generate('sales-channel-api.action.paypal.create_new_cart', ['version' => PlatformRequest::API_VERSION]),
-            'addLineItemUrl' => $this->router->generate('frontend.checkout.line-item.add'),
-            'approvePaymentUrl' => $this->router->generate('payment.paypal.approve_payment'),
+            'createOrderUrl' => $this->router->generate('store-api.paypal.express.create_order', ['version' => PlatformRequest::API_VERSION]),
+            'deleteCartUrl' => $this->router->generate('store-api.checkout.cart.delete', ['version' => PlatformRequest::API_VERSION]),
+            'prepareCheckoutUrl' => $this->router->generate('store-api.paypal.express.prepare_checkout', ['version' => PlatformRequest::API_VERSION]),
             'checkoutConfirmUrl' => $this->router->generate(
                 'frontend.checkout.confirm.page',
                 [PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true],

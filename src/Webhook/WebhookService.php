@@ -10,9 +10,11 @@ namespace Swag\PayPal\Webhook;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Util\Random;
 use Shopware\Core\PlatformRequest;
-use Swag\PayPal\PayPal\Api\CreateWebhooks;
-use Swag\PayPal\PayPal\Api\Webhook;
-use Swag\PayPal\PayPal\Resource\WebhookResource;
+use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\CreateWebhooks;
+use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
+use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
+use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
@@ -20,7 +22,7 @@ use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class WebhookService implements WebhookServiceInterface, WebhookDeregistrationServiceInterface
+class WebhookService implements WebhookServiceInterface
 {
     public const WEBHOOK_TOKEN_CONFIG_KEY = 'webhookExecuteToken';
     public const WEBHOOK_ID_KEY = 'webhookId';
@@ -30,10 +32,6 @@ class WebhookService implements WebhookServiceInterface, WebhookDeregistrationSe
     public const WEBHOOK_DELETED = 'deleted';
     public const NO_WEBHOOK_ACTION_REQUIRED = 'nothing';
 
-    /**
-     * @deprecated tag:v2.0.0 - Will be removed without replacement
-     */
-    public const PAYPAL_WEBHOOK_ROUTE = 'paypal.webhook.execute';
     public const PAYPAL_WEBHOOK_TOKEN_NAME = 'sw-token';
     public const PAYPAL_WEBHOOK_TOKEN_LENGTH = 32;
 
@@ -109,7 +107,10 @@ class WebhookService implements WebhookServiceInterface, WebhookDeregistrationSe
         }
     }
 
-    public function executeWebhook(Webhook $webhook, Context $context): void
+    /**
+     * @param WebhookV1|WebhookV2 $webhook
+     */
+    public function executeWebhook(PayPalApiStruct $webhook, Context $context): void
     {
         $webhookHandler = $this->webhookRegistry->getWebhookHandler($webhook->getEventType());
         $webhookHandler->invoke($webhook, $context);

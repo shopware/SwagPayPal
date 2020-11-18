@@ -22,16 +22,15 @@ use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookService;
-use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class SwagPayPal extends Plugin
 {
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID = 'swag_paypal_transaction_id';
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TOKEN = 'swag_paypal_token';
     public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION = 'swag_paypal_pui_payment_instruction';
+    public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID = 'swag_paypal_order_id';
+    public const ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PARTNER_ATTRIBUTION_ID = 'swag_paypal_partner_attribution_id';
     public const SALES_CHANNEL_TYPE_POS = '1ce0868f406d47d98cfe4b281e62f099';
     public const SALES_CHANNEL_POS_EXTENSION = 'paypalPosSalesChannel';
     public const PRODUCT_LOG_POS_EXTENSION = 'paypalPosLog';
@@ -72,28 +71,6 @@ class SwagPayPal extends Plugin
     public function setActivateDeactivate(ActivateDeactivate $activateDeactivate): void
     {
         $this->activateDeactivate = $activateDeactivate;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function build(ContainerBuilder $container): void
-    {
-        parent::build($container);
-
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection/'));
-        $loader->load('client.xml');
-        $loader->load('paypal_payment.xml');
-        $loader->load('resource.xml');
-        $loader->load('setting.xml');
-        $loader->load('util.xml');
-        $loader->load('webhook.xml');
-        $loader->load('express_checkout.xml');
-        $loader->load('spb_checkout.xml');
-        $loader->load('pui_checkout.xml');
-        $loader->load('checkout.xml');
-        $loader->load('plus.xml');
-        $loader->load('installment.xml');
     }
 
     public function install(InstallContext $installContext): void
@@ -177,14 +154,24 @@ class SwagPayPal extends Plugin
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->container->get(SystemConfigService::class);
         /** @var EntityRepositoryInterface $customFieldRepository */
-        $customFieldRepository = $this->container->get((new CustomFieldDefinition())->getEntityName() . '.repository');
-
+        $customFieldRepository = $this->container->get(\sprintf('%s.repository', (new CustomFieldDefinition())->getEntityName()));
+        /** @var EntityRepositoryInterface $paymentRepository */
+        $paymentRepository = $this->container->get('payment_method.repository');
         /** @var WebhookService|null $webhookService */
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        /** @var EntityRepositoryInterface $salesChannelRepository */
+        $salesChannelRepository = $this->container->get('sales_channel.repository');
 
-        (new Update($systemConfigService, $customFieldRepository, $webhookService))->update($updateContext);
+        (new Update(
+            $systemConfigService,
+            $paymentRepository,
+            $customFieldRepository,
+            $webhookService,
+            $salesChannelRepository
+        ))->update($updateContext);
 
         $this->addCustomPrivileges();
+
         parent::update($updateContext);
     }
 

@@ -25,7 +25,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\Tax\TaxDefinition;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
-use Swag\PayPal\PayPal\PaymentIntent;
+use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Symfony\Component\Routing\RouterInterface;
@@ -177,21 +177,20 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         }
         static::assertSame(self::CLIENT_ID, $expressCheckoutButtonData->getClientId());
         static::assertSame('EUR', $expressCheckoutButtonData->getCurrency());
-        static::assertSame(PaymentIntent::SALE, $expressCheckoutButtonData->getIntent());
+        static::assertSame(\strtolower(PaymentIntentV2::CAPTURE), $expressCheckoutButtonData->getIntent());
         static::assertFalse($expressCheckoutButtonData->getAddProductToCart());
         static::assertSame(
-            \sprintf('/sales-channel-api/v%s/_action/paypal/create-payment', PlatformRequest::API_VERSION),
-            $expressCheckoutButtonData->getCreatePaymentUrl()
+            \sprintf('/store-api/v%s/paypal/express/create-order', PlatformRequest::API_VERSION),
+            $expressCheckoutButtonData->getCreateOrderUrl()
         );
         static::assertSame(
-            \sprintf('/sales-channel-api/v%s/_action/paypal/create-new-cart', PlatformRequest::API_VERSION),
-            $expressCheckoutButtonData->getCreateNewCartUrl()
+            \sprintf('/store-api/v%s/checkout/cart', PlatformRequest::API_VERSION),
+            $expressCheckoutButtonData->getDeleteCartUrl()
         );
-        /**
-         * @deprecated tag:v2.0.0 - PayPal uses the core add to cart button
-         */
-        static::assertSame('/checkout/line-item/add', $expressCheckoutButtonData->getAddLineItemUrl());
-        static::assertSame('/paypal/approve-payment', $expressCheckoutButtonData->getApprovePaymentUrl());
+        static::assertSame(
+            \sprintf('/store-api/v%s/paypal/express/prepare-checkout', PlatformRequest::API_VERSION),
+            $expressCheckoutButtonData->getPrepareCheckoutUrl()
+        );
         static::assertStringContainsString('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());
         static::assertStringContainsString('/paypal/add-error', $expressCheckoutButtonData->getAddErrorUrl());
     }

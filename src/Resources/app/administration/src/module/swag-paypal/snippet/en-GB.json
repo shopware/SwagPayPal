@@ -51,8 +51,7 @@
                 "button": {
                     "title": "Get API credentials",
                     "titleSandbox": "Get sandbox API credentials",
-                    "messageFetchedError": "Try again or enter your credentials manually.",
-                    "titleFetchedError": "An error occurred"
+                    "messageFetchedError": "Try again or enter your credentials manually."
                 }
             },
             "behavior": {
@@ -64,10 +63,11 @@
                 },
                 "intent": {
                     "label": "Payment acquisition",
-                    "hint": "Note: PayPal PLUS only works with the payment acquisition \"Sale\". It will be set automatically, regardless of the selected option.",
                     "sale": "Complete payment immediately (Sale)",
                     "authorize": "Delayed payment collection (Auth-Capture)",
-                    "order": "Delayed payment collection (Order-Auth-Capture)"
+                    "order": "Delayed payment collection (Order-Auth-Capture)",
+                    "CAPTURE": "Complete payment immediately (CAPTURE)",
+                    "AUTHORIZE": "Delayed payment collection (AUTHORIZE)"
                 },
                 "submitCart": {
                     "label": "Submit cart",
@@ -80,12 +80,14 @@
                 "landingPage": {
                     "label": "PayPal landing page",
                     "helpText": {
-                        "Login": "Login: The PayPal site displays a login screen as landing page.",
-                        "Billing": "Registration: The PayPal site displays a registration form as landing page."
+                        "login": "Login: The PayPal site displays a login screen as landing page.",
+                        "billing": "Registration: The PayPal site displays a registration form as landing page.",
+                        "no_preference": "No preference: PayPal decides which page is shown, depending on the previous interaction of the customer with PayPal."
                     },
                     "options": {
-                        "Login": "Login",
-                        "Billing": "Registration"
+                        "login": "Login",
+                        "billing": "Registration",
+                        "no_preference": "No preference"
                     }
                 },
                 "sendOrderNumber": {
@@ -169,7 +171,8 @@
                 "introduction": "<strong>PayPal PLUS:</strong> Your complete all-in-one payment solution including PayPal, Direct Debit, Credit Card and Pay Upon Invoice. PayPal PLUS offers your customers full flexibility in choosing their preferred payment method. Your advantages as a seller? Easier accounting with only one contracting party, one account and one transaction overview showing all incoming payments. You receive your money directly after customers complete the order process.<br>You can apply for PayPal PLUS <a href='https://www.paypal.com/de/webapps/mpp/paypal-plus' target='_blank'>here</a>. Apply for Payment upon Invoice <a href='https://www.paypal.com/de/webapps/mpp/pui-start' target='_blank'>here</a>.",
                 "plusCheckoutEnabled": {
                     "label": "Enable PayPal PLUS"
-                }
+                },
+                "hint": "Note: PayPal PLUS only works with the payment acquisition \"Sale\". It will be set automatically."
             },
             "locale-field": {
                 "infobox": {

@@ -8,12 +8,12 @@
 namespace Swag\PayPal\Test\Setting;
 
 use PHPUnit\Framework\TestCase;
-use Swag\PayPal\Payment\Exception\PayPalApiException;
-use Swag\PayPal\PayPal\Resource\TokenResource;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
+use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Setting\SettingsController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
-use Swag\PayPal\Test\Mock\CacheMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
@@ -64,10 +64,10 @@ class SettingsControllerTest extends TestCase
 
         return new SettingsController(
             new ApiCredentialService(
-                new TokenResource(
-                    new CacheMock(),
+                new CredentialsResource(
                     new TokenClientFactoryMock($logger),
-                    new CredentialsClientFactoryMock($logger)
+                    new CredentialsClientFactoryMock($logger),
+                    new TokenValidator()
                 )
             )
         );

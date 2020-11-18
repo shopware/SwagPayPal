@@ -19,7 +19,7 @@ class DeprecatedTagTest extends TestCase
      * @var array
      */
     private $whiteList = [
-        'tests/',
+        'tests/DeprecatedTagTest.php',
         'coverage/',
         'Resources/public/',
     ];
@@ -30,6 +30,7 @@ class DeprecatedTagTest extends TestCase
         $return = [];
         $finder = new Finder();
         $finder->in($pluginPath)
+            ->notPath(['/var/', '/vendor/'])
             ->files()
             ->contains('@deprecated');
 
@@ -45,6 +46,7 @@ class DeprecatedTagTest extends TestCase
 
         $finder = new Finder();
         $finder->in($pluginPath)
+            ->notPath(['/var/', '/vendor/'])
             ->files()
             ->name('*.xml')
             ->contains('<deprecated>');

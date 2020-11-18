@@ -15,7 +15,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
-use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
+use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,7 +38,7 @@ class WebhookController extends AbstractController
     private $logger;
 
     /**
-     * @var WebhookServiceInterface|WebhookDeregistrationServiceInterface
+     * @var WebhookServiceInterface
      */
     private $webhookService;
 
@@ -80,11 +82,7 @@ class WebhookController extends AbstractController
      */
     public function deregisterWebhook(string $salesChannelId): JsonResponse
     {
-        if ($this->deleteableWebhook()) {
-            $result = $this->webhookService->deregisterWebhook($salesChannelId !== 'null' ? $salesChannelId : null);
-        } else {
-            $result = WebhookService::NO_WEBHOOK_ACTION_REQUIRED;
-        }
+        $result = $this->webhookService->deregisterWebhook($salesChannelId !== 'null' ? $salesChannelId : null);
 
         return new JsonResponse(['result' => $result]);
     }
@@ -109,22 +107,54 @@ class WebhookController extends AbstractController
     }
 
     /**
-     * @deprecated tag:v2.0.0 - Will be removed. Use WebhookController::executeWebhook instead
-     * @RouteScope(scopes={"storefront"})
-     * @Route(
-     *     "/paypal/webhook/execute",
-     *     name="paypal.webhook.execute",
-     *     methods={"POST"},
-     *     defaults={"csrf_protected"=false}
-     * )
+     * @throws BadRequestHttpException
+     *
+     * @return WebhookV1|WebhookV2
      */
-    public function executeWebhookDeprecated(Request $request, Context $context): Response
+    protected function createWebhookFromPostData(Request $request): PayPalApiStruct
     {
-        $this->logger->error(
-            \sprintf('Route "paypal.webhook.execute" is deprecated. Use "api.action.paypal.webhook.execute" instead. Please save the PayPal settings to prevent this error.')
-        );
+        $postData = $request->request->all();
+        $this->logger->debug('[PayPal Webhook] Received webhook', ['payload' => $postData]);
 
-        return $this->executeWebhook($request, $context);
+        if (empty($postData)) {
+            throw new BadRequestHttpException('No webhook data sent');
+        }
+
+        if (isset($postData['resource_version']) && $postData['resource_version'] === '2.0') {
+            $webhook = new WebhookV2();
+        } else {
+            $webhook = new WebhookV1();
+        }
+
+        $webhook->assign($postData);
+
+        return $webhook;
+    }
+
+    /**
+     * @param WebhookV1|WebhookV2 $webhook
+     *
+     * @throws BadRequestHttpException
+     */
+    protected function tryToExecuteWebhook(Context $context, PayPalApiStruct $webhook): void
+    {
+        try {
+            $this->webhookService->executeWebhook($webhook, $context);
+        } catch (WebhookException $webhookException) {
+            $this->logger->error(
+                \sprintf('[PayPal Webhook] %s', $webhookException->getMessage()),
+                [
+                    'type' => $webhookException->getEventType(),
+                    'webhook' => \json_encode($webhook),
+                ]
+            );
+
+            throw new BadRequestHttpException('An error occurred during execution of webhook');
+        } catch (\Exception $e) {
+            $this->logger->error(\sprintf('[PayPal Webhook] %s', $e->getMessage()));
+
+            throw new BadRequestHttpException('An error occurred during execution of webhook');
+        }
     }
 
     /**
@@ -156,62 +186,5 @@ class WebhookController extends AbstractController
         }
 
         throw new BadRequestHttpException('Shopware token is invalid');
-    }
-
-    /**
-     * @throws BadRequestHttpException
-     */
-    private function createWebhookFromPostData(Request $request): Webhook
-    {
-        $postData = $request->request->all();
-        $this->logger->debug('[PayPal Webhook] Received webhook', ['payload' => $postData]);
-
-        if (empty($postData)) {
-            throw new BadRequestHttpException('No webhook data sent');
-        }
-
-        $webhook = new Webhook();
-        $webhook->assign($postData);
-
-        return $webhook;
-    }
-
-    /**
-     * @throws BadRequestHttpException
-     */
-    private function tryToExecuteWebhook(Context $context, Webhook $webhook): void
-    {
-        try {
-            $this->webhookService->executeWebhook($webhook, $context);
-        } catch (WebhookException $webhookException) {
-            $this->logger->error(
-                '[PayPal Webhook] ' . $webhookException->getMessage(),
-                [
-                    'type' => $webhookException->getEventType(),
-                    'webhook' => \json_encode($webhook),
-                ]
-            );
-
-            throw new BadRequestHttpException('An error occurred during execution of webhook');
-        } catch (\Exception $e) {
-            $this->logger->error('[PayPal Webhook] ' . $e->getMessage());
-
-            throw new BadRequestHttpException('An error occurred during execution of webhook');
-        }
-    }
-
-    /**
-     * @deprecated tag:v2.0.0 - will be removed
-     */
-    private function deleteableWebhook(): bool
-    {
-        try {
-            new \ReflectionMethod($this->webhookService, 'deregisterWebhook');
-        } catch (\ReflectionException $e) {
-            // if deregister not exists
-            return false;
-        }
-
-        return true;
     }
 }

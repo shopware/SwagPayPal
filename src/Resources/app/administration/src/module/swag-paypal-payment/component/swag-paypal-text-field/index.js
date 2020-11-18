@@ -8,7 +8,7 @@ const { Component } = Shopware;
  * @status ready
  * @example-type dynamic
  * @component-example
- * <swag-paypal-text-field type="text" label="Name" placeholder="placeholder goes here..."></swag-paypal-text-field>
+ * <swag-paypal-text-field label="Name" placeholder="placeholder goes here..."></swag-paypal-text-field>
  */
 Component.extend('swag-paypal-text-field', 'sw-text-field', {
     template

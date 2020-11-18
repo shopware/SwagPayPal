@@ -8,12 +8,6 @@
 namespace Swag\PayPal\Test\Checkout\Plus;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
-use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
-use Shopware\Core\Checkout\Cart\Transaction\Struct\Transaction;
-use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -38,22 +32,24 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPage;
 use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Plus\PlusData;
 use Swag\PayPal\Checkout\Plus\PlusSubscriber;
 use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
-use Swag\PayPal\Payment\Builder\CartPaymentBuilder;
-use Swag\PayPal\Payment\Builder\OrderPaymentBuilder;
-use Swag\PayPal\Payment\PayPalPaymentHandler;
+use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder;
+use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\CreateResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
@@ -61,6 +57,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PlusSubscriberTest extends TestCase
 {
+    use CartTrait;
     use DatabaseTransactionBehaviour;
     use PaymentMethodTrait;
     use PaymentTransactionTrait;
@@ -87,6 +84,11 @@ class PlusSubscriberTest extends TestCase
         $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->paypalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
+    }
+
+    protected function tearDown(): void
+    {
+        $this->removePayPalFromDefaultsSalesChannel($this->paypalPaymentMethodId);
     }
 
     public function testGetSubscribedEvents(): void
@@ -423,18 +425,7 @@ class PlusSubscriberTest extends TestCase
             new ShippingMethodCollection([])
         );
 
-        $cart = new Cart('test', 'token');
-        $transaction = new Transaction(
-            new CalculatedPrice(
-                10.9,
-                10.9,
-                new CalculatedTaxCollection(),
-                new TaxRuleCollection()
-            ),
-            $this->paypalPaymentMethodId
-        );
-        $cart->setTransactions(new TransactionCollection([$transaction]));
-        $page->setCart($cart);
+        $page->setCart($this->createCart($this->paypalPaymentMethodId));
 
         $request = $this->createRequest($salesChannelContext->getContext());
 
@@ -466,12 +457,14 @@ class PlusSubscriberTest extends TestCase
         $plusDataService = new PlusDataService(
             new CartPaymentBuilder(
                 $settingsService,
-                $localeCodeProvider
+                $localeCodeProvider,
+                new PriceFormatter()
             ),
             new OrderPaymentBuilder(
                 $settingsService,
                 $localeCodeProvider,
-                $currencyRepo
+                $currencyRepo,
+                new PriceFormatter()
             ),
             $this->createPaymentResource($settings),
             $router,
@@ -603,9 +596,14 @@ class PlusSubscriberTest extends TestCase
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $plusExtension->getPaypalPaymentId());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_TOKEN, $plusExtension->getPaypalToken());
         static::assertSame(
-            \sprintf('/sales-channel-api/v%s/checkout/order', PlatformRequest::API_VERSION),
+            \sprintf('/store-api/v%s/checkout/order', PlatformRequest::API_VERSION),
             $plusExtension->getCheckoutOrderUrl()
         );
+        static::assertSame(
+            \sprintf('/store-api/v%s/handle-payment', PlatformRequest::API_VERSION),
+            $plusExtension->getHandlePaymentUrl()
+        );
+        static::assertSame(\sprintf('/store-api/v%s/context', PlatformRequest::API_VERSION), $plusExtension->getContextSwitchUrl());
         static::assertSame(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, $plusExtension->getIsEnabledParameterName());
         static::assertSame($event->getContext()->getLanguageId(), $plusExtension->getLanguageId());
 

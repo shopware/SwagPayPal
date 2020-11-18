@@ -138,7 +138,6 @@ Component.register('swag-paypal-credentials', {
                     }).join(' / ');
 
                     this.createNotificationError({
-                        title: this.$tc('global.default.error'),
                         message: message
                     });
 
@@ -172,7 +171,6 @@ Component.register('swag-paypal-credentials', {
                 this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecret', '');
             }
             this.createNotificationError({
-                title: this.$tc('swag-paypal.settingForm.credentials.button.titleFetchedError'),
                 message: this.$tc('swag-paypal.settingForm.credentials.button.messageFetchedError'),
                 duration: 10000
             });

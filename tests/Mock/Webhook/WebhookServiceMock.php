@@ -8,19 +8,17 @@
 namespace Swag\PayPal\Test\Mock\Webhook;
 
 use Shopware\Core\Framework\Context;
-use Swag\PayPal\PayPal\Api\Webhook;
+use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
+use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\Webhook\WebhookControllerTest;
 use Swag\PayPal\Webhook\Exception\WebhookException;
-use Swag\PayPal\Webhook\WebhookDeregistrationServiceInterface;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
-/**
- * @deprecated tag:v2.0.0 - will not extend WebhookSerivce but implement WebhookServiceInterface and WebhookDeregistrationServiceInterface
- */
-class WebhookServiceMock extends WebhookService
+class WebhookServiceMock implements WebhookServiceInterface
 {
     /**
      * @var string[]
@@ -54,7 +52,10 @@ class WebhookServiceMock extends WebhookService
         return WebhookService::WEBHOOK_DELETED;
     }
 
-    public function executeWebhook(Webhook $webhook, Context $context): void
+    /**
+     * @param WebhookV1|WebhookV2 $webhook
+     */
+    public function executeWebhook(PayPalApiStruct $webhook, Context $context): void
     {
         if ($context->hasExtension(WebhookControllerTest::THROW_WEBHOOK_EXCEPTION)) {
             throw new WebhookException(DummyWebhook::EVENT_TYPE, 'testWebhookExceptionMessage');

@@ -10,11 +10,8 @@
         "tooltipSandbox": "Je nach Aktivierung der Sandbox werden unterschiedliche Zugangsdaten hinterlegt.",
         "textSettingsHeader": "Erweiterte Einstellungen",
         "messageFetchedError": " Bitte versuche es erneut oder nutze die erweiterten Einstellungen um die Zugangsdaten direkt einzugeben.",
-        "titleFetchedError": "Es ist ein Fehler aufgetreten",
         "textFetchedSuccessful": "Die Zugangsdaten wurden erfolgreich abgerufen.",
-        "titleNoCredentials": "Fehler",
         "messageNoCredentials": "Es wurden keine Zugangsdaten hinterlegt.",
-        "messageTestSuccess": "Die Zugangsdaten sind gültig.",
-        "titleTestError": "Fehler"
+        "messageTestSuccess": "Die Zugangsdaten sind gültig."
     }
 }

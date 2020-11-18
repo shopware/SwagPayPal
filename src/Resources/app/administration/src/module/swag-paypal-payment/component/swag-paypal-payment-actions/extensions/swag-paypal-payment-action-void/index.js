@@ -1,6 +1,6 @@
 import template from './swag-paypal-payment-action-void.html.twig';
 
-const { Component, Mixin } = Shopware;
+const { Component } = Shopware;
 const utils = Shopware.Utils;
 
 Component.register('swag-paypal-payment-action-void', {
@@ -9,7 +9,7 @@ Component.register('swag-paypal-payment-action-void', {
     inject: ['SwagPayPalPaymentService'],
 
     mixins: [
-        Mixin.getByName('notification')
+        'notification'
     ],
 
     props: {
@@ -39,7 +39,6 @@ Component.register('swag-paypal-payment-action-void', {
 
             this.SwagPayPalPaymentService.voidPayment(this.orderId, resourceType, resourceId, orderId).then(() => {
                 this.createNotificationSuccess({
-                    title: this.$tc('global.default.success'),
                     message: this.$tc('swag-paypal-payment.voidAction.successMessage')
                 });
                 this.isLoading = false;
@@ -50,14 +49,12 @@ Component.register('swag-paypal-payment-action-void', {
             }).catch((errorResponse) => {
                 try {
                     this.createNotificationError({
-                        title: errorResponse.response.data.errors[0].title,
-                        message: errorResponse.response.data.errors[0].detail,
+                        message: `${errorResponse.response.data.errors[0].title}: ${errorResponse.response.data.errors[0].detail}`,
                         autoClose: false
                     });
                 } catch (e) {
                     this.createNotificationError({
-                        title: errorResponse.title,
-                        message: errorResponse.message,
+                        message: `${errorResponse.title}: ${errorResponse.message}`,
                         autoClose: false
                     });
                 } finally {

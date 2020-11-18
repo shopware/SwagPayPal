@@ -11,14 +11,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class WebhookOrderTransactionNotFoundException extends WebhookException
 {
-    public function __construct(string $payPalTransactionId, string $eventType)
+    public function __construct(string $reason, string $eventType)
     {
         parent::__construct(
             $eventType,
-            '[PayPal {{ eventType }} Webhook] Could not find associated order with the PayPal ID "{{ payPalTransactionId }}"',
+            '[PayPal {{ eventType }} Webhook] Could not find associated order transaction {{ reason }}',
             [
                 'eventType' => $eventType,
-                'payPalTransactionId' => $payPalTransactionId,
+                'reason' => $reason,
             ]
         );
     }

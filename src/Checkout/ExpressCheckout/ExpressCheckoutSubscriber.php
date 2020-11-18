@@ -18,7 +18,7 @@ use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
-use Swag\PayPal\Checkout\ExpressCheckout\Route\ExpressApprovePaymentRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -134,7 +134,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     public function disableAddressValidation(BuildValidationEvent $event): void
     {
-        if (!$event->getContext()->hasExtension(ExpressApprovePaymentRoute::EXPRESS_CHECKOUT_ACTIVE)) {
+        if (!$event->getContext()->hasExtension(ExpressPrepareCheckoutRoute::EXPRESS_CHECKOUT_ACTIVE)) {
             return;
         }
 
@@ -145,7 +145,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     public function disableCustomerValidation(BuildValidationEvent $event): void
     {
-        if (!$event->getContext()->hasExtension(ExpressApprovePaymentRoute::EXPRESS_CHECKOUT_ACTIVE)) {
+        if (!$event->getContext()->hasExtension(ExpressPrepareCheckoutRoute::EXPRESS_CHECKOUT_ACTIVE)) {
             return;
         }
 

@@ -23,12 +23,13 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
-use Swag\PayPal\PayPal\Api\Capture;
-use Swag\PayPal\PayPal\Api\Payment;
-use Swag\PayPal\PayPal\Api\Payment\Transaction;
-use Swag\PayPal\PayPal\Api\Refund;
-use Swag\PayPal\PayPal\Api\Refund\TotalRefundedAmount;
+use Swag\PayPal\RestApi\V1\Api\Capture;
+use Swag\PayPal\RestApi\V1\Api\Payment;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
+use Swag\PayPal\RestApi\V1\Api\Refund;
+use Swag\PayPal\RestApi\V1\Api\Refund\TotalRefundedAmount;
 use Swag\PayPal\Util\PaymentStatusUtil;
+use Swag\PayPal\Util\PriceFormatter;
 
 class PaymentStatusUtilTest extends TestCase
 {
@@ -79,7 +80,8 @@ class PaymentStatusUtilTest extends TestCase
 
         $this->paymentStatusUtil = new PaymentStatusUtil(
             $this->orderRepository,
-            $orderTransactionStateHandler
+            $orderTransactionStateHandler,
+            new PriceFormatter()
         );
     }
 
@@ -266,9 +268,6 @@ class PaymentStatusUtilTest extends TestCase
         $this->assertTransactionState($orderId, $expectedOrderTransactionState);
     }
 
-    /**
-     * @dataProvider dataProviderTestApplyRefundStateToPayment
-     */
     public function testApplyRefundStateToCapture(): void
     {
         $orderId = $this->createBasicOrder();

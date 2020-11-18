@@ -1,6 +1,6 @@
 import template from './swag-paypal-payment-action-capture.html.twig';
 
-const { Component, Mixin } = Shopware;
+const { Component } = Shopware;
 const utils = Shopware.Utils;
 
 Component.register('swag-paypal-payment-action-capture', {
@@ -9,7 +9,7 @@ Component.register('swag-paypal-payment-action-capture', {
     inject: ['SwagPayPalPaymentService'],
 
     mixins: [
-        Mixin.getByName('notification')
+        'notification'
     ],
 
     props: {
@@ -70,7 +70,6 @@ Component.register('swag-paypal-payment-action-capture', {
                 isFinalCapture
             ).then(() => {
                 this.createNotificationSuccess({
-                    title: this.$tc('global.default.success'),
                     message: this.$tc('swag-paypal-payment.captureAction.successMessage')
                 });
                 this.isLoading = false;
@@ -78,24 +77,21 @@ Component.register('swag-paypal-payment-action-capture', {
                 this.$nextTick(() => {
                     this.$router.replace(`${this.$route.path}?hash=${utils.createId()}`);
                 });
-            })
-                .catch((errorResponse) => {
-                    try {
-                        this.createNotificationError({
-                            title: errorResponse.response.data.errors[0].title,
-                            message: errorResponse.response.data.errors[0].detail,
-                            autoClose: false
-                        });
-                    } catch (e) {
-                        this.createNotificationError({
-                            title: errorResponse.title,
-                            message: errorResponse.message,
-                            autoClose: false
-                        });
-                    } finally {
-                        this.isLoading = false;
-                    }
-                });
+            }).catch((errorResponse) => {
+                try {
+                    this.createNotificationError({
+                        message: `${errorResponse.response.data.errors[0].title}: ${errorResponse.response.data.errors[0].detail}`,
+                        autoClose: false
+                    });
+                } catch (e) {
+                    this.createNotificationError({
+                        message: `${errorResponse.title}: ${errorResponse.message}`,
+                        autoClose: false
+                    });
+                } finally {
+                    this.isLoading = false;
+                }
+            });
         },
 
         getResourceId(paymentResource) {

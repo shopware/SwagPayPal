@@ -15,7 +15,7 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
-use Swag\PayPal\Test\Mock\LoggerMock;
+use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\Payment\AsyncPaymentHandlerMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,9 +25,6 @@ use Symfony\Component\Routing\RouterInterface;
 class PlusPaymentFinalizeControllerTest extends TestCase
 {
     use IntegrationTestBehaviour;
-
-    public const WITHOUT_TRANSACTION = 'noTransactionFound';
-    public const WITHOUT_ORDER = 'noOrderFound';
 
     /**
      * @var MockObject
@@ -59,7 +56,7 @@ class PlusPaymentFinalizeControllerTest extends TestCase
     public function testFinalizeTransactionWithoutTransaction(): void
     {
         $salesChannelContext = Generator::createSalesChannelContext();
-        $salesChannelContext->getContext()->addExtension(self::WITHOUT_TRANSACTION, new ArrayStruct());
+        $salesChannelContext->getContext()->addExtension(ConstantsForTesting::WITHOUT_TRANSACTION, new ArrayStruct());
         $this->expectException(InvalidTransactionException::class);
         $this->expectExceptionMessage('The transaction with id  is invalid or could not be found.');
         $this->createController()->finalizeTransaction(new Request(), $salesChannelContext);
@@ -68,7 +65,7 @@ class PlusPaymentFinalizeControllerTest extends TestCase
     public function testFinalizeTransactionWithoutOrder(): void
     {
         $salesChannelContext = Generator::createSalesChannelContext();
-        $salesChannelContext->getContext()->addExtension(self::WITHOUT_ORDER, new ArrayStruct());
+        $salesChannelContext->getContext()->addExtension(ConstantsForTesting::WITHOUT_ORDER, new ArrayStruct());
         $this->expectException(InvalidTransactionException::class);
         $this->expectExceptionMessage(
             \sprintf(
@@ -102,8 +99,7 @@ class PlusPaymentFinalizeControllerTest extends TestCase
             new OrderTransactionRepoMock(),
             new AsyncPaymentHandlerMock(),
             $this->orderTransactionStateHandler,
-            $router,
-            new LoggerMock()
+            $router
         );
     }
 }

@@ -21,7 +21,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Swag\PayPal\Test\Payment\Builder\OrderPaymentBuilderTest;
+use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 
 trait PaymentTransactionTrait
 {
@@ -36,7 +36,7 @@ trait PaymentTransactionTrait
         return new AsyncPaymentTransactionStruct(
             $orderTransaction,
             $order,
-            'http://www.test.de/'
+            ConstantsForTesting::PAYMENT_TRANSACTION_DOMAIN
         );
     }
 

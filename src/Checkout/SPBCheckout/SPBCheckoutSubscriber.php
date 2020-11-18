@@ -13,11 +13,11 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
-use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController;
+use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
+use Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler;
+use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
-use Swag\PayPal\Payment\Handler\AbstractPaymentHandler;
-use Swag\PayPal\Payment\Handler\EcsSpbHandler;
-use Swag\PayPal\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -30,10 +30,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class SPBCheckoutSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID = 'payPalSpbButtonData';
-    /**
-     * @deprecated tag:v2.0.0 - Will be removed without replacement
-     */
-    public const PAYPAL_SMART_PAYMENT_BUTTONS_ERROR_PARAMETER = 'payPalSpbError';
 
     /**
      * @var SettingsServiceInterface
@@ -129,7 +125,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         }
 
         $confirmPage = $event->getPage();
-        if ($confirmPage->getCart()->getExtension(ExpressCheckoutController::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID) !== null) {
+        if ($confirmPage->getCart()->getExtension(ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID) !== null) {
             return;
         }
 
@@ -169,12 +165,8 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             $storefrontRequest->request->get(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID)
         );
         $storeApiRequest->request->set(
-            AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME,
-            $storefrontRequest->request->get(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
-        );
-        $storeApiRequest->request->set(
-            EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME,
-            $storefrontRequest->request->get(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
+            AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME,
+            $storefrontRequest->request->get(AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)
         );
     }
 
@@ -202,9 +194,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     private function addSuccessMessage(Request $request): bool
     {
         $requestQuery = $request->query;
-        if ($requestQuery->has(EcsSpbHandler::PAYPAL_PAYER_ID_INPUT_NAME)
-            && $requestQuery->has(AbstractPaymentHandler::PAYPAL_PAYMENT_ID_INPUT_NAME)
-        ) {
+        if ($requestQuery->has(EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
             $this->session->getFlashBag()->add('success', $this->translator->trans('paypal.smartPaymentButtons.confirmPageHint'));
 
             return true;

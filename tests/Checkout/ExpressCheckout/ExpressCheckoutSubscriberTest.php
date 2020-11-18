@@ -420,7 +420,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
             'cartEnabled' => true,
             'clientId' => 'someClientId',
             'currency' => 'EUR',
-            'intent' => 'sale',
+            'intent' => 'capture',
             'addProductToCart' => true,
         ]);
     }

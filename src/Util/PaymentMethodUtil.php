@@ -17,8 +17,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
-use Swag\PayPal\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
 
 class PaymentMethodUtil
 {
