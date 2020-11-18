@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 2.0.0
 - PPI-182 - Improve webhook registration
+- PT-11875 - Migration to PayPal API v2 for the following features: PayPal, Express Checkout and Smart Payment Buttons
 
 # 1.10.0
 - PPI-159 - Added ACL privileges to the PayPal modules
