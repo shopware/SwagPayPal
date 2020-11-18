@@ -108,6 +108,57 @@ class WebhookController extends AbstractController
 
     /**
      * @throws BadRequestHttpException
+     *
+     * @return WebhookV1|WebhookV2
+     */
+    protected function createWebhookFromPostData(Request $request): PayPalApiStruct
+    {
+        $postData = $request->request->all();
+        $this->logger->debug('[PayPal Webhook] Received webhook', ['payload' => $postData]);
+
+        if (empty($postData)) {
+            throw new BadRequestHttpException('No webhook data sent');
+        }
+
+        if (isset($postData['resource_version']) && $postData['resource_version'] === '2.0') {
+            $webhook = new WebhookV2();
+        } else {
+            $webhook = new WebhookV1();
+        }
+
+        $webhook->assign($postData);
+
+        return $webhook;
+    }
+
+    /**
+     * @param WebhookV1|WebhookV2 $webhook
+     *
+     * @throws BadRequestHttpException
+     */
+    protected function tryToExecuteWebhook(Context $context, PayPalApiStruct $webhook): void
+    {
+        try {
+            $this->webhookService->executeWebhook($webhook, $context);
+        } catch (WebhookException $webhookException) {
+            $this->logger->error(
+                \sprintf('[PayPal Webhook] %s', $webhookException->getMessage()),
+                [
+                    'type' => $webhookException->getEventType(),
+                    'webhook' => \json_encode($webhook),
+                ]
+            );
+
+            throw new BadRequestHttpException('An error occurred during execution of webhook');
+        } catch (\Exception $e) {
+            $this->logger->error(\sprintf('[PayPal Webhook] %s', $e->getMessage()));
+
+            throw new BadRequestHttpException('An error occurred during execution of webhook');
+        }
+    }
+
+    /**
+     * @throws BadRequestHttpException
      */
     private function getShopwareToken(Request $request): string
     {
@@ -135,56 +186,5 @@ class WebhookController extends AbstractController
         }
 
         throw new BadRequestHttpException('Shopware token is invalid');
-    }
-
-    /**
-     * @throws BadRequestHttpException
-     *
-     * @return WebhookV1|WebhookV2
-     */
-    private function createWebhookFromPostData(Request $request): PayPalApiStruct
-    {
-        $postData = $request->request->all();
-        $this->logger->debug('[PayPal Webhook] Received webhook', ['payload' => $postData]);
-
-        if (empty($postData)) {
-            throw new BadRequestHttpException('No webhook data sent');
-        }
-
-        if (isset($postData['resource_version']) && $postData['resource_version'] === '2.0') {
-            $webhook = new WebhookV2();
-        } else {
-            $webhook = new WebhookV1();
-        }
-
-        $webhook->assign($postData);
-
-        return $webhook;
-    }
-
-    /**
-     * @param WebhookV1|WebhookV2 $webhook
-     *
-     * @throws BadRequestHttpException
-     */
-    private function tryToExecuteWebhook(Context $context, PayPalApiStruct $webhook): void
-    {
-        try {
-            $this->webhookService->executeWebhook($webhook, $context);
-        } catch (WebhookException $webhookException) {
-            $this->logger->error(
-                \sprintf('[PayPal Webhook] %s', $webhookException->getMessage()),
-                [
-                    'type' => $webhookException->getEventType(),
-                    'webhook' => \json_encode($webhook),
-                ]
-            );
-
-            throw new BadRequestHttpException('An error occurred during execution of webhook');
-        } catch (\Exception $e) {
-            $this->logger->error(\sprintf('[PayPal Webhook] %s', $e->getMessage()));
-
-            throw new BadRequestHttpException('An error occurred during execution of webhook');
-        }
     }
 }

@@ -48,12 +48,10 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
         ?string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ): PayPalClientInterface {
-        $settings = $this->settingsService->getSettings($salesChannelId);
-
         if ($this->payPalClient === null) {
             $this->payPalClient = new PayPalClient(
                 $this->tokenResource,
-                $settings,
+                $this->settingsService->getSettings($salesChannelId),
                 $this->logger,
                 $partnerAttributionId
             );

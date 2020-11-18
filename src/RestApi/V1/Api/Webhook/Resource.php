@@ -94,6 +94,11 @@ class Resource extends PayPalApiStruct
      */
     protected $state;
 
+    /**
+     * @var string|null
+     */
+    protected $merchantId;
+
     public function getId(): string
     {
         return $this->id;
@@ -258,5 +263,15 @@ class Resource extends PayPalApiStruct
     public function setState(string $state): void
     {
         $this->state = $state;
+    }
+
+    public function getMerchantId(): ?string
+    {
+        return $this->merchantId;
+    }
+
+    public function setMerchantId(?string $merchantId): void
+    {
+        $this->merchantId = $merchantId;
     }
 }
