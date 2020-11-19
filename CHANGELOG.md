@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-194 - Fix deregister of webhooks on Sales Channel deletion
+
 # 2.0.0
 - PPI-182 - Improve webhook registration
 - PT-11875 - Migration to PayPal API v2 for the following features: PayPal, Express Checkout and Smart Payment Buttons

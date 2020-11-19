@@ -13,6 +13,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\EntityExistence;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEvents;
@@ -111,18 +112,24 @@ class WebhookSubscriberTest extends TestCase
     private function createEvent(): EntityDeletedEvent
     {
         $writeResult = new EntityWriteResult(
+            Defaults::SALES_CHANNEL,
             ['id' => Defaults::SALES_CHANNEL],
-            [],
             SalesChannelDefinition::ENTITY_NAME,
-            EntityWriteResult::OPERATION_DELETE
+            EntityWriteResult::OPERATION_DELETE,
+            new EntityExistence(
+                SalesChannelDefinition::ENTITY_NAME,
+                ['id' => Defaults::SALES_CHANNEL],
+                true,
+                false,
+                false,
+                ['exists' => '1']
+            )
         );
 
-        $event = new EntityDeletedEvent(
+        return new EntityDeletedEvent(
             SalesChannelDefinition::ENTITY_NAME,
             [$writeResult],
             Context::createDefaultContext()
         );
-
-        return $event;
     }
 }
