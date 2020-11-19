@@ -51,11 +51,9 @@ class WebhookSubscriber implements EventSubscriberInterface
     public function removeSalesChannelWebhookConfiguration(EntityDeletedEvent $event): void
     {
         foreach ($event->getIds() as $id) {
-            $salesChannelId = $id['id'];
-
             try {
-                $settings = $this->settingsService->getSettings($salesChannelId, false);
-                $this->webhookService->deregisterWebhook($salesChannelId, $settings);
+                $settings = $this->settingsService->getSettings($id, false);
+                $this->webhookService->deregisterWebhook($id, $settings);
             } catch (\Throwable $e) {
                 $this->logger->error('[PayPal Webhook Deregistration] ' . $e->getMessage(), ['error' => $e]);
             }
