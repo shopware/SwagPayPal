@@ -44,8 +44,6 @@ Check built JS files:
         - ./psh.phar administration:build
         - ./psh.phar storefront:build
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        # Somehow the administration images are copied to storefront
-        - rm -rf src/Resources/app/storefront/dist/static
         - >
             if ! git diff --quiet --ignore-submodules HEAD --; then
                 echo "Built Javascript files differ. Update the dependencies and execute 'administration:build' and 'storefront:build' again";
