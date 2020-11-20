@@ -181,7 +181,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
             };
         }
 
-        const element = DomAccess.querySelector(document, this.options.buyButtonSelector);
+        const element = DomAccess.querySelector(this.el.closest('form'), this.options.buyButtonSelector);
 
         return {
             element,
@@ -303,11 +303,9 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     }
 
     addProductToCart() {
-        const buyButton = DomAccess.querySelector(this.el.closest('form'), this.options.buyButtonSelector);
-        const plugin = window.PluginManager.getPluginInstanceFromElement(
-            DomAccess.querySelector(document, '[data-add-to-cart]'),
-            'AddToCart'
-        );
+        const buyForm = this.el.closest('form');
+        const buyButton = DomAccess.querySelector(buyForm, this.options.buyButtonSelector);
+        const plugin = window.PluginManager.getPluginInstanceFromElement(buyForm, 'AddToCart');
 
         return new Promise(resolve => {
             this._client.delete(this.options.deleteCartUrl, null, () => {
