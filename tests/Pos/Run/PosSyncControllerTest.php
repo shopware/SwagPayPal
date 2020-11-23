@@ -160,8 +160,10 @@ class PosSyncControllerTest extends TestCase
         $salesChannelId = $this->salesChannelRepoMock->getMockEntity();
         $this->posSyncController->$syncFunction($salesChannelId->getId(), $context);
 
+        $envelope = \current($this->messageBus->getEnvelopes());
+        static::assertNotFalse($envelope);
         /** @var SyncManagerMessage $message */
-        $message = \current($this->messageBus->getEnvelopes())->getMessage();
+        $message = $envelope->getMessage();
         static::assertSame($serviceCalls, $message->getSteps());
     }
 

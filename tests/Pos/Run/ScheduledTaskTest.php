@@ -51,8 +51,10 @@ class ScheduledTaskTest extends TestCase
 
         static::assertCount($salesChannelRepoMock->getCollection()->count(), $runRepository->getCollection());
 
+        $envelope = \current($messageBus->getEnvelopes());
+        static::assertNotFalse($envelope);
         /** @var SyncManagerMessage $message */
-        $message = \current($messageBus->getEnvelopes())->getMessage();
+        $message = $envelope->getMessage();
         static::assertSame($completeTask->getSteps(), $message->getSteps());
     }
 
@@ -75,8 +77,10 @@ class ScheduledTaskTest extends TestCase
 
         static::assertCount($salesChannelRepoMock->getCollection()->count(), $runRepository->getCollection());
 
+        $envelope = \current($messageBus->getEnvelopes());
+        static::assertNotFalse($envelope);
         /** @var SyncManagerMessage $message */
-        $message = \current($messageBus->getEnvelopes())->getMessage();
+        $message = $envelope->getMessage();
         static::assertSame($inventoryTask->getSteps(), $message->getSteps());
     }
 

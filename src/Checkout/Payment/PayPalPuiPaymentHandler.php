@@ -101,7 +101,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         $transactionId = $transaction->getOrderTransaction()->getId();
         $context = $salesChannelContext->getContext();
 
-        if ($request->query->getBoolean('cancel')) {
+        if ($request->query->getBoolean(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL)) {
             throw new CustomerCanceledAsyncPaymentException(
                 $transactionId,
                 'Customer canceled the payment on the PayPal page'

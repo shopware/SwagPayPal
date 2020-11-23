@@ -1,5 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-177 - PayPal Express Checkout Buttons in Produkt-Listings korrigiert
 - PPI-194 - Deregistrierung von Webhooks beim Löschen von Sales Channel korrigiert
+- PPI-196 - PayPal Plus Checkout-Prozess verbessert
 
 # 2.0.0
 - PPI-182 - Webhook-Registrierung verbessert

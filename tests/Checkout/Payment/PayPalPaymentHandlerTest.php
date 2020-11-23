@@ -485,7 +485,7 @@ No approve link provided by PayPal');
         $this->expectExceptionMessage('The customer canceled the external payment process. Customer canceled the payment on the PayPal page');
         $this->createPayPalPaymentHandler()->finalize(
             $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, 'testTransactionId'),
-            new Request(['cancel' => true]),
+            new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
             Generator::createSalesChannelContext()
         );
     }

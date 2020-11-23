@@ -131,8 +131,10 @@ class RunTaskTest extends TestCase
 
         $task->execute($salesChannel, $context);
 
+        $envelope = \current($this->messageBus->getEnvelopes());
+        static::assertNotFalse($envelope);
         /** @var SyncManagerMessage $message */
-        $message = \current($this->messageBus->getEnvelopes())->getMessage();
+        $message = $envelope->getMessage();
         static::assertSame($serviceCalls, $message->getSteps());
     }
 }

@@ -161,8 +161,10 @@ class PosCommandTest extends TestCase
 
         static::assertSame(0, $this->commands[$commandClassName]->run($input, new NullOutput()));
 
+        $envelope = \current($this->messageBus->getEnvelopes());
+        static::assertNotFalse($envelope);
         /** @var SyncManagerMessage $message */
-        $message = \current($this->messageBus->getEnvelopes())->getMessage();
+        $message = $envelope->getMessage();
         static::assertSame($serviceCalls, $message->getSteps());
     }
 
