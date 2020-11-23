@@ -55,12 +55,12 @@ fi
 
 if [[ -n "$JS_ADMIN_FILES" && -x ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint ]]
 then
-    ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint --config ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/.eslintrc.js --ext .js,.vue --fix ${JS_ADMIN_FILES}
+    make administration-fix
 fi
 
 if [[ -n "$JS_STOREFRONT_FILES" && -x ../../../vendor/shopware/platform/src/Storefront/Resources/app/storefront/node_modules/.bin/eslint ]]
 then
-    ../../../vendor/shopware/platform/src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../vendor/shopware/platform/src/Storefront/Resources/app/storefront/.eslintrc.js --ext .js,.vue --fix ${JS_STOREFRONT_FILES}
+    make storefront-fix
 fi
 
 git add ${JS_ADMIN_FILES} ${JS_STOREFRONT_FILES} ${PHP_FILES}

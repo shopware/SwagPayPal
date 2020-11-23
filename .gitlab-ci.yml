@@ -84,7 +84,8 @@ Static analyze:
         - cd $CI_PROJECT_DIR/development
         - ./psh.phar administration:init --APP_ENV="dev"
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        - ./../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint --ignore-path .eslintignore --config ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/.eslintrc.js --ext .js,.vue .
+        - make administration-lint
+        - make storefront-lint
     rules:
         -   if: '$CI_COMMIT_BRANCH == "master"'
         -   if: '$RUN_IN_MR == "true" && $CI_PIPELINE_SOURCE == "merge_request_event"'

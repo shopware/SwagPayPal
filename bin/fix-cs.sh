@@ -4,4 +4,5 @@ php ../../../dev-ops/analyze/vendor/bin/ecs check --fix --config=../../../vendor
 php ../../../dev-ops/analyze/vendor/bin/ecs check --fix --config=easy-coding-standard.yml
 
 echo "Fix javascript files"
-../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint --ignore-path .eslintignore --config ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/.eslintrc.js --ext .js,.vue --fix .
+make administration-fix
+make storefront-fix
