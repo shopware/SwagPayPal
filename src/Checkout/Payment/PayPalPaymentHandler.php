@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 {
+    public const PAYPAL_REQUEST_PARAMETER_CANCEL = 'cancel';
     public const PAYPAL_REQUEST_PARAMETER_PAYER_ID = 'PayerID';
     public const PAYPAL_REQUEST_PARAMETER_PAYMENT_ID = 'paymentId';
     public const PAYPAL_REQUEST_PARAMETER_TOKEN = 'token';
@@ -130,7 +131,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         Request $request,
         SalesChannelContext $salesChannelContext
     ): void {
-        if ($request->query->getBoolean('cancel')) {
+        if ($request->query->getBoolean(self::PAYPAL_REQUEST_PARAMETER_CANCEL)) {
             throw new CustomerCanceledAsyncPaymentException(
                 $transaction->getOrderTransaction()->getId(),
                 'Customer canceled the payment on the PayPal page'

@@ -154,7 +154,9 @@ class SyncManagerTest extends TestCase
 
     private function assertMessageStep(int $int): void
     {
-        $message = \current($this->messageBus->getEnvelopes())->getMessage();
+        $envelope = \current($this->messageBus->getEnvelopes());
+        static::assertNotFalse($envelope);
+        $message = $envelope->getMessage();
         static::assertInstanceOf(SyncManagerMessage::class, $message);
         static::assertSame($int, $message->getCurrentStep());
     }

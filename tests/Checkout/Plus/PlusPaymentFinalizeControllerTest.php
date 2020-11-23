@@ -9,11 +9,14 @@ namespace Swag\PayPal\Test\Checkout\Plus;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
+use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\Payment\AsyncPaymentHandlerMock;
@@ -79,13 +82,36 @@ class PlusPaymentFinalizeControllerTest extends TestCase
     public function testFinalizeTransactionCustomerCancel(): void
     {
         $salesChannelContext = Generator::createSalesChannelContext();
-        $request = new Request(['cancel' => true]);
+        $request = new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]);
+        $controller = $this->createController();
+
+        if ($this->isAtLeastShopware6330()) {
+            $this->orderTransactionStateHandler->expects(static::once())->method('cancel');
+            $expectedTargetUrl = '/account/order/edit/testOrderId?error-code=CHECKOUT__CUSTOMER_CANCELED_EXTERNAL_PAYMENT';
+        } else {
+            $this->orderTransactionStateHandler->expects(static::once())->method('fail');
+            $expectedTargetUrl = '/checkout/finish?orderId=testOrderId&isPayPalPlusCheckout=1&changedPayment=0&paymentFailed=1';
+        }
+
+        $targetUrl = $controller->finalizeTransaction($request, $salesChannelContext)->getTargetUrl();
+        static::assertStringContainsString($expectedTargetUrl, $targetUrl);
+    }
+
+    public function testFinalizeTransactionError(): void
+    {
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $request = new Request([AsyncPaymentHandlerMock::REQUEST_PARAM_SHOULD_THROW_EXCEPTION => true]);
         $controller = $this->createController();
 
         $this->orderTransactionStateHandler->expects(static::once())->method('fail');
-        $response = $controller->finalizeTransaction($request, $salesChannelContext);
+        if ($this->isAtLeastShopware6330()) {
+            $expectedTargetUrl = '/account/order/edit/testOrderId?error-code=CHECKOUT__ASYNC_PAYMENT_FINALIZE_INTERRUPTED';
+        } else {
+            $expectedTargetUrl = '/checkout/finish?orderId=testOrderId&isPayPalPlusCheckout=1&changedPayment=0&paymentFailed=1';
+        }
 
-        static::assertStringContainsString('/checkout/finish?orderId=testOrderId&isPayPalPlusCheckout=1&changedPayment=0&paymentFailed=1', $response->getTargetUrl());
+        $targetUrl = $controller->finalizeTransaction($request, $salesChannelContext)->getTargetUrl();
+        static::assertStringContainsString($expectedTargetUrl, $targetUrl);
     }
 
     private function createController(): PlusPaymentFinalizeController
@@ -99,7 +125,13 @@ class PlusPaymentFinalizeControllerTest extends TestCase
             new OrderTransactionRepoMock(),
             new AsyncPaymentHandlerMock(),
             $this->orderTransactionStateHandler,
-            $router
+            $router,
+            new NullLogger()
         );
+    }
+
+    private function isAtLeastShopware6330(): bool
+    {
+        return \class_exists(Since::class);
     }
 }

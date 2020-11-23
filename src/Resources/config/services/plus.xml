@@ -27,6 +27,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\Payment\PayPalPaymentHandler"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="router"/>
+            <argument type="service" id="logger"/>
         </service>
     </services>
 </container>
