@@ -8,8 +8,11 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
+use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
@@ -63,8 +66,7 @@ class OrderFromCartBuilderTest extends TestCase
     {
         $settings = $this->createDefaultSettingStruct();
         $salesChannelContext = $this->createSalesChannelContext();
-        $cart = $this->createCart('');
-        $cart->setLineItems(new LineItemCollection([new LineItem('line-item-id', LineItem::PRODUCT_LINE_ITEM_TYPE)]));
+        $cart = $this->createCartWithLineItem();
         $order = $this->createOrderFromCartBuilder($settings)->getOrder($cart, $salesChannelContext, null);
 
         static::assertSame([], $order->getPurchaseUnits()[0]->getItems());
@@ -79,6 +81,19 @@ class OrderFromCartBuilderTest extends TestCase
 
         $order = $this->createOrderFromCartBuilder($settings)->getOrder($cart, $salesChannelContext, null);
         static::assertNull($order->getPurchaseUnits()[0]->getAmount()->getBreakdown());
+    }
+
+    public function testGetOrderWithProductWithZeroPrice(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $cart = $this->createCartWithLineItem(new CalculatedPrice(0, 0, new CalculatedTaxCollection(), new TaxRuleCollection()));
+        $salesChannelContext = $this->createSalesChannelContext();
+        $order = $this->createOrderFromCartBuilder($settings)->getOrder($cart, $salesChannelContext, null);
+
+        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        static::assertNotNull($paypalOrderItems);
+        static::assertNotEmpty($paypalOrderItems);
+        static::assertSame('0.00', $paypalOrderItems[0]->getUnitAmount()->getValue());
     }
 
     private function createOrderFromCartBuilder(?SwagPayPalSettingStruct $settings = null): OrderFromCartBuilder
@@ -101,5 +116,23 @@ class OrderFromCartBuilderTest extends TestCase
         $salesChannelContext->getCurrency()->setIsoCode('EUR');
 
         return $salesChannelContext;
+    }
+
+    private function createCartWithLineItem(?CalculatedPrice $lineItemPrice = null): Cart
+    {
+        $cart = $this->createCart('');
+        $cart->add($this->createLineItem($lineItemPrice));
+
+        return $cart;
+    }
+
+    private function createLineItem(?CalculatedPrice $lineItemPrice): LineItem
+    {
+        $lineItem = new LineItem('line-item-id', LineItem::PRODUCT_LINE_ITEM_TYPE);
+        if ($lineItemPrice !== null) {
+            $lineItem->setPrice($lineItemPrice);
+        }
+
+        return $lineItem;
     }
 }
