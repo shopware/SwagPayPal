@@ -157,7 +157,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         } elseif ($resource instanceof Refund) {
             $resource->assign([
                 'seller_payable_breakdown' => [
-                    'total_refunded_amount' => ['currency_code' => 'EUR', 'value' => '56.78'],
+                    'total_refunded_amount' => ['currency_code' => 'EUR', 'value' => '40.00'],
                 ],
             ]);
         }

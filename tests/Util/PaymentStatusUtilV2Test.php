@@ -177,6 +177,34 @@ class PaymentStatusUtilV2Test extends TestCase
         ];
     }
 
+    public function testPartialNotFinalCaptureAndFullRefund(): void
+    {
+        $orderTransactionId = $this->createOrderTransaction();
+
+        $capture = $this->createCapture(false, '10.00');
+        $this->paymentStatusUtil->applyCaptureState($orderTransactionId, $capture, $this->context);
+        $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_PARTIALLY_PAID);
+
+        $refund = $this->createRefund('10.00', '10.00');
+        $firstOrder = $this->createOrder([$capture], [$refund]);
+        $this->paymentStatusUtil->applyRefundState($orderTransactionId, $refund, $firstOrder, $this->context);
+        $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_PARTIALLY_REFUNDED);
+    }
+
+    public function testPartialFinalCaptureAndFullRefund(): void
+    {
+        $orderTransactionId = $this->createOrderTransaction();
+
+        $capture = $this->createCapture(true, '10.00');
+        $this->paymentStatusUtil->applyCaptureState($orderTransactionId, $capture, $this->context);
+        $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_PAID);
+
+        $refund = $this->createRefund('10.00', '10.00');
+        $firstOrder = $this->createOrder([$capture], [$refund]);
+        $this->paymentStatusUtil->applyRefundState($orderTransactionId, $refund, $firstOrder, $this->context);
+        $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_REFUNDED);
+    }
+
     public function testSeveralCapturesAndRefundsWorkflow(): void
     {
         $orderTransactionId = $this->createOrderTransaction();

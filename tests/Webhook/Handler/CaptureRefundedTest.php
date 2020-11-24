@@ -23,7 +23,7 @@ class CaptureRefundedTest extends AbstractWebhookHandlerTestCase
     public function testInvoke(): void
     {
         $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_REFUND);
-        $this->assertInvoke(OrderTransactionStates::STATE_REFUNDED, $webhook, OrderTransactionStates::STATE_PAID);
+        $this->assertInvoke(OrderTransactionStates::STATE_PARTIALLY_REFUNDED, $webhook, OrderTransactionStates::STATE_PAID);
     }
 
     public function testInvokeWithoutResource(): void
