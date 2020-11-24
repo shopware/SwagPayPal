@@ -80,7 +80,6 @@ class OrderResourceTest extends TestCase
     public function testCreate(): void
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->setSubmitCart(true);
         $orderBuilder = $this->createOrderBuilder($settings);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());

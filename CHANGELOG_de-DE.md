@@ -3,6 +3,7 @@
 - PPI-185 - Fehlerbehandlung des PayPal-Tabs im Bestellmodul verbessert
 - PPI-194 - Deregistrierung von Webhooks beim Löschen von Sales Channel korrigiert
 - PPI-196 - PayPal Plus Checkout-Prozess verbessert
+- PPI-197 - "Warenkorb übertragen" Funktion korrigiert
 
 # 2.0.0
 - PPI-182 - Webhook-Registrierung verbessert

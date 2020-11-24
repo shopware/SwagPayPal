@@ -118,7 +118,6 @@ class OrderPaymentBuilderTest extends TestCase
     public function testGetPaymentWithoutLineItems(): void
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->setSubmitCart(true);
         $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $context = Context::createDefaultContext();
@@ -160,7 +159,6 @@ class OrderPaymentBuilderTest extends TestCase
         $withoutTokenAndId->setLandingPage(ApplicationContext::LANDING_PAGE_TYPE_LOGIN);
 
         $submitCart = $this->createDefaultSettingStruct();
-        $submitCart->setSubmitCart(true);
         $submitCart->setLandingPage('Foo');
 
         return [
@@ -236,7 +234,6 @@ class OrderPaymentBuilderTest extends TestCase
     private function assertTransaction(string $orderId): array
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->setSubmitCart(true);
         $settings->setLandingPage('Foo');
         $paymentBuilder = $this->createPaymentBuilder($settings);
 

@@ -62,8 +62,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         if (($isExpressCheckoutProcess && $settings->getEcsSubmitCart())
             || (!$isExpressCheckoutProcess && $settings->getSubmitCart())
         ) {
-            $items = $this->createItems($currency, $cart);
-            $purchaseUnit->setItems($items);
+            $purchaseUnit->setItems($this->createItems($currency, $cart));
         }
 
         $amount = $this->amountProvider->createAmount(

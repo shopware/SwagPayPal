@@ -3,6 +3,7 @@
 - PPI-185 - Improve error handling of the PayPal tab in the order module
 - PPI-194 - Fix deregister of webhooks on Sales Channel deletion
 - PPI-196 - Improve PayPal Plus checkout process
+- PPI-197 - Fix "Submit cart" functionality
 
 # 2.0.0
 - PPI-182 - Improve webhook registration

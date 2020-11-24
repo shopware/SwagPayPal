@@ -15,6 +15,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Discount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\ItemTotal;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Shipping as BreakdownShipping;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\Util\PriceFormatter;
 
 class AmountProvider
@@ -35,23 +36,42 @@ class AmountProvider
         CurrencyEntity $currency,
         PurchaseUnit $purchaseUnit
     ): Amount {
-        $itemTotalValue = 0.0;
-        $discountValue = 0.0;
+        $currencyCode = $currency->getIsoCode();
+
+        $amount = new Amount();
+        $amount->setCurrencyCode($currencyCode);
+        $amount->setValue($this->priceFormatter->formatPrice($totalAmount->getTotalPrice()));
+
         $items = $purchaseUnit->getItems();
         if ($items !== null) {
-            foreach ($items as $key => $item) {
-                $itemUnitAmount = (float) $item->getUnitAmount()->getValue();
-                if ($itemUnitAmount <= 0.0) {
-                    $discountValue += ($itemUnitAmount * -1);
-                    unset($items[$key]);
-                } else {
-                    $itemTotalValue += $item->getQuantity() * $itemUnitAmount;
-                }
-            }
-            $purchaseUnit->setItems($items);
+            // Only set breakdown if items are submitted, otherwise the breakdown will be invalid
+            $amount->setBreakdown($this->createBreakdown($items, $purchaseUnit, $currencyCode, $shippingCosts));
         }
 
-        $currencyCode = $currency->getIsoCode();
+        return $amount;
+    }
+
+    /**
+     * @param Item[] $items
+     */
+    private function createBreakdown(
+        array $items,
+        PurchaseUnit $purchaseUnit,
+        string $currencyCode,
+        CalculatedPrice $shippingCosts
+    ): Breakdown {
+        $itemTotalValue = 0.0;
+        $discountValue = 0.0;
+        foreach ($items as $key => $item) {
+            $itemUnitAmount = (float) $item->getUnitAmount()->getValue();
+            if ($itemUnitAmount <= 0.0) {
+                $discountValue += ($itemUnitAmount * -1);
+                unset($items[$key]);
+            } else {
+                $itemTotalValue += $item->getQuantity() * $itemUnitAmount;
+            }
+        }
+        $purchaseUnit->setItems($items);
 
         $itemTotal = new ItemTotal();
         $itemTotal->setCurrencyCode($currencyCode);
@@ -70,11 +90,6 @@ class AmountProvider
         $breakdown->setShipping($shipping);
         $breakdown->setDiscount($discount);
 
-        $amount = new Amount();
-        $amount->setCurrencyCode($currencyCode);
-        $amount->setValue($this->priceFormatter->formatPrice($totalAmount->getTotalPrice()));
-        $amount->setBreakdown($breakdown);
-
-        return $amount;
+        return $breakdown;
     }
 }
