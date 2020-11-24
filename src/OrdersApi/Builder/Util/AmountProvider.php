@@ -64,7 +64,7 @@ class AmountProvider
         $discountValue = 0.0;
         foreach ($items as $key => $item) {
             $itemUnitAmount = (float) $item->getUnitAmount()->getValue();
-            if ($itemUnitAmount <= 0.0) {
+            if ($itemUnitAmount < 0.0) {
                 $discountValue += ($itemUnitAmount * -1);
                 unset($items[$key]);
             } else {
