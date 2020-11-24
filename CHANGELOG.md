@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-177 - Fix PayPal Express Checkout buttons in product listings
+- PPI-185 - Improve error handling of the PayPal tab in the order module
 - PPI-194 - Fix deregister of webhooks on Sales Channel deletion
 - PPI-196 - Improve PayPal Plus checkout process
 

@@ -97,15 +97,23 @@ Component.register('swag-paypal-payment-details-v2', {
             this.updateDateTime = this.formatDate(this.paypalOrder.update_time);
             this.amount = this.paypalOrder.purchase_units[0].amount;
             this.currency = this.paypalOrder.purchase_units[0].amount.currency_code;
-            this.payerId = this.paypalOrder.payer.payer_id;
+            const payer = this.paypalOrder.payer;
+            if (payer !== null) {
+                this.payerId = payer.payer_id;
+            }
 
             this.setPayments();
         },
 
         setPayments() {
-            const rawAuthorizations = this.paypalOrder.purchase_units[0].payments.authorizations;
-            const rawCaptures = this.paypalOrder.purchase_units[0].payments.captures;
-            const rawRefunds = this.paypalOrder.purchase_units[0].payments.refunds;
+            const payments = this.paypalOrder.purchase_units[0].payments;
+            if (payments === null) {
+                return;
+            }
+
+            const rawAuthorizations = payments.authorizations;
+            const rawCaptures = payments.captures;
+            const rawRefunds = payments.refunds;
 
             if (rawAuthorizations !== null) {
                 rawAuthorizations.forEach((authorization) => {

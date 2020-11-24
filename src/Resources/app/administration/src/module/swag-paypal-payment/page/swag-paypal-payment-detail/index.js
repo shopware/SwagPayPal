@@ -23,8 +23,7 @@ Component.register('swag-paypal-payment-detail', {
             paypalOrder: {},
             paymentResource: {},
             isLoading: true,
-            orderTransactionState: null,
-            invalidResourceError: false
+            orderTransactionState: null
         };
     },
 
@@ -33,19 +32,30 @@ Component.register('swag-paypal-payment-detail', {
             return Filter.getByName('date');
         },
 
+        stateFailedCancelled() {
+            return this.orderTransactionState === 'failed' || this.orderTransactionState === 'cancelled';
+        },
+
         showCanceledPaymentError() {
             return this.isLoading === false
                 && this.showPayPalPayment === false
                 && this.showPayPalOrder === false
-                && this.orderTransactionState === 'failed';
+                && this.stateFailedCancelled === true;
         },
 
         showSandboxLiveError() {
             return this.isLoading === false
                 && this.showPayPalPayment === false
                 && this.showPayPalOrder === false
-                && this.invalidResourceError === true
-                && this.orderTransactionState !== 'failed';
+                && this.stateFailedCancelled === false;
+        },
+
+        showGeneralError() {
+            return this.isLoading === false
+                && this.showPayPalPayment === false
+                && this.showPayPalOrder === false
+                && this.showCanceledPaymentError === false
+                && this.showSandboxLiveError === false;
         },
 
         showPayPalPayment() {
@@ -121,15 +131,6 @@ Component.register('swag-paypal-payment-detail', {
         },
 
         handleError(errorResponse) {
-            if (errorResponse.response.data.errors[0].meta.parameters.name
-                && errorResponse.response.data.errors[0].meta.parameters.name === 'INVALID_RESOURCE_ID'
-            ) {
-                this.invalidResourceError = true;
-                this.isLoading = false;
-
-                return;
-            }
-
             try {
                 this.createNotificationError({
                     message: `${this.$tc('swag-paypal-payment.paymentDetails.error.title')}: ${errorResponse.response.data.errors[0].detail}`,
