@@ -37,7 +37,8 @@ Component.register('swag-paypal-payment-actions', {
             modalType: '',
             refundableAmount: 0,
             captureableAmount: 0,
-            showVoidButton: false
+            showVoidButton: false,
+            relatedResources: null
         };
     },
 
@@ -47,6 +48,7 @@ Component.register('swag-paypal-payment-actions', {
 
     methods: {
         createdComponent() {
+            this.relatedResources = this.paymentResource.transactions[0].related_resources;
             this.setPaymentActionAmounts();
             this.setShowVoidButton();
             this.captureableAmount = this.formatAmount(this.captureableAmount);
@@ -62,14 +64,11 @@ Component.register('swag-paypal-payment-actions', {
         },
 
         setPaymentActionAmounts() {
-            const transactions = this.paymentResource.transactions;
-            if (!transactions) {
+            if (this.relatedResources === null) {
                 return;
             }
 
-            const relatedResources = transactions[0].related_resources;
-
-            relatedResources.forEach((relatedResource) => {
+            this.relatedResources.forEach((relatedResource) => {
                 if (relatedResource.authorization) {
                     if (relatedResource.authorization.state !== COMPLETED_STATE) {
                         this.captureableAmount += Number(relatedResource.authorization.amount.total);
@@ -107,12 +106,11 @@ Component.register('swag-paypal-payment-actions', {
         },
 
         setShowVoidButton() {
-            const transactions = this.paymentResource.transactions;
-            if (!transactions) {
+            if (this.relatedResources === null) {
                 return;
             }
 
-            const firstRelatedResource = transactions[0].related_resources[0];
+            const firstRelatedResource = this.relatedResources[0];
 
             if (!firstRelatedResource) {
                 return;

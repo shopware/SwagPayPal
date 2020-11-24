@@ -100,7 +100,7 @@ abstract class AbstractClient
         $message = $error['message'];
 
         if (isset($error['details'])) {
-            $message .= ': ';
+            $message .= ' ';
             foreach ($error['details'] as $detail) {
                 if (isset($detail['description'])) {
                     $message .= \sprintf('%s ', $detail['description']);

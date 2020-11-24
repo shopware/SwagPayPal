@@ -40,7 +40,7 @@
             {% endblock %}
 
             {% block swag_paypal_payment_detail_error_page_other %}
-                <div v-if="!isLoading && !showPayPalPayment && !showPayPalOrder">
+                <div v-if="showGeneralError">
                     <sw-empty-state
                             :title="$tc('swag-paypal-payment.errorPage.title')"
                             :subline="$tc('swag-paypal-payment.errorPage.other')"
