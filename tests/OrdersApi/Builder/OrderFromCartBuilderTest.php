@@ -62,13 +62,23 @@ class OrderFromCartBuilderTest extends TestCase
     public function testGetOrderWithItemWithoutPrice(): void
     {
         $settings = $this->createDefaultSettingStruct();
-        $settings->setSubmitCart(true);
         $salesChannelContext = $this->createSalesChannelContext();
         $cart = $this->createCart('');
         $cart->setLineItems(new LineItemCollection([new LineItem('line-item-id', LineItem::PRODUCT_LINE_ITEM_TYPE)]));
         $order = $this->createOrderFromCartBuilder($settings)->getOrder($cart, $salesChannelContext, null);
 
         static::assertSame([], $order->getPurchaseUnits()[0]->getItems());
+    }
+
+    public function testGetOrderWithDisabledSubmitCartConfig(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setSubmitCart(false);
+        $cart = $this->createCart('');
+        $salesChannelContext = $this->createSalesChannelContext();
+
+        $order = $this->createOrderFromCartBuilder($settings)->getOrder($cart, $salesChannelContext, null);
+        static::assertNull($order->getPurchaseUnits()[0]->getAmount()->getBreakdown());
     }
 
     private function createOrderFromCartBuilder(?SwagPayPalSettingStruct $settings = null): OrderFromCartBuilder

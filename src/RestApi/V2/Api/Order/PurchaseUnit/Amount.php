@@ -13,16 +13,16 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown;
 class Amount extends Money
 {
     /**
-     * @var Breakdown
+     * @var Breakdown|null
      */
     protected $breakdown;
 
-    public function getBreakdown(): Breakdown
+    public function getBreakdown(): ?Breakdown
     {
         return $this->breakdown;
     }
 
-    public function setBreakdown(Breakdown $breakdown): void
+    public function setBreakdown(?Breakdown $breakdown): void
     {
         $this->breakdown = $breakdown;
     }

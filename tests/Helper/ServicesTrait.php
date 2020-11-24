@@ -78,7 +78,7 @@ trait ServicesTrait
         $settingsStruct->setClientId('TestClientId');
         $settingsStruct->setClientSecret('TestClientSecret');
         $settingsStruct->setIntent(PaymentIntentV2::CAPTURE);
-        $settingsStruct->setSubmitCart(false);
+        $settingsStruct->setSubmitCart(true);
         $settingsStruct->setSendOrderNumber(true);
         $settingsStruct->setOrderNumberPrefix(OrderPaymentBuilderTest::TEST_ORDER_NUMBER_PREFIX);
         $settingsStruct->setBrandName('Test Brand');
