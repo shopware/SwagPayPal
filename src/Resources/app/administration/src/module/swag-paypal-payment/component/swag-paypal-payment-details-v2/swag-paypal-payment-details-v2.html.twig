@@ -34,43 +34,45 @@
                                         <dd>{{ amount.value }} {{ currency }}</dd>
                                     {% endblock %}
 
-                                    {% block swag_paypal_payment_detail_invoice_list_sub_total %}
-                                        <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.subTotal') }}</dt>
-                                        <dd> {{ amount.breakdown.item_total.value }} {{ currency }}</dd>
-                                    {% endblock %}
+                                    <template v-if="amount.breakdown">
+                                        {% block swag_paypal_payment_detail_invoice_list_sub_total %}
+                                            <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.subTotal') }}</dt>
+                                            <dd> {{ amount.breakdown.item_total.value }} {{ currency }}</dd>
+                                        {% endblock %}
 
-                                    {% block swag_paypal_payment_detail_invoice_list_discount %}
-                                        <div v-if="amount.breakdown.discount">
-                                            <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.discount') }}</dt>
-                                            <dd> {{ amount.breakdown.discount.value }} {{ currency }}</dd>
-                                        </div>
-                                    {% endblock %}
+                                        {% block swag_paypal_payment_detail_invoice_list_discount %}
+                                            <div v-if="amount.breakdown.discount">
+                                                <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.discount') }}</dt>
+                                                <dd> {{ amount.breakdown.discount.value }} {{ currency }}</dd>
+                                            </div>
+                                        {% endblock %}
 
-                                    {% block swag_paypal_payment_detail_invoice_list_handling %}
-                                        <div v-if="amount.breakdown.handling">
-                                            <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.handling') }}</dt>
-                                            <dd> {{ amount.breakdown.handling.value }} {{ currency }}</dd>
-                                        </div>
-                                    {% endblock %}
+                                        {% block swag_paypal_payment_detail_invoice_list_handling %}
+                                            <div v-if="amount.breakdown.handling">
+                                                <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.handling') }}</dt>
+                                                <dd> {{ amount.breakdown.handling.value }} {{ currency }}</dd>
+                                            </div>
+                                        {% endblock %}
 
-                                    {% block swag_paypal_payment_detail_invoice_list_insurance %}
-                                        <div v-if="amount.breakdown.insurance">
-                                            <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.insurance') }}</dt>
-                                            <dd> {{ amount.breakdown.insurance.value }} {{ currency }}</dd>
-                                        </div>
-                                    {% endblock %}
+                                        {% block swag_paypal_payment_detail_invoice_list_insurance %}
+                                            <div v-if="amount.breakdown.insurance">
+                                                <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.insurance') }}</dt>
+                                                <dd> {{ amount.breakdown.insurance.value }} {{ currency }}</dd>
+                                            </div>
+                                        {% endblock %}
 
-                                    {% block swag_paypal_payment_detail_invoice_list_shipping %}
-                                        <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.shipping') }}</dt>
-                                        <dd> {{ amount.breakdown.shipping.value }} {{ currency }}</dd>
-                                    {% endblock %}
+                                        {% block swag_paypal_payment_detail_invoice_list_shipping %}
+                                            <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.shipping') }}</dt>
+                                            <dd> {{ amount.breakdown.shipping.value }} {{ currency }}</dd>
+                                        {% endblock %}
 
-                                    {% block swag_paypal_payment_detail_invoice_list_shipping_discount %}
-                                        <div v-if="amount.breakdown.insurance">
-                                            <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.shipping_discount') }}</dt>
-                                            <dd> {{ amount.breakdown.shipping_discount.value }} {{ currency }}</dd>
-                                        </div>
-                                    {% endblock %}
+                                        {% block swag_paypal_payment_detail_invoice_list_shipping_discount %}
+                                            <div v-if="amount.breakdown.insurance">
+                                                <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.shipping_discount') }}</dt>
+                                                <dd> {{ amount.breakdown.shipping_discount.value }} {{ currency }}</dd>
+                                            </div>
+                                        {% endblock %}
+                                    </template>
 
                                 </sw-description-list>
                             {% endblock %}

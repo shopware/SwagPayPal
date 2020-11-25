@@ -61,6 +61,7 @@ class PaymentStatusUtilV2
         }
 
         $capturedAmount = 0.0;
+        $isFinalCaptured = false;
         $captures = $payPalOrder->getPurchaseUnits()[0]->getPayments()->getCaptures();
         if ($captures !== null) {
             foreach ($captures as $capture) {
@@ -69,10 +70,13 @@ class PaymentStatusUtilV2
                     continue;
                 }
                 $capturedAmount += (float) $amount->getValue();
+                if ($capture->isFinalCapture()) {
+                    $isFinalCaptured = true;
+                }
             }
         }
 
-        if ($refundAmount === $this->priceFormatter->formatPrice($capturedAmount)) {
+        if ($isFinalCaptured && $refundAmount === $this->priceFormatter->formatPrice($capturedAmount)) {
             $this->orderTransactionStateHandler->refund($transactionId, $context);
 
             return;

@@ -96,7 +96,7 @@ Component.register('swag-paypal-payment-details-v2', {
             this.createDateTime = this.formatDate(this.paypalOrder.create_time);
             this.updateDateTime = this.formatDate(this.paypalOrder.update_time);
             this.amount = this.paypalOrder.purchase_units[0].amount;
-            this.currency = this.paypalOrder.purchase_units[0].amount.currency_code;
+            this.currency = this.amount.currency_code;
             const payer = this.paypalOrder.payer;
             if (payer !== null) {
                 this.payerId = payer.payer_id;
@@ -151,15 +151,6 @@ Component.register('swag-paypal-payment-details-v2', {
         },
 
         pushPayment(type, payment) {
-            let transactionFee = null;
-            if (type === 'capture' && payment.seller_receivable_breakdown.paypal_fee) {
-                const currencyCode = payment.seller_receivable_breakdown.paypal_fee.currency_code;
-                transactionFee = `${payment.seller_receivable_breakdown.paypal_fee.value} ${currencyCode}`;
-            } else if (type === 'refund' && payment.seller_payable_breakdown.paypal_fee) {
-                const currencyCode = payment.seller_payable_breakdown.paypal_fee.currency_code;
-                transactionFee = `${payment.seller_payable_breakdown.paypal_fee.value} ${currencyCode}`;
-            }
-
             this.payments.push({
                 id: payment.id,
                 type: this.$tc(`swag-paypal-payment.transactionHistory.states.${type}`),
@@ -167,7 +158,7 @@ Component.register('swag-paypal-payment-details-v2', {
                 create: this.formatDate(payment.create_time),
                 createRaw: payment.create_time,
                 update: this.formatDate(payment.update_time),
-                transactionFee: transactionFee,
+                transactionFee: this.getTransactionFee(type, payment),
                 status: payment.status
             });
 
@@ -177,6 +168,38 @@ Component.register('swag-paypal-payment-details-v2', {
 
                 return dateA - dateB;
             });
+        },
+
+        getTransactionFee(type, payment) {
+            if (type === 'capture') {
+                const sellerReceivableBreakdown = payment.seller_receivable_breakdown;
+                if (sellerReceivableBreakdown === null) {
+                    return null;
+                }
+
+                const paypalFee = sellerReceivableBreakdown.paypal_fee;
+                if (paypalFee == null) {
+                    return null;
+                }
+
+                return `${paypalFee.value} ${paypalFee.currency_code}`;
+            }
+
+            if (type === 'refund') {
+                const sellerPayableBreakdown = payment.seller_payable_breakdown;
+                if (sellerPayableBreakdown === null) {
+                    return null;
+                }
+
+                const paypalFee = sellerPayableBreakdown.paypal_fee;
+                if (paypalFee === null) {
+                    return null;
+                }
+
+                return `${paypalFee.value} ${paypalFee.currency_code}`;
+            }
+
+            return null;
         },
 
         formatDate(dateTime) {
