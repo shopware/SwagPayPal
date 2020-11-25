@@ -23,6 +23,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\StateMachine\Event\StateMachineTransitionEvent;
 use Swag\PayPal\Pos\MessageQueue\Message\InventoryUpdateMessage;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -45,16 +46,25 @@ class StockSubscriber implements EventSubscriberInterface
      */
     private $messageBus;
 
-    public function __construct(EntityRepositoryInterface $orderLineItemRepository, MessageBusInterface $messageBus)
-    {
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $salesChannelRepository;
+
+    public function __construct(
+        EntityRepositoryInterface $orderLineItemRepository,
+        MessageBusInterface $messageBus,
+        EntityRepositoryInterface $salesChannelRepository
+    ) {
         $this->orderLineItemRepository = $orderLineItemRepository;
         $this->messageBus = $messageBus;
+        $this->salesChannelRepository = $salesChannelRepository;
     }
 
     /**
      * Returns a list of custom business events to listen where the product maybe changed
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             CheckoutOrderPlacedEvent::class => 'orderPlaced',
@@ -100,12 +110,13 @@ class StockSubscriber implements EventSubscriberInterface
             $ids[] = $changeSet->getAfter('referenced_id');
         }
 
-        $this->startSync(\array_filter(\array_unique($ids)), $event->getContext());
+        $this->startSync(\array_unique(\array_filter($ids)), $event->getContext());
     }
 
     public function stateChanged(StateMachineTransitionEvent $event): void
     {
-        if ($event->getContext()->getVersionId() !== Defaults::LIVE_VERSION) {
+        $context = $event->getContext();
+        if ($context->getVersionId() !== Defaults::LIVE_VERSION) {
             return;
         }
 
@@ -121,12 +132,16 @@ class StockSubscriber implements EventSubscriberInterface
             return;
         }
 
+        if ($this->posSalesChannelDoesNotExist($context)) {
+            return;
+        }
+
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('orderId', $event->getEntityId()));
         $criteria->addFilter(new EqualsFilter('type', LineItem::PRODUCT_LINE_ITEM_TYPE));
 
         /** @var OrderLineItemCollection $lineItems */
-        $lineItems = $this->orderLineItemRepository->search($criteria, $event->getContext())->getEntities();
+        $lineItems = $this->orderLineItemRepository->search($criteria, $context)->getEntities();
 
         $ids = [];
         foreach ($lineItems as $lineItem) {
@@ -134,7 +149,7 @@ class StockSubscriber implements EventSubscriberInterface
             $ids[] = $lineItem->getReferencedId();
         }
 
-        $this->startSync($ids, $event->getContext());
+        $this->startSync($ids, $context);
     }
 
     public function orderPlaced(CheckoutOrderPlacedEvent $event): void
@@ -155,6 +170,15 @@ class StockSubscriber implements EventSubscriberInterface
         $this->startSync($ids, $event->getContext());
     }
 
+    private function posSalesChannelDoesNotExist(Context $context): bool
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
+        $criteria->addFilter(new EqualsFilter('active', true));
+
+        return $this->salesChannelRepository->searchIds($criteria, $context)->getTotal() === 0;
+    }
+
     private function startSync(array $productIds, Context $context): void
     {
         if (empty($productIds)) {
@@ -162,6 +186,10 @@ class StockSubscriber implements EventSubscriberInterface
         }
 
         if ($context->getVersionId() !== Defaults::LIVE_VERSION) {
+            return;
+        }
+
+        if ($this->posSalesChannelDoesNotExist($context)) {
             return;
         }
 
