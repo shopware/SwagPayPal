@@ -24,10 +24,6 @@ class LocalWebhookCalculator implements LocalCalculatorInterface
 
     public function getChangeAmount(ProductEntity $productEntity, InventoryContext $inventoryContext): int
     {
-        if (!isset($this->fixedUpdates[$productEntity->getId()])) {
-            return 0;
-        }
-
-        return $this->fixedUpdates[$productEntity->getId()];
+        return $this->fixedUpdates[$productEntity->getId()] ?? 0;
     }
 }

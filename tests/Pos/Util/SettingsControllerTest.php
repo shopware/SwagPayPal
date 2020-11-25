@@ -23,7 +23,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Swag\PayPal\Pos\Api\Exception\PosTokenException;
 use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
 use Swag\PayPal\Pos\Exception\ExistingPosAccountException;
-use Swag\PayPal\Pos\MessageQueue\Handler\CloneVisiblityHandler;
+use Swag\PayPal\Pos\MessageQueue\Handler\CloneVisibilityHandler;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Resource\TokenResource;
 use Swag\PayPal\Pos\Resource\UserResource;
@@ -140,7 +140,7 @@ class SettingsControllerTest extends TestCase
         ]), $context);
 
         $this->messageBus->execute([
-            new CloneVisiblityHandler($this->productVisibilityRepository),
+            new CloneVisibilityHandler($this->productVisibilityRepository),
         ]);
 
         static::assertCount(3, $this->productVisibilityRepository->filterBySalesChannelId(self::FROM_SALES_CHANNEL));

@@ -6,7 +6,12 @@
 
     <services>
 
-        <service id="Swag\PayPal\Pos\MessageQueue\Handler\CloneVisiblityHandler">
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\CloneVisiblityHandler"
+                 parent="Swag\PayPal\Pos\MessageQueue\Handler\CloneVisibilityHandler">
+            <deprecated>tag:v3.0.0 - The "%service_id%" is deprecated will be removed with 3.0.0. Use CloneVisibilityHandler instead.</deprecated>
+        </service>
+
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\CloneVisibilityHandler">
             <argument type="service" id="product_visibility.repository"/>
             <tag name="messenger.message_handler" />
         </service>

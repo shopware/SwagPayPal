@@ -47,8 +47,7 @@ class ImageSyncManager extends AbstractSyncManager
 
     public function buildMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): void
     {
-        $posSalesChannel = $this->getPosSalesChannel($salesChannel);
-        $domain = $posSalesChannel->getMediaDomain();
+        $domain = $this->getPosSalesChannel($salesChannel)->getMediaDomain();
 
         if ($domain === null || $domain === '') {
             throw new MediaDomainNotSetException($salesChannel->getId());
