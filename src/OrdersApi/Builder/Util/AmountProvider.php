@@ -62,16 +62,17 @@ class AmountProvider
     ): Breakdown {
         $itemTotalValue = 0.0;
         $discountValue = 0.0;
-        foreach ($items as $key => $item) {
+        $newItems = [];
+        foreach ($items as $item) {
             $itemUnitAmount = (float) $item->getUnitAmount()->getValue();
             if ($itemUnitAmount < 0.0) {
                 $discountValue += ($itemUnitAmount * -1);
-                unset($items[$key]);
             } else {
                 $itemTotalValue += $item->getQuantity() * $itemUnitAmount;
+                $newItems[] = $item;
             }
         }
-        $purchaseUnit->setItems($items);
+        $purchaseUnit->setItems($newItems);
 
         $itemTotal = new ItemTotal();
         $itemTotal->setCurrencyCode($currencyCode);
