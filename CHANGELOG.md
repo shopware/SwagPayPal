@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 2.0.1
 - PPI-171 - Message queue is now only used if there are iZettle Sales Channels
 - PPI-172 - Improve capturing and refunding process
 - PPI-177 - Fix PayPal Express Checkout buttons in product listings
