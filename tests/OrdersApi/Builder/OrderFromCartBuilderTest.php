@@ -16,6 +16,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -96,6 +97,25 @@ class OrderFromCartBuilderTest extends TestCase
         static::assertSame('0.00', $paypalOrderItems[0]->getUnitAmount()->getValue());
     }
 
+    public function testGetOrderWithNegativePriceLineItemHasCorrectItemArray(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $salesChannelContext = $this->createSalesChannelContext();
+
+        $cart = $this->createCart('');
+        $discount = new CalculatedPrice(-2.5, -2.5, new CalculatedTaxCollection(), new TaxRuleCollection());
+        $productPrice = new CalculatedPrice(12.34, 12.34, new CalculatedTaxCollection(), new TaxRuleCollection());
+        $cart->add($this->createLineItem($discount, LineItem::PROMOTION_LINE_ITEM_TYPE));
+        $cart->add($this->createLineItem($productPrice));
+
+        $order = $this->createOrderFromCartBuilder($settings)->getOrder($cart, $salesChannelContext, null);
+
+        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        static::assertNotNull($paypalOrderItems);
+        static::assertNotEmpty($paypalOrderItems);
+        static::assertSame(0, \array_keys($paypalOrderItems)[0], 'First array key of the PayPal items array must be 0.');
+    }
+
     private function createOrderFromCartBuilder(?SwagPayPalSettingStruct $settings = null): OrderFromCartBuilder
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
@@ -126,9 +146,11 @@ class OrderFromCartBuilderTest extends TestCase
         return $cart;
     }
 
-    private function createLineItem(?CalculatedPrice $lineItemPrice): LineItem
-    {
-        $lineItem = new LineItem('line-item-id', LineItem::PRODUCT_LINE_ITEM_TYPE);
+    private function createLineItem(
+        ?CalculatedPrice $lineItemPrice,
+        string $lineItemType = LineItem::PRODUCT_LINE_ITEM_TYPE
+    ): LineItem {
+        $lineItem = new LineItem(Uuid::randomHex(), $lineItemType);
         if ($lineItemPrice !== null) {
             $lineItem->setPrice($lineItemPrice);
         }

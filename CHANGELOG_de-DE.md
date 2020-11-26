@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 2.0.2
 - PPI-199 - Webhook-Log-Einträge verbessert
+- PPI-200 - Übertragen von Warenkörben mit Rabatten korrigiert
 
 # 2.0.1
 - PPI-171 - Message-Queue wird nun nur noch genutzt, wenn es iZettle Sales Channels gibt
