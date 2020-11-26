@@ -20,6 +20,7 @@ use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Webhook\Exception\WebhookException;
+use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -141,13 +142,14 @@ class WebhookController extends AbstractController
         try {
             $this->webhookService->executeWebhook($webhook, $context);
         } catch (WebhookException $webhookException) {
-            $this->logger->error(
-                \sprintf('[PayPal Webhook] %s', $webhookException->getMessage()),
-                [
-                    'type' => $webhookException->getEventType(),
-                    'webhook' => \json_encode($webhook),
-                ]
-            );
+            $logMessage = \sprintf('[PayPal Webhook] %s', $webhookException->getMessage());
+            $logContext = ['type' => $webhookException->getEventType(), 'webhook' => \json_encode($webhook)];
+
+            if ($webhookException instanceof WebhookHandlerNotFoundException) {
+                $this->logger->info($logMessage, $logContext);
+            } else {
+                $this->logger->error($logMessage, $logContext);
+            }
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         } catch (\Exception $e) {

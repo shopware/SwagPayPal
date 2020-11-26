@@ -1,0 +1,24 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\Webhook\Exception;
+
+use Symfony\Component\HttpFoundation\Response;
+
+class WebhookHandlerNotFoundException extends WebhookException
+{
+    public function __construct(string $eventType, array $parameters = [])
+    {
+        $message = \sprintf('No webhook handler found for event "%s". Shopware does not need to handle this event.', $eventType);
+        parent::__construct($eventType, $message, $parameters);
+    }
+
+    public function getStatusCode(): int
+    {
+        return Response::HTTP_NOT_FOUND;
+    }
+}
