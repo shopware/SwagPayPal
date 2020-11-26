@@ -20,7 +20,7 @@ class ApiKeyDecoder
             throw new InvalidApiKeyException('number of segments');
         }
 
-        list($headb64, $bodyb64, $cryptob64) = $tks;
+        [$headb64, $bodyb64, $cryptob64] = $tks;
 
         $header = $this->convertSegment($headb64);
         if ($header === null) {

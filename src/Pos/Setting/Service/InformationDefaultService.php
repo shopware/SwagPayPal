@@ -161,7 +161,7 @@ class InformationDefaultService
         $this->shippingMethodRepository->create([[
             'id' => self::POS_SHIPPING_METHOD_ID,
             'active' => false,
-            'availabilityRuleId' => $this->getAvailibityRuleId($context),
+            'availabilityRuleId' => $this->getAvailabilityRuleId($context),
             'deliveryTimeId' => $this->getDeliveryTimeId($context),
             'name' => 'iZettle',
             'description' => 'Shipping via iZettle. Do not activate or use.',
@@ -178,7 +178,7 @@ class InformationDefaultService
         return self::POS_SHIPPING_METHOD_ID;
     }
 
-    private function getAvailibityRuleId(Context $context): ?string
+    private function getAvailabilityRuleId(Context $context): ?string
     {
         $ruleCriteria = new Criteria();
         $ruleCriteria->addFilter(new EqualsFilter('name', 'Cart >= 0'));

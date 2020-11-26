@@ -61,6 +61,7 @@
         <service id="Swag\PayPal\Pos\Sync\Inventory\StockSubscriber">
             <argument type="service" id="order_line_item.repository"/>
             <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="sales_channel.repository"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

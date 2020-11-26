@@ -34,9 +34,7 @@ abstract class AbstractSyncTaskHandler extends ScheduledTaskHandler
     public function run(): void
     {
         $context = Context::createDefaultContext();
-        $salesChannels = $this->getSalesChannels($context);
-
-        foreach ($salesChannels as $salesChannel) {
+        foreach ($this->getSalesChannels($context) as $salesChannel) {
             $this->executeTask($salesChannel, $context);
         }
     }

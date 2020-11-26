@@ -7,56 +7,9 @@
 
 namespace Swag\PayPal\Pos\MessageQueue\Handler;
 
-use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
-use Swag\PayPal\Pos\MessageQueue\Message\CloneVisibilityMessage;
-
-class CloneVisiblityHandler extends AbstractMessageHandler
+/**
+ * @deprecated tag:v3.0.0 - Will be removed. Use CloneVisibilityHandler instead
+ */
+class CloneVisiblityHandler extends CloneVisibilityHandler
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $productVisibilityRepository;
-
-    public function __construct(EntityRepositoryInterface $productVisibilityRepository)
-    {
-        $this->productVisibilityRepository = $productVisibilityRepository;
-    }
-
-    /**
-     * @param CloneVisibilityMessage $message
-     */
-    public function handle($message): void
-    {
-        $context = $message->getContext();
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('salesChannelId', $message->getFromSalesChannelId()));
-        $criteria->setLimit($message->getLimit());
-        $criteria->setOffset($message->getOffset());
-
-        /** @var ProductVisibilityCollection $existingVisibilities */
-        $existingVisibilities = $this->productVisibilityRepository->search($criteria, $context)->getEntities();
-
-        $updates = [];
-        foreach ($existingVisibilities as $existingVisibility) {
-            $updates[] = [
-                'productId' => $existingVisibility->getProductId(),
-                'salesChannelId' => $message->getToSalesChannelId(),
-                'visibility' => $existingVisibility->getVisibility(),
-            ];
-        }
-
-        $this->productVisibilityRepository->upsert($updates, $context);
-    }
-
-    public static function getHandledMessages(): iterable
-    {
-        return [
-            CloneVisibilityMessage::class,
-        ];
-    }
 }

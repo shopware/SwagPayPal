@@ -85,12 +85,14 @@
         <PossiblyInvalidArgument>
             <errorLevel type="info">
                 <file name="tests/Pos/Sync/Product/*Test.php"/>
+                <file name="tests/Pos/Sync/Inventory/StockSubscriberTest.php"/>
             </errorLevel>
         </PossiblyInvalidArgument>
 
         <PossiblyUndefinedMethod>
             <errorLevel type="info">
                 <file name="tests/Pos/Sync/Product/*Test.php"/>
+                <file name="tests/Pos/Sync/Inventory/StockSubscriberTest.php"/>
             </errorLevel>
         </PossiblyUndefinedMethod>
 

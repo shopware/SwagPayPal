@@ -131,7 +131,7 @@ class WebhookController extends AbstractController
         $payloadToSign = \stripslashes($webhook->getTimestamp() . '.' . $webhook->getPayload());
         $generatedSignature = \hash_hmac('sha256', $payloadToSign, $signingKey);
 
-        if ($generatedSignature !== $signature) {
+        if (\hash_equals($generatedSignature, $signature) === false) {
             throw new UnauthorizedHttpException('Signature is invalid');
         }
     }

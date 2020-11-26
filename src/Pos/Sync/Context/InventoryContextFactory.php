@@ -59,7 +59,7 @@ class InventoryContextFactory
             $locations['STORE']
         );
 
-        $inventoryContext = new InventoryContext(
+        return new InventoryContext(
             $this->uuidConverter,
             $salesChannel,
             $locations['STORE'],
@@ -70,8 +70,6 @@ class InventoryContextFactory
             new PosSalesChannelInventoryCollection(),
             $context
         );
-
-        return $inventoryContext;
     }
 
     public function filterContext(InventoryContext $inventoryContext, array $productIds, array $parentIds): InventoryContext

@@ -32,7 +32,7 @@ class ProductGroupingCollection extends Collection
             }
 
             $grouping = $this->findGrouping($product);
-            if (!$grouping) {
+            if ($grouping === null) {
                 $grouping = new ProductGrouping($product);
                 $this->set($grouping->getIdentifyingId(), $grouping);
             } else {
