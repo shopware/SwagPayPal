@@ -28,7 +28,7 @@ class WebhookRegistryTest extends TestCase
     public function testGetUnknownWebhookHandler(): void
     {
         $this->expectException(WebhookException::class);
-        $this->expectExceptionMessage('The specified event-type does not exist.');
+        $this->expectExceptionMessage('No webhook handler found for event "Foo". Shopware does not need to handle this event.');
         $this->createWebhookRegistry()->getWebhookHandler('Foo');
     }
 

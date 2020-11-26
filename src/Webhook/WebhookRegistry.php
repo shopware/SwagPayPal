@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Webhook;
 
 use Swag\PayPal\Webhook\Exception\WebhookException;
+use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
 
 class WebhookRegistry
 {
@@ -31,7 +32,7 @@ class WebhookRegistry
     public function getWebhookHandler(string $eventType): WebhookHandler
     {
         if (!isset($this->registeredWebhooks[$eventType])) {
-            throw new WebhookException($eventType, 'The specified event-type does not exist.');
+            throw new WebhookHandlerNotFoundException($eventType);
         }
 
         return $this->registeredWebhooks[$eventType];
