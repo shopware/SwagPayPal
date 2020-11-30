@@ -25,6 +25,8 @@ use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\EventDispatcherMock;
+use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
@@ -134,7 +136,9 @@ class SPBCreateOrderRouteTest extends TestCase
         $orderFromCartBuilder = new OrderFromCartBuilder(
             $settingsService,
             $priceFormatter,
-            $amountProvider
+            $amountProvider,
+            new EventDispatcherMock(),
+            new LoggerMock()
         );
 
         return new SPBCreateOrderRoute(

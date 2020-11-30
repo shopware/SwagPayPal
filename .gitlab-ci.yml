@@ -5,9 +5,8 @@ variables:
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
     DEVELOPMENT_BRANCH: 'master'
     PLATFORM_BRANCH: 'master'
-    CMS_EXTENSION_BRANCH: 'master'
+    CMS_EXTENSION_BRANCH: '1.6-sw6.3.0.0'
     RUN_IN_MR: 'true'
-    INSTALL_CMS: 'true'
     USE_DEPRECATED_PSALM_CONFIG: 'false'
 
 stages:
@@ -158,7 +157,7 @@ PHPUnit:
     script:
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal
-        - if [[ $INSTALL_CMS = "true" ]]; then php bin/console plugin:install --activate SwagCmsExtensions; fi
+        - php bin/console plugin:install --activate SwagCmsExtensions
         - ./psh.phar init-test-databases
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - bin/phpunit.sh

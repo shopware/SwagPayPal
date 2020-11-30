@@ -24,6 +24,8 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\EventDispatcherMock;
+use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\PriceFormatter;
 
@@ -116,6 +118,46 @@ class OrderFromCartBuilderTest extends TestCase
         static::assertSame(0, \array_keys($paypalOrderItems)[0], 'First array key of the PayPal items array must be 0.');
     }
 
+    public function testLineItemLabelTooLongIsTruncated(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $salesChannelContext = $this->createSalesChannelContext();
+
+        $cart = $this->createCart('');
+        $productPrice = new CalculatedPrice(12.34, 12.34, new CalculatedTaxCollection(), new TaxRuleCollection());
+        $productName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam volu';
+        $cartLineItem = $this->createLineItem($productPrice);
+        $cartLineItem->setLabel($productName);
+        $cart->add($cartLineItem);
+
+        $order = $this->createOrderFromCartBuilder($settings)->getOrder($cart, $salesChannelContext, null);
+        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        static::assertNotNull($paypalOrderItems);
+        static::assertNotEmpty($paypalOrderItems);
+        $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliqu';
+        static::assertSame($expectedItemName, $paypalOrderItems[0]->getName());
+    }
+
+    public function testLineItemProductNumberTooLongIsTruncated(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $salesChannelContext = $this->createSalesChannelContext();
+
+        $cart = $this->createCart('');
+        $productPrice = new CalculatedPrice(12.34, 12.34, new CalculatedTaxCollection(), new TaxRuleCollection());
+        $productNumber = 'SW-100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+        $cartLineItem = $this->createLineItem($productPrice);
+        $cartLineItem->setPayloadValue('productNumber', $productNumber);
+        $cart->add($cartLineItem);
+
+        $order = $this->createOrderFromCartBuilder($settings)->getOrder($cart, $salesChannelContext, null);
+        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        static::assertNotNull($paypalOrderItems);
+        static::assertNotEmpty($paypalOrderItems);
+        $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+        static::assertSame($expectedItemSku, $paypalOrderItems[0]->getSku());
+    }
+
     private function createOrderFromCartBuilder(?SwagPayPalSettingStruct $settings = null): OrderFromCartBuilder
     {
         $settings = $settings ?? $this->createDefaultSettingStruct();
@@ -125,7 +167,9 @@ class OrderFromCartBuilderTest extends TestCase
         return new OrderFromCartBuilder(
             $settingsService,
             $priceFormatter,
-            new AmountProvider($priceFormatter)
+            new AmountProvider($priceFormatter),
+            new EventDispatcherMock(),
+            new LoggerMock()
         );
     }
 

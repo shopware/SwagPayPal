@@ -1,3 +1,7 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-174 - Warenkorb- und Bestellpositionen werden jetzt mit SKU gesendet
+- PPI-174 - Es wurden Events hinzugefügt, um Positionen anzupassen, die zu PayPal gesendet werden
+
 # 2.0.2
 - PPI-199 - Webhook-Log-Einträge verbessert
 - PPI-200 - Übertragen von Warenkörben mit Rabatten korrigiert

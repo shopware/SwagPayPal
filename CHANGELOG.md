@@ -1,3 +1,7 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-174 - Cart and order line items are now sent with their SKU
+- PPI-174 - Added events to adjust line items which are sent to PayPal
+
 # 2.0.2
 - PPI-199 - Improve webhook log messages
 - PPI-200 - Fix submitting of carts with discounts

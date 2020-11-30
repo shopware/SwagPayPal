@@ -20,9 +20,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class CaptureRefundCreator
 {
-    private const MAX_LENGTH_INVOICE_ID = 127;
-    private const MAX_LENGTH_NOTE_TO_PAYER = 255;
-
     /**
      * @var PriceFormatter
      */
@@ -96,14 +93,14 @@ class CaptureRefundCreator
             return;
         }
 
-        if (\strlen($invoiceId) > self::MAX_LENGTH_INVOICE_ID) {
+        try {
+            $refundCapture->setInvoiceId($invoiceId);
+        } catch (\LengthException $e) {
             throw new RequestParameterInvalidException(
                 PayPalOrdersController::REQUEST_PARAMETER_INVOICE_NUMBER,
-                \sprintf('Must not be longer than %d characters', self::MAX_LENGTH_INVOICE_ID)
+                $e->getMessage()
             );
         }
-
-        $refundCapture->setInvoiceId($invoiceId);
     }
 
     /**
@@ -116,13 +113,13 @@ class CaptureRefundCreator
             return;
         }
 
-        if (\strlen($noteToPayer) > self::MAX_LENGTH_NOTE_TO_PAYER) {
+        try {
+            $refundCapture->setNoteToPayer($noteToPayer);
+        } catch (\LengthException $e) {
             throw new RequestParameterInvalidException(
                 PayPalOrdersController::REQUEST_PARAMETER_NOTE_TO_PAYER,
-                \sprintf('Must not be longer than %d characters', self::MAX_LENGTH_NOTE_TO_PAYER)
+                $e->getMessage()
             );
         }
-
-        $refundCapture->setNoteToPayer($noteToPayer);
     }
 }

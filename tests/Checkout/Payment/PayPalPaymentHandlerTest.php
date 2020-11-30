@@ -51,6 +51,8 @@ use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
+use Swag\PayPal\Test\Mock\EventDispatcherMock;
+use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
@@ -592,7 +594,7 @@ An error occurred during the communication with PayPal');
                 new ShippingNamePatchBuilder(),
                 new AmountPatchBuilder(new AmountProvider($priceFormatter)),
                 $orderResource,
-                new ItemListProvider($priceFormatter)
+                new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock())
             ),
             new PayPalHandler(
                 $this->orderTransactionRepo,

@@ -7,19 +7,48 @@
 
 namespace Swag\PayPal\OrdersApi\Builder;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\OrdersApi\Builder\Event\PayPalItemFromCartEvent;
+use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
+use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class OrderFromCartBuilder extends AbstractOrderBuilder
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(
+        SettingsServiceInterface $settingsService,
+        PriceFormatter $priceFormatter,
+        AmountProvider $amountProvider,
+        EventDispatcherInterface $eventDispatcher,
+        LoggerInterface $logger
+    ) {
+        parent::__construct($settingsService, $priceFormatter, $amountProvider);
+        $this->eventDispatcher = $eventDispatcher;
+        $this->logger = $logger;
+    }
+
     public function getOrder(
         Cart $cart,
         SalesChannelContext $salesChannelContext,
@@ -98,7 +127,8 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             }
 
             $item = new Item();
-            $item->setName((string) $lineItem->getLabel());
+            $this->setLabel($lineItem, $item);
+            $this->setSku($lineItem, $item);
 
             $unitAmount = new UnitAmount();
             $unitAmount->setCurrencyCode($currencyCode);
@@ -107,9 +137,37 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             $item->setUnitAmount($unitAmount);
             $item->setQuantity($lineItem->getQuantity());
 
-            $items[] = $item;
+            $event = new PayPalItemFromCartEvent($item, $lineItem);
+            $this->eventDispatcher->dispatch($event);
+
+            $items[] = $event->getPaypalLineItem();
         }
 
         return $items;
+    }
+
+    private function setLabel(LineItem $lineItem, Item $item): void
+    {
+        $label = (string) $lineItem->getLabel();
+
+        try {
+            $item->setName($label);
+        } catch (\LengthException $e) {
+            $this->logger->warning($e->getMessage(), ['lineItem' => $lineItem]);
+            $item->setName(\substr($label, 0, Item::MAX_LENGTH_NAME));
+        }
+    }
+
+    private function setSku(LineItem $lineItem, Item $item): void
+    {
+        $payload = $lineItem->getPayload();
+        $productNumber = $payload['productNumber'] ?? null;
+
+        try {
+            $item->setSku($productNumber);
+        } catch (\LengthException $e) {
+            $this->logger->warning($e->getMessage(), ['lineItem' => $lineItem]);
+            $item->setSku(\substr($productNumber, 0, Item::MAX_LENGTH_SKU));
+        }
     }
 }

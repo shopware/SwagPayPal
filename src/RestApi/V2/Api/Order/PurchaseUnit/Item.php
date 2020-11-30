@@ -13,6 +13,9 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
 
 class Item extends PayPalApiStruct
 {
+    public const MAX_LENGTH_NAME = 127;
+    public const MAX_LENGTH_SKU = 127;
+
     /**
      * @var string
      */
@@ -33,13 +36,27 @@ class Item extends PayPalApiStruct
      */
     protected $quantity;
 
+    /**
+     * @var string|null
+     */
+    protected $sku;
+
     public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @throws \LengthException if given parameter is too long
+     */
     public function setName(string $name): void
     {
+        if (\strlen($name) > self::MAX_LENGTH_NAME) {
+            throw new \LengthException(
+                \sprintf('%s::$name must not be longer than %s characters', self::class, self::MAX_LENGTH_NAME)
+            );
+        }
+
         $this->name = $name;
     }
 
@@ -74,5 +91,24 @@ class Item extends PayPalApiStruct
     public function setQuantity($quantity): void
     {
         $this->quantity = (int) $quantity;
+    }
+
+    public function getSku(): ?string
+    {
+        return $this->sku;
+    }
+
+    /**
+     * @throws \LengthException if given parameter is too long
+     */
+    public function setSku(?string $sku): void
+    {
+        if ($sku !== null && \strlen($sku) > self::MAX_LENGTH_SKU) {
+            throw new \LengthException(
+                \sprintf('%s::$sku must not be longer than %s characters', self::class, self::MAX_LENGTH_SKU)
+            );
+        }
+
+        $this->sku = $sku;
     }
 }

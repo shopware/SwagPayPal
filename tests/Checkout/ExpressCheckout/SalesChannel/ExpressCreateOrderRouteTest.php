@@ -14,6 +14,8 @@ use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
+use Swag\PayPal\Test\Mock\EventDispatcherMock;
+use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\PriceFormatter;
@@ -45,7 +47,9 @@ class ExpressCreateOrderRouteTest extends TestCase
         $orderFromCartBuilder = new OrderFromCartBuilder(
             $settingsService,
             $priceFormatter,
-            new AmountProvider($priceFormatter)
+            new AmountProvider($priceFormatter),
+            new EventDispatcherMock(),
+            new LoggerMock()
         );
         /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
