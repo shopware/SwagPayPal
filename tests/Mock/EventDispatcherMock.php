@@ -16,5 +16,6 @@ class EventDispatcherMock implements EventDispatcherInterface
      */
     public function dispatch($event): object
     {
+        return $event;
     }
 }

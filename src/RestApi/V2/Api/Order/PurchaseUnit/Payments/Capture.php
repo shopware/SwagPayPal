@@ -13,12 +13,12 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\SellerReceiva
 class Capture extends Payment
 {
     /**
-     * @var string
+     * @var string|null
      */
     protected $invoiceId;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $noteToPayer;
 
@@ -42,23 +42,41 @@ class Capture extends Payment
      */
     protected $disbursementMode;
 
-    public function getInvoiceId(): string
+    public function getInvoiceId(): ?string
     {
         return $this->invoiceId;
     }
 
-    public function setInvoiceId(string $invoiceId): void
+    /**
+     * @throws \LengthException if given parameter is too long
+     */
+    public function setInvoiceId(?string $invoiceId): void
     {
+        if ($invoiceId !== null && \strlen($invoiceId) > self::MAX_LENGTH_INVOICE_ID) {
+            throw new \LengthException(
+                \sprintf('%s::$invoiceId must not be longer than %s characters', self::class, self::MAX_LENGTH_INVOICE_ID)
+            );
+        }
+
         $this->invoiceId = $invoiceId;
     }
 
-    public function getNoteToPayer(): string
+    public function getNoteToPayer(): ?string
     {
         return $this->noteToPayer;
     }
 
-    public function setNoteToPayer(string $noteToPayer): void
+    /**
+     * @throws \LengthException if given parameter is too long
+     */
+    public function setNoteToPayer(?string $noteToPayer): void
     {
+        if ($noteToPayer !== null && \strlen($noteToPayer) > self::MAX_LENGTH_NOTE_TO_PAYER) {
+            throw new \LengthException(
+                \sprintf('%s::$invoiceId must not be longer than %s characters', self::class, self::MAX_LENGTH_NOTE_TO_PAYER)
+            );
+        }
+
         $this->noteToPayer = $noteToPayer;
     }
 

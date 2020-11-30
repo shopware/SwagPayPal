@@ -23,6 +23,7 @@ use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\DummyCollection;
+use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
@@ -112,7 +113,7 @@ trait ServicesTrait
             $settingsService,
             $priceFormatter,
             new AmountProvider($priceFormatter),
-            new ItemListProvider($priceFormatter)
+            new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock())
         );
     }
 

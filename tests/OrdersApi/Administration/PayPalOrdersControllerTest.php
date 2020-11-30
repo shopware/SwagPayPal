@@ -170,7 +170,7 @@ class PayPalOrdersControllerTest extends TestCase
         $request = $this->createCaptureRefundRequest(self::AMOUNT, self::TOO_LONG_INVOICE_NUMBER);
         $this->expectException(RequestParameterInvalidException::class);
         $this->expectExceptionMessage('Parameter "invoiceNumber" is invalid.
-Must not be longer than 127 characters');
+Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund::$invoiceId must not be longer than 127 characters');
         $this->executeRefund($request)->getContent();
     }
 
@@ -189,7 +189,7 @@ Must not be longer than 127 characters');
         $request = $this->createCaptureRefundRequest(self::AMOUNT, '', self::TOO_LONG_NOTE_TO_PAYER);
         $this->expectException(RequestParameterInvalidException::class);
         $this->expectExceptionMessage('Parameter "noteToPayer" is invalid.
-Must not be longer than 255 characters');
+Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund::$invoiceId must not be longer than 255 characters');
         $this->executeRefund($request)->getContent();
     }
 

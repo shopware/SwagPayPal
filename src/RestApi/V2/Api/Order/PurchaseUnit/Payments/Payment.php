@@ -13,6 +13,9 @@ use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
 abstract class Payment extends PayPalApiStruct
 {
+    public const MAX_LENGTH_INVOICE_ID = 127;
+    public const MAX_LENGTH_NOTE_TO_PAYER = 255;
+
     /**
      * @var string
      */

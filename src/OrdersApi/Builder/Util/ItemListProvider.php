@@ -7,11 +7,15 @@
 
 namespace Swag\PayPal\OrdersApi\Builder\Util;
 
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Swag\PayPal\OrdersApi\Builder\Event\PayPalItemFromOrderEvent;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ItemListProvider
 {
@@ -20,9 +24,24 @@ class ItemListProvider
      */
     private $priceFormatter;
 
-    public function __construct(PriceFormatter $priceFormatter)
-    {
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(
+        PriceFormatter $priceFormatter,
+        EventDispatcherInterface $eventDispatcher,
+        LoggerInterface $logger
+    ) {
         $this->priceFormatter = $priceFormatter;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->logger = $logger;
     }
 
     /**
@@ -32,7 +51,7 @@ class ItemListProvider
     {
         $items = [];
         $currencyCode = $currency->getIsoCode();
-        $lineItems = $order->getLineItems();
+        $lineItems = $order->getNestedLineItems();
         if ($lineItems === null) {
             return [];
         }
@@ -45,7 +64,8 @@ class ItemListProvider
             }
 
             $item = new Item();
-            $item->setName($lineItem->getLabel());
+            $this->setLabel($lineItem, $item);
+            $this->setSku($lineItem, $item);
 
             $unitAmount = new UnitAmount();
             $unitAmount->setCurrencyCode($currencyCode);
@@ -54,9 +74,41 @@ class ItemListProvider
             $item->setUnitAmount($unitAmount);
             $item->setQuantity($lineItem->getQuantity());
 
-            $items[] = $item;
+            $event = new PayPalItemFromOrderEvent($item, $lineItem);
+            $this->eventDispatcher->dispatch($event);
+
+            $items[] = $event->getPaypalLineItem();
         }
 
         return $items;
+    }
+
+    private function setLabel(OrderLineItemEntity $lineItem, Item $item): void
+    {
+        $label = $lineItem->getLabel();
+
+        try {
+            $item->setName($label);
+        } catch (\LengthException $e) {
+            $this->logger->warning($e->getMessage(), ['lineItem' => $lineItem]);
+            $item->setName(\substr($label, 0, Item::MAX_LENGTH_NAME));
+        }
+    }
+
+    private function setSku(OrderLineItemEntity $lineItem, Item $item): void
+    {
+        $payload = $lineItem->getPayload();
+        if ($payload === null) {
+            return;
+        }
+
+        $productNumber = $payload['productNumber'] ?? null;
+
+        try {
+            $item->setSku($productNumber);
+        } catch (\LengthException $e) {
+            $this->logger->warning($e->getMessage(), ['lineItem' => $lineItem]);
+            $item->setSku(\substr($productNumber, 0, Item::MAX_LENGTH_SKU));
+        }
     }
 }
