@@ -12,11 +12,13 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
+use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 
@@ -126,6 +128,110 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
         static::assertNull($payment->getTransactions()[0]->getItemList());
+    }
+
+    public function testGetPaymentLabelTooLongIsTruncated(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $paymentBuilder = $this->createPaymentBuilder($settings);
+
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
+        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext($context);
+
+        $productName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam volu';
+        $orderLineItems = $paymentTransaction->getOrder()->getLineItems();
+        static::assertNotNull($orderLineItems);
+        $firstOrderLineItem = $orderLineItems->first();
+        static::assertNotNull($firstOrderLineItem);
+        $firstOrderLineItem->setLabel($productName);
+
+        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
+        $itemList = $payment->getTransactions()[0]->getItemList();
+        static::assertNotNull($itemList);
+
+        $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliqu';
+        static::assertSame($expectedItemName, $itemList->getItems()[0]->getName());
+    }
+
+    public function testGetPaymentProductNumberTooLongIsTruncated(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $paymentBuilder = $this->createPaymentBuilder($settings);
+
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
+        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext($context);
+
+        $productNumber = 'SW-100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+        $orderLineItems = $paymentTransaction->getOrder()->getLineItems();
+        static::assertNotNull($orderLineItems);
+        $firstOrderLineItem = $orderLineItems->first();
+        static::assertNotNull($firstOrderLineItem);
+        $firstOrderLineItem->setPayload(['productNumber' => $productNumber]);
+
+        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
+        $itemList = $payment->getTransactions()[0]->getItemList();
+        static::assertNotNull($itemList);
+
+        $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+        static::assertSame($expectedItemSku, $itemList->getItems()[0]->getSku());
+    }
+
+    public function testGetPaymentMissingProductNumberInPayload(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $paymentBuilder = $this->createPaymentBuilder($settings);
+
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
+        $orderLineItems = $paymentTransaction->getOrder()->getLineItems();
+        static::assertNotNull($orderLineItems);
+        $firstOrderLineItem = $orderLineItems->first();
+        static::assertNotNull($firstOrderLineItem);
+        $firstOrderLineItem->setPayload(['foo' => 'bar']);
+        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext($context);
+
+        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
+        $itemList = $payment->getTransactions()[0]->getItemList();
+        static::assertNotNull($itemList);
+
+        static::assertNull($itemList->getItems()[0]->getSku());
+    }
+
+    public function testGetPaymentOrderHasNoCurrency(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $paymentBuilder = $this->createPaymentBuilder($settings);
+
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
+        $order = $paymentTransaction->getOrder();
+        $currency = $order->getCurrency();
+        static::assertNotNull($currency);
+        $order->setCurrencyId($currency->getId());
+        $order->assign(['currency' => null]);
+        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext($context);
+
+        $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
+
+        static::assertSame(self::TEST_ORDER_NUMBER, $payment->getTransactions()[0]->getInvoiceNumber());
+    }
+
+    public function testGetPaymentOrderHasNoCurrencyAndInvalidCurrencyId(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $paymentBuilder = $this->createPaymentBuilder($settings);
+
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
+        $paymentTransaction->getOrder()->setCurrencyId(CurrencyRepoMock::INVALID_CURRENCY_ID);
+        $paymentTransaction->getOrder()->assign(['currency' => null]);
+        $context = Context::createDefaultContext();
+        $salesChannelContext = Generator::createSalesChannelContext($context);
+
+        $this->expectException(CurrencyNotFoundException::class);
+        $this->expectExceptionMessage(\sprintf('Currency entity with id "%s" not found', CurrencyRepoMock::INVALID_CURRENCY_ID));
+        $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
     }
 
     /**

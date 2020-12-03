@@ -45,6 +45,8 @@ use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\EventDispatcherMock;
+use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -453,18 +455,25 @@ class PlusSubscriberTest extends TestCase
         $translator = $this->getContainer()->get('translator');
         /** @var EntityRepositoryInterface $currencyRepo */
         $currencyRepo = $this->getContainer()->get('currency.repository');
+        $priceFormatter = new PriceFormatter();
+        $eventDispatcher = new EventDispatcherMock();
+        $logger = new LoggerMock();
 
         $plusDataService = new PlusDataService(
             new CartPaymentBuilder(
                 $settingsService,
                 $localeCodeProvider,
-                new PriceFormatter()
+                $priceFormatter,
+                $eventDispatcher,
+                $logger
             ),
             new OrderPaymentBuilder(
                 $settingsService,
                 $localeCodeProvider,
-                $currencyRepo,
-                new PriceFormatter()
+                $priceFormatter,
+                $eventDispatcher,
+                $logger,
+                $currencyRepo
             ),
             $this->createPaymentResource($settings),
             $router,

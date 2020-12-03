@@ -19,6 +19,10 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
@@ -130,8 +134,20 @@ trait PaymentTransactionTrait
 
     private function createCurrencyEntity(): CurrencyEntity
     {
-        $currency = new CurrencyEntity();
-        $currency->setIsoCode(OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY);
+        if (!\method_exists($this, 'getContainer')) {
+            $currency = new CurrencyEntity();
+            $currency->setIsoCode(OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY);
+
+            return $currency;
+        }
+
+        /** @var EntityRepositoryInterface $currencyRepo */
+        $currencyRepo = $this->getContainer()->get('currency.repository');
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('isoCode', OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY));
+        /** @var CurrencyEntity $currency */
+        $currency = $currencyRepo->search($criteria, Context::createDefaultContext())->first();
 
         return $currency;
     }

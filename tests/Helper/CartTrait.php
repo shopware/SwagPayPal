@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Helper;
 
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
@@ -49,5 +50,17 @@ trait CartTrait
             new TaxRuleCollection(),
             CartPrice::TAX_STATE_GROSS
         );
+    }
+
+    protected function createLineItem(
+        ?CalculatedPrice $lineItemPrice,
+        string $lineItemType = LineItem::PRODUCT_LINE_ITEM_TYPE
+    ): LineItem {
+        $lineItem = new LineItem(Uuid::randomHex(), $lineItemType);
+        if ($lineItemPrice !== null) {
+            $lineItem->setPrice($lineItemPrice);
+        }
+
+        return $lineItem;
     }
 }
