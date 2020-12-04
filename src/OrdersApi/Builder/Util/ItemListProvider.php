@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Swag\PayPal\OrdersApi\Builder\Event\PayPalItemFromOrderEvent;
+use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromOrderEvent;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
 use Swag\PayPal\Util\PriceFormatter;
@@ -64,7 +64,7 @@ class ItemListProvider
             }
 
             $item = new Item();
-            $this->setLabel($lineItem, $item);
+            $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
 
             $unitAmount = new UnitAmount();
@@ -74,16 +74,16 @@ class ItemListProvider
             $item->setUnitAmount($unitAmount);
             $item->setQuantity($lineItem->getQuantity());
 
-            $event = new PayPalItemFromOrderEvent($item, $lineItem);
+            $event = new PayPalV2ItemFromOrderEvent($item, $lineItem);
             $this->eventDispatcher->dispatch($event);
 
-            $items[] = $event->getPaypalLineItem();
+            $items[] = $event->getPayPalLineItem();
         }
 
         return $items;
     }
 
-    private function setLabel(OrderLineItemEntity $lineItem, Item $item): void
+    private function setName(OrderLineItemEntity $lineItem, Item $item): void
     {
         $label = $lineItem->getLabel();
 
@@ -98,11 +98,11 @@ class ItemListProvider
     private function setSku(OrderLineItemEntity $lineItem, Item $item): void
     {
         $payload = $lineItem->getPayload();
-        if ($payload === null) {
+        if ($payload === null || !\array_key_exists('productNumber', $payload)) {
             return;
         }
 
-        $productNumber = $payload['productNumber'] ?? null;
+        $productNumber = $payload['productNumber'];
 
         try {
             $item->setSku($productNumber);

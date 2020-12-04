@@ -14,7 +14,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\OrdersApi\Builder\Event\PayPalItemFromCartEvent;
+use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromCartEvent;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
@@ -127,7 +127,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             }
 
             $item = new Item();
-            $this->setLabel($lineItem, $item);
+            $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
 
             $unitAmount = new UnitAmount();
@@ -137,16 +137,16 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             $item->setUnitAmount($unitAmount);
             $item->setQuantity($lineItem->getQuantity());
 
-            $event = new PayPalItemFromCartEvent($item, $lineItem);
+            $event = new PayPalV2ItemFromCartEvent($item, $lineItem);
             $this->eventDispatcher->dispatch($event);
 
-            $items[] = $event->getPaypalLineItem();
+            $items[] = $event->getPayPalLineItem();
         }
 
         return $items;
     }
 
-    private function setLabel(LineItem $lineItem, Item $item): void
+    private function setName(LineItem $lineItem, Item $item): void
     {
         $label = (string) $lineItem->getLabel();
 
@@ -160,8 +160,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
 
     private function setSku(LineItem $lineItem, Item $item): void
     {
-        $payload = $lineItem->getPayload();
-        $productNumber = $payload['productNumber'] ?? null;
+        $productNumber = $lineItem->getPayloadValue('productNumber');
 
         try {
             $item->setSku($productNumber);

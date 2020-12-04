@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\PaymentsApi\Builder;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
 use Swag\PayPal\RestApi\V1\Api\Payment\Payer;
@@ -15,6 +16,7 @@ use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 abstract class AbstractPaymentBuilder
 {
@@ -38,14 +40,28 @@ abstract class AbstractPaymentBuilder
      */
     protected $priceFormatter;
 
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
     public function __construct(
         SettingsServiceInterface $settingsService,
         LocaleCodeProvider $localeCodeProvider,
-        PriceFormatter $priceFormatter
+        PriceFormatter $priceFormatter,
+        EventDispatcherInterface $eventDispatcher,
+        LoggerInterface $logger
     ) {
         $this->settingsService = $settingsService;
         $this->localeCodeProvider = $localeCodeProvider;
         $this->priceFormatter = $priceFormatter;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->logger = $logger;
     }
 
     protected function createPayer(): Payer

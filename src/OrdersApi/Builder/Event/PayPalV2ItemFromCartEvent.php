@@ -7,37 +7,37 @@
 
 namespace Swag\PayPal\OrdersApi\Builder\Event;
 
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
+use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * Use this event to adjust the items of the order which will be submitted to PayPal
+ * Use this event to adjust the items of the cart which will be submitted to PayPal
  */
-class PayPalItemFromOrderEvent extends Event
+class PayPalV2ItemFromCartEvent extends Event
 {
     /**
      * @var Item
      */
-    private $paypalLineItem;
+    private $payPalLineItem;
 
     /**
-     * @var OrderLineItemEntity
+     * @var LineItem
      */
     private $originalShopwareLineItem;
 
-    public function __construct(Item $paypalLineItem, OrderLineItemEntity $originalShopwareLineItem)
+    public function __construct(Item $payPalLineItem, LineItem $originalShopwareLineItem)
     {
-        $this->paypalLineItem = $paypalLineItem;
+        $this->payPalLineItem = $payPalLineItem;
         $this->originalShopwareLineItem = $originalShopwareLineItem;
     }
 
-    public function getPaypalLineItem(): Item
+    public function getPayPalLineItem(): Item
     {
-        return $this->paypalLineItem;
+        return $this->payPalLineItem;
     }
 
-    public function getOriginalShopwareLineItem(): OrderLineItemEntity
+    public function getOriginalShopwareLineItem(): LineItem
     {
         return $this->originalShopwareLineItem;
     }

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\PaymentsApi\Builder;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
@@ -14,6 +15,7 @@ use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Swag\PayPal\PaymentsApi\Builder\Event\PayPalV1ItemFromCartEvent;
 use Swag\PayPal\PaymentsApi\Builder\Util\AmountProvider;
 use Swag\PayPal\PaymentsApi\Service\TransactionValidator;
 use Swag\PayPal\RestApi\V1\Api\Payment;
@@ -23,15 +25,18 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBuilderInterface
 {
     public function __construct(
         SettingsServiceInterface $settingsService,
         LocaleCodeProvider $localeCodeProvider,
-        PriceFormatter $priceFormatter
+        PriceFormatter $priceFormatter,
+        EventDispatcherInterface $eventDispatcher,
+        LoggerInterface $logger
     ) {
-        parent::__construct($settingsService, $localeCodeProvider, $priceFormatter);
+        parent::__construct($settingsService, $localeCodeProvider, $priceFormatter, $eventDispatcher, $logger);
     }
 
     public function getPayment(
@@ -100,6 +105,20 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         return $transaction;
     }
 
+    private function setItemList(
+        Transaction $transaction,
+        LineItemCollection $lineItemCollection,
+        string $currency
+    ): void {
+        $items = $this->getItemList($lineItemCollection, $currency);
+
+        if (!empty($items)) {
+            $itemList = new ItemList();
+            $itemList->setItems($items);
+            $transaction->setItemList($itemList);
+        }
+    }
+
     /**
      * @return Item[]
      */
@@ -113,7 +132,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
             $price = $lineItem->getPrice();
 
             if ($price === null) {
-                return [];
+                continue;
             }
 
             $items[] = $this->createItemFromLineItem($lineItem, $currency, $price);
@@ -128,30 +147,41 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         CalculatedPrice $price
     ): Item {
         $item = new Item();
-        $item->setName((string) $lineItem->getLabel());
+        $this->setName($lineItem, $item);
+        $this->setSku($lineItem, $item);
+
         $item->setCurrency($currency);
         $item->setQuantity($lineItem->getQuantity());
         $item->setPrice($this->priceFormatter->formatPrice($price->getTotalPrice() / $lineItem->getQuantity()));
         $item->setTax($this->priceFormatter->formatPrice(0));
 
-        if ($lineItem->hasPayloadValue('productNumber')) {
-            $item->setSku($lineItem->getPayloadValue('productNumber'));
-        }
+        $event = new PayPalV1ItemFromCartEvent($item, $lineItem);
+        $this->eventDispatcher->dispatch($event);
 
-        return $item;
+        return $event->getPayPalLineItem();
     }
 
-    private function setItemList(
-        Transaction $transaction,
-        LineItemCollection $lineItemCollection,
-        string $currency
-    ): void {
-        $items = $this->getItemList($lineItemCollection, $currency);
+    private function setName(LineItem $lineItem, Item $item): void
+    {
+        $label = (string) $lineItem->getLabel();
 
-        if (!empty($items)) {
-            $itemList = new ItemList();
-            $itemList->setItems($items);
-            $transaction->setItemList($itemList);
+        try {
+            $item->setName($label);
+        } catch (\LengthException $e) {
+            $this->logger->warning($e->getMessage(), ['lineItem' => $lineItem]);
+            $item->setName(\substr($label, 0, Item::MAX_LENGTH_NAME));
+        }
+    }
+
+    private function setSku(LineItem $lineItem, Item $item): void
+    {
+        $productNumber = $lineItem->getPayloadValue('productNumber');
+
+        try {
+            $item->setSku($productNumber);
+        } catch (\LengthException $e) {
+            $this->logger->warning($e->getMessage(), ['lineItem' => $lineItem]);
+            $item->setSku(\substr($productNumber, 0, Item::MAX_LENGTH_SKU));
         }
     }
 }
