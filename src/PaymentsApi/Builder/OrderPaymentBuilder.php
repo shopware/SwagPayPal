@@ -8,7 +8,6 @@
 namespace Swag\PayPal\PaymentsApi\Builder;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
@@ -144,10 +143,8 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
     /**
      * @return Item[]
      */
-    private function getItemList(
-        OrderEntity $order,
-        string $currency
-    ): array {
+    private function getItemList(OrderEntity $order, string $currency): array
+    {
         $items = [];
         $lineItems = $order->getNestedLineItems();
         if ($lineItems === null) {
@@ -155,23 +152,14 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         }
 
         foreach ($lineItems->getElements() as $lineItem) {
-            $price = $lineItem->getPrice();
-
-            if ($price === null) {
-                return [];
-            }
-
-            $items[] = $this->createItemFromLineItem($lineItem, $currency, $price);
+            $items[] = $this->createItemFromLineItem($lineItem, $currency);
         }
 
         return $items;
     }
 
-    private function createItemFromLineItem(
-        OrderLineItemEntity $lineItem,
-        string $currency,
-        CalculatedPrice $price
-    ): Item {
+    private function createItemFromLineItem(OrderLineItemEntity $lineItem, string $currency): Item
+    {
         $item = new Item();
 
         $this->setName($lineItem, $item);
@@ -180,7 +168,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         $item->setCurrency($currency);
         $item->setQuantity($lineItem->getQuantity());
         $item->setTax($this->priceFormatter->formatPrice(0));
-        $item->setPrice($this->priceFormatter->formatPrice($price->getTotalPrice() / $lineItem->getQuantity()));
+        $item->setPrice($this->priceFormatter->formatPrice($lineItem->getUnitPrice()));
 
         $event = new PayPalV1ItemFromOrderEvent($item, $lineItem);
         $this->eventDispatcher->dispatch($event);

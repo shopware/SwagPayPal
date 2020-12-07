@@ -8,6 +8,7 @@
 namespace Swag\PayPal\OrdersApi\Builder\Util;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
@@ -15,6 +16,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Discount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\ItemTotal;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Shipping as BreakdownShipping;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\TaxTotal;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\Util\PriceFormatter;
 
@@ -34,7 +36,8 @@ class AmountProvider
         CalculatedPrice $totalAmount,
         CalculatedPrice $shippingCosts,
         CurrencyEntity $currency,
-        PurchaseUnit $purchaseUnit
+        PurchaseUnit $purchaseUnit,
+        bool $isNet
     ): Amount {
         $currencyCode = $currency->getIsoCode();
 
@@ -45,7 +48,16 @@ class AmountProvider
         $items = $purchaseUnit->getItems();
         if ($items !== null) {
             // Only set breakdown if items are submitted, otherwise the breakdown will be invalid
-            $amount->setBreakdown($this->createBreakdown($items, $purchaseUnit, $currencyCode, $shippingCosts));
+            $amount->setBreakdown(
+                $this->createBreakdown(
+                    $items,
+                    $purchaseUnit,
+                    $currencyCode,
+                    $shippingCosts,
+                    $totalAmount->getCalculatedTaxes(),
+                    $isNet
+                )
+            );
         }
 
         return $amount;
@@ -58,7 +70,9 @@ class AmountProvider
         array $items,
         PurchaseUnit $purchaseUnit,
         string $currencyCode,
-        CalculatedPrice $shippingCosts
+        CalculatedPrice $shippingCosts,
+        CalculatedTaxCollection $taxes,
+        bool $isNet
     ): Breakdown {
         $itemTotalValue = 0.0;
         $discountValue = 0.0;
@@ -82,6 +96,13 @@ class AmountProvider
         $shipping->setCurrencyCode($currencyCode);
         $shipping->setValue($this->priceFormatter->formatPrice($shippingCosts->getTotalPrice()));
 
+        $taxTotal = null;
+        if ($isNet) {
+            $taxTotal = new TaxTotal();
+            $taxTotal->setCurrencyCode($currencyCode);
+            $taxTotal->setValue($this->priceFormatter->formatPrice($taxes->getAmount()));
+        }
+
         $discount = new Discount();
         $discount->setCurrencyCode($currencyCode);
         $discount->setValue($this->priceFormatter->formatPrice($discountValue));
@@ -89,6 +110,7 @@ class AmountProvider
         $breakdown = new Breakdown();
         $breakdown->setItemTotal($itemTotal);
         $breakdown->setShipping($shipping);
+        $breakdown->setTaxTotal($taxTotal);
         $breakdown->setDiscount($discount);
 
         return $breakdown;

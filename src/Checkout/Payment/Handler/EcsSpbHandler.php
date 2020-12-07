@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Payment\Handler;
 
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
@@ -123,7 +124,8 @@ class EcsSpbHandler extends AbstractPaymentHandler
                 $orderTransaction->getAmount(),
                 $order->getShippingCosts(),
                 $currency,
-                $purchaseUnit
+                $purchaseUnit,
+                $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS
             ),
         ];
 

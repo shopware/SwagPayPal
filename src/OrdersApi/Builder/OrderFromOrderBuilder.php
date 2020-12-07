@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\OrdersApi\Builder;
 
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -85,7 +86,8 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
             $orderTransaction->getAmount(),
             $order->getShippingCosts(),
             $currency,
-            $purchaseUnit
+            $purchaseUnit,
+            $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS
         );
         $shipping = $this->createShipping($customer);
 

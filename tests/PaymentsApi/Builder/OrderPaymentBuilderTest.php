@@ -111,12 +111,6 @@ class OrderPaymentBuilderTest extends TestCase
         static::assertSame(self::EXPECTED_ITEM_TAX, (float) $item['tax']);
     }
 
-    public function testGetPaymentWithoutPrice(): void
-    {
-        $transaction = $this->assertTransaction(ConstantsForTesting::ORDER_ID_MISSING_PRICE);
-        static::assertNull($transaction['item_list']);
-    }
-
     public function testGetPaymentWithoutLineItems(): void
     {
         $settings = $this->createDefaultSettingStruct();

@@ -11,7 +11,10 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
@@ -155,6 +158,44 @@ class OrderFromCartBuilderTest extends TestCase
         static::assertNotEmpty($paypalOrderItems);
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
         static::assertSame($expectedItemSku, $paypalOrderItems[0]->getSku());
+    }
+
+    public function testGetOrderFromNetCart(): void
+    {
+        $settings = $this->createDefaultSettingStruct();
+        $salesChannelContext = $this->createSalesChannelContext();
+        $productNetPrice = 168.07;
+        $productTax = 31.93;
+        $taxRate = 19.0;
+
+        $cart = $this->createCart('');
+        $cartPrice = new CartPrice(
+            $productNetPrice,
+            $productNetPrice + $productTax,
+            $productNetPrice,
+            new CalculatedTaxCollection([new CalculatedTax($productTax, $taxRate, $productNetPrice)]),
+            new TaxRuleCollection([new TaxRule($taxRate)]),
+            CartPrice::TAX_STATE_NET
+        );
+        $cart->setPrice($cartPrice);
+        $firstCartTransaction = $cart->getTransactions()->first();
+        static::assertNotNull($firstCartTransaction);
+        $firstCartTransaction->setAmount(
+            new CalculatedPrice(
+                $productNetPrice,
+                $productNetPrice + $productTax,
+                new CalculatedTaxCollection([new CalculatedTax($productTax, $taxRate, $productNetPrice)]),
+                new TaxRuleCollection([new TaxRule($taxRate)])
+            )
+        );
+
+        $order = $this->createOrderFromCartBuilder($settings)->getOrder($cart, $salesChannelContext, null);
+        $breakdown = $order->getPurchaseUnits()[0]->getAmount()->getBreakdown();
+        static::assertNotNull($breakdown);
+        $taxTotal = $breakdown->getTaxTotal();
+        static::assertNotNull($taxTotal);
+
+        static::assertSame((string) $productTax, $taxTotal->getValue());
     }
 
     private function createOrderFromCartBuilder(?SwagPayPalSettingStruct $settings = null): OrderFromCartBuilder
