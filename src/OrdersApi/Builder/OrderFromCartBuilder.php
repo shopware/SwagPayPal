@@ -10,6 +10,7 @@ namespace Swag\PayPal\OrdersApi\Builder;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\System\Currency\CurrencyEntity;
@@ -98,7 +99,8 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             $cartTransaction->getAmount(),
             $cart->getShippingCosts(),
             $currency,
-            $purchaseUnit
+            $purchaseUnit,
+            $cart->getPrice()->getTaxStatus() !== CartPrice::TAX_STATE_GROSS
         );
 
         if ($customer !== null) {

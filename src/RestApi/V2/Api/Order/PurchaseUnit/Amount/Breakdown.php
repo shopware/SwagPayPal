@@ -14,6 +14,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Insurance;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\ItemTotal;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Shipping;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\ShippingDiscount;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\TaxTotal;
 
 class Breakdown extends PayPalApiStruct
 {
@@ -31,6 +32,11 @@ class Breakdown extends PayPalApiStruct
      * @var Handling
      */
     protected $handling;
+
+    /**
+     * @var TaxTotal|null
+     */
+    protected $taxTotal;
 
     /**
      * @var Insurance
@@ -75,6 +81,16 @@ class Breakdown extends PayPalApiStruct
     public function setHandling(Handling $handling): void
     {
         $this->handling = $handling;
+    }
+
+    public function getTaxTotal(): ?TaxTotal
+    {
+        return $this->taxTotal;
+    }
+
+    public function setTaxTotal(?TaxTotal $taxTotal): void
+    {
+        $this->taxTotal = $taxTotal;
     }
 
     public function getInsurance(): Insurance

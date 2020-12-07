@@ -57,19 +57,13 @@ class ItemListProvider
         }
 
         foreach ($lineItems as $lineItem) {
-            $price = $lineItem->getPrice();
-
-            if ($price === null) {
-                continue;
-            }
-
             $item = new Item();
             $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
 
             $unitAmount = new UnitAmount();
             $unitAmount->setCurrencyCode($currencyCode);
-            $unitAmount->setValue($this->priceFormatter->formatPrice($price->getUnitPrice()));
+            $unitAmount->setValue($this->priceFormatter->formatPrice($lineItem->getUnitPrice()));
 
             $item->setUnitAmount($unitAmount);
             $item->setQuantity($lineItem->getQuantity());

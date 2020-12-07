@@ -29,9 +29,16 @@ class AmountPatchBuilder
         CalculatedPrice $orderTransactionAmount,
         CalculatedPrice $shippingCosts,
         CurrencyEntity $currency,
-        PurchaseUnit $purchaseUnit
+        PurchaseUnit $purchaseUnit,
+        bool $isNet
     ): Patch {
-        $amount = $this->amountProvider->createAmount($orderTransactionAmount, $shippingCosts, $currency, $purchaseUnit);
+        $amount = $this->amountProvider->createAmount(
+            $orderTransactionAmount,
+            $shippingCosts,
+            $currency,
+            $purchaseUnit,
+            $isNet
+        );
         $amountArray = \json_decode((string) \json_encode($amount), true);
 
         $amountPatch = new Patch();

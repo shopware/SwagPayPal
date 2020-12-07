@@ -91,11 +91,12 @@ trait PaymentTransactionTrait
         ));
         $order->setAmountNet(722.69);
         $order->setAmountTotal(860.0);
+        $order->setTaxStatus(CartPrice::TAX_STATE_GROSS);
 
         switch ($orderId) {
             case ConstantsForTesting::VALID_ORDER_ID:
                 $order->setId(ConstantsForTesting::VALID_ORDER_ID);
-                $order->setLineItems($this->getLineItems(true));
+                $order->setLineItems($this->getLineItems());
 
                 break;
             case ConstantsForTesting::ORDER_ID_MISSING_PRICE:
@@ -152,25 +153,13 @@ trait PaymentTransactionTrait
         return $currency;
     }
 
-    private function getLineItems(bool $setPrice = false): OrderLineItemCollection
+    private function getLineItems(): OrderLineItemCollection
     {
         $orderLineItem = new OrderLineItemEntity();
 
         $orderLineItem->setId('6198ff79c4144931919977829dbca3d6');
         $orderLineItem->setQuantity(OrderPaymentBuilderTest::EXPECTED_ITEM_QUANTITY);
-
-        if ($setPrice) {
-            $orderLineItem->setPrice(
-                new CalculatedPrice(
-                    855.01,
-                    855.01,
-                    new CalculatedTaxCollection([
-                        new CalculatedTax(OrderPaymentBuilderTest::EXPECTED_ITEM_TAX, 19, 722.69),
-                    ]),
-                    new TaxRuleCollection([19 => new TaxRule(19)])
-                )
-            );
-        }
+        $orderLineItem->setUnitPrice(855.01);
 
         $orderLineItem->setLabel(OrderPaymentBuilderTest::EXPECTED_ITEM_NAME);
         $orderLineItem->setPayload(['productNumber' => OrderPaymentBuilderTest::EXPECTED_PRODUCT_NUMBER]);

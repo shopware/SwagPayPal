@@ -152,7 +152,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
 
         $item->setCurrency($currency);
         $item->setQuantity($lineItem->getQuantity());
-        $item->setPrice($this->priceFormatter->formatPrice($price->getTotalPrice() / $lineItem->getQuantity()));
+        $item->setPrice($this->priceFormatter->formatPrice($price->getUnitPrice()));
         $item->setTax($this->priceFormatter->formatPrice(0));
 
         $event = new PayPalV1ItemFromCartEvent($item, $lineItem);

@@ -8,9 +8,6 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder\Util;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
-use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -23,21 +20,11 @@ use Swag\PayPal\Util\PriceFormatter;
 
 class ItemListProviderTest extends TestCase
 {
-    public function testLineItemWithoutPrice(): void
-    {
-        $order = $this->createOrder('Test Product Name');
-
-        $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
-        static::assertEmpty($itemList);
-    }
-
     public function testNestedLineItems(): void
     {
-        $productPrice = new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection());
-        $order = $this->createOrder('Test Product Name', $productPrice);
+        $order = $this->createOrder('Test Product Name', 10);
 
-        $childProductPrice = new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection());
-        $childLineItem = $this->createLineItem('Test Child Product', $childProductPrice);
+        $childLineItem = $this->createLineItem('Test Child Product', 10);
         $orderLineItems = $order->getLineItems();
         static::assertNotNull($orderLineItems);
         $firstOrderLineItem = $orderLineItems->first();
@@ -52,8 +39,7 @@ class ItemListProviderTest extends TestCase
     public function testLineItemLabelTooLongIsTruncated(): void
     {
         $productName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam volu';
-        $productPrice = new CalculatedPrice(12.34, 12.34, new CalculatedTaxCollection(), new TaxRuleCollection());
-        $order = $this->createOrder($productName, $productPrice);
+        $order = $this->createOrder($productName, 12.34);
 
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
 
@@ -63,9 +49,8 @@ class ItemListProviderTest extends TestCase
 
     public function testLineItemProductNumberTooLongIsTruncated(): void
     {
-        $productPrice = new CalculatedPrice(12.34, 12.34, new CalculatedTaxCollection(), new TaxRuleCollection());
         $productNumber = 'SW-100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-        $order = $this->createOrder('Test Product Name', $productPrice, $productNumber);
+        $order = $this->createOrder('Test Product Name', 12.34, $productNumber);
 
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
@@ -89,7 +74,7 @@ class ItemListProviderTest extends TestCase
         return $currency;
     }
 
-    private function createOrder(string $productName, ?CalculatedPrice $productPrice = null, ?string $productNumber = null): OrderEntity
+    private function createOrder(string $productName, float $productPrice, ?string $productNumber = null): OrderEntity
     {
         $lineItem = $this->createLineItem($productName, $productPrice, $productNumber);
 
@@ -103,17 +88,14 @@ class ItemListProviderTest extends TestCase
 
     private function createLineItem(
         string $productName,
-        ?CalculatedPrice $productPrice = null,
+        float $productPrice,
         ?string $productNumber = null
     ): OrderLineItemEntity {
         $lineItem = new OrderLineItemEntity();
         $lineItem->setId(Uuid::randomHex());
         $lineItem->setLabel($productName);
         $lineItem->setQuantity(1);
-
-        if ($productPrice !== null) {
-            $lineItem->setPrice($productPrice);
-        }
+        $lineItem->setUnitPrice($productPrice);
 
         if ($productNumber !== null) {
             $lineItem->setPayload(['productNumber' => $productNumber]);
