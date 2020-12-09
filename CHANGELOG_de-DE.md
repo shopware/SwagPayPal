@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 2.1.0
 - PPI-174 - Warenkorb- und Bestellpositionen werden jetzt mit SKU gesendet
 - PPI-174 - Es wurden Events hinzugefügt, um Positionen anzupassen, die zu PayPal gesendet werden
 - PPI-202 - PayPal Checkout für Kunden mit Nettopreisen korrigiert
