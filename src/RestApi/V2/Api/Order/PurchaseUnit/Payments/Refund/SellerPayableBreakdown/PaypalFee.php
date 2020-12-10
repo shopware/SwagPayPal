@@ -9,6 +9,6 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPa
 
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
-class PayPalFee extends Money
+class PaypalFee extends Money
 {
 }

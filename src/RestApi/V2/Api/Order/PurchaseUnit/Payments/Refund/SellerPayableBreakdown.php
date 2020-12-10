@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\GrossAmount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\NetAmount;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\PayPalFee;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\PaypalFee;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\TotalRefundedAmount;
 
 class SellerPayableBreakdown extends PayPalApiStruct
@@ -21,7 +21,7 @@ class SellerPayableBreakdown extends PayPalApiStruct
     protected $grossAmount;
 
     /**
-     * @var PayPalFee
+     * @var PaypalFee
      */
     protected $paypalFee;
 
@@ -45,12 +45,12 @@ class SellerPayableBreakdown extends PayPalApiStruct
         $this->grossAmount = $grossAmount;
     }
 
-    public function getPaypalFee(): PayPalFee
+    public function getPaypalFee(): PaypalFee
     {
         return $this->paypalFee;
     }
 
-    public function setPaypalFee(PayPalFee $paypalFee): void
+    public function setPaypalFee(PaypalFee $paypalFee): void
     {
         $this->paypalFee = $paypalFee;
     }

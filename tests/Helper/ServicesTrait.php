@@ -7,10 +7,7 @@
 
 namespace Swag\PayPal\Test\Helper;
 
-use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
-use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
-use Shopware\Core\System\SystemConfig\Util\ConfigReader;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
@@ -21,13 +18,11 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
-use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\DummyCollection;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
-use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\EntityRepositoryMock;
 use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
@@ -132,14 +127,7 @@ trait ServicesTrait
 
     protected function createSystemConfigServiceMock(array $settings = []): SystemConfigServiceMock
     {
-        $definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
-        $systemConfigRepo = $definitionRegistry->getRepository(
-            (new SystemConfigDefinition())->getEntityName()
-        );
-
-        /** @var Connection $connection */
-        $connection = $this->getContainer()->get(Connection::class);
-        $systemConfigService = new SystemConfigServiceMock($connection, $systemConfigRepo, new ConfigReader());
+        $systemConfigService = new SystemConfigServiceMock();
         foreach ($settings as $key => $value) {
             $systemConfigService->set($key, $value);
         }
