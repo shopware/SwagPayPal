@@ -16,6 +16,10 @@ class SystemConfigServiceMock extends SystemConfigService
      */
     private $data = [];
 
+    public function __construct()
+    {
+    }
+
     /**
      * @return array|bool|float|int|string|null
      */

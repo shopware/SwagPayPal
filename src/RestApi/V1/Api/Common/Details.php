@@ -39,6 +39,11 @@ abstract class Details extends PayPalApiStruct
     /**
      * @var string
      */
+    protected $discount;
+
+    /**
+     * @var string
+     */
     protected $insurance;
 
     public function getSubtotal(): string
@@ -89,6 +94,16 @@ abstract class Details extends PayPalApiStruct
     public function setShippingDiscount(string $shippingDiscount): void
     {
         $this->shippingDiscount = $shippingDiscount;
+    }
+
+    public function getDiscount(): string
+    {
+        return $this->discount;
+    }
+
+    public function setDiscount(string $discount): void
+    {
+        $this->discount = $discount;
     }
 
     public function getInsurance(): string
