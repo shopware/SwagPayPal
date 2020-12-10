@@ -5,10 +5,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\RestApi\V1\Api\Webhook;
+namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CanceledRecurringBilling;
 
-use Swag\PayPal\RestApi\V1\Api\Common\Link as CommonLink;
+use Swag\PayPal\RestApi\V1\Api\Common\Money;
 
-class Link extends CommonLink
+class ExpectedRefund extends Money
 {
 }

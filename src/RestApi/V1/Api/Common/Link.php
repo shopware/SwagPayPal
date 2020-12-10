@@ -26,6 +26,11 @@ abstract class Link extends PayPalApiStruct
      */
     protected $method;
 
+    /**
+     * @var string|null
+     */
+    protected $encType;
+
     public function getHref(): string
     {
         return $this->href;
@@ -54,5 +59,15 @@ abstract class Link extends PayPalApiStruct
     public function setMethod(string $method): void
     {
         $this->method = $method;
+    }
+
+    public function getEncType(): ?string
+    {
+        return $this->encType;
+    }
+
+    public function setEncType(?string $encType): void
+    {
+        $this->encType = $encType;
     }
 }

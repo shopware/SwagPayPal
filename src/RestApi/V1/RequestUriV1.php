@@ -21,6 +21,8 @@ final class RequestUriV1
 
     public const WEBHOOK_RESOURCE = 'v1/notifications/webhooks';
 
+    public const DISPUTES_RESOURCE = 'v1/customer/disputes';
+
     private function __construct()
     {
     }
