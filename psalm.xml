@@ -74,6 +74,9 @@
                 <referencedMethod name="Shopware\Core\Content\Product\ProductEntity::getPurchasePrice"/>
                 <referencedMethod name="Shopware\Core\Content\Product\ProductEntity::setPurchasePrice"/>
                 <referencedMethod name="Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour::silentAssertArraySubset"/>
+                <!-- ToDo PPI-65 - Remove methods -->
+                <referencedMethod name="Shopware\Core\Framework\Plugin::addPrivileges"/>
+                <referencedMethod name="Shopware\Core\Framework\Plugin::removePrivileges"/>
                 <!-- <deprecated> tag:v3.0.0 - remove with 3.0.0 -->
                 <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController::createNewCart"/>
                 <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController::createPayment"/>
