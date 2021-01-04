@@ -191,27 +191,7 @@ class SwagPayPal extends Plugin
         parent::deactivate($deactivateContext);
     }
 
-    private function addCustomPrivileges(): void
-    {
-        if (!\method_exists($this, 'addPrivileges')) {
-            return;
-        }
-
-        foreach ($this->getAddRoles() as $role => $privileges) {
-            $this->addPrivileges($role, $privileges);
-        }
-    }
-
-    private function removeCustomPrivileges(): void
-    {
-        if (!\method_exists($this, 'removePrivileges')) {
-            return;
-        }
-
-        $this->removePrivileges(self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGES);
-    }
-
-    private function getAddRoles(): array
+    public function enrichPrivileges(): array
     {
         return [
             'sales_channel.viewer' => [
@@ -237,5 +217,33 @@ class SwagPayPal extends Plugin
                 self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_DELETE,
             ],
         ];
+    }
+
+    private function addCustomPrivileges(): void
+    {
+        if (\method_exists(Plugin::class, 'enrichPrivileges')) {
+            return;
+        }
+
+        if (!\method_exists($this, 'addPrivileges')) {
+            return;
+        }
+
+        foreach ($this->enrichPrivileges() as $role => $privileges) {
+            $this->addPrivileges($role, $privileges);
+        }
+    }
+
+    private function removeCustomPrivileges(): void
+    {
+        if (\method_exists(Plugin::class, 'enrichPrivileges')) {
+            return;
+        }
+
+        if (!\method_exists($this, 'removePrivileges')) {
+            return;
+        }
+
+        $this->removePrivileges(self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGES);
     }
 }
