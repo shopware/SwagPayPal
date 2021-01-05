@@ -9,6 +9,7 @@ namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\BuyerRequestedAmount;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\History;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\SellerOfferedAmount;
 
 class Offer extends PayPalApiStruct
@@ -27,6 +28,11 @@ class Offer extends PayPalApiStruct
      * @var string
      */
     protected $offerType;
+
+    /**
+     * @var History[]|null
+     */
+    protected $history;
 
     public function getBuyerRequestedAmount(): BuyerRequestedAmount
     {
@@ -56,5 +62,21 @@ class Offer extends PayPalApiStruct
     public function setOfferType(string $offerType): void
     {
         $this->offerType = $offerType;
+    }
+
+    /**
+     * @return History[]|null
+     */
+    public function getHistory(): ?array
+    {
+        return $this->history;
+    }
+
+    /**
+     * @param History[]|null $history
+     */
+    public function setHistory(?array $history): void
+    {
+        $this->history = $history;
     }
 }

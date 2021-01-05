@@ -24,7 +24,7 @@ class DisputeResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
-    public function list(string $salesChannelId, ?string $disputeStateFilter = null): Disputes
+    public function list(?string $salesChannelId, ?string $disputeStateFilter = null): Disputes
     {
         $queryParameter = [];
         if ($disputeStateFilter !== null) {
@@ -39,7 +39,7 @@ class DisputeResource
         return (new Disputes())->assign($response);
     }
 
-    public function get(string $disputeId, string $salesChannelId): DisputeItem
+    public function get(string $disputeId, ?string $salesChannelId): DisputeItem
     {
         $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
             \sprintf('%s/%s', RequestUriV1::DISPUTES_RESOURCE, $disputeId)

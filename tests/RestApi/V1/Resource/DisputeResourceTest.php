@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use Swag\PayPal\RestApi\V1\Resource\DisputeResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDispute;
@@ -21,12 +20,12 @@ class DisputeResourceTest extends TestCase
 
     public function testList(): void
     {
-        $disputesList = $this->createResource()->list(Defaults::SALES_CHANNEL, Item::DISPUTE_STATE_APPEALABLE);
-        $disputes = $disputesList->getItems();
+        $disputes = $this->createResource()->list(Defaults::SALES_CHANNEL)->getItems();
         static::assertNotNull($disputes);
-        static::assertCount(1, $disputes);
+        $disputesCount = \count($disputes);
+        static::assertSame(3, $disputesCount);
 
-        static::assertSame(GetDisputesList::FIRST_ID, $disputes[0]->getDisputeId());
+        static::assertSame(GetDisputesList::LAST_ID, $disputes[$disputesCount - 1]->getDisputeId());
     }
 
     public function testGet(): void

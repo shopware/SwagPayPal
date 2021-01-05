@@ -19,6 +19,7 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Message;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\MoneyMovement;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\PartnerAction;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\RefundDetails;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\SupportingInfo;
 
 class Item extends PayPalApiStruct
@@ -70,7 +71,7 @@ class Item extends PayPalApiStruct
     protected $status;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $disputeState;
 
@@ -138,6 +139,11 @@ class Item extends PayPalApiStruct
      * @var Offer|null
      */
     protected $offer;
+
+    /**
+     * @var RefundDetails|null
+     */
+    protected $refundDetails;
 
     /**
      * @var CommunicationDetails|null
@@ -225,12 +231,12 @@ class Item extends PayPalApiStruct
         $this->status = $status;
     }
 
-    public function getDisputeState(): string
+    public function getDisputeState(): ?string
     {
         return $this->disputeState;
     }
 
-    public function setDisputeState(string $disputeState): void
+    public function setDisputeState(?string $disputeState): void
     {
         $this->disputeState = $disputeState;
     }
@@ -387,6 +393,16 @@ class Item extends PayPalApiStruct
     public function setOffer(?Offer $offer): void
     {
         $this->offer = $offer;
+    }
+
+    public function getRefundDetails(): ?RefundDetails
+    {
+        return $this->refundDetails;
+    }
+
+    public function setRefundDetails(?RefundDetails $refundDetails): void
+    {
+        $this->refundDetails = $refundDetails;
     }
 
     public function getCommunicationDetails(): ?CommunicationDetails
