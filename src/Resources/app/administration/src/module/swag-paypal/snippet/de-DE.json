@@ -6,6 +6,9 @@
             },
             "swag_paypal": {
                 "label": "PayPal-Einstellungen"
+            },
+            "swag_paypal_disputes": {
+                "label": "PayPal Konflikte"
             }
         }
     },

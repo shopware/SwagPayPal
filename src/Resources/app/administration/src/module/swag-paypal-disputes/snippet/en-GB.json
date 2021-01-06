@@ -1,0 +1,35 @@
+{
+    "swag-paypal-disputes": {
+        "general": {
+            "mainMenuItemGeneral": "PayPal disputes",
+            "descriptionTextModule": "Manage PayPal disputes here"
+        },
+        "list": {
+            "title": "Disputes",
+            "titleSidebarItemRefresh": "Refresh",
+            "titleSidebarItemFilter": "Filter",
+            "titleSidebarItemFilterDisputeStates": "Dispute state",
+            "errorTitle": "Error fetching disputes from PayPal",
+            "columns": {
+                "dispute_id": "ID",
+                "dispute_state": "Dispute state",
+                "status": "Status",
+                "reason": "Reason",
+                "dispute_life_cycle_stage": "Stage",
+                "dispute_amount": "Amount",
+                "seller_response_due_date": "Due date seller response",
+                "buyer_response_due_date": "Due date buyer response",
+                "create_time": "Creation time",
+                "update_time": "Update time"
+            },
+            "disputeStates": {
+                "REQUIRED_ACTION": "Action required",
+                "REQUIRED_OTHER_PARTY_ACTION": "Action required by other party",
+                "UNDER_PAYPAL_REVIEW": "Under review of PayPal",
+                "RESOLVED": "Resolved",
+                "OPEN_INQUIRIES": "Open inquiries",
+                "APPEALABLE": "Appealable"
+            }
+        }
+    }
+}
