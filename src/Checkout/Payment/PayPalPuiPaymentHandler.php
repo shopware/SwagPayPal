@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\Payment;
 
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
@@ -61,6 +62,11 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
     private $orderTransactionCaptureStateHandler;
 
     /**
+     * @var OrderTransactionCaptureService
+     */
+    private $orderTransactionCaptureService;
+
+    /**
      * @var PayPalOrderTransactionCaptureService
      */
     private $payPalOrderTransactionCaptureService;
@@ -71,6 +77,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         OrderTransactionStateHandler $orderTransactionStateHandler,
         EntityRepositoryInterface $orderTransactionRepo,
         OrderTransactionCaptureStateHandler $orderTransactionCaptureStateHandler,
+        OrderTransactionCaptureService $orderTransactionCaptureService,
         PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService
     ) {
         $this->plusPuiHandler = $plusPuiHandler;
@@ -78,6 +85,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->orderTransactionRepo = $orderTransactionRepo;
         $this->orderTransactionCaptureStateHandler = $orderTransactionCaptureStateHandler;
+        $this->orderTransactionCaptureService = $orderTransactionCaptureService;
         $this->payPalOrderTransactionCaptureService = $payPalOrderTransactionCaptureService;
     }
 
@@ -190,7 +198,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         SalesChannelContext $salesChannelContext
     ): Payment {
         $context = $salesChannelContext->getContext();
-        $orderTransactionCaptureId = $this->payPalOrderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
+        $orderTransactionCaptureId = $this->orderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
             $transactionId,
             $context
         );
@@ -217,7 +225,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
             $paypalResource = $relatedResource->getSale();
             $paypalResourceCompletedState = PaymentStatusV1::PAYMENT_SALE_COMPLETED;
         } else {
-            $this->payPalOrderTransactionCaptureService->deleteOrderTransactionCapture(
+            $this->orderTransactionCaptureService->deleteOrderTransactionCapture(
                 $orderTransactionCaptureId,
                 $context
             );

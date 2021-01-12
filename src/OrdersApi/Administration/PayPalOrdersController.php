@@ -9,6 +9,7 @@ namespace Swag\PayPal\OrdersApi\Administration;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureStateHandler;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
@@ -86,6 +87,11 @@ class PayPalOrdersController extends AbstractController
     private $orderTransactionCaptureStateHandler;
 
     /**
+     * @var OrderTransactionCaptureService
+     */
+    private $orderTransactionCaptureService;
+
+    /**
      * @var PayPalOrderTransactionCaptureService
      */
     private $payPalOrderTransactionCaptureService;
@@ -99,6 +105,7 @@ class PayPalOrdersController extends AbstractController
         PaymentStatusUtilV2 $paymentStatusUtil,
         CaptureRefundCreator $captureRefundCreator,
         OrderTransactionCaptureStateHandler $orderTransactionCaptureStateHandler,
+        OrderTransactionCaptureService $orderTransactionCaptureService,
         PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService
     ) {
         $this->orderResource = $orderResource;
@@ -109,6 +116,7 @@ class PayPalOrdersController extends AbstractController
         $this->paymentStatusUtil = $paymentStatusUtil;
         $this->captureRefundCreator = $captureRefundCreator;
         $this->orderTransactionCaptureStateHandler = $orderTransactionCaptureStateHandler;
+        $this->orderTransactionCaptureService = $orderTransactionCaptureService;
         $this->payPalOrderTransactionCaptureService = $payPalOrderTransactionCaptureService;
     }
 
@@ -423,13 +431,13 @@ class PayPalOrdersController extends AbstractController
         $capture = $this->captureRefundCreator->createCapture($request);
 
         if ($capture->getAmount() !== null) {
-            $orderTransactionCaptureId = $this->payPalOrderTransactionCaptureService->createOrderTransactionCaptureForCustomAmount(
+            $orderTransactionCaptureId = $this->orderTransactionCaptureService->createOrderTransactionCaptureForCustomAmount(
                 $orderTransactionId,
                 (float)$capture->getAmount()->getValue(),
                 $context
             );
         } else {
-            $orderTransactionCaptureId = $this->payPalOrderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
+            $orderTransactionCaptureId = $this->orderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
                 $orderTransactionId,
                 $context
             );

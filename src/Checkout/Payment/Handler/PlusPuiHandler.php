@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\Payment\Handler;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
@@ -94,6 +95,11 @@ class PlusPuiHandler
     private $orderTransactionCaptureStateHandler;
 
     /**
+     * @var OrderTransactionCaptureService
+     */
+    private $orderTransactionCaptureService;
+
+    /**
      * @var PayPalOrderTransactionCaptureService
      */
     private $payPalOrderTransactionCaptureService;
@@ -109,6 +115,7 @@ class PlusPuiHandler
         OrderTransactionStateHandler $orderTransactionStateHandler,
         LoggerInterface $logger,
         OrderTransactionCaptureStateHandler $orderTransactionCaptureStateHandler,
+        OrderTransactionCaptureService $orderTransactionCaptureService,
         PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService
     ) {
         $this->paymentResource = $paymentResource;
@@ -121,6 +128,7 @@ class PlusPuiHandler
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->logger = $logger;
         $this->orderTransactionCaptureStateHandler = $orderTransactionCaptureStateHandler;
+        $this->orderTransactionCaptureService = $orderTransactionCaptureService;
         $this->payPalOrderTransactionCaptureService = $payPalOrderTransactionCaptureService;
     }
 
@@ -381,7 +389,7 @@ class PlusPuiHandler
         string $partnerAttributionId,
         Context $context
     ): Payment {
-        $orderTransactionCaptureId = $this->payPalOrderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
+        $orderTransactionCaptureId = $this->orderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
             $transactionId,
             $context
         );
@@ -409,7 +417,7 @@ class PlusPuiHandler
             $paypalResource = $relatedResource->getSale();
             $paypalResourceCompletedState = PaymentStatusV1::PAYMENT_SALE_COMPLETED;
         } else {
-            $this->payPalOrderTransactionCaptureService->deleteOrderTransactionCapture(
+            $this->orderTransactionCaptureService->deleteOrderTransactionCapture(
                 $orderTransactionCaptureId,
                 $context
             );

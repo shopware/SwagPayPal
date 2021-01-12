@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Swag\PayPal\Checkout;
 
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\SwagPayPal;
@@ -16,42 +15,10 @@ class PayPalOrderTransactionCaptureService
      */
     private $orderTransactionCaptureRepository;
 
-    /**
-     * @var OrderTransactionCaptureService
-     */
-    private $orderTransactionCaptureService;
-
     public function __construct(
-        EntityRepositoryInterface $orderTransactionCaptureRepository,
-        OrderTransactionCaptureService $orderTransactionCaptureService
+        EntityRepositoryInterface $orderTransactionCaptureRepository
     ) {
         $this->orderTransactionCaptureRepository = $orderTransactionCaptureRepository;
-        $this->orderTransactionCaptureService = $orderTransactionCaptureService;
-    }
-
-    public function createOrderTransactionCaptureForFullAmount(string $orderTransactionId, Context $context): string
-    {
-        return $this->orderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
-            $orderTransactionId,
-            $context
-        );
-    }
-
-    public function createOrderTransactionCaptureForCustomAmount(
-        string $orderTransactionId,
-        float $customCaptureAmount,
-        Context $context
-    ): string {
-        return $this->orderTransactionCaptureService->createOrderTransactionCaptureForCustomAmount(
-            $orderTransactionId,
-            $customCaptureAmount,
-            $context
-        );
-    }
-
-    public function deleteOrderTransactionCapture(string $orderTransactionCaptureId, Context $context): void
-    {
-        $this->orderTransactionCaptureService->deleteOrderTransactionCapture($orderTransactionCaptureId, $context);
     }
 
     public function addPayPalResourceToOrderTransactionCapture(

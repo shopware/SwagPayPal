@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\Payment\Handler;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
@@ -74,6 +75,11 @@ class PayPalHandler extends AbstractPaymentHandler
     private $orderTransactionCaptureStateHandler;
 
     /**
+     * @var OrderTransactionCaptureService
+     */
+    private $orderTransactionCaptureService;
+
+    /**
      * @var PayPalOrderTransactionCaptureService
      */
     private $payPalOrderTransactionCaptureService;
@@ -88,6 +94,7 @@ class PayPalHandler extends AbstractPaymentHandler
         CustomIdPatchBuilder $customIdPatchBuilder,
         LoggerInterface $logger,
         OrderTransactionCaptureStateHandler $orderTransactionCaptureStateHandler,
+        OrderTransactionCaptureService $orderTransactionCaptureService,
         PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService
     ) {
         parent::__construct($orderTransactionRepo);
@@ -99,6 +106,7 @@ class PayPalHandler extends AbstractPaymentHandler
         $this->customIdPatchBuilder = $customIdPatchBuilder;
         $this->logger = $logger;
         $this->orderTransactionCaptureStateHandler = $orderTransactionCaptureStateHandler;
+        $this->orderTransactionCaptureService = $orderTransactionCaptureService;
         $this->payPalOrderTransactionCaptureService = $payPalOrderTransactionCaptureService;
     }
 
@@ -235,7 +243,7 @@ class PayPalHandler extends AbstractPaymentHandler
             return;
         }
 
-        $orderTransactionCaptureId = $this->payPalOrderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
+        $orderTransactionCaptureId = $this->orderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
             $transactionId,
             $context
         );

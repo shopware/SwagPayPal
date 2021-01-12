@@ -7,7 +7,6 @@
     <services>
         <service id="Swag\PayPal\Checkout\PayPalOrderTransactionCaptureService">
             <argument type="service" id="order_transaction_capture.repository"/>
-            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureService"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\CheckoutSubscriber">
@@ -35,6 +34,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureStateHandler"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureService"/>
             <argument type="service" id="Swag\PayPal\Checkout\PayPalOrderTransactionCaptureService"/>
             <tag name="shopware.payment.method.async"/>
         </service>
@@ -60,6 +60,7 @@
             <argument type="service" id="Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureStateHandler"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureService"/>
             <argument type="service" id="Swag\PayPal\Checkout\PayPalOrderTransactionCaptureService"/>
         </service>
 
@@ -74,6 +75,7 @@
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureStateHandler"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureService"/>
             <argument type="service" id="Swag\PayPal\Checkout\PayPalOrderTransactionCaptureService"/>
         </service>
     </services>
