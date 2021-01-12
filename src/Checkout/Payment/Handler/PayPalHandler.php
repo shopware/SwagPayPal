@@ -10,7 +10,6 @@ namespace Swag\PayPal\Checkout\Payment\Handler;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransactionCapture\OrderTransactionCaptureStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
@@ -24,7 +23,6 @@ use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -231,35 +229,37 @@ class PayPalHandler extends AbstractPaymentHandler
         string $partnerAttributionId,
         Context $context
     ): void {
-        if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {
-            $orderTransactionCaptureId = $this->payPalOrderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
-                $transactionId,
-                $context
-            );
-            try {
-                $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
-            } catch (PayPalApiException $apiException) {
-                $this->orderTransactionCaptureStateHandler->fail($orderTransactionCaptureId, $context);
-
-                throw $apiException;
-            }
-            $paypalCapture = $response->getPurchaseUnits()[0]->getPayments()->getCaptures()[0];
-            $paypalCaptureId = $paypalCapture->getId();
-            $this->payPalOrderTransactionCaptureService->addPayPalResourceToOrderTransactionCapture(
-                $orderTransactionCaptureId,
-                $paypalCaptureId,
-                RelatedResource::CAPTURE,
-                $context
-            );
-            if ($paypalCapture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_COMPLETED) {
-                $this->orderTransactionCaptureStateHandler->complete($orderTransactionCaptureId, $context);
-            }
-
-            if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
-                $this->orderTransactionStateHandler->paid($transactionId, $context);
-            }
-        } else {
+        if ($paypalOrder->getIntent() !== PaymentIntentV2::CAPTURE) {
             $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
+
+            return;
+        }
+
+        $orderTransactionCaptureId = $this->payPalOrderTransactionCaptureService->createOrderTransactionCaptureForFullAmount(
+            $transactionId,
+            $context
+        );
+        try {
+            $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
+        } catch (PayPalApiException $apiException) {
+            $this->orderTransactionCaptureStateHandler->fail($orderTransactionCaptureId, $context);
+
+            throw $apiException;
+        }
+        $paypalCapture = $response->getPurchaseUnits()[0]->getPayments()->getCaptures()[0];
+        $paypalCaptureId = $paypalCapture->getId();
+        $this->payPalOrderTransactionCaptureService->addPayPalResourceToOrderTransactionCapture(
+            $orderTransactionCaptureId,
+            $paypalCaptureId,
+            PaymentIntentV2::CAPTURE,
+            $context
+        );
+        if ($paypalCapture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_COMPLETED) {
+            $this->orderTransactionCaptureStateHandler->complete($orderTransactionCaptureId, $context);
+        }
+
+        if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
+            $this->orderTransactionStateHandler->paid($transactionId, $context);
         }
     }
 }
