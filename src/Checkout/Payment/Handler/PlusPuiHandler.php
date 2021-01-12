@@ -104,6 +104,11 @@ class PlusPuiHandler
      */
     private $payPalOrderTransactionCaptureService;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $orderTransactionCaptureRepository;
+
     public function __construct(
         PaymentResource $paymentResource,
         EntityRepositoryInterface $orderTransactionRepo,
@@ -116,7 +121,8 @@ class PlusPuiHandler
         LoggerInterface $logger,
         OrderTransactionCaptureStateHandler $orderTransactionCaptureStateHandler,
         OrderTransactionCaptureService $orderTransactionCaptureService,
-        PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService
+        PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService,
+        EntityRepositoryInterface $orderTransactionCaptureRepository
     ) {
         $this->paymentResource = $paymentResource;
         $this->orderTransactionRepo = $orderTransactionRepo;
@@ -130,6 +136,7 @@ class PlusPuiHandler
         $this->orderTransactionCaptureStateHandler = $orderTransactionCaptureStateHandler;
         $this->orderTransactionCaptureService = $orderTransactionCaptureService;
         $this->payPalOrderTransactionCaptureService = $payPalOrderTransactionCaptureService;
+        $this->orderTransactionCaptureRepository = $orderTransactionCaptureRepository;
     }
 
     public function handlePlusPayment(
@@ -417,10 +424,7 @@ class PlusPuiHandler
             $paypalResource = $relatedResource->getSale();
             $paypalResourceCompletedState = PaymentStatusV1::PAYMENT_SALE_COMPLETED;
         } else {
-            $this->orderTransactionCaptureService->deleteOrderTransactionCapture(
-                $orderTransactionCaptureId,
-                $context
-            );
+            $this->orderTransactionCaptureRepository->delete([['id' => $orderTransactionCaptureId]], $context);
 
             return $response;
         }

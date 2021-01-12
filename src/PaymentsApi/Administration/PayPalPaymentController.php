@@ -108,6 +108,11 @@ class PayPalPaymentController extends AbstractController
      */
     private $payPalOrderTransactionCaptureService;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $orderTransactionCaptureRepository;
+
     public function __construct(
         PaymentResource $paymentResource,
         SaleResource $saleResource,
@@ -119,7 +124,8 @@ class PayPalPaymentController extends AbstractController
         PriceFormatter $priceFormatter,
         OrderTransactionCaptureStateHandler $orderTransactionCaptureStateHandler,
         OrderTransactionCaptureService $orderTransactionCaptureService,
-        PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService
+        PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService,
+        EntityRepositoryInterface $orderTransactionCaptureRepository
     ) {
         $this->paymentResource = $paymentResource;
         $this->saleResource = $saleResource;
@@ -132,6 +138,7 @@ class PayPalPaymentController extends AbstractController
         $this->orderTransactionCaptureStateHandler = $orderTransactionCaptureStateHandler;
         $this->orderTransactionCaptureService = $orderTransactionCaptureService;
         $this->payPalOrderTransactionCaptureService = $payPalOrderTransactionCaptureService;
+        $this->orderTransactionCaptureRepository = $orderTransactionCaptureRepository;
     }
 
     /**
@@ -311,10 +318,7 @@ class PayPalPaymentController extends AbstractController
                     $captureResponse = $this->ordersResource->capture($resourceId, $capture, $salesChannelId);
                     break;
                 default:
-                    $this->orderTransactionCaptureService->deleteOrderTransactionCapture(
-                        $orderTransactionCaptureId,
-                        $context
-                    );
+                    $this->orderTransactionCaptureRepository->delete([['id' => $orderTransactionCaptureId]], $context);
 
                     throw new RequiredParameterInvalidException('resourceType');
             }

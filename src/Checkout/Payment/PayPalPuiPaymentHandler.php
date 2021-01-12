@@ -71,6 +71,11 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
      */
     private $payPalOrderTransactionCaptureService;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $orderTransactionCaptureRepository;
+
     public function __construct(
         PlusPuiHandler $plusPuiHandler,
         PaymentResource $paymentResource,
@@ -78,7 +83,8 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         EntityRepositoryInterface $orderTransactionRepo,
         OrderTransactionCaptureStateHandler $orderTransactionCaptureStateHandler,
         OrderTransactionCaptureService $orderTransactionCaptureService,
-        PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService
+        PayPalOrderTransactionCaptureService $payPalOrderTransactionCaptureService,
+        EntityRepositoryInterface $orderTransactionCaptureRepository
     ) {
         $this->plusPuiHandler = $plusPuiHandler;
         $this->paymentResource = $paymentResource;
@@ -87,6 +93,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->orderTransactionCaptureStateHandler = $orderTransactionCaptureStateHandler;
         $this->orderTransactionCaptureService = $orderTransactionCaptureService;
         $this->payPalOrderTransactionCaptureService = $payPalOrderTransactionCaptureService;
+        $this->orderTransactionCaptureRepository = $orderTransactionCaptureRepository;
     }
 
     /**
@@ -225,10 +232,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
             $paypalResource = $relatedResource->getSale();
             $paypalResourceCompletedState = PaymentStatusV1::PAYMENT_SALE_COMPLETED;
         } else {
-            $this->orderTransactionCaptureService->deleteOrderTransactionCapture(
-                $orderTransactionCaptureId,
-                $context
-            );
+            $this->orderTransactionCaptureRepository->delete([['id' => $orderTransactionCaptureId]], $context);
 
             return $response;
         }
