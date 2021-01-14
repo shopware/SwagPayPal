@@ -185,7 +185,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
         return {
             element,
-            disabled: element.getAttribute('disabled') === 'disabled'
+            disabled: element.disabled
         };
     }
 
@@ -193,17 +193,15 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         const callback = (mutations) => {
             // eslint-disable-next-line no-restricted-syntax
             for (const mutation of mutations) {
-                if (mutation.type !== 'attributes' || mutation.attributeName !== 'disabled') {
-                    return;
-                }
+                if (mutation.attributeName === 'disabled') {
+                    const { disabled: isBuyButtonDisabled } = this.getBuyButtonState();
 
-                const { disabled: isBuyButtonDisabled } = this.getBuyButtonState();
-
-                if (isBuyButtonDisabled) {
-                    disableButton();
-                    return;
+                    if (isBuyButtonDisabled) {
+                        disableButton();
+                        return;
+                    }
+                    enableButton();
                 }
-                enableButton();
             }
         };
 
