@@ -1,3 +1,6 @@
+# REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PPI-223 - Solves an issue with Express Checkout button state
+
 # 2.1.0
 - PPI-174 - Cart and order line items are now sent with their SKU
 - PPI-174 - Added events to adjust line items which are sent to PayPal
