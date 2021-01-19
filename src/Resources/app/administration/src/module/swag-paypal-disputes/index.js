@@ -1,4 +1,5 @@
 import './acl';
+import './page/swag-paypal-disputes-detail';
 import './page/swag-paypal-disputes-list';
 
 const { Module } = Shopware;
@@ -25,15 +26,18 @@ Module.register('swag-paypal-disputes', {
 
         detail: {
             component: 'swag-paypal-disputes-detail',
-            path: 'detail/:id',
-            props: { default(route) {
-                return { disputeId: route.params.id };
-            } },
-            redirect: {
-                name: 'swag.paypal.disputes.detail'
+            path: 'detail/:disputeId/:salesChannelId?',
+            props: {
+                default(route) {
+                    return {
+                        disputeId: route.params.disputeId,
+                        salesChannelId: route.params.salesChannelId
+                    };
+                }
             },
             meta: {
-                privilege: 'swag_paypal_disputes.viewer'
+                privilege: 'swag_paypal_disputes.viewer',
+                parentPath: 'swag.paypal.disputes.index'
             }
         }
     },

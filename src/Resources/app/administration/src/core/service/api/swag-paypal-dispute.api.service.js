@@ -29,6 +29,29 @@ class SwagPayPalDisputeApiService extends ApiService {
             return ApiService.handleResponse(response);
         });
     }
+
+    /**
+     * Get the details of a dispute
+     *
+     * @param {String} disputeId
+     * @param {String|null} salesChannelId
+     *
+     * @returns {Promise}
+     */
+    detail(disputeId, salesChannelId) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient.get(
+            `${this.getApiBasePath()}/${disputeId}`,
+            {
+                params: { salesChannelId },
+                headers,
+                version: Shopware.Context.api.apiVersion
+            }
+        ).then((response) => {
+            return ApiService.handleResponse(response);
+        });
+    }
 }
 
 export default SwagPayPalDisputeApiService;

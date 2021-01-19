@@ -30,6 +30,27 @@
                 "OPEN_INQUIRIES": "Open inquiries",
                 "APPEALABLE": "Appealable"
             }
+        },
+        "detail": {
+            "title": "PayPal Dispute:",
+            "titleAddition": "(Technical details)",
+            "mainFieldsCardTitle": "Details",
+            "externalLinkText": "Open dispute in PayPal resolution center",
+            "orderModuleLinkText": "Open order",
+            "fields": {
+                "update_time": "Update time",
+                "dispute_id": "ID",
+                "status": "Status",
+                "dispute_life_cycle_stage": "Stage",
+                "dispute_amount": "Amount",
+                "due_date": {
+                    "label": "Response due date",
+                    "seller": "Seller",
+                    "buyer": "Buyer"
+                }
+            },
+            "rawDataCardTitle": "Raw data",
+            "copyButtonLabel": "Copy raw data"
         }
     }
 }

@@ -30,6 +30,27 @@
                 "OPEN_INQUIRIES": "Offene Anfragen",
                 "APPEALABLE": "Anfechtbar"
             }
+        },
+        "detail": {
+            "title": "PayPal Konflikt:",
+            "titleAddition": "(Technische Details)",
+            "mainFieldsCardTitle": "Details",
+            "externalLinkText": "Konflikt im PayPal Lösungs-Center öffnen",
+            "orderModuleLinkText": "Bestellung öffnen",
+            "fields": {
+                "update_time": "Update-Zeitpunkt",
+                "dispute_id": "ID",
+                "status": "Status",
+                "dispute_life_cycle_stage": "Stadium",
+                "dispute_amount": "Betrag",
+                "due_date": {
+                    "label": "Antwortfälligkeit",
+                    "seller": "Verkäufer",
+                    "buyer": "Käufer"
+                }
+            },
+            "rawDataCardTitle": "Rohdaten",
+            "copyButtonLabel": "Kopiere Rohdaten"
         }
     }
 }

@@ -12,8 +12,7 @@
                         {% endblock %}
 
                         {% block swag_paypal_disputes_list_smart_bar_header_amount %}
-                            <span v-if="!isLoading"
-                                  class="sw-page__smart-bar-amount swag-paypal-disputes-list__smart-bar-amount">
+                            <span v-if="!isLoading">
                                 ({{ total }})
                             </span>
                         {% endblock %}
@@ -30,8 +29,24 @@
                     <sw-data-grid v-if="!isLoading"
                                   :dataSource="visibleDisputes"
                                   :columns="disputesColumns"
-                                  :showActions="true"
+                                  :showActions="false"
                                   :showSelection="false">
+
+                        {% block swag_paypal_disputes_list_content_grid_column_link %}
+                            <template #column-link="{ item }">
+                                <a :href="getExternalDetailPageLink(item)" target="_blank" rel="noopener">
+                                    <sw-icon name="default-action-external" size="12px"></sw-icon>
+                                </a>
+                            </template>
+                        {% endblock %}
+
+                        {% block swag_paypal_disputes_list_content_grid_column_dispute_id %}
+                            <template #column-dispute_id="{ item }">
+                                <router-link :to="{ name: 'swag.paypal.disputes.detail', params: { disputeId: item.dispute_id , salesChannelId} }">
+                                    {{ item.dispute_id }}
+                                </router-link>
+                            </template>
+                        {% endblock %}
 
                         {% block swag_paypal_disputes_list_content_grid_column_dispute_amount %}
                             <template #column-dispute_amount="{ item }">

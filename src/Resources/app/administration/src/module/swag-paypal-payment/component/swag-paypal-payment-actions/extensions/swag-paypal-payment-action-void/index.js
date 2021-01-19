@@ -49,7 +49,8 @@ Component.register('swag-paypal-payment-action-void', {
             }).catch((errorResponse) => {
                 try {
                     this.createNotificationError({
-                        message: `${errorResponse.response.data.errors[0].title}: ${errorResponse.response.data.errors[0].detail}`,
+                        message: `${errorResponse.response.data.errors[0].title}: ${
+                            errorResponse.response.data.errors[0].detail}`,
                         autoClose: false
                     });
                 } catch (e) {

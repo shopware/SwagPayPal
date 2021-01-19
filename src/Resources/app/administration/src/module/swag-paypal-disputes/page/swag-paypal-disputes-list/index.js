@@ -16,7 +16,8 @@ Component.register('swag-paypal-disputes-list', {
     template,
 
     inject: [
-        'SwagPayPalDisputeApiService'
+        'SwagPayPalDisputeApiService',
+        'systemConfigApiService'
     ],
 
     mixins: ['notification'],
@@ -55,7 +56,8 @@ Component.register('swag-paypal-disputes-list', {
             salesChannelId: null,
             total: 0,
             limit: 10,
-            page: 1
+            page: 1,
+            resolutionCenterUrl: 'https://www.paypal.com/resolutioncenter'
         };
     },
 
@@ -66,6 +68,9 @@ Component.register('swag-paypal-disputes-list', {
 
         disputesColumns() {
             return [
+                {
+                    property: 'link'
+                },
                 {
                     property: 'dispute_id',
                     label: this.$tc('swag-paypal-disputes.list.columns.dispute_id')
@@ -120,7 +125,13 @@ Component.register('swag-paypal-disputes-list', {
 
     methods: {
         createdComponent() {
-            this.getList();
+            this.systemConfigApiService.getValues('SwagPayPal.settings').then((response) => {
+                if (response['SwagPayPal.settings.sandbox']) {
+                    this.resolutionCenterUrl = 'https://www.sandbox.paypal.com/resolutioncenter';
+                }
+
+                this.getList();
+            });
         },
 
         getList() {
@@ -171,6 +182,10 @@ Component.register('swag-paypal-disputes-list', {
         onSalesChannelChanged(value) {
             this.salesChannelId = value;
             this.getList();
+        },
+
+        getExternalDetailPageLink(dispute) {
+            return `${this.resolutionCenterUrl}/${dispute.dispute_id}`;
         },
 
         formatDate(dateTime) {
