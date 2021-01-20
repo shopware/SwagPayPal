@@ -24,6 +24,7 @@ use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\Tax\TaxDefinition;
+use Shopware\Storefront\Controller\StoreApiProxyController;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -192,7 +193,12 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $expressCheckoutButtonData->getPrepareCheckoutUrl()
         );
         static::assertStringContainsString('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());
-        static::assertStringContainsString('/paypal/add-error', $expressCheckoutButtonData->getAddErrorUrl());
+        if (\class_exists(StoreApiProxyController::class)) {
+            static::assertTrue($expressCheckoutButtonData->getUseStoreApi());
+        } else {
+            static::assertFalse($expressCheckoutButtonData->getUseStoreApi());
+        }
+        static::assertStringContainsString('/paypal/approve-payment', $expressCheckoutButtonData->getApprovePaymentUrl());
     }
 
     public function dataProviderTestGetExpressCheckoutButtonDataWithCredentials(): array

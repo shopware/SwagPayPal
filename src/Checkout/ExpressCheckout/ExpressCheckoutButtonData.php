@@ -117,6 +117,13 @@ class ExpressCheckoutButtonData extends Struct
      */
     protected $addErrorUrl;
 
+    /**
+     * @deprecated tag:v3.0.0 - will be removed. Increase the min Shopware version to 6.3.2.0
+     *
+     * @var bool
+     */
+    protected $useStoreApi;
+
     public function getProductDetailEnabled(): bool
     {
         return $this->productDetailEnabled;
@@ -224,5 +231,13 @@ class ExpressCheckoutButtonData extends Struct
     public function getAddErrorUrl(): string
     {
         return $this->addErrorUrl;
+    }
+
+    /**
+     * @deprecated tag:v3.0.0 - will be removed. Increase the min Shopware version to 6.3.2.0
+     */
+    public function getUseStoreApi(): bool
+    {
+        return $this->useStoreApi;
     }
 }

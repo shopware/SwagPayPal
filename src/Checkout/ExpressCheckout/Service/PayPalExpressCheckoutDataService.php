@@ -11,6 +11,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Controller\StoreApiProxyController;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -82,6 +83,8 @@ class PayPalExpressCheckoutDataService
                 RouterInterface::ABSOLUTE_URL
             ),
             'addErrorUrl' => $this->router->generate('payment.paypal.add_error'),
+            'useStoreApi' => \class_exists(StoreApiProxyController::class),
+            'approvePaymentUrl' => $this->router->generate('payment.paypal.approve_payment'),
         ]);
     }
 

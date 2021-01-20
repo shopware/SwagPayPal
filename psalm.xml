@@ -81,6 +81,8 @@
                 <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController::createNewCart"/>
                 <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController::createPayment"/>
                 <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController::onApprove"/>
+                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData::getUseStoreApi"/>
+                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData::getApprovePaymentUrl"/>
             </errorLevel>
         </DeprecatedMethod>
 
