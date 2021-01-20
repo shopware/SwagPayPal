@@ -1,4 +1,5 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
+- PPI-208 - Weiterleitung bei abgebrochenen Plus-Zahlung in Shopware 6.3.3.x korrigiert
 - PPI-223 - Behebt ein Problem mit dem Status des Express Checkout Buttons
 - PPI-224 - Express Checkout für Shopware-Versionen vor 6.3.2.0 korrigiert
 
