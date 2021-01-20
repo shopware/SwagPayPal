@@ -74,6 +74,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         $countryState = $address->getCountryState();
         static::assertNotNull($countryState);
         static::assertSame('New York', $countryState->getName());
+        static::assertSame(GetOrderCapture::PAYER_PHONE_NUMBER, $address->getPhoneNumber());
 
         $cartToken = $response->getToken();
         /** @var ExpressCheckoutData|null $ecsCartExtension */

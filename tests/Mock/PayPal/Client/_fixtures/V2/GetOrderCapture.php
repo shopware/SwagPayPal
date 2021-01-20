@@ -15,6 +15,7 @@ class GetOrderCapture
     public const PAYER_NAME_SURNAME = 'Test surname';
     public const PAYER_ADDRESS_ADDRESS_LINE_1 = 'Ebbinghoff 10';
     public const PAYER_ADDRESS_ADMIN_AREA_2 = 'Schöppingen';
+    public const PAYER_PHONE_NUMBER = '01234123456789';
 
     public static function get(): array
     {
@@ -82,6 +83,12 @@ class GetOrderCapture
                     'admin_area_2' => self::PAYER_ADDRESS_ADMIN_AREA_2,
                     'postal_code' => '48624',
                     'country_code' => 'US',
+                ],
+                'phone' => [
+                    'phone_type' => 'HOME',
+                    'phone_number' => [
+                        'national_number' => self::PAYER_PHONE_NUMBER,
+                    ],
                 ],
             ],
             'create_time' => '2020-08-17T12:33:59Z',
