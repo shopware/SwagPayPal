@@ -230,7 +230,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
                 'zipcode' => $address->getPostalCode(),
                 'countryId' => $countryId,
                 'countryStateId' => $countryStateId,
-                'phone' => $phone !== null ? $phone->getPhoneNumber() : null,
+                'phoneNumber' => $phone !== null ? $phone->getPhoneNumber()->getNationalNumber() : null,
                 'city' => $address->getAdminArea2(),
                 'additionalAddressLine1' => $address->getAddressLine2(),
             ],

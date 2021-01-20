@@ -1,5 +1,6 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
 - PPI-208 - Fix redirect of cancelled Plus payment on Shopware 6.3.3.x
+- PPI-220 - Fix saving of customer telephone number on Express Checkout
 - PPI-223 - Solves an issue with Express Checkout button state
 - PPI-224 - Fix Express Checkout for Shopware versions prior 6.3.2.0
 
