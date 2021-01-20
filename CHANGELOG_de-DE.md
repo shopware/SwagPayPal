@@ -1,5 +1,6 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
 - PPI-223 - Behebt ein Problem mit dem Status des Express Checkout Buttons
+- PPI-224 - Express Checkout für Shopware-Versionen vor 6.3.2.0 korrigiert
 
 # 2.1.0
 - PPI-174 - Warenkorb- und Bestellpositionen werden jetzt mit SKU gesendet

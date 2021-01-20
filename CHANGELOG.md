@@ -1,5 +1,6 @@
 # REPLACE-GLOBAL-WITH-NEXT-VERSION
 - PPI-223 - Solves an issue with Express Checkout button state
+- PPI-224 - Fix Express Checkout for Shopware versions prior 6.3.2.0
 
 # 2.1.0
 - PPI-174 - Cart and order line items are now sent with their SKU
