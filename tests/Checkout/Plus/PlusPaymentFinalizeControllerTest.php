@@ -13,9 +13,9 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
-use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Migration\Migration1602494495SetUsersAsAdmins;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -132,6 +132,6 @@ class PlusPaymentFinalizeControllerTest extends TestCase
 
     private function isAtLeastShopware6330(): bool
     {
-        return \class_exists(Since::class);
+        return \class_exists(Migration1602494495SetUsersAsAdmins::class);
     }
 }

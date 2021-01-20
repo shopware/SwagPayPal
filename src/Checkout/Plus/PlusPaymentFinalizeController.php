@@ -22,7 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\Framework\Routing\Annotation\Since;
+use Shopware\Core\Migration\Migration1602494495SetUsersAsAdmins;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\SwagPayPal;
@@ -209,6 +209,6 @@ class PlusPaymentFinalizeController extends AbstractController
 
     private function isAtLeastShopware6330(): bool
     {
-        return \class_exists(Since::class);
+        return \class_exists(Migration1602494495SetUsersAsAdmins::class);
     }
 }
