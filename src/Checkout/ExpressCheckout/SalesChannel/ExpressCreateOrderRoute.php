@@ -72,15 +72,15 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
      *      methods={"POST"}
      * )
      */
-    public function createPayPalOrder(SalesChannelContext $context): TokenResponse
+    public function createPayPalOrder(SalesChannelContext $salesChannelContext): TokenResponse
     {
-        $cart = $this->cartService->getCart($context->getToken(), $context);
-        $order = $this->orderFromCartBuilder->getOrder($cart, $context, null, true);
+        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+        $order = $this->orderFromCartBuilder->getOrder($cart, $salesChannelContext, null, true);
         $order->getApplicationContext()->setShippingPreference(ApplicationContext::SHIPPING_PREFERENCE_GET_FROM_FILE);
 
         $orderResponse = $this->orderResource->create(
             $order,
-            $context->getSalesChannel()->getId(),
+            $salesChannelContext->getSalesChannel()->getId(),
             PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT
         );
 

@@ -81,6 +81,16 @@ class ExpressCheckoutButtonData extends Struct
     /**
      * @var string
      */
+    protected $contextSwitchUrl;
+
+    /**
+     * @var string|null
+     */
+    protected $payPaLPaymentMethodId;
+
+    /**
+     * @var string
+     */
     protected $createOrderUrl;
 
     /**
@@ -190,6 +200,16 @@ class ExpressCheckoutButtonData extends Struct
     public function getCreatePaymentUrl(): string
     {
         return $this->createPaymentUrl;
+    }
+
+    public function getContextSwitchUrl(): string
+    {
+        return $this->contextSwitchUrl;
+    }
+
+    public function getPayPaLPaymentMethodId(): ?string
+    {
+        return $this->payPaLPaymentMethodId;
     }
 
     public function getCreateOrderUrl(): string

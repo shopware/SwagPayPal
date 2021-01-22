@@ -19,14 +19,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Struct\ArrayStruct;
-use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateCollection;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
-use Shopware\Core\System\SalesChannel\SalesChannel\SalesChannelContextSwitcher;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Salutation\SalutationEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -34,7 +31,6 @@ use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -72,16 +68,6 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
     private $salesChannelContextFactory;
 
     /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
-
-    /**
-     * @var SalesChannelContextSwitcher
-     */
-    private $salesChannelContextSwitcher;
-
-    /**
      * @var OrderResource
      */
     private $orderResource;
@@ -102,8 +88,6 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
         EntityRepositoryInterface $salutationRepo,
         AccountService $accountService,
         SalesChannelContextFactory $salesChannelContextFactory,
-        PaymentMethodUtil $paymentMethodUtil,
-        SalesChannelContextSwitcher $salesChannelContextSwitcher,
         OrderResource $orderResource,
         CartService $cartService,
         SystemConfigService $systemConfigService
@@ -113,8 +97,6 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
         $this->salutationRepo = $salutationRepo;
         $this->accountService = $accountService;
         $this->salesChannelContextFactory = $salesChannelContextFactory;
-        $this->paymentMethodUtil = $paymentMethodUtil;
-        $this->salesChannelContextSwitcher = $salesChannelContextSwitcher;
         $this->orderResource = $orderResource;
         $this->cartService = $cartService;
         $this->systemConfigService = $systemConfigService;
@@ -153,8 +135,6 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
         $paypalOrderId = $request->request->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
         $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannel()->getId());
 
-        $paypalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext());
-
         //Create and login a new guest customer
         $salesChannelContext->getContext()->addExtension(self::EXPRESS_CHECKOUT_ACTIVE, new ArrayStruct());
         $customerDataBag = $this->getCustomerDataBag($paypalOrder, $salesChannelContext);
@@ -169,12 +149,6 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
             $newContextToken,
             $salesChannelContext->getSalesChannel()->getId()
         );
-
-        // Set the payment method to PayPal
-        $salesChannelDataBag = new DataBag([
-            SalesChannelContextService::PAYMENT_METHOD_ID => $paypalPaymentMethodId,
-        ]);
-        $this->salesChannelContextSwitcher->update($salesChannelDataBag, $newSalesChannelContext);
 
         $cart = $this->cartService->getCart($newSalesChannelContext->getToken(), $salesChannelContext);
 

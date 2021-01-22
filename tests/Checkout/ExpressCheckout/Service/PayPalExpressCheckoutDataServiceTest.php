@@ -29,6 +29,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataServic
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
 class PayPalExpressCheckoutDataServiceTest extends TestCase
@@ -64,24 +65,38 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
      */
     private $customerRepository;
 
+    /**
+     * @var PaymentMethodUtil
+     */
+    private $paymentMethodUtil;
+
     protected function setUp(): void
     {
         parent::setUp();
         $container = $this->getContainer();
-        /** @var RouterInterface $router */
-        $router = $container->get('router');
+
+        /** @var PaymentMethodUtil $paymentMethodUtil */
+        $paymentMethodUtil = $container->get(PaymentMethodUtil::class);
+        $this->paymentMethodUtil = $paymentMethodUtil;
 
         /** @var SalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
         $this->salesChannelContextFactory = $salesChannelContextFactory;
+
         /** @var CartService $cartService */
         $cartService = $container->get(CartService::class);
         $this->cartService = $cartService;
+
+        /** @var RouterInterface $router */
+        $router = $container->get('router');
+
         $this->payPalExpressCheckoutDataService = new PayPalExpressCheckoutDataService(
             $this->cartService,
             $this->createLocaleCodeProvider(),
-            $router
+            $router,
+            $paymentMethodUtil
         );
+
         /** @var EntityRepositoryInterface $productRepo */
         $productRepo = $container->get('product.repository');
         $this->productRepository = $productRepo;
@@ -199,6 +214,15 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             static::assertFalse($expressCheckoutButtonData->getUseStoreApi());
         }
         static::assertStringContainsString('/paypal/approve-payment', $expressCheckoutButtonData->getApprovePaymentUrl());
+        static::assertStringContainsString(
+            \sprintf('/store-api/v%s/context', PlatformRequest::API_VERSION),
+            $expressCheckoutButtonData->getContextSwitchUrl()
+        );
+        static::assertNotNull($expressCheckoutButtonData->getPayPaLPaymentMethodId());
+        static::assertSame(
+            $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
+            $expressCheckoutButtonData->getPayPaLPaymentMethodId()
+        );
     }
 
     public function dataProviderTestGetExpressCheckoutButtonDataWithCredentials(): array

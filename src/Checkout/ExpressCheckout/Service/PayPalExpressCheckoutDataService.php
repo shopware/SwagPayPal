@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StoreApiProxyController;
@@ -16,6 +17,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
 class PayPalExpressCheckoutDataService
@@ -35,14 +37,21 @@ class PayPalExpressCheckoutDataService
      */
     private $router;
 
+    /**
+     * @var PaymentMethodUtil
+     */
+    private $paymentMethodUtil;
+
     public function __construct(
         CartService $cartService,
         LocaleCodeProvider $localeCodeProvider,
-        RouterInterface $router
+        RouterInterface $router,
+        PaymentMethodUtil $paymentMethodUtil
     ) {
         $this->cartService = $cartService;
         $this->localeCodeProvider = $localeCodeProvider;
         $this->router = $router;
+        $this->paymentMethodUtil = $paymentMethodUtil;
     }
 
     public function getExpressCheckoutButtonData(
@@ -61,6 +70,8 @@ class PayPalExpressCheckoutDataService
             return null;
         }
 
+        $context = $salesChannelContext->getContext();
+
         return (new ExpressCheckoutButtonData())->assign([
             'productDetailEnabled' => $settings->getEcsDetailEnabled(),
             'offCanvasEnabled' => $settings->getEcsOffCanvasEnabled(),
@@ -70,13 +81,15 @@ class PayPalExpressCheckoutDataService
             'buttonColor' => $settings->getEcsButtonColor(),
             'buttonShape' => $settings->getEcsButtonShape(),
             'clientId' => $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
-            'languageIso' => $this->getInContextButtonLanguage($settings, $salesChannelContext),
+            'languageIso' => $this->getInContextButtonLanguage($settings, $context),
             'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
             'intent' => \strtolower($settings->getIntent()),
             'addProductToCart' => $addProductToCart,
-            'createOrderUrl' => $this->router->generate('store-api.paypal.express.create_order', ['version' => PlatformRequest::API_VERSION]),
-            'deleteCartUrl' => $this->router->generate('store-api.checkout.cart.delete', ['version' => PlatformRequest::API_VERSION]),
-            'prepareCheckoutUrl' => $this->router->generate('store-api.paypal.express.prepare_checkout', ['version' => PlatformRequest::API_VERSION]),
+            'contextSwitchUrl' => $this->generateRoute('store-api.switch-context'),
+            'payPaLPaymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
+            'createOrderUrl' => $this->generateRoute('store-api.paypal.express.create_order'),
+            'deleteCartUrl' => $this->generateRoute('store-api.checkout.cart.delete'),
+            'prepareCheckoutUrl' => $this->generateRoute('store-api.paypal.express.prepare_checkout'),
             'checkoutConfirmUrl' => $this->router->generate(
                 'frontend.checkout.confirm.page',
                 [PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true],
@@ -88,7 +101,7 @@ class PayPalExpressCheckoutDataService
         ]);
     }
 
-    private function getInContextButtonLanguage(SwagPayPalSettingStruct $settings, SalesChannelContext $context): string
+    private function getInContextButtonLanguage(SwagPayPalSettingStruct $settings, Context $context): string
     {
         if ($settingsLocale = $settings->getEcsButtonLanguageIso()) {
             return $settingsLocale;
@@ -97,7 +110,12 @@ class PayPalExpressCheckoutDataService
         return \str_replace(
             '-',
             '_',
-            $this->localeCodeProvider->getLocaleCodeFromContext($context->getContext())
+            $this->localeCodeProvider->getLocaleCodeFromContext($context)
         );
+    }
+
+    private function generateRoute(string $routeName): string
+    {
+        return $this->router->generate($routeName, ['version' => PlatformRequest::API_VERSION]);
     }
 }
