@@ -446,7 +446,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
             new PayPalExpressCheckoutDataService(
                 $cartService,
                 $this->createLocaleCodeProvider(),
-                $router
+                $router,
+                $paymentMethodUtil
             ),
             new SettingsServiceMock($settings ?? null),
             $paymentMethodUtil

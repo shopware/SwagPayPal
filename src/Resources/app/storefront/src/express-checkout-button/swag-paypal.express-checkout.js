@@ -103,6 +103,18 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         createPaymentUrl: '',
 
         /**
+         * URL to set payment method to PayPal
+         *
+         * @type string
+         */
+        contextSwitchUrl: '',
+
+        /**
+         * @type string
+         */
+        payPaLPaymentMethodId: '',
+
+        /**
          * URL to create a new PayPal order
          *
          * @type string
@@ -288,13 +300,19 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
      * @return {Promise}
      */
     createOrder() {
-        if (this.options.addProductToCart) {
-            return this.addProductToCart().then(() => {
-                return this._createOrder();
-            });
-        }
+        const switchPaymentMethodData = { paymentMethodId: this.options.payPaLPaymentMethodId };
 
-        return this._createOrder();
+        return new Promise(resolve => {
+            this._client.patch(this.options.contextSwitchUrl, JSON.stringify(switchPaymentMethodData), () => {
+                if (this.options.addProductToCart) {
+                    return this.addProductToCart().then(() => {
+                        resolve(this._createOrder());
+                    });
+                }
+
+                return resolve(this._createOrder());
+            });
+        });
     }
 
     /**
@@ -342,7 +360,9 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                 }
             );
         } else {
-            requestPayload._csrf_token = DomAccess.getDataAttribute(this.el, 'swag-pay-pal-express-button-approve-payment-token');
+            requestPayload._csrf_token = DomAccess.getDataAttribute(
+                this.el, 'swag-pay-pal-express-button-approve-payment-token'
+            );
 
             this._httpClient.post(
                 this.options.approvePaymentUrl,

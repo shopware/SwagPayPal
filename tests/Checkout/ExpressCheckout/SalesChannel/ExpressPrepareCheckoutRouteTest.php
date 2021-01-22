@@ -18,7 +18,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\SalesChannel\SalesChannelContextSwitcher;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
@@ -26,7 +25,6 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
-use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -119,10 +117,6 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         $accountService = $this->getContainer()->get(AccountService::class);
         /** @var SalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
-        /** @var SalesChannelContextSwitcher $salesChannelContextSwitcher */
-        $salesChannelContextSwitcher = $this->getContainer()->get(SalesChannelContextSwitcher::class);
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
 
@@ -134,8 +128,6 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
             $salutationRepo,
             $accountService,
             $salesChannelContextFactory,
-            $paymentMethodUtil,
-            $salesChannelContextSwitcher,
             $orderResource,
             $cartService,
             $systemConfigService
