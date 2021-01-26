@@ -1,4 +1,4 @@
-# REPLACE-GLOBAL-WITH-NEXT-VERSION
+# 2.1.1
 - PPI-208 - Weiterleitung bei abgebrochenen Plus-Zahlung in Shopware 6.3.3.x korrigiert
 - PPI-210 - Verarbeitung von Promotionen beim Express Checkout verbessert
 - PPI-220 - Speichern der Kundentelefonnummer beim Express Checkout korrigiert
