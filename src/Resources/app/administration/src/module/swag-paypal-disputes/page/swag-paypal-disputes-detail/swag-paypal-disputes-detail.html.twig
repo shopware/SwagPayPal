@@ -34,7 +34,7 @@
                                  :title="$tc('swag-paypal-disputes.detail.mainFieldsCardTitle')">
 
                             {% block swag_paypal_disputes_detail_content_details_fields %}
-                                <div v-if="dispute">
+                                <template v-if="dispute">
 
                                     {% block swag_paypal_disputes_detail_content_details_fields_external_link %}
                                         <div class="swag-paypal-disputes-detail__links">
@@ -63,38 +63,16 @@
                                         <hr class="swag-paypal-disputes-detail__separator"/>
                                     {% endblock %}
 
-                                    {% block swag_paypal_disputes_detail_content_details_fields_update_time %}
-                                        <sw-text-field :value="formatDate(dispute.update_time)"
-                                                       :label="$tc('swag-paypal-disputes.detail.fields.update_time')"
-                                                       disabled>
-                                        </sw-text-field>
-                                    {% endblock %}
-
                                     {% block swag_paypal_disputes_detail_content_details_fields_id %}
                                         <sw-text-field :value="dispute.dispute_id"
-                                                       :label="$tc('swag-paypal-disputes.detail.fields.dispute_id')"
+                                                       :label="$tc('swag-paypal-disputes.common.dispute_id')"
                                                        disabled>
                                         </sw-text-field>
                                     {% endblock %}
 
-                                    {% block swag_paypal_disputes_detail_content_details_fields_status %}
-                                        <sw-text-field :value="`${dispute.status} (${dispute.reason})`"
-                                                       :label="$tc('swag-paypal-disputes.detail.fields.status')"
-                                                       disabled>
-                                        </sw-text-field>
-                                    {% endblock %}
-
-                                    {% block swag_paypal_disputes_detail_content_details_fields_dispute_life_cycle_stage %}
-                                        <sw-text-field :value="dispute.dispute_life_cycle_stage"
-                                                       :label="$tc('swag-paypal-disputes.detail.fields.dispute_life_cycle_stage')"
-                                                       :class="getInquiryClass(dispute.dispute_life_cycle_stage)"
-                                                       disabled>
-                                        </sw-text-field>
-                                    {% endblock %}
-
-                                    {% block swag_paypal_disputes_detail_content_details_fields_dispute_amount %}
-                                        <sw-text-field :value="`${dispute.dispute_amount.value} ${dispute.dispute_amount.currency_code}`"
-                                                       :label="$tc('swag-paypal-disputes.detail.fields.dispute_amount')"
+                                    {% block swag_paypal_disputes_detail_content_details_fields_update_time %}
+                                        <sw-text-field :value="formatDate(dispute.update_time)"
+                                                       :label="$tc('swag-paypal-disputes.common.update_time')"
                                                        disabled>
                                         </sw-text-field>
                                     {% endblock %}
@@ -102,12 +80,34 @@
                                     {% block swag_paypal_disputes_detail_content_details_fields_due_date %}
                                         <sw-text-field v-if="dispute.seller_response_due_date || dispute.buyer_response_due_date"
                                                        :value="getDueDate(dispute.seller_response_due_date, dispute.buyer_response_due_date)"
-                                                       :label="$tc('swag-paypal-disputes.detail.fields.due_date.label')"
+                                                       :label="$tc('swag-paypal-disputes.common.response_due_date.label')"
                                                        disabled>
                                         </sw-text-field>
                                     {% endblock %}
 
-                                </div>
+                                    {% block swag_paypal_disputes_detail_content_details_fields_status %}
+                                        <sw-text-field :value="`${dispute.status} (${dispute.reason})`"
+                                                       :label="$tc('swag-paypal-disputes.common.status')"
+                                                       disabled>
+                                        </sw-text-field>
+                                    {% endblock %}
+
+                                    {% block swag_paypal_disputes_detail_content_details_fields_dispute_life_cycle_stage %}
+                                        <sw-text-field :value="dispute.dispute_life_cycle_stage"
+                                                       :label="$tc('swag-paypal-disputes.common.dispute_life_cycle_stage')"
+                                                       :class="getInquiryClass(dispute.dispute_life_cycle_stage)"
+                                                       disabled>
+                                        </sw-text-field>
+                                    {% endblock %}
+
+                                    {% block swag_paypal_disputes_detail_content_details_fields_dispute_amount %}
+                                        <sw-text-field :value="`${dispute.dispute_amount.value} ${dispute.dispute_amount.currency_code}`"
+                                                       :label="$tc('swag-paypal-disputes.common.dispute_amount')"
+                                                       disabled>
+                                        </sw-text-field>
+                                    {% endblock %}
+
+                                </template>
                             {% endblock %}
 
                         </sw-card>
@@ -118,7 +118,7 @@
                                  :title="$tc('swag-paypal-disputes.detail.rawDataCardTitle')">
 
                             {% block swag_paypal_disputes_detail_content_raw_data_content %}
-                                <div v-if="dispute">
+                                <template v-if="dispute">
 
                                     {% block swag_paypal_disputes_detail_content_raw_data_text %}
                                         <sw-textarea-field :value="JSON.stringify(dispute, null, 2)"
@@ -132,7 +132,7 @@
                                         </sw-button>
                                     {% endblock %}
 
-                                </div>
+                                </template>
                             {% endblock %}
 
                         </sw-card>

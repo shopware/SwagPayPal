@@ -101,6 +101,10 @@ Component.register('swag-paypal-disputes-detail', {
 
             this.orderTransactionRepository.get(disputedTransaction.custom, Context.api, this.orderTransactionCriteria)
                 .then((orderTransaction) => {
+                    if (orderTransaction === null) {
+                        return;
+                    }
+
                     this.orderModuleLink = { name: 'sw.order.detail.base', params: { id: orderTransaction.orderId } };
                 });
         },
@@ -115,12 +119,12 @@ Component.register('swag-paypal-disputes-detail', {
 
         getDueDate(sellerResponseDueDate, buyerResponseDueDate) {
             if (sellerResponseDueDate !== null) {
-                return `${this.$tc('swag-paypal-disputes.detail.fields.due_date.seller')}: ${
+                return `${this.$tc('swag-paypal-disputes.common.response_due_date.seller')}: ${
                     this.formatDate(sellerResponseDueDate)}`;
             }
 
             if (buyerResponseDueDate !== null) {
-                return `${this.$tc('swag-paypal-disputes.detail.fields.due_date.buyer')}: ${
+                return `${this.$tc('swag-paypal-disputes.common.response_due_date.buyer')}: ${
                     this.formatDate(buyerResponseDueDate)}`;
             }
 

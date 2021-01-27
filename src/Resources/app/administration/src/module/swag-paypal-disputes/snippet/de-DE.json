@@ -4,24 +4,24 @@
             "mainMenuItemGeneral": "PayPal Konflikte",
             "descriptionTextModule": "Verwaltung von PayPal Konflikten"
         },
+        "common": {
+            "dispute_id": "ID",
+            "update_time": "Update-Zeitpunkt",
+            "response_due_date": {
+                "label": "Antwortfälligkeit",
+                "seller": "Verkäufer",
+                "buyer": "Käufer"
+            },
+            "status": "Status",
+            "dispute_life_cycle_stage": "Stadium",
+            "dispute_amount": "Betrag"
+        },
         "list": {
             "title": "Konflikte",
             "titleSidebarItemRefresh": "Neu Laden",
             "titleSidebarItemFilter": "Filter",
             "titleSidebarItemFilterDisputeStates": "Konflikt Status",
             "errorTitle": "Fehler beim Abrufen der Konflikte von PayPal",
-            "columns": {
-                "dispute_id": "ID",
-                "dispute_state": "Konflikt Status",
-                "status": "Status",
-                "reason": "Grund",
-                "dispute_life_cycle_stage": "Stadium",
-                "dispute_amount": "Betrag",
-                "seller_response_due_date": "Fälligkeit Verkäuferantwort",
-                "buyer_response_due_date": "Fälligkeit Käuferantwort",
-                "create_time": "Erstellungszeit",
-                "update_time": "Update-Zeitpunkt"
-            },
             "disputeStates": {
                 "REQUIRED_ACTION": "Aktion erforderlich",
                 "REQUIRED_OTHER_PARTY_ACTION": "Aktion anderer Partei erforderlich",
@@ -29,6 +29,10 @@
                 "RESOLVED": "Geschlossen",
                 "OPEN_INQUIRIES": "Offene Anfragen",
                 "APPEALABLE": "Anfechtbar"
+            },
+            "emptyState": {
+                "title": "Es wurden keine Konflikte gefunden",
+                "subline": "Ändere den Filter, um alle Konflikte anzuzeigen."
             }
         },
         "detail": {
@@ -37,18 +41,6 @@
             "mainFieldsCardTitle": "Details",
             "externalLinkText": "Konflikt im PayPal Lösungs-Center öffnen",
             "orderModuleLinkText": "Bestellung öffnen",
-            "fields": {
-                "update_time": "Update-Zeitpunkt",
-                "dispute_id": "ID",
-                "status": "Status",
-                "dispute_life_cycle_stage": "Stadium",
-                "dispute_amount": "Betrag",
-                "due_date": {
-                    "label": "Antwortfälligkeit",
-                    "seller": "Verkäufer",
-                    "buyer": "Käufer"
-                }
-            },
             "rawDataCardTitle": "Rohdaten",
             "copyButtonLabel": "Kopiere Rohdaten"
         }

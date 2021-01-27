@@ -1,5 +1,19 @@
+@import "~scss/variables";
+
 .swag-paypal-disputes-list {
     &__sidebar .sw-sidebar-item__scrollable-container {
         padding: 0 25px;
+    }
+
+    &__reason {
+        font-size: $font-size-extra-small;
+    }
+
+    &__stage-inquiry {
+        color: $color-module-yellow-900;
+    }
+
+    &__stage-other {
+        color: $color-crimson-900;
     }
 }

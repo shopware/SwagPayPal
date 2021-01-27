@@ -73,43 +73,27 @@ Component.register('swag-paypal-disputes-list', {
                 },
                 {
                     property: 'dispute_id',
-                    label: this.$tc('swag-paypal-disputes.list.columns.dispute_id')
-                },
-                {
-                    property: 'dispute_state',
-                    label: this.$tc('swag-paypal-disputes.list.columns.dispute_state')
-                },
-                {
-                    property: 'status',
-                    label: this.$tc('swag-paypal-disputes.list.columns.status')
-                },
-                {
-                    property: 'reason',
-                    label: this.$tc('swag-paypal-disputes.list.columns.reason')
-                },
-                {
-                    property: 'dispute_life_cycle_stage',
-                    label: this.$tc('swag-paypal-disputes.list.columns.dispute_life_cycle_stage')
-                },
-                {
-                    property: 'dispute_amount',
-                    label: this.$tc('swag-paypal-disputes.list.columns.dispute_amount')
-                },
-                {
-                    property: 'seller_response_due_date',
-                    label: this.$tc('swag-paypal-disputes.list.columns.seller_response_due_date')
-                },
-                {
-                    property: 'buyer_response_due_date',
-                    label: this.$tc('swag-paypal-disputes.list.columns.buyer_response_due_date')
-                },
-                {
-                    property: 'create_time',
-                    label: this.$tc('swag-paypal-disputes.list.columns.create_time')
+                    label: this.$tc('swag-paypal-disputes.common.dispute_id')
                 },
                 {
                     property: 'update_time',
-                    label: this.$tc('swag-paypal-disputes.list.columns.update_time')
+                    label: this.$tc('swag-paypal-disputes.common.update_time')
+                },
+                {
+                    property: 'response_due_date',
+                    label: this.$tc('swag-paypal-disputes.common.response_due_date.label')
+                },
+                {
+                    property: 'status',
+                    label: this.$tc('swag-paypal-disputes.common.status')
+                },
+                {
+                    property: 'dispute_life_cycle_stage',
+                    label: this.$tc('swag-paypal-disputes.common.dispute_life_cycle_stage')
+                },
+                {
+                    property: 'dispute_amount',
+                    label: this.$tc('swag-paypal-disputes.common.dispute_amount')
                 }
             ];
         },
@@ -125,6 +109,8 @@ Component.register('swag-paypal-disputes-list', {
 
     methods: {
         createdComponent() {
+            this.isLoading = true;
+
             this.systemConfigApiService.getValues('SwagPayPal.settings').then((response) => {
                 if (response['SwagPayPal.settings.sandbox']) {
                     this.resolutionCenterUrl = 'https://www.sandbox.paypal.com/resolutioncenter';
@@ -136,19 +122,36 @@ Component.register('swag-paypal-disputes-list', {
 
         getList() {
             this.isLoading = true;
+            this.disputes = [];
             let disputeStateFilter = null;
             if (this.disputeStateFilter.length > 0) {
                 disputeStateFilter = this.disputeStateFilter.join(',');
             }
 
             this.SwagPayPalDisputeApiService.list(this.salesChannelId, disputeStateFilter).then((disputeList) => {
-                this.disputes = [];
                 if (disputeList.items !== null) {
-                    this.disputes = disputeList.items;
+                    this.disputes = this.sortDisputes(disputeList.items);
                 }
                 this.total = this.disputes.length;
                 this.isLoading = false;
             }).catch(this.handleError);
+        },
+
+        sortDisputes(disputes) {
+            // sort resolved disputes as last
+            disputes.sort((a, b) => {
+                if (a.status === 'RESOLVED') {
+                    return 1;
+                }
+
+                if (b.status === 'RESOLVED') {
+                    return -1;
+                }
+
+                return 0;
+            });
+
+            return disputes;
         },
 
         debouncedGetList: debounce(function updateList() {
@@ -162,6 +165,21 @@ Component.register('swag-paypal-disputes-list', {
                 autoClose: false
             });
             this.isLoading = false;
+        },
+
+        formatUpdateDate(dateTime) {
+            return this.formatDate(dateTime, {});
+        },
+
+        formatUpdateTime(dateTime) {
+            return this.formatDate(dateTime, {
+                day: undefined,
+                month: undefined,
+                year: undefined,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
         },
 
         onPageChange({ page, limit }) {
@@ -188,12 +206,8 @@ Component.register('swag-paypal-disputes-list', {
             return `${this.resolutionCenterUrl}/${dispute.dispute_id}`;
         },
 
-        formatDate(dateTime) {
-            return this.dateFilter(dateTime, {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
+        formatDate(dateTime, options = { hour: '2-digit', minute: '2-digit', second: '2-digit' }) {
+            return this.dateFilter(dateTime, options);
         }
     }
 });
