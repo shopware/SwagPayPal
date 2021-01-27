@@ -3,6 +3,7 @@ import './swag-paypal-disputes-detail.scss';
 
 const { Context, Component, Filter, Utils } = Shopware;
 const { Criteria } = Shopware.Data;
+const { capitalizeString } = Shopware.Utils.string;
 
 Component.register('swag-paypal-disputes-detail', {
     template,
@@ -107,6 +108,10 @@ Component.register('swag-paypal-disputes-detail', {
 
                     this.orderModuleLink = { name: 'sw.order.detail.base', params: { id: orderTransaction.orderId } };
                 });
+        },
+
+        formatTechnicalText(technicalText) {
+            return capitalizeString(technicalText).replace(/_/g, ' ');
         },
 
         getInquiryClass(stage) {

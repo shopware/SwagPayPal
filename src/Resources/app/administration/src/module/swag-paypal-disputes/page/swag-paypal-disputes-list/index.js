@@ -11,6 +11,7 @@ import './swag-paypal-disputes-list.scss';
 
 const { Component, Filter } = Shopware;
 const { debounce } = Shopware.Utils;
+const { capitalizeString } = Shopware.Utils.string;
 
 Component.register('swag-paypal-disputes-list', {
     template,
@@ -180,6 +181,10 @@ Component.register('swag-paypal-disputes-list', {
                 minute: '2-digit',
                 second: '2-digit'
             });
+        },
+
+        formatTechnicalText(technicalText) {
+            return capitalizeString(technicalText).replace(/_/g, ' ');
         },
 
         onPageChange({ page, limit }) {

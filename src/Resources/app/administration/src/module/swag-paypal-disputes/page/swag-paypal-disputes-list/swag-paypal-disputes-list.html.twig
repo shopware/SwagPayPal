@@ -38,7 +38,7 @@
                             {% block swag_paypal_disputes_list_content_grid_column_link %}
                                 <template #column-link="{ item }">
                                     <a :href="getExternalDetailPageLink(item)" target="_blank" rel="noopener">
-                                        <sw-icon name="default-action-external" size="12px"></sw-icon>
+                                        <sw-icon name="small-arrow-small-external" size="12px"></sw-icon>
                                     </a>
                                 </template>
                             {% endblock %}
@@ -69,8 +69,10 @@
                             {% block swag_paypal_disputes_list_content_grid_column_status %}
                                 <template #column-status="{ item }">
                                     <div>
-                                        <div>{{ item.status }}</div>
-                                        <div class="swag-paypal-disputes-list__reason">{{ item.reason }}</div>
+                                        <div>{{ formatTechnicalText(item.status) }}</div>
+                                        <div class="swag-paypal-disputes-list__reason">
+                                            {{ formatTechnicalText(item.reason) }}
+                                        </div>
                                     </div>
                                 </template>
                             {% endblock %}
@@ -87,11 +89,11 @@
                                 <template #column-dispute_life_cycle_stage="{ item }">
                                     <div v-if="item.dispute_life_cycle_stage === 'INQUIRY'"
                                           class="swag-paypal-disputes-list__stage-inquiry">
-                                        {{ item.dispute_life_cycle_stage }}
+                                        {{ formatTechnicalText(item.dispute_life_cycle_stage) }}
                                     </div>
                                     <div v-else
                                           class="swag-paypal-disputes-list__stage-other">
-                                        {{ item.dispute_life_cycle_stage }}
+                                        {{ formatTechnicalText(item.dispute_life_cycle_stage) }}
                                     </div>
                                 </template>
                             {% endblock %}
