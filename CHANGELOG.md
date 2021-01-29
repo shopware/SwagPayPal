@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-211 - Fix sending of shipping address name to PayPal
 - PPI-231 - Fix deletion of rule for payment upon invoice during uninstall
 
 # 2.1.1

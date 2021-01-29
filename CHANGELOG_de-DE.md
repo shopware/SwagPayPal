@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-211 - Name der Lieferaddresse wird nun korrekt zu PayPal übertragen
 - PPI-231 - Löschen der Rechnungskauf-Regel beim Deinstallieren korrigiert
 
 # 2.1.1
