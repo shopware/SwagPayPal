@@ -16,9 +16,10 @@ use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer\Address as PayerAddress;
-use Swag\PayPal\RestApi\V2\Api\Order\Payer\Name;
+use Swag\PayPal\RestApi\V2\Api\Order\Payer\Name as PayerName;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Address as ShippingAddress;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Name as ShippingName;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -69,15 +70,12 @@ abstract class AbstractOrderBuilder
     {
         $payer = new Payer();
         $payer->setEmailAddress($customer->getEmail());
-        $name = new Name();
+        $name = new PayerName();
         $name->setGivenName($customer->getFirstName());
         $name->setSurname($customer->getLastName());
         $payer->setName($name);
 
         $billingAddress = $customer->getActiveBillingAddress();
-        if ($billingAddress === null) {
-            $billingAddress = $customer->getDefaultBillingAddress();
-        }
         if ($billingAddress === null) {
             throw new AddressNotFoundException($customer->getDefaultBillingAddressId());
         }
@@ -103,15 +101,15 @@ abstract class AbstractOrderBuilder
     {
         $shippingAddress = $customer->getActiveShippingAddress();
         if ($shippingAddress === null) {
-            $shippingAddress = $customer->getDefaultShippingAddress();
-        }
-        if ($shippingAddress === null) {
             throw new AddressNotFoundException($customer->getDefaultShippingAddressId());
         }
+
+        $shipping = new Shipping();
+
         /** @var ShippingAddress $address */
         $address = $this->createAddress($shippingAddress, new ShippingAddress());
-        $shipping = new Shipping();
         $shipping->setAddress($address);
+        $shipping->setName($this->createShippingName($shippingAddress));
 
         return $shipping;
     }
@@ -166,5 +164,13 @@ abstract class AbstractOrderBuilder
         }
 
         return $address;
+    }
+
+    private function createShippingName(CustomerAddressEntity $shippingAddress): ShippingName
+    {
+        $shippingName = new ShippingName();
+        $shippingName->setFullName(\sprintf('%s %s', $shippingAddress->getFirstName(), $shippingAddress->getLastName()));
+
+        return $shippingName;
     }
 }
