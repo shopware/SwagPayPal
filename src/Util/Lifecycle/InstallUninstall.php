@@ -146,6 +146,10 @@ class InstallUninstall
             return ['id' => $id];
         }, $idSearchResult->getIds());
 
+        if ($ids === []) {
+            return;
+        }
+
         $this->systemConfigRepository->delete($ids, $context);
     }
 
@@ -299,21 +303,23 @@ class InstallUninstall
         }
 
         $criteria = new Criteria([$payPalPuiPaymentMethodId]);
-        $criteria->addAssociation('availabilityRuleId');
 
         /** @var PaymentMethodEntity $payPalPuiPaymentMethod */
         $payPalPuiPaymentMethod = $this->paymentRepository->search($criteria, $context)->get($payPalPuiPaymentMethodId);
 
         $payPalPuiPaymentMethodAvailabilityRuleId = $payPalPuiPaymentMethod->getAvailabilityRuleId();
-        if (!$payPalPuiPaymentMethodAvailabilityRuleId) {
+        if ($payPalPuiPaymentMethodAvailabilityRuleId === null) {
             return;
         }
 
-        $this->ruleRepository->delete([
-            [
-                'id' => $payPalPuiPaymentMethodAvailabilityRuleId,
-            ],
-        ], $context);
+        $this->paymentRepository->update([[
+            'id' => $payPalPuiPaymentMethodId,
+            'availabilityRuleId' => null,
+        ]], $context);
+
+        $this->ruleRepository->delete([[
+            'id' => $payPalPuiPaymentMethodAvailabilityRuleId,
+        ]], $context);
     }
 
     private function getPayPalPuiAvailabilityRuleId(Context $context): ?string

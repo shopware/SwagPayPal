@@ -38,6 +38,7 @@ class SystemConfigRepoMock implements EntityRepositoryInterface
 
     public function searchIds(Criteria $criteria, Context $context): IdSearchResult
     {
+        return new IdSearchResult(0, [], $criteria, $context);
     }
 
     public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent

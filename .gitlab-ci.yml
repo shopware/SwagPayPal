@@ -161,6 +161,8 @@ PHPUnit:
         - ./psh.phar init-test-databases
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - bin/phpunit.sh
+        - cd $CI_PROJECT_DIR/development
+        - php bin/console plugin:uninstall SwagPayPal
     rules:
         -   if: '$CI_COMMIT_BRANCH == "master"'
         -   if: '$RUN_IN_MR == "true" && $CI_PIPELINE_SOURCE == "merge_request_event"'

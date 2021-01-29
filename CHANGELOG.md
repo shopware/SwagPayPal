@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-231 - Fix deletion of rule for payment upon invoice during uninstall
+
 # 2.1.1
 - PPI-208 - Fix redirect of cancelled Plus payment on Shopware 6.3.3.x
 - PPI-210 - Improve handling of promotions during Express Checkout
