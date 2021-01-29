@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-231 - Löschen der Rechnungskauf-Regel beim Deinstallieren korrigiert
+
 # 2.1.1
 - PPI-208 - Weiterleitung bei abgebrochenen Plus-Zahlung in Shopware 6.3.3.x korrigiert
 - PPI-210 - Verarbeitung von Promotionen beim Express Checkout verbessert
