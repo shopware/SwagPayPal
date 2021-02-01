@@ -18,6 +18,7 @@ use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundExcepti
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
+use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 trait OrderTransactionTrait
@@ -28,16 +29,21 @@ trait OrderTransactionTrait
     public function getTransactionId(
         Context $context,
         ContainerInterface $container,
-        string $technicalName = OrderTransactionStates::STATE_OPEN
+        string $transactionStateTechnicalName = OrderTransactionStates::STATE_OPEN
     ): string {
-        $stateId = $this->getOrderTransactionStateIdByTechnicalName($technicalName, $container, $context);
+        $stateId = $this->getOrderTransactionStateIdByTechnicalName($transactionStateTechnicalName, $container, $context);
         if (!$stateId) {
-            throw new StateMachineStateNotFoundException(OrderTransactionStates::STATE_MACHINE, $technicalName);
+            throw new StateMachineStateNotFoundException(OrderTransactionStates::STATE_MACHINE, $transactionStateTechnicalName);
         }
+
+        /** @var PaymentMethodUtil $paymentMethodUtil */
+        $paymentMethodUtil = $container->get(PaymentMethodUtil::class);
+        $paymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId($context);
+        static::assertNotNull($paymentMethodId);
 
         return $this->getValidTransactionId(
             $this->getOrderData(Uuid::randomHex(), $context),
-            $this->getValidPaymentMethodId(),
+            $paymentMethodId,
             $stateId,
             $container,
             $context,
@@ -53,7 +59,9 @@ trait OrderTransactionTrait
         /** @var EntityRepositoryInterface $orderTransactionRepo */
         $orderTransactionRepo = $container->get(OrderTransactionDefinition::ENTITY_NAME . '.repository');
 
-        return $orderTransactionRepo->search(new Criteria([$transactionId]), $context)->get($transactionId);
+        return $context->disableCache(static function (Context $context) use ($orderTransactionRepo, $transactionId) {
+            return $orderTransactionRepo->search(new Criteria([$transactionId]), $context)->get($transactionId);
+        });
     }
 
     private function getValidTransactionId(

@@ -1,0 +1,104 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\Checkout\Payment\ScheduledTask;
+
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
+use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
+use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
+use Swag\PayPal\Util\PaymentMethodUtil;
+
+class CancelTransactionsTaskHandler extends ScheduledTaskHandler
+{
+    /**
+     * @var PaymentMethodUtil
+     */
+    private $paymentMethodUtil;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $orderTransactionRepo;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $stateMachineStateRepo;
+
+    /**
+     * @var OrderTransactionStateHandler
+     */
+    private $orderTransactionStateHandler;
+
+    public function __construct(
+        EntityRepositoryInterface $scheduledTaskRepository,
+        PaymentMethodUtil $paymentMethodUtil,
+        EntityRepositoryInterface $stateMachineStateRepository,
+        EntityRepositoryInterface $orderTransactionRepository,
+        OrderTransactionStateHandler $orderTransactionStateHandler
+    ) {
+        parent::__construct($scheduledTaskRepository);
+        $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->stateMachineStateRepo = $stateMachineStateRepository;
+        $this->orderTransactionRepo = $orderTransactionRepository;
+        $this->orderTransactionStateHandler = $orderTransactionStateHandler;
+    }
+
+    public static function getHandledMessages(): iterable
+    {
+        return [CancelTransactionsTask::class];
+    }
+
+    public function run(): void
+    {
+        $context = Context::createDefaultContext();
+        $payPalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context);
+        if ($payPalPaymentMethodId === null) {
+            return;
+        }
+        $stateMaschineStateCriteria = new Criteria();
+        $stateMaschineStateCriteria->addAssociation('stateMachine');
+        $stateMaschineStateCriteria->addFilter(
+            new EqualsFilter('technicalName', OrderTransactionStates::STATE_IN_PROGRESS)
+        );
+        $stateMaschineStateCriteria->addFilter(
+            new EqualsFilter('stateMachine.technicalName', OrderTransactionStates::STATE_MACHINE)
+        );
+        $stateInProgressId = $this->stateMachineStateRepo->searchIds($stateMaschineStateCriteria, $context)->firstId();
+        if ($stateInProgressId === null) {
+            throw new StateMachineStateNotFoundException(
+                OrderTransactionStates::STATE_MACHINE,
+                OrderTransactionStates::STATE_IN_PROGRESS
+            );
+        }
+
+        // PayPal payments which are not confirmed by customers, will be deleted after 24h.
+        // Therefore those transactions could safely be cancelled
+        $yesterday = new \DateTime('now -1 day');
+        $yesterday = $yesterday->setTimezone(new \DateTimeZone('UTC'));
+
+        $orderTransactionCriteria = new Criteria();
+        $orderTransactionCriteria->addAssociation('stateMachineState');
+        $orderTransactionCriteria->addFilter(new EqualsFilter('paymentMethodId', $payPalPaymentMethodId));
+        $orderTransactionCriteria->addFilter(new EqualsFilter('stateId', $stateInProgressId));
+        $orderTransactionCriteria->addFilter(new RangeFilter('createdAt', ['lte' => $yesterday->format(Defaults::STORAGE_DATE_TIME_FORMAT)]));
+
+        /** @var OrderTransactionCollection $orderTransactions */
+        $orderTransactions = $this->orderTransactionRepo->search($orderTransactionCriteria, $context)->getEntities();
+        foreach ($orderTransactions as $orderTransaction) {
+            $this->orderTransactionStateHandler->cancel($orderTransaction->getId(), $context);
+        }
+    }
+}

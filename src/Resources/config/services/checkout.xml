@@ -65,5 +65,19 @@
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
         </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\CancelTransactionsTask">
+            <tag name="shopware.scheduled.task"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\ScheduledTask\CancelTransactionsTaskHandler">
+            <argument type="service" id="scheduled_task.repository"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
+            <argument type="service" id="state_machine_state.repository"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <tag name="messenger.message_handler"/>
+        </service>
+
     </services>
 </container>

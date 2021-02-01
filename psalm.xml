@@ -44,6 +44,7 @@
             <errorLevel type="info">
                 <file name="src/Pos/Command/*Command.php"/>
                 <file name="src/Pos/Schedule/*Handler.php"/>
+                <file name="src/Checkout/Payment/ScheduledTask/CancelTransactionsTaskHandler.php"/>
                 <directory name="tests"/>
             </errorLevel>
         </InternalMethod>

@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 trait StateMachineStateTrait
 {
-    private function getOrderTransactionStateIdByTechnicalName(string $technicalName, ContainerInterface $container, Context $context): ?string
+    protected function getOrderTransactionStateIdByTechnicalName(string $technicalName, ContainerInterface $container, Context $context): ?string
     {
         /** @var EntityRepositoryInterface $stateMachineStateRepo */
         $stateMachineStateRepo = $container->get('state_machine_state.repository');
