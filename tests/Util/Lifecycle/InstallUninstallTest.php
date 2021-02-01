@@ -45,7 +45,10 @@ class InstallUninstallTest extends TestCase
     {
         $context = Context::createDefaultContext();
         $installUninstall = $this->createInstallUninstall();
-        $installUninstall->uninstall($context);
+        $removeRuleMethod = (new \ReflectionClass($installUninstall))->getMethod('removePuiAvailabilityRule');
+        $removeRuleMethod->setAccessible(true);
+
+        $removeRuleMethod->invoke($installUninstall, $context);
 
         $criteria = (new Criteria())
             ->addFilter(new EqualsFilter('name', InstallUninstall::PAYPAL_PUI_AVAILABILITY_RULE_NAME));
