@@ -35,6 +35,7 @@ use Shopware\Storefront\Page\Navigation\NavigationPage;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
+use Shopware\Storefront\Page\Search\SearchPageLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoader;
@@ -63,10 +64,13 @@ class ExpressCheckoutSubscriberTest extends TestCase
             NavigationPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            SearchPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
 
             CmsPageLoadedEvent::class => 'addExpressCheckoutDataToCmsPage',
 
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
+            // TODO: PPI-65: class constant can be used instead of string
+            'Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent' => 'addExpressCheckoutDataToPagelet',
 
             'framework.validation.address.create' => 'disableAddressValidation',
             'framework.validation.customer.create' => 'disableCustomerValidation',

@@ -17,6 +17,8 @@ use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
+use Shopware\Storefront\Page\Search\SearchPageLoadedEvent;
+use Shopware\Storefront\Pagelet\PageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
@@ -63,10 +65,13 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             NavigationPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+            SearchPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
 
             CmsPageLoadedEvent::class => 'addExpressCheckoutDataToCmsPage',
 
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
+            // TODO: PPI-65: class constant can be used instead of string
+            'Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent' => 'addExpressCheckoutDataToPagelet',
 
             'framework.validation.address.create' => 'disableAddressValidation',
             'framework.validation.customer.create' => 'disableCustomerValidation',
@@ -78,7 +83,9 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         $salesChannelContext = $event->getSalesChannelContext();
         $eventName = \get_class($event);
 
-        $addProductToCart = $event instanceof ProductPageLoadedEvent || $event instanceof NavigationPageLoadedEvent;
+        $addProductToCart = $event instanceof ProductPageLoadedEvent
+            || $event instanceof NavigationPageLoadedEvent
+            || $event instanceof SearchPageLoadedEvent;
 
         $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, $eventName, $addProductToCart);
 
@@ -116,7 +123,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function addExpressCheckoutDataToPagelet(QuickviewPageletLoadedEvent $event): void
+    public function addExpressCheckoutDataToPagelet(PageletLoadedEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
         $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, \get_class($event), true);
@@ -125,8 +132,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $quickviewPagelet = $event->getPagelet();
-        $quickviewPagelet->addExtension(
+        $event->getPagelet()->addExtension(
             self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
             $expressCheckoutButtonData
         );
@@ -204,6 +210,9 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
                 return $settings->getEcsCartEnabled();
             case NavigationPageLoadedEvent::class:
             case CmsPageLoadedEvent::class:
+            case SearchPageLoadedEvent::class:
+            // TODO: PPI-65: class constant can be used instead of string
+            case 'Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent':
                 return $settings->getEcsListingEnabled();
             default:
                 return false;
