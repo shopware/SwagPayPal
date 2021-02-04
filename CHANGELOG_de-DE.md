@@ -3,6 +3,7 @@
 - PPI-222 - Express-Checkout-Button auf der Suchseite und der Wunschliste hinzugefügt
 - PPI-229 - Bestell-Transaktionen mit einer veralteten PayPal-Zahlung werden mit einem ScheduledTask abgebrochen
 - PPI-231 - Löschen der Rechnungskauf-Regel beim Deinstallieren korrigiert
+- PPI-234 - Entity-Definition verbessert
 
 # 2.1.1
 - PPI-208 - Weiterleitung bei abgebrochenen Plus-Zahlung in Shopware 6.3.3.x korrigiert

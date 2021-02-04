@@ -54,12 +54,12 @@ class PosSalesChannelDefinition extends EntityDefinition
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
-            (new IdField('id', 'id'))->setFlags(new PrimaryKey(), new Required()),
+            (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
 
             (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(new Required()),
             new FkField('product_stream_id', 'productStreamId', ProductStreamDefinition::class),
 
-            (new StringField('api_key', 'apiKey', self::MAX_APIKEY_SIZE))->setFlags(new Required()),
+            (new StringField('api_key', 'apiKey', self::MAX_APIKEY_SIZE))->addFlags(new Required()),
             (new StringField('media_domain', 'mediaDomain')),
             (new StringField('webhook_signing_key', 'webhookSigningKey', self::MAX_WEBHOOK_KEY_SIZE)),
 

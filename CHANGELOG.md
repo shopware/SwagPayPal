@@ -3,6 +3,7 @@
 - PPI-222 - Add Express Checkout button to search page and wish list page
 - PPI-229 - Order transactions with a stale PayPal payment will be cancelled with a ScheduledTask
 - PPI-231 - Fix deletion of rule for payment upon invoice during uninstall
+- PPI-234 - Improve entity definition
 
 # 2.1.1
 - PPI-208 - Fix redirect of cancelled Plus payment on Shopware 6.3.3.x

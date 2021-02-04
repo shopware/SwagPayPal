@@ -41,7 +41,7 @@ class PosSalesChannelRunLogDefinition extends EntityDefinition
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
-            (new IdField('id', 'id'))->setFlags(new PrimaryKey(), new Required()),
+            (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
             (new FkField('run_id', 'runId', PosSalesChannelRunDefinition::class))->addFlags(new Required()),
 
             (new ManyToOneAssociationField('run', 'run_id', PosSalesChannelRunDefinition::class)),
