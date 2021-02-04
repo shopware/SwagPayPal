@@ -75,8 +75,10 @@ Component.register('swag-paypal-behavior', {
         },
 
         landingPageHint() {
-            const landingPageOption = this.actualConfigData['SwagPayPal.settings.landingPage'].toLowerCase();
-            const translationKey = `swag-paypal.settingForm.behaviour.landingPage.helpText.${landingPageOption}`;
+            let landingPageOption = this.actualConfigData['SwagPayPal.settings.landingPage'] ||
+                this.allConfigs.null['SwagPayPal.settings.landingPage'];
+            landingPageOption = landingPageOption.toLowerCase();
+            const translationKey = `swag-paypal.settingForm.behavior.landingPage.helpText.${landingPageOption}`;
             return this.$tc(translationKey);
         }
     },
