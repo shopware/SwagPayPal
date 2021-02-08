@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 2.1.2
 - PPI-211 - Fix sending of shipping address name to PayPal
 - PPI-222 - Add Express Checkout button to search page and wish list page
 - PPI-229 - Order transactions with a stale PayPal payment will be cancelled with a ScheduledTask

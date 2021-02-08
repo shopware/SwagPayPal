@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 2.1.2
 - PPI-211 - Name der Lieferaddresse wird nun korrekt zu PayPal übertragen
 - PPI-222 - Express-Checkout-Button auf der Suchseite und der Wunschliste hinzugefügt
 - PPI-229 - Bestell-Transaktionen mit einer veralteten PayPal-Zahlung werden mit einem ScheduledTask abgebrochen
