@@ -31,6 +31,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentAuthorizeResp
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePuiResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDispute;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDisputesList;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentAuthorizeResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentCapturedOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentOrderResponseFixture;
@@ -160,6 +162,14 @@ class GuzzleClientMock extends Client
                 'client_id' => ConstantsForTesting::VALID_CLIENT_ID,
                 'client_secret' => ConstantsForTesting::VALID_CLIENT_SECRET,
             ];
+        }
+
+        if (\strpos($resourceUri, RequestUriV1::DISPUTES_RESOURCE) !== false) {
+            if (\strpos($resourceUri, '/PP-') !== false) {
+                return GetDispute::get();
+            }
+
+            return GetDisputesList::get();
         }
 
         throw new \RuntimeException('No fixture defined for ' . $resourceUri);

@@ -1,0 +1,179 @@
+{% block swag_paypal_disputes_list %}
+    <sw-page class="swag-paypal-disputes-list">
+
+        {% block swag_paypal_disputes_list_smart_bar_header %}
+            <template #smart-bar-header>
+
+                {% block swag_paypal_disputes_list_smart_bar_header_title %}
+                    <h2>
+
+                        {% block swag_paypal_disputes_list_smart_bar_header_title_text %}
+                            {{ $tc('swag-paypal-disputes.list.title') }}
+                        {% endblock %}
+
+                        {% block swag_paypal_disputes_list_smart_bar_header_amount %}
+                            <template v-if="!isLoading">
+                                ({{ total }})
+                            </template>
+                        {% endblock %}
+
+                    </h2>
+                {% endblock %}
+
+            </template>
+        {% endblock %}
+
+        {% block swag_paypal_disputes_list_content %}
+            <template #content>
+                <sw-loader v-if="isLoading"></sw-loader>
+                <template v-else>
+
+                    {% block swag_paypal_disputes_list_content_grid %}
+                        <sw-data-grid v-if="disputes.length > 0"
+                                      :dataSource="visibleDisputes"
+                                      :columns="disputesColumns"
+                                      :showActions="false"
+                                      :showSelection="false">
+
+                            {% block swag_paypal_disputes_list_content_grid_column_link %}
+                                <template #column-link="{ item }">
+                                    <a :href="getExternalDetailPageLink(item)" target="_blank" rel="noopener">
+                                        <sw-icon name="small-arrow-small-external" size="12px"></sw-icon>
+                                    </a>
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_disputes_list_content_grid_column_update_time %}
+                                <template #column-update_time="{ item }">
+                                    <div>
+                                        <div>{{ formatUpdateDate(item.update_time) }}</div>
+                                        <div>{{ formatUpdateTime(item.update_time) }}</div>
+                                    </div>
+                                </template>
+                            {% endblock %}
+
+
+                            {% block swag_paypal_disputes_list_content_grid_column_seller_response_due_date %}
+                                <template #column-response_due_date="{ item }">
+                                    <template v-if="item.seller_response_due_date">
+                                        <strong>{{ $tc('swag-paypal-disputes.common.response_due_date.seller') }}</strong>:
+                                        {{ formatDate(item.seller_response_due_date) }}
+                                    </template>
+                                    <template v-else-if="item.buyer_response_due_date">
+                                        <strong>{{ $tc('swag-paypal-disputes.common.response_due_date.buyer') }}</strong>:
+                                        {{ formatDate(item.buyer_response_due_date) }}
+                                    </template>
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_disputes_list_content_grid_column_status %}
+                                <template #column-status="{ item }">
+                                    <div>
+                                        <div>
+                                            {{ formatTechnicalText(item.dispute_state) }}
+                                            <template v-if="item.dispute_state !== item.status"> ({{ formatTechnicalText(item.status) }})</template>
+                                        </div>
+                                        <div class="swag-paypal-disputes-list__reason">
+                                            {{ formatTechnicalText(item.reason) }}
+                                        </div>
+                                    </div>
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_disputes_list_content_grid_column_dispute_id %}
+                                <template #column-dispute_id="{ item }">
+                                    <router-link :to="{ name: 'swag.paypal.disputes.detail', params: { disputeId: item.dispute_id , salesChannelId} }">
+                                        {{ item.dispute_id }}
+                                    </router-link>
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_disputes_list_content_grid_column_dispute_life_cycle_stage %}
+                                <template #column-dispute_life_cycle_stage="{ item }">
+                                    <div v-if="item.dispute_life_cycle_stage === 'INQUIRY'"
+                                          class="swag-paypal-disputes-list__stage-inquiry">
+                                        {{ formatTechnicalText(item.dispute_life_cycle_stage) }}
+                                    </div>
+                                    <div v-else
+                                          class="swag-paypal-disputes-list__stage-other">
+                                        {{ formatTechnicalText(item.dispute_life_cycle_stage) }}
+                                    </div>
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_disputes_list_content_grid_column_dispute_amount %}
+                                <template #column-dispute_amount="{ item }">
+                                    {{ item.dispute_amount.value }} {{ item.dispute_amount.currency_code }}
+                                </template>
+                            {% endblock %}
+
+                            {% block swag_paypal_disputes_list_content_grid_pagination %}
+                                <template #pagination>
+                                    <sw-pagination
+                                        :page="page"
+                                        :limit="limit"
+                                        :total="total"
+                                        @page-change="onPageChange">
+                                    </sw-pagination>
+                                </template>
+                            {% endblock %}
+
+                        </sw-data-grid>
+                    {% endblock %}
+
+                    {% block swag_paypal_disputes_list_content_empty_state %}
+                        <sw-empty-state
+                            v-if="disputes.length === 0"
+                            :title="$tc('swag-paypal-disputes.list.emptyState.title')"
+                            :subline="$tc('swag-paypal-disputes.list.emptyState.subline')"
+                            icon="default-communication-speech-bubbles"
+                            color="#F88962">
+                        </sw-empty-state>
+                    {% endblock %}
+
+                </template>
+            </template>
+        {% endblock %}
+
+        {% block swag_paypal_disputes_list_sidebar %}
+            <template #sidebar>
+                <sw-sidebar class="swag-paypal-disputes-list__sidebar">
+
+                    {% block swag_paypal_disputes_list_sidebar_refresh %}
+                        <sw-sidebar-item
+                            icon="default-arrow-360-left"
+                            :title="$tc('swag-paypal-disputes.list.titleSidebarItemRefresh')"
+                            @click="onRefresh">
+                        </sw-sidebar-item>
+                    {% endblock %}
+
+                    {% block swag_paypal_disputes_list_sidebar_filter %}
+                        <sw-sidebar-item icon="default-action-filter"
+                                         :title="$tc('swag-paypal-disputes.list.titleSidebarItemFilter')">
+
+                            {% block swag_paypal_disputes_list_sidebar_filter_items %}
+                                {% block swag_paypal_disputes_list_sidebar_filter_sales_channel %}
+                                    <sw-sales-channel-switch :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
+                                                             @change-sales-channel-id="onSalesChannelChanged">
+                                    </sw-sales-channel-switch>
+                                {% endblock %}
+
+                                {% block swag_paypal_disputes_list_sidebar_filter_dispute_state %}
+                                    <sw-multi-select
+                                        :label="$tc('swag-paypal-disputes.common.status')"
+                                        :options="disputeStates"
+                                        :value="disputeStateFilter"
+                                        @change="onChangeDisputeStateFilter">
+                                    </sw-multi-select>
+                                {% endblock %}
+                            {% endblock %}
+
+                        </sw-sidebar-item>
+                    {% endblock %}
+
+                </sw-sidebar>
+            </template>
+        {% endblock %}
+
+    </sw-page>
+{% endblock %}

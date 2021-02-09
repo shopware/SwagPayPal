@@ -8,6 +8,7 @@
         <import resource="./services/administration.xml"/>
         <import resource="./services/checkout.xml"/>
         <import resource="./services/client.xml"/>
+        <import resource="./services/dispute.xml"/>
         <import resource="./services/express_checkout.xml"/>
         <import resource="./services/installment.xml"/>
         <import resource="./services/orders_api.xml"/>

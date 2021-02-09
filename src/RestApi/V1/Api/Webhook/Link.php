@@ -11,18 +11,4 @@ use Swag\PayPal\RestApi\V1\Api\Common\Link as CommonLink;
 
 class Link extends CommonLink
 {
-    /**
-     * @var string
-     */
-    protected $encType;
-
-    public function getEncType(): string
-    {
-        return $this->encType;
-    }
-
-    public function setEncType(string $encType): void
-    {
-        $this->encType = $encType;
-    }
 }

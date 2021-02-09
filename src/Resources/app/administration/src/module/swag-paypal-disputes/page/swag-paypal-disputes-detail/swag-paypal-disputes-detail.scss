@@ -1,0 +1,23 @@
+@import "~scss/variables";
+
+.swag-paypal-disputes-detail {
+    &__links {
+        margin-bottom: 20px;
+    }
+
+    &__separator {
+        margin-bottom: 20px;
+    }
+
+    &__stage-inquiry {
+        input {
+            color: $color-module-yellow-900;
+        }
+    }
+
+    &__stage-other {
+        input {
+            color: $color-crimson-900;
+        }
+    }
+}
