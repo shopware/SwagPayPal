@@ -1,3 +1,6 @@
+# 2.2.0
+- PPI-191 - Übersicht der PayPal-Konflikte hinzugefügt
+
 # 2.1.2
 - PPI-211 - Name der Lieferaddresse wird nun korrekt zu PayPal übertragen
 - PPI-222 - Express-Checkout-Button auf der Suchseite und der Wunschliste hinzugefügt

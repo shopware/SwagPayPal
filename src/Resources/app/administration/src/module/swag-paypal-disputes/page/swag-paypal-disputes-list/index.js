@@ -30,27 +30,27 @@ Component.register('swag-paypal-disputes-list', {
             disputeStates: [
                 {
                     value: DISPUTE_STATE_REQUIRED_ACTION,
-                    label: this.$tc(`swag-paypal-disputes.list.disputeStates.${DISPUTE_STATE_REQUIRED_ACTION}`)
+                    label: this.formatTechnicalText(DISPUTE_STATE_REQUIRED_ACTION)
                 },
                 {
                     value: DISPUTE_STATE_REQUIRED_OTHER_PARTY_ACTION,
-                    label: this.$tc(`swag-paypal-disputes.list.disputeStates.${DISPUTE_STATE_REQUIRED_OTHER_PARTY_ACTION}`)
+                    label: this.formatTechnicalText(DISPUTE_STATE_REQUIRED_OTHER_PARTY_ACTION)
                 },
                 {
                     value: DISPUTE_STATE_UNDER_PAYPAL_REVIEW,
-                    label: this.$tc(`swag-paypal-disputes.list.disputeStates.${DISPUTE_STATE_UNDER_PAYPAL_REVIEW}`)
+                    label: this.formatTechnicalText(DISPUTE_STATE_UNDER_PAYPAL_REVIEW)
                 },
                 {
                     value: DISPUTE_STATE_RESOLVED,
-                    label: this.$tc(`swag-paypal-disputes.list.disputeStates.${DISPUTE_STATE_RESOLVED}`)
+                    label: this.formatTechnicalText(DISPUTE_STATE_RESOLVED)
                 },
                 {
                     value: DISPUTE_STATE_OPEN_INQUIRIES,
-                    label: this.$tc(`swag-paypal-disputes.list.disputeStates.${DISPUTE_STATE_OPEN_INQUIRIES}`)
+                    label: this.formatTechnicalText(DISPUTE_STATE_OPEN_INQUIRIES)
                 },
                 {
                     value: DISPUTE_STATE_APPEALABLE,
-                    label: this.$tc(`swag-paypal-disputes.list.disputeStates.${DISPUTE_STATE_APPEALABLE}`)
+                    label: this.formatTechnicalText(DISPUTE_STATE_APPEALABLE)
                 }
             ],
             disputeStateFilter: [],

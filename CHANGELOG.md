@@ -1,3 +1,6 @@
+# 2.2.0
+- PPI-191 - Introduce PayPal disputes overview
+
 # 2.1.2
 - PPI-211 - Fix sending of shipping address name to PayPal
 - PPI-222 - Add Express Checkout button to search page and wish list page

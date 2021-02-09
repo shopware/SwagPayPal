@@ -69,7 +69,10 @@
                             {% block swag_paypal_disputes_list_content_grid_column_status %}
                                 <template #column-status="{ item }">
                                     <div>
-                                        <div>{{ formatTechnicalText(item.status) }}</div>
+                                        <div>
+                                            {{ formatTechnicalText(item.dispute_state) }}
+                                            <template v-if="item.dispute_state !== item.status"> ({{ formatTechnicalText(item.status) }})</template>
+                                        </div>
                                         <div class="swag-paypal-disputes-list__reason">
                                             {{ formatTechnicalText(item.reason) }}
                                         </div>
@@ -157,7 +160,7 @@
 
                                 {% block swag_paypal_disputes_list_sidebar_filter_dispute_state %}
                                     <sw-multi-select
-                                        :label="$tc('swag-paypal-disputes.list.titleSidebarItemFilterDisputeStates')"
+                                        :label="$tc('swag-paypal-disputes.common.status')"
                                         :options="disputeStates"
                                         :value="disputeStateFilter"
                                         @change="onChangeDisputeStateFilter">

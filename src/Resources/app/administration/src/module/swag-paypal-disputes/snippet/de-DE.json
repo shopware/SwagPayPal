@@ -20,16 +20,7 @@
             "title": "Konflikte",
             "titleSidebarItemRefresh": "Neu Laden",
             "titleSidebarItemFilter": "Filter",
-            "titleSidebarItemFilterDisputeStates": "Konflikt Status",
             "errorTitle": "Fehler beim Abrufen der Konflikte von PayPal",
-            "disputeStates": {
-                "REQUIRED_ACTION": "Aktion erforderlich",
-                "REQUIRED_OTHER_PARTY_ACTION": "Aktion anderer Partei erforderlich",
-                "UNDER_PAYPAL_REVIEW": "In Überprüfung von PayPal",
-                "RESOLVED": "Geschlossen",
-                "OPEN_INQUIRIES": "Offene Anfragen",
-                "APPEALABLE": "Anfechtbar"
-            },
             "emptyState": {
                 "title": "Es wurden keine Konflikte gefunden",
                 "subline": "Ändere den Filter, um alle Konflikte anzuzeigen."

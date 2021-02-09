@@ -20,16 +20,7 @@
             "title": "Disputes",
             "titleSidebarItemRefresh": "Refresh",
             "titleSidebarItemFilter": "Filter",
-            "titleSidebarItemFilterDisputeStates": "Dispute state",
             "errorTitle": "Error fetching disputes from PayPal",
-            "disputeStates": {
-                "REQUIRED_ACTION": "Action required",
-                "REQUIRED_OTHER_PARTY_ACTION": "Action required by other party",
-                "UNDER_PAYPAL_REVIEW": "Under review of PayPal",
-                "RESOLVED": "Resolved",
-                "OPEN_INQUIRIES": "Open inquiries",
-                "APPEALABLE": "Appealable"
-            },
             "emptyState": {
                 "title": "No disputes found",
                 "subline": "Change the filter to show all disputes."
