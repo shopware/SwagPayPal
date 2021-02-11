@@ -89,11 +89,15 @@ class CancelTransactionsTaskHandler extends ScheduledTaskHandler
         $yesterday = new \DateTime('now -1 day');
         $yesterday = $yesterday->setTimezone(new \DateTimeZone('UTC'));
 
+        // Only consider order_transactions which are younger than a week, to ignore older orders once the plugin is updated
+        $aWeekAgo = new \DateTime('now -7 day');
+        $aWeekAgo = $aWeekAgo->setTimezone(new \DateTimeZone('UTC'));
+
         $orderTransactionCriteria = new Criteria();
-        $orderTransactionCriteria->addAssociation('stateMachineState');
         $orderTransactionCriteria->addFilter(new EqualsFilter('paymentMethodId', $payPalPaymentMethodId));
         $orderTransactionCriteria->addFilter(new EqualsFilter('stateId', $stateInProgressId));
         $orderTransactionCriteria->addFilter(new RangeFilter('createdAt', ['lte' => $yesterday->format(Defaults::STORAGE_DATE_TIME_FORMAT)]));
+        $orderTransactionCriteria->addFilter(new RangeFilter('createdAt', ['gte' => $aWeekAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT)]));
 
         /** @var OrderTransactionCollection $orderTransactions */
         $orderTransactions = $this->orderTransactionRepo->search($orderTransactionCriteria, $context)->getEntities();
