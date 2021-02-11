@@ -1,3 +1,6 @@
+# 2.2.1
+- PPI-241 - Improve cancelling order transactions with the ScheduledTask
+
 # 2.2.0
 - PPI-191 - Introduce PayPal disputes overview
 

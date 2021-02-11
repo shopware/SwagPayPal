@@ -60,4 +60,37 @@ class CancelTransactionsTaskHandlerTest extends TestCase
 
         static::assertSame($cancelledStateId, $transaction->getStateId());
     }
+
+    public function testRunDoNotChangeOlderThanFiveDays(): void
+    {
+        $context = Context::createDefaultContext();
+        $container = $this->getContainer();
+
+        $transactionId = $this->getTransactionId($context, $container, OrderTransactionStates::STATE_IN_PROGRESS);
+
+        $tenDaysAgo = new \DateTime('now -10 days');
+        $tenDaysAgo = $tenDaysAgo->setTimezone(new \DateTimeZone('UTC'));
+        /** @var Connection $connection */
+        $connection = $container->get(Connection::class);
+        $connection->update(
+            'order_transaction',
+            ['created_at' => $tenDaysAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT)],
+            ['id' => Uuid::fromHexToBytes($transactionId)]
+        );
+
+        /** @var CancelTransactionsTaskHandler $handler */
+        $handler = $container->get(CancelTransactionsTaskHandler::class);
+        $handler->run();
+
+        $transaction = $this->getTransaction($transactionId, $container, $context);
+        static::assertNotNull($transaction);
+
+        $cancelledStateId = $this->getOrderTransactionStateIdByTechnicalName(
+            OrderTransactionStates::STATE_IN_PROGRESS,
+            $container,
+            $context
+        );
+
+        static::assertSame($cancelledStateId, $transaction->getStateId());
+    }
 }

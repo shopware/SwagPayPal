@@ -1,3 +1,6 @@
+# 2.2.1
+- PPI-241 - Abbruch der Bestell-Transaktionen mit dem ScheduledTask verbessert
+
 # 2.2.0
 - PPI-191 - Übersicht der PayPal-Konflikte hinzugefügt
 
