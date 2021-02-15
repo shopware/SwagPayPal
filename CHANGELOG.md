@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_RELEASE
+- PPI-244 - Fix issue on API authentication
+
 # 2.2.1
 - PPI-241 - Improve cancelling order transactions with the ScheduledTask
 
