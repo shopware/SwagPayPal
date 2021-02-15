@@ -32,7 +32,7 @@ class Payload extends PosStruct
     /**
      * Expiration time
      *
-     * @var int
+     * @var string
      */
     protected $exp;
 
@@ -46,7 +46,7 @@ class Payload extends PosStruct
     /**
      * Issued At
      *
-     * @var int
+     * @var string
      */
     protected $iat;
 
@@ -95,14 +95,17 @@ class Payload extends PosStruct
         $this->aud = $aud;
     }
 
-    public function getExp(): int
+    public function getExp(): string
     {
         return $this->exp;
     }
 
-    public function setExp(int $exp): void
+    /**
+     * @param int|string $exp
+     */
+    public function setExp($exp): void
     {
-        $this->exp = $exp;
+        $this->exp = (string) $exp;
     }
 
     public function getSub(): string
@@ -115,14 +118,17 @@ class Payload extends PosStruct
         $this->sub = $sub;
     }
 
-    public function getIat(): int
+    public function getIat(): string
     {
         return $this->iat;
     }
 
-    public function setIat(int $iat): void
+    /**
+     * @param int|string $iat
+     */
+    public function setIat($iat): void
     {
-        $this->iat = $iat;
+        $this->iat = (string) $iat;
     }
 
     public function isRenewed(): bool

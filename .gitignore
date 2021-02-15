@@ -5,3 +5,4 @@ vendor/
 src/Resources/public/administration/swag-pay-pal.*.hot-update.js
 phpstan.neon
 var/
+composer.lock
