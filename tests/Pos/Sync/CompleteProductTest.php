@@ -98,7 +98,8 @@ class CompleteProductTest extends TestCase
             new VariantConverter(
                 new UuidConverter(),
                 new PriceConverter(),
-                new PresentationConverter()
+                new PresentationConverter(),
+                new NullLogger()
             ),
             new OptionGroupConverter(),
             new PresentationConverter(),

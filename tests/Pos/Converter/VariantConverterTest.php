@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Converter;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
@@ -62,6 +63,27 @@ class VariantConverterTest extends TestCase
         );
 
         $variant = $this->createVariant();
+
+        $uuid = $this->createUuidConverter()->incrementUuid($productEntity->getId());
+        $variant->setUuid($this->createUuidConverter()->convertUuidToV1($uuid));
+
+        static::assertEquals($variant, $converted);
+    }
+
+    public function testConvertOversizedDescription(): void
+    {
+        $productEntity = $this->createProductEntity();
+        $productEntity->addTranslated('description', \str_repeat(self::PRODUCT_DESCRIPTION, 100));
+        static::assertGreaterThan(1024, \strlen($productEntity->getTranslation('description')));
+
+        $converted = $this->createVariantConverter()->convert(
+            $productEntity,
+            null,
+            $this->createMock(ProductContext::class)
+        );
+
+        $variant = $this->createVariant();
+        $variant->setDescription(\sprintf('%s...', \substr(\str_repeat(self::PRODUCT_DESCRIPTION, 100), 0, 1021)));
 
         $uuid = $this->createUuidConverter()->incrementUuid($productEntity->getId());
         $variant->setUuid($this->createUuidConverter()->convertUuidToV1($uuid));
@@ -136,7 +158,7 @@ class VariantConverterTest extends TestCase
 
     private function createVariantConverter(): VariantConverter
     {
-        return new VariantConverter($this->createUuidConverter(), new PriceConverter(), new PresentationConverter());
+        return new VariantConverter($this->createUuidConverter(), new PriceConverter(), new PresentationConverter(), new NullLogger());
     }
 
     private function createUuidConverter(): UuidConverter

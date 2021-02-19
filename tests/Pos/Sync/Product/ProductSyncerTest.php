@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Sync\Product;
 
 use PHPUnit\Framework\MockObject\MockObject;
+use Psr\Log\NullLogger;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -99,7 +100,7 @@ class ProductSyncerTest extends AbstractProductSyncTest
             new ProductConverter(
                 new UuidConverter(),
                 new CategoryConverter(new UuidConverter()),
-                new VariantConverter(new UuidConverter(), new PriceConverter(), new PresentationConverter()),
+                new VariantConverter(new UuidConverter(), new PriceConverter(), new PresentationConverter(), new NullLogger()),
                 new OptionGroupConverter(),
                 new PresentationConverter(),
                 new MetadataGenerator()

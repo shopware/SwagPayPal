@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_RELEASE
+# 2.2.2
 - PPI-244 - Problem bei der API-Authentifizierung behoben
+- PPI-221 - Problem mit überlangen Produktbeschreibungen bei Zettle korrigiert
 
 # 2.2.1
 - PPI-241 - Abbruch der Bestell-Transaktionen mit dem ScheduledTask verbessert
