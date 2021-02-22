@@ -169,6 +169,27 @@ class ProductConverterTest extends TestCase
         static::assertEquals($product, $convertedGrouping->getProduct());
     }
 
+    public function testConvertOversizedDescription(): void
+    {
+        $productEntity = $this->createProductEntity();
+        $productEntity->addTranslated('description', \str_repeat(self::PRODUCT_DESCRIPTION, 100));
+        static::assertGreaterThan(1024, \strlen($productEntity->getTranslation('description')));
+
+        $converted = $this->createProductConverter()->convertShopwareProducts(
+            new ProductCollection([$productEntity]),
+            $this->getCurrency(),
+            $this->createMock(ProductContext::class)
+        );
+        $convertedGrouping = $converted->first();
+
+        $product = $this->createProduct();
+        $product->setDescription(\sprintf('%s...', \substr(\str_repeat(self::PRODUCT_DESCRIPTION, 100), 0, 1021)));
+        $product->setUuid($this->createUuidConverter()->convertUuidToV1($productEntity->getId()));
+
+        static::assertNotNull($convertedGrouping);
+        static::assertEquals($product, $convertedGrouping->getProduct());
+    }
+
     private function createProductEntity(): SalesChannelProductEntity
     {
         $productEntity = new SalesChannelProductEntity();

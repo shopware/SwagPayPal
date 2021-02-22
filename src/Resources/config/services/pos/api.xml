@@ -20,6 +20,7 @@
             <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\UuidConverter"/>
             <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\PriceConverter"/>
             <argument type="service" id="Swag\PayPal\Pos\Api\Service\Converter\PresentationConverter"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
         </service>
 
         <service id="Swag\PayPal\Pos\Api\Service\ProductConverter">
@@ -36,12 +37,12 @@
         </service>
 
         <service id="Swag\PayPal\Pos\Client\TokenClientFactory">
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
         </service>
 
         <service id="Swag\PayPal\Pos\Client\PosClientFactory">
             <argument type="service" id="Swag\PayPal\Pos\Resource\TokenResource"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
         </service>
 
         <service id="Swag\PayPal\Pos\Resource\ImageResource">

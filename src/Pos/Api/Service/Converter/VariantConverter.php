@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Pos\Api\Service\Converter;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Pos\Api\Product\Variant;
@@ -31,14 +32,21 @@ class VariantConverter
      */
     private $presentationConverter;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         UuidConverter $uuidConverter,
         PriceConverter $priceConverter,
-        PresentationConverter $presentationConverter
+        PresentationConverter $presentationConverter,
+        LoggerInterface $logger
     ) {
         $this->uuidConverter = $uuidConverter;
         $this->priceConverter = $priceConverter;
         $this->presentationConverter = $presentationConverter;
+        $this->logger = $logger;
     }
 
     public function convert(SalesChannelProductEntity $shopwareVariant, ?CurrencyEntity $currency, ProductContext $productContext): Variant
@@ -52,8 +60,19 @@ class VariantConverter
         $variant->setUuid($this->uuidConverter->convertUuidToV1($uuid));
 
         $variant->setName((string) ($shopwareVariant->getTranslation('name') ?? $shopwareVariant->getName()));
-        $variant->setDescription((string) ($shopwareVariant->getTranslation('description') ?? $shopwareVariant->getDescription()));
         $variant->setSku($shopwareVariant->getProductNumber());
+        $variant->setDescription((string) ($shopwareVariant->getTranslation('description') ?? $shopwareVariant->getDescription()));
+        if (\strlen($variant->getDescription()) > 1024) {
+            $variant->setDescription(\sprintf('%s...', \substr($variant->getDescription(), 0, 1021)));
+
+            $this->logger->warning(
+                'The description of product "{productName}" is too long and will be cut off at 1024 characters.',
+                [
+                    'productName' => $variant->getName(),
+                    'product' => $shopwareVariant,
+                ]
+            );
+        }
 
         $barcode = $shopwareVariant->getEan();
         if ($barcode !== null) {
