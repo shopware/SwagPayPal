@@ -18,11 +18,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateCollection;
 use Shopware\Core\System\Country\CountryEntity;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Salutation\SalutationEntity;
@@ -63,7 +64,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
     private $accountService;
 
     /**
-     * @var SalesChannelContextFactory
+     * @var AbstractSalesChannelContextFactory
      */
     private $salesChannelContextFactory;
 
@@ -87,7 +88,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
         EntityRepositoryInterface $countryRepo,
         EntityRepositoryInterface $salutationRepo,
         AccountService $accountService,
-        SalesChannelContextFactory $salesChannelContextFactory,
+        AbstractSalesChannelContextFactory $salesChannelContextFactory,
         OrderResource $orderResource,
         CartService $cartService,
         SystemConfigService $systemConfigService
@@ -109,7 +110,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 
     /**
      * @OA\Post(
-     *     path="/store-api/v{version}/paypal/express/prepare-checkout",
+     *     path="/store-api/paypal/express/prepare-checkout",
      *     description="Loggs in a guest customer, with the data of a paypal order",
      *     operationId="preparePayPalExpressCheckout",
      *     tags={"Store API", "PayPal"},
@@ -125,7 +126,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
      * )
      *
      * @Route(
-     *     "/store-api/v{version}/paypal/express/prepare-checkout",
+     *     "/store-api/paypal/express/prepare-checkout",
      *     name="store-api.paypal.express.prepare_checkout",
      *     methods={"POST"}
      * )
@@ -133,6 +134,11 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
     public function prepareCheckout(SalesChannelContext $salesChannelContext, Request $request): ContextTokenResponse
     {
         $paypalOrderId = $request->request->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
+
+        if ($paypalOrderId === null) {
+            throw new MissingRequestParameterException(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
+        }
+
         $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannel()->getId());
 
         //Create and login a new guest customer

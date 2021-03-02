@@ -59,9 +59,7 @@ trait OrderTransactionTrait
         /** @var EntityRepositoryInterface $orderTransactionRepo */
         $orderTransactionRepo = $container->get(OrderTransactionDefinition::ENTITY_NAME . '.repository');
 
-        return $context->disableCache(static function (Context $context) use ($orderTransactionRepo, $transactionId) {
-            return $orderTransactionRepo->search(new Criteria([$transactionId]), $context)->get($transactionId);
-        });
+        return $orderTransactionRepo->search(new Criteria([$transactionId]), $context)->get($transactionId);
     }
 
     private function getValidTransactionId(

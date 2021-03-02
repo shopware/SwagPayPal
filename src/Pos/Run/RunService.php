@@ -102,9 +102,7 @@ class RunService
     public function isRunActive(string $runId, Context $context): bool
     {
         /** @var PosSalesChannelRunEntity|null $run */
-        $run = $context->disableCache(function (Context $context) use ($runId) {
-            return $this->runRepository->search(new Criteria([$runId]), $context);
-        })->first();
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
 
         if ($run === null) {
             return false;

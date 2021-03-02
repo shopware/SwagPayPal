@@ -11,7 +11,6 @@ use Shopware\Core\Checkout\Payment\DataAbstractionLayer\PaymentMethodRepositoryD
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Exception\ExistingPosSalesChannelsException;
@@ -142,15 +141,8 @@ class ActivateDeactivate
     private function checkPosSalesChannels(Context $context): void
     {
         $criteria = new Criteria();
-        $criteria
-            ->addFilter(
-                new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS)
-            );
-
-        /** @var EntitySearchResult $result */
-        $result = $context->disableCache(function (Context $context) use ($criteria): EntitySearchResult {
-            return $this->salesChannelRepository->search($criteria, $context);
-        });
+        $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
+        $result = $this->salesChannelRepository->search($criteria, $context);
 
         if ($result->getTotal() > 0) {
             $names = $result->getEntities()->map(function (SalesChannelEntity $item): string {

@@ -1,4 +1,4 @@
-# 2.2.2
+# 3.0.0
 - PPI-244 - Fix issue on API authentication
 - PPI-221 - Fix issue with oversized product descriptions in Zettle
 

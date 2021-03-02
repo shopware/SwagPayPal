@@ -13,6 +13,9 @@
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentStatusUtilV2"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <service id="Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator">

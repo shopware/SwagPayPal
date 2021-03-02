@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandle
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
+use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
@@ -141,9 +142,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
         $context = $salesChannelContext->getContext();
 
-        $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
         $paymentId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
-        $token = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
 
         $isExpressCheckout = $request->query->getBoolean(self::PAYPAL_EXPRESS_CHECKOUT_ID);
         $isSPBCheckout = $request->query->getBoolean(self::PAYPAL_SMART_PAYMENT_BUTTONS_ID);
@@ -153,6 +152,11 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $orderDataPatchNeeded = $isExpressCheckout || $isSPBCheckout || $isPlus;
 
         if ($paymentId) {
+            $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
+            if ($payerId === null) {
+                throw new MissingRequestParameterException(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
+            }
+
             $this->plusPuiHandler->handleFinalizePayment(
                 $transaction,
                 $salesChannelId,
@@ -164,6 +168,11 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             );
 
             return;
+        }
+
+        $token = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
+        if ($token === null) {
+            throw new MissingRequestParameterException(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
         }
 
         $this->payPalHandler->handleFinalizeOrder(

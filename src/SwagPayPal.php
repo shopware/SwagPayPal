@@ -19,6 +19,7 @@ use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
+use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
 use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Swag\PayPal\Util\Lifecycle\Update;
@@ -48,18 +49,6 @@ class SwagPayPal extends Plugin
     private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_CREATE = 'swag_paypal_pos_sales_channel_run:create';
     private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_DELETE = 'swag_paypal_pos_sales_channel_run:delete';
     private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_LOG_READ = 'swag_paypal_pos_sales_channel_run_log:read';
-
-    private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGES = [
-        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_READ,
-        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_UPDATE,
-        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_CREATE,
-        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_DELETE,
-        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_READ,
-        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_UPDATE,
-        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_CREATE,
-        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_DELETE,
-        self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_LOG_READ,
-    ];
 
     /**
      * @var ActivateDeactivate
@@ -168,6 +157,8 @@ class SwagPayPal extends Plugin
         $informationDefaultService = $this->container->get(InformationDefaultService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         /** @var EntityRepositoryInterface $shippingRepository */
         $shippingRepository = $this->container->get('shipping_method.repository');
+        /** @var PosWebhookService|null $posWebhookService */
+        $posWebhookService = $this->container->get(PosWebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
 
         (new Update(
             $systemConfigService,
@@ -177,10 +168,9 @@ class SwagPayPal extends Plugin
             $salesChannelRepository,
             $salesChannelTypeRepository,
             $informationDefaultService,
-            $shippingRepository
+            $shippingRepository,
+            $posWebhookService
         ))->update($updateContext);
-
-        $this->addCustomPrivileges();
 
         parent::update($updateContext);
     }
@@ -188,7 +178,6 @@ class SwagPayPal extends Plugin
     public function activate(ActivateContext $activateContext): void
     {
         $this->activateDeactivate->activate($activateContext->getContext());
-        $this->addCustomPrivileges();
 
         parent::activate($activateContext);
     }
@@ -196,7 +185,6 @@ class SwagPayPal extends Plugin
     public function deactivate(DeactivateContext $deactivateContext): void
     {
         $this->activateDeactivate->deactivate($deactivateContext->getContext());
-        $this->removeCustomPrivileges();
 
         parent::deactivate($deactivateContext);
     }
@@ -227,33 +215,5 @@ class SwagPayPal extends Plugin
                 self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_DELETE,
             ],
         ];
-    }
-
-    private function addCustomPrivileges(): void
-    {
-        if (\method_exists(Plugin::class, 'enrichPrivileges')) {
-            return;
-        }
-
-        if (!\method_exists($this, 'addPrivileges')) {
-            return;
-        }
-
-        foreach ($this->enrichPrivileges() as $role => $privileges) {
-            $this->addPrivileges($role, $privileges);
-        }
-    }
-
-    private function removeCustomPrivileges(): void
-    {
-        if (\method_exists(Plugin::class, 'enrichPrivileges')) {
-            return;
-        }
-
-        if (!\method_exists($this, 'removePrivileges')) {
-            return;
-        }
-
-        $this->removePrivileges(self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGES);
     }
 }

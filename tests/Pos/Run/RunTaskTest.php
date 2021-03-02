@@ -75,7 +75,7 @@ class RunTaskTest extends TestCase
         /** @var AbstractTask $task */
         $task = $this->getMockBuilder($taskName)
             ->disableOriginalConstructor()
-            ->setMethodsExcept(['getRunTaskName'])
+            ->onlyMethods(['execute'])
             ->getMock();
 
         static::assertSame($expectedName, $task->getRunTaskName());

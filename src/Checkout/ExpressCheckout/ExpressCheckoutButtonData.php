@@ -72,13 +72,6 @@ class ExpressCheckoutButtonData extends Struct
     protected $addProductToCart;
 
     /**
-     * @deprecated tag:v3.0.0 - will be removed. Use createOrderUrl instead
-     *
-     * @var string
-     */
-    protected $createPaymentUrl;
-
-    /**
      * @var string
      */
     protected $contextSwitchUrl;
@@ -94,23 +87,9 @@ class ExpressCheckoutButtonData extends Struct
     protected $createOrderUrl;
 
     /**
-     * @deprecated tag:v3.0.0 - will be removed. Use deleteCartUrl instead
-     *
-     * @var string
-     */
-    protected $createNewCartUrl;
-
-    /**
      * @var string
      */
     protected $deleteCartUrl;
-
-    /**
-     * @deprecated tag:v3.0.0 - will be removed. Use prepareCheckoutUrl instead
-     *
-     * @var string
-     */
-    protected $approvePaymentUrl;
 
     /**
      * @var string
@@ -126,13 +105,6 @@ class ExpressCheckoutButtonData extends Struct
      * @var string
      */
     protected $addErrorUrl;
-
-    /**
-     * @deprecated tag:v3.0.0 - will be removed. Increase the min Shopware version to 6.3.2.0
-     *
-     * @var bool
-     */
-    protected $useStoreApi;
 
     public function getProductDetailEnabled(): bool
     {
@@ -194,14 +166,6 @@ class ExpressCheckoutButtonData extends Struct
         return $this->addProductToCart;
     }
 
-    /**
-     * @deprecated tag:v3.0.0 - will be removed. Use getCreateOrderUrl instead
-     */
-    public function getCreatePaymentUrl(): string
-    {
-        return $this->createPaymentUrl;
-    }
-
     public function getContextSwitchUrl(): string
     {
         return $this->contextSwitchUrl;
@@ -217,25 +181,9 @@ class ExpressCheckoutButtonData extends Struct
         return $this->createOrderUrl;
     }
 
-    /**
-     * @deprecated tag:v3.0.0 - will be removed. Use getDeleteCartUrl instead
-     */
-    public function getCreateNewCartUrl(): string
-    {
-        return $this->createNewCartUrl;
-    }
-
     public function getDeleteCartUrl(): string
     {
         return $this->deleteCartUrl;
-    }
-
-    /**
-     * @deprecated tag:v3.0.0 - will be removed. Use getCheckoutConfirmUrl instead
-     */
-    public function getApprovePaymentUrl(): string
-    {
-        return $this->approvePaymentUrl;
     }
 
     public function getPrepareCheckoutUrl(): string
@@ -251,13 +199,5 @@ class ExpressCheckoutButtonData extends Struct
     public function getAddErrorUrl(): string
     {
         return $this->addErrorUrl;
-    }
-
-    /**
-     * @deprecated tag:v3.0.0 - will be removed. Increase the min Shopware version to 6.3.2.0
-     */
-    public function getUseStoreApi(): bool
-    {
-        return $this->useStoreApi;
     }
 }

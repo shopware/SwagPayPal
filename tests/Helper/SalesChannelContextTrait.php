@@ -70,6 +70,7 @@ trait SalesChannelContextTrait
             $salesChannelContext = new SalesChannelContext(
                 $salesChannelContext->getContext(),
                 $salesChannelContext->getToken(),
+                null,
                 $salesChannelContext->getSalesChannel(),
                 $salesChannelContext->getCurrency(),
                 $salesChannelContext->getCurrentCustomerGroup(),
@@ -79,6 +80,8 @@ trait SalesChannelContextTrait
                 $salesChannelContext->getShippingMethod(),
                 $salesChannelContext->getShippingLocation(),
                 $salesChannelContext->getCustomer(),
+                $salesChannelContext->getItemRounding(),
+                $salesChannelContext->getTotalRounding(),
                 $salesChannelContext->getRuleIds()
             );
             $paymentCollection->add($paymentMethod);

@@ -132,7 +132,7 @@ class PayPalPaymentController extends AbstractController
      *         @OA\JsonContent(type="array")
      *     )
      * )
-     * @Route("/api/v{version}/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"})
+     * @Route("/api/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"})
      * @Acl({"order.viewer"})
      */
     public function paymentDetails(string $orderId, string $paymentId, Context $context): JsonResponse
@@ -175,7 +175,7 @@ class PayPalPaymentController extends AbstractController
      *         @OA\JsonContent(type="array")
      *     )
      * )
-     * @Route("/api/v{version}/paypal/resource-details/{resourceType}/{resourceId}/{orderId}", name="api.paypal.resource_details", methods={"GET"})
+     * @Route("/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}", name="api.paypal.resource_details", methods={"GET"})
      * @Acl({"order.viewer"})
      */
     public function resourceDetails(Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
@@ -206,7 +206,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"})
+     * @Route("/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"})
      * @Acl({"order.editor"})
      *
      * @throws RequiredParameterInvalidException
@@ -249,7 +249,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"})
+     * @Route("/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"})
      * @Acl({"order.editor"})
      *
      * @throws RequiredParameterInvalidException
@@ -287,7 +287,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"})
+     * @Route("/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"})
      * @Acl({"order.editor"})
      *
      * @throws RequiredParameterInvalidException

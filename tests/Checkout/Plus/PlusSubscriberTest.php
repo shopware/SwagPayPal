@@ -21,7 +21,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\PlatformRequest;
 use Shopware\Core\SalesChannelRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -111,10 +110,7 @@ class PlusSubscriberTest extends TestCase
         $subscriber->onAccountEditOrderLoaded($event);
         $plusExtension = $this->assertPlusExtension($event);
 
-        static::assertSame(
-            \sprintf('/store-api/v%s/order/payment', PlatformRequest::API_VERSION),
-            $plusExtension->getSetPaymentRouteUrl()
-        );
+        static::assertSame('/store-api/order/payment', $plusExtension->getSetPaymentRouteUrl());
         static::assertSame(ConstantsForTesting::VALID_ORDER_ID, $plusExtension->getOrderId());
     }
 
@@ -180,7 +176,7 @@ class PlusSubscriberTest extends TestCase
         $subscriber = $this->createSubscriber();
         $event = $this->createConfirmEvent();
         $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
-        $event->getRequest()->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, true);
+        $event->getRequest()->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, 'true');
 
         $subscriber->onCheckoutConfirmLoaded($event);
 
@@ -275,7 +271,7 @@ class PlusSubscriberTest extends TestCase
         $subscriber = $this->createSubscriber();
         $event = $this->createFinishEvent();
         $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
-        $event->getRequest()->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, false);
+        $event->getRequest()->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, 'false');
 
         $subscriber->onCheckoutFinishLoaded($event);
 
@@ -422,10 +418,9 @@ class PlusSubscriberTest extends TestCase
             $withOtherDefaultPayment
         );
 
-        $page = new CheckoutConfirmPage(
-            $paymentCollection,
-            new ShippingMethodCollection([])
-        );
+        $page = new CheckoutConfirmPage();
+        $page->setPaymentMethods($paymentCollection);
+        $page->setShippingMethods(new ShippingMethodCollection([]));
 
         $page->setCart($this->createCart($this->paypalPaymentMethodId));
 
@@ -553,7 +548,7 @@ class PlusSubscriberTest extends TestCase
 
         $request = new Request();
         $request->attributes->add([SalesChannelRequest::ATTRIBUTE_DOMAIN_SNIPPET_SET_ID => $snippetSetId]);
-        $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, true);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, 'true');
 
         /** @var RequestStack $requestStack */
         $requestStack = $this->getContainer()->get('request_stack');
@@ -604,15 +599,9 @@ class PlusSubscriberTest extends TestCase
         static::assertSame($this->paypalPaymentMethodId, $plusExtension->getPaymentMethodId());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $plusExtension->getPaypalPaymentId());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_TOKEN, $plusExtension->getPaypalToken());
-        static::assertSame(
-            \sprintf('/store-api/v%s/checkout/order', PlatformRequest::API_VERSION),
-            $plusExtension->getCheckoutOrderUrl()
-        );
-        static::assertSame(
-            \sprintf('/store-api/v%s/handle-payment', PlatformRequest::API_VERSION),
-            $plusExtension->getHandlePaymentUrl()
-        );
-        static::assertSame(\sprintf('/store-api/v%s/context', PlatformRequest::API_VERSION), $plusExtension->getContextSwitchUrl());
+        static::assertSame('/store-api/checkout/order', $plusExtension->getCheckoutOrderUrl());
+        static::assertSame('/store-api/handle-payment', $plusExtension->getHandlePaymentUrl());
+        static::assertSame('/store-api/context', $plusExtension->getContextSwitchUrl());
         static::assertSame(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, $plusExtension->getIsEnabledParameterName());
         static::assertSame($event->getContext()->getLanguageId(), $plusExtension->getLanguageId());
 

@@ -28,7 +28,7 @@ class RouterMock implements RouterInterface
     {
     }
 
-    public function generate($name, $parameters = [], $referenceType = self::ABSOLUTE_PATH): string
+    public function generate(string $name, array $parameters = [], int $referenceType = self::ABSOLUTE_PATH): string
     {
         if ($parameters['sw-token'] === WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN) {
             return GuzzleClientMock::GET_WEBHOOK_URL;

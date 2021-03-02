@@ -155,6 +155,7 @@ class PayUponInvoiceSubscriberTest extends TestCase
         return new SalesChannelEntitySearchResultLoadedEvent(
             new PaymentMethodDefinition(),
             new EntitySearchResult(
+                PaymentMethodDefinition::ENTITY_NAME,
                 $collection->count(),
                 $collection,
                 null,

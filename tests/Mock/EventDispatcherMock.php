@@ -11,10 +11,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EventDispatcherMock implements EventDispatcherInterface
 {
-    /**
-     * @param object $event
-     */
-    public function dispatch($event): object
+    public function dispatch(object $event, ?string $eventName = null): object
     {
         return $event;
     }

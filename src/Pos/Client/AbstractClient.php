@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Pos\Client;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\Pos\Api\Exception\PosException;
@@ -15,7 +15,7 @@ use Swag\PayPal\Pos\Api\Exception\PosException;
 abstract class AbstractClient
 {
     /**
-     * @var Client
+     * @var ClientInterface
      */
     protected $client;
 
@@ -24,7 +24,7 @@ abstract class AbstractClient
      */
     protected $logger;
 
-    public function __construct(Client $client, LoggerInterface $logger)
+    public function __construct(ClientInterface $client, LoggerInterface $logger)
     {
         $this->client = $client;
         $this->logger = $logger;
@@ -33,7 +33,7 @@ abstract class AbstractClient
     protected function post(string $uri, array $options): ?array
     {
         try {
-            $response = $this->client->post($uri, $options)->getBody()->getContents();
+            $response = $this->client->request('post', $uri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
             throw $this->handleRequestException($requestException, $options);
         }
@@ -44,7 +44,7 @@ abstract class AbstractClient
     protected function get(string $uri, array $options = []): ?array
     {
         try {
-            $response = $this->client->get($uri, $options)->getBody()->getContents();
+            $response = $this->client->request('get', $uri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
             throw $this->handleRequestException($requestException, $options);
         }
@@ -55,7 +55,7 @@ abstract class AbstractClient
     protected function put(string $uri, array $options): ?array
     {
         try {
-            $response = $this->client->put($uri, $options)->getBody()->getContents();
+            $response = $this->client->request('put', $uri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
             throw $this->handleRequestException($requestException, $options);
         }
@@ -66,7 +66,7 @@ abstract class AbstractClient
     protected function delete(string $uri, array $options = []): ?array
     {
         try {
-            $response = $this->client->delete($uri, $options)->getBody()->getContents();
+            $response = $this->client->request('delete', $uri, $options)->getBody()->getContents();
         } catch (RequestException $requestException) {
             throw $this->handleRequestException($requestException, $options);
         }

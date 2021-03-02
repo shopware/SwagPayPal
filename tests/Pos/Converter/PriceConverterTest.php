@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Pos\Api\Service\Converter\PriceConverter;
 
@@ -33,7 +34,7 @@ class PriceConverterTest extends TestCase
         $shopwarePrice = new CalculatedPrice($floatValue, $floatValue, new CalculatedTaxCollection(), new TaxRuleCollection());
         $currency = new CurrencyEntity();
         $currency->setIsoCode($currencyCode);
-        $currency->setDecimalPrecision($decimalPrecision);
+        $currency->setItemRounding(new CashRoundingConfig($decimalPrecision, 3, true));
         $price = $this->createPriceConverter()->convert($shopwarePrice, $currency);
         static::assertSame($intValue, $price->getAmount());
         static::assertSame($currency->getIsoCode(), $price->getCurrencyId());
@@ -46,7 +47,7 @@ class PriceConverterTest extends TestCase
     {
         $currency = new CurrencyEntity();
         $currency->setIsoCode($currencyCode);
-        $currency->setDecimalPrecision($decimalPrecision);
+        $currency->setItemRounding(new CashRoundingConfig($decimalPrecision, 3, true));
         $price = $this->createPriceConverter()->convertFloat($floatValue, $currency);
         static::assertSame($intValue, $price->getAmount());
         static::assertSame($currency->getIsoCode(), $price->getCurrencyId());

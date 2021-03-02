@@ -13,7 +13,6 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Plus\PlusData;
@@ -164,10 +163,10 @@ class PlusDataService
             'paymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
             'paypalPaymentId' => $response->getId(),
             'paypalToken' => PaymentTokenExtractor::extract($response),
-            'checkoutOrderUrl' => $this->router->generate('store-api.checkout.cart.order', ['version' => PlatformRequest::API_VERSION]),
-            'handlePaymentUrl' => $this->router->generate('store-api.payment.handle', ['version' => PlatformRequest::API_VERSION]),
-            'setPaymentRouteUrl' => $this->router->generate('store-api.order.set-payment', ['version' => PlatformRequest::API_VERSION]),
-            'contextSwitchUrl' => $this->router->generate('store-api.switch-context', ['version' => PlatformRequest::API_VERSION]),
+            'checkoutOrderUrl' => $this->router->generate('store-api.checkout.cart.order'),
+            'handlePaymentUrl' => $this->router->generate('store-api.payment.handle'),
+            'setPaymentRouteUrl' => $this->router->generate('store-api.order.set-payment'),
+            'contextSwitchUrl' => $this->router->generate('store-api.switch-context'),
             'isEnabledParameterName' => PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID,
             'languageId' => $salesChannelContext->getContext()->getLanguageId(),
         ]);

@@ -116,9 +116,7 @@ class SyncManagerHandler extends AbstractMessageHandler
         $criteria->addAggregation(new SumAggregation('totalSize', 'size'));
 
         /** @var SumResult|null $queued */
-        $queued = $context->disableCache(function (Context $context) use ($criteria) {
-            return $this->messageQueueStatsRepository->aggregate($criteria, $context)->get('totalSize');
-        });
+        $queued = $this->messageQueueStatsRepository->aggregate($criteria, $context)->get('totalSize');
 
         if ($queued !== null && $queued->getSum() > 0) {
             $envelope = new Envelope($message, [

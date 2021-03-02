@@ -202,10 +202,9 @@ class SPBMarksSubscriberTest extends TestCase
         $salesChannelContext = $this->createSalesChannelContext();
         $paymentMethodCollection = $salesChannelContext->getSalesChannel()->getPaymentMethods();
         static::assertNotNull($paymentMethodCollection);
-        $confirmPage = new CheckoutConfirmPage(
-            $paymentMethodCollection,
-            new ShippingMethodCollection()
-        );
+        $confirmPage = new CheckoutConfirmPage();
+        $confirmPage->setPaymentMethods($paymentMethodCollection);
+        $confirmPage->setShippingMethods(new ShippingMethodCollection());
         $confirmPage->setCart(new Cart('test-cart', 'test-token'));
 
         return new CheckoutConfirmPageLoadedEvent($confirmPage, $salesChannelContext, new Request());

@@ -21,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\Framework\Event\NestedEventCollection;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 
@@ -88,7 +89,7 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function delete(array $data, Context $context): EntityWrittenContainerEvent
+    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
     {
     }
 
@@ -105,7 +106,7 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
         return $this->data;
     }
 
-    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
     {
     }
 
@@ -115,6 +116,7 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
         bool $withOrder = true
     ): EntitySearchResult {
         return new EntitySearchResult(
+            $this->getDefinition()->getEntityName(),
             ConstantsForTesting::REPO_SEARCH_RESULT_TOTAL_WITH_RESULTS,
             $this->createEntityCollection($withOrder),
             null,
@@ -146,6 +148,7 @@ class OrderTransactionRepoMock implements EntityRepositoryInterface
         Context $context
     ): EntitySearchResult {
         return new EntitySearchResult(
+            $this->getDefinition()->getEntityName(),
             ConstantsForTesting::REPO_SEARCH_RESULT_TOTAL_WITHOUT_RESULTS,
             new EntityCollection([]),
             null,

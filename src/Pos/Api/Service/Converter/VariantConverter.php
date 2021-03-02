@@ -83,7 +83,7 @@ class VariantConverter
             $price = $shopwareVariant->getCalculatedPrice();
             $variant->setPrice($this->priceConverter->convert($price, $currency));
 
-            $costPrice = $shopwareVariant->getPurchasePrice();
+            $costPrice = $this->getPurchasePrice($shopwareVariant, $currency);
             if ($costPrice !== null) {
                 $variant->setCostPrice(CostPrice::convertFromPrice($this->priceConverter->convertFloat($costPrice, $currency)));
             }
@@ -110,5 +110,20 @@ class VariantConverter
         }
 
         return $variant;
+    }
+
+    private function getPurchasePrice(SalesChannelProductEntity $shopwareVariant, CurrencyEntity $currency): ?float
+    {
+        $purchasePrices = $shopwareVariant->getPurchasePrices();
+        if ($purchasePrices === null) {
+            return null;
+        }
+
+        $purchasePrice = $purchasePrices->get($currency->getId());
+        if ($purchasePrice === null) {
+            return null;
+        }
+
+        return $purchasePrice->getGross();
     }
 }

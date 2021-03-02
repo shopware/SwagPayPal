@@ -69,7 +69,7 @@ Component.register('swag-paypal-pos-detail-synced-products', {
             }
 
             this.isLoading = true;
-            const params = this.getListingParams();
+            const params = this.getMainListingParams();
 
             return this.SwagPayPalPosApiService.getProductLog(
                 this.salesChannel.id,

@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 
 class PaymentMethodRepoMock implements EntityRepositoryInterface
@@ -48,7 +49,7 @@ class PaymentMethodRepoMock implements EntityRepositoryInterface
         return $this->getIdSearchResult(false, $criteria, $context);
     }
 
-    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
     {
     }
 
@@ -68,7 +69,7 @@ class PaymentMethodRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function delete(array $data, Context $context): EntityWrittenContainerEvent
+    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
     {
     }
 

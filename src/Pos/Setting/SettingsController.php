@@ -10,6 +10,7 @@ namespace Swag\PayPal\Pos\Setting;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Swag\PayPal\Pos\Exception\ExistingPosAccountException;
 use Swag\PayPal\Pos\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
@@ -69,7 +70,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route(
-     *     "/api/v{version}/_action/paypal/pos/validate-api-credentials",
+     *     "/api/_action/paypal/pos/validate-api-credentials",
      *     name="api.action.paypal.pos.validate.api.credentials",
      *     methods={"POST"}
      * )
@@ -78,6 +79,10 @@ class SettingsController extends AbstractController
     public function validateApiCredentials(Request $request, Context $context): JsonResponse
     {
         $apiKey = $request->request->get('apiKey');
+        if ($apiKey === null) {
+            throw new MissingRequestParameterException('apiKey');
+        }
+
         $salesChannelId = $request->request->getAlnum('salesChannelId');
 
         $credentialsValid = $this->apiCredentialService->testApiCredentials($apiKey);
@@ -93,7 +98,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route(
-     *     "/api/v{version}/paypal/pos/fetch-information",
+     *     "/api/paypal/pos/fetch-information",
      *     name="api.paypal.pos.fetch.information",
      *     methods={"POST"}
      * )
@@ -102,6 +107,9 @@ class SettingsController extends AbstractController
     public function fetchInformation(Request $request, Context $context): JsonResponse
     {
         $apiKey = $request->request->get('apiKey');
+        if ($apiKey === null) {
+            throw new MissingRequestParameterException('apiKey');
+        }
 
         $information = new AdditionalInformation();
         $this->informationFetchService->addInformation($information, $apiKey, $context);
@@ -112,7 +120,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route(
-     *     "/api/v{version}/_action/paypal/pos/clone-product-visibility",
+     *     "/api/_action/paypal/pos/clone-product-visibility",
      *     name="api.action.paypal.pos.clone.product.visibility",
      *     methods={"POST"}
      * )
@@ -130,7 +138,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route(
-     *     "/api/v{version}/paypal/pos/product-count",
+     *     "/api/paypal/pos/product-count",
      *     name="api.paypal.pos.product.count",
      *     methods={"GET"}
      * )

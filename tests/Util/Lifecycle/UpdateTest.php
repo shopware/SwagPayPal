@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -24,7 +25,12 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTyp
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
+use Swag\PayPal\Pos\Resource\SubscriptionResource;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
+use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
+use Swag\PayPal\Pos\Webhook\WebhookRegistry;
+use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV1;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
@@ -37,13 +43,19 @@ use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\RouterMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
+use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
+use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
+use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookService;
+use Symfony\Component\Routing\Router;
 
 class UpdateTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
     use ServicesTrait;
+    use SalesChannelTrait;
+    use PosSalesChannelTrait;
 
     private const CLIENT_ID = 'testClientId';
     private const CLIENT_SECRET = 'testClientSecret';
@@ -55,11 +67,19 @@ class UpdateTest extends TestCase
      */
     private $paymentMethodRepository;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $salesChannelRepository;
+
     protected function setUp(): void
     {
         /** @var EntityRepositoryInterface $paymentMethodRepository */
-        $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
+        $paymentMethodRepository = $this->getContainer()->get(\sprintf('%s.repository', PaymentMethodDefinition::ENTITY_NAME));
         $this->paymentMethodRepository = $paymentMethodRepository;
+        /** @var EntityRepositoryInterface $salesChannelRepository */
+        $salesChannelRepository = $this->getContainer()->get(\sprintf('%s.repository', SalesChannelDefinition::ENTITY_NAME));
+        $this->salesChannelRepository = $salesChannelRepository;
     }
 
     public function testUpdateTo130WithNoPreviousSettings(): void
@@ -265,6 +285,35 @@ class UpdateTest extends TestCase
         $updater->update($updateContext);
     }
 
+    public function testUpdateTo300(): void
+    {
+        $systemConfigService = $this->createSystemConfigServiceMock([
+            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox' => self::OTHER_CLIENT_ID,
+            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox' => self::OTHER_CLIENT_SECRET,
+            SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => true,
+            SettingsService::SYSTEM_CONFIG_DOMAIN . 'webhookId' => 'anyIdWillDo',
+        ]);
+
+        $updateContext = $this->createUpdateContext('2.2.2', '3.0.0');
+        $update = $this->createUpdateService(
+            $systemConfigService,
+            $this->createWebhookService($systemConfigService),
+            $this->createPosWebhookService($systemConfigService)
+        );
+
+        $salesChannel = $this->getSalesChannel($updateContext->getContext());
+        $this->salesChannelRepository->update([[
+            'id' => Defaults::SALES_CHANNEL,
+            'typeId' => SwagPayPal::SALES_CHANNEL_TYPE_POS,
+            SwagPayPal::SALES_CHANNEL_POS_EXTENSION => \array_filter($this->getPosSalesChannel($salesChannel)->jsonSerialize()),
+        ]], $updateContext->getContext());
+        $systemConfigService->set('core.basicInformation.email', 'some@one.com', $salesChannel->getId());
+
+        $update->update($updateContext);
+        static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'webhookId'));
+        static::assertTrue(WebhookUpdateFixture::$sent);
+    }
+
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext
     {
         /** @var MigrationCollectionLoader $migrationLoader */
@@ -280,12 +329,13 @@ class UpdateTest extends TestCase
         );
     }
 
-    private function createUpdateService(SystemConfigServiceMock $systemConfigService, ?WebhookService $webhookService = null): Update
-    {
+    private function createUpdateService(
+        SystemConfigServiceMock $systemConfigService,
+        ?WebhookService $webhookService = null,
+        ?PosWebhookService $posWebhookService = null
+    ): Update {
         /** @var EntityRepositoryInterface $customFieldRepository */
         $customFieldRepository = $this->getContainer()->get(CustomFieldDefinition::ENTITY_NAME . '.repository');
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->getContainer()->get(SalesChannelDefinition::ENTITY_NAME . '.repository');
         /** @var EntityRepositoryInterface $salesChannelTypeRepository */
         $salesChannelTypeRepository = $this->getContainer()->get(SalesChannelTypeDefinition::ENTITY_NAME . '.repository');
         /** @var InformationDefaultService|null $informationDefaultService */
@@ -298,10 +348,11 @@ class UpdateTest extends TestCase
             $this->paymentMethodRepository,
             $customFieldRepository,
             $webhookService,
-            $salesChannelRepository,
+            $this->salesChannelRepository,
             $salesChannelTypeRepository,
             $informationDefaultService,
-            $shippingRepository
+            $shippingRepository,
+            $posWebhookService
         );
     }
 
@@ -314,6 +365,22 @@ class UpdateTest extends TestCase
             $this->createWebhookRegistry(new OrderTransactionRepoMock()),
             $settingsService,
             new RouterMock()
+        );
+    }
+
+    private function createPosWebhookService(SystemConfigServiceMock $systemConfigService): PosWebhookService
+    {
+        $webhookRegistry = new WebhookRegistry(new \ArrayObject([]));
+        /** @var Router $router */
+        $router = $this->getContainer()->get('router');
+
+        return new PosWebhookService(
+            new SubscriptionResource(new PosClientFactoryMock()),
+            $webhookRegistry,
+            $this->salesChannelRepository,
+            $systemConfigService,
+            new UuidConverter(),
+            $router
         );
     }
 }

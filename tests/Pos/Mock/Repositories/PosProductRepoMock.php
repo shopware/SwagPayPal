@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductEntity;
@@ -57,9 +58,9 @@ class PosProductRepoMock extends AbstractRepoMock implements EntityRepositoryInt
         return $this->updateCollection($data, $context);
     }
 
-    public function delete(array $data, Context $context): EntityWrittenContainerEvent
+    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
     {
-        return $this->removeFromCollection($data, $context);
+        return $this->removeFromCollection($ids, $context);
     }
 
     public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
@@ -70,7 +71,7 @@ class PosProductRepoMock extends AbstractRepoMock implements EntityRepositoryInt
     {
     }
 
-    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
     {
     }
 

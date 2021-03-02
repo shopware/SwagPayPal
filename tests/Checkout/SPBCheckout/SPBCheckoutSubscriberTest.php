@@ -15,7 +15,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
-use Shopware\Core\PlatformRequest;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
@@ -312,10 +311,9 @@ class SPBCheckoutSubscriberTest extends TestCase
             $this->paypalPaymentMethodId
         );
 
-        $page = new CheckoutConfirmPage(
-            $paymentCollection,
-            new ShippingMethodCollection([])
-        );
+        $page = new CheckoutConfirmPage();
+        $page->setPaymentMethods($paymentCollection);
+        $page->setShippingMethods(new ShippingMethodCollection([]));
 
         $page->setCart($this->createCart($this->paypalPaymentMethodId));
 
@@ -364,10 +362,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame($this->paypalPaymentMethodId, $spbExtension->getPaymentMethodId());
         static::assertSame(\strtolower(PaymentIntentV2::CAPTURE), $spbExtension->getIntent());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
-        static::assertSame(
-            \sprintf('/store-api/v%s/paypal/spb/create-order', PlatformRequest::API_VERSION),
-            $spbExtension->getCreateOrderUrl()
-        );
+        static::assertSame('/store-api/paypal/spb/create-order', $spbExtension->getCreateOrderUrl());
         static::assertStringContainsString('/checkout/confirm', $spbExtension->getCheckoutConfirmUrl());
         static::assertStringContainsString('/paypal/add-error', $spbExtension->getAddErrorUrl());
 

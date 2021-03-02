@@ -187,6 +187,8 @@ class CompleteProductTest extends TestCase
         $salesChannel = $this->getSalesChannel($context);
         $tax = $this->getTax();
         $category = $this->getCategory();
+        $currency = $salesChannel->getCurrency();
+        static::assertNotNull($currency);
         $mediaA = $this->getMedia(self::MEDIA_A_ID, 'first.jpg');
         $mediaB = $this->getMedia(self::MEDIA_B_ID, 'second.jpg');
         $mediaC = $this->getMedia(Uuid::randomHex(), 'non_existing.jpg');
@@ -200,24 +202,24 @@ class CompleteProductTest extends TestCase
           * F - removed
           * G - manually added to Zettle
           */
-        $productA = $salesChannelProductRepository->createMockEntity($tax, $category, 'productA', ConstantsForTesting::PRODUCT_A_ID);
+        $productA = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productA', ConstantsForTesting::PRODUCT_A_ID);
         $productRepository->addMockEntity($productA);
-        $productB = $salesChannelProductRepository->createMockEntity($tax, $category, 'productB', ConstantsForTesting::PRODUCT_B_ID);
+        $productB = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productB', ConstantsForTesting::PRODUCT_B_ID);
         $productRepository->addMockEntity($productB);
-        $variantA = $salesChannelProductRepository->createMockEntity($tax, $category, 'productB_variantA', ConstantsForTesting::VARIANT_A_ID, ConstantsForTesting::PRODUCT_B_ID);
+        $variantA = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productB_variantA', ConstantsForTesting::VARIANT_A_ID, ConstantsForTesting::PRODUCT_B_ID);
         $productRepository->addMockEntity($variantA);
-        $variantB = $salesChannelProductRepository->createMockEntity($tax, $category, 'productB_variantB', ConstantsForTesting::VARIANT_B_ID, ConstantsForTesting::PRODUCT_B_ID);
+        $variantB = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productB_variantB', ConstantsForTesting::VARIANT_B_ID, ConstantsForTesting::PRODUCT_B_ID);
         $productRepository->addMockEntity($variantB);
         $productB->setChildCount(2);
-        $productC = $salesChannelProductRepository->createMockEntity($tax, $category, 'productC', ConstantsForTesting::PRODUCT_C_ID, null, $mediaB);
+        $productC = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productC', ConstantsForTesting::PRODUCT_C_ID, null, $mediaB);
         $productRepository->addMockEntity($productC);
-        $productD = $salesChannelProductRepository->createMockEntity($tax, $category, 'productD', ConstantsForTesting::PRODUCT_D_ID);
+        $productD = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productD', ConstantsForTesting::PRODUCT_D_ID);
         $productRepository->addMockEntity($productD);
-        $productE = $salesChannelProductRepository->createMockEntity($tax, $category, 'productE', ConstantsForTesting::PRODUCT_E_ID);
+        $productE = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productE', ConstantsForTesting::PRODUCT_E_ID);
         $productRepository->addMockEntity($productE);
-        $variantC = $salesChannelProductRepository->createMockEntity($tax, $category, 'productE_variantC', ConstantsForTesting::VARIANT_C_ID, ConstantsForTesting::PRODUCT_E_ID, $mediaA);
+        $variantC = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productE_variantC', ConstantsForTesting::VARIANT_C_ID, ConstantsForTesting::PRODUCT_E_ID, $mediaA);
         $productRepository->addMockEntity($variantC);
-        $variantD = $salesChannelProductRepository->createMockEntity($tax, $category, 'productE_variantD', ConstantsForTesting::VARIANT_D_ID, ConstantsForTesting::PRODUCT_E_ID, $mediaA);
+        $variantD = $salesChannelProductRepository->createMockEntity($tax, $category, $currency, 'productE_variantD', ConstantsForTesting::VARIANT_D_ID, ConstantsForTesting::PRODUCT_E_ID, $mediaA);
         $productRepository->addMockEntity($variantD);
         $productE->setChildCount(2);
         static::assertCount(9, $productRepository->getCollection());
@@ -225,7 +227,7 @@ class CompleteProductTest extends TestCase
         // create current checksum for unchanged product A
         $convertedGroupingA = $productConverter->convertShopwareProducts(
             new ProductCollection([$productA]),
-            $salesChannel->getCurrency(),
+            $currency,
             new ProductContext($salesChannel, new PosSalesChannelProductCollection([]), new PosSalesChannelMediaCollection([]), $context)
         )->first();
         static::assertNotNull($convertedGroupingA);

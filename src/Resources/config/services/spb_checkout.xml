@@ -19,12 +19,6 @@
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutController" public="true">
-            <deprecated>tag:v3.0.0 - The "%service_id%" is deprecated will be removed with 3.0.0. Use SPBCreateOrderRoute instead.</deprecated>
-            <argument type="service" id="Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
-        </service>
-
         <service id="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService"/>

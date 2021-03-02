@@ -19,6 +19,8 @@ use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price as ShopwarePrice;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -93,17 +95,26 @@ class VariantConverterTest extends TestCase
 
     public function testConvertMaximal(): void
     {
+        $currency = $this->getCurrency();
+
         $productEntity = $this->createProductEntity();
         $productEntity->setParentId(Uuid::randomHex());
         $productEntity->addTranslated('name', self::PRODUCT_NAME . self::TRANSLATION_MARK);
         $productEntity->addTranslated('description', self::PRODUCT_DESCRIPTION . self::TRANSLATION_MARK);
         $productEntity->setEan(self::PRODUCT_EAN);
         $productEntity->setOptions($this->createOptions());
-        $productEntity->setPurchasePrice(self::PRODUCT_PURCHASE_PRICE);
+        $productEntity->setPurchasePrices(new PriceCollection([
+            $currency->getId() => new ShopwarePrice(
+                $currency->getId(),
+                self::PRODUCT_PURCHASE_PRICE,
+                self::PRODUCT_PURCHASE_PRICE,
+                false
+            ),
+        ]));
 
         $converted = $this->createVariantConverter()->convert(
             $productEntity,
-            $this->getCurrency(),
+            $currency,
             $this->createMock(ProductContext::class)
         );
 

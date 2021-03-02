@@ -8,12 +8,11 @@
 namespace Swag\PayPal\Test\RestApi;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour;
 use Swag\PayPal\Test\RestApi\_fixtures\TestStruct;
 
 class PayPalApiStructTest extends TestCase
 {
-    use AssertArraySubsetBehaviour;
+    use AssertArraySubsetTrait;
 
     public function testAssign(): void
     {
@@ -37,7 +36,7 @@ class PayPalApiStructTest extends TestCase
 
         $testArray = \json_decode($testJsonString, true);
 
-        $this->silentAssertArraySubset($data, $testArray);
+        static::assertArraySubset($data, $testArray);
     }
 
     public function testAssignWithNoGetter(): void

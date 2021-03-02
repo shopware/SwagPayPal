@@ -56,7 +56,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 
     /**
      * @OA\Post(
-     *     path="/store-api/v{version}/paypal/express/create-order",
+     *     path="/store-api/paypal/express/create-order",
      *     description="Creates a PayPal order from the existing cart",
      *     operationId="createPayPalExpressOrder",
      *     tags={"Store API", "PayPal"},
@@ -67,7 +67,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
      * )
      *
      * @Route(
-     *     "/store-api/v{version}/paypal/express/create-order",
+     *     "/store-api/paypal/express/create-order",
      *      name="store-api.paypal.express.create_order",
      *      methods={"POST"}
      * )

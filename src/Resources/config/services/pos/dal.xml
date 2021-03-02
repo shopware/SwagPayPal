@@ -17,6 +17,10 @@
             <tag name="shopware.entity.extension"/>
         </service>
 
+        <service id="Swag\PayPal\Pos\DataAbstractionLayer\Extension\ProductStreamExtension">
+            <tag name="shopware.entity.extension"/>
+        </service>
+
         <service id="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryDefinition">
             <tag name="shopware.entity.definition" entity="swag_paypal_pos_sales_channel_inventory"/>
         </service>

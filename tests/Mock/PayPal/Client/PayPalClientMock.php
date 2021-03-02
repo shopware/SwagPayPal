@@ -14,22 +14,21 @@ use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 
 class PayPalClientMock extends PayPalClient
 {
-    /**
-     * @var GuzzleClientMock
-     */
-    protected $client;
-
     public function __construct(
         TokenResource $tokenResource,
         SwagPayPalSettingStruct $settings,
         LoggerInterface $logger
     ) {
         parent::__construct($tokenResource, $settings, $logger);
-        $this->client = new GuzzleClientMock();
+        $this->client = new GuzzleClientMock([]);
     }
 
     public function getData(): array
     {
+        if (!$this->client instanceof GuzzleClientMock) {
+            return [];
+        }
+
         return $this->client->getData();
     }
 }

@@ -114,7 +114,6 @@ class PaymentMethodUtilTest extends TestCase
             $defaultContext->getLanguageIdChain(),
             PaymentMethodRepoMock::VERSION_ID_WITHOUT_PAYMENT_METHOD,
             $defaultContext->getCurrencyFactor(),
-            $defaultContext->getCurrencyPrecision(),
             $defaultContext->considerInheritance(),
             $defaultContext->getTaxState()
         );

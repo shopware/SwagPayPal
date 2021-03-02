@@ -15,7 +15,6 @@ use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
-use Shopware\Core\Migration\Migration1602494495SetUsersAsAdmins;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Plus\PlusPaymentFinalizeController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -85,13 +84,8 @@ class PlusPaymentFinalizeControllerTest extends TestCase
         $request = new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]);
         $controller = $this->createController();
 
-        if ($this->isAtLeastShopware6330()) {
-            $this->orderTransactionStateHandler->expects(static::once())->method('cancel');
-            $expectedTargetUrl = '/account/order/edit/testOrderId?error-code=CHECKOUT__CUSTOMER_CANCELED_EXTERNAL_PAYMENT';
-        } else {
-            $this->orderTransactionStateHandler->expects(static::once())->method('fail');
-            $expectedTargetUrl = '/checkout/finish?orderId=testOrderId&isPayPalPlusCheckout=1&changedPayment=0&paymentFailed=1';
-        }
+        $this->orderTransactionStateHandler->expects(static::once())->method('cancel');
+        $expectedTargetUrl = '/account/order/edit/testOrderId?error-code=CHECKOUT__CUSTOMER_CANCELED_EXTERNAL_PAYMENT';
 
         $targetUrl = $controller->finalizeTransaction($request, $salesChannelContext)->getTargetUrl();
         static::assertStringContainsString($expectedTargetUrl, $targetUrl);
@@ -104,11 +98,7 @@ class PlusPaymentFinalizeControllerTest extends TestCase
         $controller = $this->createController();
 
         $this->orderTransactionStateHandler->expects(static::once())->method('fail');
-        if ($this->isAtLeastShopware6330()) {
-            $expectedTargetUrl = '/account/order/edit/testOrderId?error-code=CHECKOUT__ASYNC_PAYMENT_FINALIZE_INTERRUPTED';
-        } else {
-            $expectedTargetUrl = '/checkout/finish?orderId=testOrderId&isPayPalPlusCheckout=1&changedPayment=0&paymentFailed=1';
-        }
+        $expectedTargetUrl = '/account/order/edit/testOrderId?error-code=CHECKOUT__ASYNC_PAYMENT_FINALIZE_INTERRUPTED';
 
         $targetUrl = $controller->finalizeTransaction($request, $salesChannelContext)->getTargetUrl();
         static::assertStringContainsString($expectedTargetUrl, $targetUrl);
@@ -128,10 +118,5 @@ class PlusPaymentFinalizeControllerTest extends TestCase
             $router,
             new NullLogger()
         );
-    }
-
-    private function isAtLeastShopware6330(): bool
-    {
-        return \class_exists(Migration1602494495SetUsersAsAdmins::class);
     }
 }

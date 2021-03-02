@@ -112,6 +112,7 @@ abstract class AbstractRepoMock
     protected function searchCollection(EntityCollection $entityCollection, Criteria $criteria, Context $context): EntitySearchResult
     {
         return new EntitySearchResult(
+            $this->getDefinition()->getEntityName(),
             \count($entityCollection),
             $entityCollection,
             null,

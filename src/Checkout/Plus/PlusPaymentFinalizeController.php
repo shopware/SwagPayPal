@@ -22,7 +22,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\Migration\Migration1602494495SetUsersAsAdmins;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\SwagPayPal;
@@ -138,20 +137,11 @@ class PlusPaymentFinalizeController extends AbstractController
         try {
             $this->paymentHandler->finalize($paymentTransactionStruct, $request, $salesChannelContext);
         } catch (PaymentProcessException $paymentProcessException) {
-            if ($this->isAtLeastShopware6330()) {
-                $finishUrl = $this->redirectToConfirmPageWorkflow(
-                    $paymentProcessException,
-                    $context,
-                    $orderId
-                );
-            } else {
-                $finishUrl = $this->redirectToFinishPageWorkflow(
-                    $paymentProcessException,
-                    $context,
-                    $orderId,
-                    $changedPayment
-                );
-            }
+            $finishUrl = $this->redirectToConfirmPageWorkflow(
+                $paymentProcessException,
+                $context,
+                $orderId
+            );
         }
 
         return new RedirectResponse($finishUrl);
@@ -186,29 +176,5 @@ class PlusPaymentFinalizeController extends AbstractController
         $urlQuery = \parse_url($errorUrl, PHP_URL_QUERY) ? '&' : '?';
 
         return \sprintf('%s%serror-code=%s', $errorUrl, $urlQuery, $paymentProcessException->getErrorCode());
-    }
-
-    private function redirectToFinishPageWorkflow(
-        PaymentProcessException $paymentProcessException,
-        Context $context,
-        string $orderId,
-        bool $changedPayment
-    ): string {
-        $this->transactionStateHandler->fail(
-            $paymentProcessException->getOrderTransactionId(),
-            $context
-        );
-
-        return $this->router->generate('frontend.checkout.finish.page', [
-            'orderId' => $orderId,
-            PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID => true,
-            'changedPayment' => $changedPayment,
-            'paymentFailed' => true,
-        ]);
-    }
-
-    private function isAtLeastShopware6330(): bool
-    {
-        return \class_exists(Migration1602494495SetUsersAsAdmins::class);
     }
 }

@@ -122,7 +122,7 @@ class PayPalOrdersController extends AbstractController
      *     )
      * )
      * @Route(
-     *     "/api/v{version}/paypal-v2/order/{orderTransactionId}/{paypalOrderId}",
+     *     "/api/paypal-v2/order/{orderTransactionId}/{paypalOrderId}",
      *      name="api.paypal_v2.order_details",
      *      methods={"GET"}
      * )
@@ -167,7 +167,7 @@ class PayPalOrdersController extends AbstractController
      *     )
      * )
      * @Route(
-     *     "/api/v{version}/paypal-v2/authorization/{orderTransactionId}/{authorizationId}",
+     *     "/api/paypal-v2/authorization/{orderTransactionId}/{authorizationId}",
      *      name="api.paypal_v2.authorization_details",
      *      methods={"GET"}
      * )
@@ -212,7 +212,7 @@ class PayPalOrdersController extends AbstractController
      *     )
      * )
      * @Route(
-     *     "/api/v{version}/paypal-v2/capture/{orderTransactionId}/{captureId}",
+     *     "/api/paypal-v2/capture/{orderTransactionId}/{captureId}",
      *      name="api.paypal_v2.capture_details",
      *      methods={"GET"}
      * )
@@ -257,7 +257,7 @@ class PayPalOrdersController extends AbstractController
      *     )
      * )
      * @Route(
-     *     "/api/v{version}/paypal-v2/refund/{orderTransactionId}/{refundId}",
+     *     "/api/paypal-v2/refund/{orderTransactionId}/{refundId}",
      *      name="api.paypal_v2.refund_details",
      *      methods={"GET"}
      * )
@@ -319,7 +319,7 @@ class PayPalOrdersController extends AbstractController
      *     )
      * )
      * @Route(
-     *     "/api/v{version}/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}",
+     *     "/api/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}",
      *     name="api.action.paypal_v2.refund_capture",
      *     methods={"POST"}
      * )
@@ -389,7 +389,7 @@ class PayPalOrdersController extends AbstractController
      *     )
      * )
      * @Route(
-     *     "/api/v{version}/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}",
+     *     "/api/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}",
      *     name="api.action.paypal_v2.capture_authorization",
      *     methods={"POST"}
      * )
@@ -449,7 +449,7 @@ class PayPalOrdersController extends AbstractController
      *     )
      * )
      * @Route(
-     *     "/api/v{version}/_action/paypal-v2/void-authorization/{orderTransactionId}/{authorizationId}",
+     *     "/api/_action/paypal-v2/void-authorization/{orderTransactionId}/{authorizationId}",
      *     name="api.action.paypal_v2.void_authorization",
      *     methods={"POST"}
      * )

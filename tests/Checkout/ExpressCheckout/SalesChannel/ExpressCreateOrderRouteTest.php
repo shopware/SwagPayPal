@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -24,6 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
 class ExpressCreateOrderRouteTest extends TestCase
 {
     use CheckoutRouteTrait;
+    use IntegrationTestBehaviour;
 
     public function testCreatePayment(): void
     {
