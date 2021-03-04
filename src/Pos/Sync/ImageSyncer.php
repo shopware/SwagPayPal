@@ -88,7 +88,7 @@ class ImageSyncer
                 $bulkUpload->addImageUpload($upload);
             } catch (InvalidMediaTypeException $invalidMediaTypeException) {
                 $this->logger->warning(
-                    'Media Type {mimeType} is not supported by iZettle. Skipping image {fileName}.',
+                    'Media Type {mimeType} is not supported by Zettle. Skipping image {fileName}.',
                     [
                         'mimeType' => $entity->getMedia()->getMimeType(),
                         'fileName' => $entity->getMedia()->getFileName() . '.' . $entity->getMedia()->getFileExtension(),
@@ -118,7 +118,7 @@ class ImageSyncer
         }
 
         foreach ($response->getInvalid() as $invalid) {
-            $this->logger->warning('Upload was not accepted by iZettle (is the URL publicly available?): {invalid}', [
+            $this->logger->warning('Upload was not accepted by Zettle (is the URL publicly available?): {invalid}', [
                 'invalid' => $invalid,
             ]);
         }
@@ -179,8 +179,8 @@ class ImageSyncer
         }
 
         if ($posMedia === null) {
-            $this->logger->warning('Could not match uploaded image to local media: {iZettleUrl}', [
-                'iZettleUrl' => \current($uploaded->getImageUrls()),
+            $this->logger->warning('Could not match uploaded image to local media: {posUrl}', [
+                'posUrl' => \current($uploaded->getImageUrls()),
             ]);
 
             return null;

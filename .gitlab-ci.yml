@@ -52,6 +52,7 @@ Check built JS files:
                 echo "Everything ok"
                 exit 0;
             fi
+    allow_failure: true
 
 Static analyze:
     stage: Static analysis

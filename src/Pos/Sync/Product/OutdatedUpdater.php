@@ -48,7 +48,7 @@ class OutdatedUpdater
                 } catch (PosApiException $posApiException) {
                     if ($posApiException->getApiError()->getErrorType() === PosApiError::ERROR_TYPE_ENTITY_NOT_FOUND) {
                         $productContext->removeProduct($shopwareProduct);
-                        $this->logger->notice('The product was marked as synced, but could not be found at iZettle. It will be recreated with the next sync.', ['product' => $shopwareProduct]);
+                        $this->logger->notice('The product was marked as synced, but could not be found at Zettle. It will be recreated with the next sync.', ['product' => $shopwareProduct]);
                     } else {
                         $this->logger->error('Product update error: ' . $posApiException, ['product' => $shopwareProduct]);
                     }

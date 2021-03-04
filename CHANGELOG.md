@@ -1,5 +1,6 @@
-# NEXT_VERSION
+# 2.2.4
 - NEXT-15014 - Improve ACL handling
+- PPI-239 - Rebranding von iZettle auf Zettle
 
 # 2.2.3
 - PPI-256 - Fix canceling of finalized orders by using the browser history

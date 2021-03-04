@@ -1,13 +1,13 @@
 {
     "swag-paypal-pos": {
         "general": {
-            "moduleTitle": "iZettle",
+            "moduleTitle": "Zettle by PayPal",
             "salesChannelDetailDescription": {
-                "title": "Grow your business with Shopware and iZettle",
-                "manufacturer": "iZettle by PayPal"
+                "title": "Grow your business with Shopware and Zettle by PayPal",
+                "manufacturer": "Zettle by PayPal"
             }
         },
-        "header": "iZettle Sales Channel",
+        "header": "Zettle Sales Channel",
         "tabTitle": {
             "overview": "Overview",
             "syncedProducts": "Synchronised Products",
@@ -17,7 +17,7 @@
         },
         "detail": {
             "disclaimer": {
-                "headline": "iZettle is a PayPal service",
+                "headline": "Zettle is a PayPal service",
                 "subheadline": "Help increase sales through the power of PayPal. Get started for free.",
                 "linkTarget": "https://www.paypal.com/en/webapps/mpp/merchant",
                 "linkText": "Activate PayPal for your shop"
@@ -54,8 +54,8 @@
                     "cardTitle": "Setup",
                     "content": {
                         "headline": "Setup product synchronisation",
-                        "firstLine": "Your iZettle and Shopware accounts are now connected! You may now setup product synchronisation.",
-                        "secondLine": "Once activated, iZettle will automatically be kept in sync with your Shopware products. Sales made through iZettle are also synchronised with Shopware and you can use the Administration to keep yourself up to date on iZettle and Shopware sales as well."
+                        "firstLine": "Your Zettle and Shopware accounts are now connected! You may now setup product synchronisation.",
+                        "secondLine": "Once activated, Zettle will automatically be kept in sync with your Shopware products. Sales made through Zettle are also synchronised with Shopware and you can use the Administration to keep yourself up to date on Zettle and Shopware sales as well."
                     }
                 }
             },
@@ -78,21 +78,21 @@
             "settings": {
                 "titleGeneralSettings": "General settings",
                 "domain": "Your Shop-Domain",
-                "domainHelpText": "iZettle will use this domain to download media associated with your synchronised products. iZettle will only accept secure URLs (https).",
+                "domainHelpText": "Zettle will use this domain to download media associated with your synchronised products. Zettle will only accept secure URLs (https).",
                 "productStream": "Dynamic product group",
                 "titleCredentials": "Credentials",
                 "titleSync": "Synchronisation",
                 "titlePrices": "Prices",
                 "syncPrices": "Synchronise prices",
-                "replace": "Replace existing products in iZettle",
-                "activeHelpText": "If active, the iZettle synchronisation will happen automatically in the background.",
-                "saveAlert": "Saved changes are available after the currently running synchronisation between Shopware and iZettle ended.",
+                "replace": "Replace existing products in Zettle",
+                "activeHelpText": "If active, the Zettle synchronisation will happen automatically in the background.",
+                "saveAlert": "Saved changes are available after the currently running synchronisation between Shopware and Zettle ended.",
                 "optionsTitle": "Options",
                 "reset": {
                     "buttonTitle": "Reset synchronisation",
                     "descriptionText": "If you are experiencing issues, you may re-upload all products and images.",
                     "modalConfirmText": "This will reset the synchronisation history for the Sales Channel",
-                    "modalTextInfo": "All items will be re-uploaded on the next synchronisation. This may take a while. You will not lose any data in Shopware, some data may be overwritten at iZettle.",
+                    "modalTextInfo": "All items will be re-uploaded on the next synchronisation. This may take a while. You will not lose any data in Shopware, some data may be overwritten at Zettle.",
                     "modalTitle": "Resetting synchronisation history",
                     "modalButtonConfirm": "Reset synchronisation"
                 }
@@ -135,7 +135,7 @@
             "cleanLog": "Clean up log"
         },
         "wizard": {
-            "salesChannelPrototypeName": "iZettle POS",
+            "salesChannelPrototypeName": "Zettle POS",
             "stepItemTitle": {
                 "connection": "Account setup",
                 "connectionSuccess": "Connection",
@@ -147,25 +147,25 @@
             },
             "connection": {
                 "modalTitle": "Account setup",
-                "headerConnect": "Connect your iZettle account",
-                "headerNewCustomer": "New to iZettle?",
-                "buttonCreateAccount": "Create iZettle account",
-                "buttonCreateAccountLink": "https://www.izettle.com/gb/integrations/e-commerce/shopware?utm_source=local_partnership&utm_medium=ecommerce&utm_campaign=shopware"
+                "headerConnect": "Connect your Zettle account",
+                "headerNewCustomer": "New to Zettle?",
+                "buttonCreateAccount": "Create Zettle account",
+                "buttonCreateAccountLink": "https://www.zettle.com/gb/integrations/e-commerce/shopware?utm_source=local_partnership&utm_medium=ecommerce&utm_campaign=shopware"
             },
             "connectionSuccess": {
                 "modalTitle": "Connection established",
-                "headline": "Your iZettle and Shopware accounts are now connected!",
+                "headline": "Your Zettle and Shopware accounts are now connected!",
                 "info": "Follow the next steps to finish setting up product synchronisation.",
                 "disconnectButton": "Disconnect",
-                "disclaimer": "Any changes you make to your Shopware products will now automatically be updated in your connected iZettle account.",
+                "disclaimer": "Any changes you make to your Shopware products will now automatically be updated in your connected Zettle account.",
                 "fakeFirstName": "Currently",
                 "fakeLastName": "loading...",
                 "fakeMail": "pos@example.com"
             },
             "connectionDisconnect": {
-                "modalTitle": "Disconnect iZettle account",
-                "headline": "You are about to disconnect iZettle",
-                "info": "Products will no longer be updated and synchronised with your shown iZettle account when disconnecting your account.",
+                "modalTitle": "Disconnect Zettle account",
+                "headline": "You are about to disconnect Zettle",
+                "info": "Products will no longer be updated and synchronised with your shown Zettle account when disconnecting your account.",
                 "disconnectButton": "Disconnect account",
                 "disconnectErrorMessage": "An error occured while disconnecting."
             },
@@ -173,51 +173,51 @@
                 "salesChannelLabel": "Name of Sales Channel",
                 "modalTitle": "Sales Channel details",
                 "labelDomain": "Your Shop-Domain",
-                "subtitle": "iZettle will use this domain to download media associated with your synchronised products.",
+                "subtitle": "Zettle will use this domain to download media associated with your synchronised products.",
                 "placeholderDomain": "www.my-store.shopware.com"
             },
             "productSelection": {
                 "modalTitle": "Transfer products from existing Sales Channel",
                 "labelSelect": "Sales Channel",
                 "labelToggle": "Transfer product selection",
-                "info": "To get started quicker you now have the option to assign products from an existing Sales Channel to your newly created one. All assigned products will then be available for synchronisation in iZettle POS. No manual work needed."
+                "info": "To get started quicker you now have the option to assign products from an existing Sales Channel to your newly created one. All assigned products will then be available for synchronisation in Zettle POS. No manual work needed."
             },
             "syncLibrary": {
                 "modalTitle": "Setup product synchronisation",
-                "header": "We found {shopwareProducts} and {iZettleProducts}",
+                "header": "We found {shopwareProducts} and {posProducts}",
                 "shopwareProducts": "no Shopware products | one Shopware product | {n} Shopware products",
-                "iZettleProducts": "no iZettle products | one iZettle product | {n} iZettle products",
-                "description": "All products are synchronised from your newly created Sales Channel in Shopware. How would you like to setup your iZettle library?",
+                "posProducts": "no Zettle products | one Zettle product | {n} Zettle products",
+                "description": "All products are synchronised from your newly created Sales Channel in Shopware. How would you like to setup your Zettle library?",
                 "optionReplacePermanentlyLabel": "Use only Shopware products",
-                "optionReplacePermanentlyDescription": "Only your Shopware products and stock quantities will exist in your iZettle library.",
-                "optionReplaceOneTimeLabel": "Replace iZettle library",
-                "optionReplaceOneTimeDescription": "Replace your existing iZettle library with products and stock quantities from Shopware once.",
+                "optionReplacePermanentlyDescription": "Only your Shopware products and stock quantities will exist in your Zettle library.",
+                "optionReplaceOneTimeLabel": "Replace Zettle library",
+                "optionReplaceOneTimeDescription": "Replace your existing Zettle library with products and stock quantities from Shopware once.",
                 "optionReplaceNotLabel": "Add Shopware products",
-                "optionReplaceNotDescription": "Your Shopware products and stock quantities will be added to your existing iZettle library.",
+                "optionReplaceNotDescription": "Your Shopware products and stock quantities will be added to your existing Zettle library.",
                 "disclaimer": "You can change these settings later at any time."
             },
             "syncPrices": {
                 "modalTitle": "Setup product synchronisation",
-                "header": "How would you like to synchronise product prices with iZettle?",
-                "description": "Your products’ prices will include VAT when synchronised to iZettle.",
-                "disclaimer": "You can edit your VAT manually in the iZettle product library.",
+                "header": "How would you like to synchronise product prices with Zettle?",
+                "description": "Your products’ prices will include VAT when synchronised to Zettle.",
+                "disclaimer": "You can edit your VAT manually in the Zettle product library.",
                 "optionTrueLabel": "Synchronise prices with VAT",
-                "optionTrueDescription": "Prices synchronised to iZettle will include VAT.",
+                "optionTrueDescription": "Prices synchronised to Zettle will include VAT.",
                 "optionFalseLabel": "Don't synchronise prices",
-                "optionFalseDescription": "Product prices will not be transferred on synchronisation. You can set them in your iZettle product library."
+                "optionFalseDescription": "Product prices will not be transferred on synchronisation. You can set them in your Zettle product library."
             },
             "finish": {
                 "modalTitle": "Finish",
                 "header": "Product synchronisation setup completed!",
-                "firstParagraph": "Your iZettle account is now linked to your Sales Channel and your products will be transferred to iZettle. In the future, when you make a sale, we will update your stock in iZettle and Shopware.",
-                "secondParagraph": "If you need to update your products, we recommend you do this in Shopware and they'll synchronise to your iZettle app automatically."
+                "firstParagraph": "Your Zettle account is now linked to your Sales Channel and your products will be transferred to Zettle. In the future, when you make a sale, we will update your stock in Zettle and Shopware.",
+                "secondParagraph": "If you need to update your products, we recommend you do this in Shopware and they'll synchronise to your Zettle app automatically."
             }
         },
         "authentication": {
             "messageTestError": "The credentials could not be validated.",
             "labelApiKey": "API key",
             "placeholderApiKey": "Enter API key...",
-            "apiKeyDescription": "API keys function like passwords. Shopware will use your iZettle API key to establish a secure connection to your iZettle account.",
+            "apiKeyDescription": "API keys function like passwords. Shopware will use your Zettle API key to establish a secure connection to your Zettle account.",
             "buttonGenerateKey": "Generate API key"
         },
         "account": {
@@ -232,18 +232,18 @@
             "lastUpdated": "Last updated"
         },
         "gettingStarted": {
-            "cardTitle": "Get started with iZettle",
-            "readerHeadline": "Login to iZettle to order your iZettle card reader",
+            "cardTitle": "Get started with Zettle by PayPal",
+            "readerHeadline": "Login to Zettle to order your Zettle card reader",
             "readerText": "Learn more about the card reader and order one right here:",
-            "readerLinkTarget": "https://shop.izettle.com",
-            "readerLinkText": "shop.izettle.com",
-            "readerImageAlt": "iZettle card reader",
-            "appHeadline": "Download the iZettle Go app",
-            "appText": "Available for iOS and Android tablets and phones.<br>Connect your iZettle account and your card reader to start making sales.",
-            "appImageAlt": "iZettle app"
+            "readerLinkTarget": "https://shop.zettle.com",
+            "readerLinkText": "shop.zettle.com",
+            "readerImageAlt": "Zettle card reader",
+            "appHeadline": "Download the Zettle Go app",
+            "appText": "Available for iOS and Android tablets and phones.<br>Connect your Zettle account and your card reader to start making sales.",
+            "appImageAlt": "Zettle app"
         },
         "messageCloneError": "Could not transfer product visibility from another Sales Channel.",
-        "messageWebhookRegisterError": "The webhook could not be registered at iZettle"
+        "messageWebhookRegisterError": "The webhook could not be registered at Zettle"
     },
     "swag-image-slider": {
         "imageAlt": "Image {index} / {total}"

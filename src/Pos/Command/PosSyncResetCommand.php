@@ -36,7 +36,7 @@ class PosSyncResetCommand extends AbstractPosCommand
     protected function configure(): void
     {
         parent::configure();
-        $this->setDescription('Reset iZettle sync');
+        $this->setDescription('Reset Zettle sync');
     }
 
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void
