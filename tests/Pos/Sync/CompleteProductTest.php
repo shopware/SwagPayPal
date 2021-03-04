@@ -198,7 +198,7 @@ class CompleteProductTest extends TestCase
           * D - updated (simple)
           * E - updated (with variants C, D), with uploaded media
           * F - removed
-          * G - manually added to iZettle
+          * G - manually added to Zettle
           */
         $productA = $salesChannelProductRepository->createMockEntity($tax, $category, 'productA', ConstantsForTesting::PRODUCT_A_ID);
         $productRepository->addMockEntity($productA);

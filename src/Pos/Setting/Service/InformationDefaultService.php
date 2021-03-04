@@ -133,15 +133,15 @@ class InformationDefaultService
             'handlerIdentifier' => PosPayment::class,
             'active' => false,
             'position' => 999,
-            'name' => 'iZettle',
+            'name' => 'Zettle by PayPal',
             'pluginId' => $pluginId,
-            'description' => 'Payment via iZettle. Do not activate or use.',
+            'description' => 'Payment via Zettle by PayPal. Do not activate or use.',
             'translations' => [
                 'de-DE' => [
-                    'description' => 'Bezahlung per iZettle. Nicht aktivieren oder nutzen.',
+                    'description' => 'Bezahlung per Zettle by PayPal. Nicht aktivieren oder nutzen.',
                 ],
                 'en-GB' => [
-                    'description' => 'Payment via iZettle. Do not activate or use.',
+                    'description' => 'Payment via Zettle by PayPal. Do not activate or use.',
                 ],
             ],
         ]], $context);
@@ -158,19 +158,19 @@ class InformationDefaultService
             return $firstId;
         }
 
-        $this->shippingMethodRepository->create([[
+        $this->shippingMethodRepository->upsert([[
             'id' => self::POS_SHIPPING_METHOD_ID,
             'active' => false,
             'availabilityRuleId' => $this->getAvailabilityRuleId($context),
             'deliveryTimeId' => $this->getDeliveryTimeId($context),
-            'name' => 'iZettle',
-            'description' => 'Shipping via iZettle. Do not activate or use.',
+            'name' => 'Zettle by PayPal',
+            'description' => 'Shipping via Zettle by PayPal. Do not activate or use.',
             'translations' => [
                 'de-DE' => [
-                    'description' => 'Versand per iZettle. Nicht aktivieren oder nutzen.',
+                    'description' => 'Versand per Zettle by PayPal. Nicht aktivieren oder nutzen.',
                 ],
                 'en-GB' => [
-                    'description' => 'Shipping via iZettle. Do not activate or use.',
+                    'description' => 'Shipping via Zettle by PayPal. Do not activate or use.',
                 ],
             ],
         ]], $context);
@@ -192,10 +192,10 @@ class InformationDefaultService
         $criteria->addFilter(new EqualsFilter('min', 0));
         $criteria->addFilter(new EqualsFilter('max', 0));
         $criteria->addFilter(new EqualsFilter('unit', DeliveryTimeEntity::DELIVERY_TIME_DAY));
-        $firstId = $this->deliveryTimeRepository->searchIds($criteria, $context)->firstId();
+        $first = $this->deliveryTimeRepository->search($criteria, $context)->first();
 
-        if ($firstId !== null) {
-            return $firstId;
+        if ($first !== null) {
+            return $first->getId();
         }
 
         $this->deliveryTimeRepository->create([[
@@ -213,8 +213,6 @@ class InformationDefaultService
             ],
         ]], $context);
 
-        $firstId = $this->deliveryTimeRepository->searchIds($criteria, $context)->firstId();
-
-        return $firstId;
+        return $this->deliveryTimeRepository->searchIds($criteria, $context)->firstId();
     }
 }

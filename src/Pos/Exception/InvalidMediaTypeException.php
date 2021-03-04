@@ -14,7 +14,7 @@ class InvalidMediaTypeException extends ShopwareHttpException
     public function __construct(string $mimeType)
     {
         parent::__construct(
-            'The media with the MIME type "{{ mimeType }}" is not accepted by iZettle.',
+            'The media with the MIME type "{{ mimeType }}" is not accepted by Zettle.',
             ['mimeType' => $mimeType]
         );
     }

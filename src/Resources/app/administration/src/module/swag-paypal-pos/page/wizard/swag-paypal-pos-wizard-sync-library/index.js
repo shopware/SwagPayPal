@@ -28,7 +28,7 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
     data() {
         return {
             shopwareProductsCount: 0,
-            iZettleProductsCount: 0
+            posProductsCount: 0
         };
     },
 
@@ -119,7 +119,7 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
                 this.cloneSalesChannelId
             ).then((response) => {
                 this.shopwareProductsCount = response.localCount;
-                this.iZettleProductsCount = response.remoteCount;
+                this.posProductsCount = response.remoteCount;
             }).finally(() => {
                 this.toggleLoadingState(false);
             });

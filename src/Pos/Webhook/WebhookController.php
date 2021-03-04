@@ -143,7 +143,7 @@ class WebhookController extends AbstractController
     {
         $postData = $request->request->all();
 
-        $this->logger->debug('[iZettle Webhook] Received webhook', ['payload' => $postData]);
+        $this->logger->debug('[Zettle Webhook] Received webhook', ['payload' => $postData]);
 
         if (empty($postData)) {
             throw new BadRequestHttpException('No webhook data sent');
@@ -164,7 +164,7 @@ class WebhookController extends AbstractController
             $this->webhookService->executeWebhook($webhook, $salesChannel, $context);
         } catch (WebhookException $webhookException) {
             $this->logger->error(
-                '[iZettle Webhook] ' . $webhookException->getMessage(),
+                '[Zettle Webhook] ' . $webhookException->getMessage(),
                 [
                     'type' => $webhookException->getEventName(),
                     'webhook' => \json_encode($webhook),
@@ -173,7 +173,7 @@ class WebhookController extends AbstractController
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         } catch (\Throwable $e) {
-            $this->logger->error('[iZettle Webhook] ' . $e->getMessage());
+            $this->logger->error('[Zettle Webhook] ' . $e->getMessage());
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         }

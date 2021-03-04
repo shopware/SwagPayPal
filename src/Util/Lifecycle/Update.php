@@ -15,6 +15,8 @@ use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
+use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV1;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext as ApplicationContextV2;
@@ -51,18 +53,39 @@ class Update
      */
     private $salesChannelRepository;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $salesChannelTypeRepository;
+
+    /**
+     * @var InformationDefaultService|null
+     */
+    private $informationDefaultService;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $shippingRepository;
+
     public function __construct(
         SystemConfigService $systemConfig,
         EntityRepositoryInterface $paymentRepository,
         EntityRepositoryInterface $customFieldRepository,
         ?WebhookServiceInterface $webhookService,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepositoryInterface $salesChannelTypeRepository,
+        ?InformationDefaultService $informationDefaultService,
+        EntityRepositoryInterface $shippingRepository
     ) {
         $this->systemConfig = $systemConfig;
         $this->customFieldRepository = $customFieldRepository;
         $this->webhookService = $webhookService;
         $this->paymentRepository = $paymentRepository;
         $this->salesChannelRepository = $salesChannelRepository;
+        $this->salesChannelTypeRepository = $salesChannelTypeRepository;
+        $this->informationDefaultService = $informationDefaultService;
+        $this->shippingRepository = $shippingRepository;
     }
 
     public function update(UpdateContext $updateContext): void
@@ -85,6 +108,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '2.0.0', '<')) {
             $this->updateTo200($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '2.2.3', '<')) {
+            $this->updateTo223($updateContext->getContext());
         }
     }
 
@@ -149,6 +176,63 @@ class Update
         $this->changePaymentHandlerIdentifier($context);
         $this->migrateIntentSetting($context);
         $this->migrateLandingPageSetting($context);
+    }
+
+    private function updateTo223(Context $context): void
+    {
+        if ($this->informationDefaultService === null) {
+            // Plugin is not activated, no entities created
+            return;
+        }
+
+        $this->salesChannelTypeRepository->upsert([
+            [
+                'id' => SwagPayPal::SALES_CHANNEL_TYPE_POS,
+                'name' => 'Point of Sale – Zettle by PayPal',
+                'descriptionLong' => 'Zettle’s point-of-sale system allows you to accept cash, card or contactless payments. Connect Shopware to Zettle to keep products, stocks and sales in sync – all in one place.',
+                'translations' => [
+                    'en-GB' => [
+                        'name' => 'Point of Sale – Zettle by PayPal',
+                        'descriptionLong' => 'Zettle’s point-of-sale system allows you to accept cash, card or contactless payments. Connect Shopware to Zettle to keep products, stocks and sales in sync – all in one place.',
+                    ],
+                    'de-DE' => [
+                        'name' => 'Point of Sale – Zettle by PayPal',
+                        'descriptionLong' => 'Mit Zettles Point-of-Sale-Lösung kannst Du Zahlungen in bar, mit Karte oder kontaktlos entgegennehmen. Verbinde Shopware mit Zettle, um Produkte, Lagerbestände und Verkäufe synchron zu halten - Alles an einem Ort.',
+                    ],
+                ],
+            ],
+        ], $context);
+
+        $this->informationDefaultService->addInformation(new AdditionalInformation(), $context);
+
+        $this->paymentRepository->upsert([[
+            'id' => InformationDefaultService::POS_PAYMENT_METHOD_ID,
+            'name' => 'Zettle by PayPal',
+            'description' => 'Payment via Zettle by PayPal. Do not activate or use.',
+            'translations' => [
+                'de-DE' => [
+                    'description' => 'Bezahlung per Zettle by PayPal. Nicht aktivieren oder nutzen.',
+                ],
+                'en-GB' => [
+                    'description' => 'Payment via Zettle by PayPal. Do not activate or use.',
+                ],
+            ],
+        ]], $context);
+
+        $this->shippingRepository->upsert([[
+            'id' => InformationDefaultService::POS_SHIPPING_METHOD_ID,
+            'active' => false,
+            'name' => 'Zettle by PayPal',
+            'description' => 'Shipping via Zettle by PayPal. Do not activate or use.',
+            'translations' => [
+                'de-DE' => [
+                    'description' => 'Versand per Zettle by PayPal. Nicht aktivieren oder nutzen.',
+                ],
+                'en-GB' => [
+                    'description' => 'Shipping via Zettle by PayPal. Do not activate or use.',
+                ],
+            ],
+        ]], $context);
     }
 
     private function changePaymentHandlerIdentifier(Context $context): void

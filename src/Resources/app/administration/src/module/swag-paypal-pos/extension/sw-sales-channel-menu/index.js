@@ -7,15 +7,15 @@ Component.override('sw-sales-channel-menu', {
         createMenuTree() {
             this.$super('createMenuTree');
 
-            const iZettleIds = [];
+            const posIds = [];
             this.salesChannels.forEach((salesChannel) => {
                 if (salesChannel.typeId === PAYPAL_POS_SALES_CHANNEL_TYPE_ID) {
-                    iZettleIds.push(salesChannel.id);
+                    posIds.push(salesChannel.id);
                 }
             });
 
             this.menuItems.forEach((menuItem) => {
-                if (iZettleIds.includes(menuItem.id)) {
+                if (posIds.includes(menuItem.id)) {
                     menuItem.path = 'swag.paypal.pos.detail';
                 }
             });
