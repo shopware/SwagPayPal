@@ -38,8 +38,8 @@
                                 <sw-avatar
                                         class="swag-paypal-pos-wizard-connection-success__user-avatar"
                                         size="40px"
-                                        :firstName="iZettleUser.firstName"
-                                        :lastName="iZettleUser.lastName">
+                                        :firstName="posUser.firstName"
+                                        :lastName="posUser.lastName">
                                 </sw-avatar>
                             {% endblock %}
 
@@ -48,10 +48,10 @@
 
                                     {% block swag_paypal_pos_wizard_connection_success_user_information_real %}
                                         <div class="swag-paypal-pos-wizard-connection-success__user-info-name">
-                                            {{ iZettleUser.fullName }}
+                                            {{ posUser.fullName }}
                                         </div>
                                         <div class="swag-paypal-pos-wizard-connection-success__user-info-mail">
-                                            {{ iZettleUser.mail }}
+                                            {{ posUser.mail }}
                                         </div>
                                     {% endblock %}
                                 </div>

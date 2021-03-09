@@ -12,7 +12,7 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 final class Token extends PosStruct
 {
     /**
-     * The access token issued by iZettle. After the access token
+     * The access token issued by Zettle. After the access token
      * expires (see $expiresIn), you must request a new access token.
      *
      * @var string

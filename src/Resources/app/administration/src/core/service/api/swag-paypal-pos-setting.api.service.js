@@ -23,7 +23,7 @@ class SwagPayPalPosSettingApiService extends ApiService {
     }
 
     /**
-     * Fetch necessary information for the sales channel from iZettle (e.g. currency)
+     * Fetch necessary information for the sales channel from Zettle (e.g. currency)
      * and insert into salesChannel Object
      *
      * @param {Object} salesChannel
@@ -86,7 +86,7 @@ class SwagPayPalPosSettingApiService extends ApiService {
     }
 
     /**
-     * Get product count from iZettle and cloned Sales Channel
+     * Get product count from Zettle and cloned Sales Channel
      *
      * @param {String} salesChannelId
      * @param {String|null} cloneSalesChannelId

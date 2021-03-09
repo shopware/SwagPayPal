@@ -36,7 +36,7 @@ class PosLogCleanupCommand extends AbstractPosCommand
     protected function configure(): void
     {
         parent::configure();
-        $this->setDescription('Cleanup iZettle sync log');
+        $this->setDescription('Cleanup Zettle sync log');
     }
 
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void

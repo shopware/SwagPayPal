@@ -32,13 +32,13 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
 
     data() {
         return {
-            iZettleData: null,
+            posData: null,
             isFetchingInformation: true
         };
     },
 
     computed: {
-        iZettleUser() {
+        posUser() {
             if (this.isFetchingInformation) {
                 const firstName = this.$tc('swag-paypal-pos.wizard.connectionSuccess.fakeFirstName');
                 const lastName = this.$tc('swag-paypal-pos.wizard.connectionSuccess.fakeLastName');
@@ -51,13 +51,13 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
                     mail
                 };
             }
-            const parts = this.iZettleData.merchantInformation.name.split(' ');
+            const parts = this.posData.merchantInformation.name.split(' ');
 
             return {
                 firstName: parts[0],
                 lastName: parts[parts.length - 1],
-                fullName: this.iZettleData.merchantInformation.name,
-                mail: this.iZettleData.merchantInformation.contactEmail
+                fullName: this.posData.merchantInformation.name,
+                mail: this.posData.merchantInformation.contactEmail
             };
         }
     },
@@ -73,7 +73,7 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
             this.setTitle();
 
             return this.SwagPayPalPosSettingApiService.fetchInformation(this.salesChannel, true).then((response) => {
-                this.iZettleData = response;
+                this.posData = response;
 
                 if (this.salesChannel.languageId === null) {
                     this.salesChannel.languageId = Context.api.systemLanguageId;

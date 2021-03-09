@@ -74,7 +74,7 @@ abstract class AbstractPosCommand extends Command
         $salesChannels = $this->getSalesChannels($input, $context);
 
         if ($salesChannels->count() === 0) {
-            $output->writeln('No active iZettle sales channel found.');
+            $output->writeln('No active Zettle sales channel found.');
 
             return 1;
         }

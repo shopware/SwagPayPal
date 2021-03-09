@@ -20,9 +20,11 @@ use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV1;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
@@ -284,13 +286,22 @@ class UpdateTest extends TestCase
         $customFieldRepository = $this->getContainer()->get(CustomFieldDefinition::ENTITY_NAME . '.repository');
         /** @var EntityRepositoryInterface $salesChannelRepository */
         $salesChannelRepository = $this->getContainer()->get(SalesChannelDefinition::ENTITY_NAME . '.repository');
+        /** @var EntityRepositoryInterface $salesChannelTypeRepository */
+        $salesChannelTypeRepository = $this->getContainer()->get(SalesChannelTypeDefinition::ENTITY_NAME . '.repository');
+        /** @var InformationDefaultService|null $informationDefaultService */
+        $informationDefaultService = $this->getContainer()->get(InformationDefaultService::class);
+        /** @var EntityRepositoryInterface $shippingRepository */
+        $shippingRepository = $this->getContainer()->get('shipping_method.repository');
 
         return new Update(
             $systemConfigService,
             $this->paymentMethodRepository,
             $customFieldRepository,
             $webhookService,
-            $salesChannelRepository
+            $salesChannelRepository,
+            $salesChannelTypeRepository,
+            $informationDefaultService,
+            $shippingRepository
         );
     }
 

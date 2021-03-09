@@ -18,6 +18,7 @@ use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Swag\PayPal\Util\Lifecycle\Update;
@@ -161,13 +162,22 @@ class SwagPayPal extends Plugin
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         /** @var EntityRepositoryInterface $salesChannelRepository */
         $salesChannelRepository = $this->container->get('sales_channel.repository');
+        /** @var EntityRepositoryInterface $salesChannelTypeRepository */
+        $salesChannelTypeRepository = $this->container->get('sales_channel_type.repository');
+        /** @var InformationDefaultService|null $informationDefaultService */
+        $informationDefaultService = $this->container->get(InformationDefaultService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        /** @var EntityRepositoryInterface $shippingRepository */
+        $shippingRepository = $this->container->get('shipping_method.repository');
 
         (new Update(
             $systemConfigService,
             $paymentRepository,
             $customFieldRepository,
             $webhookService,
-            $salesChannelRepository
+            $salesChannelRepository,
+            $salesChannelTypeRepository,
+            $informationDefaultService,
+            $shippingRepository
         ))->update($updateContext);
 
         $this->addCustomPrivileges();

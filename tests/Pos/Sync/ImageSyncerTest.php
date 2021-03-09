@@ -203,18 +203,18 @@ class ImageSyncerTest extends TestCase
         );
         $logger->expects(static::exactly(3))->method('warning')->withConsecutive(
             [
-                'Media Type {mimeType} is not supported by iZettle. Skipping image {fileName}.',
+                'Media Type {mimeType} is not supported by Zettle. Skipping image {fileName}.',
                 [
                     'mimeType' => self::INVALID_MIME_TYPE,
                     'fileName' => self::LOCAL_FILE_NAME . '.' . self::LOCAL_FILE_EXTENSION,
                 ],
             ],
             [
-                'Could not match uploaded image to local media: {iZettleUrl}',
-                ['iZettleUrl' => self::POS_IMAGE_URL_INVALID],
+                'Could not match uploaded image to local media: {posUrl}',
+                ['posUrl' => self::POS_IMAGE_URL_INVALID],
             ],
             [
-                'Upload was not accepted by iZettle (is the URL publicly available?): {invalid}',
+                'Upload was not accepted by Zettle (is the URL publicly available?): {invalid}',
                 ['invalid' => self::DOMAIN_URL . self::MEDIA_URL_INVALID_ENCODED],
             ]
         );
