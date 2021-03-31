@@ -10,7 +10,6 @@ namespace Swag\PayPal\Pos\Webhook;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Pos\Api\Error\PosApiError;
@@ -176,7 +175,7 @@ class WebhookService
 
         return $this->router->generate(
             'api.action.paypal.pos.webhook.execute',
-            ['salesChannelId' => $salesChannelId, 'version' => PlatformRequest::API_VERSION],
+            ['salesChannelId' => $salesChannelId],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
     }

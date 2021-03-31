@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Checkout\SPBCheckout\Service;
 
-use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -64,7 +63,7 @@ class SPBCheckoutDataService
             'buttonColor' => $settings->getSpbButtonColor(),
             'paymentMethodId' => $paymentMethodId,
             'useAlternativePaymentMethods' => $settings->getSpbAlternativePaymentMethodsEnabled(),
-            'createOrderUrl' => $this->router->generate('store-api.paypal.spb.create_order', ['version' => PlatformRequest::API_VERSION]),
+            'createOrderUrl' => $this->router->generate('store-api.paypal.spb.create_order'),
             'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
             'addErrorUrl' => $this->router->generate('payment.paypal.add_error'),
         ]);

@@ -82,7 +82,7 @@ Component.register('swag-paypal-pos-detail-runs', {
             criteria.getAssociation('logs').limit = 1;
             criteria.getAssociation('logs').addSorting(Criteria.sort('level', 'DESC'));
 
-            const params = this.getListingParams();
+            const params = this.getMainListingParams();
             criteria.addSorting(Criteria.sort(params.sortBy, params.sortDirection, params.naturalSorting));
             criteria.addSorting(Criteria.sort('finishedAt', 'DESC'));
 

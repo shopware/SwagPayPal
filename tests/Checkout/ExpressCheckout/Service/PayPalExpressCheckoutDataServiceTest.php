@@ -19,12 +19,10 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\Tax\TaxDefinition;
-use Shopware\Storefront\Controller\StoreApiProxyController;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
@@ -195,29 +193,11 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame('EUR', $expressCheckoutButtonData->getCurrency());
         static::assertSame(\strtolower(PaymentIntentV2::CAPTURE), $expressCheckoutButtonData->getIntent());
         static::assertFalse($expressCheckoutButtonData->getAddProductToCart());
-        static::assertSame(
-            \sprintf('/store-api/v%s/paypal/express/create-order', PlatformRequest::API_VERSION),
-            $expressCheckoutButtonData->getCreateOrderUrl()
-        );
-        static::assertSame(
-            \sprintf('/store-api/v%s/checkout/cart', PlatformRequest::API_VERSION),
-            $expressCheckoutButtonData->getDeleteCartUrl()
-        );
-        static::assertSame(
-            \sprintf('/store-api/v%s/paypal/express/prepare-checkout', PlatformRequest::API_VERSION),
-            $expressCheckoutButtonData->getPrepareCheckoutUrl()
-        );
+        static::assertSame('/store-api/paypal/express/create-order', $expressCheckoutButtonData->getCreateOrderUrl());
+        static::assertSame('/store-api/checkout/cart', $expressCheckoutButtonData->getDeleteCartUrl());
+        static::assertSame('/store-api/paypal/express/prepare-checkout', $expressCheckoutButtonData->getPrepareCheckoutUrl());
         static::assertStringContainsString('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());
-        if (\class_exists(StoreApiProxyController::class)) {
-            static::assertTrue($expressCheckoutButtonData->getUseStoreApi());
-        } else {
-            static::assertFalse($expressCheckoutButtonData->getUseStoreApi());
-        }
-        static::assertStringContainsString('/paypal/approve-payment', $expressCheckoutButtonData->getApprovePaymentUrl());
-        static::assertStringContainsString(
-            \sprintf('/store-api/v%s/context', PlatformRequest::API_VERSION),
-            $expressCheckoutButtonData->getContextSwitchUrl()
-        );
+        static::assertStringContainsString('/store-api/context', $expressCheckoutButtonData->getContextSwitchUrl());
         static::assertNotNull($expressCheckoutButtonData->getPayPaLPaymentMethodId());
         static::assertSame(
             $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),

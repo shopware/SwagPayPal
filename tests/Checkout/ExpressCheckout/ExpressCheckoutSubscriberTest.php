@@ -18,7 +18,6 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -36,6 +35,7 @@ use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Shopware\Storefront\Page\Search\SearchPageLoadedEvent;
+use Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoader;
@@ -52,7 +52,6 @@ use Symfony\Component\Routing\RouterInterface;
 
 class ExpressCheckoutSubscriberTest extends TestCase
 {
-    use DatabaseTransactionBehaviour;
     use ServicesTrait;
 
     public function testGetSubscribedEvents(): void
@@ -69,8 +68,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
             CmsPageLoadedEvent::class => 'addExpressCheckoutDataToCmsPage',
 
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
-            // TODO: PPI-65: class constant can be used instead of string
-            'Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent' => 'addExpressCheckoutDataToPagelet',
+            GuestWishlistPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
 
             'framework.validation.address.create' => 'disableAddressValidation',
             'framework.validation.customer.create' => 'disableCustomerValidation',

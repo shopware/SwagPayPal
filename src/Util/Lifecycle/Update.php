@@ -15,8 +15,12 @@ use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;
+use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
+use Swag\PayPal\Pos\Webhook\Exception\WebhookNotRegisteredException;
+use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV1;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext as ApplicationContextV2;
@@ -24,10 +28,14 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
+use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 class Update
 {
+    use PosSalesChannelTrait;
+
     /**
      * @var SystemConfigService
      */
@@ -68,6 +76,11 @@ class Update
      */
     private $shippingRepository;
 
+    /**
+     * @var PosWebhookService|null
+     */
+    private $posWebhookService;
+
     public function __construct(
         SystemConfigService $systemConfig,
         EntityRepositoryInterface $paymentRepository,
@@ -76,7 +89,8 @@ class Update
         EntityRepositoryInterface $salesChannelRepository,
         EntityRepositoryInterface $salesChannelTypeRepository,
         ?InformationDefaultService $informationDefaultService,
-        EntityRepositoryInterface $shippingRepository
+        EntityRepositoryInterface $shippingRepository,
+        ?PosWebhookService $posWebhookService
     ) {
         $this->systemConfig = $systemConfig;
         $this->customFieldRepository = $customFieldRepository;
@@ -86,6 +100,7 @@ class Update
         $this->salesChannelTypeRepository = $salesChannelTypeRepository;
         $this->informationDefaultService = $informationDefaultService;
         $this->shippingRepository = $shippingRepository;
+        $this->posWebhookService = $posWebhookService;
     }
 
     public function update(UpdateContext $updateContext): void
@@ -110,8 +125,8 @@ class Update
             $this->updateTo200($updateContext->getContext());
         }
 
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '2.2.3', '<')) {
-            $this->updateTo223($updateContext->getContext());
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '3.0.0', '<')) {
+            $this->updateTo300($updateContext->getContext());
         }
     }
 
@@ -178,7 +193,7 @@ class Update
         $this->migrateLandingPageSetting($context);
     }
 
-    private function updateTo223(Context $context): void
+    private function updateTo300(Context $context): void
     {
         if ($this->informationDefaultService === null) {
             // Plugin is not activated, no entities created
@@ -233,6 +248,48 @@ class Update
                 ],
             ],
         ]], $context);
+
+        if ($this->webhookService === null || $this->posWebhookService === null) {
+            // If the WebhookService is `null`, the plugin is deactivated.
+            return;
+        }
+
+        $salesChannelIds = $this->salesChannelRepository->searchIds(new Criteria(), $context)->getIds();
+        $salesChannelIds[] = null;
+
+        try {
+            foreach ($salesChannelIds as $salesChannelId) {
+                if (!\is_string($salesChannelId) && $salesChannelId !== null) {
+                    continue;
+                }
+
+                if (!$this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_ID_KEY, $salesChannelId)) {
+                    continue;
+                }
+
+                $this->webhookService->deregisterWebhook($salesChannelId);
+                $this->webhookService->registerWebhook($salesChannelId);
+            }
+        } catch (PayPalSettingsInvalidException | WebhookIdInvalidException $exception) {
+            // do nothing, if the plugin is not correctly configured
+        }
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
+        $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
+        $posSalesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();
+
+        try {
+            foreach ($posSalesChannels as $salesChannel) {
+                if (!$this->getPosSalesChannel($salesChannel)->getWebhookSigningKey()) {
+                    continue;
+                }
+
+                $this->posWebhookService->registerWebhook($salesChannel->getId(), $context);
+            }
+        } catch (PosApiException | WebhookNotRegisteredException $exception) {
+            // do nothing, if the Sales Channel is not correctly configured
+        }
     }
 
     private function changePaymentHandlerIdentifier(Context $context): void

@@ -56,7 +56,6 @@ class LocaleCodeProviderTest extends TestCase
             ],
             $defaultContext->getVersionId(),
             $defaultContext->getCurrencyFactor(),
-            $defaultContext->getCurrencyPrecision(),
             $defaultContext->considerInheritance(),
             $defaultContext->getTaxState()
         );

@@ -19,6 +19,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 
@@ -60,6 +61,7 @@ class OrderRepositoryMock implements EntityRepositoryInterface
         }
 
         return new EntitySearchResult(
+            $this->getDefinition()->getEntityName(),
             \count($orderCollection),
             $orderCollection,
             null,
@@ -80,7 +82,7 @@ class OrderRepositoryMock implements EntityRepositoryInterface
     {
     }
 
-    public function delete(array $data, Context $context): EntityWrittenContainerEvent
+    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
     {
     }
 
@@ -92,7 +94,7 @@ class OrderRepositoryMock implements EntityRepositoryInterface
     {
     }
 
-    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
     {
     }
 

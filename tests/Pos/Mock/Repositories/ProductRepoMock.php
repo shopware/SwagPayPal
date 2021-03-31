@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 class ProductRepoMock extends AbstractRepoMock implements EntityRepositoryInterface
@@ -55,9 +56,9 @@ class ProductRepoMock extends AbstractRepoMock implements EntityRepositoryInterf
         return $this->updateCollection($data, $context);
     }
 
-    public function delete(array $data, Context $context): EntityWrittenContainerEvent
+    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
     {
-        return $this->removeFromCollection($data, $context);
+        return $this->removeFromCollection($ids, $context);
     }
 
     public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
@@ -68,7 +69,7 @@ class ProductRepoMock extends AbstractRepoMock implements EntityRepositoryInterf
     {
     }
 
-    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
     {
     }
 

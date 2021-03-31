@@ -7,8 +7,10 @@
 
 namespace Swag\PayPal\Pos\DataAbstractionLayer\Entity;
 
+use Shopware\Core\Content\ProductStream\ProductStreamEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityIdTrait;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 
 class PosSalesChannelEntity extends Entity
@@ -31,9 +33,19 @@ class PosSalesChannelEntity extends Entity
     protected $salesChannelId;
 
     /**
+     * @var SalesChannelEntity|null
+     */
+    protected $salesChannel;
+
+    /**
      * @var string|null
      */
     protected $productStreamId;
+
+    /**
+     * @var ProductStreamEntity|null
+     */
+    protected $productStream;
 
     /**
      * @var string
@@ -70,6 +82,16 @@ class PosSalesChannelEntity extends Entity
         $this->salesChannelId = $salesChannelId;
     }
 
+    public function getSalesChannel(): ?SalesChannelEntity
+    {
+        return $this->salesChannel;
+    }
+
+    public function setSalesChannel(?SalesChannelEntity $salesChannel): void
+    {
+        $this->salesChannel = $salesChannel;
+    }
+
     public function getProductStreamId(): ?string
     {
         return $this->productStreamId;
@@ -78,6 +100,16 @@ class PosSalesChannelEntity extends Entity
     public function setProductStreamId(?string $productStreamId): void
     {
         $this->productStreamId = $productStreamId;
+    }
+
+    public function getProductStream(): ?ProductStreamEntity
+    {
+        return $this->productStream;
+    }
+
+    public function setProductStream(?ProductStreamEntity $productStream): void
+    {
+        $this->productStream = $productStream;
     }
 
     public function getApiKey(): string

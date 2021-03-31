@@ -78,15 +78,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         disabledAlternativePaymentMethods: [],
 
         /**
-         * URL to create a new PayPal payment
-         *
-         * @deprecated tag:v3.0.0 - will be removed. Use createOrderUrl instead
-         *
-         * @type string
-         */
-        createPaymentUrl: '',
-
-        /**
          * URL to create a new PayPal order
          *
          * @type string

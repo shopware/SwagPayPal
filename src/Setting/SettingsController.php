@@ -9,6 +9,7 @@ namespace Swag\PayPal\Setting;
 
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Swag\PayPal\Setting\Service\ApiCredentialServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,13 +33,21 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/validate-api-credentials", name="api.action.paypal.validate.api.credentials", methods={"GET"})
+     * @Route("/api/_action/paypal/validate-api-credentials", name="api.action.paypal.validate.api.credentials", methods={"GET"})
      * @Acl({"swag_paypal.viewer"})
      */
     public function validateApiCredentials(Request $request): JsonResponse
     {
         $clientId = $request->query->get('clientId');
+        if ($clientId === null) {
+            throw new MissingRequestParameterException('clientId');
+        }
+
         $clientSecret = $request->query->get('clientSecret');
+        if ($clientSecret === null) {
+            throw new MissingRequestParameterException('clientSecret');
+        }
+
         $sandboxActive = $request->query->getBoolean('sandboxActive');
 
         $credentialsValid = $this->apiCredentialService->testApiCredentials($clientId, $clientSecret, $sandboxActive);
@@ -47,7 +56,7 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/paypal/get-api-credentials", name="api.action.paypal.get.api.credentials", methods={"POST"})
+     * @Route("/api/_action/paypal/get-api-credentials", name="api.action.paypal.get.api.credentials", methods={"POST"})
      * @Acl({"swag_paypal.editor"})
      */
     public function getApiCredentials(RequestDataBag $requestDataBag): JsonResponse

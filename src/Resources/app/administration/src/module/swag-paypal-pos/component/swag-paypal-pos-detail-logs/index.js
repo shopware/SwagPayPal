@@ -66,7 +66,7 @@ Component.register('swag-paypal-pos-detail-logs', {
 
     methods: {
         getListCriteria() {
-            const params = this.getListingParams();
+            const params = this.getMainListingParams();
             const criteria = new Criteria(this.page, this.limit);
             criteria.addFilter(Criteria.equals('runId', this.runId));
             criteria.addAssociation('run');

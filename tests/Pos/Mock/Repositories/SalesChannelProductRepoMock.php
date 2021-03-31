@@ -21,6 +21,8 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price as ShopwarePrice;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\Bucket;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\TermsResult;
@@ -33,7 +35,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Tax\TaxEntity;
@@ -176,9 +180,9 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
         return $this->updateCollection($data, $context);
     }
 
-    public function delete(array $data, Context $context): EntityWrittenContainerEvent
+    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
     {
-        return $this->removeFromCollection($data, $context);
+        return $this->removeFromCollection($ids, $context);
     }
 
     public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
@@ -189,13 +193,14 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
     {
     }
 
-    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
     {
     }
 
     public function createMockEntity(
         TaxEntity $tax,
         CategoryEntity $category,
+        CurrencyEntity $currency,
         string $name,
         string $id,
         ?string $parentId = null,
@@ -211,7 +216,14 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
         $entity->setProductNumber(ConstantsForTesting::PRODUCT_NUMBER);
         $shopwarePrice = new CalculatedPrice(ConstantsForTesting::PRODUCT_PRICE, ConstantsForTesting::PRODUCT_PRICE, new CalculatedTaxCollection(), new TaxRuleCollection());
         $entity->setCalculatedPrice($shopwarePrice);
-        $entity->setPurchasePrice(ConstantsForTesting::PRODUCT_PRICE * 2);
+        $entity->setPurchasePrices(new PriceCollection([
+            $currency->getId() => new ShopwarePrice(
+                $currency->getId(),
+                ConstantsForTesting::PRODUCT_PRICE * 2,
+                ConstantsForTesting::PRODUCT_PRICE * 2,
+                false
+            ),
+        ]));
         if ($mediaEntity) {
             $productMedia = new ProductMediaEntity();
             $productMedia->setId(Uuid::randomHex());

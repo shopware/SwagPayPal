@@ -9,7 +9,6 @@ namespace Swag\PayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Util\Random;
-use Shopware\Core\PlatformRequest;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\CreateWebhooks;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
@@ -79,7 +78,7 @@ class WebhookService implements WebhookServiceInterface
         $this->router->getContext()->setScheme('https');
         $webhookUrl = $this->router->generate(
             'api.action.paypal.webhook.execute',
-            [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken, 'version' => PlatformRequest::API_VERSION],
+            [self::PAYPAL_WEBHOOK_TOKEN_NAME => $webhookExecuteToken],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 

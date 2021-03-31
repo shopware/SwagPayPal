@@ -3,23 +3,24 @@ variables:
     DOCKER_HOST: 'tcp://docker:2375'
     MYSQL_ROOT_PASSWORD: app
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
-    DEVELOPMENT_BRANCH: 'master'
-    PLATFORM_BRANCH: 'master'
-    CMS_EXTENSION_BRANCH: '1.6-sw6.3.0.0'
-    RUN_IN_MR: 'true'
-    USE_DEPRECATED_PSALM_CONFIG: 'false'
+    DEV_IMAGE: shopware/development:7.4-composer-2
+    CORE_BRANCH: "trunk"
+    CMS_EXTENSION_BRANCH: "master"
+    RUN_IN_MR: "true"
+    MYSQL_IMAGE: mysql:5.7
+    MYSQL_CMD: mysqld
 
 stages:
     - Static analysis
     - Testing
 
 default:
-    image: shopware/development:latest
+    image: $DEV_IMAGE
     before_script:
         - zip -rq plugin.zip .
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $DEVELOPMENT_BRANCH
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $CORE_BRANCH
         - rm -rf development/platform
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $CORE_BRANCH
         - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git development/custom/plugins/SwagCmsExtensions --branch $CMS_EXTENSION_BRANCH
         - unzip -q plugin.zip -d development/custom/plugins/SwagPayPal
         - cd development
@@ -32,6 +33,8 @@ Check built JS files:
         refs:
             - merge_requests
             - master
+            - schedules
+            - pipelines
     stage: Static analysis
     services:
         -   name: mysql:5.7
@@ -56,6 +59,12 @@ Check built JS files:
 
 Static analyze:
     stage: Static analysis
+    only:
+        refs:
+            - merge_requests
+            - master
+            - schedules
+            - pipelines
     services:
         -   name: mysql:5.7
             alias: mysql
@@ -63,77 +72,58 @@ Static analyze:
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        - >
-            if [ -f "../../../vendor/shopware/platform/easy-coding-standard.php" ];
-            then
-                php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.php src tests
-            else
-                php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.yml src tests
-            fi;
-        - php ../../../dev-ops/analyze/vendor/bin/ecs check --config=easy-coding-standard.yml
+        - php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.php src tests
+        - php ../../../dev-ops/analyze/vendor/bin/ecs check --config=easy-coding-standard.php
         - composer dump-autoload
         - php bin/phpstan-config-generator.php
         - php ../../../dev-ops/analyze/vendor/bin/phpstan analyze --configuration phpstan.neon src tests
-        - >
-            if [[ $USE_DEPRECATED_PSALM_CONFIG = "false" ]];
-            then
-                php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.xml --threads=$(nproc) --diff --show-info=false
-            else
-                php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.deprecated.xml --threads=$(nproc) --diff --show-info=false
-            fi;
+        - php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.xml --threads=$(nproc) --diff --show-info=false
         - cd $CI_PROJECT_DIR/development
         - ./psh.phar administration:init --APP_ENV="dev"
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - make administration-lint
         - make storefront-lint
-    rules:
-        -   if: '$CI_COMMIT_BRANCH == "master"'
-        -   if: '$RUN_IN_MR == "true" && $CI_PIPELINE_SOURCE == "merge_request_event"'
     parallel:
         matrix:
-            -   PLATFORM_BRANCH: '6.3.0.0'
-                DEVELOPMENT_BRANCH: '6.3.2.0'
-                USE_DEPRECATED_PSALM_CONFIG: 'true'
-            -   PLATFORM_BRANCH: '6.3.1.0'
-                DEVELOPMENT_BRANCH: '6.3.2.0'
-                USE_DEPRECATED_PSALM_CONFIG: 'true'
-                RUN_IN_MR: 'false'
-            -   PLATFORM_BRANCH: '6.3.2.0'
-                DEVELOPMENT_BRANCH: '6.3.2.0'
-                USE_DEPRECATED_PSALM_CONFIG: 'true'
-                RUN_IN_MR: 'false'
-            -   PLATFORM_BRANCH: '6.3.3.0'
-                DEVELOPMENT_BRANCH: 'master'
-                RUN_IN_MR: 'false'
-            -   PLATFORM_BRANCH: 'master'
-                DEVELOPMENT_BRANCH: 'master'
+            -   DEV_IMAGE:
+                - shopware/development:7.4-composer-2
+                - shopware/development:8.0-composer-2
+            -   CORE_BRANCH:
+                - v6.4.0.0-RC1
+                - trunk
 
 ToDos resolved:
     only:
         refs:
             - merge_requests
             - master
+            - schedules
+            - pipelines
     stage: Static analysis
     allow_failure: true
     script:
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - if [[ -n $CI_COMMIT_BRANCH ]]; then bin/check-todos.sh $CI_COMMIT_BRANCH; else bin/check-todos.sh $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME; fi
 
-PHPUnit Coverage (6.3.x.x dev):
-    only:
-        refs:
-            - merge_requests
-            - master
+PHPUnit:
     stage: Testing
     services:
-        -   name: mariadb:10.3
-            alias: mysql
+          -   name: $MYSQL_IMAGE
+              alias: mysql
+              entrypoint: [ "sh", "-c", "docker-entrypoint.sh $MYSQL_CMD" ]
+    coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
+    artifacts:
+        paths:
+            - development/build/artifacts/phpunit.clover.xml
+        reports:
+            junit: development/build/artifacts/phpunit.junit.xml
     script:
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal
         - php bin/console plugin:install --activate SwagCmsExtensions
-        - composer dump-autoload -d custom/plugins/SwagPayPal
         - ./psh.phar init-test-databases
+        - composer dump-autoload -d custom/plugins/SwagPayPal
+        - touch custom/plugins/SwagPayPal/vendor/composer/InstalledVersions.php
         - php -d pcov.enabled=1 -d pcov.directory=$CI_PROJECT_DIR
             vendor/bin/phpunit
             --configuration custom/plugins/SwagPayPal/phpunit.xml.dist
@@ -142,43 +132,34 @@ PHPUnit Coverage (6.3.x.x dev):
             --coverage-clover build/artifacts/phpunit.clover.xml
             --coverage-html build/artifacts/phpunit-coverage-html
             --coverage-text
-
-    coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
-    artifacts:
-        paths:
-            - development/build/artifacts/phpunit.clover.xml
-        reports:
-            junit: development/build/artifacts/phpunit.junit.xml
-
-PHPUnit:
-    stage: Testing
-    services:
-        -   name: mysql:5.7
-            alias: mysql
-    script:
-        - ./psh.phar init
-        - php bin/console plugin:install --activate SwagPayPal
-        - php bin/console plugin:install --activate SwagCmsExtensions
-        - ./psh.phar init-test-databases
-        - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        - bin/phpunit.sh
-        - cd $CI_PROJECT_DIR/development
         - php bin/console plugin:uninstall SwagPayPal
     rules:
+        -   if: '$CI_MERGE_REQUEST_LABELS =~ /.*unit::all.*/'
+        -   if: '$CI_MERGE_REQUEST_LABELS =~ /.*unit::skip.*/'
+            when: never
         -   if: '$CI_COMMIT_BRANCH == "master"'
+        -   if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+            changes:
+                - "Migration*.php"
+                - "**/Migration*.php"
         -   if: '$RUN_IN_MR == "true" && $CI_PIPELINE_SOURCE == "merge_request_event"'
+        -   if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+            when: manual
+            allow_failure: true
     parallel:
         matrix:
-            -   PLATFORM_BRANCH: '6.3.0.0'
-                DEVELOPMENT_BRANCH: 'master'
-            -   PLATFORM_BRANCH: '6.3.1.0'
-                DEVELOPMENT_BRANCH: 'master'
-                RUN_IN_MR: 'false'
-            -   PLATFORM_BRANCH: '6.3.2.0'
-                DEVELOPMENT_BRANCH: '6.3.2.0'
-                RUN_IN_MR: 'false'
-            -   PLATFORM_BRANCH: '6.3.3.0'
-                DEVELOPMENT_BRANCH: 'master'
-                RUN_IN_MR: 'false'
-            -   PLATFORM_BRANCH: 'master'
-                DEVELOPMENT_BRANCH: 'master'
+            -   MYSQL_IMAGE: mariadb:10.4
+                DEV_IMAGE: shopware/development:8.0-composer-2
+                CORE_BRANCH: [ "v6.4.0.0-RC1", "trunk" ]
+            -   MYSQL_IMAGE:
+                    - mysql:5.7
+                    - mariadb:10.3
+                DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
+                CORE_BRANCH: [ "v6.4.0.0-RC1", "trunk" ]
+                RUN_IN_MR: "false"
+            -   MYSQL_IMAGE:
+                    - mysql:8.0.19
+                DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
+                CORE_BRANCH: [ "v6.4.0.0-RC1", "trunk" ]
+                MYSQL_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
+                RUN_IN_MR: "false"

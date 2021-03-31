@@ -1,8 +1,6 @@
 {% block swag_paypal_ecs_button %}
     <div class="{{ button_class }}"
          data-swag-paypal-express-button="true"
-         {# @deprecated tag:v3.0.0 - "data-swag-pay-pal-express-button-approve-payment-token" will be removed. #}
-         data-swag-pay-pal-express-button-approve-payment-token="{{ sw_csrf('payment.paypal.approve_payment', {"mode": "token"}) }}"
          data-swag-pay-pal-express-button-options="{{ expressSettings|json_encode }}"
          data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
     </div>

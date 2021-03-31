@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigEntity;
@@ -41,7 +42,7 @@ class SystemConfigRepoMock implements EntityRepositoryInterface
         return new IdSearchResult(0, [], $criteria, $context);
     }
 
-    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
     {
     }
 
@@ -53,6 +54,7 @@ class SystemConfigRepoMock implements EntityRepositoryInterface
             || $filter->getValue() !== WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN
         ) {
             return new EntitySearchResult(
+                $this->getDefinition()->getEntityName(),
                 0,
                 new EntityCollection([]),
                 null,
@@ -62,6 +64,7 @@ class SystemConfigRepoMock implements EntityRepositoryInterface
         }
 
         return new EntitySearchResult(
+            $this->getDefinition()->getEntityName(),
             1,
             new EntityCollection([
                 $this->createConfigEntity(),
@@ -84,7 +87,7 @@ class SystemConfigRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function delete(array $data, Context $context): EntityWrittenContainerEvent
+    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
     {
     }
 

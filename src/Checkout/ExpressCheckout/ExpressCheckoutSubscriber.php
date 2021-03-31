@@ -19,6 +19,7 @@ use Shopware\Storefront\Page\PageLoadedEvent;
 use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Shopware\Storefront\Page\Search\SearchPageLoadedEvent;
 use Shopware\Storefront\Pagelet\PageletLoadedEvent;
+use Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
@@ -70,8 +71,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             CmsPageLoadedEvent::class => 'addExpressCheckoutDataToCmsPage',
 
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
-            // TODO: PPI-65: class constant can be used instead of string
-            'Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent' => 'addExpressCheckoutDataToPagelet',
+            GuestWishlistPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
 
             'framework.validation.address.create' => 'disableAddressValidation',
             'framework.validation.customer.create' => 'disableCustomerValidation',
@@ -211,8 +211,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             case NavigationPageLoadedEvent::class:
             case CmsPageLoadedEvent::class:
             case SearchPageLoadedEvent::class:
-            // TODO: PPI-65: class constant can be used instead of string
-            case 'Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent':
+            case GuestWishlistPageletLoadedEvent::class:
                 return $settings->getEcsListingEnabled();
             default:
                 return false;

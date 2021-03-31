@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
@@ -37,7 +38,7 @@ class CurrencyRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
     {
     }
 
@@ -54,7 +55,14 @@ class CurrencyRepoMock implements EntityRepositoryInterface
         $currency->setId($currencyId);
         $currency->setIsoCode(OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY);
 
-        return new EntitySearchResult(1, new CurrencyCollection([$currency]), null, $criteria, $context);
+        return new EntitySearchResult(
+            $this->getDefinition()->getEntityName(),
+            1,
+            new CurrencyCollection([$currency]),
+            null,
+            $criteria,
+            $context
+        );
     }
 
     public function update(array $data, Context $context): EntityWrittenContainerEvent
@@ -69,7 +77,7 @@ class CurrencyRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function delete(array $data, Context $context): EntityWrittenContainerEvent
+    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
     {
     }
 

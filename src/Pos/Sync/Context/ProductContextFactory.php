@@ -114,9 +114,7 @@ class ProductContextFactory
         }
 
         /** @var PosSalesChannelMediaCollection $posMediaCollection */
-        $posMediaCollection = $context->disableCache(function (Context $context) use ($criteria) {
-            return $this->posMediaRepository->search($criteria, $context)->getEntities();
-        });
+        $posMediaCollection = $this->posMediaRepository->search($criteria, $context)->getEntities();
 
         return $posMediaCollection;
     }

@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\System\Language\LanguageDefinition;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\Locale\LocaleEntity;
@@ -44,6 +45,7 @@ class LanguageRepoMock implements EntityRepositoryInterface
         $withLocale = $criteria->getIds()[0] !== self::LANGUAGE_ID_WITHOUT_LOCALE;
 
         return new EntitySearchResult(
+            $this->getDefinition()->getEntityName(),
             1,
             new EntityCollection([$this->createLanguageEntity($withLocale)]),
             null,
@@ -64,7 +66,7 @@ class LanguageRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function delete(array $data, Context $context): EntityWrittenContainerEvent
+    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
     {
     }
 
@@ -76,7 +78,7 @@ class LanguageRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
     {
     }
 

@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Pos\MessageQueue\Handler\Sync;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaEntity;
@@ -51,16 +50,15 @@ class ImageSyncHandler extends AbstractSyncHandler
         $criteria->setLimit($message->getLimit());
 
         /** @var PosSalesChannelMediaCollection $posMediaCollection */
-        $posMediaCollection = $message->getContext()->disableCache(
-            function (Context $context) use ($criteria) {
-                return $this->posMediaRepository->search($criteria, $context)->getEntities()->filter(
-                    static function (PosSalesChannelMediaEntity $entity) {
-                        return $entity->getUrl() === null
-                            || $entity->getCreatedAt() < $entity->getMedia()->getUpdatedAt();
-                    }
-                );
-            }
-        );
+        $posMediaCollection = $this->posMediaRepository
+            ->search($criteria, $message->getContext())
+            ->getEntities()
+            ->filter(
+                static function (PosSalesChannelMediaEntity $entity) {
+                    return $entity->getUrl() === null
+                        || $entity->getCreatedAt() < $entity->getMedia()->getUpdatedAt();
+                }
+            );
 
         $this->imageSyncer->sync($posMediaCollection, $message->getSalesChannel(), $message->getContext());
     }

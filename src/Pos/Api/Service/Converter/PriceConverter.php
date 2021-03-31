@@ -22,7 +22,7 @@ class PriceConverter
     {
         $newPrice = new Price();
 
-        $precision = 10 ** ($currency->getDecimalPrecision());
+        $precision = 10 ** ($currency->getItemRounding()->getDecimals());
 
         $newPrice->setAmount((int) ($price * $precision));
         $newPrice->setCurrencyId($currency->getIsoCode());

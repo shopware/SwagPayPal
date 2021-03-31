@@ -1,6 +1,5 @@
 import './acl';
 import './page/swag-paypal';
-import './extension/sw-plugin';
 import './components/swag-paypal-settings-hint';
 import './components/swag-paypal-behavior';
 import './components/swag-paypal-credentials';

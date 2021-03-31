@@ -9,6 +9,9 @@
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
             <argument type="service" id="system_config.repository"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <service id="Swag\PayPal\Webhook\WebhookService" public="true">
@@ -85,6 +88,9 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <service id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper">

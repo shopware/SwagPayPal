@@ -62,7 +62,7 @@ class DisputeController extends AbstractController
      *     )
      * )
      * @Route(
-     *     "/api/v{version}/paypal/dispute",
+     *     "/api/paypal/dispute",
      *      name="api.paypal.dispute_list",
      *      methods={"GET"}
      * )
@@ -106,7 +106,7 @@ class DisputeController extends AbstractController
      *     )
      * )
      * @Route(
-     *     "/api/v{version}/paypal/dispute/{disputeId}",
+     *     "/api/paypal/dispute/{disputeId}",
      *      name="api.paypal.dispute_details",
      *      methods={"GET"}
      * )
@@ -126,9 +126,6 @@ class DisputeController extends AbstractController
     private function validateSalesChannelId(Request $request): ?string
     {
         $salesChannelId = $request->query->get('salesChannelId');
-        if ($salesChannelId !== null) {
-            $salesChannelId = (string) $salesChannelId;
-        }
 
         if ($salesChannelId !== null && Uuid::isValid($salesChannelId) === false) {
             throw new InvalidSalesChannelIdException($salesChannelId);
@@ -144,7 +141,6 @@ class DisputeController extends AbstractController
     {
         $disputeStateFilter = $request->query->get('disputeStateFilter');
         if ($disputeStateFilter !== null) {
-            $disputeStateFilter = (string) $disputeStateFilter;
             foreach (\explode(',', $disputeStateFilter) as $disputeStateFilterItem) {
                 if (!\in_array($disputeStateFilterItem, Item::DISPUTE_STATES, true)) {
                     throw new InvalidRequestParameterException('disputeStateFilter');

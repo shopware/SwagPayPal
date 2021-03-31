@@ -94,15 +94,6 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         addProductToCart: false,
 
         /**
-         * URL to create a new PayPal payment
-         *
-         * @deprecated tag:v3.0.0 - will be removed. Use createOrderUrl instead
-         *
-         * @type string
-         */
-        createPaymentUrl: '',
-
-        /**
          * URL to set payment method to PayPal
          *
          * @type string
@@ -122,29 +113,11 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         createOrderUrl: '',
 
         /**
-         * URL to create a new cart in Shopware
-         *
-         * @deprecated tag:v3.0.0 - will be removed. Use deleteCartUrl instead
-         *
-         * @type string
-         */
-        createNewCartUrl: '',
-
-        /**
          * URL to delete an existing cart in Shopware
          *
          * @type string
          */
         deleteCartUrl: '',
-
-        /**
-         * URL for the payment approval
-         *
-         * @deprecated tag:v3.0.0 - will be removed. Use prepareCheckoutUrl instead
-         *
-         * @type string
-         */
-        approvePaymentUrl: '',
 
         /**
          * URL for creating and logging in guest customer
@@ -165,16 +138,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          *
          * @type string
          */
-        addErrorUrl: '',
-
-        /**
-         * Indicator whether the Store-Api could be used or not
-         *
-         * @deprecated tag:v3.0.0 - will be removed. Increase the min Shopware version to 6.3.2.0
-         *
-         * @type boolean
-         */
-        useStoreApi: true
+        addErrorUrl: ''
     };
 
     init() {
@@ -351,27 +315,13 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         // Add a loading indicator to the body to prevent the user breaking the checkout process
         ElementLoadingIndicatorUtil.create(document.body);
 
-        if (this.options.useStoreApi) {
-            this._client.post(
-                this.options.prepareCheckoutUrl,
-                JSON.stringify(requestPayload),
-                () => {
-                    actions.redirect(this.options.checkoutConfirmUrl);
-                }
-            );
-        } else {
-            requestPayload._csrf_token = DomAccess.getDataAttribute(
-                this.el, 'swag-pay-pal-express-button-approve-payment-token'
-            );
-
-            this._httpClient.post(
-                this.options.approvePaymentUrl,
-                JSON.stringify(requestPayload),
-                () => {
-                    actions.redirect(this.options.checkoutConfirmUrl);
-                }
-            );
-        }
+        this._client.post(
+            this.options.prepareCheckoutUrl,
+            JSON.stringify(requestPayload),
+            () => {
+                actions.redirect(this.options.checkoutConfirmUrl);
+            }
+        );
     }
 
     onError() {

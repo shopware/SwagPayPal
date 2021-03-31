@@ -52,7 +52,7 @@ class PayPalPaymentMethodController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/v{version}/_action/paypal/saleschannel-default", name="api.action.paypal.saleschannel_default", methods={"POST"})
+     * @Route("/api/_action/paypal/saleschannel-default", name="api.action.paypal.saleschannel_default", methods={"POST"})
      * @Acl({"swag_paypal.editor"})
      */
     public function setPayPalPaymentMethodAsSalesChannelDefault(Request $request, Context $context): Response

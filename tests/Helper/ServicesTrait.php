@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Test\Helper;
 
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
@@ -37,7 +37,7 @@ use Swag\PayPal\Webhook\WebhookRegistry;
 
 trait ServicesTrait
 {
-    use KernelTestBehaviour;
+    use IntegrationTestBehaviour;
 
     protected function createPayPalClientFactory(
         ?SwagPayPalSettingStruct $settings = null

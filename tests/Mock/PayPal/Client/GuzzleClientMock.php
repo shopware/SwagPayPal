@@ -7,18 +7,21 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Utils;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\UriInterface;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Api\Payment\Payer\ExecutePayerInfo;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
-use Swag\PayPal\RestApi\V2\Api\Patch;
 use Swag\PayPal\RestApi\V2\RequestUriV2;
 use Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRouteTest;
 use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
@@ -59,8 +62,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
 use Swag\PayPal\Test\RestApi\V1\Resource\PaymentResourceTest;
 use Swag\PayPal\Test\RestApi\V1\Resource\WebhookResourceTest;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 
-class GuzzleClientMock extends Client
+class GuzzleClientMock implements ClientInterface
 {
     public const GENERAL_CLIENT_EXCEPTION_MESSAGE = 'generalClientExceptionMessage';
     public const CLIENT_EXCEPTION_MESSAGE_WITH_RESPONSE = 'clientExceptionWithoutResponse';
@@ -74,43 +78,80 @@ class GuzzleClientMock extends Client
     private $data;
 
     /**
-     * @throws ClientException
+     * @var array
      */
-    public function get(string $uri, array $options = []): ResponseInterface
+    private $config;
+
+    public function __construct(array $config)
     {
-        return new Response(200, [], $this->handleGetRequests($uri));
+        $this->config = $config;
+
+        // Add the default user-agent header.
+        if (!isset($this->config['headers'])) {
+            $this->config['headers'] = ['User-Agent' => Utils::defaultUserAgent()];
+        } else {
+            // Add the User-Agent header if one was not already set.
+            foreach (\array_keys($this->config['headers']) as $name) {
+                if (\is_string($name) && \strtolower($name) === 'user-agent') {
+                    return;
+                }
+            }
+            $this->config['headers']['User-Agent'] = Utils::defaultUserAgent();
+        }
     }
 
     /**
+     * @param string|UriInterface $uri
+     *
      * @throws ClientException
      * @throws \RuntimeException
      */
-    public function post(string $uri, array $options = []): ResponseInterface
+    public function request(string $method, $uri, array $options = []): ResponseInterface
     {
-        return new Response(200, [], $this->handlePostRequests($uri, $options['json'] ?? null));
-    }
+        switch (\strtolower($method)) {
+            case 'get':
+                return new Response(200, [], $this->handleGetRequests((string) $uri));
+            case 'post':
+                return new Response(200, [], $this->handlePostRequests((string) $uri, $options['json'] ?? null));
+            case 'patch':
+                return new Response(200, [], $this->handlePatchRequests((string) $uri, $options['json']));
+            case 'delete':
+                $this->handleDeleteRequests((string) $uri);
 
-    /**
-     * @throws ClientException
-     */
-    public function patch(string $uri, array $options = []): ResponseInterface
-    {
-        return new Response(200, [], $this->handlePatchRequests($uri, $options['json']));
-    }
-
-    /**
-     * @throws ClientException
-     */
-    public function delete(string $uri, array $options = []): ResponseInterface
-    {
-        $this->handleDeleteRequests($uri);
-
-        return new Response(204);
+                return new Response(204);
+            default:
+                throw new MethodNotAllowedException(['get', 'post', 'patch', 'delete']);
+        }
     }
 
     public function getData(): array
     {
         return $this->data;
+    }
+
+    public function send(RequestInterface $request, array $options = []): ResponseInterface
+    {
+    }
+
+    public function sendAsync(RequestInterface $request, array $options = []): PromiseInterface
+    {
+    }
+
+    public function requestAsync(string $method, $uri, array $options = []): PromiseInterface
+    {
+    }
+
+    public function getConfig(?string $option = null)
+    {
+        if ($option !== null) {
+            if (isset($this->config[$option])) {
+                return $this->config[$option];
+            }
+
+            return null;
+        }
+
+        return $this->config;
     }
 
     /**
@@ -509,35 +550,50 @@ class GuzzleClientMock extends Client
 
     private function createClientExceptionWithResponse(int $errorCode = SymfonyResponse::HTTP_BAD_REQUEST): ClientException
     {
-        $jsonString = (string) \json_encode(['name' => 'TEST', 'message' => self::GENERAL_CLIENT_EXCEPTION_MESSAGE]);
+        $jsonString = (string) \json_encode([
+            'name' => 'TEST',
+            'message' => self::GENERAL_CLIENT_EXCEPTION_MESSAGE,
+        ]);
 
         return $this->createClientExceptionFromResponseString($jsonString, $errorCode);
     }
 
     private function createClientExceptionDuplicateTransaction(): ClientException
     {
-        $jsonString = $this->ensureValidJson(['name' => 'DUPLICATE_TRANSACTION', 'message' => 'Duplicate invoice Id detected.']);
+        $jsonString = $this->ensureValidJson([
+            'name' => 'DUPLICATE_TRANSACTION',
+            'message' => 'Duplicate invoice Id detected.',
+        ]);
 
         return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_BAD_REQUEST);
     }
 
     private function createClientExceptionDuplicateOrderNumber(): ClientException
     {
-        $jsonString = $this->ensureValidJson(['name' => 'UNPROCESSABLE_ENTITY', 'message' => 'The requested action could not be performed, semantically incorrect, or failed business validation.: Duplicate Invoice ID detected. To avoid a potential duplicate transaction your account setting requires that Invoice Id be unique for each transaction. DUPLICATE_INVOICE_ID']);
+        $jsonString = $this->ensureValidJson([
+            'name' => 'UNPROCESSABLE_ENTITY',
+            'message' => 'The requested action could not be performed, semantically incorrect, or failed business validation.: Duplicate Invoice ID detected. To avoid a potential duplicate transaction your account setting requires that Invoice Id be unique for each transaction. DUPLICATE_INVOICE_ID',
+        ]);
 
         return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     private function createClientExceptionWithInvalidId(): ClientException
     {
-        $jsonString = (string) \json_encode(['name' => 'INVALID_RESOURCE_ID', 'message' => self::GENERAL_CLIENT_EXCEPTION_MESSAGE]);
+        $jsonString = (string) \json_encode([
+            'name' => 'INVALID_RESOURCE_ID',
+            'message' => self::GENERAL_CLIENT_EXCEPTION_MESSAGE,
+        ]);
 
         return $this->createClientExceptionFromResponseString($jsonString);
     }
 
     private function createClientExceptionWebhookAlreadyExists(): ClientException
     {
-        $jsonString = (string) \json_encode(['name' => 'WEBHOOK_URL_ALREADY_EXISTS', 'message' => self::GENERAL_CLIENT_EXCEPTION_MESSAGE]);
+        $jsonString = (string) \json_encode([
+            'name' => 'WEBHOOK_URL_ALREADY_EXISTS',
+            'message' => self::GENERAL_CLIENT_EXCEPTION_MESSAGE,
+        ]);
 
         return $this->createClientExceptionFromResponseString($jsonString);
     }

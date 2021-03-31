@@ -45,20 +45,3 @@
         {% parent %}
     </template>
 {% endblock %}
-
-{# PPI-65 - Remove block override or replace swag-image-slider with sw-image-slider #}
-{% block sw_sales_channel_modal_detail_screenshots %}
-    <div v-if="isPayPalPosSalesChannel(detailType.id)"
-         class="sw-sales-channel-modal-detail__screenshots">
-        <swag-image-slider
-                :images="detailType.screenshotUrls"
-                :canvasWidth="580"
-                :canvasHeight="272"
-                overflow="visible">
-        </swag-image-slider>
-    </div>
-
-    <template v-else>
-        {% parent %}
-    </template>
-{% endblock %}

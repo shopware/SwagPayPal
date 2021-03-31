@@ -3,9 +3,9 @@ import { PAYPAL_POS_SALES_CHANNEL_TYPE_ID } from '../../../../constant/swag-payp
 const { Component } = Shopware;
 
 Component.override('sw-sales-channel-menu', {
-    methods: {
-        createMenuTree() {
-            this.$super('createMenuTree');
+    computed: {
+        buildMenuTree() {
+            const menuItems = this.$super('buildMenuTree');
 
             const posIds = [];
             this.salesChannels.forEach((salesChannel) => {
@@ -14,11 +14,13 @@ Component.override('sw-sales-channel-menu', {
                 }
             });
 
-            this.menuItems.forEach((menuItem) => {
+            menuItems.forEach((menuItem) => {
                 if (posIds.includes(menuItem.id)) {
                     menuItem.path = 'swag.paypal.pos.detail';
                 }
             });
+
+            return menuItems;
         }
     }
 });

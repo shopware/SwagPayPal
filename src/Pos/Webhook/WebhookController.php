@@ -62,7 +62,7 @@ class WebhookController extends AbstractController
 
     /**
      * @Route(
-     *     "/api/v{version}/_action/paypal/pos/webhook/registration/{salesChannelId}",
+     *     "/api/_action/paypal/pos/webhook/registration/{salesChannelId}",
      *     name="api.action.paypal.pos.webhook.registration.register",
      *     methods={"POST"}
      * )
@@ -77,7 +77,7 @@ class WebhookController extends AbstractController
 
     /**
      * @Route(
-     *     "/api/v{version}/_action/paypal/pos/webhook/registration/{salesChannelId}",
+     *     "/api/_action/paypal/pos/webhook/registration/{salesChannelId}",
      *     name="api.action.paypal.pos.webhook.registration.unregister",
      *     methods={"DELETE"}
      * )
@@ -92,7 +92,7 @@ class WebhookController extends AbstractController
 
     /**
      * @Route(
-     *     "/api/v{version}/_action/paypal/pos/webhook/execute/{salesChannelId}",
+     *     "/api/_action/paypal/pos/webhook/execute/{salesChannelId}",
      *     name="api.action.paypal.pos.webhook.execute",
      *     methods={"POST"},
      *     defaults={"auth_required"=false}

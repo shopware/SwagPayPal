@@ -45,17 +45,11 @@
                 <file name="src/Pos/Command/*Command.php"/>
                 <file name="src/Pos/Schedule/*Handler.php"/>
                 <file name="src/Checkout/Payment/ScheduledTask/CancelTransactionsTaskHandler.php"/>
+                <!-- is used for validation purposes, no caching issues -->
+                <referencedMethod name="Shopware\Core\System\SystemConfig\SystemConfigService::getDomain"/>
                 <directory name="tests"/>
             </errorLevel>
         </InternalMethod>
-
-        <DeprecatedClass>
-            <errorLevel type="info">
-                <!-- <deprecated> tag:v3.0.0 - remove with 3.0.0 -->
-                <file name="src/Checkout/ExpressCheckout/Route/ExpressApprovePaymentRoute.php"/>
-                <file name="tests/Checkout/ExpressCheckout/ExpressCheckoutControllerTest.php"/>
-            </errorLevel>
-        </DeprecatedClass>
 
         <DeprecatedInterface>
             <errorLevel type="info">
@@ -71,19 +65,7 @@
 
         <DeprecatedMethod>
             <errorLevel type="info">
-                <!-- ToDo PPI-65 - Change for 6.4 to PurchasePrice collection -->
-                <referencedMethod name="Shopware\Core\Content\Product\ProductEntity::getPurchasePrice"/>
-                <referencedMethod name="Shopware\Core\Content\Product\ProductEntity::setPurchasePrice"/>
-                <referencedMethod name="Shopware\Core\Framework\Test\TestCaseBase\AssertArraySubsetBehaviour::silentAssertArraySubset"/>
-                <!-- ToDo PPI-65 - Remove methods -->
-                <referencedMethod name="Shopware\Core\Framework\Plugin::addPrivileges"/>
-                <referencedMethod name="Shopware\Core\Framework\Plugin::removePrivileges"/>
-                <!-- <deprecated> tag:v3.0.0 - remove with 3.0.0 -->
-                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController::createNewCart"/>
-                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController::createPayment"/>
-                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutController::onApprove"/>
-                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData::getUseStoreApi"/>
-                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData::getApprovePaymentUrl"/>
+                <referencedMethod name="Doctrine\DBAL\Connection::executeUpdate"/>
             </errorLevel>
         </DeprecatedMethod>
 
@@ -119,6 +101,12 @@
                 <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
             </errorLevel>
         </UnsafeInstantiation>
+
+        <NonInvariantDocblockPropertyType>
+            <errorLevel type="info">
+                <file name="src/Checkout/TokenResponse.php"/>
+            </errorLevel>
+        </NonInvariantDocblockPropertyType>
 
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>

@@ -14,14 +14,14 @@ class DIContainerMock implements ContainerInterface
     /**
      * {@inheritdoc}
      */
-    public function set($id, $service): void
+    public function set(string $id, ?object $service): void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function get($id, $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE): ?object
+    public function get($id, int $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE): ?object
     {
     }
 
@@ -35,7 +35,7 @@ class DIContainerMock implements ContainerInterface
     /**
      * {@inheritdoc}
      */
-    public function initialized($id): bool
+    public function initialized(string $id): bool
     {
     }
 
@@ -44,21 +44,21 @@ class DIContainerMock implements ContainerInterface
      *
      * @return array|bool|float|int|string|null
      */
-    public function getParameter($name)
+    public function getParameter(string $name)
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function hasParameter($name): bool
+    public function hasParameter(string $name): bool
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setParameter($name, $value): void
+    public function setParameter(string $name, $value): void
     {
     }
 }

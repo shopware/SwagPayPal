@@ -83,7 +83,7 @@ class SPBCreateOrderRoute extends AbstractSPBCreateOrderRoute
 
     /**
      * @OA\Post(
-     *     path="/store-api/v{version}/paypal/spb/create-order",
+     *     path="/store-api/paypal/spb/create-order",
      *     description="Creates a PayPal order from the existing cart",
      *     operationId="createPayPalSPBOrder",
      *     tags={"Store API", "PayPal"},
@@ -94,7 +94,7 @@ class SPBCreateOrderRoute extends AbstractSPBCreateOrderRoute
      * )
      *
      * @Route(
-     *     "/store-api/v{version}/paypal/spb/create-order",
+     *     "/store-api/paypal/spb/create-order",
      *      name="store-api.paypal.spb.create_order",
      *      methods={"POST"}
      * )

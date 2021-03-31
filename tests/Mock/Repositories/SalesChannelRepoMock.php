@@ -19,6 +19,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Aggreg
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\Framework\Event\NestedEventCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -54,9 +55,10 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
         $withPaymentMethods = $id === Defaults::SALES_CHANNEL;
 
         return new EntitySearchResult(
+            $this->getDefinition()->getEntityName(),
             1,
             new EntityCollection([
-                $withPaymentMethods ? $id : PaymentMethodUtilTest::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD => $this->createSalesChannelEntity(
+                $withPaymentMethods ? $id ?? 0 : PaymentMethodUtilTest::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD => $this->createSalesChannelEntity(
                     $id ?? Defaults::SALES_CHANNEL,
                     $withPaymentMethods
                 ),
@@ -87,7 +89,7 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function delete(array $data, Context $context): EntityWrittenContainerEvent
+    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
     {
     }
 
@@ -99,7 +101,7 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
     {
     }
 
-    public function clone(string $id, Context $context, ?string $newId = null): EntityWrittenContainerEvent
+    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
     {
     }
 

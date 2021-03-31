@@ -196,7 +196,7 @@ Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund::$invoiceId must n
     public function testCaptureAuthorization(): void
     {
         $request = $this->createCaptureRefundRequest();
-        $request->request->set(PayPalOrdersController::REQUEST_PARAMETER_IS_FINAL, false);
+        $request->request->set(PayPalOrdersController::REQUEST_PARAMETER_IS_FINAL, 'false');
         $response = $this->createController()->captureAuthorization(
             'orderTransactionId',
             'authorizationId',

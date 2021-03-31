@@ -20,7 +20,6 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
@@ -71,7 +70,6 @@ class PayPalPaymentHandlerTest extends TestCase
     use ServicesTrait;
     use StateMachineStateTrait;
     use OrderFixture;
-    use DatabaseTransactionBehaviour;
     use OrderTransactionTrait;
     use SalesChannelContextTrait;
 
@@ -419,7 +417,7 @@ No approve link provided by PayPal');
     public function testFinalizeEcs(): void
     {
         $request = $this->createPaymentV1Request();
-        $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, true);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, 'true');
         $this->assertFinalizeRequest($request);
     }
 
@@ -427,14 +425,14 @@ No approve link provided by PayPal');
     {
         ExecutePaymentSaleResponseFixture::setDuplicateTransaction(true);
         $request = $this->createPaymentV1Request(self::PAYER_ID_DUPLICATE_TRANSACTION);
-        $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, true);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, 'true');
         $this->assertFinalizeRequest($request);
     }
 
     public function testFinalizeSpb(): void
     {
         $request = $this->createPaymentV1Request();
-        $request->query->set(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID, true);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID, 'true');
         $this->assertFinalizeRequest($request);
     }
 
@@ -442,14 +440,14 @@ No approve link provided by PayPal');
     {
         ExecutePaymentSaleResponseFixture::setDuplicateTransaction(true);
         $request = $this->createPaymentV1Request(self::PAYER_ID_DUPLICATE_TRANSACTION);
-        $request->query->set(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID, true);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID, 'true');
         $this->assertFinalizeRequest($request);
     }
 
     public function testFinalizePlus(): void
     {
         $request = $this->createPaymentV1Request();
-        $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, true);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, 'true');
         $this->assertFinalizeRequest($request);
     }
 
@@ -457,7 +455,7 @@ No approve link provided by PayPal');
     {
         ExecutePaymentSaleResponseFixture::setDuplicateTransaction(true);
         $request = $this->createPaymentV1Request(self::PAYER_ID_DUPLICATE_TRANSACTION);
-        $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, true);
+        $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, 'true');
         $this->assertFinalizeRequest($request);
     }
 
