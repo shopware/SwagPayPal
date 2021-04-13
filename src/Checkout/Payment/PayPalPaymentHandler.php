@@ -9,13 +9,17 @@ namespace Swag\PayPal\Checkout\Payment;
 
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
@@ -34,6 +38,15 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
     public const PAYPAL_PLUS_CHECKOUT_ID = 'isPayPalPlusCheckout';
     public const PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
+
+    /**
+     * @deprecated tag:v4.0.0 Will be removed with min 6.4.1.0 without replacement
+     */
+    public const ORDER_TRANSACTION_STATE_AUTHORIZED = 'authorized';
+    public const FINALIZED_ORDER_TRANSACTION_STATES = [
+        OrderTransactionStates::STATE_PAID,
+        self::ORDER_TRANSACTION_STATE_AUTHORIZED,
+    ];
 
     /**
      * @var OrderTransactionStateHandler
@@ -55,16 +68,23 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
      */
     private $plusPuiHandler;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $stateMachineStateRepository;
+
     public function __construct(
         OrderTransactionStateHandler $orderTransactionStateHandler,
         EcsSpbHandler $ecsSpbHandler,
         PayPalHandler $payPalHandler,
-        PlusPuiHandler $plusPuiHandler
+        PlusPuiHandler $plusPuiHandler,
+        EntityRepositoryInterface $stateMachineStateRepository
     ) {
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->ecsSpbHandler = $ecsSpbHandler;
         $this->payPalHandler = $payPalHandler;
         $this->plusPuiHandler = $plusPuiHandler;
+        $this->stateMachineStateRepository = $stateMachineStateRepository;
     }
 
     /**
@@ -131,6 +151,10 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         Request $request,
         SalesChannelContext $salesChannelContext
     ): void {
+        if ($this->transactionAlreadyFinalized($transaction, $salesChannelContext)) {
+            return;
+        }
+
         if ($request->query->getBoolean(self::PAYPAL_REQUEST_PARAMETER_CANCEL)) {
             throw new CustomerCanceledAsyncPaymentException(
                 $transaction->getOrderTransaction()->getId(),
@@ -191,5 +215,29 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         }
 
         return PartnerAttributionId::PAYPAL_CLASSIC;
+    }
+
+    private function transactionAlreadyFinalized(
+        AsyncPaymentTransactionStruct $transaction,
+        SalesChannelContext $salesChannelContext
+    ): bool {
+        $transactionStateMachineStateId = $transaction->getOrderTransaction()->getStateId();
+        $criteria = new Criteria([$transactionStateMachineStateId]);
+
+        /** @var StateMachineStateEntity|null $stateMachineState */
+        $stateMachineState = $this->stateMachineStateRepository->search(
+            $criteria,
+            $salesChannelContext->getContext()
+        )->get($transactionStateMachineStateId);
+
+        if ($stateMachineState === null) {
+            return false;
+        }
+
+        return \in_array(
+            $stateMachineState->getTechnicalName(),
+            self::FINALIZED_ORDER_TRANSACTION_STATES,
+            true
+        );
     }
 }

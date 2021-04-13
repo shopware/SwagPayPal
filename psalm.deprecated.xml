@@ -85,6 +85,13 @@
             </errorLevel>
         </DeprecatedMethod>
 
+        <DeprecatedConstant>
+            <errorLevel type="info">
+                <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
+                <file name="src/Checkout/Payment/PayPalPaymentHandler.php"/>
+            </errorLevel>
+        </DeprecatedConstant>
+
         <PossiblyInvalidArgument>
             <errorLevel type="info">
                 <file name="tests/Pos/Sync/Product/*Test.php"/>

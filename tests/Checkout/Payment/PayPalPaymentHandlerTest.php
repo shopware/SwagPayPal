@@ -12,6 +12,7 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
+use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
@@ -21,7 +22,10 @@ use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateDefinition;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
@@ -486,7 +490,13 @@ No approve link provided by PayPal');
         $this->expectException(CustomerCanceledAsyncPaymentException::class);
         $this->expectExceptionMessage('The customer canceled the external payment process. Customer canceled the payment on the PayPal page');
         $this->createPayPalPaymentHandler()->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, 'testTransactionId'),
+            $this->createPaymentTransactionStruct(
+                ConstantsForTesting::VALID_ORDER_ID,
+                'testTransactionId',
+                null,
+                $this->getContainer(),
+                Context::createDefaultContext()
+            ),
             new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
             Generator::createSalesChannelContext()
         );
@@ -513,7 +523,13 @@ No approve link provided by PayPal');
         $this->expectExceptionMessage('The asynchronous payment finalize was interrupted due to the following error:
 An error occurred during the communication with PayPal');
         $this->createPayPalPaymentHandler($settings)->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, 'testTransactionId'),
+            $this->createPaymentTransactionStruct(
+                ConstantsForTesting::VALID_ORDER_ID,
+                'testTransactionId',
+                null,
+                $this->getContainer(),
+                Context::createDefaultContext()
+            ),
             $request,
             Generator::createSalesChannelContext()
         );
@@ -572,8 +588,40 @@ An error occurred during the communication with PayPal');
         }
     }
 
-    private function createPayPalPaymentHandler(?SwagPayPalSettingStruct $settings = null): PayPalPaymentHandler
+    public function testFinalizeWontCancelFinalizedTransactions(): void
     {
+        $orderTransactionEntity = $this->createOrderTransaction(Uuid::randomHex());
+        $context = Context::createDefaultContext();
+        $stateId = $this->getOrderTransactionStateIdByTechnicalName(OrderTransactionStates::STATE_PAID, $this->getContainer(), $context);
+        static::assertNotNull($stateId);
+        $orderTransactionEntity->setStateId(
+            $stateId
+        );
+        $salesChannelContextMock = $this->createMock(SalesChannelContext::class);
+        $salesChannelContextMock->expects(static::never())->method('getSalesChannel')->withAnyParameters();
+        $salesChannelContextMock->expects(static::once())->method('getContext')->withAnyParameters()->willReturn($context);
+
+        /** @var EntityRepositoryInterface $stateMachineStateRepository */
+        $stateMachineStateRepository = $this->getContainer()->get(\sprintf('%s.repository', StateMachineStateDefinition::ENTITY_NAME));
+
+        $this->createPayPalPaymentHandler(
+            null,
+            $stateMachineStateRepository
+        )->finalize(
+            new AsyncPaymentTransactionStruct(
+                $orderTransactionEntity,
+                $this->createOrderEntity(Uuid::randomHex()),
+                'https://example.com'
+            ),
+            new Request([PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL => true]),
+            $salesChannelContextMock
+        );
+    }
+
+    private function createPayPalPaymentHandler(
+        ?SwagPayPalSettingStruct $settings = null,
+        ?EntityRepositoryInterface $orderTransactionRepository = null
+    ): PayPalPaymentHandler {
         $settings = $settings ?? $this->createDefaultSettingStruct();
         $this->clientFactory = $this->createPayPalClientFactory($settings);
         $orderResource = new OrderResource($this->clientFactory);
@@ -583,6 +631,8 @@ An error occurred during the communication with PayPal');
         $settingsService = new SettingsServiceMock($settings);
         $priceFormatter = new PriceFormatter();
         $logger = new NullLogger();
+        /** @var EntityRepositoryInterface $orderTransactionRepositoryMock */
+        $orderTransactionRepositoryMock = $this->createMock(EntityRepositoryInterface::class);
 
         return new PayPalPaymentHandler(
             $orderTransactionStateHandler,
@@ -616,7 +666,8 @@ An error occurred during the communication with PayPal');
                 $settingsService,
                 $orderTransactionStateHandler,
                 $logger
-            )
+            ),
+            $orderTransactionRepository ?? $orderTransactionRepositoryMock
         );
     }
 
@@ -639,7 +690,13 @@ An error occurred during the communication with PayPal');
 
         $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $container);
         $handler->finalize(
-            $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId),
+            $this->createPaymentTransactionStruct(
+                ConstantsForTesting::VALID_ORDER_ID,
+                $transactionId,
+                null,
+                $this->getContainer(),
+                $salesChannelContext->getContext()
+            ),
             $request,
             $salesChannelContext
         );
