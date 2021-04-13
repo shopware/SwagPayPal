@@ -24,6 +24,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Handler\PayPalHandler"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler"/>
+            <argument type="service" id="state_machine_state.repository"/>
             <tag name="shopware.payment.method.async"/>
         </service>
 

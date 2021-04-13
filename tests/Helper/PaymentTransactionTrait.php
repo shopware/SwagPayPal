@@ -16,6 +16,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Defaults;
@@ -26,15 +27,33 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 trait PaymentTransactionTrait
 {
+    use StateMachineStateTrait;
+
     protected function createPaymentTransactionStruct(
         string $orderId = 'some-order-id',
         ?string $transactionId = null,
-        ?string $orderNumber = null
+        ?string $orderNumber = null,
+        ?ContainerInterface $container = null,
+        ?Context $context = null
     ): AsyncPaymentTransactionStruct {
         $orderTransaction = $this->createOrderTransaction($transactionId);
+
+        if ($context !== null && $container !== null) {
+            $stateId = $this->getOrderTransactionStateIdByTechnicalName(
+                OrderTransactionStates::STATE_OPEN,
+                $container,
+                $context
+            );
+
+            if ($stateId !== null) {
+                $orderTransaction->setStateId($stateId);
+            }
+        }
+
         $order = $this->createOrderEntity($orderId, $orderNumber);
 
         return new AsyncPaymentTransactionStruct(
