@@ -1,3 +1,6 @@
+# 2.2.3
+- PPI-256 - Behebt das Abbrechen von abgeschlossenen Bestellungen über den Browserverlauf
+
 # 2.2.2
 - PPI-244 - Problem bei der API-Authentifizierung behoben
 - PPI-221 - Problem mit überlangen Produktbeschreibungen bei Zettle korrigiert

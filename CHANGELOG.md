@@ -1,3 +1,6 @@
+# 2.2.3
+- PPI-256 - Fix canceling of finalized orders by using the browser history
+
 # 2.2.2
 - PPI-244 - Fix issue on API authentication
 - PPI-221 - Fix issue with oversized product descriptions in Zettle
