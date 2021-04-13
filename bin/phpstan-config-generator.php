@@ -23,6 +23,8 @@ $swagPayPal = [
     'autoload' => $composerJson['autoload'],
     'baseClass' => SwagPayPal::class,
     'managedByComposer' => false,
+    'name' => 'SwagPayPal',
+    'version' => $composerJson['version'],
     'active' => true,
     'path' => $pluginRootPath,
 ];

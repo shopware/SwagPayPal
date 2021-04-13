@@ -21,7 +21,6 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -53,7 +52,6 @@ use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
@@ -73,7 +71,6 @@ class PayPalPaymentHandlerTest extends TestCase
 {
     use PaymentTransactionTrait;
     use ServicesTrait;
-    use StateMachineStateTrait;
     use OrderFixture;
     use OrderTransactionTrait;
     use SalesChannelContextTrait;
