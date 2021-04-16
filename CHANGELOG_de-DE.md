@@ -1,6 +1,6 @@
 # 3.0.0
 - PPI-65 - Kompatibilität für Shopware 6.4 hinzugefügt
- -PPI-239 - Rebranding von iZettle auf Zettle
+- PPI-239 - Rebranding von iZettle auf Zettle
 
 # 2.2.3
 - PPI-256 - Behebt das Abbrechen von abgeschlossenen Bestellungen über den Browserverlauf
