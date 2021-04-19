@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-255 - Fix Express checkout if data protection checkbox is required
+
 # 3.0.0
 - PPI-65 - Added compatibility for Shopware 6.4
 - PPI-239 - Rebranded iZettle to Zettle
