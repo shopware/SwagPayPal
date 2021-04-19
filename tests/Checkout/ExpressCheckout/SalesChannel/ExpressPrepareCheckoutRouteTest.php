@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -38,6 +39,11 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
     public function testPrepare(): void
     {
         $salesChannelContext = $this->getSalesChannelContext();
+        $this->getSystemConfigService()->set(
+            'core.loginRegistration.requireDataProtectionCheckbox',
+            true,
+            Defaults::SALES_CHANNEL
+        );
 
         $testPaypalOrderId = 'testPaypalOrderId';
         $request = new Request([], [
@@ -170,5 +176,13 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
 
         $countryState = $address->getCountryState();
         static::assertNull($countryState);
+    }
+
+    private function getSystemConfigService(): SystemConfigService
+    {
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+
+        return $systemConfigService;
     }
 }

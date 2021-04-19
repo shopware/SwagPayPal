@@ -214,6 +214,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
                 'city' => $address->getAdminArea2(),
                 'additionalAddressLine1' => $address->getAddressLine2(),
             ],
+            'acceptedDataProtection' => true,
         ]);
     }
 
