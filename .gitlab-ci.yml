@@ -83,6 +83,8 @@ Static analyze:
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - make administration-lint
         - make storefront-lint
+        - cd $CI_PROJECT_DIR/development
+        - php bin/console dal:validate
     parallel:
         matrix:
             -   DEV_IMAGE:

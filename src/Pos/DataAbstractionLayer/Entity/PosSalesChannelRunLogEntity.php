@@ -22,7 +22,7 @@ class PosSalesChannelRunLogEntity extends Entity
     /**
      * @var PosSalesChannelRunEntity
      */
-    protected $run;
+    protected $posSalesChannelRun;
 
     /**
      * @var int
@@ -54,14 +54,30 @@ class PosSalesChannelRunLogEntity extends Entity
         $this->runId = $runId;
     }
 
+    /**
+     * @deprecated tag:v4.0.0, since REPLACE-GLOBAL-WITH-NEXT-VERSION use getPosSalesChannelRun() instead
+     */
     public function getRun(): PosSalesChannelRunEntity
     {
-        return $this->run;
+        return $this->getPosSalesChannelRun();
     }
 
-    public function setRun(PosSalesChannelRunEntity $run): void
+    /**
+     * @deprecated tag:v4.0.0, since REPLACE-GLOBAL-WITH-NEXT-VERSION use setPosSalesChannelRun() instead
+     */
+    public function setRun(PosSalesChannelRunEntity $posSalesChannelRun): void
     {
-        $this->run = $run;
+        $this->setPosSalesChannelRun($posSalesChannelRun);
+    }
+
+    public function getPosSalesChannelRun(): PosSalesChannelRunEntity
+    {
+        return $this->posSalesChannelRun;
+    }
+
+    public function setPosSalesChannelRun(PosSalesChannelRunEntity $posSalesChannelRun): void
+    {
+        $this->posSalesChannelRun = $posSalesChannelRun;
     }
 
     public function getLevel(): int
