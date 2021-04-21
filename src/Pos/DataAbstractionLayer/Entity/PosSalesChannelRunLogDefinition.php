@@ -44,7 +44,7 @@ class PosSalesChannelRunLogDefinition extends EntityDefinition
             (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
             (new FkField('run_id', 'runId', PosSalesChannelRunDefinition::class))->addFlags(new Required()),
 
-            (new ManyToOneAssociationField('run', 'run_id', PosSalesChannelRunDefinition::class)),
+            (new ManyToOneAssociationField('posSalesChannelRun', 'run_id', PosSalesChannelRunDefinition::class)),
 
             (new IntField('level', 'level'))->addFlags(new Required()),
             (new LongTextField('message', 'message'))->addFlags(new Required()),

@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-255 - Fix Express checkout if data protection checkbox is required
+- PPI-263 - Das Plugin ist jetzt valide für den Konsolenbefehl `dal:validate`
 
 # 3.0.0
 - PPI-65 - Added compatibility for Shopware 6.4
