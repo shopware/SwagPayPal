@@ -5,8 +5,12 @@
             <i18n class="swag-paypal-pos-wizard-sync-library__headline"
                   path="swag-paypal-pos.wizard.syncLibrary.header"
                   tag="div">
-                <span place="shopwareProducts">{{ $tc('swag-paypal-pos.wizard.syncLibrary.shopwareProducts', shopwareProductsCount) }}</span>
-                <span place="posProducts">{{ $tc('swag-paypal-pos.wizard.syncLibrary.posProducts', posProductsCount) }}</span>
+                <template #shopwareProducts>
+                    <span>{{ $tc('swag-paypal-pos.wizard.syncLibrary.shopwareProducts', shopwareProductsCount) }}</span>
+                </template>
+                <template #posProducts>
+                    <span>{{ $tc('swag-paypal-pos.wizard.syncLibrary.posProducts', posProductsCount) }}</span>
+                </template>
             </i18n>
         {% endblock %}
 
@@ -15,7 +19,6 @@
                 v-model="salesChannel.extensions.paypalPosSalesChannel.replace"
                 class="swag-paypal-pos-boolean-radio"
                 :label="$tc('swag-paypal-pos.wizard.syncLibrary.description')"
-                :name="name"
                 :options="options">
             </sw-radio-field>
         {% endblock %}

@@ -11,6 +11,10 @@
             <argument type="service" id="Swag\PayPal\Pos\Setting\Service\InformationDefaultService"/>
             <argument type="service" id="Swag\PayPal\Pos\Setting\Service\ProductVisibilityCloneService"/>
             <argument type="service" id="Swag\PayPal\Pos\Setting\Service\ProductCountService"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <service id="Swag\PayPal\Pos\Setting\Service\ApiCredentialService">
