@@ -69,7 +69,7 @@ Component.register('swag-paypal-pos-detail-logs', {
             const params = this.getMainListingParams();
             const criteria = new Criteria(this.page, this.limit);
             criteria.addFilter(Criteria.equals('runId', this.runId));
-            criteria.addAssociation('run');
+            criteria.addAssociation('posSalesChannelRun');
 
             criteria.addSorting(Criteria.sort(params.sortBy, params.sortDirection, params.naturalSorting));
             criteria.addSorting(Criteria.sort('level', 'DESC'));
@@ -90,7 +90,7 @@ Component.register('swag-paypal-pos-detail-logs', {
         },
 
         getLabelVariantForItem(item) {
-            if (item.run && item.run.abortedByUser) {
+            if (item.posSalesChannelRun && item.posSalesChannelRun.abortedByUser) {
                 return 'info';
             }
 
@@ -98,7 +98,7 @@ Component.register('swag-paypal-pos-detail-logs', {
         },
 
         getLabelForItem(item) {
-            if (item.run && item.run.abortedByUser) {
+            if (item.posSalesChannelRun && item.posSalesChannelRun.abortedByUser) {
                 return 'swag-paypal-pos.detail.logs.states.aborted';
             }
 

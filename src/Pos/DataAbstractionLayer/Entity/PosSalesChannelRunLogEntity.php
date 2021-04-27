@@ -20,7 +20,14 @@ class PosSalesChannelRunLogEntity extends Entity
     protected $runId;
 
     /**
-     * @var PosSalesChannelRunEntity
+     * @deprecated tag:v4.0.0, since REPLACE-GLOBAL-WITH-NEXT-VERSION use $posSalesChannelRun instead
+     *
+     * @var PosSalesChannelRunEntity|null
+     */
+    protected $run;
+
+    /**
+     * @var PosSalesChannelRunEntity|null
      */
     protected $posSalesChannelRun;
 
@@ -57,7 +64,7 @@ class PosSalesChannelRunLogEntity extends Entity
     /**
      * @deprecated tag:v4.0.0, since REPLACE-GLOBAL-WITH-NEXT-VERSION use getPosSalesChannelRun() instead
      */
-    public function getRun(): PosSalesChannelRunEntity
+    public function getRun(): ?PosSalesChannelRunEntity
     {
         return $this->getPosSalesChannelRun();
     }
@@ -65,17 +72,17 @@ class PosSalesChannelRunLogEntity extends Entity
     /**
      * @deprecated tag:v4.0.0, since REPLACE-GLOBAL-WITH-NEXT-VERSION use setPosSalesChannelRun() instead
      */
-    public function setRun(PosSalesChannelRunEntity $posSalesChannelRun): void
+    public function setRun(?PosSalesChannelRunEntity $run): void
     {
-        $this->setPosSalesChannelRun($posSalesChannelRun);
+        $this->setPosSalesChannelRun($run);
     }
 
-    public function getPosSalesChannelRun(): PosSalesChannelRunEntity
+    public function getPosSalesChannelRun(): ?PosSalesChannelRunEntity
     {
         return $this->posSalesChannelRun;
     }
 
-    public function setPosSalesChannelRun(PosSalesChannelRunEntity $posSalesChannelRun): void
+    public function setPosSalesChannelRun(?PosSalesChannelRunEntity $posSalesChannelRun): void
     {
         $this->posSalesChannelRun = $posSalesChannelRun;
     }
