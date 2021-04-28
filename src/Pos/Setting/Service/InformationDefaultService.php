@@ -181,7 +181,14 @@ class InformationDefaultService
     private function getAvailabilityRuleId(Context $context): ?string
     {
         $ruleCriteria = new Criteria();
-        $ruleCriteria->addFilter(new EqualsFilter('name', 'Cart >= 0'));
+        $ruleCriteria->addFilter(new EqualsFilter('name', 'Always valid (Default)'));
+        $id = $this->ruleRepository->searchIds($ruleCriteria, $context)->firstId();
+        if ($id !== null) {
+            return $id;
+        }
+
+        $ruleCriteria = new Criteria();
+        $ruleCriteria->setLimit(1);
 
         return $this->ruleRepository->searchIds($ruleCriteria, $context)->firstId();
     }

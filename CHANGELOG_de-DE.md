@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-65 - Kompatibilität mit Shopware 6.4 und Zettle verbessert
 - PPI-255 - Problem mit Express Checkout und Datenschutzbestimmungen-Checkbox behoben
 - PPI-263 - Plugin is valid for the `dal:validate` console command
 

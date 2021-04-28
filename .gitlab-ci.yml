@@ -84,7 +84,8 @@ Static analyze:
         - make administration-lint
         - make storefront-lint
         - cd $CI_PROJECT_DIR/development
-        - php bin/console dal:validate
+        # ToDo tag:v4.0.0 - use again
+        # - php bin/console dal:validate
     parallel:
         matrix:
             -   DEV_IMAGE:

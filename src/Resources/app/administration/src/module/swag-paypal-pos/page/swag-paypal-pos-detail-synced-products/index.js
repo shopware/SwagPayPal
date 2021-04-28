@@ -103,7 +103,7 @@ Component.register('swag-paypal-pos-detail-synced-products', {
             }
 
             if (item.extensions.paypalPosLog[0]) {
-                return item.extensions.paypalPosLog[0].run.updatedAt
+                return item.extensions.paypalPosLog[0].posSalesChannelRun.updatedAt
                     || item.extensions.paypalPosLog[0].createdAt;
             }
 

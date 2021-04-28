@@ -9,6 +9,10 @@
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <argument type="service" id="Swag\PayPal\Pos\Webhook\WebhookService"/>
             <argument type="service" id="sales_channel.repository"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
 
         <service id="Swag\PayPal\Pos\Webhook\WebhookService" public="true">
