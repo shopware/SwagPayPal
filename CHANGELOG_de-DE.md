@@ -1,3 +1,6 @@
+# NEXT_VERSION
+- NEXT-15014 - Improve ACL handling
+
 # 2.2.3
 - PPI-256 - Behebt das Abbrechen von abgeschlossenen Bestellungen über den Browserverlauf
 
