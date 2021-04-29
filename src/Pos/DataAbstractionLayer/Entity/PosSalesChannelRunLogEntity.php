@@ -20,7 +20,7 @@ class PosSalesChannelRunLogEntity extends Entity
     protected $runId;
 
     /**
-     * @deprecated tag:v4.0.0, since REPLACE-GLOBAL-WITH-NEXT-VERSION use $posSalesChannelRun instead
+     * @deprecated tag:v4.0.0, since 3.0.1 use $posSalesChannelRun instead
      *
      * @var PosSalesChannelRunEntity|null
      */
@@ -62,7 +62,7 @@ class PosSalesChannelRunLogEntity extends Entity
     }
 
     /**
-     * @deprecated tag:v4.0.0, since REPLACE-GLOBAL-WITH-NEXT-VERSION use getPosSalesChannelRun() instead
+     * @deprecated tag:v4.0.0, since 3.0.1 use getPosSalesChannelRun() instead
      */
     public function getRun(): ?PosSalesChannelRunEntity
     {
@@ -70,7 +70,7 @@ class PosSalesChannelRunLogEntity extends Entity
     }
 
     /**
-     * @deprecated tag:v4.0.0, since REPLACE-GLOBAL-WITH-NEXT-VERSION use setPosSalesChannelRun() instead
+     * @deprecated tag:v4.0.0, since 3.0.1 use setPosSalesChannelRun() instead
      */
     public function setRun(?PosSalesChannelRunEntity $run): void
     {
