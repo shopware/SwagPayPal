@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Webhook\Registration;
 
+use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
 use Shopware\Core\System\SystemConfig\Service\ConfigurationService;
@@ -43,6 +44,9 @@ class WebhookSystemConfigController extends SystemConfigController
         $this->webhookSystemConfigHelper = $webhookSystemConfigHelper;
     }
 
+    /**
+     * @Acl({"system_config:update", "system_config:create", "system_config:delete"})
+     */
     public function saveConfiguration(Request $request): JsonResponse
     {
         $salesChannelId = $request->query->get('salesChannelId');
@@ -67,6 +71,9 @@ class WebhookSystemConfigController extends SystemConfigController
         }, $errors)]);
     }
 
+    /**
+     * @Acl({"system_config:update", "system_config:create", "system_config:delete"})
+     */
     public function batchSaveConfiguration(Request $request): JsonResponse
     {
         $oldSettings = [];

@@ -1,3 +1,6 @@
+# NEXT_VERSION
+- NEXT-15014 - Improve ACL handling
+
 # 2.2.3
 - PPI-256 - Fix canceling of finalized orders by using the browser history
 
