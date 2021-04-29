@@ -3,7 +3,7 @@ const { Mixin } = Shopware;
 Mixin.register('swag-paypal-pos-log-label', {
     methods: {
         /**
-         * Returns the corresponding sw-label variant for a iZettle log
+         * Returns the corresponding sw-label variant for a Zettle log
          *
          * @param {Number} level
          * @returns {string}
@@ -25,7 +25,7 @@ Mixin.register('swag-paypal-pos-log-label', {
         },
 
         /**
-         * Returns the corresponding translation path for a iZettle log
+         * Returns the corresponding translation path for a Zettle log
          *
          * @param {Number} level
          * @returns {string}

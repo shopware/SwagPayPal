@@ -1,5 +1,6 @@
-# NEXT_VERSION
+# 2.2.4
 - NEXT-15014 - Improve ACL handling
+- PPI-239 - Rebranded iZettle to Zettle
 
 # 2.2.3
 - PPI-256 - Behebt das Abbrechen von abgeschlossenen Bestellungen über den Browserverlauf

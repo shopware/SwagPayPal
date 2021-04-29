@@ -36,7 +36,7 @@ class PosSyncCommand extends AbstractPosCommand
     protected function configure(): void
     {
         parent::configure();
-        $this->setDescription('Sync to iZettle');
+        $this->setDescription('Sync to Zettle');
     }
 
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void

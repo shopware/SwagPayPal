@@ -36,7 +36,7 @@ class PosImageSyncCommand extends AbstractPosCommand
     protected function configure(): void
     {
         parent::configure();
-        $this->setDescription('Sync only images to iZettle');
+        $this->setDescription('Sync only images to Zettle');
     }
 
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void
