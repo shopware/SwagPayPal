@@ -5,16 +5,16 @@
  * file that was distributed with this source code.
  */
 
-use PackageVersions\Versions;
+use Composer\InstalledVersions;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Shopware\Development\Kernel;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Dotenv\Dotenv;
 
 $classLoader = require __DIR__ . '/../../../../vendor/autoload.php';
-(new Dotenv(true))->load(__DIR__ . '/../../../../.env');
+(new Dotenv())->usePutEnv()->load(__DIR__ . '/../../../../.env');
 
-$shopwareVersion = Versions::getVersion('shopware/platform');
+$shopwareVersion = InstalledVersions::getVersion('shopware/platform') . '@' . InstalledVersions::getReference('shopware/platform');
 
 $pluginRootPath = \dirname(__DIR__);
 $composerJson = \json_decode((string) \file_get_contents($pluginRootPath . '/composer.json'), true);

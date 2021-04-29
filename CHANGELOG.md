@@ -1,3 +1,6 @@
+# 3.0.2
+- NEXT-15014 - Improve ACL handling
+
 # 3.0.1
 - PPI-65 - Improved compatibility for Shopware 6.4 with Zettle
 - PPI-255 - Fix Express checkout if data protection checkbox is required

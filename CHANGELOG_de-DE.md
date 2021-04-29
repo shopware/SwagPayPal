@@ -1,3 +1,6 @@
+# 3.0.2
+- NEXT-15014 - ACL-Handling verbessert
+
 # 3.0.1
 - PPI-65 - Kompatibilität mit Shopware 6.4 und Zettle verbessert
 - PPI-255 - Problem mit Express Checkout und Datenschutzbestimmungen-Checkbox behoben
