@@ -28,6 +28,9 @@ class SubscriptionResource
         $this->posClientFactory = $posClientFactory;
     }
 
+    /**
+     * @deprecated tag:v4.0.0 will be removed, use UserResource instead
+     */
     public function getMerchantInformation(string $apiKey): ?MerchantInformation
     {
         $client = $this->posClientFactory->getPosClient(PosBaseURL::SECURE, $apiKey);
