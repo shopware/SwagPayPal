@@ -1,10 +1,13 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-238 - Fix issue with order not being linked in disputes of Plus payments
+
 # 3.0.2
 - NEXT-15014 - Improve ACL handling
 
 # 3.0.1
 - PPI-65 - Improved compatibility for Shopware 6.4 with Zettle
 - PPI-255 - Fix Express checkout if data protection checkbox is required
-- PPI-263 - Das Plugin ist jetzt valide für den Konsolenbefehl `dal:validate`
+- PPI-263 - Plugin is valid for the `dal:validate` console command
 
 # 3.0.0
 - PPI-65 - Added compatibility for Shopware 6.4

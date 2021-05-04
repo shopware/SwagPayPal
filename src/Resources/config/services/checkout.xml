@@ -64,6 +64,7 @@
             <argument type="service" id="Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder"/>
             <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder"/>
             <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder"/>
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\CustomTransactionPatchBuilder"/>
             <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
