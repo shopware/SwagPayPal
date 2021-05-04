@@ -38,6 +38,7 @@ use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder as OrderNumberPatchBuilderV2;
 use Swag\PayPal\OrdersApi\Patch\ShippingAddressPatchBuilder as ShippingAddressPatchBuilderV2;
 use Swag\PayPal\OrdersApi\Patch\ShippingNamePatchBuilder;
+use Swag\PayPal\PaymentsApi\Patch\CustomTransactionPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
@@ -166,7 +167,7 @@ class PayPalPaymentHandlerTest extends TestCase
         );
 
         $patchData = $this->clientFactory->getClient()->getData();
-        static::assertCount(2, $patchData);
+        static::assertCount(3, $patchData);
         foreach ($patchData as $patch) {
             static::assertInstanceOf(Patch::class, $patch);
             if ($patch->getPath() === '/transactions/0/item_list/shipping_address') {
@@ -180,6 +181,10 @@ class PayPalPaymentHandlerTest extends TestCase
                 static::assertIsArray($patchValue);
                 static::assertSame(self::TEST_CUSTOMER_FIRST_NAME, $patchValue['first_name']);
                 static::assertSame(self::TEST_CUSTOMER_STREET, $patchValue['billing_address']['line1']);
+            }
+
+            if ($patch->getPath() === '/transactions/0/custom') {
+                static::assertSame($transactionId, $patch->getValue());
             }
         }
 
@@ -662,6 +667,7 @@ An error occurred during the communication with PayPal');
                 $this->createPaymentBuilder($settings),
                 new PayerInfoPatchBuilder(),
                 new OrderNumberPatchBuilder(),
+                new CustomTransactionPatchBuilder(),
                 new ShippingAddressPatchBuilder(),
                 $settingsService,
                 $orderTransactionStateHandler,

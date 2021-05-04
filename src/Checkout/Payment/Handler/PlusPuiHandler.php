@@ -18,6 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilderInterface;
+use Swag\PayPal\PaymentsApi\Patch\CustomTransactionPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
@@ -59,6 +60,11 @@ class PlusPuiHandler
     private $orderNumberPatchBuilder;
 
     /**
+     * @var CustomTransactionPatchBuilder
+     */
+    private $customTransactionPatchBuilder;
+
+    /**
      * @var PayerInfoPatchBuilder
      */
     private $payerInfoPatchBuilder;
@@ -89,6 +95,7 @@ class PlusPuiHandler
         OrderPaymentBuilderInterface $paymentBuilder,
         PayerInfoPatchBuilder $payerInfoPatchBuilder,
         OrderNumberPatchBuilder $orderNumberPatchBuilder,
+        CustomTransactionPatchBuilder $customTransactionPatchBuilder,
         ShippingAddressPatchBuilder $shippingAddressPatchBuilder,
         SettingsServiceInterface $settingsService,
         OrderTransactionStateHandler $orderTransactionStateHandler,
@@ -98,6 +105,7 @@ class PlusPuiHandler
         $this->orderTransactionRepo = $orderTransactionRepo;
         $this->paymentBuilder = $paymentBuilder;
         $this->orderNumberPatchBuilder = $orderNumberPatchBuilder;
+        $this->customTransactionPatchBuilder = $customTransactionPatchBuilder;
         $this->payerInfoPatchBuilder = $payerInfoPatchBuilder;
         $this->shippingAddressPatchBuilder = $shippingAddressPatchBuilder;
         $this->settingsService = $settingsService;
@@ -118,6 +126,7 @@ class PlusPuiHandler
         $patches = [
             $this->shippingAddressPatchBuilder->createShippingAddressPatch($customer),
             $this->payerInfoPatchBuilder->createPayerInfoPatch($customer),
+            $this->customTransactionPatchBuilder->createCustomTransactionPatch($transaction->getOrderTransaction()->getId()),
         ];
 
         $this->patchPayPalPayment(

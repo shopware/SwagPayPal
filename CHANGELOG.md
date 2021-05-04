@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-238 - Fix issue with order not being linked in disputes of Plus payments
+
 # 2.2.4
 - NEXT-15014 - Improve ACL handling
 - PPI-239 - Rebranding von iZettle auf Zettle

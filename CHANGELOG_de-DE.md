@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-238 - Behebt ein Problem, bei dem Zahlungen über PayPal Plus nicht in den Disputes verlinkt wurden
+
 # 2.2.4
 - NEXT-15014 - Improve ACL handling
 - PPI-239 - Rebranded iZettle to Zettle

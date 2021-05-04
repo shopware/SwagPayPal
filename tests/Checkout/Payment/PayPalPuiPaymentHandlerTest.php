@@ -24,6 +24,7 @@ use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
+use Swag\PayPal\PaymentsApi\Patch\CustomTransactionPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
@@ -147,6 +148,7 @@ Customer is not logged in.');
                 $this->createPaymentBuilder($settings),
                 $payerInfoPatchBuilder,
                 new OrderNumberPatchBuilder(),
+                new CustomTransactionPatchBuilder(),
                 $shippingAddressPatchBuilder,
                 new SettingsServiceMock($settings),
                 $orderTransactionStateHandler,
