@@ -189,7 +189,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('en_GB', $spbExtension->getLanguageIso());
         static::assertSame($this->paypalPaymentMethodId, $spbExtension->getPaymentMethodId());
-        static::assertSame(\strtolower(PaymentIntentV2::CAPTURE), $spbExtension->getIntent());
+        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbExtension->getIntent());
         static::assertSame('gold', $spbExtension->getButtonColor());
         static::assertSame('rect', $spbExtension->getButtonShape());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
@@ -360,7 +360,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame('EUR', $spbExtension->getCurrency());
         static::assertSame('de_DE', $spbExtension->getLanguageIso());
         static::assertSame($this->paypalPaymentMethodId, $spbExtension->getPaymentMethodId());
-        static::assertSame(\strtolower(PaymentIntentV2::CAPTURE), $spbExtension->getIntent());
+        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbExtension->getIntent());
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
         static::assertSame('/store-api/paypal/spb/create-order', $spbExtension->getCreateOrderUrl());
         static::assertStringContainsString('/checkout/confirm', $spbExtension->getCheckoutConfirmUrl());

@@ -92,7 +92,7 @@ class GuzzleClientMock implements ClientInterface
         } else {
             // Add the User-Agent header if one was not already set.
             foreach (\array_keys($this->config['headers']) as $name) {
-                if (\is_string($name) && \strtolower($name) === 'user-agent') {
+                if (\is_string($name) && \mb_strtolower($name) === 'user-agent') {
                     return;
                 }
             }
@@ -108,7 +108,7 @@ class GuzzleClientMock implements ClientInterface
      */
     public function request(string $method, $uri, array $options = []): ResponseInterface
     {
-        switch (\strtolower($method)) {
+        switch (\mb_strtolower($method)) {
             case 'get':
                 return new Response(200, [], $this->handleGetRequests((string) $uri));
             case 'post':
@@ -159,9 +159,9 @@ class GuzzleClientMock implements ClientInterface
      */
     private function handleGetRequests(string $resourceUri): string
     {
-        if (\strpos($resourceUri, 'v1') === 0) {
+        if (\mb_strpos($resourceUri, 'v1') === 0) {
             $response = $this->handleApiV1GetRequests($resourceUri);
-        } elseif (\strpos($resourceUri, 'v2') === 0) {
+        } elseif (\mb_strpos($resourceUri, 'v2') === 0) {
             $response = $this->handleApiV2GetRequests($resourceUri);
         }
 
@@ -174,39 +174,39 @@ class GuzzleClientMock implements ClientInterface
 
     private function handleApiV1GetRequests(string $resourceUri): array
     {
-        if (\strpos($resourceUri, RequestUriV1::WEBHOOK_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV1::WEBHOOK_RESOURCE) !== false) {
             return $this->handleWebhookGetRequests($resourceUri);
         }
 
-        if (\strpos($resourceUri, RequestUriV1::PAYMENT_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV1::PAYMENT_RESOURCE) !== false) {
             return $this->handlePaymentGetRequests($resourceUri);
         }
 
-        if (\strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false) {
             return GetResourceAuthorizeResponseFixture::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV1::CAPTURE_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV1::CAPTURE_RESOURCE) !== false) {
             return CaptureAuthorizationResponseFixture::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false) {
             return GetResourceOrderResponseFixture::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV1::SALE_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV1::SALE_RESOURCE) !== false) {
             return GetResourceSaleResponseFixture::get();
         }
 
-        if (\strpos($resourceUri, 'customer/partners/') !== false) {
+        if (\mb_strpos($resourceUri, 'customer/partners/') !== false) {
             return [
                 'client_id' => ConstantsForTesting::VALID_CLIENT_ID,
                 'client_secret' => ConstantsForTesting::VALID_CLIENT_SECRET,
             ];
         }
 
-        if (\strpos($resourceUri, RequestUriV1::DISPUTES_RESOURCE) !== false) {
-            if (\strpos($resourceUri, '/PP-') !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV1::DISPUTES_RESOURCE) !== false) {
+            if (\mb_strpos($resourceUri, '/PP-') !== false) {
                 return GetDispute::get();
             }
 
@@ -218,7 +218,7 @@ class GuzzleClientMock implements ClientInterface
 
     private function handleApiV2GetRequests(string $resourceUri): array
     {
-        if (\strpos($resourceUri, RequestUriV2::ORDERS_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV2::ORDERS_RESOURCE) !== false) {
             if (\mb_substr($resourceUri, -17) === GetCapturedOrderCapture::ID) {
                 return GetCapturedOrderCapture::get();
             }
@@ -243,15 +243,15 @@ class GuzzleClientMock implements ClientInterface
             return $orderCapture;
         }
 
-        if (\strpos($resourceUri, RequestUriV2::CAPTURES_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV2::CAPTURES_RESOURCE) !== false) {
             return GetCapture::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV2::REFUNDS_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV2::REFUNDS_RESOURCE) !== false) {
             return GetRefund::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV2::AUTHORIZATIONS_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV2::AUTHORIZATIONS_RESOURCE) !== false) {
             return GetAuthorization::get();
         }
 
@@ -301,9 +301,9 @@ class GuzzleClientMock implements ClientInterface
      */
     private function handlePostRequests(string $resourceUri, ?PayPalApiStruct $data): string
     {
-        if (\strpos($resourceUri, 'v1') === 0) {
+        if (\mb_strpos($resourceUri, 'v1') === 0) {
             $response = $this->handleApiV1PostRequests($resourceUri, $data);
-        } elseif (\strpos($resourceUri, 'v2') === 0) {
+        } elseif (\mb_strpos($resourceUri, 'v2') === 0) {
             $response = $this->handleApiV2PostRequests($resourceUri, $data);
         }
 
@@ -334,7 +334,7 @@ class GuzzleClientMock implements ClientInterface
             return CreateTokenResponseFixture::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV1::PAYMENT_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV1::PAYMENT_RESOURCE) !== false) {
             $dataJson = $this->ensureValidJson($data);
             $dataArray = \json_decode($dataJson, true);
             if (isset($dataArray['transactions'][0]['invoice_number']) && $dataArray['transactions'][0]['invoice_number'] === ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION_WITH_PREFIX) {
@@ -355,7 +355,7 @@ class GuzzleClientMock implements ClientInterface
             return CreateResponseFixture::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV1::WEBHOOK_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV1::WEBHOOK_RESOURCE) !== false) {
             if ($data === null) {
                 throw new \RuntimeException('Create webhook request needs valid Webhook struct');
             }
@@ -363,27 +363,27 @@ class GuzzleClientMock implements ClientInterface
             return $this->handleWebhookCreateRequests($data);
         }
 
-        if (\strpos($resourceUri, RequestUriV1::SALE_RESOURCE) !== false && \mb_substr($resourceUri, -7) === '/refund') {
+        if (\mb_strpos($resourceUri, RequestUriV1::SALE_RESOURCE) !== false && \mb_substr($resourceUri, -7) === '/refund') {
             return RefundSaleResponseFixture::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV1::CAPTURE_RESOURCE) !== false && \mb_substr($resourceUri, -7) === '/refund') {
+        if (\mb_strpos($resourceUri, RequestUriV1::CAPTURE_RESOURCE) !== false && \mb_substr($resourceUri, -7) === '/refund') {
             return RefundCaptureResponseFixture::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/capture') {
+        if (\mb_strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/capture') {
             return CaptureAuthorizationResponseFixture::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false && \mb_substr($resourceUri, -5) === '/void') {
+        if (\mb_strpos($resourceUri, RequestUriV1::AUTHORIZATION_RESOURCE) !== false && \mb_substr($resourceUri, -5) === '/void') {
             return VoidAuthorizationResponseFixture::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/capture') {
+        if (\mb_strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/capture') {
             return CaptureOrdersResponseFixture::get();
         }
 
-        if (\strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/do-void') {
+        if (\mb_strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/do-void') {
             return VoidOrderResponseFixture::get();
         }
 
@@ -392,7 +392,7 @@ class GuzzleClientMock implements ClientInterface
 
     private function handleApiV2PostRequests(string $resourceUri, ?PayPalApiStruct $data): array
     {
-        if (\strpos($resourceUri, RequestUriV2::ORDERS_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV2::ORDERS_RESOURCE) !== false) {
             if ($data instanceof Order && $data->getPurchaseUnits()[0]->getInvoiceId() === ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION) {
                 throw new \RuntimeException('A PayPal test error occurred.');
             }
@@ -423,7 +423,7 @@ class GuzzleClientMock implements ClientInterface
             return $response;
         }
 
-        if (\strpos($resourceUri, RequestUriV2::CAPTURES_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV2::CAPTURES_RESOURCE) !== false) {
             $refundedCapture = RefundCapture::get();
             if ($data instanceof Refund) {
                 $amount = $data->getAmount();
@@ -445,7 +445,7 @@ class GuzzleClientMock implements ClientInterface
             return $refundedCapture;
         }
 
-        if (\strpos($resourceUri, RequestUriV2::AUTHORIZATIONS_RESOURCE) !== false) {
+        if (\mb_strpos($resourceUri, RequestUriV2::AUTHORIZATIONS_RESOURCE) !== false) {
             if (\mb_substr($resourceUri, -5) === '/void') {
                 return [];
             }

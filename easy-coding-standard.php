@@ -5,6 +5,7 @@
  * file that was distributed with this source code.
  */
 
+use PhpCsFixer\Fixer\Alias\MbStrFunctionsFixer;
 use PhpCsFixer\Fixer\Comment\HeaderCommentFixer;
 use PhpCsFixer\Fixer\FunctionNotation\NativeFunctionInvocationFixer;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -18,6 +19,8 @@ For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.', 'separate' => 'bottom', 'location' => 'after_declare_strict', 'comment_type' => 'comment']]);
 
     $services->set(NativeFunctionInvocationFixer::class);
+
+    $services->set(MbStrFunctionsFixer::class);
 
     $parameters = $containerConfigurator->parameters();
 

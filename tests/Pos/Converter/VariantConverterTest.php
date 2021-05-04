@@ -76,7 +76,7 @@ class VariantConverterTest extends TestCase
     {
         $productEntity = $this->createProductEntity();
         $productEntity->addTranslated('description', \str_repeat(self::PRODUCT_DESCRIPTION, 100));
-        static::assertGreaterThan(1024, \strlen($productEntity->getTranslation('description')));
+        static::assertGreaterThan(1024, \mb_strlen($productEntity->getTranslation('description')));
 
         $converted = $this->createVariantConverter()->convert(
             $productEntity,
@@ -85,7 +85,7 @@ class VariantConverterTest extends TestCase
         );
 
         $variant = $this->createVariant();
-        $variant->setDescription(\sprintf('%s...', \substr(\str_repeat(self::PRODUCT_DESCRIPTION, 100), 0, 1021)));
+        $variant->setDescription(\sprintf('%s...', \mb_substr(\str_repeat(self::PRODUCT_DESCRIPTION, 100), 0, 1021)));
 
         $uuid = $this->createUuidConverter()->incrementUuid($productEntity->getId());
         $variant->setUuid($this->createUuidConverter()->convertUuidToV1($uuid));

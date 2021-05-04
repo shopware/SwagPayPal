@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-238 - Behebt ein Problem, bei dem Zahlungen über PayPal Plus nicht in den Disputes verlinkt wurden
+- PPI-265 - Behebt Kodierungsfehler bei gekürzten Zettle-Produktbeschreibungen
 
 # 3.0.2
 - NEXT-15014 - ACL-Handling verbessert

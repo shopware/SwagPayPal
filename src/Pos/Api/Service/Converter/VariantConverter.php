@@ -62,8 +62,8 @@ class VariantConverter
         $variant->setName((string) ($shopwareVariant->getTranslation('name') ?? $shopwareVariant->getName()));
         $variant->setSku($shopwareVariant->getProductNumber());
         $variant->setDescription((string) ($shopwareVariant->getTranslation('description') ?? $shopwareVariant->getDescription()));
-        if (\strlen($variant->getDescription()) > 1024) {
-            $variant->setDescription(\sprintf('%s...', \substr($variant->getDescription(), 0, 1021)));
+        if (\mb_strlen($variant->getDescription()) > 1024) {
+            $variant->setDescription(\sprintf('%s...', \mb_substr($variant->getDescription(), 0, 1021)));
 
             $this->logger->warning(
                 'The description of product "{productName}" is too long and will be cut off at 1024 characters.',

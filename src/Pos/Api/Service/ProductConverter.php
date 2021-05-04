@@ -93,8 +93,8 @@ class ProductConverter
         $product->setUuid($mainProductId);
         $product->setName((string) ($shopwareProduct->getTranslation('name') ?? $shopwareProduct->getName()));
         $product->setDescription((string) ($shopwareProduct->getTranslation('description') ?? $shopwareProduct->getDescription()));
-        if (\strlen($product->getDescription()) > 1024) {
-            $product->setDescription(\sprintf('%s...', \substr($product->getDescription(), 0, 1021)));
+        if (\mb_strlen($product->getDescription()) > 1024) {
+            $product->setDescription(\sprintf('%s...', \mb_substr($product->getDescription(), 0, 1021)));
             // no warning to produce, since it will also be added in VariantConverter
         }
 
