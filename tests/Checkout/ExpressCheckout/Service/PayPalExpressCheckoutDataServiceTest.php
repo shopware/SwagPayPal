@@ -193,7 +193,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         }
         static::assertSame(self::CLIENT_ID, $expressCheckoutButtonData->getClientId());
         static::assertSame('EUR', $expressCheckoutButtonData->getCurrency());
-        static::assertSame(\strtolower(PaymentIntentV2::CAPTURE), $expressCheckoutButtonData->getIntent());
+        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $expressCheckoutButtonData->getIntent());
         static::assertFalse($expressCheckoutButtonData->getAddProductToCart());
         static::assertSame(
             \sprintf('/store-api/v%s/paypal/express/create-order', PlatformRequest::API_VERSION),

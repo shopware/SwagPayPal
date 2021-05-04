@@ -2,6 +2,7 @@
 - PPI-20 - Fix Webhooks when payment status is already set identically
 - PPI-235 - Fix Webhooks not correctly registered for separate Sales Channel credentials
 - PPI-238 - Fix issue with order not being linked in disputes of Plus payments
+- PPI-265 - Fix encoding on shortened Zettle product descriptions
 
 # 2.2.4
 - NEXT-15014 - Improve ACL handling

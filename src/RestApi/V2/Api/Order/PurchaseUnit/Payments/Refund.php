@@ -36,7 +36,7 @@ class Refund extends Payment
      */
     public function setInvoiceId(?string $invoiceId): void
     {
-        if ($invoiceId !== null && \strlen($invoiceId) > self::MAX_LENGTH_INVOICE_ID) {
+        if ($invoiceId !== null && \mb_strlen($invoiceId) > self::MAX_LENGTH_INVOICE_ID) {
             throw new \LengthException(
                 \sprintf('%s::$invoiceId must not be longer than %s characters', self::class, self::MAX_LENGTH_INVOICE_ID)
             );
@@ -55,7 +55,7 @@ class Refund extends Payment
      */
     public function setNoteToPayer(?string $noteToPayer): void
     {
-        if ($noteToPayer !== null && \strlen($noteToPayer) > self::MAX_LENGTH_NOTE_TO_PAYER) {
+        if ($noteToPayer !== null && \mb_strlen($noteToPayer) > self::MAX_LENGTH_NOTE_TO_PAYER) {
             throw new \LengthException(
                 \sprintf('%s::$invoiceId must not be longer than %s characters', self::class, self::MAX_LENGTH_NOTE_TO_PAYER)
             );
