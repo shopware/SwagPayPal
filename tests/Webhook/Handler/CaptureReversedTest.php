@@ -44,6 +44,12 @@ class CaptureReversedTest extends AbstractWebhookHandlerTestCase
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_CAPTURE_REVERSED, $webhook, $reason);
     }
 
+    public function testInvokeWithSameInitialState(): void
+    {
+        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_REFUND);
+        $this->assertInvoke(OrderTransactionStates::STATE_PARTIALLY_REFUNDED, $webhook, OrderTransactionStates::STATE_PARTIALLY_REFUNDED);
+    }
+
     protected function createWebhookHandler(): CaptureReversed
     {
         /** @var PaymentStatusUtilV2 $paymentStatusUtil */

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Webhook\Handler;
 
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
@@ -26,6 +27,8 @@ class SaleRefunded extends AbstractWebhookHandler
     {
         $orderTransaction = $this->getOrderTransaction($webhook, $context);
 
-        $this->orderTransactionStateHandler->refund($orderTransaction->getId(), $context);
+        if ($this->isChangeAllowed($orderTransaction, OrderTransactionStates::STATE_REFUNDED)) {
+            $this->orderTransactionStateHandler->refund($orderTransaction->getId(), $context);
+        }
     }
 }
