@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-20 - Fix Webhooks when payment status is already set identically
 - PPI-238 - Fix issue with order not being linked in disputes of Plus payments
 
 # 2.2.4

@@ -45,6 +45,12 @@ class CaptureDeniedTest extends AbstractWebhookHandlerTestCase
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_CAPTURE_DENIED, $webhook, $reason);
     }
 
+    public function testInvokeWithSameInitialState(): void
+    {
+        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_CAPTURE);
+        $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook, OrderTransactionStates::STATE_CANCELLED);
+    }
+
     protected function createWebhookHandler()
     {
         return new CaptureDenied(

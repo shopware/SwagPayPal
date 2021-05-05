@@ -46,6 +46,12 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_CAPTURE_COMPLETED, $webhook, $reason);
     }
 
+    public function testInvokeWithSameInitialState(): void
+    {
+        $webhook = $this->createWebhookV2(Webhook::RESOURCE_TYPE_CAPTURE);
+        $this->assertInvoke(OrderTransactionStates::STATE_PAID, $webhook, OrderTransactionStates::STATE_PAID);
+    }
+
     protected function createWebhookHandler()
     {
         /** @var PaymentStatusUtilV2 $paymentStatusUtil */

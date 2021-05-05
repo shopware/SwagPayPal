@@ -63,6 +63,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         }
 
         $criteria = new Criteria();
+        $criteria->addAssociation('order');
         $criteria->addFilter(
             new EqualsFilter(
                 \sprintf('customFields.%s', SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_TRANSACTION_ID),
@@ -102,5 +103,15 @@ abstract class AbstractWebhookHandler implements WebhookHandler
         }
 
         return $orderTransaction;
+    }
+
+    protected function isChangeAllowed(OrderTransactionEntity $orderTransaction, string $invalidStatus): bool
+    {
+        $state = $orderTransaction->getStateMachineState();
+        if ($state === null) {
+            return true;
+        }
+
+        return $state->getTechnicalName() !== $invalidStatus;
     }
 }
