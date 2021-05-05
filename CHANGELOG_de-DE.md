@@ -1,10 +1,13 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-238 - Behebt ein Problem, bei dem Zahlungen über PayPal Plus nicht in den Disputes verlinkt wurden
+
 # 3.0.2
 - NEXT-15014 - ACL-Handling verbessert
 
 # 3.0.1
 - PPI-65 - Kompatibilität mit Shopware 6.4 und Zettle verbessert
 - PPI-255 - Problem mit Express Checkout und Datenschutzbestimmungen-Checkbox behoben
-- PPI-263 - Plugin is valid for the `dal:validate` console command
+- PPI-263 - Das Plugin ist jetzt valide für den Konsolenbefehl `dal:validate`
 
 # 3.0.0
 - PPI-65 - Kompatibilität für Shopware 6.4 hinzugefügt

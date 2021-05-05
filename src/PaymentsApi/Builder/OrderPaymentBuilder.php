@@ -89,6 +89,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         $currency = $currencyEntity->getIsoCode();
 
         $transaction = new Transaction();
+        $transaction->setCustom($orderTransaction->getId());
 
         $amount = (new AmountProvider($this->priceFormatter))->createAmount(
             $orderTransactionAmount,

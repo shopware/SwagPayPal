@@ -50,6 +50,11 @@ class Transaction extends PayPalApiStruct
      */
     protected $description;
 
+    /**
+     * @var string
+     */
+    protected $custom;
+
     public function getAmount(): Amount
     {
         return $this->amount;
@@ -124,5 +129,15 @@ class Transaction extends PayPalApiStruct
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    public function getCustom(): string
+    {
+        return $this->custom;
+    }
+
+    public function setCustom(string $custom): void
+    {
+        $this->custom = $custom;
     }
 }
