@@ -30,9 +30,9 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
     private $logger;
 
     /**
-     * @var PayPalClient|null
+     * @var PayPalClient[]
      */
-    private $payPalClient;
+    private $payPalClients = [];
 
     public function __construct(
         TokenResourceInterface $tokenResource,
@@ -48,8 +48,10 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
         ?string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ): PayPalClientInterface {
-        if ($this->payPalClient === null) {
-            $this->payPalClient = new PayPalClient(
+        $key = $salesChannelId ?? 'null';
+
+        if (!isset($this->payPalClients[$key])) {
+            $this->payPalClients[$key] = new PayPalClient(
                 $this->tokenResource,
                 $this->settingsService->getSettings($salesChannelId),
                 $this->logger,
@@ -57,6 +59,6 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
             );
         }
 
-        return $this->payPalClient;
+        return $this->payPalClients[$key];
     }
 }
