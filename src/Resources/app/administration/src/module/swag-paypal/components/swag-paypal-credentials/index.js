@@ -24,19 +24,29 @@ Component.register('swag-paypal-credentials', {
             required: true
         },
         selectedSalesChannelId: {
-            required: true
+            type: String,
+            required: false,
+            default: null
         },
         clientIdErrorState: {
-            required: true
+            type: Object,
+            required: false,
+            default: null
         },
         clientSecretErrorState: {
-            required: true
+            type: Object,
+            required: false,
+            default: null
         },
         clientIdSandboxErrorState: {
-            required: true
+            type: Object,
+            required: false,
+            default: null
         },
         clientSecretSandboxErrorState: {
-            required: true
+            type: Object,
+            required: false,
+            default: null
         },
         clientIdFilled: {
             type: Boolean,

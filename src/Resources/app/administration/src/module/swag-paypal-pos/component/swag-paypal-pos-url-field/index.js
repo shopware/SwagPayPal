@@ -4,7 +4,8 @@ Component.extend('swag-paypal-pos-url-field', 'sw-url-field', {
     props: {
         error: {
             type: Object,
-            required: false
+            required: false,
+            default: null
         }
     },
 

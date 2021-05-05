@@ -20,15 +20,18 @@ Component.register('swag-paypal-pos-detail-overview', {
     props: {
         salesChannel: {
             type: Object,
-            required: false
+            required: false,
+            default: null
         },
         lastRun: {
             type: Object,
-            required: false
+            required: false,
+            default: null
         },
         lastCompleteRun: {
             type: Object,
-            required: false
+            required: false,
+            default: null
         }
     },
 

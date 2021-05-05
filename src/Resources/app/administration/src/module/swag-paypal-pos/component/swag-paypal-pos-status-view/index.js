@@ -8,11 +8,13 @@ Component.register('swag-paypal-pos-status-view', {
     props: {
         lastFinishedRun: {
             type: Object,
-            required: false
+            required: false,
+            default: null
         },
         lastCompleteRun: {
             type: Object,
-            required: false
+            required: false,
+            default: null
         },
         isLoading: {
             type: Boolean,
@@ -24,11 +26,13 @@ Component.register('swag-paypal-pos-status-view', {
         },
         salesChannel: {
             type: Object,
-            required: false
+            required: false,
+            default: null
         },
         syncErrors: {
             type: Array,
-            required: false
+            required: false,
+            default: null
         }
     },
 

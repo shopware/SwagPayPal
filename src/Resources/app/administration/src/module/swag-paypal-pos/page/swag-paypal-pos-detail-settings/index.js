@@ -31,7 +31,8 @@ Component.register('swag-paypal-pos-detail-settings', {
         },
         cloneSalesChannelId: {
             type: String,
-            required: false
+            required: false,
+            default: null
         }
     },
 
