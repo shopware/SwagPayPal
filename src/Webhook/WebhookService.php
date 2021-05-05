@@ -68,7 +68,7 @@ class WebhookService implements WebhookServiceInterface
 
     public function registerWebhook(?string $salesChannelId): string
     {
-        $settings = $this->settingsService->getSettings($salesChannelId);
+        $settings = $this->settingsService->getSettings($salesChannelId, false);
 
         $webhookExecuteToken = $settings->getWebhookExecuteToken();
         if ($webhookExecuteToken === null) {
