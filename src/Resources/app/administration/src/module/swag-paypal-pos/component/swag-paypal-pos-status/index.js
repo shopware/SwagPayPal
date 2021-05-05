@@ -9,7 +9,8 @@ Component.register('swag-paypal-pos-status', {
     props: {
         title: {
             type: String,
-            required: false
+            required: false,
+            default: ''
         },
         status: {
             type: String,
@@ -36,7 +37,8 @@ Component.register('swag-paypal-pos-status', {
         },
         subIcon: {
             type: String,
-            required: false
+            required: false,
+            default: ''
         },
         showSubStatus: {
             type: Boolean,

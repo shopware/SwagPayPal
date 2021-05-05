@@ -19,7 +19,9 @@ Component.register('swag-paypal-express', {
             required: true
         },
         selectedSalesChannelId: {
-            required: true
+            type: String,
+            required: false,
+            default: null
         }
     },
 

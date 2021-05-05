@@ -1,5 +1,5 @@
 import template from './swag-paypal-behavior.html.twig';
-import constants from './../../page/swag-paypal/swag-paypal-consts';
+import constants from '../../page/swag-paypal/swag-paypal-consts';
 
 const { Component } = Shopware;
 
@@ -20,7 +20,9 @@ Component.register('swag-paypal-behavior', {
             required: true
         },
         selectedSalesChannelId: {
-            required: true
+            type: String,
+            required: false,
+            default: null
         }
     },
 

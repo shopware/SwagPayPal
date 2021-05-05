@@ -22,7 +22,8 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
         },
         cloneSalesChannelId: {
             type: String,
-            required: false
+            required: false,
+            default: null
         },
         saveSalesChannel: {
             type: Function,

@@ -14,11 +14,13 @@ Component.register('swag-paypal-pos-account', {
     props: {
         salesChannel: {
             type: Object,
-            require: false
+            require: false,
+            default: null
         },
         lastRun: {
             type: Object,
-            require: false
+            require: false,
+            default: null
         }
     },
 
@@ -76,14 +78,14 @@ Component.register('swag-paypal-pos-account', {
         }
     },
 
-    created() {
-        this.createdComponent();
-    },
-
     watch: {
         salesChannel() {
             this.loadMerchantData();
         }
+    },
+
+    created() {
+        this.createdComponent();
     },
 
     methods: {

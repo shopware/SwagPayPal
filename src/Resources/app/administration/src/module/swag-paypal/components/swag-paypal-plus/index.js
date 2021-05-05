@@ -19,7 +19,9 @@ Component.register('swag-paypal-plus', {
             required: true
         },
         selectedSalesChannelId: {
-            required: true
+            type: String,
+            required: false,
+            default: null
         }
     },
 

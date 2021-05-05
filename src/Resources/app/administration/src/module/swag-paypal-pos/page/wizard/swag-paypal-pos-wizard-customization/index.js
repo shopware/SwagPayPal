@@ -13,7 +13,8 @@ Component.register('swag-paypal-pos-wizard-customization', {
         },
         cloneSalesChannelId: {
             type: String,
-            required: false
+            required: false,
+            default: null
         },
         saveSalesChannel: {
             type: Function,

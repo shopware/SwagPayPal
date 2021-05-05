@@ -22,7 +22,8 @@ Component.register('swag-paypal-pos-detail-runs', {
     props: {
         salesChannel: {
             type: Object,
-            required: false
+            required: false,
+            default: null
         }
     },
 
