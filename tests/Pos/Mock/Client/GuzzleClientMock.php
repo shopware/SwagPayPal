@@ -56,7 +56,7 @@ class GuzzleClientMock implements ClientInterface
      */
     public function request(string $method, $uri, array $options = []): ResponseInterface
     {
-        switch (\strtolower($method)) {
+        switch (\mb_strtolower($method)) {
             case 'get':
                 return new Response(200, [], $this->handleGetRequests((string) $uri));
             case 'post':

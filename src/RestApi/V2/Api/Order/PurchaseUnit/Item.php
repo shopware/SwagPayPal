@@ -51,7 +51,7 @@ class Item extends PayPalApiStruct
      */
     public function setName(string $name): void
     {
-        if (\strlen($name) > self::MAX_LENGTH_NAME) {
+        if (\mb_strlen($name) > self::MAX_LENGTH_NAME) {
             throw new \LengthException(
                 \sprintf('%s::$name must not be longer than %s characters', self::class, self::MAX_LENGTH_NAME)
             );
@@ -103,7 +103,7 @@ class Item extends PayPalApiStruct
      */
     public function setSku(?string $sku): void
     {
-        if ($sku !== null && \strlen($sku) > self::MAX_LENGTH_SKU) {
+        if ($sku !== null && \mb_strlen($sku) > self::MAX_LENGTH_SKU) {
             throw new \LengthException(
                 \sprintf('%s::$sku must not be longer than %s characters', self::class, self::MAX_LENGTH_SKU)
             );

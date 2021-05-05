@@ -156,7 +156,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             $item->setName($label);
         } catch (\LengthException $e) {
             $this->logger->warning($e->getMessage(), ['lineItem' => $lineItem]);
-            $item->setName(\substr($label, 0, Item::MAX_LENGTH_NAME));
+            $item->setName(\mb_substr($label, 0, Item::MAX_LENGTH_NAME));
         }
     }
 
@@ -168,7 +168,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             $item->setSku($productNumber);
         } catch (\LengthException $e) {
             $this->logger->warning($e->getMessage(), ['lineItem' => $lineItem]);
-            $item->setSku(\substr($productNumber, 0, Item::MAX_LENGTH_SKU));
+            $item->setSku(\mb_substr($productNumber, 0, Item::MAX_LENGTH_SKU));
         }
     }
 }

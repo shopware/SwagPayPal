@@ -61,7 +61,7 @@ class CrawlWebhookEventNamesCommand extends Command
                 $webhooksString .= "\n";
                 foreach ($webhooks as $webhook) {
                     $webhookName = $webhook[self::WEBHOOK_NAME_KEY];
-                    if (\strpos($webhooksString, $webhookName) !== false) {
+                    if (\mb_strpos($webhooksString, $webhookName) !== false) {
                         continue;
                     }
 

@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-238 - Fix issue with order not being linked in disputes of Plus payments
+- PPI-265 - Fix encoding on shortened Zettle product descriptions
 
 # 3.0.2
 - NEXT-15014 - Improve ACL handling
