@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Webhook\Handler;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\RestApi\PayPalApiStruct;
@@ -71,6 +72,8 @@ class CaptureRefunded extends AbstractWebhookHandler
         $paypalOrderId = $customFields[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID];
         $paypalOrder = $this->orderResource->get($paypalOrderId, $shopwareOrder->getSalesChannelId());
 
-        $this->paymentStatusUtil->applyRefundState($orderTransaction->getId(), $refund, $paypalOrder, $context);
+        if ($this->isChangeAllowed($orderTransaction, OrderTransactionStates::STATE_REFUNDED)) {
+            $this->paymentStatusUtil->applyRefundState($orderTransaction->getId(), $refund, $paypalOrder, $context);
+        }
     }
 }
