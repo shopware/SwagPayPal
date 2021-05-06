@@ -27,6 +27,7 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\Response;
 
 class PayPalHandler extends AbstractPaymentHandler
@@ -175,7 +176,7 @@ class PayPalHandler extends AbstractPaymentHandler
                     $this->orderTransactionStateHandler->paid($transactionId, $context);
                 }
             } else {
-                $this->orderResource->authorize($paypalOrderId, $salesChannelId, $partnerAttributionId);
+                $response = $this->orderResource->authorize($paypalOrderId, $salesChannelId, $partnerAttributionId);
             }
         } catch (PayPalApiException $e) {
             if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
@@ -198,7 +199,7 @@ class PayPalHandler extends AbstractPaymentHandler
                     $this->orderTransactionStateHandler->paid($transactionId, $context);
                 }
             } else {
-                $this->orderResource->authorize($paypalOrderId, $salesChannelId, $partnerAttributionId);
+                $response = $this->orderResource->authorize($paypalOrderId, $salesChannelId, $partnerAttributionId);
             }
         } catch (\Exception $e) {
             throw new AsyncPaymentFinalizeException(
@@ -206,5 +207,30 @@ class PayPalHandler extends AbstractPaymentHandler
                 \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
             );
         }
+
+        $this->addPayPalResourceId($response, $transactionId, $context);
+    }
+
+    private function addPayPalResourceId(PayPalOrder $order, string $transactionId, Context $context): void
+    {
+        $payments = $order->getPurchaseUnits()[0]->getPayments();
+
+        $id = null;
+        if ($order->getIntent() === PaymentIntentV2::CAPTURE && $captures = $payments->getCaptures()) {
+            $id = $captures[0]->getId();
+        } elseif ($order->getIntent() === PaymentIntentV2::AUTHORIZE && $authorizations = $payments->getAuthorizations()) {
+            $id = $authorizations[0]->getId();
+        }
+
+        if ($id === null) {
+            return;
+        }
+
+        $this->orderTransactionRepo->update([[
+            'id' => $transactionId,
+            'customFields' => [
+                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID => $id,
+            ],
+        ]], $context);
     }
 }

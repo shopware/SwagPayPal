@@ -68,7 +68,7 @@ class OrderResource
         string $orderId,
         string $salesChannelId,
         string $partnerAttributionId,
-        bool $minimalResponse = true
+        bool $minimalResponse = false
     ): Order {
         $headers = [];
         if ($minimalResponse === false) {
@@ -88,7 +88,7 @@ class OrderResource
         string $orderId,
         string $salesChannelId,
         string $partnerAttributionId,
-        bool $minimalResponse = true
+        bool $minimalResponse = false
     ): Order {
         $headers = [];
         if ($minimalResponse === false) {

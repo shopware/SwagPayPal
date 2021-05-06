@@ -57,6 +57,8 @@ use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
@@ -419,6 +421,7 @@ No approve link provided by PayPal');
     public function testFinalizeSale(): void
     {
         $this->assertFinalizeRequest($this->createPaymentV1Request());
+        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
     }
 
     public function testFinalizeEcs(): void
@@ -426,6 +429,7 @@ No approve link provided by PayPal');
         $request = $this->createPaymentV1Request();
         $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, 'true');
         $this->assertFinalizeRequest($request);
+        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
     }
 
     public function testFinalizeEcsWithDuplicateTransaction(): void
@@ -434,6 +438,7 @@ No approve link provided by PayPal');
         $request = $this->createPaymentV1Request(self::PAYER_ID_DUPLICATE_TRANSACTION);
         $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, 'true');
         $this->assertFinalizeRequest($request);
+        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
     }
 
     public function testFinalizeSpb(): void
@@ -441,6 +446,7 @@ No approve link provided by PayPal');
         $request = $this->createPaymentV1Request();
         $request->query->set(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID, 'true');
         $this->assertFinalizeRequest($request);
+        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
     }
 
     public function testFinalizeSpbWithDuplicateTransaction(): void
@@ -449,6 +455,7 @@ No approve link provided by PayPal');
         $request = $this->createPaymentV1Request(self::PAYER_ID_DUPLICATE_TRANSACTION);
         $request->query->set(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID, 'true');
         $this->assertFinalizeRequest($request);
+        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
     }
 
     public function testFinalizePlus(): void
@@ -456,6 +463,7 @@ No approve link provided by PayPal');
         $request = $this->createPaymentV1Request();
         $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, 'true');
         $this->assertFinalizeRequest($request);
+        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
     }
 
     public function testFinalizePlusWithDuplicateTransaction(): void
@@ -464,6 +472,7 @@ No approve link provided by PayPal');
         $request = $this->createPaymentV1Request(self::PAYER_ID_DUPLICATE_TRANSACTION);
         $request->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER, 'true');
         $this->assertFinalizeRequest($request);
+        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
     }
 
     public function testFinalizeAuthorization(): void
@@ -474,6 +483,7 @@ No approve link provided by PayPal');
             ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE
         );
         $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_OPEN);
+        $this->assertCustomFields(ExecutePaymentAuthorizeResponseFixture::AUTHORIZATION_ID);
     }
 
     public function testFinalizeOrder(): void
@@ -484,6 +494,7 @@ No approve link provided by PayPal');
             ConstantsForTesting::PAYER_ID_PAYMENT_ORDER
         );
         $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_OPEN);
+        $this->assertCustomFields(ExecutePaymentOrderResponseFixture::ORDER_ID);
     }
 
     public function testFinalizeWithCancel(): void
@@ -508,6 +519,7 @@ No approve link provided by PayPal');
         $request = $this->createPaymentV1Request();
         $request->query->set(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID, self::PAYER_ID_PAYMENT_INCOMPLETE);
         $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_FAILED);
+        $this->assertCustomFields(ExecutePaymentSaleResponseFixture::SALE_ID);
     }
 
     public function testFinalizeWithException(): void
@@ -542,6 +554,7 @@ An error occurred during the communication with PayPal');
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => 'paypalOrderId',
         ]);
         $this->assertFinalizeRequest($request);
+        $this->assertCustomFields(CaptureOrderCapture::CAPTURE_ID);
     }
 
     public function testFinalizePayPalOrderPatchOrderNumber(): void
@@ -551,6 +564,7 @@ An error occurred during the communication with PayPal');
             PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
         ]);
         $orderTransactionId = $this->assertFinalizeRequest($request);
+        $this->assertCustomFields(CaptureOrderCapture::CAPTURE_ID);
 
         $patchData = $this->clientFactory->getClient()->getData();
         static::assertCount(2, $patchData);
@@ -578,6 +592,7 @@ An error occurred during the communication with PayPal');
         ]);
         CaptureOrderCapture::setDuplicateOrderNumber(true);
         $this->assertFinalizeRequest($request);
+        $this->assertCustomFields(CaptureOrderCapture::CAPTURE_ID);
 
         $patchData = $this->clientFactory->getClient()->getData();
         static::assertCount(1, $patchData);
@@ -706,5 +721,14 @@ An error occurred during the communication with PayPal');
         $this->assertOrderTransactionState($state, $transactionId, $salesChannelContext->getContext());
 
         return $transactionId;
+    }
+
+    private function assertCustomFields(?string $resourceId): void
+    {
+        /** @var OrderTransactionRepoMock $orderTransactionRepo */
+        $orderTransactionRepo = $this->orderTransactionRepo;
+        $updatedData = $orderTransactionRepo->getData();
+
+        static::assertSame($resourceId, $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID]);
     }
 }
