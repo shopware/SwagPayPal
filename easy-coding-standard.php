@@ -18,7 +18,11 @@ return static function (ContainerConfigurator $containerConfigurator): void {
 For the full copyright and license information, please view the LICENSE
 file that was distributed with this source code.', 'separate' => 'bottom', 'location' => 'after_declare_strict', 'comment_type' => 'comment']]);
 
-    $services->set(NativeFunctionInvocationFixer::class);
+    $services->set(NativeFunctionInvocationFixer::class)
+        ->call('configure', [[
+            'include' => [NativeFunctionInvocationFixer::SET_ALL],
+            'scope' => 'namespaced',
+        ]]);
 
     $services->set(MbStrFunctionsFixer::class);
 

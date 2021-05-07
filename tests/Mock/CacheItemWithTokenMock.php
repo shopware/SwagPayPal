@@ -45,6 +45,7 @@ class CacheItemWithTokenMock implements CacheItemInterface
      */
     public function set($value): CacheItemInterface
     {
+        return $this;
     }
 
     /**
@@ -54,6 +55,7 @@ class CacheItemWithTokenMock implements CacheItemInterface
      */
     public function expiresAt($expiration): CacheItemInterface
     {
+        return $this;
     }
 
     /**
@@ -63,5 +65,6 @@ class CacheItemWithTokenMock implements CacheItemInterface
      */
     public function expiresAfter($time): CacheItemInterface
     {
+        return $this;
     }
 }

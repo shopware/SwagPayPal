@@ -16,7 +16,7 @@ class RequestParameterInvalidException extends ShopwareHttpException
     {
         $message = 'Parameter "{{ invalidParameter }}" is invalid.';
         if ($additionalInfo !== '') {
-            $message .= PHP_EOL . $additionalInfo;
+            $message .= \PHP_EOL . $additionalInfo;
         }
         parent::__construct(
             $message,

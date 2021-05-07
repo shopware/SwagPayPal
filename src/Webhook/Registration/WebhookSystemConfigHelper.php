@@ -84,7 +84,7 @@ class WebhookSystemConfigHelper
             static function (string $key) {
                 return \in_array(SettingsService::SYSTEM_CONFIG_DOMAIN . $key, self::WEBHOOK_KEYS, true);
             },
-            ARRAY_FILTER_USE_KEY
+            \ARRAY_FILTER_USE_KEY
         );
 
         $newSettingsFiltered = \array_filter(
@@ -92,7 +92,7 @@ class WebhookSystemConfigHelper
             static function (string $key) {
                 return \in_array(SettingsService::SYSTEM_CONFIG_DOMAIN . $key, self::WEBHOOK_KEYS, true);
             },
-            ARRAY_FILTER_USE_KEY
+            \ARRAY_FILTER_USE_KEY
         );
 
         return !empty(\array_diff_assoc($oldSettingsFiltered, $newSettingsFiltered));
