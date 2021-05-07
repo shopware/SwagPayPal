@@ -9,6 +9,8 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
 class ExecutePaymentOrderResponseFixture
 {
+    public const ORDER_ID = 'O-7PS41727C2382141U';
+
     public static function get(): array
     {
         return [
@@ -66,7 +68,7 @@ class ExecutePaymentOrderResponseFixture
                     'related_resources' => [
                         0 => [
                             'order' => [
-                                'id' => 'O-7PS41727C2382141U',
+                                'id' => self::ORDER_ID,
                                 'create_time' => '2018-12-04T15:23:24Z',
                                 'update_time' => '2018-12-04T15:23:24Z',
                                 'amount' => [

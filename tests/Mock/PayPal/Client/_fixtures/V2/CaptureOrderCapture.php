@@ -7,9 +7,12 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 
+use Swag\PayPal\RestApi\V2\PaymentIntentV2;
+
 class CaptureOrderCapture
 {
     public const ID = '9XG87361JT539825C';
+    public const CAPTURE_ID = '41U19903S66342642';
 
     /**
      * @var bool
@@ -31,6 +34,7 @@ class CaptureOrderCapture
         return [
             'id' => self::ID,
             'status' => 'COMPLETED',
+            'intent' => PaymentIntentV2::CAPTURE,
             'purchase_units' => [
                 0 => [
                     'reference_id' => 'default',
@@ -48,7 +52,7 @@ class CaptureOrderCapture
                     'payments' => [
                         'captures' => [
                             0 => [
-                                'id' => '41U19903S66342642',
+                                'id' => self::CAPTURE_ID,
                                 'status' => 'COMPLETED',
                                 'amount' => [
                                     'currency_code' => 'EUR',

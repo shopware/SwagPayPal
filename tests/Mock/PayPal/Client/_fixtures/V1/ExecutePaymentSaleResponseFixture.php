@@ -9,6 +9,8 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
 class ExecutePaymentSaleResponseFixture
 {
+    public const SALE_ID = '5GB9720606957970A';
+
     /**
      * @var bool
      */
@@ -86,7 +88,7 @@ class ExecutePaymentSaleResponseFixture
                     'related_resources' => [
                         0 => [
                             'sale' => [
-                                'id' => '5GB9720606957970A',
+                                'id' => self::SALE_ID,
                                 'state' => 'completed',
                                 'amount' => [
                                     'total' => '727.00',

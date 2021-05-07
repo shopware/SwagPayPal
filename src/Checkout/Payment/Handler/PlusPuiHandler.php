@@ -264,7 +264,7 @@ class PlusPuiHandler
             $this->orderTransactionStateHandler->fail($transactionId, $context);
         }
 
-        $this->savePaymentInstructions($response, $transactionId, $context);
+        $this->updateTransaction($response, $transactionId, $context);
     }
 
     /**
@@ -342,20 +342,45 @@ class PlusPuiHandler
         return $paymentState;
     }
 
-    private function savePaymentInstructions(Payment $payment, string $transactionId, Context $context): void
+    private function updateTransaction(Payment $payment, string $transactionId, Context $context): void
     {
+        $customFields = [];
+
         $paymentInstructions = $payment->getPaymentInstruction();
-        if ($paymentInstructions === null
-            || $paymentInstructions->getInstructionType() !== PaymentInstruction::TYPE_INVOICE
+        if ($paymentInstructions !== null
+            && $paymentInstructions->getInstructionType() === PaymentInstruction::TYPE_INVOICE
         ) {
+            $customFields[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION] = $paymentInstructions;
+        }
+
+        switch ($payment->getIntent()) {
+            case PaymentIntentV1::ORDER:
+                $resource = $payment->getTransactions()[0]->getRelatedResources()[0]->getOrder();
+
+                break;
+            case PaymentIntentV1::AUTHORIZE:
+                $resource = $payment->getTransactions()[0]->getRelatedResources()[0]->getAuthorization();
+
+                break;
+            case PaymentIntentV1::SALE:
+                $resource = $payment->getTransactions()[0]->getRelatedResources()[0]->getSale();
+
+                break;
+            default:
+                $resource = null;
+        }
+
+        if ($resource !== null) {
+            $customFields[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID] = $resource->getId();
+        }
+
+        if (empty($customFields)) {
             return;
         }
 
         $this->orderTransactionRepo->update([[
             'id' => $transactionId,
-            'customFields' => [
-                SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION => $paymentInstructions,
-            ],
+            'customFields' => $customFields,
         ]], $context);
     }
 }

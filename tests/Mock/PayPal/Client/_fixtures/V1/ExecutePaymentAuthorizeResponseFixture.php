@@ -9,6 +9,8 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
 class ExecutePaymentAuthorizeResponseFixture
 {
+    public const AUTHORIZATION_ID = '3TG33581TT5577908';
+
     public static function get(): array
     {
         return [
@@ -67,7 +69,7 @@ class ExecutePaymentAuthorizeResponseFixture
                     'related_resources' => [
                         0 => [
                             'authorization' => [
-                                'id' => '3TG33581TT5577908',
+                                'id' => self::AUTHORIZATION_ID,
                                 'state' => 'authorized',
                                 'amount' => [
                                     'total' => '375.00',

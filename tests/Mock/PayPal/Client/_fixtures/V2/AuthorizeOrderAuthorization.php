@@ -7,6 +7,8 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 
+use Swag\PayPal\RestApi\V2\PaymentIntentV2;
+
 class AuthorizeOrderAuthorization
 {
     public const ID = '5YK02325A2136392C';
@@ -16,6 +18,7 @@ class AuthorizeOrderAuthorization
         return [
             'id' => self::ID,
             'status' => 'COMPLETED',
+            'intent' => PaymentIntentV2::AUTHORIZE,
             'purchase_units' => [
                 0 => [
                     'reference_id' => 'default',
