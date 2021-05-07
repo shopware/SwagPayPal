@@ -212,7 +212,7 @@ class EcsSpbHandler extends AbstractPaymentHandler
         } catch (\Exception $e) {
             throw new AsyncPaymentProcessException(
                 $orderTransactionId,
-                \sprintf('An error occurred during the communication with PayPal%s%s', PHP_EOL, $e->getMessage())
+                \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
             );
         }
     }

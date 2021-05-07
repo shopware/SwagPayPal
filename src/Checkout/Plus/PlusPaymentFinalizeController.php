@@ -159,7 +159,7 @@ class PlusPaymentFinalizeController extends AbstractController
                 $paymentProcessException->getOrderTransactionId(),
                 $context
             );
-            $urlQuery = \parse_url($errorUrl, PHP_URL_QUERY) ? '&' : '?';
+            $urlQuery = \parse_url($errorUrl, \PHP_URL_QUERY) ? '&' : '?';
 
             return \sprintf('%s%serror-code=%s', $errorUrl, $urlQuery, $paymentProcessException->getErrorCode());
         }
@@ -173,7 +173,7 @@ class PlusPaymentFinalizeController extends AbstractController
             $transactionId,
             $context
         );
-        $urlQuery = \parse_url($errorUrl, PHP_URL_QUERY) ? '&' : '?';
+        $urlQuery = \parse_url($errorUrl, \PHP_URL_QUERY) ? '&' : '?';
 
         return \sprintf('%s%serror-code=%s', $errorUrl, $urlQuery, $paymentProcessException->getErrorCode());
     }

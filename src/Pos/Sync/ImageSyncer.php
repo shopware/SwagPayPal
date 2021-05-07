@@ -165,7 +165,7 @@ class ImageSyncer
         Uploaded $uploaded,
         string $salesChannelId
     ): ?array {
-        $urlPath = \parse_url($uploaded->getSource(), PHP_URL_PATH);
+        $urlPath = \parse_url($uploaded->getSource(), \PHP_URL_PATH);
 
         if (\is_string($urlPath)) {
             $posMedia = $posMediaCollection->filter(

@@ -55,7 +55,7 @@ class ApiKeyDecoder
             return null;
         }
 
-        return \json_decode($decoded, true, 512, JSON_BIGINT_AS_STRING);
+        return \json_decode($decoded, true, 512, \JSON_BIGINT_AS_STRING);
     }
 
     private function decodeSegment(string $base64encoded): ?string

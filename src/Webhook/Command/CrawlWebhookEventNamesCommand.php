@@ -80,7 +80,7 @@ class CrawlWebhookEventNamesCommand extends Command
         $webhookEventTypesClass = \sprintf($this->getClassTemplate(), self::PAYPAL_WEBHOOK_PAGE, $webhooksString);
 
         $webhookEventTypesClassPath = __DIR__ . '/../WebhookEventTypes.php';
-        $result = \file_put_contents($webhookEventTypesClassPath, $webhookEventTypesClass, LOCK_EX);
+        $result = \file_put_contents($webhookEventTypesClassPath, $webhookEventTypesClass, \LOCK_EX);
         if ($result === false) {
             throw new \RuntimeException(\sprintf('File "%s" could not be written', $webhookEventTypesClassPath));
         }

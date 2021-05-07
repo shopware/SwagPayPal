@@ -41,6 +41,7 @@ class CacheItemMock implements CacheItemInterface
      */
     public function expiresAt($expiration): CacheItemInterface
     {
+        return $this;
     }
 
     /**
@@ -50,5 +51,6 @@ class CacheItemMock implements CacheItemInterface
      */
     public function expiresAfter($time): CacheItemInterface
     {
+        return $this;
     }
 }
