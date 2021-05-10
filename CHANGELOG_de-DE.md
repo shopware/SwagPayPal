@@ -1,7 +1,8 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 3.0.3
 - PPI-20 - Behebt ein Problem, bei dem Webhooks fehlschlugen, wenn der Zahlungsstatus bereits identisch gesetzt wurde
 - PPI-235 - Behebt Webhook-Registierungsfehler bei Verkaufskanal-eigenen Zugangsdaten
 - PPI-238 - Behebt ein Problem, bei dem Zahlungen über PayPal Plus nicht in den Disputes verlinkt wurden
+- PPI-243 - Weitere, PayPal-spezifische Transaktionsdaten zu Zusatzfeldern hinzugefügt
 - PPI-265 - Behebt Kodierungsfehler bei gekürzten Zettle-Produktbeschreibungen
 
 # 3.0.2
