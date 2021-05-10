@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 2.2.5
 - PPI-20 - Fix Webhooks when payment status is already set identically
 - PPI-235 - Fix Webhooks not correctly registered for separate Sales Channel credentials
 - PPI-238 - Fix issue with order not being linked in disputes of Plus payments
