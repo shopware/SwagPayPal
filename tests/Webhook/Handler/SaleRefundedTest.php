@@ -38,6 +38,12 @@ class SaleRefundedTest extends AbstractWebhookHandlerTestCase
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_SALE_REFUNDED, $webhook, $reason);
     }
 
+    public function testInvokeWithSameInitialState(): void
+    {
+        $webhook = $this->createWebhookV1();
+        $this->assertInvoke(OrderTransactionStates::STATE_REFUNDED, $webhook, OrderTransactionStates::STATE_REFUNDED);
+    }
+
     protected function createWebhookHandler(): SaleRefunded
     {
         return new SaleRefunded(

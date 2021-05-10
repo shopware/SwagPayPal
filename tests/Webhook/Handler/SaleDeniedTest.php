@@ -38,6 +38,12 @@ class SaleDeniedTest extends AbstractWebhookHandlerTestCase
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_SALE_DENIED, $webhook, $reason);
     }
 
+    public function testInvokeWithSameInitialState(): void
+    {
+        $webhook = $this->createWebhookV1();
+        $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook, OrderTransactionStates::STATE_CANCELLED);
+    }
+
     protected function createWebhookHandler(): SaleDenied
     {
         return new SaleDenied(

@@ -46,6 +46,12 @@ class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
         $this->assertInvokeWithoutTransaction(WebhookEventTypes::PAYMENT_AUTHORIZATION_VOIDED, $webhook, $reason);
     }
 
+    public function testInvokeWithSameInitialState(): void
+    {
+        $webhook = $this->createWebhookV2(WebhookV2::RESOURCE_TYPE_AUTHORIZATION);
+        $this->assertInvoke(OrderTransactionStates::STATE_CANCELLED, $webhook, OrderTransactionStates::STATE_CANCELLED);
+    }
+
     protected function createWebhookHandler(): AuthorizationVoided
     {
         return new AuthorizationVoided(
