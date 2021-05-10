@@ -1,7 +1,8 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 3.0.3
 - PPI-20 - Fix Webhooks when payment status is already set identically
 - PPI-235 - Fix Webhooks not correctly registered for separate Sales Channel credentials
 - PPI-238 - Fix issue with order not being linked in disputes of Plus payments
+- PPI-243 - Added more PayPal-specific transaction data to custom fields
 - PPI-265 - Fix encoding on shortened Zettle product descriptions
 
 # 3.0.2
