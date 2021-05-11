@@ -117,7 +117,6 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
     methods: {
         createdComponent() {
-            this.$super('createdComponent');
             this.generateStepper();
 
             const salesChannelId = this.$route.params.id;
