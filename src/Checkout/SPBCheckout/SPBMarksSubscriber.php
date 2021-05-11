@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\SPBCheckout;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPageLoadedEvent;
@@ -33,10 +34,16 @@ class SPBMarksSubscriber implements EventSubscriberInterface
      */
     private $paymentMethodUtil;
 
-    public function __construct(SettingsServiceInterface $settingsService, PaymentMethodUtil $paymentMethodUtil)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(SettingsServiceInterface $settingsService, PaymentMethodUtil $paymentMethodUtil, LoggerInterface $logger)
     {
         $this->settingsService = $settingsService;
         $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents(): array
@@ -59,6 +66,7 @@ class SPBMarksSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $this->logger->debug('Adding SPB marks to {page}', ['page' => \get_class($event)]);
         if ($event instanceof CheckoutConfirmPageLoadedEvent) {
             $confirmPage = $event->getPage();
             if ($confirmPage->getCart()->getExtension(ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID) !== null) {

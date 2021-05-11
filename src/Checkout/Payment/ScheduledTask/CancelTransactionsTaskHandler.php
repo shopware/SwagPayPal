@@ -68,15 +68,15 @@ class CancelTransactionsTaskHandler extends ScheduledTaskHandler
         if ($payPalPaymentMethodId === null) {
             return;
         }
-        $stateMaschineStateCriteria = new Criteria();
-        $stateMaschineStateCriteria->addAssociation('stateMachine');
-        $stateMaschineStateCriteria->addFilter(
+        $stateMachineStateCriteria = new Criteria();
+        $stateMachineStateCriteria->addAssociation('stateMachine');
+        $stateMachineStateCriteria->addFilter(
             new EqualsFilter('technicalName', OrderTransactionStates::STATE_IN_PROGRESS)
         );
-        $stateMaschineStateCriteria->addFilter(
+        $stateMachineStateCriteria->addFilter(
             new EqualsFilter('stateMachine.technicalName', OrderTransactionStates::STATE_MACHINE)
         );
-        $stateInProgressId = $this->stateMachineStateRepo->searchIds($stateMaschineStateCriteria, $context)->firstId();
+        $stateInProgressId = $this->stateMachineStateRepo->searchIds($stateMachineStateCriteria, $context)->firstId();
         if ($stateInProgressId === null) {
             throw new StateMachineStateNotFoundException(
                 OrderTransactionStates::STATE_MACHINE,

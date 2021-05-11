@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Payment;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
@@ -50,16 +51,23 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
      */
     private $orderTransactionRepo;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         PlusPuiHandler $plusPuiHandler,
         PaymentResource $paymentResource,
         OrderTransactionStateHandler $orderTransactionStateHandler,
-        EntityRepositoryInterface $orderTransactionRepo
+        EntityRepositoryInterface $orderTransactionRepo,
+        LoggerInterface $logger
     ) {
         $this->plusPuiHandler = $plusPuiHandler;
         $this->paymentResource = $paymentResource;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->orderTransactionRepo = $orderTransactionRepo;
+        $this->logger = $logger;
     }
 
     /**
@@ -70,6 +78,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
+        $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
@@ -99,6 +108,7 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         Request $request,
         SalesChannelContext $salesChannelContext
     ): void {
+        $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
         $context = $salesChannelContext->getContext();
 

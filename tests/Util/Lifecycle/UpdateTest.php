@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Defaults;
@@ -358,7 +359,7 @@ class UpdateTest extends TestCase
 
     private function createWebhookService(SystemConfigServiceMock $systemConfigService): WebhookService
     {
-        $settingsService = new SettingsService($systemConfigService);
+        $settingsService = new SettingsService($systemConfigService, new NullLogger());
 
         return new WebhookService(
             new WebhookResource($this->createPayPalClientFactoryWithService($settingsService)),

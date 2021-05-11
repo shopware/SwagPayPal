@@ -156,7 +156,8 @@ Customer is not logged in.');
             ),
             $paymentResource,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
-            $this->orderTransactionRepo
+            $this->orderTransactionRepo,
+            new NullLogger()
         );
     }
 }

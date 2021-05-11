@@ -63,7 +63,7 @@ class WebhookSystemConfigHelper
                 $this->webhookService->deregisterWebhook($salesChannelId, $oldSettings);
             } catch (\Throwable $e) {
                 $errors[] = $e;
-                $this->logger->error('[PayPal Webhook Deregistration] ' . $e->getMessage(), ['error' => $e]);
+                $this->logger->error($e->getMessage(), ['error' => $e]);
             }
         }
 
@@ -71,7 +71,7 @@ class WebhookSystemConfigHelper
             $this->webhookService->registerWebhook($salesChannelId);
         } catch (\Throwable $e) {
             $errors[] = $e;
-            $this->logger->error('[PayPal Webhook Registration] ' . $e->getMessage(), ['error' => $e]);
+            $this->logger->error($e->getMessage(), ['error' => $e]);
         }
 
         return $errors;

@@ -660,7 +660,8 @@ An error occurred during the communication with PayPal');
                 new ShippingNamePatchBuilder(),
                 new AmountPatchBuilder(new AmountProvider($priceFormatter)),
                 $orderResource,
-                new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock())
+                new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock()),
+                $logger
             ),
             new PayPalHandler(
                 $this->orderTransactionRepo,
@@ -684,7 +685,8 @@ An error occurred during the communication with PayPal');
                 $orderTransactionStateHandler,
                 $logger
             ),
-            $orderTransactionRepository ?? $orderTransactionRepositoryMock
+            $orderTransactionRepository ?? $orderTransactionRepositoryMock,
+            $logger
         );
     }
 

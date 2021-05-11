@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Installment\Banner;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -49,14 +50,21 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
      */
     private $bannerDataService;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         SettingsServiceInterface $settingsService,
         PaymentMethodUtil $paymentMethodUtil,
-        BannerDataService $bannerDataService
+        BannerDataService $bannerDataService,
+        LoggerInterface $logger
     ) {
         $this->settingsService = $settingsService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->bannerDataService = $bannerDataService;
+        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents(): array
@@ -117,6 +125,8 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
             self::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID,
             $bannerData
         );
+
+        $this->logger->debug('Added data to {page}', ['page' => \get_class($pageLoadedEvent)]);
     }
 
     public function addInstallmentBannerPagelet(PageletLoadedEvent $pageletLoadedEvent): void

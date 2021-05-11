@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Installment\Banner;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
@@ -250,7 +251,8 @@ class InstallmentBannerSubscriberTest extends TestCase
         return new InstallmentBannerSubscriber(
             new SettingsServiceMock($settings),
             $this->paymentMethodUtil,
-            new BannerDataService($this->paymentMethodUtil)
+            new BannerDataService($this->paymentMethodUtil),
+            new NullLogger()
         );
     }
 

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\Plus;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
@@ -476,7 +477,13 @@ class PlusSubscriberTest extends TestCase
             $localeCodeProvider
         );
 
-        return new PlusSubscriber($settingsService, $plusDataService, $this->paymentMethodUtil, $translator);
+        return new PlusSubscriber(
+            $settingsService,
+            $plusDataService,
+            $this->paymentMethodUtil,
+            $translator,
+            new NullLogger()
+        );
     }
 
     private function createFinishEvent(

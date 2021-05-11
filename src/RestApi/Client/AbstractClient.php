@@ -11,6 +11,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractClient
 {
@@ -32,51 +33,53 @@ abstract class AbstractClient
 
     protected function post(string $uri, array $options): array
     {
-        try {
-            $response = $this->client->request('post', $uri, $options)->getBody()->getContents();
-        } catch (RequestException $requestException) {
-            throw $this->handleRequestException($requestException, $options);
-        }
-
-        return $this->decodeJsonResponse($response);
+        return $this->request(Request::METHOD_POST, $uri, $options);
     }
 
     protected function get(string $uri, array $options = []): array
     {
-        try {
-            $response = $this->client->request('get', $uri, $options)->getBody()->getContents();
-        } catch (RequestException $requestException) {
-            throw $this->handleRequestException($requestException, $options);
-        }
-
-        return $this->decodeJsonResponse($response);
+        return $this->request(Request::METHOD_GET, $uri, $options);
     }
 
     protected function patch(string $uri, array $options): array
     {
-        try {
-            $response = $this->client->request('patch', $uri, $options)->getBody()->getContents();
-        } catch (RequestException $requestException) {
-            throw $this->handleRequestException($requestException, $options);
-        }
-
-        return $this->decodeJsonResponse($response);
+        return $this->request(Request::METHOD_PATCH, $uri, $options);
     }
 
     protected function delete(string $uri, array $options = []): array
     {
+        return $this->request(Request::METHOD_DELETE, $uri, $options);
+    }
+
+    private function request(string $method, string $uri, array $options = []): array
+    {
+        $this->logger->debug(
+            'Sending {method} request to {uri} with the following content: {content}',
+            [
+                'method' => \mb_strtoupper($method),
+                'uri' => $uri,
+                'content' => $options,
+            ]
+        );
+
         try {
-            $response = $this->client->request('delete', $uri, $options)->getBody()->getContents();
+            $response = $this->client->request($method, $uri, $options);
+            $body = $response->getBody()->getContents();
         } catch (RequestException $requestException) {
             throw $this->handleRequestException($requestException, $options);
         }
 
-        return $this->decodeJsonResponse($response);
-    }
+        $this->logger->debug(
+            'Received {code} from {method} {uri} with following response: {response}',
+            [
+                'method' => \mb_strtoupper($method),
+                'code' => \sprintf('%s %s', $response->getStatusCode(), $response->getReasonPhrase()),
+                'uri' => $uri,
+                'response' => $body,
+            ]
+        );
 
-    private function decodeJsonResponse(string $response): array
-    {
-        return \json_decode($response, true) ?? [];
+        return \json_decode($body, true) ?? [];
     }
 
     private function handleRequestException(RequestException $requestException, array $data): PayPalApiException

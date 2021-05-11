@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Payment;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -74,18 +75,25 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
      */
     private $stateMachineStateRepository;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         OrderTransactionStateHandler $orderTransactionStateHandler,
         EcsSpbHandler $ecsSpbHandler,
         PayPalHandler $payPalHandler,
         PlusPuiHandler $plusPuiHandler,
-        EntityRepositoryInterface $stateMachineStateRepository
+        EntityRepositoryInterface $stateMachineStateRepository,
+        LoggerInterface $logger
     ) {
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->ecsSpbHandler = $ecsSpbHandler;
         $this->payPalHandler = $payPalHandler;
         $this->plusPuiHandler = $plusPuiHandler;
         $this->stateMachineStateRepository = $stateMachineStateRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -96,13 +104,14 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
+        $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
-            throw new AsyncPaymentProcessException(
-                $transactionId,
-                (new CustomerNotLoggedInException())->getMessage()
-            );
+            $message = (new CustomerNotLoggedInException())->getMessage();
+            $this->logger->error($message);
+
+            throw new AsyncPaymentProcessException($transactionId, $message);
         }
 
         $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
@@ -110,6 +119,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             try {
                 return $this->ecsSpbHandler->handleEcsPayment($transaction, $dataBag, $salesChannelContext, $customer);
             } catch (\Exception $e) {
+                $this->logger->error($e->getMessage(), ['error' => $e]);
+
                 throw new AsyncPaymentProcessException($transactionId, $e->getMessage());
             }
         }
@@ -122,6 +133,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             try {
                 return $this->plusPuiHandler->handlePlusPayment($transaction, $dataBag, $salesChannelContext, $customer);
             } catch (\Exception $e) {
+                $this->logger->error($e->getMessage(), ['error' => $e]);
+
                 throw new AsyncPaymentProcessException($transactionId, $e->getMessage());
             }
         }
@@ -129,6 +142,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         try {
             $response = $this->payPalHandler->handlePayPalOrder($transaction, $salesChannelContext, $customer);
         } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['error' => $e]);
+
             throw new AsyncPaymentProcessException($transactionId, $e->getMessage());
         }
 
@@ -152,11 +167,16 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         Request $request,
         SalesChannelContext $salesChannelContext
     ): void {
+        $this->logger->debug('Started');
         if ($this->transactionAlreadyFinalized($transaction, $salesChannelContext)) {
+            $this->logger->debug('Already finalized');
+
             return;
         }
 
         if ($request->query->getBoolean(self::PAYPAL_REQUEST_PARAMETER_CANCEL)) {
+            $this->logger->debug('Customer canceled');
+
             throw new CustomerCanceledAsyncPaymentException(
                 $transaction->getOrderTransaction()->getId(),
                 'Customer canceled the payment on the PayPal page'

@@ -119,6 +119,7 @@ class PlusPuiHandler
         SalesChannelContext $salesChannelContext,
         CustomerEntity $customer
     ): RedirectResponse {
+        $this->logger->debug('Started');
         $paypalPaymentId = $dataBag->get(self::PAYPAL_PAYMENT_ID_INPUT_NAME);
         $paypalToken = $dataBag->get(self::PAYPAL_PAYMENT_TOKEN_INPUT_NAME);
         $this->addPayPalTransactionId($transaction, $paypalPaymentId, $salesChannelContext->getContext(), $paypalToken);
@@ -147,6 +148,7 @@ class PlusPuiHandler
         SalesChannelContext $salesChannelContext,
         CustomerEntity $customer
     ): Payment {
+        $this->logger->debug('Started');
         $payment = $this->paymentBuilder->getPayment($transaction, $salesChannelContext);
         $payment->getPayer()->setExternalSelectedFundingInstrumentType(PaymentInstruction::TYPE_INVOICE);
         $payment->getApplicationContext()->setLocale('de_DE');
@@ -193,6 +195,7 @@ class PlusPuiHandler
         string $partnerAttributionId,
         bool $orderNumberSendNeeded
     ): void {
+        $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
         $settings = $this->settingsService->getSettings($salesChannelId);
         $orderNumber = $transaction->getOrder()->getOrderNumber();
@@ -230,7 +233,7 @@ class PlusPuiHandler
                 throw $e;
             }
 
-            $this->logger->warning($e->getMessage(), ['orderNumber' => $orderNumber]);
+            $this->logger->warning('Duplicate order number {orderNumber} detected. Retrying payment without order number.', ['orderNumber' => $orderNumber]);
 
             $this->paymentResource->patch(
                 [

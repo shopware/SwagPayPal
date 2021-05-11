@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Checkout\SPBCheckout\SalesChannel;
 
 use OpenApi\Annotations as OA;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
@@ -62,18 +63,25 @@ class SPBCreateOrderRoute extends AbstractSPBCreateOrderRoute
      */
     private $orderResource;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         CartService $cartService,
         EntityRepositoryInterface $orderRepository,
         OrderFromOrderBuilder $orderFromOrderBuilder,
         OrderFromCartBuilder $orderFromCartBuilder,
-        OrderResource $orderResource
+        OrderResource $orderResource,
+        LoggerInterface $logger
     ) {
         $this->cartService = $cartService;
         $this->orderRepository = $orderRepository;
         $this->orderFromOrderBuilder = $orderFromOrderBuilder;
         $this->orderFromCartBuilder = $orderFromCartBuilder;
         $this->orderResource = $orderResource;
+        $this->logger = $logger;
     }
 
     public function getDecorated(): AbstractSPBCreateOrderRoute
@@ -103,22 +111,29 @@ class SPBCreateOrderRoute extends AbstractSPBCreateOrderRoute
      */
     public function createPayPalOrder(SalesChannelContext $salesChannelContext, Request $request): TokenResponse
     {
-        $customer = $salesChannelContext->getCustomer();
-        if ($customer === null) {
-            throw new CustomerNotLoggedInException();
+        try {
+            $this->logger->debug('Started', ['request' => $request->request->all()]);
+            $customer = $salesChannelContext->getCustomer();
+            if ($customer === null) {
+                throw new CustomerNotLoggedInException();
+            }
+
+            $orderId = $request->request->get('orderId');
+            if ($orderId === null) {
+                $paypalOrder = $this->getOrderFromCart($salesChannelContext, $customer);
+            } else {
+                $paypalOrder = $this->getOrderFromOrder($orderId, $salesChannelContext, $customer);
+            }
+
+            $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
+            $response = $this->orderResource->create($paypalOrder, $salesChannelId, PartnerAttributionId::SMART_PAYMENT_BUTTONS);
+
+            return new TokenResponse($response->getId());
+        } catch (\Throwable $e) {
+            $this->logger->error($e->getMessage(), ['error' => $e]);
+
+            throw $e;
         }
-
-        $orderId = $request->request->get('orderId');
-        if ($orderId === null) {
-            $paypalOrder = $this->getOrderFromCart($salesChannelContext, $customer);
-        } else {
-            $paypalOrder = $this->getOrderFromOrder($orderId, $salesChannelContext, $customer);
-        }
-
-        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-        $response = $this->orderResource->create($paypalOrder, $salesChannelId, PartnerAttributionId::SMART_PAYMENT_BUTTONS);
-
-        return new TokenResponse($response->getId());
     }
 
     private function getOrderFromCart(SalesChannelContext $salesChannelContext, CustomerEntity $customer): Order

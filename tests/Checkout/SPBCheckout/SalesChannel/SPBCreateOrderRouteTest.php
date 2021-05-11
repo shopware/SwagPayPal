@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\SPBCheckout\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
@@ -146,7 +147,8 @@ class SPBCreateOrderRouteTest extends TestCase
             new OrderRepositoryMock(),
             $this->createOrderBuilder($settings),
             $orderFromCartBuilder,
-            new OrderResource($this->createPayPalClientFactory())
+            new OrderResource($this->createPayPalClientFactory()),
+            new NullLogger()
         );
     }
 }

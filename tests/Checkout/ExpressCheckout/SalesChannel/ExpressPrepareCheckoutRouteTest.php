@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
@@ -134,7 +135,8 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
             $salesChannelContextFactory,
             $orderResource,
             $cartService,
-            $systemConfigService
+            $systemConfigService,
+            new NullLogger()
         );
     }
 

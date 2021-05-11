@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\SPBCheckout;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
@@ -291,7 +292,8 @@ class SPBCheckoutSubscriberTest extends TestCase
             $spbDataService,
             $this->paymentMethodUtil,
             $session,
-            $translator
+            $translator,
+            new NullLogger()
         );
     }
 

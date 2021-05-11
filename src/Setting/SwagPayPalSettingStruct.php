@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Setting;
 
+use Monolog\Logger;
 use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -174,6 +175,11 @@ class SwagPayPalSettingStruct extends Struct
      * @var string
      */
     protected $merchantPayerId;
+
+    /**
+     * @var int
+     */
+    protected $loggingLevel = Logger::WARNING;
 
     public function getClientId(): string
     {
@@ -488,5 +494,15 @@ class SwagPayPalSettingStruct extends Struct
     public function setMerchantPayerId(string $merchantPayerId): void
     {
         $this->merchantPayerId = $merchantPayerId;
+    }
+
+    public function getLoggingLevel(): int
+    {
+        return $this->loggingLevel;
+    }
+
+    public function setLoggingLevel(int $loggingLevel): void
+    {
+        $this->loggingLevel = $loggingLevel;
     }
 }

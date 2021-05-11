@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\SPBCheckout;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -175,7 +176,8 @@ class SPBMarksSubscriberTest extends TestCase
 
         return new SPBMarksSubscriber(
             $settingsService,
-            new PaymentMethodUtilMock()
+            new PaymentMethodUtilMock(),
+            new NullLogger()
         );
     }
 

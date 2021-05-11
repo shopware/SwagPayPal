@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
@@ -25,10 +26,16 @@ class CheckoutSubscriber implements EventSubscriberInterface
      */
     private $paymentMethodUtil;
 
-    public function __construct(SettingsServiceInterface $settingsService, PaymentMethodUtil $paymentMethodUtil)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(SettingsServiceInterface $settingsService, PaymentMethodUtil $paymentMethodUtil, LoggerInterface $logger)
     {
         $this->settingsService = $settingsService;
         $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents(): array
@@ -43,6 +50,7 @@ class CheckoutSubscriber implements EventSubscriberInterface
         try {
             $this->settingsService->getSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
         } catch (PayPalSettingsInvalidException $e) {
+            $this->logger->info('PayPal is removed from the available Payment Methods: {message}', ['message' => $e->getMessage()]);
             $this->removePayPalPaymentMethodFromConfirmPage($event);
         }
     }

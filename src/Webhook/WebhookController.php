@@ -115,7 +115,7 @@ class WebhookController extends AbstractController
     protected function createWebhookFromPostData(Request $request): PayPalApiStruct
     {
         $postData = $request->request->all();
-        $this->logger->debug('[PayPal Webhook] Received webhook', ['payload' => $postData]);
+        $this->logger->debug('Received webhook', ['payload' => $postData]);
 
         if (empty($postData)) {
             throw new BadRequestHttpException('No webhook data sent');
@@ -153,7 +153,7 @@ class WebhookController extends AbstractController
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         } catch (\Exception $e) {
-            $this->logger->error(\sprintf('[PayPal Webhook] %s', $e->getMessage()));
+            $this->logger->error($e->getMessage(), ['error' => $e]);
 
             throw new BadRequestHttpException('An error occurred during execution of webhook');
         }

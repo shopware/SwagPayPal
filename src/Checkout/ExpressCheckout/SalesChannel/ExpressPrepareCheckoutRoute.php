@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 
 use OpenApi\Annotations as OA;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
@@ -83,6 +84,11 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
      */
     private $systemConfigService;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         RegisterRoute $registerRoute,
         EntityRepositoryInterface $countryRepo,
@@ -91,7 +97,8 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
         OrderResource $orderResource,
         CartService $cartService,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
+        LoggerInterface $logger
     ) {
         $this->registerRoute = $registerRoute;
         $this->countryRepo = $countryRepo;
@@ -101,6 +108,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
         $this->orderResource = $orderResource;
         $this->cartService = $cartService;
         $this->systemConfigService = $systemConfigService;
+        $this->logger = $logger;
     }
 
     public function getDecorated(): AbstractExpressPrepareCheckoutRoute
@@ -133,38 +141,49 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
      */
     public function prepareCheckout(SalesChannelContext $salesChannelContext, Request $request): ContextTokenResponse
     {
-        $paypalOrderId = $request->request->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
+        try {
+            $this->logger->debug('Started', ['request' => $request->request->all()]);
+            $paypalOrderId = $request->request->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
 
-        if ($paypalOrderId === null) {
-            throw new MissingRequestParameterException(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
+            if ($paypalOrderId === null) {
+                throw new MissingRequestParameterException(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
+            }
+
+            $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannel()->getId());
+
+            //Create and login a new guest customer
+            $this->logger->debug('Creating customer');
+            $salesChannelContext->getContext()->addExtension(self::EXPRESS_CHECKOUT_ACTIVE, new ArrayStruct());
+            $customerDataBag = $this->getCustomerDataBag($paypalOrder, $salesChannelContext);
+            $this->registerRoute->register($customerDataBag, $salesChannelContext, false);
+            $this->logger->debug('Customer created, logging in customer');
+            $newContextToken = $this->accountService->login($customerDataBag->get('email'), $salesChannelContext, true);
+            $salesChannelContext->getContext()->removeExtension(self::EXPRESS_CHECKOUT_ACTIVE);
+
+            // Since a new customer was logged in, the context changed in the system,
+            // but this doesn't effect the current context given as parameter.
+            // Because of that a new context for the following operations is created
+            $this->logger->debug('Getting new context');
+            $newSalesChannelContext = $this->salesChannelContextFactory->create(
+                $newContextToken,
+                $salesChannelContext->getSalesChannel()->getId()
+            );
+
+            $cart = $this->cartService->getCart($newSalesChannelContext->getToken(), $salesChannelContext);
+
+            $expressCheckoutData = new ExpressCheckoutData($paypalOrderId);
+            $cart->addExtension(self::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID, $expressCheckoutData);
+
+            // The cart needs to be saved.
+            $this->logger->debug('Recalculating cart');
+            $this->cartService->recalculate($cart, $newSalesChannelContext);
+
+            return new ContextTokenResponse($cart->getToken());
+        } catch (\Throwable $e) {
+            $this->logger->error($e->getMessage(), ['error' => $e]);
+
+            throw $e;
         }
-
-        $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannel()->getId());
-
-        //Create and login a new guest customer
-        $salesChannelContext->getContext()->addExtension(self::EXPRESS_CHECKOUT_ACTIVE, new ArrayStruct());
-        $customerDataBag = $this->getCustomerDataBag($paypalOrder, $salesChannelContext);
-        $this->registerRoute->register($customerDataBag, $salesChannelContext, false);
-        $newContextToken = $this->accountService->login($customerDataBag->get('email'), $salesChannelContext, true);
-        $salesChannelContext->getContext()->removeExtension(self::EXPRESS_CHECKOUT_ACTIVE);
-
-        // Since a new customer was logged in, the context changed in the system,
-        // but this doesn't effect the current context given as parameter.
-        // Because of that a new context for the following operations is created
-        $newSalesChannelContext = $this->salesChannelContextFactory->create(
-            $newContextToken,
-            $salesChannelContext->getSalesChannel()->getId()
-        );
-
-        $cart = $this->cartService->getCart($newSalesChannelContext->getToken(), $salesChannelContext);
-
-        $expressCheckoutData = new ExpressCheckoutData($paypalOrderId);
-        $cart->addExtension(self::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID, $expressCheckoutData);
-
-        // The cart needs to be saved.
-        $this->cartService->recalculate($cart, $newSalesChannelContext);
-
-        return new ContextTokenResponse($cart->getToken());
     }
 
     private function getCustomerDataBag(Order $paypalOrder, SalesChannelContext $salesChannelContext): RequestDataBag

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Cms\CmsPageCollection;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Framework\Validation\BuildValidationEvent;
@@ -48,14 +49,21 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
      */
     private $paymentMethodUtil;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         PayPalExpressCheckoutDataService $service,
         SettingsServiceInterface $settingsService,
-        PaymentMethodUtil $paymentMethodUtil
+        PaymentMethodUtil $paymentMethodUtil,
+        LoggerInterface $logger
     ) {
         $this->expressCheckoutDataService = $service;
         $this->settingsService = $settingsService;
         $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents(): array
@@ -97,6 +105,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
             $expressCheckoutButtonData
         );
+        $this->logger->debug('Added data to page {page}', ['page' => \get_class($event)]);
     }
 
     public function addExpressCheckoutDataToCmsPage(CmsPageLoadedEvent $event): void

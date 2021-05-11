@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\SPBCheckout;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -56,18 +57,25 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
      */
     private $translator;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         SettingsServiceInterface $settingsService,
         SPBCheckoutDataService $spbCheckoutDataService,
         PaymentMethodUtil $paymentMethodUtil,
         Session $session,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        LoggerInterface $logger
     ) {
         $this->settingsService = $settingsService;
         $this->spbCheckoutDataService = $spbCheckoutDataService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->session = $session;
         $this->translator = $translator;
+        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents(): array
@@ -89,9 +97,12 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         }
 
         if ($this->addSuccessMessage($request)) {
+            $this->logger->debug('Added success message');
+
             return;
         }
 
+        $this->logger->debug('Adding data');
         $editOrderPage = $event->getPage();
         $buttonData = $this->spbCheckoutDataService->getCheckoutData(
             $event->getSalesChannelContext(),
@@ -114,6 +125,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         $this->changePaymentMethodDescription($editOrderPage->getPaymentMethods(), $event->getContext());
 
         $editOrderPage->addExtension(self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID, $buttonData);
+        $this->logger->debug('Added data');
     }
 
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
@@ -130,9 +142,12 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         }
 
         if ($this->addSuccessMessage($request)) {
+            $this->logger->debug('Added success message');
+
             return;
         }
 
+        $this->logger->debug('Adding data');
         $buttonData = $this->spbCheckoutDataService->getCheckoutData(
             $event->getSalesChannelContext(),
             $settings
@@ -148,10 +163,12 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         $this->changePaymentMethodDescription($confirmPage->getPaymentMethods(), $event->getContext());
 
         $confirmPage->addExtension(self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID, $buttonData);
+        $this->logger->debug('Added data');
     }
 
     public function addNecessaryRequestParameter(HandlePaymentMethodRouteRequestEvent $event): void
     {
+        $this->logger->debug('Adding request parameter');
         $storefrontRequest = $event->getStorefrontRequest();
         $storeApiRequest = $event->getStoreApiRequest();
 
@@ -168,6 +185,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME,
             $storefrontRequest->request->get(AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)
         );
+        $this->logger->debug('Added request parameter');
     }
 
     private function checkSettings(SalesChannelContext $salesChannelContext, PaymentMethodCollection $paymentMethods): ?SwagPayPalSettingStruct

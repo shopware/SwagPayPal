@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-246 - Option zur erweiterten Protokollierung hinzugefügt
+
 # 3.0.3
 - PPI-20 - Behebt ein Problem, bei dem Webhooks fehlschlugen, wenn der Zahlungsstatus bereits identisch gesetzt wurde
 - PPI-235 - Behebt Webhook-Registierungsfehler bei Verkaufskanal-eigenen Zugangsdaten
