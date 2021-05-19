@@ -11,8 +11,8 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
-use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
@@ -20,7 +20,6 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 
 class OrderFromOrderBuilderTest extends TestCase
 {
-    use BasicTestDataBehaviour;
     use PaymentTransactionTrait;
     use SalesChannelContextTrait;
     use ServicesTrait;
@@ -102,5 +101,24 @@ class OrderFromOrderBuilderTest extends TestCase
             $salesChannelContext,
             $customer
         );
+    }
+
+    public function testGetOrderPrefix(): void
+    {
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $customer = $salesChannelContext->getCustomer();
+        static::assertNotNull($customer);
+
+        $settings = $this->createSystemConfigServiceMock([Settings::ORDER_NUMBER_PREFIX => 'foo']);
+        $order = $this->createOrderBuilder($settings)->getOrder(
+            $paymentTransaction,
+            $salesChannelContext,
+            $customer
+        );
+
+        $invoiceId = $order->getPurchaseUnits()[0]->getInvoiceId();
+        static::assertIsString($invoiceId);
+        static::assertStringStartsWith('foo', $invoiceId);
     }
 }

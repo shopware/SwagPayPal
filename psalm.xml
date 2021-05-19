@@ -16,6 +16,13 @@
         </ignoreFiles>
     </projectFiles>
 
+    <forbiddenFunctions>
+        <function name="dump"/>
+        <function name="dd"/>
+        <function name="var_dump"/>
+        <function name="error_log"/>
+    </forbiddenFunctions>
+
     <issueHandlers>
         <MoreSpecificImplementedParamType>
             <errorLevel type="info">

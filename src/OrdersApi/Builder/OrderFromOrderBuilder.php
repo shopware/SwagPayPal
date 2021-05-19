@@ -25,10 +25,7 @@ use Swag\PayPal\Util\PriceFormatter;
 
 class OrderFromOrderBuilder extends AbstractOrderBuilder
 {
-    /**
-     * @var ItemListProvider
-     */
-    private $itemListProvider;
+    private ItemListProvider $itemListProvider;
 
     public function __construct(
         SettingsServiceInterface $settingsService,
@@ -80,7 +77,8 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
             throw new \RuntimeException('No system settings available');
         }
 
-        if ($this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId())) {
+        $salesChannelId = $salesChannelContext->getSalesChannelId();
+        if ($this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelId)) {
             $items = $this->itemListProvider->getItemList($currency, $order);
             $purchaseUnit->setItems($items);
         }
@@ -98,7 +96,13 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
         $purchaseUnit->setShipping($shipping);
         $purchaseUnit->setCustomId($orderTransaction->getId());
         $orderNumber = $order->getOrderNumber();
+
         if ($orderNumber !== null) {
+            if ($this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelId)) {
+                $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelId);
+                $orderNumber = $orderNumberPrefix . $orderNumber;
+            }
+
             $purchaseUnit->setInvoiceId($orderNumber);
         }
 
