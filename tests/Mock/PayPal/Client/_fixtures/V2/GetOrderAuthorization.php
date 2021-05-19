@@ -16,7 +16,7 @@ class GetOrderAuthorization
         return [
             'id' => self::ID,
             'intent' => 'AUTHORIZE',
-            'status' => 'APPROVED',
+            'status' => 'COMPLETED',
             'purchase_units' => [
                 0 => [
                     'reference_id' => 'default',

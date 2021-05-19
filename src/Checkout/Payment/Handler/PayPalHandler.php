@@ -9,6 +9,7 @@ namespace Swag\PayPal\Checkout\Payment\Handler;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
@@ -16,6 +17,9 @@ use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
+use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Shopware\Core\System\StateMachine\Transition;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
@@ -67,6 +71,11 @@ class PayPalHandler extends AbstractPaymentHandler
      */
     private $logger;
 
+    /**
+     * @var StateMachineRegistry
+     */
+    private $stateMachineRegistry;
+
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepo,
         OrderFromOrderBuilder $orderBuilder,
@@ -75,6 +84,7 @@ class PayPalHandler extends AbstractPaymentHandler
         SettingsServiceInterface $settingsService,
         OrderNumberPatchBuilder $orderNumberPatchBuilder,
         CustomIdPatchBuilder $customIdPatchBuilder,
+        StateMachineRegistry $stateMachineRegistry,
         LoggerInterface $logger
     ) {
         parent::__construct($orderTransactionRepo);
@@ -84,6 +94,7 @@ class PayPalHandler extends AbstractPaymentHandler
         $this->settingsService = $settingsService;
         $this->orderNumberPatchBuilder = $orderNumberPatchBuilder;
         $this->customIdPatchBuilder = $customIdPatchBuilder;
+        $this->stateMachineRegistry = $stateMachineRegistry;
         $this->logger = $logger;
     }
 
@@ -179,6 +190,10 @@ class PayPalHandler extends AbstractPaymentHandler
                 }
             } else {
                 $response = $this->orderResource->authorize($paypalOrderId, $salesChannelId, $partnerAttributionId);
+                if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
+                    // ToDo: Replace after NEXT-13973 is in min-version
+                    $this->setTransactionToAuthorize($transactionId, $context);
+                }
             }
         } catch (PayPalApiException $e) {
             if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
@@ -202,6 +217,10 @@ class PayPalHandler extends AbstractPaymentHandler
                 }
             } else {
                 $response = $this->orderResource->authorize($paypalOrderId, $salesChannelId, $partnerAttributionId);
+                if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
+                    // ToDo: Replace after NEXT-13973 is in min-version
+                    $this->setTransactionToAuthorize($transactionId, $context);
+                }
             }
         } catch (\Exception $e) {
             throw new AsyncPaymentFinalizeException(
@@ -234,5 +253,21 @@ class PayPalHandler extends AbstractPaymentHandler
                 SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID => $id,
             ],
         ]], $context);
+    }
+
+    /**
+     * ToDo: Replace after NEXT-13973 is in min-Version
+     */
+    private function setTransactionToAuthorize(string $transactionId, Context $context): void
+    {
+        $this->stateMachineRegistry->transition(
+            new Transition(
+                OrderTransactionDefinition::ENTITY_NAME,
+                $transactionId,
+                StateMachineTransitionActions::ACTION_AUTHORIZE,
+                'stateId'
+            ),
+            $context
+        );
     }
 }

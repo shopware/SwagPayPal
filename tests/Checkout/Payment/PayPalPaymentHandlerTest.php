@@ -62,6 +62,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentOrderResponse
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
@@ -220,7 +223,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
             new PaymentMethodCollection()
         );
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
-        $paypalOrderId = 'paypalOrderId';
+        $paypalOrderId = GetOrderCapture::ID;
         $dataBag = new RequestDataBag([
             PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
             EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $paypalOrderId,
@@ -311,7 +314,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
             new PaymentMethodCollection()
         );
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
-        $paypalOrderId = 'paypalOrderId';
+        $paypalOrderId = GetOrderCapture::ID;
         $dataBag = new RequestDataBag([
             PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID => true,
             EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $paypalOrderId,
@@ -548,19 +551,29 @@ An error occurred during the communication with PayPal');
         );
     }
 
-    public function testFinalizePayPalOrder(): void
+    public function testFinalizePayPalOrderCapture(): void
     {
         $request = new Request([
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => 'paypalOrderId',
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => GetOrderCapture::ID,
         ]);
         $this->assertFinalizeRequest($request);
         $this->assertCustomFields(CaptureOrderCapture::CAPTURE_ID);
     }
 
+    public function testFinalizePayPalOrderAuthorize(): void
+    {
+        $request = new Request([
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => GetOrderAuthorization::ID,
+        ]);
+        // state does only exist in > 6.4.1.0
+        $this->assertFinalizeRequest($request, PayPalPaymentHandler::ORDER_TRANSACTION_STATE_AUTHORIZED);
+        $this->assertCustomFields(GetAuthorization::ID);
+    }
+
     public function testFinalizePayPalOrderPatchOrderNumber(): void
     {
         $request = new Request([
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => 'paypalOrderId',
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => GetOrderCapture::ID,
             PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
         ]);
         $orderTransactionId = $this->assertFinalizeRequest($request);
@@ -671,6 +684,7 @@ An error occurred during the communication with PayPal');
                 $settingsService,
                 new OrderNumberPatchBuilderV2(),
                 new CustomIdPatchBuilder(),
+                $this->stateMachineRegistry,
                 $logger
             ),
             new PlusPuiHandler(

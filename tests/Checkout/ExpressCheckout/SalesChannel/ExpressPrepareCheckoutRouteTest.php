@@ -46,9 +46,8 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
             Defaults::SALES_CHANNEL
         );
 
-        $testPaypalOrderId = 'testPaypalOrderId';
         $request = new Request([], [
-            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => $testPaypalOrderId,
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => GetOrderCapture::ID,
         ]);
 
         /** @var CartService $cartService */
@@ -85,7 +84,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
             ->getExtension(ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID);
 
         static::assertInstanceOf(ExpressCheckoutData::class, $ecsCartExtension);
-        static::assertSame($testPaypalOrderId, $ecsCartExtension->getPaypalOrderId());
+        static::assertSame(GetOrderCapture::ID, $ecsCartExtension->getPaypalOrderId());
     }
 
     public function testPrepareWithoutStateFromPayPal(): void

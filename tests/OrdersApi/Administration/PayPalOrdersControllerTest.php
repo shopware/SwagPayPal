@@ -47,7 +47,7 @@ class PayPalOrdersControllerTest extends TestCase
     {
         $response = $this->createController()->orderDetails(
             'orderTransactionId',
-            'paypalOrderId',
+            GetOrderCapture::ID,
             Context::createDefaultContext()
         );
 
@@ -80,7 +80,7 @@ class PayPalOrdersControllerTest extends TestCase
         $this->expectExceptionMessage('The transaction with id orderTransactionId is invalid or could not be found.');
         $this->createController()->orderDetails(
             'orderTransactionId',
-            'paypalOrderId',
+            GetOrderCapture::ID,
             $context
         );
     }
@@ -262,7 +262,7 @@ Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund::$invoiceId must n
         return $this->createController()->refundCapture(
             'orderTransactionId',
             'captureId',
-            'paypalOrderId',
+            GetOrderCapture::ID,
             Context::createDefaultContext(),
             $request
         );
