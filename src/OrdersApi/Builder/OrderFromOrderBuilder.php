@@ -95,7 +95,13 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
         $purchaseUnit->setShipping($shipping);
         $purchaseUnit->setCustomId($orderTransaction->getId());
         $orderNumber = $order->getOrderNumber();
+
         if ($orderNumber !== null) {
+            if ($settings->getSendOrderNumber()) {
+                $orderNumberPrefix = (string) $settings->getOrderNumberPrefix();
+                $orderNumber = $orderNumberPrefix . $orderNumber;
+            }
+
             $purchaseUnit->setInvoiceId($orderNumber);
         }
 

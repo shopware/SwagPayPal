@@ -103,4 +103,24 @@ class OrderFromOrderBuilderTest extends TestCase
             $customer
         );
     }
+
+    public function testGetOrderPrefix(): void
+    {
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $customer = $salesChannelContext->getCustomer();
+        static::assertNotNull($customer);
+
+        $settings = $this->createDefaultSettingStruct();
+        $settings->setOrderNumberPrefix('foo');
+        $orderBuilder = $this->createOrderBuilder($settings);
+
+        $order = $orderBuilder->getOrder(
+            $paymentTransaction,
+            $salesChannelContext,
+            $customer
+        );
+
+        static::assertStringStartsWith('foo', $order->getPurchaseUnits()[0]->getInvoiceId());
+    }
 }
