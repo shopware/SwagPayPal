@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Content\Cms\CmsPageCollection;
@@ -452,7 +453,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
                 $paymentMethodUtil
             ),
             new SettingsServiceMock($settings ?? null),
-            $paymentMethodUtil
+            $paymentMethodUtil,
+            new NullLogger()
         );
     }
 

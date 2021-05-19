@@ -55,7 +55,7 @@ class WebhookSubscriber implements EventSubscriberInterface
                 $settings = $this->settingsService->getSettings($id, false);
                 $this->webhookService->deregisterWebhook($id, $settings);
             } catch (\Throwable $e) {
-                $this->logger->error('[PayPal Webhook Deregistration] ' . $e->getMessage(), ['error' => $e]);
+                $this->logger->error($e->getMessage(), ['error' => $e]);
             }
         }
     }

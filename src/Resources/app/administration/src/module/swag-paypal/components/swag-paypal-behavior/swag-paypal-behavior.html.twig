@@ -135,6 +135,15 @@
                     </sw-inherit-wrapper>
                 {% endblock %}
 
+                {% block swag_paypal_content_card_channel_config_behavior_settings_logging_level %}
+                    <sw-single-select v-model="allConfigs['null']['SwagPayPal.settings.loggingLevel']"
+                                      :options="loggingLevelOptions"
+                                      :label="$tc('swag-paypal.settingForm.behavior.loggingLevel.label')"
+                                      :helpText="$tc('swag-paypal.settingForm.behavior.loggingLevel.tooltipText')"
+                                      :disabled="!acl.can('swag_paypal.editor')">
+                    </sw-single-select>
+                {% endblock %}
+
             </div>
         {% endblock %}
 

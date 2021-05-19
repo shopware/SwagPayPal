@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Setting\Service;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
@@ -26,7 +27,7 @@ class SettingsServiceTest extends TestCase
 
     public function testEmptyGetSettings(): void
     {
-        $settingsProvider = new SettingsService($this->createSystemConfigServiceMock());
+        $settingsProvider = new SettingsService($this->createSystemConfigServiceMock(), new NullLogger());
         $this->expectException(PayPalSettingsInvalidException::class);
         $settingsProvider->getSettings();
     }
@@ -63,7 +64,7 @@ class SettingsServiceTest extends TestCase
         $settingValues = $this->getRequiredConfigValues();
         $settingValues[$key] = $value;
 
-        $settingsService = new SettingsService($this->createSystemConfigServiceMock($settingValues));
+        $settingsService = new SettingsService($this->createSystemConfigServiceMock($settingValues), new NullLogger());
         $settings = $settingsService->getSettings();
 
         static::assertTrue(\method_exists($settings, $getterName), 'getter ' . $getterName . ' does not exist');
@@ -97,7 +98,10 @@ class SettingsServiceTest extends TestCase
      */
     public function testUpdate(string $key, string $getterName, $value): void
     {
-        $settingsService = new SettingsService($this->createSystemConfigServiceMock($this->getRequiredConfigValues()));
+        $settingsService = new SettingsService(
+            $this->createSystemConfigServiceMock($this->getRequiredConfigValues()),
+            new NullLogger()
+        );
 
         $settingsService->updateSettings([$key => $value]);
         $settings = $settingsService->getSettings();
@@ -109,7 +113,7 @@ class SettingsServiceTest extends TestCase
     public function testGetWithWrongPrefix(): void
     {
         $values = ['wrongDomain.brandName' => 'Wrong brand'];
-        $settingsService = new SettingsService($this->createSystemConfigServiceMock($values));
+        $settingsService = new SettingsService($this->createSystemConfigServiceMock($values), new NullLogger());
         $this->expectException(PayPalSettingsInvalidException::class);
         $settingsService->getSettings();
     }

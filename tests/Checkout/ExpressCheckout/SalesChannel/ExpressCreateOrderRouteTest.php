@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
@@ -61,7 +62,8 @@ class ExpressCreateOrderRouteTest extends TestCase
         return new ExpressCreateOrderRoute(
             $cartService,
             $orderFromCartBuilder,
-            $orderResource
+            $orderResource,
+            new NullLogger()
         );
     }
 }

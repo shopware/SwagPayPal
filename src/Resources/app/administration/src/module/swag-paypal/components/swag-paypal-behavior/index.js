@@ -82,6 +82,19 @@ Component.register('swag-paypal-behavior', {
             landingPageOption = landingPageOption.toLowerCase();
             const translationKey = `swag-paypal.settingForm.behavior.landingPage.helpText.${landingPageOption}`;
             return this.$tc(translationKey);
+        },
+
+        loggingLevelOptions() {
+            return [
+                {
+                    value: 300,
+                    label: this.$tc('swag-paypal.settingForm.behavior.loggingLevel.options.basic')
+                },
+                {
+                    value: 100,
+                    label: this.$tc('swag-paypal.settingForm.behavior.loggingLevel.options.advanced')
+                }
+            ];
         }
     },
 

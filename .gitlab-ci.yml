@@ -151,12 +151,14 @@ PHPUnit:
             allow_failure: true
     parallel:
         matrix:
-            -   MYSQL_IMAGE: mariadb:10.4
+            # ToDo: Use working MariaDB version with https://jira.mariadb.org/browse/MDEV-25672 fixed
+            -   MYSQL_IMAGE: mariadb:10.4.18
                 DEV_IMAGE: shopware/development:8.0-composer-2
                 CORE_BRANCH: [ "6.4.0.0", "trunk" ]
             -   MYSQL_IMAGE:
                     - mysql:5.7
-                    - mariadb:10.3
+                    # ToDo: Use working MariaDB version with https://jira.mariadb.org/browse/MDEV-25672 fixed
+                    - mariadb:10.3.28
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
                 CORE_BRANCH: [ "6.4.0.0", "trunk" ]
                 RUN_IN_MR: "false"

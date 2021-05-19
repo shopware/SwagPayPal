@@ -28,8 +28,18 @@
             <argument type="service" id="language.repository"/>
         </service>
 
+
+        <service id="Swag\PayPal\Util\Log\LoggerFactory">
+            <argument type="string">%kernel.logs_dir%/%%s_%kernel.environment%.log</argument>
+            <argument>%shopware.logger.file_rotation_count%</argument>
+
+            <call method="setLogLevel">
+                <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            </call>
+        </service>
+
         <service id="Swag\PayPal\Util\Logger" class="Monolog\Logger">
-            <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
+            <factory service="Swag\PayPal\Util\Log\LoggerFactory" method="createRotating"/>
             <argument type="string">swag_paypal</argument>
         </service>
 

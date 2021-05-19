@@ -87,6 +87,7 @@ class PlusPaymentFinalizeController extends AbstractController
     public function finalizeTransaction(Request $request, SalesChannelContext $salesChannelContext): RedirectResponse
     {
         $token = $request->query->get('token');
+        $this->logger->debug('Starting with token {token}.', ['token' => $token]);
 
         $criteria = new Criteria();
         $criteria->addAssociation('order');
@@ -135,8 +136,13 @@ class PlusPaymentFinalizeController extends AbstractController
         ]);
 
         try {
+            $this->logger->debug('Forwarding to payment handler.');
             $this->paymentHandler->finalize($paymentTransactionStruct, $request, $salesChannelContext);
         } catch (PaymentProcessException $paymentProcessException) {
+            $this->logger->warning(
+                '{message}. Redirecting to confirm page.',
+                ['message' => $paymentProcessException->getMessage(), 'error' => $paymentProcessException]
+            );
             $finishUrl = $this->redirectToConfirmPageWorkflow(
                 $paymentProcessException,
                 $context,
@@ -166,8 +172,8 @@ class PlusPaymentFinalizeController extends AbstractController
 
         $transactionId = $paymentProcessException->getOrderTransactionId();
         $this->logger->error(
-            'An error occurred during finalizing async payment',
-            ['orderTransactionId' => $transactionId, 'exceptionMessage' => $paymentProcessException->getMessage()]
+            $paymentProcessException->getMessage(),
+            ['orderTransactionId' => $transactionId, 'error' => $paymentProcessException]
         );
         $this->transactionStateHandler->fail(
             $transactionId,

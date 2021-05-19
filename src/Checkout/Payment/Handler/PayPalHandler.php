@@ -95,6 +95,7 @@ class PayPalHandler extends AbstractPaymentHandler
         SalesChannelContext $salesChannelContext,
         CustomerEntity $customer
     ): PayPalOrder {
+        $this->logger->debug('Started');
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
         $orderTransactionId = $transaction->getOrderTransaction()->getId();
 
@@ -139,6 +140,7 @@ class PayPalHandler extends AbstractPaymentHandler
         string $partnerAttributionId,
         bool $orderDataPatchNeeded
     ): void {
+        $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
         $orderNumber = $transaction->getOrder()->getOrderNumber();
 
@@ -184,7 +186,7 @@ class PayPalHandler extends AbstractPaymentHandler
                 throw $e;
             }
 
-            $this->logger->warning($e->getMessage(), ['orderNumber' => $orderNumber]);
+            $this->logger->warning('Duplicate order number {orderNumber} detected. Retrying payment without order number.', ['orderNumber' => $orderNumber]);
 
             $this->orderResource->update(
                 [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Payment\Handler;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
@@ -67,6 +68,11 @@ class EcsSpbHandler extends AbstractPaymentHandler
      */
     private $itemListProvider;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepo,
         SettingsServiceInterface $settingsService,
@@ -75,7 +81,8 @@ class EcsSpbHandler extends AbstractPaymentHandler
         ShippingNamePatchBuilder $shippingNamePatchBuilder,
         AmountPatchBuilder $amountPatchBuilder,
         OrderResource $orderResource,
-        ItemListProvider $itemListProvider
+        ItemListProvider $itemListProvider,
+        LoggerInterface $logger
     ) {
         parent::__construct($orderTransactionRepo);
         $this->settingsService = $settingsService;
@@ -85,6 +92,7 @@ class EcsSpbHandler extends AbstractPaymentHandler
         $this->amountPatchBuilder = $amountPatchBuilder;
         $this->orderResource = $orderResource;
         $this->itemListProvider = $itemListProvider;
+        $this->logger = $logger;
     }
 
     public function handleEcsPayment(
@@ -93,6 +101,7 @@ class EcsSpbHandler extends AbstractPaymentHandler
         SalesChannelContext $salesChannelContext,
         CustomerEntity $customer
     ): RedirectResponse {
+        $this->logger->debug('Started');
         $paypalOrderId = $dataBag->get(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
         $orderTransaction = $transaction->getOrderTransaction();
         $orderTransactionId = $orderTransaction->getId();
@@ -149,6 +158,7 @@ class EcsSpbHandler extends AbstractPaymentHandler
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
+        $this->logger->debug('Started');
         $paypalOrderId = $dataBag->get(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
         $this->addPayPalOrderId(
             $transaction->getOrderTransaction()->getId(),

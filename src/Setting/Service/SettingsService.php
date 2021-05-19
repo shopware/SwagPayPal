@@ -7,7 +7,9 @@
 
 namespace Swag\PayPal\Setting\Service;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Setting\SwagPayPalSettingStructValidator;
 
@@ -20,9 +22,15 @@ class SettingsService implements SettingsServiceInterface
      */
     private $systemConfigService;
 
-    public function __construct(SystemConfigService $systemConfigService)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(SystemConfigService $systemConfigService, LoggerInterface $logger)
     {
         $this->systemConfigService = $systemConfigService;
+        $this->logger = $logger;
     }
 
     public function getSettings(?string $salesChannelId = null, bool $inherited = true): SwagPayPalSettingStruct
@@ -47,7 +55,13 @@ class SettingsService implements SettingsServiceInterface
         $settingsEntity = new SwagPayPalSettingStruct();
         $settingsEntity->assign($propertyValuePairs);
         if ($inherited) {
-            SwagPayPalSettingStructValidator::validate($settingsEntity);
+            try {
+                SwagPayPalSettingStructValidator::validate($settingsEntity);
+            } catch (PayPalSettingsInvalidException $exception) {
+                $this->logger->info($exception->getMessage(), ['error' => $exception]);
+
+                throw $exception;
+            }
         }
 
         return $settingsEntity;

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Checkout\Plus;
 
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -49,16 +50,23 @@ class PlusSubscriber implements EventSubscriberInterface
      */
     private $translator;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         SettingsServiceInterface $settingsService,
         PlusDataService $plusDataService,
         PaymentMethodUtil $paymentMethodUtil,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        LoggerInterface $logger
     ) {
         $this->settingsService = $settingsService;
         $this->plusDataService = $plusDataService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->translator = $translator;
+        $this->logger = $logger;
     }
 
     public static function getSubscribedEvents(): array
@@ -78,9 +86,11 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $this->logger->debug('Adding data');
         $page = $event->getPage();
         $plusData = $this->plusDataService->getPlusDataFromOrder($page->getOrder(), $salesChannelContext, $settings);
         $this->addPlusExtension($plusData, $page, $salesChannelContext);
+        $this->logger->debug('Added data');
     }
 
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
@@ -96,9 +106,11 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $this->logger->debug('Adding data');
         $page = $event->getPage();
         $plusData = $this->plusDataService->getPlusData($page->getCart(), $salesChannelContext, $settings);
         $this->addPlusExtension($plusData, $page, $salesChannelContext);
+        $this->logger->debug('Added data');
     }
 
     public function onCheckoutFinishLoaded(CheckoutFinishPageLoadedEvent $event): void
@@ -142,7 +154,9 @@ class PlusSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $this->logger->debug('Changing payment method data');
         $this->changePaymentMethod($paymentMethod);
+        $this->logger->debug('Changed payment method data');
     }
 
     private function checkSettings(SalesChannelContext $salesChannelContext, PaymentMethodCollection $paymentMethods): ?SwagPayPalSettingStruct
