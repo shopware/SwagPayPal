@@ -30,9 +30,11 @@ Component.register('swag-paypal-pos-wizard-finish', {
         createdComponent() {
             this.updateButtons();
             this.setTitle();
-            this.triggerCompleteSync();
         },
 
+        /**
+         * @deprecated tag:v4.0.0 will be removed
+         */
         triggerCompleteSync() {
             this.SwagPayPalPosApiService.startCompleteSync(this.salesChannel.id);
         },
