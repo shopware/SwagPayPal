@@ -16,6 +16,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\ScheduledTask\CancelTransactionsTaskHandler;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
@@ -61,7 +62,7 @@ class CancelTransactionsTaskHandlerTest extends TestCase
         static::assertSame($cancelledStateId, $transaction->getStateId());
     }
 
-    public function testRunDoNotChangeOlderThanFiveDays(): void
+    public function testRunDoesNotChangeOlderThanSevenDays(): void
     {
         $context = Context::createDefaultContext();
         $container = $this->getContainer();
@@ -87,6 +88,39 @@ class CancelTransactionsTaskHandlerTest extends TestCase
 
         $cancelledStateId = $this->getOrderTransactionStateIdByTechnicalName(
             OrderTransactionStates::STATE_IN_PROGRESS,
+            $container,
+            $context
+        );
+
+        static::assertSame($cancelledStateId, $transaction->getStateId());
+    }
+
+    public function testRunDoesNotCancelOtherStates(): void
+    {
+        $context = Context::createDefaultContext();
+        $container = $this->getContainer();
+
+        $transactionId = $this->getTransactionId($context, $container, PayPalPaymentHandler::ORDER_TRANSACTION_STATE_AUTHORIZED);
+
+        $twoDaysAgo = new \DateTime('now -2 days');
+        $twoDaysAgo = $twoDaysAgo->setTimezone(new \DateTimeZone('UTC'));
+        /** @var Connection $connection */
+        $connection = $container->get(Connection::class);
+        $connection->update(
+            'order_transaction',
+            ['created_at' => $twoDaysAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT)],
+            ['id' => Uuid::fromHexToBytes($transactionId)]
+        );
+
+        /** @var CancelTransactionsTaskHandler $handler */
+        $handler = $container->get(CancelTransactionsTaskHandler::class);
+        $handler->run();
+
+        $transaction = $this->getTransaction($transactionId, $container, $context);
+        static::assertNotNull($transaction);
+
+        $cancelledStateId = $this->getOrderTransactionStateIdByTechnicalName(
+            PayPalPaymentHandler::ORDER_TRANSACTION_STATE_AUTHORIZED,
             $container,
             $context
         );

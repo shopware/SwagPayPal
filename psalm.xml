@@ -73,6 +73,8 @@
             <errorLevel type="info">
                 <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
                 <file name="src/Checkout/Payment/PayPalPaymentHandler.php"/>
+                <file name="tests/Checkout/Payment/ScheduledTask/CancelTransactionsTaskHandlerTest.php"/>
+                <file name="tests/Checkout/Payment/PayPalPaymentHandlerTest.php"/>
             </errorLevel>
         </DeprecatedConstant>
 

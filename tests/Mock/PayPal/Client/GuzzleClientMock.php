@@ -55,6 +55,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefund;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
@@ -227,20 +228,32 @@ class GuzzleClientMock implements ClientInterface
                 return GetRefundedOrderCapture::get();
             }
 
+            if (\mb_substr($resourceUri, -17) === GetOrderAuthorization::ID) {
+                return GetOrderAuthorization::get();
+            }
+
             $orderCapture = GetOrderCapture::get();
+            if (\mb_substr($resourceUri, -17) === GetOrderCapture::ID || \mb_substr($resourceUri, -33) === PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER) {
+                return $orderCapture;
+            }
+
             if (\mb_strpos($resourceUri, ExpressPrepareCheckoutRouteTest::TEST_PAYMENT_ID_WITHOUT_STATE) !== false) {
                 $orderCapture['payer']['address']['admin_area_1'] = null;
+
+                return $orderCapture;
             }
 
             if (\mb_strpos($resourceUri, ExpressPrepareCheckoutRouteTest::TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES) !== false) {
                 $orderCapture['payer']['address']['country_code'] = 'NL';
+
+                return $orderCapture;
             }
 
             if (\mb_strpos($resourceUri, ExpressPrepareCheckoutRouteTest::TEST_PAYMENT_ID_WITH_STATE_NOT_FOUND) !== false) {
                 $orderCapture['payer']['address']['admin_area_1'] = 'XY';
-            }
 
-            return $orderCapture;
+                return $orderCapture;
+            }
         }
 
         if (\mb_strpos($resourceUri, RequestUriV2::CAPTURES_RESOURCE) !== false) {
