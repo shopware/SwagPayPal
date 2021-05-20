@@ -15,7 +15,7 @@ use Monolog\Processor\PsrLogMessageProcessor;
 use Monolog\Processor\WebProcessor;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Settings;
 
 class LoggerFactory
 {
@@ -48,7 +48,7 @@ class LoggerFactory
         $this->logLevel = self::DEFAULT_LEVEL;
 
         try {
-            $setting = $systemConfigService->getInt(\sprintf('%sloggingLevel', SettingsService::SYSTEM_CONFIG_DOMAIN));
+            $setting = $systemConfigService->getInt(Settings::LOGGING_LEVEL);
             if ($setting > 0) {
                 $this->logLevel = $setting;
             }

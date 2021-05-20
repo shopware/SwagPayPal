@@ -17,6 +17,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilderInterface;
 use Swag\PayPal\PaymentsApi\Patch\CustomTransactionPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder;
@@ -30,7 +31,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -39,55 +40,25 @@ class PlusPuiHandler
     public const PAYPAL_PAYMENT_ID_INPUT_NAME = 'paypalPaymentId';
     public const PAYPAL_PAYMENT_TOKEN_INPUT_NAME = 'paypalToken';
 
-    /**
-     * @var PaymentResource
-     */
-    private $paymentResource;
+    private PaymentResource $paymentResource;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderTransactionRepo;
+    private EntityRepositoryInterface $orderTransactionRepo;
 
-    /**
-     * @var OrderPaymentBuilderInterface
-     */
-    private $paymentBuilder;
+    private OrderPaymentBuilderInterface $paymentBuilder;
 
-    /**
-     * @var OrderNumberPatchBuilder
-     */
-    private $orderNumberPatchBuilder;
+    private OrderNumberPatchBuilder $orderNumberPatchBuilder;
 
-    /**
-     * @var CustomTransactionPatchBuilder
-     */
-    private $customTransactionPatchBuilder;
+    private CustomTransactionPatchBuilder $customTransactionPatchBuilder;
 
-    /**
-     * @var PayerInfoPatchBuilder
-     */
-    private $payerInfoPatchBuilder;
+    private PayerInfoPatchBuilder $payerInfoPatchBuilder;
 
-    /**
-     * @var ShippingAddressPatchBuilder
-     */
-    private $shippingAddressPatchBuilder;
+    private ShippingAddressPatchBuilder $shippingAddressPatchBuilder;
 
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var OrderTransactionStateHandler
-     */
-    private $orderTransactionStateHandler;
+    private OrderTransactionStateHandler $orderTransactionStateHandler;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         PaymentResource $paymentResource,
@@ -97,7 +68,7 @@ class PlusPuiHandler
         OrderNumberPatchBuilder $orderNumberPatchBuilder,
         CustomTransactionPatchBuilder $customTransactionPatchBuilder,
         ShippingAddressPatchBuilder $shippingAddressPatchBuilder,
-        SettingsServiceInterface $settingsService,
+        SystemConfigService $systemConfigService,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         LoggerInterface $logger
     ) {
@@ -108,7 +79,7 @@ class PlusPuiHandler
         $this->customTransactionPatchBuilder = $customTransactionPatchBuilder;
         $this->payerInfoPatchBuilder = $payerInfoPatchBuilder;
         $this->shippingAddressPatchBuilder = $shippingAddressPatchBuilder;
-        $this->settingsService = $settingsService;
+        $this->systemConfigService = $systemConfigService;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->logger = $logger;
     }
@@ -149,12 +120,12 @@ class PlusPuiHandler
         CustomerEntity $customer
     ): Payment {
         $this->logger->debug('Started');
+        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
+        $orderTransactionId = $transaction->getOrderTransaction()->getId();
+
         $payment = $this->paymentBuilder->getPayment($transaction, $salesChannelContext);
         $payment->getPayer()->setExternalSelectedFundingInstrumentType(PaymentInstruction::TYPE_INVOICE);
         $payment->getApplicationContext()->setLocale('de_DE');
-
-        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-        $orderTransactionId = $transaction->getOrderTransaction()->getId();
 
         try {
             $response = $this->paymentResource->create(
@@ -197,11 +168,10 @@ class PlusPuiHandler
     ): void {
         $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
-        $settings = $this->settingsService->getSettings($salesChannelId);
         $orderNumber = $transaction->getOrder()->getOrderNumber();
 
-        if ($orderNumberSendNeeded && $orderNumber !== null && $settings->getSendOrderNumber()) {
-            $orderNumberPrefix = (string) $settings->getOrderNumberPrefix();
+        if ($orderNumberSendNeeded && $orderNumber !== null && $this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelId)) {
+            $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelId);
             $orderNumber = $orderNumberPrefix . $orderNumber;
 
             try {

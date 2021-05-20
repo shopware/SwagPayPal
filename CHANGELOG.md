@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-271 - Fix an issue where updated settings did not correctly invalidate cache
+
 # 3.1.0
 - PPI-246 - Added option for advanced logging
 - PPI-251 - Fix authorized transaction state on delayed payment collection

@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Defaults;
@@ -37,7 +36,7 @@ use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext as ApplicationContextV2;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
-use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
@@ -89,69 +88,69 @@ class UpdateTest extends TestCase
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
         $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
-        static::assertNull($systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox'));
-        static::assertNull($systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'));
+        static::assertNull($systemConfigService->get(Settings::CLIENT_ID_SANDBOX));
+        static::assertNull($systemConfigService->get(Settings::CLIENT_SECRET_SANDBOX));
     }
 
     public function testUpdateTo130WithSandboxEnabled(): void
     {
         $systemConfigService = $this->createSystemConfigServiceMock([
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId' => self::CLIENT_ID,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret' => self::CLIENT_SECRET,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => true,
+            Settings::CLIENT_ID => self::CLIENT_ID,
+            Settings::CLIENT_SECRET => self::CLIENT_SECRET,
+            Settings::SANDBOX => true,
         ]);
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
         $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
-        static::assertSame('', $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId'));
-        static::assertSame('', $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret'));
-        static::assertSame(self::CLIENT_ID, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox'));
-        static::assertSame(self::CLIENT_SECRET, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'));
+        static::assertSame('', $systemConfigService->get(Settings::CLIENT_ID));
+        static::assertSame('', $systemConfigService->get(Settings::CLIENT_SECRET));
+        static::assertSame(self::CLIENT_ID, $systemConfigService->get(Settings::CLIENT_ID_SANDBOX));
+        static::assertSame(self::CLIENT_SECRET, $systemConfigService->get(Settings::CLIENT_SECRET_SANDBOX));
     }
 
     public function testUpdateTo130WithSandboxDisabled(): void
     {
         $systemConfigService = $this->createSystemConfigServiceMock([
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId' => self::CLIENT_ID,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret' => self::CLIENT_SECRET,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => false,
+            Settings::CLIENT_ID => self::CLIENT_ID,
+            Settings::CLIENT_SECRET => self::CLIENT_SECRET,
+            Settings::SANDBOX => false,
         ]);
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
         $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
-        static::assertSame(self::CLIENT_ID, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId'));
-        static::assertSame(self::CLIENT_SECRET, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret'));
-        static::assertNull($systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox'));
-        static::assertNull($systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'));
+        static::assertSame(self::CLIENT_ID, $systemConfigService->get(Settings::CLIENT_ID));
+        static::assertSame(self::CLIENT_SECRET, $systemConfigService->get(Settings::CLIENT_SECRET));
+        static::assertNull($systemConfigService->get(Settings::CLIENT_ID_SANDBOX));
+        static::assertNull($systemConfigService->get(Settings::CLIENT_SECRET_SANDBOX));
     }
 
     public function testUpdateTo130WithSandboxSettingsSet(): void
     {
         $systemConfigService = $this->createSystemConfigServiceMock([
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId' => self::CLIENT_ID,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret' => self::CLIENT_SECRET,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox' => self::OTHER_CLIENT_ID,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox' => self::OTHER_CLIENT_SECRET,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => true,
+            Settings::CLIENT_ID => self::CLIENT_ID,
+            Settings::CLIENT_SECRET => self::CLIENT_SECRET,
+            Settings::CLIENT_ID_SANDBOX => self::OTHER_CLIENT_ID,
+            Settings::CLIENT_SECRET_SANDBOX => self::OTHER_CLIENT_SECRET,
+            Settings::SANDBOX => true,
         ]);
         $updateContext = $this->createUpdateContext('1.2.0', '1.3.0');
         $update = $this->createUpdateService($systemConfigService);
         $update->update($updateContext);
-        static::assertSame(self::OTHER_CLIENT_ID, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox'));
-        static::assertSame(self::OTHER_CLIENT_SECRET, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'));
+        static::assertSame(self::OTHER_CLIENT_ID, $systemConfigService->get(Settings::CLIENT_ID_SANDBOX));
+        static::assertSame(self::OTHER_CLIENT_SECRET, $systemConfigService->get(Settings::CLIENT_SECRET_SANDBOX));
     }
 
     public function testUpdateTo170(): void
     {
         $systemConfigService = $this->createSystemConfigServiceMock([
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox' => self::OTHER_CLIENT_ID,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox' => self::OTHER_CLIENT_SECRET,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => true,
+            Settings::CLIENT_ID_SANDBOX => self::OTHER_CLIENT_ID,
+            Settings::CLIENT_SECRET_SANDBOX => self::OTHER_CLIENT_SECRET,
+            Settings::SANDBOX => true,
         ]);
         $updateContext = $this->createUpdateContext('1.6.9', '1.7.0');
         $update = $this->createUpdateService($systemConfigService, $this->createWebhookService($systemConfigService));
         $update->update($updateContext);
-        static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'webhookId'));
+        static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $systemConfigService->get(Settings::WEBHOOK_ID));
     }
 
     public function testUpdateTo170WithMissingSettings(): void
@@ -160,7 +159,7 @@ class UpdateTest extends TestCase
         $updateContext = $this->createUpdateContext('1.6.9', '1.7.0');
         $update = $this->createUpdateService($systemConfigService, $this->createWebhookService($systemConfigService));
         $update->update($updateContext);
-        static::assertNull($systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'webhookId'));
+        static::assertNull($systemConfigService->get(Settings::WEBHOOK_ID));
     }
 
     public function testUpdateTo172(): void
@@ -239,31 +238,26 @@ class UpdateTest extends TestCase
         $updateContext = $this->createUpdateContext('1.9.1', '2.0.0');
         $systemConfig = $this->createSystemConfigServiceMock();
 
-        $settingKeyIntent = SettingsService::SYSTEM_CONFIG_DOMAIN . 'intent';
-        $systemConfig->set($settingKeyIntent, PaymentIntentV1::SALE);
-        $systemConfig->set($settingKeyIntent, PaymentIntentV1::ORDER, Defaults::SALES_CHANNEL);
+        $systemConfig->set(Settings::INTENT, PaymentIntentV1::SALE);
+        $systemConfig->set(Settings::INTENT, PaymentIntentV1::ORDER, Defaults::SALES_CHANNEL);
 
-        $settingKeyLandingPage = SettingsService::SYSTEM_CONFIG_DOMAIN . 'landingPage';
-        $systemConfig->set($settingKeyLandingPage, ApplicationContextV1::LANDING_PAGE_TYPE_LOGIN);
-        $systemConfig->set($settingKeyLandingPage, ApplicationContextV1::LANDING_PAGE_TYPE_BILLING, Defaults::SALES_CHANNEL);
+        $systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV1::LANDING_PAGE_TYPE_LOGIN);
+        $systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV1::LANDING_PAGE_TYPE_BILLING, Defaults::SALES_CHANNEL);
 
         $updater = $this->createUpdateService($systemConfig);
         $updater->update($updateContext);
 
-        static::assertSame(PaymentIntentV2::CAPTURE, $systemConfig->get($settingKeyIntent, null, false));
-        static::assertSame(PaymentIntentV2::AUTHORIZE, $systemConfig->get($settingKeyIntent, Defaults::SALES_CHANNEL, false));
-        static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_LOGIN, $systemConfig->get($settingKeyLandingPage, null, false));
-        static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, $systemConfig->get($settingKeyLandingPage, Defaults::SALES_CHANNEL, false));
+        static::assertSame(PaymentIntentV2::CAPTURE, $systemConfig->get(Settings::INTENT, null, false));
+        static::assertSame(PaymentIntentV2::AUTHORIZE, $systemConfig->get(Settings::INTENT, Defaults::SALES_CHANNEL, false));
+        static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_LOGIN, $systemConfig->get(Settings::LANDING_PAGE, null, false));
+        static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, $systemConfig->get(Settings::LANDING_PAGE, Defaults::SALES_CHANNEL, false));
     }
 
     public function testUpdateTo200MigrateIntentSettingWithInvalidIntent(): void
     {
         $updateContext = $this->createUpdateContext('1.9.1', '2.0.0');
         $systemConfig = $this->createSystemConfigServiceMock();
-
-        $settingKeyIntent = SettingsService::SYSTEM_CONFIG_DOMAIN . 'intent';
-
-        $systemConfig->set($settingKeyIntent, 'invalidIntent');
+        $systemConfig->set(Settings::INTENT, 'invalidIntent');
 
         $updater = $this->createUpdateService($systemConfig);
         $this->expectException(\RuntimeException::class);
@@ -276,9 +270,7 @@ class UpdateTest extends TestCase
         $updateContext = $this->createUpdateContext('1.9.1', '2.0.0');
         $systemConfig = $this->createSystemConfigServiceMock();
 
-        $settingKeyIntent = SettingsService::SYSTEM_CONFIG_DOMAIN . 'landingPage';
-
-        $systemConfig->set($settingKeyIntent, 'invalidLandingPage');
+        $systemConfig->set(Settings::LANDING_PAGE, 'invalidLandingPage');
 
         $updater = $this->createUpdateService($systemConfig);
         $this->expectException(\RuntimeException::class);
@@ -289,10 +281,10 @@ class UpdateTest extends TestCase
     public function testUpdateTo300(): void
     {
         $systemConfigService = $this->createSystemConfigServiceMock([
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox' => self::OTHER_CLIENT_ID,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox' => self::OTHER_CLIENT_SECRET,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => true,
-            SettingsService::SYSTEM_CONFIG_DOMAIN . 'webhookId' => 'anyIdWillDo',
+            Settings::CLIENT_ID_SANDBOX => self::OTHER_CLIENT_ID,
+            Settings::CLIENT_SECRET_SANDBOX => self::OTHER_CLIENT_SECRET,
+            Settings::SANDBOX => true,
+            Settings::WEBHOOK_ID => 'anyIdWillDo',
         ]);
 
         $updateContext = $this->createUpdateContext('2.2.2', '3.0.0');
@@ -311,7 +303,7 @@ class UpdateTest extends TestCase
         $systemConfigService->set('core.basicInformation.email', 'some@one.com', $salesChannel->getId());
 
         $update->update($updateContext);
-        static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'webhookId'));
+        static::assertSame(GuzzleClientMock::TEST_WEBHOOK_ID, $systemConfigService->get(Settings::WEBHOOK_ID));
         static::assertTrue(WebhookUpdateFixture::$sent);
     }
 
@@ -359,12 +351,10 @@ class UpdateTest extends TestCase
 
     private function createWebhookService(SystemConfigServiceMock $systemConfigService): WebhookService
     {
-        $settingsService = new SettingsService($systemConfigService, new NullLogger());
-
         return new WebhookService(
-            new WebhookResource($this->createPayPalClientFactoryWithService($settingsService)),
+            new WebhookResource($this->createPayPalClientFactoryWithService($systemConfigService)),
             $this->createWebhookRegistry(new OrderTransactionRepoMock()),
-            $settingsService,
+            $systemConfigService,
             new RouterMock()
         );
     }

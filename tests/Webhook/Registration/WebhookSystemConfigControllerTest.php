@@ -15,11 +15,12 @@ use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
 use Shopware\Core\System\SystemConfig\Service\ConfigurationService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Webhook\WebhookServiceMock;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigController;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
-use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\HttpFoundation\Request;
 
 class WebhookSystemConfigControllerTest extends TestCase
@@ -62,72 +63,96 @@ class WebhookSystemConfigControllerTest extends TestCase
         // creating new instance without decoration
         $this->undecoratedController = new SystemConfigController($configurationService, $systemConfigService);
 
-        $this->webhookService = new WebhookServiceMock();
+        $this->webhookService = new WebhookServiceMock($systemConfigService);
     }
 
     public function testBatchSaveWithChangedSandboxMode(): void
     {
         $oldConfig = $this->getDefaultConfig();
-        $oldConfig['null'][SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_ID_KEY] = null;
+        $oldConfig['null'][Settings::WEBHOOK_ID] = null;
         $newConfig = $this->getDefaultConfig();
-        $newConfig['null'][SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox'] = false;
-        $newConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox'] = false;
+        $newConfig['null'][Settings::SANDBOX] = false;
+        $newConfig[Defaults::SALES_CHANNEL][Settings::SANDBOX] = false;
 
         $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
 
         $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
 
-        static::assertFalse($this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox'));
-        static::assertFalse($this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox'), Defaults::SALES_CHANNEL);
+        static::assertFalse($this->systemConfigService->get(Settings::SANDBOX));
+        static::assertFalse($this->systemConfigService->get(Settings::SANDBOX, Defaults::SALES_CHANNEL));
 
-        static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL], $this->webhookService->getDeregistrations());
+        static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL, 'null'], $this->webhookService->getDeregistrations());
         static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL, 'null'], $this->webhookService->getRegistrations());
     }
 
     public function testBatchSaveWithChangedSandboxCredentials(): void
     {
         $oldConfig = $this->getDefaultConfig();
-        $oldConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_ID_KEY] = null;
+        $oldConfig[Defaults::SALES_CHANNEL][Settings::WEBHOOK_ID] = null;
         $newConfig = $this->getDefaultConfig();
-        $newConfig['null'][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSecret'] = self::OTHER_CLIENT_ID;
-        $newConfig['null'][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'] = self::OTHER_CLIENT_SECRET;
-        $newConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSecret'] = self::OTHER_CLIENT_ID;
-        $newConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'] = self::OTHER_CLIENT_SECRET;
+        $newConfig['null'][Settings::CLIENT_ID_SANDBOX] = self::OTHER_CLIENT_ID;
+        $newConfig['null'][Settings::CLIENT_SECRET_SANDBOX] = self::OTHER_CLIENT_SECRET;
+        $newConfig[Defaults::SALES_CHANNEL][Settings::CLIENT_ID_SANDBOX] = self::OTHER_CLIENT_ID;
+        $newConfig[Defaults::SALES_CHANNEL][Settings::CLIENT_SECRET_SANDBOX] = self::OTHER_CLIENT_SECRET;
 
         $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
 
         $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
 
-        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSecret'));
-        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'));
-        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSecret'), Defaults::SALES_CHANNEL);
-        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'), Defaults::SALES_CHANNEL);
+        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(Settings::CLIENT_ID_SANDBOX));
+        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(Settings::CLIENT_SECRET_SANDBOX));
+        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(Settings::CLIENT_ID_SANDBOX, Defaults::SALES_CHANNEL));
+        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(Settings::CLIENT_SECRET_SANDBOX, Defaults::SALES_CHANNEL));
 
-        static::assertEqualsCanonicalizing(['null'], $this->webhookService->getDeregistrations());
+        static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL, 'null'], $this->webhookService->getDeregistrations());
+        static::assertEqualsCanonicalizing(['null'], $this->webhookService->getRegistrations());
+    }
+
+    public function testBatchSaveWithChangedMixedCredentials(): void
+    {
+        $oldConfig = $this->getDefaultConfig();
+        $oldConfig[Defaults::SALES_CHANNEL][Settings::WEBHOOK_ID] = null;
+        $newConfig = $this->getDefaultConfig();
+        $newConfig['null'][Settings::CLIENT_ID_SANDBOX] = self::OTHER_CLIENT_ID;
+        $newConfig['null'][Settings::CLIENT_SECRET_SANDBOX] = self::OTHER_CLIENT_SECRET;
+        $newConfig[Defaults::SALES_CHANNEL][Settings::SANDBOX] = false;
+        $newConfig[Defaults::SALES_CHANNEL][Settings::CLIENT_ID] = self::OTHER_CLIENT_ID;
+        $newConfig[Defaults::SALES_CHANNEL][Settings::CLIENT_SECRET] = self::OTHER_CLIENT_SECRET;
+
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
+
+        $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
+
+        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(Settings::CLIENT_ID_SANDBOX));
+        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(Settings::CLIENT_SECRET_SANDBOX));
+        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(Settings::CLIENT_ID, Defaults::SALES_CHANNEL));
+        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(Settings::CLIENT_SECRET, Defaults::SALES_CHANNEL));
+
+        static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL, 'null'], $this->webhookService->getDeregistrations());
         static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL, 'null'], $this->webhookService->getRegistrations());
     }
 
     public function testBatchSaveWithChangedRegularCredentials(): void
     {
         $oldConfig = $this->getDefaultConfig();
-        $oldConfig['null'][SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_ID_KEY] = null;
-        $oldConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_ID_KEY] = null;
+        $oldConfig['null'][Settings::WEBHOOK_ID] = null;
+        $oldConfig[Defaults::SALES_CHANNEL][Settings::WEBHOOK_ID] = null;
         $newConfig = $this->getDefaultConfig();
-        $newConfig['null'][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId'] = self::OTHER_CLIENT_ID;
-        $newConfig['null'][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret'] = self::OTHER_CLIENT_SECRET;
-        $newConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId'] = self::OTHER_CLIENT_ID;
-        $newConfig[Defaults::SALES_CHANNEL][SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret'] = self::OTHER_CLIENT_SECRET;
+        $newConfig['null'][Settings::CLIENT_ID] = self::OTHER_CLIENT_ID;
+        $newConfig['null'][Settings::CLIENT_SECRET] = self::OTHER_CLIENT_SECRET;
+        $newConfig[Defaults::SALES_CHANNEL][Settings::CLIENT_ID] = self::OTHER_CLIENT_ID;
+        $newConfig[Defaults::SALES_CHANNEL][Settings::CLIENT_SECRET] = self::OTHER_CLIENT_SECRET;
 
         $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($oldConfig));
 
         $this->createWebhookSystemConfigController()->batchSaveConfiguration($this->createBatchRequest($newConfig));
 
-        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId'));
-        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret'));
-        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId'), Defaults::SALES_CHANNEL);
-        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret'), Defaults::SALES_CHANNEL);
+        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(Settings::CLIENT_ID));
+        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(Settings::CLIENT_SECRET));
+        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(Settings::CLIENT_ID, Defaults::SALES_CHANNEL));
+        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(Settings::CLIENT_SECRET, Defaults::SALES_CHANNEL));
 
-        static::assertEmpty($this->webhookService->getDeregistrations());
+        static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL, 'null'], $this->webhookService->getDeregistrations());
         static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL, 'null'], $this->webhookService->getRegistrations());
     }
 
@@ -148,50 +173,68 @@ class WebhookSystemConfigControllerTest extends TestCase
     {
         $oldConfig = $this->getDefaultConfig()[Defaults::SALES_CHANNEL];
         $newConfig = $this->getDefaultConfig()[Defaults::SALES_CHANNEL];
-        $newConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox'] = false;
+        $newConfig[Settings::SANDBOX] = false;
 
         $this->undecoratedController->saveConfiguration($this->createSingleRequest($oldConfig, Defaults::SALES_CHANNEL));
         $this->createWebhookSystemConfigController()->saveConfiguration($this->createSingleRequest($newConfig, Defaults::SALES_CHANNEL));
 
-        static::assertFalse($this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox', Defaults::SALES_CHANNEL));
+        static::assertFalse($this->systemConfigService->get(Settings::SANDBOX, Defaults::SALES_CHANNEL));
 
         static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL], $this->webhookService->getDeregistrations());
         static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL], $this->webhookService->getRegistrations());
     }
 
+    public function testSaveWithRemovedSalesChannelSettings(): void
+    {
+        $this->undecoratedController->batchSaveConfiguration($this->createBatchRequest($this->getDefaultConfig()));
+        $newConfig = [
+            Settings::CLIENT_ID_SANDBOX => null,
+            Settings::CLIENT_SECRET_SANDBOX => null,
+        ];
+
+        $this->createWebhookSystemConfigController()->saveConfiguration($this->createSingleRequest($newConfig, Defaults::SALES_CHANNEL));
+
+        // going back to inherited config
+        static::assertNotNull($this->systemConfigService->get(Settings::CLIENT_ID_SANDBOX, Defaults::SALES_CHANNEL));
+        static::assertNotNull($this->systemConfigService->get(Settings::CLIENT_SECRET_SANDBOX, Defaults::SALES_CHANNEL));
+
+        static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL], $this->webhookService->getDeregistrations());
+        static::assertEmpty($this->webhookService->getRegistrations());
+    }
+
     public function testSaveWithChangedSandboxCredentials(): void
     {
         $oldConfig = $this->getDefaultConfig()['null'];
-        $oldConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_ID_KEY] = null;
+        $oldConfig[Settings::WEBHOOK_ID] = null;
         $newConfig = $this->getDefaultConfig()['null'];
-        $newConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSecret'] = self::OTHER_CLIENT_ID;
-        $newConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'] = self::OTHER_CLIENT_SECRET;
+        $newConfig[Settings::CLIENT_ID_SANDBOX] = self::OTHER_CLIENT_ID;
+        $newConfig[Settings::CLIENT_SECRET_SANDBOX] = self::OTHER_CLIENT_SECRET;
 
         $this->undecoratedController->saveConfiguration($this->createSingleRequest($oldConfig, null));
         $this->createWebhookSystemConfigController()->saveConfiguration($this->createSingleRequest($newConfig, null));
 
-        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSecret'));
-        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox'));
+        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(Settings::CLIENT_ID_SANDBOX));
+        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(Settings::CLIENT_SECRET_SANDBOX));
 
-        static::assertEmpty($this->webhookService->getDeregistrations());
+        static::assertEqualsCanonicalizing(['null'], $this->webhookService->getDeregistrations());
         static::assertEqualsCanonicalizing(['null'], $this->webhookService->getRegistrations());
     }
 
     public function testSaveWithChangedRegularCredentials(): void
     {
         $oldConfig = $this->getDefaultConfig()[Defaults::SALES_CHANNEL];
-        $oldConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_ID_KEY] = null;
+        $oldConfig[Settings::WEBHOOK_ID] = null;
         $newConfig = $this->getDefaultConfig()[Defaults::SALES_CHANNEL];
-        $newConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId'] = self::OTHER_CLIENT_ID;
-        $newConfig[SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret'] = self::OTHER_CLIENT_SECRET;
+        $newConfig[Settings::CLIENT_ID] = self::OTHER_CLIENT_ID;
+        $newConfig[Settings::CLIENT_SECRET] = self::OTHER_CLIENT_SECRET;
 
         $this->undecoratedController->saveConfiguration($this->createSingleRequest($oldConfig, Defaults::SALES_CHANNEL));
         $this->createWebhookSystemConfigController()->saveConfiguration($this->createSingleRequest($newConfig, Defaults::SALES_CHANNEL));
 
-        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId', Defaults::SALES_CHANNEL));
-        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret', Defaults::SALES_CHANNEL));
+        static::assertSame(self::OTHER_CLIENT_ID, $this->systemConfigService->get(Settings::CLIENT_ID, Defaults::SALES_CHANNEL));
+        static::assertSame(self::OTHER_CLIENT_SECRET, $this->systemConfigService->get(Settings::CLIENT_SECRET, Defaults::SALES_CHANNEL));
 
-        static::assertEmpty($this->webhookService->getDeregistrations());
+        static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL], $this->webhookService->getDeregistrations());
         static::assertEqualsCanonicalizing([Defaults::SALES_CHANNEL], $this->webhookService->getRegistrations());
     }
 
@@ -215,11 +258,12 @@ class WebhookSystemConfigControllerTest extends TestCase
         return new WebhookSystemConfigController(
             $this->configurationService,
             $this->systemConfigService,
-            $settingsService,
             new WebhookSystemConfigHelper(
                 new NullLogger(),
                 $settingsService,
-                $this->webhookService
+                $this->webhookService,
+                $this->systemConfigService,
+                new SettingsValidationService($this->systemConfigService, new NullLogger())
             )
         );
     }
@@ -254,20 +298,20 @@ class WebhookSystemConfigControllerTest extends TestCase
     {
         return [
             'null' => [
-                SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId' => 'oldClientId',
-                SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret' => 'oldClientSecret',
-                SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => true,
-                SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox' => 'oldClientId',
-                SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox' => 'oldClientSecret',
-                SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_ID_KEY => 'someWebhookId',
+                Settings::CLIENT_ID => 'oldClientId',
+                Settings::CLIENT_SECRET => 'oldClientSecret',
+                Settings::SANDBOX => true,
+                Settings::CLIENT_ID_SANDBOX => 'oldClientId',
+                Settings::CLIENT_SECRET_SANDBOX => 'oldClientSecret',
+                Settings::WEBHOOK_ID => 'someWebhookId',
             ],
             Defaults::SALES_CHANNEL => [
-                SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId' => 'oldClientId',
-                SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret' => 'oldClientSecret',
-                SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox' => true,
-                SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox' => 'oldClientId',
-                SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox' => 'oldClientSecret',
-                SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_ID_KEY => 'someWebhookId',
+                Settings::CLIENT_ID => 'oldSpecificClientId',
+                Settings::CLIENT_SECRET => 'oldSpecificClientSecret',
+                Settings::SANDBOX => true,
+                Settings::CLIENT_ID_SANDBOX => 'oldSpecificClientId',
+                Settings::CLIENT_SECRET_SANDBOX => 'oldSpecificClientSecret',
+                Settings::WEBHOOK_ID => 'someSpecificOwnWebhookId',
             ],
         ];
     }

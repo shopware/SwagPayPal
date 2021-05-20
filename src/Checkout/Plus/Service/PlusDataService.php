@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Plus\PlusData;
 use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilderInterface;
@@ -21,6 +22,7 @@ use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilderInterface;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -30,35 +32,19 @@ use Symfony\Component\Routing\RouterInterface;
 
 class PlusDataService
 {
-    /**
-     * @var RouterInterface
-     */
-    private $router;
+    private RouterInterface $router;
 
-    /**
-     * @var CartPaymentBuilderInterface
-     */
-    private $cartPaymentBuilder;
+    private CartPaymentBuilderInterface $cartPaymentBuilder;
 
-    /**
-     * @var OrderPaymentBuilderInterface
-     */
-    private $orderPaymentBuilder;
+    private OrderPaymentBuilderInterface $orderPaymentBuilder;
 
-    /**
-     * @var PaymentResource
-     */
-    private $paymentResource;
+    private PaymentResource $paymentResource;
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PaymentMethodUtil$paymentMethodUtil;
 
-    /**
-     * @var LocaleCodeProvider
-     */
-    private $localeCodeProvider;
+    private LocaleCodeProvider $localeCodeProvider;
+
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         CartPaymentBuilderInterface $cartPaymentBuilder,
@@ -66,7 +52,8 @@ class PlusDataService
         PaymentResource $paymentResource,
         RouterInterface $router,
         PaymentMethodUtil $paymentMethodUtil,
-        LocaleCodeProvider $localeCodeProvider
+        LocaleCodeProvider $localeCodeProvider,
+        SystemConfigService $systemConfigService
     ) {
         $this->cartPaymentBuilder = $cartPaymentBuilder;
         $this->orderPaymentBuilder = $orderPaymentBuilder;
@@ -74,12 +61,16 @@ class PlusDataService
         $this->router = $router;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->localeCodeProvider = $localeCodeProvider;
+        $this->systemConfigService = $systemConfigService;
     }
 
+    /**
+     * @deprecated tag:v4.0.0 - parameter $settings will be removed
+     */
     public function getPlusData(
         Cart $cart,
         SalesChannelContext $salesChannelContext,
-        SwagPayPalSettingStruct $settings
+        ?SwagPayPalSettingStruct $settings = null
     ): ?PlusData {
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
@@ -89,13 +80,16 @@ class PlusDataService
         $finishUrl = $this->createFinishUrl();
         $payment = $this->cartPaymentBuilder->getPayment($cart, $salesChannelContext, $finishUrl, false);
 
-        return $this->getPlusDataFromPayment($payment, $salesChannelContext, $customer, $settings->getSandbox());
+        return $this->getPlusDataFromPayment($payment, $salesChannelContext, $customer);
     }
 
+    /**
+     * @deprecated tag:v4.0.0 - parameter $settings will be removed
+     */
     public function getPlusDataFromOrder(
         OrderEntity $order,
         SalesChannelContext $salesChannelContext,
-        SwagPayPalSettingStruct $settings
+        ?SwagPayPalSettingStruct $settings = null
     ): ?PlusData {
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
@@ -116,7 +110,7 @@ class PlusDataService
         $paymentTransaction = new AsyncPaymentTransactionStruct($firstTransaction, $order, $finishUrl);
         $payment = $this->orderPaymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
-        $plusData = $this->getPlusDataFromPayment($payment, $salesChannelContext, $customer, $settings->getSandbox());
+        $plusData = $this->getPlusDataFromPayment($payment, $salesChannelContext, $customer);
         if ($plusData === null) {
             return null;
         }
@@ -141,8 +135,7 @@ class PlusDataService
     private function getPlusDataFromPayment(
         Payment $payment,
         SalesChannelContext $salesChannelContext,
-        CustomerEntity $customer,
-        bool $useSandbox
+        CustomerEntity $customer
     ): ?PlusData {
         try {
             $response = $this->paymentResource->create(
@@ -158,7 +151,7 @@ class PlusDataService
         $payPalData = new PlusData();
         $payPalData->assign([
             'approvalUrl' => $response->getLinks()[1]->getHref(),
-            'mode' => $useSandbox ? 'sandbox' : 'live',
+            'mode' => $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelContext->getSalesChannelId()) ? 'sandbox' : 'live',
             'customerSelectedLanguage' => $this->getPaymentWallLanguage($context),
             'paymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
             'paypalPaymentId' => $response->getId(),

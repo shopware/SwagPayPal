@@ -35,8 +35,8 @@ class PaymentResourceTest extends TestCase
     {
         $salesChannelContext = Generator::createSalesChannelContext();
         $paymentTransaction = $this->createPaymentTransactionStruct();
-        $payment = $this->createPaymentBuilder()->getPayment($paymentTransaction, $salesChannelContext);
-        $createdPayment = $this->createPaymentResource()->create(
+        $payment = $this->createPaymentBuilder($this->createDefaultSystemConfig())->getPayment($paymentTransaction, $salesChannelContext);
+        $createdPayment = $this->createPaymentResource($this->createDefaultSystemConfig())->create(
             $payment,
             $salesChannelContext->getSalesChannel()->getId(),
             PartnerAttributionId::PAYPAL_CLASSIC
@@ -49,7 +49,7 @@ class PaymentResourceTest extends TestCase
 
     public function testExecuteSale(): void
     {
-        $executedPayment = $this->createPaymentResource()->execute(
+        $executedPayment = $this->createPaymentResource($this->createDefaultSystemConfig())->execute(
             'testPayerId',
             self::TEST_PAYMENT_ID,
             Defaults::SALES_CHANNEL
@@ -65,7 +65,7 @@ class PaymentResourceTest extends TestCase
 
     public function testExecuteAuthorize(): void
     {
-        $executedPayment = $this->createPaymentResource()->execute(
+        $executedPayment = $this->createPaymentResource($this->createDefaultSystemConfig())->execute(
             ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE,
             self::TEST_PAYMENT_ID,
             Defaults::SALES_CHANNEL
@@ -81,7 +81,7 @@ class PaymentResourceTest extends TestCase
 
     public function testExecuteOrder(): void
     {
-        $executedPayment = $this->createPaymentResource()->execute(
+        $executedPayment = $this->createPaymentResource($this->createDefaultSystemConfig())->execute(
             ConstantsForTesting::PAYER_ID_PAYMENT_ORDER,
             self::TEST_PAYMENT_ID,
             Defaults::SALES_CHANNEL
@@ -97,7 +97,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetSale(): void
     {
-        $payment = $this->createPaymentResource()->get(self::TEST_PAYMENT_ID, Defaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::TEST_PAYMENT_ID, Defaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -109,7 +109,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetSaleWithRefund(): void
     {
-        $payment = $this->createPaymentResource()->get(self::SALE_WITH_REFUND_PAYMENT_ID, Defaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::SALE_WITH_REFUND_PAYMENT_ID, Defaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -125,7 +125,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetOrder(): void
     {
-        $payment = $this->createPaymentResource()->get(self::ORDER_PAYMENT_ID, Defaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::ORDER_PAYMENT_ID, Defaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -137,7 +137,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetCapturedAuthorizeWithRefunds(): void
     {
-        $payment = $this->createPaymentResource()->get(self::AUTHORIZE_PAYMENT_ID, Defaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::AUTHORIZE_PAYMENT_ID, Defaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -157,7 +157,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetCapturedOrder(): void
     {
-        $payment = $this->createPaymentResource()->get(self::CAPTURED_ORDER_PAYMENT_ID, Defaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::CAPTURED_ORDER_PAYMENT_ID, Defaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);

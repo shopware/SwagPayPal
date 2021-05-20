@@ -8,16 +8,18 @@
 namespace Swag\PayPal\Test\Mock\Setting\Service;
 
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Setting\Settings;
 
 class SystemConfigServiceMock extends SystemConfigService
 {
     /**
      * @var mixed[][]
      */
-    private $data = [];
+    private $data;
 
     public function __construct()
     {
+        $this->data = ['' => Settings::DEFAULT_VALUES];
     }
 
     /**
@@ -26,17 +28,20 @@ class SystemConfigServiceMock extends SystemConfigService
     public function get(string $key, ?string $salesChannelId = null, bool $inherit = true)
     {
         $salesChannelId = (string) $salesChannelId;
-        if (!isset($this->data[$salesChannelId][$key])) {
-            return null;
+        if (isset($this->data[$salesChannelId][$key])) {
+            return $this->data[$salesChannelId][$key];
         }
 
-        return $this->data[$salesChannelId][$key] ?? null;
+        if (isset($this->data[''][$key])) {
+            return $this->data[''][$key];
+        }
+
+        return null;
     }
 
     public function getDomain(string $domain, ?string $salesChannelId = null, bool $inherit = false): array
     {
         $values = [];
-        $domain = \rtrim($domain, '.') . '.';
 
         if ($inherit && $salesChannelId !== null) {
             foreach ($this->data[''] as $key => $value) {

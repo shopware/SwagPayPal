@@ -23,10 +23,11 @@ use Swag\PayPal\Pos\Webhook\Exception\WebhookNotRegisteredException;
 use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext as ApplicationContextV1;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
+use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext as ApplicationContextV2;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookService;
@@ -132,26 +133,26 @@ class Update
 
     private function updateTo110(): void
     {
-        $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled', true);
+        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_ENABLED, true);
     }
 
     private function updateTo130(): void
     {
-        if (!$this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox')) {
+        if (!$this->systemConfig->get(Settings::SANDBOX)) {
             return;
         }
 
-        $previousClientId = $this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId');
-        $previousClientSecret = $this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret');
-        $previousClientIdSandbox = $this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox');
-        $previousClientSecretSandbox = $this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox');
+        $previousClientId = $this->systemConfig->get(Settings::CLIENT_ID);
+        $previousClientSecret = $this->systemConfig->get(Settings::CLIENT_SECRET);
+        $previousClientIdSandbox = $this->systemConfig->get(Settings::CLIENT_ID_SANDBOX);
+        $previousClientSecretSandbox = $this->systemConfig->get(Settings::CLIENT_SECRET_SANDBOX);
 
         if ($previousClientId && $previousClientSecret
             && $previousClientIdSandbox === null && $previousClientSecretSandbox === null) {
-            $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox', $previousClientId);
-            $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox', $previousClientSecret);
-            $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId', '');
-            $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret', '');
+            $this->systemConfig->set(Settings::CLIENT_ID_SANDBOX, $previousClientId);
+            $this->systemConfig->set(Settings::CLIENT_SECRET_SANDBOX, $previousClientSecret);
+            $this->systemConfig->set(Settings::CLIENT_ID, '');
+            $this->systemConfig->set(Settings::CLIENT_SECRET, '');
         }
     }
 
@@ -263,7 +264,7 @@ class Update
                     continue;
                 }
 
-                if (!$this->systemConfig->get(SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_ID_KEY, $salesChannelId)) {
+                if (!$this->systemConfig->get(Settings::WEBHOOK_ID, $salesChannelId)) {
                     continue;
                 }
 
@@ -337,50 +338,66 @@ class Update
     private function migrateIntentSetting(Context $context): void
     {
         $salesChannelIds = $this->getSalesChannelIds($context);
-        $settingKey = SettingsService::SYSTEM_CONFIG_DOMAIN . 'intent';
 
         foreach ($salesChannelIds as $salesChannelId) {
-            $intent = $this->getConfigValue($salesChannelId, $settingKey);
-            if ($intent === null) {
+            $intent = $this->systemConfig->getString(Settings::INTENT, $salesChannelId);
+
+            if ($salesChannelId !== null && $intent === $this->systemConfig->getString(Settings::INTENT)) {
+                continue;
+            }
+
+            if ($intent === '') {
+                continue;
+            }
+
+            if (\in_array($intent, PaymentIntentV2::INTENTS, true)) {
                 continue;
             }
 
             if (!\in_array($intent, PaymentIntentV1::INTENTS, true)) {
-                throw new \RuntimeException('Invalid value for "' . $settingKey . '" setting');
+                throw new \RuntimeException('Invalid value for "' . Settings::INTENT . '" setting');
             }
 
             if ($intent === PaymentIntentV1::SALE) {
-                $this->systemConfig->set($settingKey, PaymentIntentV2::CAPTURE, $salesChannelId);
+                $this->systemConfig->set(Settings::INTENT, PaymentIntentV2::CAPTURE, $salesChannelId);
 
                 continue;
             }
 
-            $this->systemConfig->set($settingKey, PaymentIntentV2::AUTHORIZE, $salesChannelId);
+            $this->systemConfig->set(Settings::INTENT, PaymentIntentV2::AUTHORIZE, $salesChannelId);
         }
     }
 
     private function migrateLandingPageSetting(Context $context): void
     {
         $salesChannelIds = $this->getSalesChannelIds($context);
-        $settingKey = SettingsService::SYSTEM_CONFIG_DOMAIN . 'landingPage';
 
         foreach ($salesChannelIds as $salesChannelId) {
-            $landingPage = $this->getConfigValue($salesChannelId, $settingKey);
-            if ($landingPage === null) {
+            $landingPage = $this->systemConfig->getString(Settings::LANDING_PAGE, $salesChannelId);
+
+            if ($salesChannelId !== null && $landingPage === $this->systemConfig->getString(Settings::LANDING_PAGE)) {
+                continue;
+            }
+
+            if ($landingPage === '') {
+                continue;
+            }
+
+            if (\in_array($landingPage, ApplicationContext::LANDING_PAGE_TYPES, true)) {
                 continue;
             }
 
             if (!\in_array($landingPage, ApplicationContextV1::LANDING_PAGE_TYPES, true)) {
-                throw new \RuntimeException('Invalid value for "' . $settingKey . '" setting');
+                throw new \RuntimeException('Invalid value for "' . Settings::LANDING_PAGE . '" setting');
             }
 
             if ($landingPage === ApplicationContextV1::LANDING_PAGE_TYPE_LOGIN) {
-                $this->systemConfig->set($settingKey, ApplicationContextV2::LANDING_PAGE_TYPE_LOGIN, $salesChannelId);
+                $this->systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV2::LANDING_PAGE_TYPE_LOGIN, $salesChannelId);
 
                 continue;
             }
 
-            $this->systemConfig->set($settingKey, ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, $salesChannelId);
+            $this->systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, $salesChannelId);
         }
     }
 
@@ -390,19 +407,5 @@ class Update
         $salesChannelIds[] = null; // Global config for all sales channels
 
         return $salesChannelIds;
-    }
-
-    private function getConfigValue(?string $salesChannelId, string $settingKey): ?string
-    {
-        $settings = $this->systemConfig->getDomain(SettingsService::SYSTEM_CONFIG_DOMAIN, $salesChannelId);
-        if ($settings === []) {
-            return null; // Config for this sales channel is inherited, so no need to update
-        }
-
-        if (!\array_key_exists($settingKey, $settings)) {
-            return null; // Sales channel specific config does not contain $settingKey
-        }
-
-        return $settings[$settingKey];
     }
 }

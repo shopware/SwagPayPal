@@ -6,7 +6,8 @@
 
     <services>
         <service id="Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber">
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <argument type="service" id="Swag\PayPal\Installment\Banner\Service\BannerDataService"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
@@ -15,6 +16,7 @@
 
         <service id="Swag\PayPal\Installment\Banner\Service\BannerDataService">
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
     </services>
 </container>

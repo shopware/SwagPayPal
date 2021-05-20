@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -20,8 +21,8 @@ use Shopware\Storefront\Page\Page;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -30,39 +31,28 @@ class PlusSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_PLUS_DATA_EXTENSION_ID = 'payPalPlusData';
 
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SettingsValidationServiceInterface $settingsValidationService;
 
-    /**
-     * @var PlusDataService
-     */
-    private $plusDataService;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PlusDataService $plusDataService;
 
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private TranslatorInterface $translator;
+
+    private LoggerInterface $logger;
 
     public function __construct(
-        SettingsServiceInterface $settingsService,
+        SettingsValidationServiceInterface $settingsValidationService,
+        SystemConfigService $systemConfigService,
         PlusDataService $plusDataService,
         PaymentMethodUtil $paymentMethodUtil,
         TranslatorInterface $translator,
         LoggerInterface $logger
     ) {
-        $this->settingsService = $settingsService;
+        $this->settingsValidationService = $settingsValidationService;
+        $this->systemConfigService = $systemConfigService;
         $this->plusDataService = $plusDataService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->translator = $translator;
@@ -81,14 +71,13 @@ class PlusSubscriber implements EventSubscriberInterface
     public function onAccountEditOrderLoaded(AccountEditOrderPageLoadedEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
-        $settings = $this->checkSettings($salesChannelContext, $event->getPage()->getPaymentMethods());
-        if ($settings === null) {
+        if (!$this->checkSettings($salesChannelContext, $event->getPage()->getPaymentMethods())) {
             return;
         }
 
         $this->logger->debug('Adding data');
         $page = $event->getPage();
-        $plusData = $this->plusDataService->getPlusDataFromOrder($page->getOrder(), $salesChannelContext, $settings);
+        $plusData = $this->plusDataService->getPlusDataFromOrder($page->getOrder(), $salesChannelContext);
         $this->addPlusExtension($plusData, $page, $salesChannelContext);
         $this->logger->debug('Added data');
     }
@@ -101,14 +90,13 @@ class PlusSubscriber implements EventSubscriberInterface
         }
 
         $salesChannelContext = $event->getSalesChannelContext();
-        $settings = $this->checkSettings($salesChannelContext, $event->getPage()->getPaymentMethods());
-        if ($settings === null) {
+        if (!$this->checkSettings($salesChannelContext, $event->getPage()->getPaymentMethods())) {
             return;
         }
 
         $this->logger->debug('Adding data');
         $page = $event->getPage();
-        $plusData = $this->plusDataService->getPlusData($page->getCart(), $salesChannelContext, $settings);
+        $plusData = $this->plusDataService->getPlusData($page->getCart(), $salesChannelContext);
         $this->addPlusExtension($plusData, $page, $salesChannelContext);
         $this->logger->debug('Added data');
     }
@@ -122,14 +110,16 @@ class PlusSubscriber implements EventSubscriberInterface
 
         $salesChannelContext = $event->getSalesChannelContext();
 
+        $salesChannelId = $salesChannelContext->getSalesChannelId();
+
         try {
-            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
+            $this->settingsValidationService->validate($salesChannelId);
         } catch (PayPalSettingsInvalidException $e) {
             return;
         }
 
-        if (!$settings->getPlusCheckoutEnabled()
-            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER
+        if (!$this->systemConfigService->getBool(Settings::PLUS_CHECKOUT_ENABLED, $salesChannelId)
+            || $this->systemConfigService->getString(Settings::MERCHANT_LOCATION, $salesChannelId) === Settings::MERCHANT_LOCATION_OTHER
         ) {
             return;
         }
@@ -159,25 +149,27 @@ class PlusSubscriber implements EventSubscriberInterface
         $this->logger->debug('Changed payment method data');
     }
 
-    private function checkSettings(SalesChannelContext $salesChannelContext, PaymentMethodCollection $paymentMethods): ?SwagPayPalSettingStruct
+    private function checkSettings(SalesChannelContext $salesChannelContext, PaymentMethodCollection $paymentMethods): bool
     {
         if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext, $paymentMethods)) {
-            return null;
+            return false;
         }
+
+        $salesChannelId = $salesChannelContext->getSalesChannelId();
 
         try {
-            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
+            $this->settingsValidationService->validate($salesChannelId);
         } catch (PayPalSettingsInvalidException $e) {
-            return null;
+            return false;
         }
 
-        if (!$settings->getPlusCheckoutEnabled()
-            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER
+        if (!$this->systemConfigService->getBool(Settings::PLUS_CHECKOUT_ENABLED, $salesChannelId)
+            || $this->systemConfigService->getString(Settings::MERCHANT_LOCATION, $salesChannelId) === Settings::MERCHANT_LOCATION_OTHER
         ) {
-            return null;
+            return false;
         }
 
-        return $settings;
+        return true;
     }
 
     /**

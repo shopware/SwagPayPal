@@ -17,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\PaymentsApi\Builder\Event\PayPalV1ItemFromOrderEvent;
 use Swag\PayPal\PaymentsApi\Builder\Util\AmountProvider;
@@ -26,6 +27,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -43,9 +45,10 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         PriceFormatter $priceFormatter,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger,
+        SystemConfigService $systemConfigService,
         EntityRepositoryInterface $currencyRepository
     ) {
-        parent::__construct($settingsService, $localeCodeProvider, $priceFormatter, $eventDispatcher, $logger);
+        parent::__construct($settingsService, $localeCodeProvider, $priceFormatter, $eventDispatcher, $logger, $systemConfigService);
         $this->currencyRepository = $currencyRepository;
     }
 
@@ -56,11 +59,9 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         AsyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext
     ): Payment {
-        $this->settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
-
         $payer = $this->createPayer();
         $redirectUrls = $this->createRedirectUrls($paymentTransaction->getReturnUrl());
-        $transaction = $this->createTransaction($paymentTransaction, $salesChannelContext->getContext());
+        $transaction = $this->createTransaction($paymentTransaction, $salesChannelContext);
         $applicationContext = $this->getApplicationContext($salesChannelContext);
 
         $requestPayment = new Payment();
@@ -74,7 +75,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 
     private function createTransaction(
         AsyncPaymentTransactionStruct $paymentTransaction,
-        Context $context
+        SalesChannelContext $salesChannelContext
     ): Transaction {
         $orderTransaction = $paymentTransaction->getOrderTransaction();
         $order = $paymentTransaction->getOrder();
@@ -83,7 +84,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 
         $currencyEntity = $order->getCurrency();
         if ($currencyEntity === null) {
-            $currencyEntity = $this->getCurrency($order->getCurrencyId(), $context);
+            $currencyEntity = $this->getCurrency($order->getCurrencyId(), $salesChannelContext->getContext());
         }
 
         $currency = $currencyEntity->getIsoCode();
@@ -98,14 +99,19 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         );
         $transaction->setAmount($amount);
 
-        if ($this->settings->getSendOrderNumber()) {
-            $orderNumberPrefix = (string) $this->settings->getOrderNumberPrefix();
+        if ($this->systemConfigService === null) {
+            // this can not occur, since this child's constructor is not nullable
+            throw new \RuntimeException('No system settings available');
+        }
+
+        if ($this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelContext->getSalesChannelId())) {
+            $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelContext->getSalesChannelId());
             $orderNumber = $orderNumberPrefix . $order->getOrderNumber();
             $transaction->setInvoiceNumber($orderNumber);
         }
 
         $itemListValid = true;
-        if ($this->settings->getSubmitCart()) {
+        if ($this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId())) {
             $items = $this->getItemList($order, $currency);
 
             if ($items !== []) {

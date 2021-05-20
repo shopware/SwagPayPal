@@ -8,36 +8,32 @@
 namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\Client\PayPalClientInterface;
 use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\CacheMock;
 
 class PayPalClientFactoryMock implements PayPalClientFactoryInterface
 {
-    /**
-     * @var PayPalClientMock|null
-     */
-    private $client;
+    private ?PayPalClientMock $client = null;
 
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
-        SettingsServiceInterface $settingsService,
+        SystemConfigService $systemConfigService,
         LoggerInterface $logger
     ) {
-        $this->settingsService = $settingsService;
+        $this->systemConfigService = $systemConfigService;
         $this->logger = $logger;
     }
 
@@ -45,8 +41,6 @@ class PayPalClientFactoryMock implements PayPalClientFactoryInterface
         ?string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ): PayPalClientInterface {
-        $settings = $this->settingsService->getSettings($salesChannelId);
-
         if ($this->client === null) {
             $this->client = new PayPalClientMock(
                 new TokenResource(
@@ -54,7 +48,7 @@ class PayPalClientFactoryMock implements PayPalClientFactoryInterface
                     new TokenClientFactoryMock($this->logger),
                     new TokenValidator()
                 ),
-                $settings,
+                $this->createCredentialsObject($salesChannelId),
                 $this->logger
             );
         }
@@ -69,5 +63,25 @@ class PayPalClientFactoryMock implements PayPalClientFactoryInterface
         }
 
         return $this->client;
+    }
+
+    private function createCredentialsObject(?string $salesChannelId): OAuthCredentials
+    {
+        $validation = new SettingsValidationService($this->systemConfigService, new NullLogger());
+        $validation->validate($salesChannelId);
+
+        $isSandbox = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId);
+        $url = $isSandbox ? BaseURL::SANDBOX : BaseURL::LIVE;
+        $suffix = $isSandbox ? 'Sandbox' : '';
+
+        $clientId = $this->systemConfigService->getString(Settings::CLIENT_ID . $suffix, $salesChannelId);
+        $clientSecret = $this->systemConfigService->getString(Settings::CLIENT_SECRET . $suffix, $salesChannelId);
+
+        $credentials = new OAuthCredentials();
+        $credentials->setRestId($clientId);
+        $credentials->setRestSecret($clientSecret);
+        $credentials->setUrl($url);
+
+        return $credentials;
     }
 }

@@ -18,6 +18,9 @@ interface WebhookServiceInterface
 {
     public function registerWebhook(?string $salesChannelId): string;
 
+    /**
+     * @deprecated tag:v4.0.0 - parameter $settings will be removed
+     */
     public function deregisterWebhook(?string $salesChannelId, ?SwagPayPalSettingStruct $settings = null): string;
 
     /**

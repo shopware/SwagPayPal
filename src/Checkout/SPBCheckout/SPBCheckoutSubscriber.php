@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
@@ -18,10 +19,10 @@ use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRout
 use Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
+use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataServiceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,45 +33,31 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID = 'payPalSpbButtonData';
 
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SettingsValidationServiceInterface $settingsValidationService;
 
-    /**
-     * @var SPBCheckoutDataService
-     */
-    private $spbCheckoutDataService;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private SPBCheckoutDataServiceInterface $spbCheckoutDataService;
 
-    /**
-     * @var Session
-     */
-    private $session;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private Session $session;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private TranslatorInterface $translator;
+
+    private LoggerInterface $logger;
 
     public function __construct(
-        SettingsServiceInterface $settingsService,
-        SPBCheckoutDataService $spbCheckoutDataService,
+        SettingsValidationServiceInterface $settingsValidationService,
+        SystemConfigService $systemConfigService,
+        SPBCheckoutDataServiceInterface $spbCheckoutDataService,
         PaymentMethodUtil $paymentMethodUtil,
         Session $session,
         TranslatorInterface $translator,
         LoggerInterface $logger
     ) {
-        $this->settingsService = $settingsService;
+        $this->settingsValidationService = $settingsValidationService;
+        $this->systemConfigService = $systemConfigService;
         $this->spbCheckoutDataService = $spbCheckoutDataService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->session = $session;
@@ -91,8 +78,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     public function onAccountOrderEditLoaded(AccountEditOrderPageLoadedEvent $event): void
     {
         $request = $event->getRequest();
-        $settings = $this->checkSettings($event->getSalesChannelContext(), $event->getPage()->getPaymentMethods());
-        if ($settings === null) {
+        if (!$this->checkSettings($event->getSalesChannelContext(), $event->getPage()->getPaymentMethods())) {
             return;
         }
 
@@ -104,9 +90,8 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
 
         $this->logger->debug('Adding data');
         $editOrderPage = $event->getPage();
-        $buttonData = $this->spbCheckoutDataService->getCheckoutData(
+        $buttonData = $this->spbCheckoutDataService->buildCheckoutData(
             $event->getSalesChannelContext(),
-            $settings,
             $editOrderPage->getOrder()->getId()
         );
 
@@ -131,8 +116,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
         $request = $event->getRequest();
-        $settings = $this->checkSettings($event->getSalesChannelContext(), $event->getPage()->getPaymentMethods());
-        if ($settings === null) {
+        if (!$this->checkSettings($event->getSalesChannelContext(), $event->getPage()->getPaymentMethods())) {
             return;
         }
 
@@ -148,10 +132,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         }
 
         $this->logger->debug('Adding data');
-        $buttonData = $this->spbCheckoutDataService->getCheckoutData(
-            $event->getSalesChannelContext(),
-            $settings
-        );
+        $buttonData = $this->spbCheckoutDataService->buildCheckoutData($event->getSalesChannelContext());
 
         $buttonData->setDisabledAlternativePaymentMethods(
             $this->spbCheckoutDataService->getDisabledAlternativePaymentMethods(
@@ -188,25 +169,27 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         $this->logger->debug('Added request parameter');
     }
 
-    private function checkSettings(SalesChannelContext $salesChannelContext, PaymentMethodCollection $paymentMethods): ?SwagPayPalSettingStruct
+    private function checkSettings(SalesChannelContext $salesChannelContext, PaymentMethodCollection $paymentMethods): bool
     {
         if (!$this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext, $paymentMethods)) {
-            return null;
+            return false;
         }
+
+        $salesChannelId = $salesChannelContext->getSalesChannelId();
 
         try {
-            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
+            $this->settingsValidationService->validate($salesChannelId);
         } catch (PayPalSettingsInvalidException $e) {
-            return null;
+            return false;
         }
 
-        if (!$settings->getSpbCheckoutEnabled()
-            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_GERMANY
+        if (!$this->systemConfigService->getBool(Settings::SPB_CHECKOUT_ENABLED, $salesChannelId)
+            || $this->systemConfigService->getString(Settings::MERCHANT_LOCATION, $salesChannelId) === Settings::MERCHANT_LOCATION_GERMANY
         ) {
-            return null;
+            return false;
         }
 
-        return $settings;
+        return true;
     }
 
     private function addSuccessMessage(Request $request): bool

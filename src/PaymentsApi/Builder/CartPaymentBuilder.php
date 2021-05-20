@@ -13,8 +13,8 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\LineItem\LineItemCollection;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
-use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\PaymentsApi\Builder\Event\PayPalV1ItemFromCartEvent;
 use Swag\PayPal\PaymentsApi\Builder\Util\AmountProvider;
 use Swag\PayPal\PaymentsApi\Service\TransactionValidator;
@@ -23,6 +23,7 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -34,9 +35,10 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         LocaleCodeProvider $localeCodeProvider,
         PriceFormatter $priceFormatter,
         EventDispatcherInterface $eventDispatcher,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SystemConfigService $systemConfigService
     ) {
-        parent::__construct($settingsService, $localeCodeProvider, $priceFormatter, $eventDispatcher, $logger);
+        parent::__construct($settingsService, $localeCodeProvider, $priceFormatter, $eventDispatcher, $logger, $systemConfigService);
     }
 
     public function getPayment(
@@ -45,13 +47,11 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         string $finishUrl,
         bool $isExpressCheckoutProcess = false
     ): Payment {
-        $this->settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
-
         $payer = $this->createPayer();
         $redirectUrls = $this->createRedirectUrls($finishUrl);
         $transaction = $this->createTransactionFromCart(
             $cart,
-            $salesChannelContext->getCurrency(),
+            $salesChannelContext,
             $isExpressCheckoutProcess
         );
         $applicationContext = $this->getApplicationContext($salesChannelContext);
@@ -70,7 +70,7 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
      */
     private function createTransactionFromCart(
         Cart $cart,
-        CurrencyEntity $currencyEntity,
+        SalesChannelContext $salesChannelContext,
         bool $isExpressCheckoutProcess
     ): Transaction {
         $cartTransaction = $cart->getTransactions()->first();
@@ -78,22 +78,27 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
             throw new InvalidTransactionException('');
         }
         $transactionAmount = $cartTransaction->getAmount();
-        $currency = $currencyEntity->getIsoCode();
+        $currency = $salesChannelContext->getCurrency()->getIsoCode();
 
         $transaction = new Transaction();
         $shippingCostsTotal = $cart->getShippingCosts()->getTotalPrice();
         $amount = (new AmountProvider($this->priceFormatter))->createAmount($transactionAmount, $shippingCostsTotal, $currency);
         $transaction->setAmount($amount);
 
+        if ($this->systemConfigService === null) {
+            // this can not occur, since this child's constructor is not nullable
+            throw new \RuntimeException('No system settings available');
+        }
+
         $itemListValid = true;
         // If its an express checkout process, use the ecs submit cart option
-        if ($isExpressCheckoutProcess && $this->settings->getEcsSubmitCart()) {
+        if ($isExpressCheckoutProcess && $this->systemConfigService->getBool(Settings::ECS_SUBMIT_CART, $salesChannelContext->getSalesChannelId())) {
             $this->setItemList($transaction, $cart->getLineItems(), $currency);
             $itemListValid = TransactionValidator::validateItemList([$transaction]);
         }
 
         // If its not an express checkout process, use the normal submit cart option
-        if (!$isExpressCheckoutProcess && $this->settings->getSubmitCart()) {
+        if (!$isExpressCheckoutProcess && $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId())) {
             $this->setItemList($transaction, $cart->getLineItems(), $currency);
             $itemListValid = TransactionValidator::validateItemList([$transaction]);
         }

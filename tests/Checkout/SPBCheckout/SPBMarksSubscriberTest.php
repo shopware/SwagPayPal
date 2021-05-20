@@ -15,7 +15,6 @@ use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Struct\ArrayStruct;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -29,14 +28,16 @@ use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksSubscriber;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PaymentMethodUtilMock;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class SPBMarksSubscriberTest extends TestCase
 {
-    use IntegrationTestBehaviour;
+    use ServicesTrait;
+
     private const TEST_CLIENT_ID = 'testClientId';
 
     public function testGetSubscribedEvents(): void
@@ -163,19 +164,16 @@ class SPBMarksSubscriberTest extends TestCase
         bool $withSettings = true,
         bool $spbEnabled = true
     ): SPBMarksSubscriber {
-        $settings = null;
-        if ($withSettings) {
-            $settings = new SwagPayPalSettingStruct();
-            $settings->setClientId(self::TEST_CLIENT_ID);
-            $settings->setClientSecret('testClientSecret');
-            $settings->setSpbCheckoutEnabled($spbEnabled);
-            $settings->setMerchantLocation(SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER);
-        }
-
-        $settingsService = new SettingsServiceMock($settings);
+        $settings = $this->createSystemConfigServiceMock($withSettings ? [
+            Settings::CLIENT_ID => self::TEST_CLIENT_ID,
+            Settings::CLIENT_SECRET => 'testClientSecret',
+            Settings::SPB_CHECKOUT_ENABLED => $spbEnabled,
+            Settings::MERCHANT_LOCATION => Settings::MERCHANT_LOCATION_OTHER,
+        ] : []);
 
         return new SPBMarksSubscriber(
-            $settingsService,
+            new SettingsValidationService($settings, new NullLogger()),
+            $settings,
             new PaymentMethodUtilMock(),
             new NullLogger()
         );

@@ -8,39 +8,38 @@
 namespace Swag\PayPal\RestApi\Client;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Setting\Settings;
 
 class PayPalClientFactory implements PayPalClientFactoryInterface
 {
-    /**
-     * @var TokenResourceInterface
-     */
-    private $tokenResource;
+    private TokenResourceInterface $tokenResource;
 
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SettingsValidationServiceInterface $settingsValidationService;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private SystemConfigService $systemConfigService;
+
+    private LoggerInterface $logger;
 
     /**
      * @var PayPalClient[]
      */
-    private $payPalClients = [];
+    private array $payPalClients = [];
 
     public function __construct(
         TokenResourceInterface $tokenResource,
-        SettingsServiceInterface $settingsService,
+        SettingsValidationServiceInterface $settingsValidationService,
+        SystemConfigService $systemConfigService,
         LoggerInterface $logger
     ) {
         $this->tokenResource = $tokenResource;
-        $this->settingsService = $settingsService;
+        $this->settingsValidationService = $settingsValidationService;
+        $this->systemConfigService = $systemConfigService;
         $this->logger = $logger;
     }
 
@@ -53,12 +52,32 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
         if (!isset($this->payPalClients[$key])) {
             $this->payPalClients[$key] = new PayPalClient(
                 $this->tokenResource,
-                $this->settingsService->getSettings($salesChannelId),
+                null,
                 $this->logger,
-                $partnerAttributionId
+                $partnerAttributionId,
+                $this->createCredentialsObject($salesChannelId)
             );
         }
 
         return $this->payPalClients[$key];
+    }
+
+    private function createCredentialsObject(?string $salesChannelId): OAuthCredentials
+    {
+        $this->settingsValidationService->validate($salesChannelId);
+
+        $isSandbox = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId);
+        $url = $isSandbox ? BaseURL::SANDBOX : BaseURL::LIVE;
+        $suffix = $isSandbox ? 'Sandbox' : '';
+
+        $clientId = $this->systemConfigService->getString(Settings::CLIENT_ID . $suffix, $salesChannelId);
+        $clientSecret = $this->systemConfigService->getString(Settings::CLIENT_SECRET . $suffix, $salesChannelId);
+
+        $credentials = new OAuthCredentials();
+        $credentials->setRestId($clientId);
+        $credentials->setRestSecret($clientSecret);
+        $credentials->setUrl($url);
+
+        return $credentials;
     }
 }

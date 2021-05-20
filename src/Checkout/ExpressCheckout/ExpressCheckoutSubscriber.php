@@ -12,6 +12,7 @@ use Shopware\Core\Content\Cms\CmsPageCollection;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Framework\Validation\BuildValidationEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
@@ -23,10 +24,10 @@ use Shopware\Storefront\Pagelet\PageletLoadedEvent;
 use Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
-use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -34,34 +35,26 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID = 'payPalEcsButtonData';
 
-    /**
-     * @var PayPalExpressCheckoutDataService
-     */
-    private $expressCheckoutDataService;
+    private ExpressCheckoutDataServiceInterface $expressCheckoutDataService;
 
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SettingsValidationServiceInterface $settingsValidationService;
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private PaymentMethodUtil $paymentMethodUtil;
+
+    private LoggerInterface $logger;
 
     public function __construct(
-        PayPalExpressCheckoutDataService $service,
-        SettingsServiceInterface $settingsService,
+        ExpressCheckoutDataServiceInterface $service,
+        SettingsValidationServiceInterface $settingsValidationService,
+        SystemConfigService $systemConfigService,
         PaymentMethodUtil $paymentMethodUtil,
         LoggerInterface $logger
     ) {
         $this->expressCheckoutDataService = $service;
-        $this->settingsService = $settingsService;
+        $this->settingsValidationService = $settingsValidationService;
+        $this->systemConfigService = $systemConfigService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->logger = $logger;
     }
@@ -175,53 +168,52 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         bool $addProductToCart = false
     ): ?ExpressCheckoutButtonData {
         $settings = $this->checkSettings($salesChannelContext, $eventName);
-        if ($settings === null) {
+        if ($settings === false) {
             return null;
         }
 
-        return $this->expressCheckoutDataService->getExpressCheckoutButtonData(
+        return $this->expressCheckoutDataService->buildExpressCheckoutButtonData(
             $salesChannelContext,
-            $settings,
             $addProductToCart
         );
     }
 
-    private function checkSettings(SalesChannelContext $context, string $eventName): ?SwagPayPalSettingStruct
+    private function checkSettings(SalesChannelContext $context, string $eventName): bool
     {
         if ($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($context) === false) {
-            return null;
+            return false;
         }
 
         try {
-            $settings = $this->settingsService->getSettings($context->getSalesChannel()->getId());
+            $this->settingsValidationService->validate($context->getSalesChannelId());
         } catch (PayPalSettingsInvalidException $e) {
-            return null;
+            return false;
         }
 
-        if ($this->expressOptionForEventEnabled($settings, $eventName) === false) {
-            return null;
+        if ($this->expressOptionForEventEnabled($context->getSalesChannelId(), $eventName) === false) {
+            return false;
         }
 
-        return $settings;
+        return true;
     }
 
-    private function expressOptionForEventEnabled(SwagPayPalSettingStruct $settings, string $eventName): bool
+    private function expressOptionForEventEnabled(string $salesChannelId, string $eventName): bool
     {
         switch ($eventName) {
             case ProductPageLoadedEvent::class:
             case QuickviewPageletLoadedEvent::class:
-                return $settings->getEcsDetailEnabled();
+                return $this->systemConfigService->getBool(Settings::ECS_DETAIL_ENABLED, $salesChannelId);
             case OffcanvasCartPageLoadedEvent::class:
-                return $settings->getEcsOffCanvasEnabled();
+                return $this->systemConfigService->getBool(Settings::ECS_OFF_CANVAS_ENABLED, $salesChannelId);
             case CheckoutRegisterPageLoadedEvent::class:
-                return $settings->getEcsLoginEnabled();
+                return $this->systemConfigService->getBool(Settings::ECS_LOGIN_ENABLED, $salesChannelId);
             case CheckoutCartPageLoadedEvent::class:
-                return $settings->getEcsCartEnabled();
+                return $this->systemConfigService->getBool(Settings::ECS_CART_ENABLED, $salesChannelId);
             case NavigationPageLoadedEvent::class:
             case CmsPageLoadedEvent::class:
             case SearchPageLoadedEvent::class:
             case GuestWishlistPageletLoadedEvent::class:
-                return $settings->getEcsListingEnabled();
+                return $this->systemConfigService->getBool(Settings::ECS_LISTING_ENABLED, $salesChannelId);
             default:
                 return false;
         }

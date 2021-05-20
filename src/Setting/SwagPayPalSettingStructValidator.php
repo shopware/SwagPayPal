@@ -9,6 +9,9 @@ namespace Swag\PayPal\Setting;
 
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 
+/**
+ * @deprecated tag:v4.0.0 - will be removed. Use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface instead.
+ */
 class SwagPayPalSettingStructValidator
 {
     /**

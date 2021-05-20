@@ -10,6 +10,9 @@ namespace Swag\PayPal\Setting\Service;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 
+/**
+ * @deprecated tag:v4.0.0 - will be removed. Use Shopware\Core\System\SystemConfig\SystemConfigService directly instead.
+ */
 interface SettingsServiceInterface
 {
     /**

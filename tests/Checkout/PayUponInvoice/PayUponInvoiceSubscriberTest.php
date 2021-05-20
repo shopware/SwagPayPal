@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Checkout\PayUponInvoice;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
@@ -15,19 +16,20 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntitySearchResultLoadedEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
 use Swag\PayPal\Checkout\PayUponInvoice\PayUponInvoiceSubscriber;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\ServicesTrait;
 
 class PayUponInvoiceSubscriberTest extends TestCase
 {
-    use IntegrationTestBehaviour;
+    use ServicesTrait;
 
     /**
      * @var SalesChannelContext
@@ -82,7 +84,7 @@ class PayUponInvoiceSubscriberTest extends TestCase
 
     public function testOnSearchResultRemovesPuiPaymentMethodIfSpcCheckoutIsDisabled(): void
     {
-        $settings = $this->getSettingsStruct(false);
+        $settings = $this->getSettings(false);
 
         $event = $this->getEvent();
 
@@ -96,7 +98,7 @@ class PayUponInvoiceSubscriberTest extends TestCase
 
     public function testOnSearchResultRemovesPuiPaymentMethodIfAdvancedSpbPaymentsAreDisabled(): void
     {
-        $settings = $this->getSettingsStruct(true, false);
+        $settings = $this->getSettings(true, false);
         $event = $this->getEvent();
 
         $this->getSubscriber($settings)->onSearchResultLoaded($event);
@@ -109,7 +111,7 @@ class PayUponInvoiceSubscriberTest extends TestCase
 
     public function testOnSearchResultDoesNotRemovesPuiPaymentMethodIfSpbIsFullyEnabled(): void
     {
-        $settings = $this->getSettingsStruct();
+        $settings = $this->getSettings();
         $event = $this->getEvent();
 
         $this->getSubscriber($settings)->onSearchResultLoaded($event);
@@ -120,26 +122,25 @@ class PayUponInvoiceSubscriberTest extends TestCase
         );
     }
 
-    private function getSubscriber(?SwagPayPalSettingStruct $settings = null): PayUponInvoiceSubscriber
+    private function getSubscriber(?SystemConfigService $settings = null): PayUponInvoiceSubscriber
     {
-        return new PayUponInvoiceSubscriber(new SettingsServiceMock($settings));
+        $settings = $settings ?? $this->createSystemConfigServiceMock();
+
+        return new PayUponInvoiceSubscriber(new SettingsValidationService($settings, new NullLogger()), $settings);
     }
 
-    private function getSettingsStruct(
+    private function getSettings(
         bool $spbCheckoutEnabled = true,
         bool $alternativeSpbMethodsEnabled = true
-    ): SwagPayPalSettingStruct {
+    ): SystemConfigService {
         $randomHex = Uuid::randomHex();
 
-        $data = [
-            'clientId' => $randomHex,
-            'clientSecret' => $randomHex,
-            'spbCheckoutEnabled' => $spbCheckoutEnabled,
-            'spbAlternativePaymentMethodsEnabled' => $alternativeSpbMethodsEnabled,
-        ];
-
-        $settings = new SwagPayPalSettingStruct();
-        $settings->assign($data);
+        $settings = $this->createSystemConfigServiceMock([
+            Settings::CLIENT_ID => $randomHex,
+            Settings::CLIENT_SECRET => $randomHex,
+            Settings::SPB_CHECKOUT_ENABLED => $spbCheckoutEnabled,
+            Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED => $alternativeSpbMethodsEnabled,
+        ]);
 
         return $settings;
     }

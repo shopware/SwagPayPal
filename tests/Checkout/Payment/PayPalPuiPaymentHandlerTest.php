@@ -28,7 +28,7 @@ use Swag\PayPal\PaymentsApi\Patch\CustomTransactionPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
@@ -37,7 +37,6 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPuiPaymentHandlerTest extends TestCase
@@ -89,8 +88,7 @@ class PayPalPuiPaymentHandlerTest extends TestCase
 
     public function testPayWithoutCustomer(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $handler = $this->createPayPalPuiPaymentHandler($settings);
+        $handler = $this->createPayPalPuiPaymentHandler();
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $salesChannelContext = $this->createSalesChannelContext(
@@ -133,10 +131,10 @@ Customer is not logged in.');
         ]);
     }
 
-    private function createPayPalPuiPaymentHandler(?SwagPayPalSettingStruct $settings = null): PayPalPuiPaymentHandler
+    private function createPayPalPuiPaymentHandler(): PayPalPuiPaymentHandler
     {
-        $settings = $settings ?? $this->createDefaultSettingStruct();
-        $paymentResource = $this->createPaymentResource($settings);
+        $systemConfig = $this->createDefaultSystemConfig();
+        $paymentResource = $this->createPaymentResource($systemConfig);
         $payerInfoPatchBuilder = new PayerInfoPatchBuilder();
         $shippingAddressPatchBuilder = new ShippingAddressPatchBuilder();
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
@@ -145,19 +143,20 @@ Customer is not logged in.');
             new PlusPuiHandler(
                 $paymentResource,
                 $this->orderTransactionRepo,
-                $this->createPaymentBuilder($settings),
+                $this->createPaymentBuilder($systemConfig),
                 $payerInfoPatchBuilder,
                 new OrderNumberPatchBuilder(),
                 new CustomTransactionPatchBuilder(),
                 $shippingAddressPatchBuilder,
-                new SettingsServiceMock($settings),
+                $systemConfig,
                 $orderTransactionStateHandler,
                 new NullLogger()
             ),
             $paymentResource,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
             $this->orderTransactionRepo,
-            new NullLogger()
+            new NullLogger(),
+            new SettingsValidationService($systemConfig, new NullLogger()),
         );
     }
 }

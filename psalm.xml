@@ -27,12 +27,6 @@
             </errorLevel>
         </MoreSpecificImplementedParamType>
 
-        <UnusedMethodCall>
-            <errorLevel type="info">
-                <file name="src/Setting/SwagPayPalSettingStructValidator.php"/>
-            </errorLevel>
-        </UnusedMethodCall>
-
         <InvalidReturnType>
             <errorLevel type="info">
                 <directory name="tests/Mock"/>
@@ -45,27 +39,53 @@
                 <file name="src/Pos/Command/*Command.php"/>
                 <file name="src/Pos/Schedule/*Handler.php"/>
                 <file name="src/Checkout/Payment/ScheduledTask/CancelTransactionsTaskHandler.php"/>
-                <!-- is used for validation purposes, no caching issues -->
+                <!-- is only used on webhook registration, no caching issues -->
                 <referencedMethod name="Shopware\Core\System\SystemConfig\SystemConfigService::getDomain"/>
                 <directory name="tests"/>
             </errorLevel>
         </InternalMethod>
 
+        <DeprecatedClass>
+            <errorLevel type="info">
+                <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
+                <referencedClass name="Swag\PayPal\Setting\Service\SettingsService"/>
+                <referencedClass name="Swag\PayPal\Setting\Service\SettingsServiceInterface"/>
+                <referencedClass name="Swag\PayPal\Setting\SwagPayPalSettingStruct"/>
+                <file name="tests/Setting/SwagPayPalSettingStructValidatorTest.php"/>
+                <file name="tests/Setting/SwagPayPalSettingStructTest.php"/>
+                <file name="src/Setting/Service/SettingsService.php"/>
+                <file name="src/Setting/Service/SettingsServiceInterface.php"/>
+                <file name="src/Setting/SwagPayPalSettingStructValidator.php"/>
+            </errorLevel>
+        </DeprecatedClass>
+
         <DeprecatedInterface>
             <errorLevel type="info">
-                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\EntityExtensionInterface"/>
+                <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
+                <file name="src/Setting/Service/SettingsService.php"/>
             </errorLevel>
         </DeprecatedInterface>
 
-        <DeprecatedTrait>
-            <errorLevel type="info">
-                <directory name="tests"/>
-            </errorLevel>
-        </DeprecatedTrait>
-
         <DeprecatedMethod>
             <errorLevel type="info">
+                <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
                 <referencedMethod name="Doctrine\DBAL\Connection::executeUpdate"/>
+                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService::getExpressCheckoutButtonData"/>
+                <referencedMethod name="Swag\PayPal\Checkout\Plus\Service\PlusDataService::getPlusData"/>
+                <referencedMethod name="Swag\PayPal\Checkout\Plus\Service\PlusDataService::getPlusDataFromOrder"/>
+                <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService::getCheckoutData"/>
+                <referencedMethod name="Swag\PayPal\Installment\Banner\Service\BannerDataService::getInstallmentBannerData"/>
+                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::__construct"/>
+                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::createApplicationContext"/>
+                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::getIntent"/>
+                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::getBrandName"/>
+                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::getLandingPageType"/>
+                <referencedMethod name="Swag\PayPal\PaymentsApi\Builder\AbstractPaymentBuilder::__construct"/>
+                <referencedMethod name="Swag\PayPal\RestApi\Client\PayPalClient::__construct"/>
+                <referencedMethod name="Swag\PayPal\RestApi\Client\TokenClient::__construct"/>
+                <referencedMethod name="Swag\PayPal\RestApi\Client\TokenClientFactory::createTokenClient"/>
+                <referencedMethod name="Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface::getToken"/>
+                <referencedMethod name="Swag\PayPal\Webhook\WebhookServiceInterface::deregisterWebhook"/>
             </errorLevel>
         </DeprecatedMethod>
 
@@ -77,6 +97,15 @@
                 <file name="tests/Checkout/Payment/PayPalPaymentHandlerTest.php"/>
             </errorLevel>
         </DeprecatedConstant>
+
+        <DeprecatedProperty>
+            <errorLevel type="info">
+                <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
+                <referencedProperty name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::$settingsService"/>
+                <referencedProperty name="Swag\PayPal\PaymentsApi\Builder\AbstractPaymentBuilder::$settingsService"/>
+                <referencedProperty name="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper::$settingsService"/>
+            </errorLevel>
+        </DeprecatedProperty>
 
         <PossiblyInvalidArgument>
             <errorLevel type="info">

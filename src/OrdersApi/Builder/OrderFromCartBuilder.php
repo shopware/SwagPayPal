@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromCartEvent;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
@@ -22,7 +23,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -42,10 +43,11 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         SettingsServiceInterface $settingsService,
         PriceFormatter $priceFormatter,
         AmountProvider $amountProvider,
+        SystemConfigService $systemConfigService,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger
     ) {
-        parent::__construct($settingsService, $priceFormatter, $amountProvider);
+        parent::__construct($settingsService, $priceFormatter, $amountProvider, $systemConfigService);
         $this->eventDispatcher = $eventDispatcher;
         $this->logger = $logger;
     }
@@ -56,16 +58,15 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         ?CustomerEntity $customer,
         bool $isExpressCheckout = false
     ): Order {
-        $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
         $order = new Order();
 
-        $intent = $this->getIntent($settings);
+        $intent = $this->getIntent(null, $salesChannelContext->getSalesChannelId());
         if ($customer !== null) {
             $payer = $this->createPayer($customer);
             $order->setPayer($payer);
         }
-        $purchaseUnit = $this->createPurchaseUnit($salesChannelContext, $cart, $customer, $settings, $isExpressCheckout);
-        $applicationContext = $this->createApplicationContext($salesChannelContext, $settings);
+        $purchaseUnit = $this->createPurchaseUnit($salesChannelContext, $cart, $customer, $isExpressCheckout);
+        $applicationContext = $this->createApplicationContext($salesChannelContext);
 
         $order->setIntent($intent);
         $order->setPurchaseUnits([$purchaseUnit]);
@@ -78,7 +79,6 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         SalesChannelContext $salesChannelContext,
         Cart $cart,
         ?CustomerEntity $customer,
-        SwagPayPalSettingStruct $settings,
         bool $isExpressCheckoutProcess
     ): PurchaseUnit {
         $cartTransaction = $cart->getTransactions()->first();
@@ -89,8 +89,13 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         $currency = $salesChannelContext->getCurrency();
         $purchaseUnit = new PurchaseUnit();
 
-        if (($isExpressCheckoutProcess && $settings->getEcsSubmitCart())
-            || (!$isExpressCheckoutProcess && $settings->getSubmitCart())
+        if ($this->systemConfigService === null) {
+            // this can not occur, since this child's constructor is not nullable
+            throw new \RuntimeException('No system settings available');
+        }
+
+        if (($isExpressCheckoutProcess && $this->systemConfigService->getBool(Settings::ECS_SUBMIT_CART, $salesChannelContext->getSalesChannelId()))
+            || (!$isExpressCheckoutProcess && $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId()))
         ) {
             $purchaseUnit->setItems($this->createItems($currency, $cart));
         }

@@ -22,7 +22,8 @@ use Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -30,7 +31,6 @@ use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -125,11 +125,12 @@ class SPBCreateOrderRouteTest extends TestCase
         /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
 
-        $settings = new SwagPayPalSettingStruct();
-        $settings->setClientId('testClientId');
-        $settings->setClientSecret('testClientSecret');
+        $settings = $this->createSystemConfigServiceMock([
+            Settings::CLIENT_ID => 'testClientId',
+            Settings::CLIENT_SECRET => 'testClientSecret',
+        ]);
 
-        $settingsService = new SettingsServiceMock($settings);
+        $settingsService = new SettingsService($settings, new NullLogger());
 
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
@@ -138,6 +139,7 @@ class SPBCreateOrderRouteTest extends TestCase
             $settingsService,
             $priceFormatter,
             $amountProvider,
+            $settings,
             new EventDispatcherMock(),
             new LoggerMock()
         );

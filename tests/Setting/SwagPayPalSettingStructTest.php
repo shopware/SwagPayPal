@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
-use Swag\PayPal\Webhook\WebhookService;
 
 class SwagPayPalSettingStructTest extends TestCase
 {
@@ -39,7 +38,7 @@ class SwagPayPalSettingStructTest extends TestCase
             'intent' => PaymentIntentV2::CAPTURE,
             'submitCart' => true,
             'webhookId' => self::WEBHOOK_ID,
-            WebhookService::WEBHOOK_TOKEN_CONFIG_KEY => self::WEBHOOK_EXECUTE_TOKEN,
+            'webhookExecuteToken' => self::WEBHOOK_EXECUTE_TOKEN,
             'brandName' => self::BRAND_NAME,
             'landingPage' => ApplicationContext::LANDING_PAGE_TYPE_LOGIN,
             'sendOrderNumber' => false,

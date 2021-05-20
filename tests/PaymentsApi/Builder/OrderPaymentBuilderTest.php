@@ -14,12 +14,13 @@ use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
+use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 
 class OrderPaymentBuilderTest extends TestCase
@@ -58,8 +59,9 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithoutBrandName(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setBrandName('');
+        $settings = $this->createDefaultSystemConfig([
+            Settings::BRAND_NAME => '',
+        ]);
         $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
@@ -77,8 +79,9 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithoutBrandNameAndSalesChannel(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setBrandName('');
+        $settings = $this->createDefaultSystemConfig([
+            Settings::BRAND_NAME => '',
+        ]);
         $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $paymentTransaction = $this->createPaymentTransactionStruct();
@@ -113,8 +116,7 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithoutLineItems(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $paymentBuilder = $this->createPaymentBuilder($settings);
+        $paymentBuilder = $this->createPaymentBuilder();
 
         $context = Context::createDefaultContext();
         $salesChannelContext = Generator::createSalesChannelContext($context);
@@ -126,8 +128,7 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentLabelTooLongIsTruncated(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $paymentBuilder = $this->createPaymentBuilder($settings);
+        $paymentBuilder = $this->createPaymentBuilder();
 
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $context = Context::createDefaultContext();
@@ -150,8 +151,7 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentProductNumberTooLongIsTruncated(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $paymentBuilder = $this->createPaymentBuilder($settings);
+        $paymentBuilder = $this->createPaymentBuilder();
 
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $context = Context::createDefaultContext();
@@ -174,8 +174,7 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentMissingProductNumberInPayload(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $paymentBuilder = $this->createPaymentBuilder($settings);
+        $paymentBuilder = $this->createPaymentBuilder();
 
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $orderLineItems = $paymentTransaction->getOrder()->getLineItems();
@@ -195,8 +194,7 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentOrderHasNoCurrency(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $paymentBuilder = $this->createPaymentBuilder($settings);
+        $paymentBuilder = $this->createPaymentBuilder();
 
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $order = $paymentTransaction->getOrder();
@@ -214,8 +212,7 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentOrderHasNoCurrencyAndInvalidCurrencyId(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $paymentBuilder = $this->createPaymentBuilder($settings);
+        $paymentBuilder = $this->createPaymentBuilder();
 
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $paymentTransaction->getOrder()->setCurrencyId(CurrencyRepoMock::INVALID_CURRENCY_ID);
@@ -231,7 +228,7 @@ class OrderPaymentBuilderTest extends TestCase
     /**
      * @dataProvider dataProviderTestApplicationContext
      */
-    public function testApplicationContext(SwagPayPalSettingStruct $settings, string $expectedResult): void
+    public function testApplicationContext(SystemConfigServiceMock $settings, string $expectedResult): void
     {
         $paymentBuilder = $this->createPaymentBuilder($settings);
 
@@ -251,15 +248,18 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function dataProviderTestApplicationContext(): array
     {
-        $withoutToken = $this->createDefaultSettingStruct();
-        $withoutToken->setWebhookId(WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_ID);
-        $withoutToken->setLandingPage(ApplicationContext::LANDING_PAGE_TYPE_BILLING);
+        $withoutToken = $this->createDefaultSystemConfig([
+            Settings::WEBHOOK_ID => WebhookServiceTest::ALREADY_EXISTING_WEBHOOK_ID,
+            Settings::LANDING_PAGE => ApplicationContext::LANDING_PAGE_TYPE_BILLING,
+        ]);
 
-        $withoutTokenAndId = $this->createDefaultSettingStruct();
-        $withoutTokenAndId->setLandingPage(ApplicationContext::LANDING_PAGE_TYPE_LOGIN);
+        $withoutTokenAndId = $this->createDefaultSystemConfig([
+            Settings::LANDING_PAGE => ApplicationContext::LANDING_PAGE_TYPE_LOGIN,
+        ]);
 
-        $submitCart = $this->createDefaultSettingStruct();
-        $submitCart->setLandingPage('Foo');
+        $submitCart = $this->createDefaultSystemConfig([
+            Settings::LANDING_PAGE => 'Foo',
+        ]);
 
         return [
             [
@@ -279,8 +279,9 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithOrderNumber(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setSendOrderNumber(true);
+        $settings = $this->createDefaultSystemConfig([
+            Settings::SEND_ORDER_NUMBER => true,
+        ]);
 
         $paymentBuilder = $this->createPaymentBuilder($settings);
 
@@ -298,9 +299,10 @@ class OrderPaymentBuilderTest extends TestCase
 
     public function testGetPaymentWithOrderNumberWithoutPrefix(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setSendOrderNumber(true);
-        $settings->setOrderNumberPrefix('');
+        $settings = $this->createDefaultSystemConfig([
+            Settings::SEND_ORDER_NUMBER => true,
+            Settings::ORDER_NUMBER_PREFIX => '',
+        ]);
 
         $paymentBuilder = $this->createPaymentBuilder($settings);
 
@@ -333,8 +335,7 @@ class OrderPaymentBuilderTest extends TestCase
 
     private function assertTransaction(string $orderId): array
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setLandingPage('Foo');
+        $settings = $this->createDefaultSystemConfig([Settings::LANDING_PAGE => 'Foo']);
         $paymentBuilder = $this->createPaymentBuilder($settings);
 
         $context = Context::createDefaultContext();

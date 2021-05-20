@@ -20,6 +20,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Shopware\Core\System\StateMachine\Transition;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
@@ -30,58 +31,34 @@ use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\Response;
 
 class PayPalHandler extends AbstractPaymentHandler
 {
-    /**
-     * @var OrderFromOrderBuilder
-     */
-    private $orderBuilder;
+    private OrderFromOrderBuilder $orderBuilder;
 
-    /**
-     * @var OrderResource
-     */
-    private $orderResource;
+    private OrderResource $orderResource;
 
-    /**
-     * @var OrderTransactionStateHandler
-     */
-    private $orderTransactionStateHandler;
+    private OrderTransactionStateHandler $orderTransactionStateHandler;
 
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var OrderNumberPatchBuilder
-     */
-    private $orderNumberPatchBuilder;
+    private OrderNumberPatchBuilder $orderNumberPatchBuilder;
 
-    /**
-     * @var CustomIdPatchBuilder
-     */
-    private $customIdPatchBuilder;
+    private CustomIdPatchBuilder $customIdPatchBuilder;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var StateMachineRegistry
-     */
-    private $stateMachineRegistry;
+    private StateMachineRegistry $stateMachineRegistry;
 
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepo,
         OrderFromOrderBuilder $orderBuilder,
         OrderResource $orderResource,
         OrderTransactionStateHandler $orderTransactionStateHandler,
-        SettingsServiceInterface $settingsService,
+        SystemConfigService $systemConfigService,
         OrderNumberPatchBuilder $orderNumberPatchBuilder,
         CustomIdPatchBuilder $customIdPatchBuilder,
         StateMachineRegistry $stateMachineRegistry,
@@ -91,7 +68,7 @@ class PayPalHandler extends AbstractPaymentHandler
         $this->orderBuilder = $orderBuilder;
         $this->orderResource = $orderResource;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
-        $this->settingsService = $settingsService;
+        $this->systemConfigService = $systemConfigService;
         $this->orderNumberPatchBuilder = $orderNumberPatchBuilder;
         $this->customIdPatchBuilder = $customIdPatchBuilder;
         $this->stateMachineRegistry = $stateMachineRegistry;
@@ -158,9 +135,8 @@ class PayPalHandler extends AbstractPaymentHandler
         if ($orderDataPatchNeeded) {
             $patches = [$this->customIdPatchBuilder->createCustomIdPatch($transactionId)];
 
-            $settings = $this->settingsService->getSettings($salesChannelId);
-            if ($orderNumber !== null && $settings->getSendOrderNumber()) {
-                $orderNumberPrefix = (string) $settings->getOrderNumberPrefix();
+            if ($orderNumber !== null && $this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelId)) {
+                $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelId);
                 $orderNumber = $orderNumberPrefix . $orderNumber;
                 $patches[] = $this->orderNumberPatchBuilder->createOrderNumberPatch($orderNumber);
             }

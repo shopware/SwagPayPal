@@ -17,7 +17,7 @@
         <service id="Swag\PayPal\Webhook\WebhookService" public="true">
             <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\WebhookResource"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookRegistry"/>
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="router"/>
         </service>
 
@@ -86,7 +86,6 @@
                  public="true">
             <argument type="service" id="Shopware\Core\System\SystemConfig\Service\ConfigurationService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -97,11 +96,13 @@
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
         </service>
 
         <service id="Swag\PayPal\Webhook\Registration\WebhookSubscriber">
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
