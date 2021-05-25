@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-246 - Added option for advanced logging
 - PPI-251 - Fix authorized transaction state on delayed payment collection
+- PPI-276 - Fix multiple unnecessary requests in the background with PayPal Plus
 
 # 3.0.3
 - PPI-20 - Fix Webhooks when payment status is already set identically
