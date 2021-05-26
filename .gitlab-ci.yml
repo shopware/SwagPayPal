@@ -72,19 +72,26 @@ Static analyze:
         - ./psh.phar init
         - php bin/console plugin:install --activate SwagPayPal
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        - php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.php src tests
-        - php ../../../dev-ops/analyze/vendor/bin/ecs check --config=easy-coding-standard.php
+        - if [[ -n $CI_COMMIT_BRANCH ]]; then bin/check-todos.sh $CI_COMMIT_BRANCH; else bin/check-todos.sh $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME; fi
+        - >
+            if [[ $CORE_BRANCH = "trunk" ]]; then
+                php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.php src tests
+                php ../../../dev-ops/analyze/vendor/bin/ecs check --config=easy-coding-standard.php
+            fi
         - composer dump-autoload
         - php bin/phpstan-config-generator.php
         - php ../../../dev-ops/analyze/vendor/bin/phpstan analyze --configuration phpstan.neon src tests
         - php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.xml --threads=$(nproc) --diff --show-info=false
-        - cd $CI_PROJECT_DIR/development
-        - ./psh.phar administration:init --APP_ENV="dev"
-        - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        - make administration-lint
-        - make storefront-lint
-        - cd $CI_PROJECT_DIR/development
+        - >
+            if [[ $CORE_BRANCH = "trunk" ]]; then
+                cd $CI_PROJECT_DIR/development
+                ./psh.phar administration:init --APP_ENV="dev"
+                cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
+                make administration-lint
+                make storefront-lint
+            fi
         # ToDo tag:v4.0.0 - use again
+        # - cd $CI_PROJECT_DIR/development
         # - php bin/console dal:validate
     parallel:
         matrix:
@@ -93,20 +100,8 @@ Static analyze:
                 - shopware/development:8.0-composer-2
             -   CORE_BRANCH:
                 - 6.4.0.0
+                - 6.4.1.0
                 - trunk
-
-ToDos resolved:
-    only:
-        refs:
-            - merge_requests
-            - master
-            - schedules
-            - pipelines
-    stage: Static analysis
-    allow_failure: true
-    script:
-        - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
-        - if [[ -n $CI_COMMIT_BRANCH ]]; then bin/check-todos.sh $CI_COMMIT_BRANCH; else bin/check-todos.sh $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME; fi
 
 PHPUnit:
     stage: Testing
@@ -154,17 +149,17 @@ PHPUnit:
             # ToDo: Use working MariaDB version with https://jira.mariadb.org/browse/MDEV-25672 fixed
             -   MYSQL_IMAGE: mariadb:10.4.18
                 DEV_IMAGE: shopware/development:8.0-composer-2
-                CORE_BRANCH: [ "6.4.0.0", "trunk" ]
+                CORE_BRANCH: [ "6.4.0.0", "6.4.1.0", "trunk" ]
             -   MYSQL_IMAGE:
                     - mysql:5.7
                     # ToDo: Use working MariaDB version with https://jira.mariadb.org/browse/MDEV-25672 fixed
                     - mariadb:10.3.28
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                CORE_BRANCH: [ "6.4.0.0", "trunk" ]
+                CORE_BRANCH: [ "6.4.0.0", "6.4.1.0", "trunk" ]
                 RUN_IN_MR: "false"
             -   MYSQL_IMAGE:
                     - mysql:8.0.19
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                CORE_BRANCH: [ "6.4.0.0", "trunk" ]
+                CORE_BRANCH: [ "6.4.0.0", "6.4.1.0", "trunk" ]
                 MYSQL_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
                 RUN_IN_MR: "false"

@@ -27,7 +27,6 @@ abstract class AbstractRepoMock
 
     public function __construct()
     {
-        /** @var class-string<EntityCollection> $collectionClass */
         $collectionClass = $this->getDefinition()->getCollectionClass();
         $this->entityCollection = new $collectionClass([]);
     }
@@ -51,7 +50,6 @@ abstract class AbstractRepoMock
                 $entry['id'] = Uuid::randomHex();
             }
 
-            /** @var class-string<Entity> $className */
             $className = $this->getDefinition()->getEntityClass();
             $entity = new $className();
             $entity->assign($entry);
