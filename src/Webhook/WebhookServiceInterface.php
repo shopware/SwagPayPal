@@ -24,6 +24,7 @@ interface WebhookServiceInterface
      * @param WebhookV1|WebhookV2 $webhook
      *
      * @throws WebhookException if no transaction could be found to the given Webhook
+     * @throws \Exception
      */
     public function executeWebhook(PayPalApiStruct $webhook, Context $context): void;
 }

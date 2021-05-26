@@ -1,3 +1,6 @@
+includes:
+    - ../../../dev-ops/analyze/vendor/phpstan/phpstan/conf/bleedingEdge.neon
+
 parameters:
     level: 8
     tmpDir: var/cache/phpstan
@@ -7,9 +10,6 @@ parameters:
         constant_hassers: false
         # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
         container_xml_path: '../../..%ShopwareHashedCacheDir%/Shopware_Development_KernelDevDebugContainer.xml'
-
-    featureToggles:
-        unusedClassElements: true
 
     ignoreErrors:
         -   # the mock classes do not implement all methods correctly

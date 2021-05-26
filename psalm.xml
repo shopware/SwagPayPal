@@ -117,6 +117,27 @@
             </errorLevel>
         </NonInvariantDocblockPropertyType>
 
+        <InvalidStringClass>
+            <errorLevel type="info">
+                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
+                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
+            </errorLevel>
+        </InvalidStringClass>
+
+        <ArgumentTypeCoercion>
+            <errorLevel type="info">
+                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
+                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
+            </errorLevel>
+        </ArgumentTypeCoercion>
+
+        <PropertyTypeCoercion>
+            <errorLevel type="info">
+                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
+                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
+            </errorLevel>
+        </PropertyTypeCoercion>
+
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>
         <MissingConstructor errorLevel="info"/>

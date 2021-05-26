@@ -49,20 +49,17 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
+        /** @var string[] $ids */
         $ids = $criteria->getIds();
-        /** @var string|null $id */
         $id = $ids[0] ?? null;
         $withPaymentMethods = $id === Defaults::SALES_CHANNEL;
+        $salesChannelId = $id ?? Defaults::SALES_CHANNEL;
+        $arrayKey = $withPaymentMethods ? $salesChannelId : PaymentMethodUtilTest::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD;
 
         return new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             1,
-            new EntityCollection([
-                $withPaymentMethods ? $id ?? 0 : PaymentMethodUtilTest::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD => $this->createSalesChannelEntity(
-                    $id ?? Defaults::SALES_CHANNEL,
-                    $withPaymentMethods
-                ),
-            ]),
+            new EntityCollection([$arrayKey => $this->createSalesChannelEntity($salesChannelId, $withPaymentMethods)]),
             null,
             $criteria,
             $context
