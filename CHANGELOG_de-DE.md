@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-246 - Option zur erweiterten Protokollierung hinzugefügt
 - PPI-251 - Behebt ein Problem, bei dem der Transaktionsstatus bei verzögertem Zahlungseinzug nicht korrekt gesetzt wurde
+- PPI-276 - Entfernt mehrere unnötige Hintergrundreqeusts bei PayPal Plus
 
 # 3.0.3
 - PPI-20 - Behebt ein Problem, bei dem Webhooks fehlschlugen, wenn der Zahlungsstatus bereits identisch gesetzt wurde
