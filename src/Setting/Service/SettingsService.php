@@ -10,12 +10,16 @@ namespace Swag\PayPal\Setting\Service;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Setting\SwagPayPalSettingStructValidator;
 
+/**
+ * @deprecated tag:v4.0.0 - will be removed. Use Shopware\Core\System\SystemConfig\SystemConfigService directly instead.
+ */
 class SettingsService implements SettingsServiceInterface
 {
-    public const SYSTEM_CONFIG_DOMAIN = 'SwagPayPal.settings.';
+    public const SYSTEM_CONFIG_DOMAIN = Settings::SYSTEM_CONFIG_DOMAIN;
 
     /**
      * @var SystemConfigService
@@ -36,7 +40,7 @@ class SettingsService implements SettingsServiceInterface
     public function getSettings(?string $salesChannelId = null, bool $inherited = true): SwagPayPalSettingStruct
     {
         $values = $this->systemConfigService->getDomain(
-            self::SYSTEM_CONFIG_DOMAIN,
+            Settings::SYSTEM_CONFIG_DOMAIN,
             $salesChannelId,
             $inherited
         );
@@ -45,7 +49,7 @@ class SettingsService implements SettingsServiceInterface
 
         /** @var string $key */
         foreach ($values as $key => $value) {
-            $property = (string) \mb_substr($key, \mb_strlen(self::SYSTEM_CONFIG_DOMAIN));
+            $property = (string) \mb_substr($key, \mb_strlen(Settings::SYSTEM_CONFIG_DOMAIN));
             if ($property === '') {
                 continue;
             }
@@ -71,7 +75,7 @@ class SettingsService implements SettingsServiceInterface
     {
         foreach ($settings as $key => $value) {
             $this->systemConfigService->set(
-                self::SYSTEM_CONFIG_DOMAIN . $key,
+                Settings::SYSTEM_CONFIG_DOMAIN . $key,
                 $value,
                 $salesChannelId
             );

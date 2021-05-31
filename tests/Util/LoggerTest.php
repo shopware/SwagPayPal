@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\Log\LoggerFactory;
 
 class LoggerTest extends TestCase
@@ -41,7 +41,7 @@ class LoggerTest extends TestCase
     {
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-        $systemConfigService->delete(\sprintf('%sloggingLevel', SettingsService::SYSTEM_CONFIG_DOMAIN));
+        $systemConfigService->delete(Settings::LOGGING_LEVEL);
     }
 
     public function dataProviderLevel(): array
@@ -127,7 +127,7 @@ class LoggerTest extends TestCase
     {
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-        $systemConfigService->set(\sprintf('%sloggingLevel', SettingsService::SYSTEM_CONFIG_DOMAIN), $level);
+        $systemConfigService->set(Settings::LOGGING_LEVEL, $level);
 
         /** @var LoggerFactory $loggerFactory */
         $loggerFactory = $this->getContainer()->get(LoggerFactory::class);

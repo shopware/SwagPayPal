@@ -22,10 +22,12 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\System\Tax\TaxDefinition;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
@@ -39,9 +41,9 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     private const CLIENT_ID = 'someClientId';
 
     /**
-     * @var PayPalExpressCheckoutDataService
+     * @var ExpressCheckoutDataServiceInterface
      */
-    private $payPalExpressCheckoutDataService;
+    private $expressCheckoutDataService;
 
     /**
      * @var SalesChannelContextFactory
@@ -68,6 +70,8 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
      */
     private $paymentMethodUtil;
 
+    private SystemConfigService $systemConfigService;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -88,11 +92,14 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         /** @var RouterInterface $router */
         $router = $container->get('router');
 
-        $this->payPalExpressCheckoutDataService = new PayPalExpressCheckoutDataService(
+        $this->systemConfigService = $this->createSystemConfigServiceMock();
+
+        $this->expressCheckoutDataService = new PayPalExpressCheckoutDataService(
             $this->cartService,
             $this->createLocaleCodeProvider(),
             $router,
-            $paymentMethodUtil
+            $paymentMethodUtil,
+            $this->systemConfigService
         );
 
         /** @var EntityRepositoryInterface $productRepo */
@@ -107,10 +114,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     public function testGetExpressCheckoutButtonDataWithoutCart(): void
     {
         $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);
-        $expressCheckoutButtonData = $this->payPalExpressCheckoutDataService->getExpressCheckoutButtonData(
-            $salesChannelContext,
-            new SwagPayPalSettingStruct()
-        );
+        $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext);
 
         static::assertNull($expressCheckoutButtonData);
     }
@@ -141,10 +145,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         $cart = $this->cartService->createNew($salesChannelContext->getToken());
         $this->cartService->add($cart, $lineItem, $salesChannelContext);
 
-        $expressCheckoutButtonData = $this->payPalExpressCheckoutDataService->getExpressCheckoutButtonData(
-            $salesChannelContext,
-            new SwagPayPalSettingStruct()
-        );
+        $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext);
 
         static::assertInstanceOf(CustomerEntity::class, $salesChannelContext->getCustomer());
         static::assertNull($expressCheckoutButtonData);
@@ -163,18 +164,14 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         $cart = $this->cartService->createNew($salesChannelContext->getToken());
         $this->cartService->add($cart, $lineItem, $salesChannelContext);
 
-        $settings = new SwagPayPalSettingStruct();
-        $settings->setClientId(self::CLIENT_ID);
-        $settings->setClientSecret('someClientSecret');
+        $this->systemConfigService->set(Settings::CLIENT_ID, self::CLIENT_ID);
+        $this->systemConfigService->set(Settings::CLIENT_SECRET, 'someClientSecret');
 
         if ($withSettingsLocale) {
-            $settings->setEcsButtonLanguageIso('zz_ZZ');
+            $this->systemConfigService->set(Settings::ECS_BUTTON_LANGUAGE_ISO, 'zz_ZZ');
         }
 
-        $expressCheckoutButtonData = $this->payPalExpressCheckoutDataService->getExpressCheckoutButtonData(
-            $salesChannelContext,
-            $settings
-        );
+        $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext);
 
         static::assertNotNull($expressCheckoutButtonData);
         static::assertTrue($expressCheckoutButtonData->getProductDetailEnabled());

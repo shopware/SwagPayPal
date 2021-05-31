@@ -12,6 +12,9 @@ use Shopware\Core\Framework\Struct\Struct;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 
+/**
+ * @deprecated tag:v4.0.0 - will be removed. Use Shopware\Core\System\SystemConfig\SystemConfigService directly instead.
+ */
 class SwagPayPalSettingStruct extends Struct
 {
     public const MERCHANT_LOCATION_GERMANY = 'germany';

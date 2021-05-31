@@ -9,14 +9,15 @@ namespace Swag\PayPal\Checkout\SPBCheckout;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -24,24 +25,22 @@ class SPBMarksSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID = 'payPalSpbMarksData';
 
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SettingsValidationServiceInterface $settingsValidationService;
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    public function __construct(SettingsServiceInterface $settingsService, PaymentMethodUtil $paymentMethodUtil, LoggerInterface $logger)
-    {
-        $this->settingsService = $settingsService;
+    private LoggerInterface $logger;
+
+    public function __construct(
+        SettingsValidationServiceInterface $settingsValidationService,
+        SystemConfigService $systemConfigService,
+        PaymentMethodUtil $paymentMethodUtil,
+        LoggerInterface $logger
+    ) {
+        $this->settingsValidationService = $settingsValidationService;
+        $this->systemConfigService = $systemConfigService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->logger = $logger;
     }
@@ -93,22 +92,28 @@ class SPBMarksSubscriber implements EventSubscriberInterface
             return null;
         }
 
+        $salesChannelId = $salesChannelContext->getSalesChannelId();
+
         try {
-            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
+            $this->settingsValidationService->validate($salesChannelId);
         } catch (PayPalSettingsInvalidException $e) {
             return null;
         }
 
-        if (!$settings->getSpbCheckoutEnabled()
-            || $settings->getMerchantLocation() === SwagPayPalSettingStruct::MERCHANT_LOCATION_GERMANY
+        if (!$this->systemConfigService->getBool(Settings::SPB_CHECKOUT_ENABLED, $salesChannelId)
+            || $this->systemConfigService->getString(Settings::MERCHANT_LOCATION, $salesChannelId) === Settings::MERCHANT_LOCATION_GERMANY
         ) {
             return null;
         }
 
+        $clientId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
+            ? $this->systemConfigService->getString(Settings::CLIENT_ID_SANDBOX, $salesChannelId)
+            : $this->systemConfigService->getString(Settings::CLIENT_ID, $salesChannelId);
+
         return new SPBMarksData(
-            $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
+            $clientId,
             (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
-            $settings->getSpbAlternativePaymentMethodsEnabled()
+            $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId)
         );
     }
 }

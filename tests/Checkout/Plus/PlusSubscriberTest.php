@@ -38,7 +38,9 @@ use Swag\PayPal\Checkout\Plus\PlusSubscriber;
 use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
 use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
@@ -48,7 +50,6 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Swag\PayPal\Util\PriceFormatter;
@@ -434,15 +435,13 @@ class PlusSubscriberTest extends TestCase
         bool $withSettings = true,
         bool $plusEnabled = true
     ): PlusSubscriber {
-        $settings = null;
-        if ($withSettings) {
-            $settings = new SwagPayPalSettingStruct();
-            $settings->setClientId('testClientId');
-            $settings->setClientSecret('testClientSecret');
-            $settings->setPlusCheckoutEnabled($plusEnabled);
-        }
+        $settings = $this->createSystemConfigServiceMock($withSettings ? [
+            Settings::CLIENT_ID => 'testClientId',
+            Settings::CLIENT_SECRET => 'testClientSecret',
+            Settings::PLUS_CHECKOUT_ENABLED => $plusEnabled,
+        ] : []);
 
-        $settingsService = new SettingsServiceMock($settings);
+        $settingsService = new SettingsService($settings, new NullLogger());
         /** @var LocaleCodeProvider $localeCodeProvider */
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
         /** @var RouterInterface $router */
@@ -461,7 +460,8 @@ class PlusSubscriberTest extends TestCase
                 $localeCodeProvider,
                 $priceFormatter,
                 $eventDispatcher,
-                $logger
+                $logger,
+                $settings
             ),
             new OrderPaymentBuilder(
                 $settingsService,
@@ -469,16 +469,19 @@ class PlusSubscriberTest extends TestCase
                 $priceFormatter,
                 $eventDispatcher,
                 $logger,
+                $settings,
                 $currencyRepo
             ),
             $this->createPaymentResource($settings),
             $router,
             $this->paymentMethodUtil,
-            $localeCodeProvider
+            $localeCodeProvider,
+            $settings
         );
 
         return new PlusSubscriber(
-            $settingsService,
+            new SettingsValidationService($settings, new NullLogger()),
+            $settings,
             $plusDataService,
             $this->paymentMethodUtil,
             $translator,

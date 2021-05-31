@@ -18,12 +18,13 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Symfony\Component\HttpFoundation\Request;
@@ -104,9 +105,10 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
 
     private function createRoute(?CartService $cartService = null): ExpressPrepareCheckoutRoute
     {
-        $settings = new SwagPayPalSettingStruct();
-        $settings->setClientId('testClientId');
-        $settings->setClientSecret('testClientSecret');
+        $settings = $this->createSystemConfigServiceMock([
+            Settings::CLIENT_ID => 'testClientId',
+            Settings::CLIENT_SECRET => 'testClientSecret',
+        ]);
         if ($cartService === null) {
             /** @var CartService $cartService */
             $cartService = $this->getContainer()->get(CartService::class);
@@ -147,7 +149,8 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         $criteria = (new Criteria())
             ->addFilter(new EqualsFilter('email', GetOrderCapture::PAYER_EMAIL_ADDRESS))
             ->addAssociation('addresses.country')
-            ->addAssociation('addresses.countryState');
+            ->addAssociation('addresses.countryState')
+            ->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
         /** @var CustomerEntity|null $customer */
         $customer = $customerRepo->search($criteria, $context)->first();
         static::assertNotNull($customer);

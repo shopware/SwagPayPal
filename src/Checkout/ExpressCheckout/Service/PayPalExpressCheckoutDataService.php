@@ -11,50 +11,54 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
-class PayPalExpressCheckoutDataService
+class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInterface
 {
-    /**
-     * @var CartService
-     */
-    private $cartService;
+    private CartService $cartService;
 
-    /**
-     * @var LocaleCodeProvider
-     */
-    private $localeCodeProvider;
+    private LocaleCodeProvider $localeCodeProvider;
 
-    /**
-     * @var RouterInterface
-     */
-    private $router;
+    private RouterInterface $router;
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PaymentMethodUtil $paymentMethodUtil;
+
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         CartService $cartService,
         LocaleCodeProvider $localeCodeProvider,
         RouterInterface $router,
-        PaymentMethodUtil $paymentMethodUtil
+        PaymentMethodUtil $paymentMethodUtil,
+        SystemConfigService $systemConfigService
     ) {
         $this->cartService = $cartService;
         $this->localeCodeProvider = $localeCodeProvider;
         $this->router = $router;
         $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->systemConfigService = $systemConfigService;
     }
 
+    /**
+     * @deprecated tag:v4.0.0 - will be removed, use buildExpressCheckoutButtonData instead
+     */
     public function getExpressCheckoutButtonData(
         SalesChannelContext $salesChannelContext,
         SwagPayPalSettingStruct $settings,
+        bool $addProductToCart = false
+    ): ?ExpressCheckoutButtonData {
+        return $this->buildExpressCheckoutButtonData($salesChannelContext, $addProductToCart);
+    }
+
+    public function buildExpressCheckoutButtonData(
+        SalesChannelContext $salesChannelContext,
         bool $addProductToCart = false
     ): ?ExpressCheckoutButtonData {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
@@ -69,19 +73,23 @@ class PayPalExpressCheckoutDataService
         }
 
         $context = $salesChannelContext->getContext();
+        $salesChannelId = $salesChannelContext->getSalesChannelId();
+        $clientId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
+            ? $this->systemConfigService->getString(Settings::CLIENT_ID_SANDBOX, $salesChannelId)
+            : $this->systemConfigService->getString(Settings::CLIENT_ID, $salesChannelId);
 
         return (new ExpressCheckoutButtonData())->assign([
-            'productDetailEnabled' => $settings->getEcsDetailEnabled(),
-            'offCanvasEnabled' => $settings->getEcsOffCanvasEnabled(),
-            'loginEnabled' => $settings->getEcsLoginEnabled(),
-            'cartEnabled' => $settings->getEcsCartEnabled(),
-            'listingEnabled' => $settings->getEcsListingEnabled(),
-            'buttonColor' => $settings->getEcsButtonColor(),
-            'buttonShape' => $settings->getEcsButtonShape(),
-            'clientId' => $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
-            'languageIso' => $this->getInContextButtonLanguage($settings, $context),
+            'productDetailEnabled' => $this->systemConfigService->getBool(Settings::ECS_DETAIL_ENABLED, $salesChannelId),
+            'offCanvasEnabled' => $this->systemConfigService->getBool(Settings::ECS_OFF_CANVAS_ENABLED, $salesChannelId),
+            'loginEnabled' => $this->systemConfigService->getBool(Settings::ECS_LOGIN_ENABLED, $salesChannelId),
+            'cartEnabled' => $this->systemConfigService->getBool(Settings::ECS_CART_ENABLED, $salesChannelId),
+            'listingEnabled' => $this->systemConfigService->getBool(Settings::ECS_LISTING_ENABLED, $salesChannelId),
+            'buttonColor' => $this->systemConfigService->getString(Settings::ECS_BUTTON_COLOR, $salesChannelId),
+            'buttonShape' => $this->systemConfigService->getString(Settings::ECS_BUTTON_SHAPE, $salesChannelId),
+            'clientId' => $clientId,
+            'languageIso' => $this->getInContextButtonLanguage($salesChannelId, $context),
             'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
-            'intent' => \mb_strtolower($settings->getIntent()),
+            'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $salesChannelId)),
             'addProductToCart' => $addProductToCart,
             'contextSwitchUrl' => $this->generateRoute('store-api.switch-context'),
             'payPaLPaymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
@@ -97,9 +105,9 @@ class PayPalExpressCheckoutDataService
         ]);
     }
 
-    private function getInContextButtonLanguage(SwagPayPalSettingStruct $settings, Context $context): string
+    private function getInContextButtonLanguage(string $salesChannelId, Context $context): string
     {
-        if ($settingsLocale = $settings->getEcsButtonLanguageIso()) {
+        if ($settingsLocale = $this->systemConfigService->getString(Settings::ECS_BUTTON_LANGUAGE_ISO, $salesChannelId)) {
             return $settingsLocale;
         }
 

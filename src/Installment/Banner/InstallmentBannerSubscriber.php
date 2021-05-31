@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Installment\Banner;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -26,7 +27,8 @@ use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -35,33 +37,25 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
     public const PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID = 'payPalInstallmentBannerData';
     public const PAYPAL_INSTALLMENT_BANNER_DATA_CART_PAGE_EXTENSION_ID = 'payPalInstallmentBannerDataCheckoutCart';
 
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SettingsValidationServiceInterface $settingsValidationService;
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var BannerDataService
-     */
-    private $bannerDataService;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private BannerDataService $bannerDataService;
+
+    private LoggerInterface $logger;
 
     public function __construct(
-        SettingsServiceInterface $settingsService,
+        SettingsValidationServiceInterface $settingsValidationService,
+        SystemConfigService $systemConfigService,
         PaymentMethodUtil $paymentMethodUtil,
         BannerDataService $bannerDataService,
         LoggerInterface $logger
     ) {
-        $this->settingsService = $settingsService;
+        $this->settingsValidationService = $settingsValidationService;
+        $this->systemConfigService = $systemConfigService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->bannerDataService = $bannerDataService;
         $this->logger = $logger;
@@ -89,23 +83,19 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         }
 
         try {
-            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
+            $this->settingsValidationService->validate($salesChannelContext->getSalesChannel()->getId());
         } catch (PayPalSettingsInvalidException $e) {
             return;
         }
 
-        if ($settings->getInstallmentBannerEnabled() === false) {
+        if (!$this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_ENABLED)) {
             return;
         }
 
         /** @var CheckoutCartPage|CheckoutConfirmPage|CheckoutRegisterPage|OffcanvasCartPage|ProductPage $page */
         $page = $pageLoadedEvent->getPage();
 
-        $bannerData = $this->bannerDataService->getInstallmentBannerData(
-            $page,
-            $salesChannelContext,
-            $settings
-        );
+        $bannerData = $this->bannerDataService->getInstallmentBannerData($page, $salesChannelContext);
 
         if ($page instanceof CheckoutCartPage) {
             $productTableBannerData = new BannerData(
@@ -137,23 +127,19 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         }
 
         try {
-            $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
+            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
         } catch (PayPalSettingsInvalidException $e) {
             return;
         }
 
-        if ($settings->getInstallmentBannerEnabled() === false) {
+        if (!$this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_ENABLED, $salesChannelContext->getSalesChannelId())) {
             return;
         }
 
         /** @var FooterPagelet|QuickviewPagelet $pagelet */
         $pagelet = $pageletLoadedEvent->getPagelet();
 
-        $bannerData = $this->bannerDataService->getInstallmentBannerData(
-            $pagelet,
-            $salesChannelContext,
-            $settings
-        );
+        $bannerData = $this->bannerDataService->getInstallmentBannerData($pagelet, $salesChannelContext);
 
         $pagelet->addExtension(
             self::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID,

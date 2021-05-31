@@ -27,6 +27,8 @@ use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Common\Link;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -50,35 +52,19 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         self::ORDER_TRANSACTION_STATE_AUTHORIZED,
     ];
 
-    /**
-     * @var OrderTransactionStateHandler
-     */
-    private $orderTransactionStateHandler;
+    private OrderTransactionStateHandler $orderTransactionStateHandler;
 
-    /**
-     * @var EcsSpbHandler
-     */
-    private $ecsSpbHandler;
+    private EcsSpbHandler $ecsSpbHandler;
 
-    /**
-     * @var PayPalHandler
-     */
-    private $payPalHandler;
+    private PayPalHandler $payPalHandler;
 
-    /**
-     * @var PlusPuiHandler
-     */
-    private $plusPuiHandler;
+    private PlusPuiHandler $plusPuiHandler;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $stateMachineStateRepository;
+    private EntityRepositoryInterface $stateMachineStateRepository;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
+
+    private SettingsValidationServiceInterface $settingsValidationService;
 
     public function __construct(
         OrderTransactionStateHandler $orderTransactionStateHandler,
@@ -86,7 +72,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         PayPalHandler $payPalHandler,
         PlusPuiHandler $plusPuiHandler,
         EntityRepositoryInterface $stateMachineStateRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SettingsValidationServiceInterface $settingsValidationService
     ) {
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->ecsSpbHandler = $ecsSpbHandler;
@@ -94,6 +81,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $this->plusPuiHandler = $plusPuiHandler;
         $this->stateMachineStateRepository = $stateMachineStateRepository;
         $this->logger = $logger;
+        $this->settingsValidationService = $settingsValidationService;
     }
 
     /**
@@ -112,6 +100,12 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             $this->logger->error($message);
 
             throw new AsyncPaymentProcessException($transactionId, $message);
+        }
+
+        try {
+            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
+        } catch (PayPalSettingsInvalidException $exception) {
+            throw new AsyncPaymentProcessException($transactionId, $exception->getMessage());
         }
 
         $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
@@ -181,6 +175,12 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
                 $transaction->getOrderTransaction()->getId(),
                 'Customer canceled the payment on the PayPal page'
             );
+        }
+
+        try {
+            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
+        } catch (PayPalSettingsInvalidException $exception) {
+            throw new AsyncPaymentFinalizeException($transaction->getOrderTransaction()->getId(), $exception->getMessage());
         }
 
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();

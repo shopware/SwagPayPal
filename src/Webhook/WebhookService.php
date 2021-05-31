@@ -9,12 +9,13 @@ namespace Swag\PayPal\Webhook;
 
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Util\Random;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\CreateWebhooks;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
@@ -23,7 +24,14 @@ use Symfony\Component\Routing\RouterInterface;
 
 class WebhookService implements WebhookServiceInterface
 {
+    /**
+     * @deprecated tag:v4.0.0 - will be removed, use Settings::WEBHOOK_EXECUTE_TOKEN instead
+     */
     public const WEBHOOK_TOKEN_CONFIG_KEY = 'webhookExecuteToken';
+
+    /**
+     * @deprecated tag:v4.0.0 - will be removed, use Settings::WEBHOOK_ID instead
+     */
     public const WEBHOOK_ID_KEY = 'webhookId';
 
     public const WEBHOOK_CREATED = 'created';
@@ -34,44 +42,36 @@ class WebhookService implements WebhookServiceInterface
     public const PAYPAL_WEBHOOK_TOKEN_NAME = 'sw-token';
     public const PAYPAL_WEBHOOK_TOKEN_LENGTH = 32;
 
-    /**
-     * @var WebhookResource
-     */
-    private $webhookResource;
+    private WebhookResource $webhookResource;
 
-    /**
-     * @var RouterInterface
-     */
-    private $router;
+    private RouterInterface $router;
 
-    /**
-     * @var WebhookRegistry
-     */
-    private $webhookRegistry;
+    private WebhookRegistry $webhookRegistry;
 
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         WebhookResource $webhookResource,
         WebhookRegistry $webhookRegistry,
-        SettingsServiceInterface $settingsService,
+        SystemConfigService $systemConfigService,
         RouterInterface $router
     ) {
         $this->webhookResource = $webhookResource;
         $this->webhookRegistry = $webhookRegistry;
         $this->router = $router;
-        $this->settingsService = $settingsService;
+        $this->systemConfigService = $systemConfigService;
     }
 
     public function registerWebhook(?string $salesChannelId): string
     {
-        $settings = $this->settingsService->getSettings($salesChannelId, false);
+        $webhookExecuteToken = $this->systemConfigService->getString(Settings::WEBHOOK_EXECUTE_TOKEN, $salesChannelId);
 
-        $webhookExecuteToken = $settings->getWebhookExecuteToken();
-        if ($webhookExecuteToken === null) {
+        if ($salesChannelId !== null && $webhookExecuteToken === $this->systemConfigService->getString(Settings::WEBHOOK_EXECUTE_TOKEN)) {
+            // inherited
+            $webhookExecuteToken = '';
+        }
+
+        if ($webhookExecuteToken === '') {
             $webhookExecuteToken = Random::getAlphanumericString(self::PAYPAL_WEBHOOK_TOKEN_LENGTH);
         }
 
@@ -82,9 +82,13 @@ class WebhookService implements WebhookServiceInterface
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
-        $webhookId = $settings->getWebhookId();
+        $webhookId = $this->systemConfigService->getString(Settings::WEBHOOK_ID, $salesChannelId);
 
-        if ($webhookId === null) {
+        if ($salesChannelId !== null && $webhookId === $this->systemConfigService->getString(Settings::WEBHOOK_ID)) {
+            return $this->createWebhook($salesChannelId, $webhookUrl, $webhookExecuteToken);
+        }
+
+        if ($webhookId === '') {
             return $this->createWebhook($salesChannelId, $webhookUrl, $webhookExecuteToken);
         }
 
@@ -115,15 +119,22 @@ class WebhookService implements WebhookServiceInterface
         $webhookHandler->invoke($webhook, $context);
     }
 
+    /**
+     * @deprecated tag:v4.0.0 - parameter $settings will be removed
+     */
     public function deregisterWebhook(?string $salesChannelId, ?SwagPayPalSettingStruct $settings = null): string
     {
-        if ($settings === null) {
-            $settings = $this->settingsService->getSettings($salesChannelId);
+        $webhookId = $this->systemConfigService->getString(Settings::WEBHOOK_ID, $salesChannelId);
+        if ($settings !== null) {
+            $webhookId = $settings->getWebhookId();
         }
 
-        $webhookId = $settings->getWebhookId();
+        if ($webhookId === null || $webhookId === '') {
+            return WebhookService::NO_WEBHOOK_ACTION_REQUIRED;
+        }
 
-        if ($webhookId === null) {
+        if ($salesChannelId !== null && $webhookId === $this->systemConfigService->getString(Settings::WEBHOOK_ID)) {
+            // inherited
             return WebhookService::NO_WEBHOOK_ACTION_REQUIRED;
         }
 
@@ -134,13 +145,8 @@ class WebhookService implements WebhookServiceInterface
             $deleted = false;
         }
 
-        $this->settingsService->updateSettings(
-            [
-                WebhookService::WEBHOOK_TOKEN_CONFIG_KEY => null,
-                WebhookService::WEBHOOK_ID_KEY => null,
-            ],
-            $salesChannelId
-        );
+        $this->systemConfigService->delete(Settings::WEBHOOK_EXECUTE_TOKEN, $salesChannelId);
+        $this->systemConfigService->delete(Settings::WEBHOOK_ID, $salesChannelId);
 
         return $deleted ? WebhookService::WEBHOOK_DELETED : WebhookService::NO_WEBHOOK_ACTION_REQUIRED;
     }
@@ -165,13 +171,8 @@ class WebhookService implements WebhookServiceInterface
                 $salesChannelId
             );
 
-            $this->settingsService->updateSettings(
-                [
-                    self::WEBHOOK_TOKEN_CONFIG_KEY => $webhookExecuteToken,
-                    self::WEBHOOK_ID_KEY => $webhookId,
-                ],
-                $salesChannelId
-            );
+            $this->systemConfigService->set(Settings::WEBHOOK_EXECUTE_TOKEN, $webhookExecuteToken, $salesChannelId);
+            $this->systemConfigService->set(Settings::WEBHOOK_ID, $webhookId, $salesChannelId);
 
             return self::WEBHOOK_CREATED;
         } catch (WebhookAlreadyExistsException $e) {

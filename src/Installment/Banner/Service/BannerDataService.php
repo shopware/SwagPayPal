@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Installment\Banner\Service;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPage;
@@ -16,28 +17,31 @@ use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\PayPal\Installment\Banner\BannerData;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
 class BannerDataService
 {
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    public function __construct(PaymentMethodUtil $paymentMethodUtil)
+    private SystemConfigService $systemConfigService;
+
+    public function __construct(PaymentMethodUtil $paymentMethodUtil, SystemConfigService $systemConfigService)
     {
         $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
+     * @deprecated tag:v4.0.0 - parameter $settings will be removed
+     *
      * @param CheckoutCartPage|CheckoutConfirmPage|CheckoutRegisterPage|OffcanvasCartPage|ProductPage|FooterPagelet|QuickviewPagelet $page
      */
     public function getInstallmentBannerData(
         $page,
         SalesChannelContext $salesChannelContext,
-        SwagPayPalSettingStruct $settings
+        ?SwagPayPalSettingStruct $settings = null
     ): BannerData {
         $amount = 0.0;
 
@@ -60,13 +64,12 @@ class BannerDataService
             }
         }
 
+        $paymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext());
+        $clientId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelContext->getSalesChannelId())
+            ? $this->systemConfigService->getString(Settings::CLIENT_ID_SANDBOX, $salesChannelContext->getSalesChannelId())
+            : $this->systemConfigService->getString(Settings::CLIENT_ID, $salesChannelContext->getSalesChannelId());
         $currency = $salesChannelContext->getCurrency()->getIsoCode();
 
-        return new BannerData(
-            (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
-            $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
-            $amount,
-            $currency
-        );
+        return new BannerData($paymentMethodId, $clientId, $amount, $currency);
     }
 }

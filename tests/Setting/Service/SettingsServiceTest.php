@@ -9,21 +9,17 @@ namespace Swag\PayPal\Test\Setting\Service;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
-use Swag\PayPal\Webhook\WebhookService;
 
 class SettingsServiceTest extends TestCase
 {
-    use DatabaseTransactionBehaviour;
     use ServicesTrait;
-
-    private const PREFIX = 'SwagPayPal.settings.';
 
     public function testEmptyGetSettings(): void
     {
@@ -32,30 +28,8 @@ class SettingsServiceTest extends TestCase
         $settingsProvider->getSettings();
     }
 
-    public function getProvider(): array
-    {
-        $prefix = static::PREFIX;
-
-        return [
-            [$prefix . 'clientId', 'getClientId', 'testClientId'],
-            [$prefix . 'clientSecret', 'getClientSecret', 'getTestClientId'],
-            [$prefix . 'clientIdSandbox', 'getClientIdSandbox', 'testClientIdSandbox'],
-            [$prefix . 'clientSecretSandbox', 'getClientSecretSandbox', 'getTestClientIdSandbox'],
-            [$prefix . 'sandbox', 'getSandbox', true],
-            [$prefix . 'intent', 'getIntent', PaymentIntentV1::SALE],
-            [$prefix . 'submitCart', 'getSubmitCart', false],
-            [$prefix . 'webhookId', 'getWebhookId', GuzzleClientMock::TEST_WEBHOOK_ID],
-            [$prefix . WebhookService::WEBHOOK_TOKEN_CONFIG_KEY, 'getwebhookExecuteToken', 'testWebhookToken'],
-            [$prefix . 'brandName', 'getBrandName', 'Awesome brand'],
-            [$prefix . 'landingPage', 'getLandingPage', ApplicationContext::LANDING_PAGE_TYPE_LOGIN],
-            [$prefix . 'sendOrderNumber', 'getSendOrderNumber', false],
-            [$prefix . 'orderNumberPrefix', 'getOrderNumberPrefix', 'TEST_'],
-            [$prefix . 'spbCheckoutEnabled', 'getSpbCheckoutEnabled', true],
-        ];
-    }
-
     /**
-     * @dataProvider getProvider
+     * @dataProvider dataProvider
      *
      * @param string|bool $value
      */
@@ -71,28 +45,28 @@ class SettingsServiceTest extends TestCase
         static::assertSame($value, $settings->$getterName());
     }
 
-    public function updateProvider(): array
+    public function dataProvider(): array
     {
         return [
-            ['clientId', 'getClientId', 'testClientId'],
-            ['clientSecret', 'getClientSecret', 'getTestClientId'],
-            ['clientIdSandbox', 'getClientIdSandbox', 'testClientIdSandbox'],
-            ['clientSecretSandbox', 'getClientSecretSandbox', 'getTestClientIdSandbox'],
-            ['sandbox', 'getSandbox', true],
-            ['intent', 'getIntent', PaymentIntentV1::SALE],
-            ['submitCart', 'getSubmitCart', false],
-            ['webhookId', 'getWebhookId', GuzzleClientMock::TEST_WEBHOOK_ID],
-            [WebhookService::WEBHOOK_TOKEN_CONFIG_KEY, 'getwebhookExecuteToken', 'testWebhookToken'],
-            ['brandName', 'getBrandName', 'Awesome brand'],
-            ['landingPage', 'getLandingPage', ApplicationContext::LANDING_PAGE_TYPE_LOGIN],
-            ['sendOrderNumber', 'getSendOrderNumber', false],
-            ['orderNumberPrefix', 'getOrderNumberPrefix', 'TEST_'],
-            ['spbCheckoutEnabled', 'getSpbCheckoutEnabled', true],
+            [Settings::CLIENT_ID, 'getClientId', 'testClientId'],
+            [Settings::CLIENT_SECRET, 'getClientSecret', 'testClientSecret'],
+            [Settings::CLIENT_ID_SANDBOX, 'getClientIdSandbox', 'testClientIdSandbox'],
+            [Settings::CLIENT_SECRET_SANDBOX, 'getClientSecretSandbox', 'getTestClientIdSandbox'],
+            [Settings::SANDBOX, 'getSandbox', true],
+            [Settings::INTENT, 'getIntent', PaymentIntentV1::SALE],
+            [Settings::SUBMIT_CART, 'getSubmitCart', false],
+            [Settings::WEBHOOK_ID, 'getWebhookId', GuzzleClientMock::TEST_WEBHOOK_ID],
+            [Settings::WEBHOOK_EXECUTE_TOKEN, 'getWebhookExecuteToken', 'testWebhookToken'],
+            [Settings::BRAND_NAME, 'getBrandName', 'Awesome brand'],
+            [Settings::LANDING_PAGE, 'getLandingPage', ApplicationContext::LANDING_PAGE_TYPE_LOGIN],
+            [Settings::SEND_ORDER_NUMBER, 'getSendOrderNumber', false],
+            [Settings::ORDER_NUMBER_PREFIX, 'getOrderNumberPrefix', 'TEST_'],
+            [Settings::SPB_CHECKOUT_ENABLED, 'getSpbCheckoutEnabled', true],
         ];
     }
 
     /**
-     * @dataProvider updateProvider
+     * @dataProvider dataProvider
      *
      * @param string|bool $value
      */
@@ -103,6 +77,7 @@ class SettingsServiceTest extends TestCase
             new NullLogger()
         );
 
+        $key = \str_replace(Settings::SYSTEM_CONFIG_DOMAIN, '', $key);
         $settingsService->updateSettings([$key => $value]);
         $settings = $settingsService->getSettings();
 
@@ -121,10 +96,10 @@ class SettingsServiceTest extends TestCase
     private function getRequiredConfigValues(): array
     {
         return [
-            self::PREFIX . 'clientId' => 'testclientid',
-            self::PREFIX . 'clientSecret' => 'testclientid',
-            self::PREFIX . 'clientIdSandbox' => 'testclientid',
-            self::PREFIX . 'clientSecretSandbox' => 'testclientid',
+            Settings::CLIENT_ID => 'testclientid',
+            Settings::CLIENT_SECRET => 'testclientid',
+            Settings::CLIENT_ID_SANDBOX => 'testclientid',
+            Settings::CLIENT_SECRET_SANDBOX => 'testclientid',
         ];
     }
 }

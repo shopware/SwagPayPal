@@ -8,13 +8,15 @@
 namespace Swag\PayPal\Checkout\SPBCheckout\Service;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
-class SPBCheckoutDataService
+class SPBCheckoutDataService implements SPBCheckoutDataServiceInterface
 {
     private const APM_BLIK = 'blik';
     private const APM_EPS = 'eps';
@@ -22,47 +24,56 @@ class SPBCheckoutDataService
     private const APM_P24 = 'p24';
     private const APM_SOFORT = 'sofort';
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    /**
-     * @var LocaleCodeProvider
-     */
-    private $localeCodeProvider;
+    private LocaleCodeProvider $localeCodeProvider;
 
-    /**
-     * @var RouterInterface
-     */
-    private $router;
+    private RouterInterface $router;
+
+    private SystemConfigService $systemConfigService;
 
     public function __construct(
         PaymentMethodUtil $paymentMethodUtil,
         LocaleCodeProvider $localeCodeProvider,
-        RouterInterface $router
+        RouterInterface $router,
+        SystemConfigService $systemConfigService
     ) {
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->localeCodeProvider = $localeCodeProvider;
         $this->router = $router;
+        $this->systemConfigService = $systemConfigService;
     }
 
+    /**
+     * @deprecated tag:v4.0.0 - will be removed, use buildCheckoutData instead
+     */
     public function getCheckoutData(
         SalesChannelContext $context,
         SwagPayPalSettingStruct $settings,
         ?string $orderId = null
     ): SPBCheckoutButtonData {
+        return $this->buildCheckoutData($context, $orderId);
+    }
+
+    public function buildCheckoutData(
+        SalesChannelContext $context,
+        ?string $orderId = null
+    ): SPBCheckoutButtonData {
         $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context->getContext());
+        $salesChannelId = $context->getSalesChannelId();
+        $clientId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
+            ? $this->systemConfigService->getString(Settings::CLIENT_ID_SANDBOX, $salesChannelId)
+            : $this->systemConfigService->getString(Settings::CLIENT_ID, $salesChannelId);
 
         $spbCheckoutButtonData = (new SPBCheckoutButtonData())->assign([
-            'clientId' => $settings->getSandbox() ? $settings->getClientIdSandbox() : $settings->getClientId(),
-            'languageIso' => $this->getButtonLanguage($settings, $context),
+            'clientId' => $clientId,
+            'languageIso' => $this->getButtonLanguage($context),
             'currency' => $context->getCurrency()->getIsoCode(),
-            'intent' => \mb_strtolower($settings->getIntent()),
-            'buttonShape' => $settings->getSpbButtonShape(),
-            'buttonColor' => $settings->getSpbButtonColor(),
+            'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $salesChannelId)),
+            'buttonShape' => $this->systemConfigService->getString(Settings::SPB_BUTTON_SHAPE, $salesChannelId),
+            'buttonColor' => $this->systemConfigService->getString(Settings::SPB_BUTTON_COLOR, $salesChannelId),
             'paymentMethodId' => $paymentMethodId,
-            'useAlternativePaymentMethods' => $settings->getSpbAlternativePaymentMethodsEnabled(),
+            'useAlternativePaymentMethods' => $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId),
             'createOrderUrl' => $this->router->generate('store-api.paypal.spb.create_order'),
             'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
             'addErrorUrl' => $this->router->generate('payment.paypal.add_error'),
@@ -106,9 +117,9 @@ class SPBCheckoutDataService
         return $disabled;
     }
 
-    private function getButtonLanguage(SwagPayPalSettingStruct $settings, SalesChannelContext $context): string
+    private function getButtonLanguage(SalesChannelContext $context): string
     {
-        if ($settingsLocale = $settings->getSpbButtonLanguageIso()) {
+        if ($settingsLocale = $this->systemConfigService->getString(Settings::SPB_BUTTON_LANGUAGE_ISO, $context->getSalesChannelId())) {
             return $settingsLocale;
         }
 

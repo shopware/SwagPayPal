@@ -14,12 +14,12 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -40,17 +40,19 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     private function createRoute(): ExpressCreateOrderRoute
     {
-        $settings = new SwagPayPalSettingStruct();
-        $settings->setClientId('testClientId');
-        $settings->setClientSecret('testClientSecret');
+        $settings = $this->createSystemConfigServiceMock([
+            Settings::CLIENT_ID => 'testClientId',
+            Settings::CLIENT_SECRET => 'testClientSecret',
+        ]);
 
-        $settingsService = new SettingsServiceMock($settings);
+        $settingsService = new SettingsService($settings, new NullLogger());
 
         $priceFormatter = new PriceFormatter();
         $orderFromCartBuilder = new OrderFromCartBuilder(
             $settingsService,
             $priceFormatter,
             new AmountProvider($priceFormatter),
+            $settings,
             new EventDispatcherMock(),
             new LoggerMock()
         );

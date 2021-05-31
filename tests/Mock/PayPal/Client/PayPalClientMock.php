@@ -9,17 +9,18 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\RestApi\Client\PayPalClient;
+use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 
 class PayPalClientMock extends PayPalClient
 {
     public function __construct(
         TokenResource $tokenResource,
-        SwagPayPalSettingStruct $settings,
+        OAuthCredentials $credentials,
         LoggerInterface $logger
     ) {
-        parent::__construct($tokenResource, $settings, $logger);
+        parent::__construct($tokenResource, null, $logger, PartnerAttributionId::PAYPAL_CLASSIC, $credentials);
         $this->client = new GuzzleClientMock([]);
     }
 

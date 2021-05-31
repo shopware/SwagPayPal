@@ -46,7 +46,8 @@ use Swag\PayPal\RestApi\V1\Api\Patch;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V2\Api\Patch as PatchV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
@@ -68,7 +69,6 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
@@ -119,7 +119,8 @@ class PayPalPaymentHandlerTest extends TestCase
 
     public function testPay(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
+        $settings = $this->getDefaultConfigData();
+        $handler = $this->createPayPalPaymentHandler($settings);
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $salesChannelContext = $this->createSalesChannelContext(
@@ -144,7 +145,8 @@ class PayPalPaymentHandlerTest extends TestCase
 
     public function testPayWithPlus(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
+        $settings = $this->getDefaultConfigData();
+        $handler = $this->createPayPalPaymentHandler($settings);
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $salesChannelContext = $this->createSalesChannelContext(
@@ -194,7 +196,8 @@ class PayPalPaymentHandlerTest extends TestCase
 
     public function testPayWithPlusThrowsException(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
+        $settings = $this->getDefaultConfigData();
+        $handler = $this->createPayPalPaymentHandler($settings);
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $salesChannelContext = $this->createSalesChannelContext(
@@ -215,7 +218,8 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
 
     public function testPayWithEcs(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
+        $settings = $this->getDefaultConfigData();
+        $handler = $this->createPayPalPaymentHandler($settings);
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $salesChannelContext = $this->createSalesChannelContext(
@@ -283,7 +287,8 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
 
     public function testPayWithEcsThrowsException(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
+        $settings = $this->getDefaultConfigData();
+        $handler = $this->createPayPalPaymentHandler($settings);
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $salesChannelContext = $this->createSalesChannelContext(
@@ -306,7 +311,8 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
 
     public function testPayWithSpb(): void
     {
-        $handler = $this->createPayPalPaymentHandler();
+        $settings = $this->getDefaultConfigData();
+        $handler = $this->createPayPalPaymentHandler($settings);
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $salesChannelContext = $this->createSalesChannelContext(
@@ -348,8 +354,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
 
     public function testPayWithExceptionDuringPayPalCommunication(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-
+        $settings = $this->getDefaultConfigData();
         $handler = $this->createPayPalPaymentHandler($settings);
 
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
@@ -368,21 +373,20 @@ An error occurred during the communication with PayPal');
 
     public function testPayWithInvalidSettingsException(): void
     {
-        $settings = new SwagPayPalSettingStruct();
-        $handler = $this->createPayPalPaymentHandler($settings);
+        $handler = $this->createPayPalPaymentHandler();
         $salesChannelContext = Generator::createSalesChannelContext();
         $transactionId = $this->getTransactionId($salesChannelContext->getContext(), $this->getContainer());
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
 
         $this->expectException(AsyncPaymentProcessException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
-Required setting "ClientId" is missing or invalid');
+Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
     }
 
     public function testPayWithoutCustomer(): void
     {
-        $settings = $this->createDefaultSettingStruct();
+        $settings = $this->getDefaultConfigData();
         $handler = $this->createPayPalPaymentHandler($settings);
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
@@ -401,9 +405,8 @@ Customer is not logged in.');
 
     public function testPayWithoutApprovalURL(): void
     {
-        $settings = $this->createDefaultSettingStruct();
-        $settings->setSendOrderNumber(true);
-        $handler = $this->createPayPalPaymentHandler($settings);
+        $settings = $this->getDefaultConfigData();
+        $handler = $this->createPayPalPaymentHandler(\array_merge($settings, [Settings::SEND_ORDER_NUMBER => true]));
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $salesChannelContext = $this->createSalesChannelContext(
@@ -527,7 +530,7 @@ No approve link provided by PayPal');
 
     public function testFinalizeWithException(): void
     {
-        $settings = $this->createDefaultSettingStruct();
+        $settings = $this->getDefaultConfigData();
 
         $request = $this->createPaymentV1Request();
         $request->query->set(
@@ -634,7 +637,7 @@ An error occurred during the communication with PayPal');
         $stateMachineStateRepository = $this->getContainer()->get(\sprintf('%s.repository', StateMachineStateDefinition::ENTITY_NAME));
 
         $this->createPayPalPaymentHandler(
-            null,
+            [],
             $stateMachineStateRepository
         )->finalize(
             new AsyncPaymentTransactionStruct(
@@ -648,16 +651,15 @@ An error occurred during the communication with PayPal');
     }
 
     private function createPayPalPaymentHandler(
-        ?SwagPayPalSettingStruct $settings = null,
+        array $settings = [],
         ?EntityRepositoryInterface $orderTransactionRepository = null
     ): PayPalPaymentHandler {
-        $settings = $settings ?? $this->createDefaultSettingStruct();
-        $this->clientFactory = $this->createPayPalClientFactory($settings);
+        $systemConfig = $this->createSystemConfigServiceMock($settings);
+        $this->clientFactory = $this->createPayPalClientFactoryWithService($systemConfig);
         $orderResource = new OrderResource($this->clientFactory);
         /** @var EntityRepositoryInterface $currencyRepository */
         $currencyRepository = $this->getContainer()->get('currency.repository');
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
-        $settingsService = new SettingsServiceMock($settings);
         $priceFormatter = new PriceFormatter();
         $logger = new NullLogger();
         /** @var EntityRepositoryInterface $orderTransactionRepositoryMock */
@@ -667,7 +669,7 @@ An error occurred during the communication with PayPal');
             $orderTransactionStateHandler,
             new EcsSpbHandler(
                 $this->orderTransactionRepo,
-                $settingsService,
+                $systemConfig,
                 $currencyRepository,
                 new ShippingAddressPatchBuilderV2(),
                 new ShippingNamePatchBuilder(),
@@ -678,10 +680,10 @@ An error occurred during the communication with PayPal');
             ),
             new PayPalHandler(
                 $this->orderTransactionRepo,
-                $this->createOrderBuilder($settings),
+                $this->createOrderBuilder($systemConfig),
                 $orderResource,
                 $orderTransactionStateHandler,
-                $settingsService,
+                $systemConfig,
                 new OrderNumberPatchBuilderV2(),
                 new CustomIdPatchBuilder(),
                 $this->stateMachineRegistry,
@@ -690,17 +692,18 @@ An error occurred during the communication with PayPal');
             new PlusPuiHandler(
                 new PaymentResource($this->clientFactory),
                 $this->orderTransactionRepo,
-                $this->createPaymentBuilder($settings),
+                $this->createPaymentBuilder($systemConfig),
                 new PayerInfoPatchBuilder(),
                 new OrderNumberPatchBuilder(),
                 new CustomTransactionPatchBuilder(),
                 new ShippingAddressPatchBuilder(),
-                $settingsService,
+                $systemConfig,
                 $orderTransactionStateHandler,
                 $logger
             ),
             $orderTransactionRepository ?? $orderTransactionRepositoryMock,
-            $logger
+            $logger,
+            new SettingsValidationService($systemConfig, new NullLogger())
         );
     }
 
@@ -716,7 +719,8 @@ An error occurred during the communication with PayPal');
         Request $request,
         string $state = OrderTransactionStates::STATE_PAID
     ): string {
-        $handler = $this->createPayPalPaymentHandler();
+        $settings = $this->getDefaultConfigData();
+        $handler = $this->createPayPalPaymentHandler($settings);
 
         $salesChannelContext = Generator::createSalesChannelContext();
         $container = $this->getContainer();

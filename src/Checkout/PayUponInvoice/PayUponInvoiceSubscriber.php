@@ -10,21 +10,25 @@ namespace Swag\PayPal\Checkout\PayUponInvoice;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntitySearchResultLoadedEvent;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PayUponInvoiceSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SettingsValidationServiceInterface $settingsValidationService;
 
-    public function __construct(SettingsServiceInterface $settingsService)
-    {
-        $this->settingsService = $settingsService;
+    private SystemConfigService $systemConfigService;
+
+    public function __construct(
+        SettingsValidationServiceInterface $settingsValidationService,
+        SystemConfigService $systemConfigService
+    ) {
+        $this->settingsValidationService = $settingsValidationService;
+        $this->systemConfigService = $systemConfigService;
     }
 
     public static function getSubscribedEvents(): array
@@ -43,15 +47,16 @@ class PayUponInvoiceSubscriber implements EventSubscriberInterface
             return;
         }
 
+        $salesChannelId = $event->getSalesChannelContext()->getSalesChannelId();
+
         try {
-            $settings = $this->settingsService->getSettings(
-                $event->getSalesChannelContext()->getSalesChannel()->getId()
-            );
+            $this->settingsValidationService->validate($salesChannelId);
         } catch (PayPalSettingsInvalidException $e) {
             return;
         }
 
-        if ($settings->getSpbCheckoutEnabled() && $settings->getSpbAlternativePaymentMethodsEnabled()) {
+        if ($this->systemConfigService->getBool(Settings::SPB_CHECKOUT_ENABLED, $salesChannelId)
+            && $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId)) {
             return;
         }
 

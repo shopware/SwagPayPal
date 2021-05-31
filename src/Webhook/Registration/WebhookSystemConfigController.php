@@ -12,7 +12,6 @@ use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
 use Shopware\Core\System\SystemConfig\Service\ConfigurationService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -24,11 +23,6 @@ class WebhookSystemConfigController extends SystemConfigController
     public const WEBHOOK_ERRORS_KEY = 'payPalWebhookErrors';
 
     /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
-
-    /**
      * @var WebhookSystemConfigHelper
      */
     private $webhookSystemConfigHelper;
@@ -36,11 +30,9 @@ class WebhookSystemConfigController extends SystemConfigController
     public function __construct(
         ConfigurationService $configurationService,
         SystemConfigService $systemConfig,
-        SettingsServiceInterface $settingsService,
         WebhookSystemConfigHelper $webhookSystemConfigHelper
     ) {
         parent::__construct($configurationService, $systemConfig);
-        $this->settingsService = $settingsService;
         $this->webhookSystemConfigHelper = $webhookSystemConfigHelper;
     }
 
@@ -50,17 +42,16 @@ class WebhookSystemConfigController extends SystemConfigController
     public function saveConfiguration(Request $request): JsonResponse
     {
         $salesChannelId = $request->query->get('salesChannelId');
+        if ($salesChannelId === null || $salesChannelId === '') {
+            $salesChannelId = 'null';
+        }
+        $data = [$salesChannelId => $request->request->all()];
 
-        $oldSettings = $this->settingsService->getSettings($salesChannelId, false);
-        $kvs = $request->request->all();
+        $errors = $this->webhookSystemConfigHelper->checkWebhookBefore($data);
 
         $response = parent::saveConfiguration($request);
 
-        if (!$this->webhookSystemConfigHelper->configHasPayPalSettings($kvs)) {
-            return $response;
-        }
-
-        $errors = $this->webhookSystemConfigHelper->checkWebhook($oldSettings, $salesChannelId);
+        \array_push($errors, ...$this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
 
         if (empty($errors)) {
             return $response;
@@ -76,35 +67,12 @@ class WebhookSystemConfigController extends SystemConfigController
      */
     public function batchSaveConfiguration(Request $request): JsonResponse
     {
-        $oldSettings = [];
-
-        foreach ($request->request->all() as $salesChannelId => $kvs) {
-            if (!$this->webhookSystemConfigHelper->configHasPayPalSettings($kvs)) {
-                continue;
-            }
-
-            if ($salesChannelId === 'null' || !\is_string($salesChannelId)) {
-                $salesChannelId = null;
-            }
-
-            $oldSettings[$salesChannelId ?? ''] = $this->settingsService->getSettings($salesChannelId, false);
-        }
+        $data = $request->request->all();
+        $errors = $this->webhookSystemConfigHelper->checkWebhookBefore($data);
 
         $response = parent::batchSaveConfiguration($request);
 
-        if (empty($oldSettings)) {
-            return $response;
-        }
-
-        $errors = [];
-        foreach ($oldSettings as $salesChannelId => $oldSetting) {
-            $salesChannelId = $salesChannelId !== '' ? $salesChannelId : null;
-            $newErrors = $this->webhookSystemConfigHelper->checkWebhook($oldSetting, $salesChannelId);
-
-            if ($newErrors) {
-                \array_push($errors, ...$newErrors);
-            }
-        }
+        \array_push($errors, ...$this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
 
         if (empty($errors)) {
             return $response;

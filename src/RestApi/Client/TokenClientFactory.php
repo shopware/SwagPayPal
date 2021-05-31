@@ -12,16 +12,16 @@ use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 
 class TokenClientFactory
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
 
+    /**
+     * @deprecated tag:v4.0.0 - parameter $url will be removed, is placed in OAuthCredentials now
+     */
     public function createTokenClient(OAuthCredentials $credentials, string $url): TokenClient
     {
         return new TokenClient($credentials, $url, $this->logger);

@@ -8,9 +8,11 @@
 namespace Swag\PayPal\Test\Mock\Webhook;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\Webhook\WebhookControllerTest;
@@ -30,8 +32,11 @@ class WebhookServiceMock implements WebhookServiceInterface
      */
     private $deregistrations = [];
 
-    public function __construct()
+    private SystemConfigService $systemConfigService;
+
+    public function __construct(SystemConfigService $systemConfigService)
     {
+        $this->systemConfigService = $systemConfigService;
     }
 
     public function registerWebhook(?string $salesChannelId): string
@@ -43,11 +48,11 @@ class WebhookServiceMock implements WebhookServiceInterface
 
     public function deregisterWebhook(?string $salesChannelId, ?SwagPayPalSettingStruct $settings = null): string
     {
-        if ($settings === null || $settings->getWebhookId() === null) {
+        $this->deregistrations[] = $salesChannelId ?? 'null';
+
+        if ($this->systemConfigService->getString(Settings::WEBHOOK_ID, $salesChannelId) === '') {
             return WebhookService::NO_WEBHOOK_ACTION_REQUIRED;
         }
-
-        $this->deregistrations[] = $salesChannelId ?? 'null';
 
         return WebhookService::WEBHOOK_DELETED;
     }

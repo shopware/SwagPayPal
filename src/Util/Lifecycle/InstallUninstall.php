@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Util\Lifecycle;
 
 use Doctrine\DBAL\Connection;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Rule\CartAmountRule;
 use Shopware\Core\Checkout\Customer\Rule\BillingCountryRule;
 use Shopware\Core\Checkout\Customer\Rule\IsCompanyRule;
@@ -33,59 +34,31 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductDefinition
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogDefinition;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsService;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
-use Swag\PayPal\Setting\SwagPayPalSettingStructValidator;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
 class InstallUninstall
 {
     public const PAYPAL_PUI_AVAILABILITY_RULE_NAME = 'PayPalPuiAvailabilityRule';
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $systemConfigRepository;
+    private EntityRepositoryInterface $systemConfigRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $paymentRepository;
+    private EntityRepositoryInterface $paymentRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $ruleRepository;
+    private EntityRepositoryInterface $ruleRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $countryRepository;
+    private EntityRepositoryInterface $countryRepository;
 
-    /**
-     * @var PluginIdProvider
-     */
-    private $pluginIdProvider;
+    private PluginIdProvider $pluginIdProvider;
 
-    /**
-     * @var string
-     */
-    private $className;
+    private string $className;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfig;
+    private SystemConfigService $systemConfig;
 
-    /**
-     * @var Connection
-     */
-    private $connection;
+    private Connection $connection;
 
     public function __construct(
         EntityRepositoryInterface $systemConfigRepository,
@@ -128,18 +101,15 @@ class InstallUninstall
             return;
         }
 
-        foreach ((new SwagPayPalSettingStruct())->jsonSerialize() as $key => $value) {
-            if ($value === null || $value === []) {
-                continue;
-            }
-            $this->systemConfig->set(SettingsService::SYSTEM_CONFIG_DOMAIN . $key, $value);
+        foreach (Settings::DEFAULT_VALUES as $key => $value) {
+            $this->systemConfig->set($key, $value);
         }
     }
 
     private function removeConfiguration(Context $context): void
     {
         $criteria = (new Criteria())
-            ->addFilter(new ContainsFilter('configurationKey', SettingsService::SYSTEM_CONFIG_DOMAIN));
+            ->addFilter(new ContainsFilter('configurationKey', Settings::SYSTEM_CONFIG_DOMAIN));
         $idSearchResult = $this->systemConfigRepository->searchIds($criteria, $context);
 
         $ids = \array_map(static function ($id) {
@@ -337,21 +307,11 @@ class InstallUninstall
 
     private function validSettingsExists(): bool
     {
-        $keyValuePairs = $this->systemConfig->getDomain(SettingsService::SYSTEM_CONFIG_DOMAIN);
-
-        $structData = [];
-        foreach ($keyValuePairs as $key => $value) {
-            $identifier = (string) \mb_substr($key, \mb_strlen(SettingsService::SYSTEM_CONFIG_DOMAIN));
-            if ($identifier === '') {
-                continue;
-            }
-            $structData[$identifier] = $value;
-        }
-
-        $settings = (new SwagPayPalSettingStruct())->assign($structData);
+        // since we don't have access to the regular service, we create it
+        $validation = new SettingsValidationService($this->systemConfig, new NullLogger());
 
         try {
-            SwagPayPalSettingStructValidator::validate($settings);
+            $validation->validate();
         } catch (PayPalSettingsInvalidException $e) {
             return false;
         }

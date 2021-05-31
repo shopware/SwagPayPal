@@ -59,7 +59,7 @@ class CaptureReversedTest extends AbstractWebhookHandlerTestCase
             $this->orderTransactionRepository,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
             $paymentStatusUtil,
-            $this->createOrderResource()
+            $this->createOrderResource($this->createDefaultSystemConfig())
         );
     }
 }

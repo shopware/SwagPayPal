@@ -25,6 +25,7 @@
             <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="currency.repository"/>
         </service>
 
@@ -34,6 +35,7 @@
             <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
         <service id="Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder"/>

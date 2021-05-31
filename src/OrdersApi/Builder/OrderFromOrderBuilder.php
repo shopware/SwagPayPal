@@ -13,13 +13,14 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PriceFormatter;
 
 class OrderFromOrderBuilder extends AbstractOrderBuilder
@@ -33,9 +34,10 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
         SettingsServiceInterface $settingsService,
         PriceFormatter $priceFormatter,
         AmountProvider $amountProvider,
+        SystemConfigService $systemConfigService,
         ItemListProvider $itemListProvider
     ) {
-        parent::__construct($settingsService, $priceFormatter, $amountProvider);
+        parent::__construct($settingsService, $priceFormatter, $amountProvider, $systemConfigService);
         $this->itemListProvider = $itemListProvider;
     }
 
@@ -44,18 +46,15 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
         SalesChannelContext $salesChannelContext,
         CustomerEntity $customer
     ): Order {
-        $settings = $this->settingsService->getSettings($salesChannelContext->getSalesChannel()->getId());
-
-        $intent = $this->getIntent($settings);
+        $intent = $this->getIntent(null, $salesChannelContext->getSalesChannelId());
         $payer = $this->createPayer($customer);
         $purchaseUnit = $this->createPurchaseUnit(
             $salesChannelContext,
             $paymentTransaction->getOrder(),
             $paymentTransaction->getOrderTransaction(),
-            $customer,
-            $settings
+            $customer
         );
-        $applicationContext = $this->createApplicationContext($salesChannelContext, $settings);
+        $applicationContext = $this->createApplicationContext($salesChannelContext);
         $this->addReturnUrls($applicationContext, $paymentTransaction->getReturnUrl());
 
         $order = new Order();
@@ -71,13 +70,17 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
         SalesChannelContext $salesChannelContext,
         OrderEntity $order,
         OrderTransactionEntity $orderTransaction,
-        CustomerEntity $customer,
-        SwagPayPalSettingStruct $settings
+        CustomerEntity $customer
     ): PurchaseUnit {
         $currency = $salesChannelContext->getCurrency();
         $purchaseUnit = new PurchaseUnit();
 
-        if ($settings->getSubmitCart()) {
+        if ($this->systemConfigService === null) {
+            // this can not occur, since this child's constructor is not nullable
+            throw new \RuntimeException('No system settings available');
+        }
+
+        if ($this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId())) {
             $items = $this->itemListProvider->getItemList($currency, $order);
             $purchaseUnit->setItems($items);
         }

@@ -11,6 +11,7 @@ use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEnt
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
@@ -23,6 +24,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Name as ShippingName;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\PriceFormatter;
 
@@ -34,6 +36,8 @@ abstract class AbstractOrderBuilder
     protected $priceFormatter;
 
     /**
+     * @deprecated tag:v4.0.0 - will be removed
+     *
      * @var SettingsServiceInterface
      */
     protected $settingsService;
@@ -43,22 +47,39 @@ abstract class AbstractOrderBuilder
      */
     protected $amountProvider;
 
+    protected ?SystemConfigService $systemConfigService;
+
+    /**
+     * @deprecated tag:v4.0.0 - parameter $settingsService will be removed, parameter $systemConfigService will not be nullable
+     */
     public function __construct(
         SettingsServiceInterface $settingsService,
         PriceFormatter $priceFormatter,
-        AmountProvider $amountProvider
+        AmountProvider $amountProvider,
+        ?SystemConfigService $systemConfigService = null
     ) {
         $this->settingsService = $settingsService;
         $this->priceFormatter = $priceFormatter;
         $this->amountProvider = $amountProvider;
+        $this->systemConfigService = $systemConfigService;
     }
 
     /**
+     * @deprecated tag:v4.0.0 - parameter $settings will be removed, parameter $salesChannelId will be not nullable
+     *
      * @throws PayPalSettingsInvalidException
      */
-    protected function getIntent(SwagPayPalSettingStruct $settings): string
+    protected function getIntent(?SwagPayPalSettingStruct $settings = null, ?string $salesChannelId = null): string
     {
-        $intent = $settings->getIntent();
+        $intent = PaymentIntentV2::CAPTURE;
+        if ($settings !== null) {
+            $intent = $settings->getIntent();
+        }
+
+        if ($this->systemConfigService !== null) {
+            $intent = $this->systemConfigService->getString(Settings::INTENT, $salesChannelId);
+        }
+
         if (!\in_array($intent, PaymentIntentV2::INTENTS, true)) {
             throw new PayPalSettingsInvalidException('intent');
         }
@@ -86,13 +107,16 @@ abstract class AbstractOrderBuilder
         return $payer;
     }
 
+    /**
+     * @deprecated tag:v4.0.0 - parameter $settings will be removed
+     */
     protected function createApplicationContext(
         SalesChannelContext $salesChannelContext,
-        SwagPayPalSettingStruct $settings
+        ?SwagPayPalSettingStruct $settings = null
     ): ApplicationContext {
         $applicationContext = new ApplicationContext();
-        $applicationContext->setBrandName($this->getBrandName($salesChannelContext, $settings));
-        $applicationContext->setLandingPage($this->getLandingPageType($settings));
+        $applicationContext->setBrandName($this->getBrandName($salesChannelContext, $settings, $salesChannelContext->getSalesChannelId()));
+        $applicationContext->setLandingPage($this->getLandingPageType($settings, $salesChannelContext->getSalesChannelId()));
 
         return $applicationContext;
     }
@@ -114,9 +138,19 @@ abstract class AbstractOrderBuilder
         return $shipping;
     }
 
-    private function getBrandName(SalesChannelContext $salesChannelContext, SwagPayPalSettingStruct $settings): string
+    /**
+     * @deprecated tag:v4.0.0 - parameter $settings will be removed, parameter $salesChannelId will be not nullable
+     */
+    private function getBrandName(SalesChannelContext $salesChannelContext, ?SwagPayPalSettingStruct $settings, ?string $salesChannelId): string
     {
-        $brandName = $settings->getBrandName();
+        $brandName = null;
+        if ($settings !== null) {
+            $brandName = $settings->getBrandName();
+        }
+
+        if ($this->systemConfigService !== null) {
+            $brandName = $this->systemConfigService->getString(Settings::BRAND_NAME, $salesChannelId);
+        }
 
         if ($brandName === null || $brandName === '') {
             $brandName = $salesChannelContext->getSalesChannel()->getName() ?? '';
@@ -126,11 +160,21 @@ abstract class AbstractOrderBuilder
     }
 
     /**
+     * @deprecated tag:v4.0.0 - parameter $settings will be removed, parameter $salesChannelId will be not nullable
+     *
      * @throws PayPalSettingsInvalidException
      */
-    private function getLandingPageType(SwagPayPalSettingStruct $settings): string
+    private function getLandingPageType(?SwagPayPalSettingStruct $settings, ?string $salesChannelId): string
     {
-        $landingPageType = $settings->getLandingPage();
+        $landingPageType = ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE;
+        if ($settings !== null) {
+            $landingPageType = $settings->getLandingPage();
+        }
+
+        if ($this->systemConfigService !== null) {
+            $landingPageType = $this->systemConfigService->getString(Settings::LANDING_PAGE, $salesChannelId);
+        }
+
         if (!\in_array($landingPageType, ApplicationContext::LANDING_PAGE_TYPES, true)) {
             throw new PayPalSettingsInvalidException('landingPage');
         }

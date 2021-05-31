@@ -13,9 +13,6 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
@@ -28,13 +25,14 @@ use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,12 +43,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class SPBCheckoutSubscriberTest extends TestCase
 {
     use CartTrait;
-    use DatabaseTransactionBehaviour;
-    use KernelTestBehaviour;
     use PaymentMethodTrait;
     use PaymentTransactionTrait;
-    use BasicTestDataBehaviour;
     use SalesChannelContextTrait;
+    use ServicesTrait;
 
     private const TEST_CLIENT_ID = 'testClientId';
 
@@ -257,20 +253,13 @@ class SPBCheckoutSubscriberTest extends TestCase
         bool $nonGermanMerchantLocation = true,
         ?string $languageIso = null
     ): SPBCheckoutSubscriber {
-        $settings = null;
-        if ($withSettings) {
-            $settings = new SwagPayPalSettingStruct();
-            $settings->setClientId(self::TEST_CLIENT_ID);
-            $settings->setClientSecret('testClientSecret');
-            $settings->setSpbCheckoutEnabled($spbEnabled);
-            $settings->setMerchantLocation(
-                $nonGermanMerchantLocation ? SwagPayPalSettingStruct::MERCHANT_LOCATION_OTHER : SwagPayPalSettingStruct::MERCHANT_LOCATION_GERMANY
-            );
-
-            if ($languageIso !== null) {
-                $settings->setSpbButtonLanguageIso($languageIso);
-            }
-        }
+        $settings = $this->createSystemConfigServiceMock($withSettings ? [
+            Settings::CLIENT_ID => self::TEST_CLIENT_ID,
+            Settings::CLIENT_SECRET => 'testClientSecret',
+            Settings::SPB_CHECKOUT_ENABLED => $spbEnabled,
+            Settings::MERCHANT_LOCATION => $nonGermanMerchantLocation ? Settings::MERCHANT_LOCATION_OTHER : Settings::MERCHANT_LOCATION_GERMANY,
+            Settings::SPB_BUTTON_LANGUAGE_ISO => $languageIso,
+        ] : []);
 
         /** @var LocaleCodeProvider $localeCodeProvider */
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
@@ -279,7 +268,8 @@ class SPBCheckoutSubscriberTest extends TestCase
         $spbDataService = new SPBCheckoutDataService(
             $this->paymentMethodUtil,
             $localeCodeProvider,
-            $router
+            $router,
+            $settings
         );
 
         /** @var Session $session */
@@ -288,7 +278,8 @@ class SPBCheckoutSubscriberTest extends TestCase
         $translator = $this->getContainer()->get('translator');
 
         return new SPBCheckoutSubscriber(
-            new SettingsServiceMock($settings),
+            new SettingsValidationService($settings, new NullLogger()),
+            $settings,
             $spbDataService,
             $this->paymentMethodUtil,
             $session,

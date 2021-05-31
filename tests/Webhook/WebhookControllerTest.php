@@ -142,7 +142,7 @@ class WebhookControllerTest extends TestCase
 
         return new WebhookController(
             new LoggerMock(),
-            new WebhookServiceMock(),
+            new WebhookServiceMock($this->createSystemConfigServiceMock()),
             $systemConfigRepo
         );
     }

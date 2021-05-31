@@ -306,7 +306,7 @@ class PayPalPaymentControllerTest extends TestCase
     private function createPaymentController(): PayPalPaymentController
     {
         return new PayPalPaymentController(
-            $this->createPaymentResource(),
+            $this->createPaymentResource($this->createDefaultSystemConfig()),
             new SaleResource($this->createPayPalClientFactory()),
             new AuthorizationResource($this->createPayPalClientFactory()),
             new OrdersResource($this->createPayPalClientFactory()),
@@ -335,7 +335,7 @@ class PayPalPaymentControllerTest extends TestCase
     private function createPaymentControllerWithSaleResourceMock(): PayPalPaymentController
     {
         return new PayPalPaymentController(
-            $this->createPaymentResource(),
+            $this->createPaymentResource($this->createDefaultSystemConfig()),
             new SaleResource($this->createPayPalClientFactory()),
             new AuthorizationResource($this->createPayPalClientFactory()),
             new OrdersResource($this->createPayPalClientFactory()),

@@ -8,57 +8,159 @@
 namespace Swag\PayPal\Webhook\Registration;
 
 use Psr\Log\LoggerInterface;
-use Swag\PayPal\Setting\Service\SettingsService;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 class WebhookSystemConfigHelper
 {
     private const WEBHOOK_KEYS = [
-        SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientId',
-        SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecret',
-        SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox',
-        SettingsService::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox',
-        SettingsService::SYSTEM_CONFIG_DOMAIN . 'sandbox',
+        Settings::CLIENT_ID,
+        Settings::CLIENT_SECRET,
+        Settings::CLIENT_ID_SANDBOX,
+        Settings::CLIENT_SECRET_SANDBOX,
+        Settings::SANDBOX,
+        Settings::WEBHOOK_ID,
     ];
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
-     * @var SettingsServiceInterface
+     * @deprecated tag:v4.0.0 - will be removed
      */
-    private $settingsService;
+    private SettingsServiceInterface $settingsService;
 
-    /**
-     * @var WebhookServiceInterface
-     */
-    private $webhookService;
+    private WebhookServiceInterface $webhookService;
+
+    private SystemConfigService $systemConfigService;
+
+    private SettingsValidationServiceInterface $settingsValidationService;
 
     public function __construct(
         LoggerInterface $logger,
         SettingsServiceInterface $settingsService,
-        WebhookServiceInterface $webhookService
+        WebhookServiceInterface $webhookService,
+        SystemConfigService $systemConfigService,
+        SettingsValidationServiceInterface $settingsValidationService
     ) {
         $this->logger = $logger;
         $this->settingsService = $settingsService;
         $this->webhookService = $webhookService;
+        $this->systemConfigService = $systemConfigService;
+        $this->settingsValidationService = $settingsValidationService;
     }
 
+    /**
+     * @deprecated tag:v4.0.0 - will be removed
+     */
     public function configHasPayPalSettings(array $kvs): bool
     {
         return !empty(\array_intersect(\array_keys($kvs), self::WEBHOOK_KEYS));
     }
 
+    /**
+     * @param array<string, array<string, mixed>> $newData
+     *
+     * @return \Throwable[]
+     */
+    public function checkWebhookBefore(array $newData): array
+    {
+        $errors = [];
+
+        foreach ($newData as $salesChannelId => $newSettings) {
+            if ($salesChannelId === 'null') {
+                $salesChannelId = null;
+            }
+
+            $oldDistinctSettings = $this->fetchSettings($salesChannelId);
+            if (empty($oldDistinctSettings)) {
+                // Sales Channel previously had no own configuration
+                continue;
+            }
+
+            $oldActualSettings = $this->fetchSettings($salesChannelId, true);
+            if (!$this->configHasChangedSettings($newSettings, $oldActualSettings)) {
+                // No writing of new credentials in this Sales Channel
+                continue;
+            }
+
+            // since credentials will be changed: try to deregister with old credentials
+            try {
+                $this->webhookService->deregisterWebhook($salesChannelId);
+            } catch (\Throwable $e) {
+                $errors[] = $e;
+                $this->logger->error($e->getMessage(), ['error' => $e]);
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @param string[] $salesChannelIds
+     *
+     * @return \Throwable[]
+     */
+    public function checkWebhookAfter(array $salesChannelIds): array
+    {
+        $errors = [];
+
+        foreach ($salesChannelIds as $salesChannelId) {
+            if ($salesChannelId === 'null') {
+                $salesChannelId = null;
+            }
+
+            $newSettings = $this->fetchSettings($salesChannelId);
+            if (empty(\array_filter($newSettings))) {
+                // has no own valid configuration
+                continue;
+            }
+
+            $newSettings[Settings::SANDBOX] = $this->systemConfigService->get(Settings::SANDBOX, $salesChannelId);
+            if ($this->settingsValidationService->checkForMissingSetting($newSettings) !== null) {
+                // this sales channel has no valid setting
+                continue;
+            }
+
+            try {
+                $this->webhookService->registerWebhook($salesChannelId);
+            } catch (\Throwable $e) {
+                $errors[] = $e;
+                $this->logger->error($e->getMessage(), ['error' => $e]);
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * @deprecated tag:v4.0.0 - will be removed
+     */
     public function checkWebhook(SwagPayPalSettingStruct $oldSettings, ?string $salesChannelId): array
     {
         $errors = [];
         $newSettings = $this->settingsService->getSettings($salesChannelId, false);
 
-        if ($this->isWebhookChanged($oldSettings, $newSettings)) {
+        $oldSettingsFiltered = \array_filter(
+            $oldSettings->jsonSerialize(),
+            static function (string $key) {
+                return \in_array(Settings::SYSTEM_CONFIG_DOMAIN . $key, self::WEBHOOK_KEYS, true);
+            },
+            \ARRAY_FILTER_USE_KEY
+        );
+
+        $newSettingsFiltered = \array_filter(
+            $newSettings->jsonSerialize(),
+            static function (string $key) {
+                return \in_array(Settings::SYSTEM_CONFIG_DOMAIN . $key, self::WEBHOOK_KEYS, true);
+            },
+            \ARRAY_FILTER_USE_KEY
+        );
+
+        if (!empty(\array_diff_assoc($oldSettingsFiltered, $newSettingsFiltered))) {
             try {
                 $this->webhookService->deregisterWebhook($salesChannelId, $oldSettings);
             } catch (\Throwable $e) {
@@ -77,24 +179,34 @@ class WebhookSystemConfigHelper
         return $errors;
     }
 
-    private function isWebhookChanged(SwagPayPalSettingStruct $oldSettings, SwagPayPalSettingStruct $newSettings): bool
+    private function fetchSettings(?string $salesChannelId, bool $inherit = false): array
     {
-        $oldSettingsFiltered = \array_filter(
-            $oldSettings->jsonSerialize(),
-            static function (string $key) {
-                return \in_array(SettingsService::SYSTEM_CONFIG_DOMAIN . $key, self::WEBHOOK_KEYS, true);
-            },
-            \ARRAY_FILTER_USE_KEY
-        );
+        $settings = [];
+        foreach (self::WEBHOOK_KEYS as $key) {
+            $value = $this->systemConfigService->get($key, $salesChannelId);
 
-        $newSettingsFiltered = \array_filter(
-            $newSettings->jsonSerialize(),
-            static function (string $key) {
-                return \in_array(SettingsService::SYSTEM_CONFIG_DOMAIN . $key, self::WEBHOOK_KEYS, true);
-            },
-            \ARRAY_FILTER_USE_KEY
-        );
+            if (!$inherit && $salesChannelId !== null && $value === $this->systemConfigService->get($key)) {
+                continue;
+            }
 
-        return !empty(\array_diff_assoc($oldSettingsFiltered, $newSettingsFiltered));
+            $settings[$key] = $value;
+        }
+
+        return $settings;
+    }
+
+    private function configHasChangedSettings(array $newSettings, array $oldSettings): bool
+    {
+        return !empty(\array_diff_assoc($this->filterSettings($newSettings), $oldSettings));
+    }
+
+    /**
+     * @param array<string, mixed> $kvs
+     */
+    private function filterSettings(array $kvs): array
+    {
+        return \array_filter($kvs, static function (string $key) {
+            return \in_array($key, self::WEBHOOK_KEYS, true);
+        }, \ARRAY_FILTER_USE_KEY);
     }
 }

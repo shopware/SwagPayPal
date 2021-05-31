@@ -10,34 +10,26 @@ namespace Swag\PayPal\Webhook\Registration;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelEvents;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class WebhookSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var WebhookServiceInterface
-     */
-    private $webhookService;
+    private WebhookServiceInterface $webhookService;
 
     public function __construct(
         LoggerInterface $logger,
-        SettingsServiceInterface $settingsService,
+        SystemConfigService $systemConfigService,
         WebhookServiceInterface $webhookService
     ) {
         $this->logger = $logger;
-        $this->settingsService = $settingsService;
+        $this->systemConfigService = $systemConfigService;
         $this->webhookService = $webhookService;
     }
 
@@ -50,10 +42,14 @@ class WebhookSubscriber implements EventSubscriberInterface
 
     public function removeSalesChannelWebhookConfiguration(EntityDeletedEvent $event): void
     {
-        foreach ($event->getIds() as $id) {
+        $generalWebhookId = $this->systemConfigService->getString(Settings::WEBHOOK_ID);
+        foreach ($event->getIds() as $salesChannelId) {
+            $webhookId = $this->systemConfigService->getString(Settings::WEBHOOK_ID, $salesChannelId);
+
             try {
-                $settings = $this->settingsService->getSettings($id, false);
-                $this->webhookService->deregisterWebhook($id, $settings);
+                if ($webhookId !== $generalWebhookId) {
+                    $this->webhookService->deregisterWebhook($salesChannelId);
+                }
             } catch (\Throwable $e) {
                 $this->logger->error($e->getMessage(), ['error' => $e]);
             }

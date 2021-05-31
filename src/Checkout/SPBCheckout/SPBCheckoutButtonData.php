@@ -86,6 +86,11 @@ class SPBCheckoutButtonData extends Struct
         return $this->clientId;
     }
 
+    public function setClientId(string $clientId): void
+    {
+        $this->clientId = $clientId;
+    }
+
     public function getLanguageIso(): string
     {
         return $this->languageIso;

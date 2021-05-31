@@ -25,49 +25,40 @@ use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
 {
-    /**
-     * @var PlusPuiHandler
-     */
-    private $plusPuiHandler;
+    private PlusPuiHandler $plusPuiHandler;
 
-    /**
-     * @var PaymentResource
-     */
-    private $paymentResource;
+    private PaymentResource $paymentResource;
 
-    /**
-     * @var OrderTransactionStateHandler
-     */
-    private $orderTransactionStateHandler;
+    private OrderTransactionStateHandler $orderTransactionStateHandler;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderTransactionRepo;
+    private EntityRepositoryInterface $orderTransactionRepo;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
+
+    private SettingsValidationServiceInterface $settingsValidationService;
 
     public function __construct(
         PlusPuiHandler $plusPuiHandler,
         PaymentResource $paymentResource,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         EntityRepositoryInterface $orderTransactionRepo,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        SettingsValidationServiceInterface $settingsValidationService
     ) {
         $this->plusPuiHandler = $plusPuiHandler;
         $this->paymentResource = $paymentResource;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->orderTransactionRepo = $orderTransactionRepo;
         $this->logger = $logger;
+        $this->settingsValidationService = $settingsValidationService;
     }
 
     /**
@@ -86,6 +77,12 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
                 $transactionId,
                 (new CustomerNotLoggedInException())->getMessage()
             );
+        }
+
+        try {
+            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
+        } catch (PayPalSettingsInvalidException $exception) {
+            throw new AsyncPaymentProcessException($transactionId, $exception->getMessage());
         }
 
         $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
@@ -117,6 +114,12 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
                 $transactionId,
                 'Customer canceled the payment on the PayPal page'
             );
+        }
+
+        try {
+            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
+        } catch (PayPalSettingsInvalidException $exception) {
+            throw new AsyncPaymentFinalizeException($transactionId, $exception->getMessage());
         }
 
         $payerId = $request->query->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID);

@@ -18,7 +18,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
-use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookHandlerNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,20 +33,11 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class WebhookController extends AbstractController
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var WebhookServiceInterface
-     */
-    private $webhookService;
+    private WebhookServiceInterface $webhookService;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $systemConfigRepository;
+    private EntityRepositoryInterface $systemConfigRepository;
 
     public function __construct(
         LoggerInterface $logger,
@@ -182,7 +173,7 @@ class WebhookController extends AbstractController
         $systemConfigCollection = $this->systemConfigRepository->search($criteria, $context)->getEntities();
 
         foreach ($systemConfigCollection as $systemConfigEntity) {
-            if ($systemConfigEntity->getConfigurationKey() === SettingsService::SYSTEM_CONFIG_DOMAIN . WebhookService::WEBHOOK_TOKEN_CONFIG_KEY) {
+            if ($systemConfigEntity->getConfigurationKey() === Settings::WEBHOOK_EXECUTE_TOKEN) {
                 return;
             }
         }

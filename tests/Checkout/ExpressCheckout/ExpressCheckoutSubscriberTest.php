@@ -16,13 +16,11 @@ use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\Tax\TaxDefinition;
 use Shopware\Storefront\Page\Account\Login\AccountLoginPage;
 use Shopware\Storefront\Page\Account\Login\AccountLoginPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
@@ -43,9 +41,9 @@ use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoader;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -430,13 +428,12 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     private function getExpressCheckoutSubscriber(bool $withSettings = true, bool $disableEcsListing = false, bool $disableEcsDetail = false): ExpressCheckoutSubscriber
     {
-        if ($withSettings) {
-            $settings = new SwagPayPalSettingStruct();
-            $settings->setClientId('someClientId');
-            $settings->setClientSecret('someClientSecret');
-            $settings->setEcsListingEnabled(!$disableEcsListing);
-            $settings->setEcsDetailEnabled(!$disableEcsDetail);
-        }
+        $settings = $this->createSystemConfigServiceMock($withSettings ? [
+            Settings::CLIENT_ID => 'someClientId',
+            Settings::CLIENT_SECRET => 'someClientSecret',
+            Settings::ECS_LISTING_ENABLED => !$disableEcsListing,
+            Settings::ECS_DETAIL_ENABLED => !$disableEcsDetail,
+        ] : []);
 
         /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
@@ -450,9 +447,11 @@ class ExpressCheckoutSubscriberTest extends TestCase
                 $cartService,
                 $this->createLocaleCodeProvider(),
                 $router,
-                $paymentMethodUtil
+                $paymentMethodUtil,
+                $settings
             ),
-            new SettingsServiceMock($settings ?? null),
+            new SettingsValidationService($settings, new NullLogger()),
+            $settings,
             $paymentMethodUtil,
             new NullLogger()
         );
@@ -460,7 +459,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     private function createSalesChannelContext(bool $withItemList = false, bool $paymentMethodActive = true): SalesChannelContext
     {
-        $taxId = $this->createTaxId(Context::createDefaultContext());
         /** @var SalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
 
@@ -485,7 +483,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
                         'name' => 'amazing brand',
                     ],
                     'productNumber' => 'P1234',
-                    'tax' => ['id' => $taxId],
+                    'tax' => ['id' => $this->getValidTaxId()],
                     'price' => [
                         [
                             'currencyId' => Defaults::CURRENCY,
@@ -543,24 +541,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
         return $salesChannelContext;
     }
 
-    private function createTaxId(Context $context): string
-    {
-        /** @var EntityRepositoryInterface $taxRepo */
-        $taxRepo = $this->getContainer()->get(TaxDefinition::ENTITY_NAME . '.repository');
-        $taxId = Uuid::randomHex();
-        $taxData = [
-            [
-                'id' => $taxId,
-                'taxRate' => 19.0,
-                'name' => 'testTaxRate',
-            ],
-        ];
-
-        $taxRepo->create($taxData, $context);
-
-        return $taxId;
-    }
-
     private function createCmsPageLoadedEvent(bool $hasCmsPage = true, bool $paymentMethodActive = true): CmsPageLoadedEvent
     {
         $cmsPages = [];
@@ -601,6 +581,9 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         /** @var QuickviewPagelet $pagelet */
         $pagelet = $quickViewLoader->load($request, $salesChannelContext);
+
+        // clean up for mock event
+        $pagelet->removeExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
 
         return new QuickviewPageletLoadedEvent(
             $pagelet,

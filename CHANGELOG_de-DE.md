@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-271 - Behebt ein Problem, bei dem der Cache bei Einstellungsänderungen nicht korrekt invalidiert wurde
+
 # 3.1.0
 - PPI-246 - Option zur erweiterten Protokollierung hinzugefügt
 - PPI-251 - Behebt ein Problem, bei dem der Transaktionsstatus bei verzögertem Zahlungseinzug nicht korrekt gesetzt wurde

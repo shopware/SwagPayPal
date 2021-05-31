@@ -10,30 +10,21 @@ namespace Swag\PayPal\Checkout;
 use Psr\Log\LoggerInterface;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CheckoutSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var SettingsServiceInterface
-     */
-    private $settingsService;
+    private SettingsValidationServiceInterface $settingsValidationService;
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    public function __construct(SettingsServiceInterface $settingsService, PaymentMethodUtil $paymentMethodUtil, LoggerInterface $logger)
+    public function __construct(SettingsValidationServiceInterface $settingsValidationService, PaymentMethodUtil $paymentMethodUtil, LoggerInterface $logger)
     {
-        $this->settingsService = $settingsService;
+        $this->settingsValidationService = $settingsValidationService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->logger = $logger;
     }
@@ -48,7 +39,7 @@ class CheckoutSubscriber implements EventSubscriberInterface
     public function onConfirmPageLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {
         try {
-            $this->settingsService->getSettings($event->getSalesChannelContext()->getSalesChannel()->getId());
+            $this->settingsValidationService->validate($event->getSalesChannelContext()->getSalesChannel()->getId());
         } catch (PayPalSettingsInvalidException $e) {
             $this->logger->info('PayPal is removed from the available Payment Methods: {message}', ['message' => $e->getMessage()]);
             $this->removePayPalPaymentMethodFromConfirmPage($event);

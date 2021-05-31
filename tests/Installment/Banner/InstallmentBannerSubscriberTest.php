@@ -23,7 +23,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Struct\Struct;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -41,15 +40,16 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
+use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 
 class InstallmentBannerSubscriberTest extends TestCase
 {
-    use IntegrationTestBehaviour;
+    use ServicesTrait;
     use PaymentMethodTrait;
 
     private const CART_TOTAL_PRICE = 123.45;
@@ -112,23 +112,23 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     public function testAddInstallmentBannerInvalidSettings(): void
     {
-        $settings = new SwagPayPalSettingStruct();
         $event = $this->createCheckoutCartPageLoadedEvent();
 
-        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBanner($event);
+        $this->createInstallmentBannerSubscriber([
+            Settings::CLIENT_ID => null,
+            Settings::CLIENT_SECRET => null,
+        ])->addInstallmentBanner($event);
 
         static::assertEmpty($event->getPage()->getExtensions());
     }
 
     public function testAddInstallmentBannerDisabled(): void
     {
-        $settings = new SwagPayPalSettingStruct();
-        $settings->setClientId('testClientId');
-        $settings->setClientSecret('testClientSecret');
-        $settings->setInstallmentBannerEnabled(false);
         $event = $this->createCheckoutCartPageLoadedEvent();
 
-        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBanner($event);
+        $this->createInstallmentBannerSubscriber([
+            Settings::INSTALLMENT_BANNER_ENABLED => false,
+        ])->addInstallmentBanner($event);
 
         static::assertEmpty($event->getPage()->getExtensions());
     }
@@ -192,23 +192,23 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     public function testAddInstallmentBannerFooterInvalidSettings(): void
     {
-        $settings = new SwagPayPalSettingStruct();
         $event = $this->createFooterPageletLoadedEvent();
 
-        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBannerPagelet($event);
+        $this->createInstallmentBannerSubscriber([
+            Settings::CLIENT_ID => null,
+            Settings::CLIENT_SECRET => null,
+        ])->addInstallmentBannerPagelet($event);
 
         static::assertEmpty($event->getPagelet()->getExtensions());
     }
 
     public function testAddInstallmentBannerFooterDisabled(): void
     {
-        $settings = new SwagPayPalSettingStruct();
-        $settings->setClientId('testClientId');
-        $settings->setClientSecret('testClientSecret');
-        $settings->setInstallmentBannerEnabled(false);
         $event = $this->createFooterPageletLoadedEvent();
 
-        $this->createInstallmentBannerSubscriber($settings)->addInstallmentBannerPagelet($event);
+        $this->createInstallmentBannerSubscriber([
+            Settings::INSTALLMENT_BANNER_ENABLED => false,
+        ])->addInstallmentBannerPagelet($event);
 
         static::assertEmpty($event->getPagelet()->getExtensions());
     }
@@ -239,19 +239,21 @@ class InstallmentBannerSubscriberTest extends TestCase
         static::assertSame('black', $bannerData->getTextColor());
     }
 
-    private function createInstallmentBannerSubscriber(
-        ?SwagPayPalSettingStruct $settings = null
-    ): InstallmentBannerSubscriber {
-        if ($settings === null) {
-            $settings = new SwagPayPalSettingStruct();
-            $settings->setClientId('testClientId');
-            $settings->setClientSecret('testClientSecret');
-        }
+    private function createInstallmentBannerSubscriber(array $settings = []): InstallmentBannerSubscriber
+    {
+        $settings = $this->createSystemConfigServiceMock(\array_merge(
+            [
+                Settings::CLIENT_ID => 'testClientId',
+                Settings::CLIENT_SECRET => 'testClientSecret',
+            ],
+            $settings
+        ));
 
         return new InstallmentBannerSubscriber(
-            new SettingsServiceMock($settings),
+            new SettingsValidationService($settings, new NullLogger()),
+            $settings,
             $this->paymentMethodUtil,
-            new BannerDataService($this->paymentMethodUtil),
+            new BannerDataService($this->paymentMethodUtil, $settings),
             new NullLogger()
         );
     }

@@ -19,6 +19,8 @@ class OAuthCredentials
      */
     protected $restSecret;
 
+    protected string $url;
+
     public function __toString(): string
     {
         return \sprintf('Basic %s', \base64_encode($this->restId . ':' . $this->restSecret));
@@ -42,5 +44,15 @@ class OAuthCredentials
     public function setRestSecret(string $restSecret): void
     {
         $this->restSecret = $restSecret;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(string $url): void
+    {
+        $this->url = $url;
     }
 }

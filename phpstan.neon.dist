@@ -18,6 +18,10 @@ parameters:
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
+        -   # The null check is somehow ignored after a few lines
+            message: '#Cannot call method getBool\(\) on Shopware\\Core\\System\\SystemConfig\\SystemConfigService\|null#'
+            path: src/PaymentsApi/Builder/CartPaymentBuilder.php
+            count: 1
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

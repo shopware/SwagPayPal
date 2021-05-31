@@ -8,29 +8,28 @@
 namespace Swag\PayPal\Test\PaymentsApi\Builder;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
-use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
+use Swag\PayPal\Setting\Service\SettingsService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
+use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
-use Swag\PayPal\Test\Mock\Setting\Service\SettingsServiceMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 
 class CartPaymentBuilderTest extends TestCase
 {
-    use BasicTestDataBehaviour;
+    use ServicesTrait;
     use CartTrait;
-    use KernelTestBehaviour;
     use SalesChannelContextTrait;
 
     public function testGetPaymentLineItemMissingPrice(): void
@@ -93,11 +92,12 @@ class CartPaymentBuilderTest extends TestCase
 
     private function createCartPaymentBuilder(): CartPaymentBuilder
     {
-        $settings = new SwagPayPalSettingStruct();
-        $settings->setClientId('testClientId');
-        $settings->setClientSecret('testClientSecret');
+        $settings = $this->createDefaultSystemConfig([
+            Settings::CLIENT_ID => 'testClientId',
+            Settings::CLIENT_SECRET => 'testClientSecret',
+        ]);
 
-        $settingsService = new SettingsServiceMock($settings);
+        $settingsService = new SettingsService($settings, new NullLogger());
         /** @var LocaleCodeProvider $localeCodeProvider */
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
 
@@ -106,7 +106,8 @@ class CartPaymentBuilderTest extends TestCase
             $localeCodeProvider,
             new PriceFormatter(),
             new EventDispatcherMock(),
-            new LoggerMock()
+            new LoggerMock(),
+            $settings
         );
     }
 }
