@@ -45,7 +45,7 @@ class ApplicationContext extends PayPalApiStruct
     /**
      * @var string
      */
-    protected $userAction = self::USER_ACTION_CONTINUE;
+    protected $userAction = self::USER_ACTION_PAY_NOW;
 
     /**
      * @var string

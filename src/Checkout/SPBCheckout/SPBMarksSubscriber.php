@@ -18,6 +18,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRout
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -33,16 +34,20 @@ class SPBMarksSubscriber implements EventSubscriberInterface
 
     private LoggerInterface $logger;
 
+    private LocaleCodeProvider $localeCodeProvider;
+
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
         SystemConfigService $systemConfigService,
         PaymentMethodUtil $paymentMethodUtil,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        LocaleCodeProvider $localeCodeProvider
     ) {
         $this->settingsValidationService = $settingsValidationService;
         $this->systemConfigService = $systemConfigService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->logger = $logger;
+        $this->localeCodeProvider = $localeCodeProvider;
     }
 
     public static function getSubscribedEvents(): array
@@ -110,10 +115,29 @@ class SPBMarksSubscriber implements EventSubscriberInterface
             ? $this->systemConfigService->getString(Settings::CLIENT_ID_SANDBOX, $salesChannelId)
             : $this->systemConfigService->getString(Settings::CLIENT_ID, $salesChannelId);
 
-        return new SPBMarksData(
-            $clientId,
-            (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
-            $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId)
+        $data = new SPBMarksData();
+        $data->assign([
+            'clientId' => $clientId,
+            'paymentMethodId' => (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
+            'useAlternativePaymentMethods' => $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId),
+            'languageIso' => $this->getButtonLanguage($salesChannelContext),
+            'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
+            'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $salesChannelId)),
+        ]);
+
+        return $data;
+    }
+
+    private function getButtonLanguage(SalesChannelContext $context): string
+    {
+        if ($settingsLocale = $this->systemConfigService->getString(Settings::SPB_BUTTON_LANGUAGE_ISO, $context->getSalesChannelId())) {
+            return $settingsLocale;
+        }
+
+        return \str_replace(
+            '-',
+            '_',
+            $this->localeCodeProvider->getLocaleCodeFromContext($context->getContext())
         );
     }
 }

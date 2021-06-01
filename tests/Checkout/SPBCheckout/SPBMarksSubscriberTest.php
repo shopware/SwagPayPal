@@ -28,10 +28,12 @@ use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksSubscriber;
+use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PaymentMethodUtilMock;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
 
 class SPBMarksSubscriberTest extends TestCase
@@ -102,6 +104,9 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
         static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertSame('EUR', $spbMarksExtension->getCurrency());
+        static::assertSame('en_GB', $spbMarksExtension->getLanguageIso());
+        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());
     }
 
     public function testOnFooterPageletLoadedSPBNotEnabled(): void
@@ -129,6 +134,10 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertNotNull($spbMarksExtension);
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
+        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertSame('EUR', $spbMarksExtension->getCurrency());
+        static::assertSame('en_GB', $spbMarksExtension->getLanguageIso());
+        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());
     }
 
     public function testOnCheckoutConfirmPageLoadedSPBEnabled(): void
@@ -146,6 +155,29 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
         static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertSame('EUR', $spbMarksExtension->getCurrency());
+        static::assertSame('en_GB', $spbMarksExtension->getLanguageIso());
+        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());
+    }
+
+    public function testOnCheckoutConfirmPageLoadedSPBEnabledDifferentLanguage(): void
+    {
+        $subscriber = $this->createSubscriber(true, true, 'de_DE');
+        $event = $this->createCheckoutConfirmEvent();
+        $subscriber->addMarksExtension($event);
+
+        /** @var SPBMarksData|null $spbMarksExtension */
+        $spbMarksExtension = $event->getPage()->getExtension(
+            SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID
+        );
+
+        static::assertNotNull($spbMarksExtension);
+        static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
+        static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
+        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertSame('EUR', $spbMarksExtension->getCurrency());
+        static::assertSame('de_DE', $spbMarksExtension->getLanguageIso());
+        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());
     }
 
     public function testOnCheckoutConfirmPageLoadedSPBNotEnabledExpressCheckoutActive(): void
@@ -162,20 +194,26 @@ class SPBMarksSubscriberTest extends TestCase
 
     private function createSubscriber(
         bool $withSettings = true,
-        bool $spbEnabled = true
+        bool $spbEnabled = true,
+        ?string $languageIso = null
     ): SPBMarksSubscriber {
         $settings = $this->createSystemConfigServiceMock($withSettings ? [
             Settings::CLIENT_ID => self::TEST_CLIENT_ID,
             Settings::CLIENT_SECRET => 'testClientSecret',
             Settings::SPB_CHECKOUT_ENABLED => $spbEnabled,
             Settings::MERCHANT_LOCATION => Settings::MERCHANT_LOCATION_OTHER,
+            Settings::SPB_BUTTON_LANGUAGE_ISO => $languageIso,
         ] : []);
+
+        /** @var LocaleCodeProvider $localeCodeProvider */
+        $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
 
         return new SPBMarksSubscriber(
             new SettingsValidationService($settings, new NullLogger()),
             $settings,
             new PaymentMethodUtilMock(),
-            new NullLogger()
+            new NullLogger(),
+            $localeCodeProvider
         );
     }
 

@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-271 - Fix an issue where updated settings did not correctly invalidate cache
+- PPI-283 - Removed extra confirm step with Smart Payment Buttons which correctly enables Alternative Payment Methods
 
 # 3.1.0
 - PPI-246 - Added option for advanced logging
