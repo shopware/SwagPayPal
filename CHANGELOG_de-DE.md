@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-271 - Behebt ein Problem, bei dem der Cache bei Einstellungsänderungen nicht korrekt invalidiert wurde
+- PPI-282 - Behebt eine Inkompatibiltät mit dem Sendcloud-Plugin
 - PPI-283 - Zusätzlicher Bestätigungsschritt bei Smart Payment Buttons entfernt, sodass Alternative Zahlungsmethoden korrekt dargestellt werden
 
 # 3.1.0
