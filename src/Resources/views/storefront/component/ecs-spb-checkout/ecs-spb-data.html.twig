@@ -3,7 +3,6 @@
     {% set expressCheckoutData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\SalesChannel\\ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData spbCheckoutButtonData #}
     {% set spbCheckoutButtonData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
-    {% set payPalOrderId = app.request.query.get(constant('Swag\\PayPal\\Checkout\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME')) %}
 
     {% if expressCheckoutData %}
 
@@ -21,11 +20,8 @@
             </div>
         {% endblock %}
 
-    {% elseif payPalOrderId %}
-
         {% block swag_paypal_ecs_spb_data_input %}
             <input hidden name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID') }}" value="1">
-            <input hidden name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME') }}" value="{{ payPalOrderId }}">
         {% endblock %}
 
     {% endif %}

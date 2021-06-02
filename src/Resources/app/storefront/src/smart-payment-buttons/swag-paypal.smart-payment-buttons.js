@@ -3,6 +3,7 @@
 import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import StoreApiClient from 'src/service/store-api-client.service';
+import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractButtons {
@@ -61,7 +62,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          *
          * @type boolean
          */
-        commit: false,
+        commit: true,
 
         /**
          * This option toggles if credit card and ELV should be shown
@@ -165,7 +166,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
             },
 
             /**
-             * Will be called if the express button is clicked
+             * Will be called if when the payment process starts
              */
             createOrder: this.createOrder.bind(this),
 
@@ -173,6 +174,16 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
              * Will be called if the payment process is approved by paypal
              */
             onApprove: this.onApprove.bind(this),
+
+            /**
+             * Remove loading spinner when user comes back
+             */
+            onCancel: this.onCancel.bind(this),
+
+            /**
+             * Check form validity & show loading spinner on confirm click
+             */
+            onClick: this.onClick.bind(this),
 
             /**
              * Will be called if an error occurs during the payment process.
@@ -185,6 +196,10 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
      * @return {Promise}
      */
     createOrder() {
+        if (!this.confirmOrderForm.checkValidity()) {
+            throw new Error('Checkout form not valid');
+        }
+
         const formData = FormSerializeUtil.serialize(this.confirmOrderForm);
 
         const orderId = this.options.orderId;
@@ -204,21 +219,32 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         });
     }
 
-    onApprove(data, actions) {
-        const params = new URLSearchParams();
-        let url = this.options.checkoutConfirmUrl;
-        params.append('paypalOrderId', data.orderID);
+    onApprove(data) {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'hidden');
+        input.setAttribute('name', 'paypalOrderId');
+        input.setAttribute('value', data.orderID);
 
-        if (this.options.accountOrderEditUrl !== null) {
-            url = this.options.accountOrderEditUrl;
-        }
-
-        const redirectUrl = `${url}?${params.toString()}`;
-
-        actions.redirect(redirectUrl);
+        this.confirmOrderForm.appendChild(input);
+        this.confirmOrderForm.submit();
     }
 
-    onError() {
-        this.createError();
+    onCancel() {
+        PageLoadingIndicatorUtil.remove();
+    }
+
+    onClick(data, actions) {
+        if (!this.confirmOrderForm.checkValidity()) {
+            return actions.reject();
+        }
+
+        PageLoadingIndicatorUtil.create();
+        return actions.resolve();
+    }
+
+    onError(error) {
+        PageLoadingIndicatorUtil.remove();
+
+        this.createError(error);
     }
 }

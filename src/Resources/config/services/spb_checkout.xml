@@ -37,6 +37,7 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>
