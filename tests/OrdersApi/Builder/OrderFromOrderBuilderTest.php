@@ -121,6 +121,8 @@ class OrderFromOrderBuilderTest extends TestCase
             $customer
         );
 
-        static::assertStringStartsWith('foo', $order->getPurchaseUnits()[0]->getInvoiceId());
+        $invoiceId = $order->getPurchaseUnits()[0]->getInvoiceId();
+        static::assertIsString($invoiceId);
+        static::assertStringStartsWith('foo', $invoiceId);
     }
 }

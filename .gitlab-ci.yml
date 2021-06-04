@@ -126,7 +126,7 @@ PHPUnit Coverage (6.3.x.x dev):
             - master
     stage: Testing
     services:
-        -   name: mariadb:10.3
+        -   name: mariadb:10.3.28
             alias: mysql
     script:
         - ./psh.phar init
