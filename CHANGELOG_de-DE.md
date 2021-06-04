@@ -1,3 +1,6 @@
+# 2.2.6
+- PPI-273 - Bestellnummern-Prefix wird nun immer korrekt mitgesendet
+
 # 2.2.5
 - PPI-20 - Behebt ein Problem, bei dem Webhooks fehlschlugen, wenn der Zahlungsstatus bereits identisch gesetzt wurde
 - PPI-235 - Behebt Webhook-Registierungsfehler bei Verkaufskanal-eigenen Zugangsdaten

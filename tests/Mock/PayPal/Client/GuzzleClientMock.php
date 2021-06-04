@@ -352,7 +352,7 @@ class GuzzleClientMock extends Client
     private function handleApiV2PostRequests(string $resourceUri, ?PayPalApiStruct $data): array
     {
         if (\strpos($resourceUri, RequestUriV2::ORDERS_RESOURCE) !== false) {
-            if ($data instanceof Order && $data->getPurchaseUnits()[0]->getInvoiceId() === ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION) {
+            if ($data instanceof Order && \stripos((string) $data->getPurchaseUnits()[0]->getInvoiceId(), ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION) !== false) {
                 throw new \RuntimeException('A PayPal test error occurred.');
             }
 
@@ -372,7 +372,7 @@ class GuzzleClientMock extends Client
             }
 
             $response = CreateOrderCapture::get();
-            if ($data instanceof Order && $data->getPurchaseUnits()[0]->getInvoiceId() === ConstantsForTesting::PAYPAL_RESPONSE_HAS_NO_APPROVAL_URL) {
+            if ($data instanceof Order && \stripos((string) $data->getPurchaseUnits()[0]->getInvoiceId(), ConstantsForTesting::PAYPAL_RESPONSE_HAS_NO_APPROVAL_URL) !== false) {
                 $links = $response['links'];
                 unset($links[1]);
                 $links = \array_values($links);

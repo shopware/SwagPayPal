@@ -54,7 +54,6 @@ use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
@@ -74,7 +73,6 @@ class PayPalPaymentHandlerTest extends TestCase
 {
     use PaymentTransactionTrait;
     use ServicesTrait;
-    use StateMachineStateTrait;
     use OrderFixture;
     use DatabaseTransactionBehaviour;
     use OrderTransactionTrait;
