@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 3.1.1
 - PPI-271 - Fix an issue where updated settings did not correctly invalidate cache
 - PPI-273 - Order number prefix is now always sent correctly
 - PPI-282 - Fix incompatibility with the Sendcloud plugin

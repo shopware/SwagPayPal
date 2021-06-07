@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 3.1.1
 - PPI-271 - Behebt ein Problem, bei dem der Cache bei Einstellungsänderungen nicht korrekt invalidiert wurde
 - PPI-273 - Bestellnummern-Prefix wird nun immer korrekt mitgesendet
 - PPI-282 - Behebt eine Inkompatibiltät mit dem Sendcloud-Plugin
