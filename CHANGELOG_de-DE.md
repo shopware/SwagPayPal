@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-262 - Behebt ein Problem, bei dem der Express-Button in CMS-Buyboxen nicht angezeigt wurde
+
 # 3.1.1
 - PPI-271 - Behebt ein Problem, bei dem der Cache bei Einstellungsänderungen nicht korrekt invalidiert wurde
 - PPI-273 - Bestellnummern-Prefix wird nun immer korrekt mitgesendet
