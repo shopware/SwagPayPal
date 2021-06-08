@@ -1,0 +1,43 @@
+{% sw_extends "@Storefront/storefront/component/buy-widget/buy-widget-form.html.twig" %}
+
+{% block buy_widget_buy_container %}
+    {{ parent() }}
+
+    {% block buy_widget_buy_button_container_paypal %}
+        {% set isProductDetail = cmsPage.type is same as 'product_detail' %}
+
+        {% if buyable %}
+
+            {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData expressSettings #}
+            {% set expressSettings = page.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+
+            {% if expressSettings is null and cmsPage.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+                {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData expressSettings #}
+                {% set expressSettings = cmsPage.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
+            {% endif %}
+
+            {% if (isProductDetail and expressSettings.productDetailEnabled) or (not isProductDetail and expressSettings.listingEnabled) %}
+                <div class="form-row mt-3 justify-content-end">
+                    {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'col-8'} %}
+                </div>
+            {% endif %}
+
+        {% endif %}
+
+        {% if isProductDetail %}
+
+            {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
+            {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
+
+            {% if installmentBanner is not null %}
+                <div class="form-row mt-3 mb-4 justify-content-end">
+                    <div class="{{ buyable ? 'col-8' : 'col-12' }}"
+                         data-swag-paypal-installment-banner="true"
+                         data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
+                    </div>
+                </div>
+            {% endif %}
+
+        {% endif %}
+    {% endblock %}
+{% endblock %}
