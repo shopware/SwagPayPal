@@ -32,11 +32,10 @@ use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
-use Swag\PayPal\OrdersApi\Patch\AmountPatchBuilder;
+use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder as OrderNumberPatchBuilderV2;
-use Swag\PayPal\OrdersApi\Patch\ShippingAddressPatchBuilder as ShippingAddressPatchBuilderV2;
-use Swag\PayPal\OrdersApi\Patch\ShippingNamePatchBuilder;
+use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\CustomTransactionPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
@@ -259,28 +258,17 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         );
 
         $patchData = $this->clientFactory->getClient()->getData();
-        static::assertCount(3, $patchData);
-        foreach ($patchData as $patch) {
-            static::assertInstanceOf(PatchV2::class, $patch);
-            if ($patch->getPath() === "/purchase_units/@reference_id=='default'/shipping/address") {
-                $patchValue = $patch->getValue();
-                static::assertIsArray($patchValue);
-                static::assertSame(self::TEST_CUSTOMER_STREET, $patchValue['address_line_1']);
-            }
-
-            if ($patch->getPath() === "/purchase_units/@reference_id=='default'/shipping/name") {
-                $patchValue = $patch->getValue();
-                static::assertIsArray($patchValue);
-                static::assertSame(\sprintf('%s %s', self::TEST_CUSTOMER_FIRST_NAME, self::TEST_CUSTOMER_LAST_NAME), $patchValue['full_name']);
-            }
-
-            if ($patch->getPath() === "/purchase_units/@reference_id=='default'/amount") {
-                $patchValue = $patch->getValue();
-                static::assertIsArray($patchValue);
-                static::assertSame(self::TEST_AMOUNT, $patchValue['value']);
-                static::assertSame(self::TEST_SHIPPING, $patchValue['breakdown']['shipping']['value']);
-            }
-        }
+        static::assertCount(1, $patchData);
+        $patch = \current($patchData);
+        static::assertInstanceOf(PatchV2::class, $patch);
+        static::assertSame("/purchase_units/@reference_id=='default'", $patch->getPath());
+        $patchValue = $patch->getValue();
+        static::assertIsArray($patchValue);
+        static::assertSame(self::TEST_CUSTOMER_STREET, $patchValue['shipping']['address']['address_line_1']);
+        static::assertSame(\sprintf('%s %s', self::TEST_CUSTOMER_FIRST_NAME, self::TEST_CUSTOMER_LAST_NAME), $patchValue['shipping']['name']['full_name']);
+        static::assertSame(self::TEST_AMOUNT, $patchValue['amount']['value']);
+        static::assertSame(self::TEST_SHIPPING, $patchValue['amount']['breakdown']['shipping']['value']);
+        static::assertSame(1, $patchValue['items'][0]['quantity']);
 
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
     }
@@ -671,9 +659,7 @@ An error occurred during the communication with PayPal');
                 $this->orderTransactionRepo,
                 $systemConfig,
                 $currencyRepository,
-                new ShippingAddressPatchBuilderV2(),
-                new ShippingNamePatchBuilder(),
-                new AmountPatchBuilder(new AmountProvider($priceFormatter)),
+                new PurchaseUnitPatchBuilder(new PurchaseUnitProvider(new AmountProvider($priceFormatter), $systemConfig)),
                 $orderResource,
                 new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock()),
                 $logger

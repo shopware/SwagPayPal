@@ -18,6 +18,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromCartEvent;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
@@ -44,10 +45,11 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         PriceFormatter $priceFormatter,
         AmountProvider $amountProvider,
         SystemConfigService $systemConfigService,
+        PurchaseUnitProvider $purchaseUnitProvider,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger
     ) {
-        parent::__construct($settingsService, $priceFormatter, $amountProvider, $systemConfigService);
+        parent::__construct($settingsService, $priceFormatter, $amountProvider, $systemConfigService, $purchaseUnitProvider);
         $this->eventDispatcher = $eventDispatcher;
         $this->logger = $logger;
     }
@@ -86,36 +88,29 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             throw new InvalidTransactionException('');
         }
 
-        $currency = $salesChannelContext->getCurrency();
-        $purchaseUnit = new PurchaseUnit();
-
         if ($this->systemConfigService === null) {
             // this can not occur, since this child's constructor is not nullable
             throw new \RuntimeException('No system settings available');
         }
 
-        if (($isExpressCheckoutProcess && $this->systemConfigService->getBool(Settings::ECS_SUBMIT_CART, $salesChannelContext->getSalesChannelId()))
-            || (!$isExpressCheckoutProcess && $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId()))
-        ) {
-            $purchaseUnit->setItems($this->createItems($currency, $cart));
+        if ($this->purchaseUnitProvider === null) {
+            // this can not occur, since this child's constructor is not nullable
+            throw new \RuntimeException('No purchase unit provider available');
         }
 
-        $amount = $this->amountProvider->createAmount(
+        $submitCart = ($isExpressCheckoutProcess && $this->systemConfigService->getBool(Settings::ECS_SUBMIT_CART, $salesChannelContext->getSalesChannelId()))
+            || (!$isExpressCheckoutProcess && $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId()));
+
+        $items = $submitCart ? $this->createItems($salesChannelContext->getCurrency(), $cart) : null;
+
+        return $this->purchaseUnitProvider->createPurchaseUnit(
             $cartTransaction->getAmount(),
             $cart->getShippingCosts(),
-            $currency,
-            $purchaseUnit,
+            $customer,
+            $items,
+            $salesChannelContext,
             $cart->getPrice()->getTaxStatus() !== CartPrice::TAX_STATE_GROSS
         );
-
-        if ($customer !== null) {
-            $shipping = $this->createShipping($customer);
-            $purchaseUnit->setShipping($shipping);
-        }
-
-        $purchaseUnit->setAmount($amount);
-
-        return $purchaseUnit;
     }
 
     /**

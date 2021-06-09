@@ -21,6 +21,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\Settings;
@@ -125,12 +126,12 @@ class SPBCreateOrderRouteTest extends TestCase
         /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
 
-        $settings = $this->createSystemConfigServiceMock([
+        $systemConfig = $this->createSystemConfigServiceMock([
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
         ]);
 
-        $settingsService = new SettingsService($settings, new NullLogger());
+        $settingsService = new SettingsService($systemConfig, new NullLogger());
 
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
@@ -139,7 +140,8 @@ class SPBCreateOrderRouteTest extends TestCase
             $settingsService,
             $priceFormatter,
             $amountProvider,
-            $settings,
+            $systemConfig,
+            new PurchaseUnitProvider($amountProvider, $systemConfig),
             new EventDispatcherMock(),
             new LoggerMock()
         );
@@ -147,7 +149,7 @@ class SPBCreateOrderRouteTest extends TestCase
         return new SPBCreateOrderRoute(
             $cartService,
             new OrderRepositoryMock(),
-            $this->createOrderBuilder($settings),
+            $this->createOrderBuilder($systemConfig),
             $orderFromCartBuilder,
             new OrderResource($this->createPayPalClientFactory()),
             new NullLogger()

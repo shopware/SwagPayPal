@@ -14,6 +14,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
@@ -40,26 +41,28 @@ class ExpressCreateOrderRouteTest extends TestCase
 
     private function createRoute(): ExpressCreateOrderRoute
     {
-        $settings = $this->createSystemConfigServiceMock([
+        $systemConfig = $this->createSystemConfigServiceMock([
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
         ]);
 
-        $settingsService = new SettingsService($settings, new NullLogger());
-
+        $settingsService = new SettingsService($systemConfig, new NullLogger());
         $priceFormatter = new PriceFormatter();
+        $amountProvider = new AmountProvider($priceFormatter);
+
         $orderFromCartBuilder = new OrderFromCartBuilder(
             $settingsService,
             $priceFormatter,
-            new AmountProvider($priceFormatter),
-            $settings,
+            $amountProvider,
+            $systemConfig,
+            new PurchaseUnitProvider($amountProvider, $systemConfig),
             new EventDispatcherMock(),
             new LoggerMock()
         );
         /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
 
-        $orderResource = $this->createOrderResource($settings);
+        $orderResource = $this->createOrderResource($systemConfig);
 
         return new ExpressCreateOrderRoute(
             $cartService,

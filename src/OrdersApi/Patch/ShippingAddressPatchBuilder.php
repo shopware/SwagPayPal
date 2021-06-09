@@ -12,6 +12,9 @@ use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Address;
 use Swag\PayPal\RestApi\V2\Api\Patch;
 
+/**
+ * @deprecated tag:v4.0.0 - will be removed, is part of Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder now
+ */
 class ShippingAddressPatchBuilder
 {
     /**

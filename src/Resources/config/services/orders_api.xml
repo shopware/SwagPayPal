@@ -27,6 +27,7 @@
             <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
         </service>
@@ -36,6 +37,7 @@
             <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider"/>
         </service>
 
@@ -49,6 +51,11 @@
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
         </service>
 
+        <service id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
+
         <service id="Swag\PayPal\OrdersApi\Patch\AmountPatchBuilder">
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
         </service>
@@ -56,6 +63,10 @@
         <service id="Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder"/>
 
         <service id="Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder"/>
+
+        <service id="Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
+        </service>
 
         <service id="Swag\PayPal\OrdersApi\Patch\ShippingAddressPatchBuilder"/>
 

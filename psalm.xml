@@ -108,7 +108,11 @@
         <DeprecatedProperty>
             <errorLevel type="info">
                 <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
+                <referencedProperty name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::$amountProvider"/>
+                <referencedProperty name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::$priceFormatter"/>
+                <referencedProperty name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::$purchaseUnitProvider"/>
                 <referencedProperty name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::$settingsService"/>
+                <referencedProperty name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::$systemConfigService"/>
                 <referencedProperty name="Swag\PayPal\PaymentsApi\Builder\AbstractPaymentBuilder::$settingsService"/>
                 <referencedProperty name="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper::$settingsService"/>
             </errorLevel>

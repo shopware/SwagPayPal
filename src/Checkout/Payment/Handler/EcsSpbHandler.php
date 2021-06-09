@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Checkout\Payment\Handler;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
@@ -23,11 +22,8 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
-use Swag\PayPal\OrdersApi\Patch\AmountPatchBuilder;
-use Swag\PayPal\OrdersApi\Patch\ShippingAddressPatchBuilder;
-use Swag\PayPal\OrdersApi\Patch\ShippingNamePatchBuilder;
+use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -38,11 +34,7 @@ class EcsSpbHandler extends AbstractPaymentHandler
 
     private EntityRepositoryInterface $currencyRepository;
 
-    private ShippingAddressPatchBuilder $shippingAddressPatchBuilder;
-
-    private ShippingNamePatchBuilder $shippingNamePatchBuilder;
-
-    private AmountPatchBuilder $amountPatchBuilder;
+    private PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder;
 
     private OrderResource $orderResource;
 
@@ -54,9 +46,7 @@ class EcsSpbHandler extends AbstractPaymentHandler
         EntityRepositoryInterface $orderTransactionRepo,
         SystemConfigService $systemConfigService,
         EntityRepositoryInterface $currencyRepository,
-        ShippingAddressPatchBuilder $shippingAddressPatchBuilder,
-        ShippingNamePatchBuilder $shippingNamePatchBuilder,
-        AmountPatchBuilder $amountPatchBuilder,
+        PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder,
         OrderResource $orderResource,
         ItemListProvider $itemListProvider,
         LoggerInterface $logger
@@ -64,9 +54,7 @@ class EcsSpbHandler extends AbstractPaymentHandler
         parent::__construct($orderTransactionRepo);
         $this->systemConfigService = $systemConfigService;
         $this->currencyRepository = $currencyRepository;
-        $this->shippingAddressPatchBuilder = $shippingAddressPatchBuilder;
-        $this->shippingNamePatchBuilder = $shippingNamePatchBuilder;
-        $this->amountPatchBuilder = $amountPatchBuilder;
+        $this->purchaseUnitPatchBuilder = $purchaseUnitPatchBuilder;
         $this->orderResource = $orderResource;
         $this->itemListProvider = $itemListProvider;
         $this->logger = $logger;
@@ -98,20 +86,15 @@ class EcsSpbHandler extends AbstractPaymentHandler
 
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
         $submitCart = $this->systemConfigService->getBool(Settings::ECS_SUBMIT_CART, $salesChannelId);
-        $purchaseUnit = new PurchaseUnit();
-        if ($submitCart) {
-            $purchaseUnit->setItems($this->itemListProvider->getItemList($currency, $order));
-        }
+        $items = $submitCart ? $this->itemListProvider->getItemList($currency, $order) : null;
 
         $patches = [
-            $this->shippingAddressPatchBuilder->createShippingAddressPatch($customer),
-            $this->shippingNamePatchBuilder->createShippingNamePatch($customer),
-            $this->amountPatchBuilder->createAmountPatch(
-                $orderTransaction->getAmount(),
-                $order->getShippingCosts(),
-                $currency,
-                $purchaseUnit,
-                $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS
+            $this->purchaseUnitPatchBuilder->createPurchaseUnitPatch(
+                $customer,
+                $items,
+                $salesChannelContext,
+                $order,
+                $orderTransaction
             ),
         ];
 
