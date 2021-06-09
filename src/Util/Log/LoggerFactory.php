@@ -19,23 +19,14 @@ use Swag\PayPal\Setting\Settings;
 
 class LoggerFactory
 {
+    protected const DEFAULT_LEVEL = Logger::WARNING;
     private const LOG_FORMAT = "[%datetime%] %channel%.%level_name%: %extra.class%::%extra.function% (%extra.line%): %message% %context% %extra%\n";
-    private const DEFAULT_LEVEL = Logger::WARNING;
 
-    /**
-     * @var string
-     */
-    private $rotatingFilePathPattern = '';
+    protected int $logLevel = self::DEFAULT_LEVEL;
 
-    /**
-     * @var int
-     */
-    private $defaultFileRotationCount;
+    private string $rotatingFilePathPattern = '';
 
-    /**
-     * @var int
-     */
-    private $logLevel = self::DEFAULT_LEVEL;
+    private int $defaultFileRotationCount;
 
     public function __construct(string $rotatingFilePathPattern, int $defaultFileRotationCount = 14)
     {
