@@ -13,6 +13,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -105,12 +106,14 @@ trait ServicesTrait
 
         $settingsService = new SettingsService($systemConfig, new NullLogger());
         $priceFormatter = new PriceFormatter();
+        $amountProvider = new AmountProvider($priceFormatter);
 
         return new OrderFromOrderBuilder(
             $settingsService,
             $priceFormatter,
-            new AmountProvider($priceFormatter),
+            $amountProvider,
             $systemConfig,
+            new PurchaseUnitProvider($amountProvider, $systemConfig),
             new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock())
         );
     }

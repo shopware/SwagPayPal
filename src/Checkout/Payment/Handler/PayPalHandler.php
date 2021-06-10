@@ -26,7 +26,6 @@ use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
@@ -92,7 +91,6 @@ class PayPalHandler extends AbstractPaymentHandler
             $salesChannelContext,
             $customer
         );
-        $paypalOrder->getApplicationContext()->setUserAction(ApplicationContext::USER_ACTION_PAY_NOW);
 
         try {
             $paypalOrderResponse = $this->orderResource->create(

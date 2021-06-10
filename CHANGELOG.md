@@ -1,8 +1,7 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 3.2.0
 - PPI-262 - Fix issue where Express button was not shown in CMS buy box elements
-
-# 3.1.1
 - PPI-271 - Fix an issue where updated settings did not correctly invalidate cache
+- PPI-277 - Fix issue where Express checkout failed on changes on confirm page
 - PPI-273 - Order number prefix is now always sent correctly
 - PPI-282 - Fix incompatibility with the Sendcloud plugin
 - PPI-283 - Removed extra confirm step with Smart Payment Buttons which correctly enables Alternative Payment Methods

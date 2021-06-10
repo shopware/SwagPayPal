@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
@@ -31,6 +32,8 @@ use Swag\PayPal\Util\PriceFormatter;
 abstract class AbstractOrderBuilder
 {
     /**
+     * @deprecated tag:v4.0.0 - will be removed and moved as private to OrderFromCartBuilder
+     *
      * @var PriceFormatter
      */
     protected $priceFormatter;
@@ -43,25 +46,38 @@ abstract class AbstractOrderBuilder
     protected $settingsService;
 
     /**
+     * @deprecated tag:v4.0.0 - will be removed
+     *
      * @var AmountProvider
      */
     protected $amountProvider;
 
+    /**
+     * @deprecated tag:v4.0.0 - will not be nullable
+     */
     protected ?SystemConfigService $systemConfigService;
 
     /**
-     * @deprecated tag:v4.0.0 - parameter $settingsService will be removed, parameter $systemConfigService will not be nullable
+     * @deprecated tag:v4.0.0 - will not be nullable
+     */
+    protected ?PurchaseUnitProvider $purchaseUnitProvider;
+
+    /**
+     * @deprecated tag:v4.0.0 - parameter $settingsService, $priceFormatter and $amountProvider will be removed,
+     *                          parameter $systemConfigService and $purchaseUnitProvider will not be nullable
      */
     public function __construct(
         SettingsServiceInterface $settingsService,
         PriceFormatter $priceFormatter,
         AmountProvider $amountProvider,
-        ?SystemConfigService $systemConfigService = null
+        ?SystemConfigService $systemConfigService = null,
+        ?PurchaseUnitProvider $purchaseUnitProvider = null
     ) {
         $this->settingsService = $settingsService;
         $this->priceFormatter = $priceFormatter;
         $this->amountProvider = $amountProvider;
         $this->systemConfigService = $systemConfigService;
+        $this->purchaseUnitProvider = $purchaseUnitProvider;
     }
 
     /**
@@ -121,6 +137,9 @@ abstract class AbstractOrderBuilder
         return $applicationContext;
     }
 
+    /**
+     * @deprecated tag:v4.0.0 - will be removed, is part of Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider now
+     */
     protected function createShipping(CustomerEntity $customer): Shipping
     {
         $shippingAddress = $customer->getActiveShippingAddress();

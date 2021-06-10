@@ -1,9 +1,8 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 3.2.0
 - PPI-262 - Behebt ein Problem, bei dem der Express-Button in CMS-Buyboxen nicht angezeigt wurde
-
-# 3.1.1
 - PPI-271 - Behebt ein Problem, bei dem der Cache bei Einstellungsänderungen nicht korrekt invalidiert wurde
 - PPI-273 - Bestellnummern-Prefix wird nun immer korrekt mitgesendet
+- PPI-277 - Behebt ein Problem, bei dem die Express-Zahlung bei Änderungen auf der Bestätigungsseite fehlschlug
 - PPI-282 - Behebt eine Inkompatibiltät mit dem Sendcloud-Plugin
 - PPI-283 - Zusätzlicher Bestätigungsschritt bei Smart Payment Buttons entfernt, sodass Alternative Zahlungsmethoden korrekt dargestellt werden
 

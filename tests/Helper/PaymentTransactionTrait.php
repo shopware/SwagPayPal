@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Helper;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Cart\Price\Struct\QuantityPriceDefinition;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
@@ -111,6 +112,17 @@ trait PaymentTransactionTrait
         $order->setAmountNet(722.69);
         $order->setAmountTotal(860.0);
         $order->setTaxStatus(CartPrice::TAX_STATE_GROSS);
+        $lineItem = new OrderLineItemEntity();
+        $lineItem->setId(Uuid::randomHex());
+        $lineItem->setType('product');
+        $lineItem->setIdentifier('test');
+        $lineItem->setQuantity(1);
+        $lineItem->setLabel('test');
+        $lineItem->setUnitPrice(5.0);
+        $lineItem->setPrice(new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()));
+        $lineItem->setPriceDefinition(new QuantityPriceDefinition(10, new TaxRuleCollection()));
+        $lineItem->setGood(true);
+        $order->setLineItems(new OrderLineItemCollection([$lineItem]));
 
         switch ($orderId) {
             case ConstantsForTesting::VALID_ORDER_ID:

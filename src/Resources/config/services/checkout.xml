@@ -46,9 +46,7 @@
             <argument type="service" id="order_transaction.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="currency.repository"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Patch\ShippingAddressPatchBuilder"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Patch\ShippingNamePatchBuilder"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Patch\AmountPatchBuilder"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>

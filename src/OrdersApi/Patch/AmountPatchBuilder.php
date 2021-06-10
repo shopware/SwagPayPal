@@ -13,6 +13,9 @@ use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Patch;
 
+/**
+ * @deprecated tag:v4.0.0 - will be removed, is part of Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder now
+ */
 class AmountPatchBuilder
 {
     /**

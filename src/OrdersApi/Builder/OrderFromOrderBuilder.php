@@ -16,6 +16,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
@@ -32,9 +33,10 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
         PriceFormatter $priceFormatter,
         AmountProvider $amountProvider,
         SystemConfigService $systemConfigService,
+        PurchaseUnitProvider $purchaseUnitProvider,
         ItemListProvider $itemListProvider
     ) {
-        parent::__construct($settingsService, $priceFormatter, $amountProvider, $systemConfigService);
+        parent::__construct($settingsService, $priceFormatter, $amountProvider, $systemConfigService, $purchaseUnitProvider);
         $this->itemListProvider = $itemListProvider;
     }
 
@@ -69,44 +71,30 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
         OrderTransactionEntity $orderTransaction,
         CustomerEntity $customer
     ): PurchaseUnit {
-        $currency = $salesChannelContext->getCurrency();
-        $purchaseUnit = new PurchaseUnit();
-
         if ($this->systemConfigService === null) {
             // this can not occur, since this child's constructor is not nullable
             throw new \RuntimeException('No system settings available');
         }
 
-        $salesChannelId = $salesChannelContext->getSalesChannelId();
-        if ($this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelId)) {
-            $items = $this->itemListProvider->getItemList($currency, $order);
-            $purchaseUnit->setItems($items);
+        if ($this->purchaseUnitProvider === null) {
+            // this can not occur, since this child's constructor is not nullable
+            throw new \RuntimeException('No purchase unit provider available');
         }
 
-        $amount = $this->amountProvider->createAmount(
+        $submitCart = $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId());
+
+        $items = $submitCart ? $this->itemListProvider->getItemList($salesChannelContext->getCurrency(), $order) : null;
+
+        return $this->purchaseUnitProvider->createPurchaseUnit(
             $orderTransaction->getAmount(),
             $order->getShippingCosts(),
-            $currency,
-            $purchaseUnit,
-            $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS
+            $customer,
+            $items,
+            $salesChannelContext,
+            $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS,
+            $order,
+            $orderTransaction
         );
-        $shipping = $this->createShipping($customer);
-
-        $purchaseUnit->setAmount($amount);
-        $purchaseUnit->setShipping($shipping);
-        $purchaseUnit->setCustomId($orderTransaction->getId());
-        $orderNumber = $order->getOrderNumber();
-
-        if ($orderNumber !== null) {
-            if ($this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelId)) {
-                $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelId);
-                $orderNumber = $orderNumberPrefix . $orderNumber;
-            }
-
-            $purchaseUnit->setInvoiceId($orderNumber);
-        }
-
-        return $purchaseUnit;
     }
 
     private function addReturnUrls(ApplicationContext $applicationContext, string $returnUrl): void
