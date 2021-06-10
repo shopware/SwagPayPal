@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V2\Api;
 
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Referral\BusinessEntity;
 use Swag\PayPal\RestApi\V2\Api\Referral\LegalConsent;
 use Swag\PayPal\RestApi\V2\Api\Referral\Link;
 use Swag\PayPal\RestApi\V2\Api\Referral\Operation;
@@ -51,6 +52,8 @@ class Referral extends PayPalApiStruct
      * @var Link[]
      */
     protected $links;
+
+    protected BusinessEntity $businessEntity;
 
     public function getTrackingId(): string
     {
@@ -144,5 +147,15 @@ class Referral extends PayPalApiStruct
     public function setLinks(array $links): void
     {
         $this->links = $links;
+    }
+
+    public function getBusinessEntity(): BusinessEntity
+    {
+        return $this->businessEntity;
+    }
+
+    public function setBusinessEntity(BusinessEntity $businessEntity): void
+    {
+        $this->businessEntity = $businessEntity;
     }
 }
