@@ -21,7 +21,7 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
-class BannerDataService
+class BannerDataService implements BannerDataServiceInterface
 {
     private PaymentMethodUtil $paymentMethodUtil;
 
