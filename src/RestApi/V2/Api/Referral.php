@@ -17,11 +17,9 @@ use Swag\PayPal\RestApi\V2\Api\Referral\PartnerConfigOverride;
 class Referral extends PayPalApiStruct
 {
     public const PRODUCT_TYPE_EXPRESS_CHECKOUT = 'EXPRESS_CHECKOUT';
+    public const PRODUCT_TYPE_PPCP = 'PPCP';
 
-    /**
-     * @var string
-     */
-    protected $trackingId;
+    protected BusinessEntity $businessEntity;
 
     /**
      * @var string
@@ -29,9 +27,9 @@ class Referral extends PayPalApiStruct
     protected $preferredLanguageCode;
 
     /**
-     * @var Operation[]
+     * @var string
      */
-    protected $operations;
+    protected $trackingId;
 
     /**
      * @var PartnerConfigOverride
@@ -39,21 +37,44 @@ class Referral extends PayPalApiStruct
     protected $partnerConfigOverride;
 
     /**
-     * @var LegalConsent[]
+     * @var Operation[]
      */
-    protected $legalConsents;
+    protected $operations;
 
     /**
      * @var string[]
      */
-    protected $products = [self::PRODUCT_TYPE_EXPRESS_CHECKOUT];
+    protected $products = [self::PRODUCT_TYPE_PPCP];
+
+    /**
+     * @var LegalConsent[]
+     */
+    protected $legalConsents;
 
     /**
      * @var Link[]
      */
     protected $links;
 
-    protected BusinessEntity $businessEntity;
+    public function getBusinessEntity(): BusinessEntity
+    {
+        return $this->businessEntity;
+    }
+
+    public function setBusinessEntity(BusinessEntity $businessEntity): void
+    {
+        $this->businessEntity = $businessEntity;
+    }
+
+    public function getPreferredLanguageCode(): string
+    {
+        return $this->preferredLanguageCode;
+    }
+
+    public function setPreferredLanguageCode(string $preferredLanguageCode): void
+    {
+        $this->preferredLanguageCode = $preferredLanguageCode;
+    }
 
     public function getTrackingId(): string
     {
@@ -65,14 +86,14 @@ class Referral extends PayPalApiStruct
         $this->trackingId = $trackingId;
     }
 
-    public function getPreferredLanguageCode(): string
+    public function getPartnerConfigOverride(): PartnerConfigOverride
     {
-        return $this->preferredLanguageCode;
+        return $this->partnerConfigOverride;
     }
 
-    public function setPreferredLanguageCode(string $preferredLanguageCode): void
+    public function setPartnerConfigOverride(PartnerConfigOverride $partnerConfigOverride): void
     {
-        $this->preferredLanguageCode = $preferredLanguageCode;
+        $this->partnerConfigOverride = $partnerConfigOverride;
     }
 
     /**
@@ -89,32 +110,6 @@ class Referral extends PayPalApiStruct
     public function setOperations(array $operations): void
     {
         $this->operations = $operations;
-    }
-
-    public function getPartnerConfigOverride(): PartnerConfigOverride
-    {
-        return $this->partnerConfigOverride;
-    }
-
-    public function setPartnerConfigOverride(PartnerConfigOverride $partnerConfigOverride): void
-    {
-        $this->partnerConfigOverride = $partnerConfigOverride;
-    }
-
-    /**
-     * @return LegalConsent[]
-     */
-    public function getLegalConsents(): array
-    {
-        return $this->legalConsents;
-    }
-
-    /**
-     * @param LegalConsent[] $legalConsents
-     */
-    public function setLegalConsents(array $legalConsents): void
-    {
-        $this->legalConsents = $legalConsents;
     }
 
     /**
@@ -134,6 +129,22 @@ class Referral extends PayPalApiStruct
     }
 
     /**
+     * @return LegalConsent[]
+     */
+    public function getLegalConsents(): array
+    {
+        return $this->legalConsents;
+    }
+
+    /**
+     * @param LegalConsent[] $legalConsents
+     */
+    public function setLegalConsents(array $legalConsents): void
+    {
+        $this->legalConsents = $legalConsents;
+    }
+
+    /**
      * @return Link[]
      */
     public function getLinks(): array
@@ -147,15 +158,5 @@ class Referral extends PayPalApiStruct
     public function setLinks(array $links): void
     {
         $this->links = $links;
-    }
-
-    public function getBusinessEntity(): BusinessEntity
-    {
-        return $this->businessEntity;
-    }
-
-    public function setBusinessEntity(BusinessEntity $businessEntity): void
-    {
-        $this->businessEntity = $businessEntity;
     }
 }
