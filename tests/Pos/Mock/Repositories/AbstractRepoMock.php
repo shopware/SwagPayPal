@@ -148,6 +148,11 @@ abstract class AbstractRepoMock
             ]);
         }
 
-        return $entity->get('id');
+        $id = $entity->get('id');
+        if (\is_string($id)) {
+            return $id;
+        }
+
+        throw new \RuntimeException('ID is not a string. Should not happen.');
     }
 }

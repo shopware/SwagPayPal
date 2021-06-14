@@ -1,5 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.2.1)
-- PPI-279 - Extends the partner referral API
+- PPI-279, PPI-297 - Extends the partner referral API
 - PPI-290 - Improved extensibility
 
 # 3.2.0
