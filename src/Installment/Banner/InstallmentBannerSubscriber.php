@@ -25,7 +25,7 @@ use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Shopware\Storefront\Pagelet\PageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
-use Swag\PayPal\Installment\Banner\Service\BannerDataService;
+use Swag\PayPal\Installment\Banner\Service\BannerDataServiceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
@@ -43,7 +43,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
 
     private PaymentMethodUtil $paymentMethodUtil;
 
-    private BannerDataService $bannerDataService;
+    private BannerDataServiceInterface $bannerDataService;
 
     private LoggerInterface $logger;
 
@@ -51,7 +51,7 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         SettingsValidationServiceInterface $settingsValidationService,
         SystemConfigService $systemConfigService,
         PaymentMethodUtil $paymentMethodUtil,
-        BannerDataService $bannerDataService,
+        BannerDataServiceInterface $bannerDataService,
         LoggerInterface $logger
     ) {
         $this->settingsValidationService = $settingsValidationService;

@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.2.1)
 - PPI-279 - Extends the partner referral API
+- PPI-290 - Improved extensibility
 
 # 3.2.0
 - PPI-262 - Fix issue where Express button was not shown in CMS buy box elements

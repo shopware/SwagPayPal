@@ -47,6 +47,11 @@ class SPBMarksData extends Struct
         return $this->clientId;
     }
 
+    public function setClientId(string $clientId): void
+    {
+        $this->clientId = $clientId;
+    }
+
     public function getPaymentMethodId(): string
     {
         return $this->paymentMethodId;

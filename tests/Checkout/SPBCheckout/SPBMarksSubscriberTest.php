@@ -26,6 +26,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
+use Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksSubscriber;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -209,11 +210,13 @@ class SPBMarksSubscriberTest extends TestCase
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
 
         return new SPBMarksSubscriber(
-            new SettingsValidationService($settings, new NullLogger()),
-            $settings,
-            new PaymentMethodUtilMock(),
-            new NullLogger(),
-            $localeCodeProvider
+            new SPBMarksDataService(
+                new SettingsValidationService($settings, new NullLogger()),
+                $settings,
+                new PaymentMethodUtilMock(),
+                $localeCodeProvider
+            ),
+            new NullLogger()
         );
     }
 

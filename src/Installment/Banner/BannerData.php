@@ -88,6 +88,11 @@ class BannerData extends Struct
         return $this->clientId;
     }
 
+    public function setClientId(string $clientId): void
+    {
+        $this->clientId = $clientId;
+    }
+
     public function getAmount(): float
     {
         return $this->amount;
