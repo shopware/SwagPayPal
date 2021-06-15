@@ -1,5 +1,5 @@
-import template from './sw-order.html.twig';
-import './sw-order.scss';
+import template from './sw-order-detail.html.twig';
+import './sw-order-detail.scss';
 
 const { Component, Context } = Shopware;
 const Criteria = Shopware.Data.Criteria;

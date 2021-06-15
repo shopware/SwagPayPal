@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.2.1)
 - PPI-279, PPI-297 - Erweiterung der Partner-Referral-API
 - PPI-290 - Erweiterbarkeit verbessert
+- PPI-295 - Behebt ein Problem, bei dem die Bestelldetails in der Administration nicht komplett angezeigt wurden
 - PPI-296 - Darstellung von APMs im Footer verbessert
 - PPI-298 - Behebt Probleme mit dem Spinner bei Smart Payment Buttons
 
