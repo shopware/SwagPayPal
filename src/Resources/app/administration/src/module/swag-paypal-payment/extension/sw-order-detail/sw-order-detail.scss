@@ -1,0 +1,11 @@
+// ToDo PPI-301 - can be removed with minVersion >= 6.4.2.0
+.sw-order-detail {
+    .sw-page__main-content-inner > .sw-tabs {
+        margin-top: 40px;
+    }
+    .sw-order-detail-base .sw-card-view__content {
+        overflow: visible;
+        margin-top: -40px;
+        height: initial;
+    }
+}
