@@ -14,6 +14,7 @@ use Shopware\Core\Framework\Validation\BuildValidationEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPageLoadedEvent;
 use Shopware\Storefront\Page\Navigation\NavigationPageLoadedEvent;
@@ -25,6 +26,7 @@ use Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
@@ -76,6 +78,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
             'framework.validation.address.create' => 'disableAddressValidation',
             'framework.validation.customer.create' => 'disableCustomerValidation',
+
+            CheckoutConfirmPageLoadedEvent::class => 'onCheckoutConfirmLoaded',
         ];
     }
 
@@ -160,6 +164,28 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         $event->getDefinition()->set('birthdayDay')
                                ->set('birthdayMonth')
                                ->set('birthdayYear');
+    }
+
+    public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void
+    {
+        if ($event->getRequest()->query->has(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID) === false) {
+            return;
+        }
+
+        $confirmPage = $event->getPage();
+        $payPalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($event->getContext());
+        if ($payPalPaymentMethodId === null) {
+            return;
+        }
+
+        $paymentMethods = $confirmPage->getPaymentMethods();
+        if ($paymentMethods->has($payPalPaymentMethodId) === false) {
+            return;
+        }
+
+        $filtered = $paymentMethods->filterByProperty('id', $payPalPaymentMethodId);
+        $confirmPage->setPaymentMethods($filtered);
+        $this->logger->debug('Removed other payment methods from selection for Express Checkout');
     }
 
     private function getExpressCheckoutButtonData(

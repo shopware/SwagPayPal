@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Content\Cms\CmsPageCollection;
 use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
@@ -18,6 +19,7 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -25,6 +27,8 @@ use Shopware\Storefront\Page\Account\Login\AccountLoginPage;
 use Shopware\Storefront\Page\Account\Login\AccountLoginPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
+use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPage;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Register\CheckoutRegisterPage;
@@ -41,6 +45,7 @@ use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoader;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -71,6 +76,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
             'framework.validation.address.create' => 'disableAddressValidation',
             'framework.validation.customer.create' => 'disableCustomerValidation',
+
+            CheckoutConfirmPageLoadedEvent::class => 'onCheckoutConfirmLoaded',
         ];
 
         static::assertSame($expectedEvents, $subscribedEvents);
@@ -389,6 +396,41 @@ class ExpressCheckoutSubscriberTest extends TestCase
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
+    public function testRemovingOtherPaymentMethodsOnExpressCheckout(): void
+    {
+        $event = $this->createCheckoutConfirmPageLoadedEvent(true, true);
+
+        $this->getExpressCheckoutSubscriber()->onCheckoutConfirmLoaded($event);
+
+        $paymentMethods = $event->getPage()->getPaymentMethods();
+        static::assertCount(1, $paymentMethods);
+        $firstPaymentMethod = $paymentMethods->first();
+        static::assertNotNull($firstPaymentMethod);
+        static::assertSame(PayPalPaymentHandler::class, $firstPaymentMethod->getHandlerIdentifier());
+    }
+
+    public function testNotRemovingOtherPaymentMethodsOnCheckoutConfirm(): void
+    {
+        $event = $this->createCheckoutConfirmPageLoadedEvent(false);
+
+        $this->getExpressCheckoutSubscriber()->onCheckoutConfirmLoaded($event);
+
+        $paymentMethods = $event->getPage()->getPaymentMethods();
+        // Nothing should happen, so PayPal + 3 others
+        static::assertCount(4, $paymentMethods);
+    }
+
+    public function testNotRemovingOtherPaymentMethodsOnCheckoutConfirmIfPayPalNotAvailable(): void
+    {
+        $event = $this->createCheckoutConfirmPageLoadedEvent(true, false);
+
+        $this->getExpressCheckoutSubscriber()->onCheckoutConfirmLoaded($event);
+
+        $paymentMethods = $event->getPage()->getPaymentMethods();
+        // PayPal not active, so only 3 others
+        static::assertCount(3, $paymentMethods);
+    }
+
     private function assertExpressCheckoutButtonData(
         ExpressCheckoutButtonData $expectedExpressCheckoutButtonData,
         ?ExpressCheckoutButtonData $actualExpressCheckoutButtonData
@@ -536,7 +578,13 @@ class ExpressCheckoutSubscriberTest extends TestCase
             }, $paymentMethodIds),
         ]], $salesChannelContext->getContext());
 
+        $criteria = new Criteria($paymentMethodIds);
+        $criteria->addFilter(new EqualsFilter('active', true));
+        $paymentMethods = $paymentMethodRepo->search($criteria, $salesChannelContext->getContext())->getEntities();
+        static::assertInstanceOf(PaymentMethodCollection::class, $paymentMethods);
+
         $salesChannelContext->getSalesChannel()->setPaymentMethodIds($paymentMethodIds);
+        $salesChannelContext->getSalesChannel()->setPaymentMethods($paymentMethods);
 
         return $salesChannelContext;
     }
@@ -590,5 +638,25 @@ class ExpressCheckoutSubscriberTest extends TestCase
             $salesChannelContext,
             new Request()
         );
+    }
+
+    private function createCheckoutConfirmPageLoadedEvent(
+        bool $isExpressCheckout = true,
+        bool $paymentMethodActive = true
+    ): CheckoutConfirmPageLoadedEvent {
+        $salesChannelContext = $this->createSalesChannelContext(false, $paymentMethodActive);
+
+        $paymentMethodsFormSalesChannel = $salesChannelContext->getSalesChannel()->getPaymentMethods();
+        static::assertNotNull($paymentMethodsFormSalesChannel);
+
+        $confirmPage = new CheckoutConfirmPage();
+        $confirmPage->setPaymentMethods($paymentMethodsFormSalesChannel);
+
+        $request = new Request();
+        if ($isExpressCheckout) {
+            $request->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, '1');
+        }
+
+        return new CheckoutConfirmPageLoadedEvent($confirmPage, $salesChannelContext, $request);
     }
 }

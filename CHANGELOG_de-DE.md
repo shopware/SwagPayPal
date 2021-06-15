@@ -4,6 +4,7 @@
 - PPI-295 - Behebt ein Problem, bei dem die Bestelldetails in der Administration nicht komplett angezeigt wurden
 - PPI-296 - Darstellung von APMs im Footer verbessert
 - PPI-298 - Behebt Probleme mit dem Spinner bei Smart Payment Buttons
+- PPI-300 - Es ist nicht mehr möglich, andere Zahlungsarten beim Express Checkout auszuwählen
 
 # 3.2.0
 - PPI-262 - Behebt ein Problem, bei dem der Express-Button in CMS-Buyboxen nicht angezeigt wurde
