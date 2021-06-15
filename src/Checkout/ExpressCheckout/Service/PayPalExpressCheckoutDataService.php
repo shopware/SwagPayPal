@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Settings;
@@ -32,18 +33,22 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
 
     private SystemConfigService $systemConfigService;
 
+    private CartPriceService $cartPriceService;
+
     public function __construct(
         CartService $cartService,
         LocaleCodeProvider $localeCodeProvider,
         RouterInterface $router,
         PaymentMethodUtil $paymentMethodUtil,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
+        CartPriceService $cartPriceService
     ) {
         $this->cartService = $cartService;
         $this->localeCodeProvider = $localeCodeProvider;
         $this->router = $router;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->systemConfigService = $systemConfigService;
+        $this->cartPriceService = $cartPriceService;
     }
 
     /**
@@ -64,6 +69,10 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
         if (!$addProductToCart && $cart->getLineItems()->count() === 0) {
+            return null;
+        }
+
+        if (!$addProductToCart && $this->cartPriceService->isZeroValueCart($cart)) {
             return null;
         }
 

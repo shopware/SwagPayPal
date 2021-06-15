@@ -24,6 +24,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\System\Tax\TaxDefinition;
+use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -99,7 +100,8 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $this->createLocaleCodeProvider(),
             $router,
             $paymentMethodUtil,
-            $this->systemConfigService
+            $this->systemConfigService,
+            new CartPriceService()
         );
 
         /** @var EntityRepositoryInterface $productRepo */

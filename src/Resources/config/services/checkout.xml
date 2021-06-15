@@ -9,8 +9,16 @@
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="Swag\PayPal\Checkout\Cart\Validation\CartValidator">
+            <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
+            <tag name="shopware.cart.validator"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
 
         <service id="Swag\PayPal\Checkout\ErrorController" public="true">
             <argument type="service" id="session"/>

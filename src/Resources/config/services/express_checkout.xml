@@ -11,6 +11,7 @@
             <argument type="service" id="router"/>
             <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute" public="true">
