@@ -219,6 +219,8 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     }
 
     onApprove(data) {
+        PageLoadingIndicatorUtil.create();
+
         const input = document.createElement('input');
         input.setAttribute('type', 'hidden');
         input.setAttribute('name', 'paypalOrderId');
@@ -228,8 +230,10 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         this.confirmOrderForm.submit();
     }
 
+    /**
+     * @deprecated tag:v4.0.0 - will be removed without replacement
+     */
     onCancel() {
-        PageLoadingIndicatorUtil.remove();
     }
 
     onClick(data, actions) {
@@ -237,13 +241,10 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
             return actions.reject();
         }
 
-        PageLoadingIndicatorUtil.create();
         return actions.resolve();
     }
 
     onError(error) {
-        PageLoadingIndicatorUtil.remove();
-
         this.createError(error);
     }
 }

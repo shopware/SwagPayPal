@@ -2,6 +2,7 @@
 - PPI-279, PPI-297 - Extends the partner referral API
 - PPI-290 - Improved extensibility
 - PPI-296 - Improved display of APMs in Footer
+- PPI-298 - Fix issues with loading spinner with Smart Payment Buttons
 
 # 3.2.0
 - PPI-262 - Fix issue where Express button was not shown in CMS buy box elements
