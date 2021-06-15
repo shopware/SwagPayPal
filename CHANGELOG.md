@@ -4,6 +4,7 @@
 - PPI-295 - Fix order details in administration not showing complete page
 - PPI-296 - Improved display of APMs in Footer
 - PPI-298 - Fix issues with loading spinner with Smart Payment Buttons
+- PPI-300 - It is no longer possible to select other payment methods on Express Checkout
 
 # 3.2.0
 - PPI-262 - Fix issue where Express button was not shown in CMS buy box elements
