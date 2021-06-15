@@ -1,6 +1,8 @@
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
+    static loadingScript = false;
+
     static options = {
         /**
          * This option holds the client id specified in the settings
@@ -46,13 +48,11 @@ export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
     };
 
     init() {
-        this.paypal = null;
         this.createMarks();
     }
 
     createMarks() {
-        this.createScript(() => {
-            const paypal = window.paypal;
+        this.createScript((paypal) => {
             paypal.Marks().render(this.el);
         });
     }

@@ -2,10 +2,7 @@
 
 import Plugin from 'src/plugin-system/plugin.class';
 import DomAccess from 'src/helper/dom-access.helper';
-
-let loadingScript = false;
-let scriptLoaded = false;
-const callbacks = [];
+import SwagPayPalScriptLoading from './swag-paypal.script-loading';
 
 const availableAPMs = [
     'card',
@@ -23,17 +20,21 @@ const availableAPMs = [
 ];
 
 export default class SwagPaypalAbstractButtons extends Plugin {
-    createScript(callback) {
-        callbacks.push(callback);
+    static scriptLoading = new SwagPayPalScriptLoading();
 
-        if (loadingScript) {
-            if (scriptLoaded) {
-                callback.call(this);
-            }
+    createScript(callback) {
+        if (this.constructor.scriptLoading.paypal !== null) {
+            callback.call(this, this.constructor.scriptLoading.paypal);
             return;
         }
 
-        loadingScript = true;
+        this.constructor.scriptLoading.callbacks.push(callback);
+
+        if (this.constructor.scriptLoading.loadingScript) {
+            return;
+        }
+
+        this.constructor.scriptLoading.loadingScript = true;
         const scriptOptions = this.getScriptUrlOptions();
         const payPalScriptUrl = `https://www.paypal.com/sdk/js?client-id=${this.options.clientId}${scriptOptions}`;
         const payPalScript = document.createElement('script');
@@ -45,11 +46,14 @@ export default class SwagPaypalAbstractButtons extends Plugin {
     }
 
     callCallbacks() {
-        callbacks.forEach(callback => {
-            callback.call(this);
-        });
+        if (this.constructor.scriptLoading.paypal === null) {
+            this.constructor.scriptLoading.paypal = window.paypal;
+            delete window.paypal;
+        }
 
-        scriptLoaded = true;
+        this.constructor.scriptLoading.callbacks.forEach(callback => {
+            callback.call(this, this.constructor.scriptLoading.paypal);
+        });
     }
 
     /**
