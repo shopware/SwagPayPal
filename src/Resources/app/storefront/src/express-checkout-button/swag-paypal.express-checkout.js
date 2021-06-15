@@ -5,8 +5,11 @@ import StoreApiClient from 'src/service/store-api-client.service';
 import DomAccess from 'src/helper/dom-access.helper';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
+import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
 export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractButtons {
+    static scriptLoading = new SwagPayPalScriptLoading();
+
     static options = {
 
         /**
@@ -148,8 +151,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     }
 
     createButton() {
-        this.createScript(() => {
-            const paypal = window.paypal;
+        this.createScript((paypal) => {
             this.renderButton(paypal);
         });
     }

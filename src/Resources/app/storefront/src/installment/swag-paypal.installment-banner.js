@@ -109,9 +109,7 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
     }
 
     createInstallmentBanner() {
-        this.createScript(() => {
-            const paypal = window.paypal;
-
+        this.createScript((paypal) => {
             paypal.Messages(this.getBannerConfig()).render(this.el);
         });
     }

@@ -142,8 +142,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     }
 
     createButton() {
-        this.createScript(() => {
-            const paypal = window.paypal;
+        this.createScript((paypal) => {
             this.renderButton(paypal);
         });
     }
