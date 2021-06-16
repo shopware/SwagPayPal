@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.2.1)
+# 3.2.1
 - PPI-279, PPI-297 - Extends the partner referral API
 - PPI-290 - Improved extensibility
 - PPI-295 - Fix order details in administration not showing complete page

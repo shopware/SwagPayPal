@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.2.1)
+# 3.2.1
 - PPI-279, PPI-297 - Erweiterung der Partner-Referral-API
 - PPI-290 - Erweiterbarkeit verbessert
 - PPI-295 - Behebt ein Problem, bei dem die Bestelldetails in der Administration nicht komplett angezeigt wurden
