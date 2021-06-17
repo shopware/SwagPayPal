@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Checkout\Shipping\Cart\Error\ShippingMethodBlockedError;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
@@ -89,7 +90,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $event = $this->createEditOrderPageLoadedEvent();
         $subscriber->onAccountOrderEditLoaded($event);
 
-        static::assertNull($event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
+        static::assertFalse($event->getPage()->hasExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
     }
 
     public function testOnAccountOrderEditLoaded(): void
@@ -108,7 +109,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        static::assertNull($event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
+        static::assertFalse($event->getPage()->hasExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
     }
 
     public function testOnCheckoutConfirmSPBPayPalNotInActiveSalesChannel(): void
@@ -120,7 +121,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         );
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        static::assertNull($event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
+        static::assertFalse($event->getPage()->hasExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
     }
 
     public function testOnCheckoutConfirmSPBNotEnabled(): void
@@ -130,7 +131,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        static::assertNull($event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
+        static::assertFalse($event->getPage()->hasExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
     }
 
     public function testOnCheckoutConfirmLoadedSPBDisabledWithGermanMerchantLocation(): void
@@ -140,10 +141,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        /** @var SPBCheckoutButtonData|null $spbExtension */
-        $spbExtension = $event->getPage()->getExtension('spbCheckoutButtonData');
-
-        static::assertNull($spbExtension);
+        static::assertFalse($event->getPage()->hasExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
     }
 
     public function testOnCheckoutConfirmLoadedSPBEnabled(): void
@@ -156,6 +154,17 @@ class SPBCheckoutSubscriberTest extends TestCase
         $this->assertSpbCheckoutButtonData($event);
     }
 
+    public function testOnCheckoutConfirmLoadedSPBDisabledWithCartErrors(): void
+    {
+        $subscriber = $this->createSubscriber();
+        $event = $this->createConfirmPageLoadedEvent();
+        $event->getPage()->getCart()->addErrors(new ShippingMethodBlockedError('foo'));
+        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $subscriber->onCheckoutConfirmLoaded($event);
+
+        static::assertFalse($event->getPage()->hasExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
+    }
+
     public function testOnCheckoutConfirmLoadedPayerIdInRequest(): void
     {
         $subscriber = $this->createSubscriber();
@@ -164,7 +173,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        static::assertNull($event->getPage()->getExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
+        static::assertFalse($event->getPage()->hasExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
         /** @var Session $session */
         $session = $this->getContainer()->get('session');
         $flashBag = $session->getFlashBag();
