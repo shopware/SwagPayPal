@@ -172,7 +172,8 @@ class PlusPuiHandler
 
         if ($orderNumberSendNeeded && $orderNumber !== null && $this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelId)) {
             $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelId);
-            $orderNumber = $orderNumberPrefix . $orderNumber;
+            $orderNumberSuffix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_SUFFIX, $salesChannelId);
+            $orderNumber = $orderNumberPrefix . $orderNumber . $orderNumberSuffix;
 
             try {
                 $this->paymentResource->patch(

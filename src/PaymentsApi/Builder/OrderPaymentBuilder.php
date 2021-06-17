@@ -106,7 +106,8 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 
         if ($this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelContext->getSalesChannelId())) {
             $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelContext->getSalesChannelId());
-            $orderNumber = $orderNumberPrefix . $order->getOrderNumber();
+            $orderNumberSuffix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_SUFFIX, $salesChannelContext->getSalesChannelId());
+            $orderNumber = $orderNumberPrefix . $order->getOrderNumber() . $orderNumberSuffix;
             $transaction->setInvoiceNumber($orderNumber);
         }
 

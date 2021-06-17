@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.2.2)
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.3.0)
 - PPI-219 - PayPal wird jetzt deaktiviert, wenn der Warenkorbwert 0 ist
+- PPI-227 - Die an PayPal gesendete Bestellnummer kann nun mit einem Suffix versehen werden
 - PPI-304 - Behebt ein Problem, bei dem die Smart Payment Buttons trotz Warenkorb-Fehlern sichtbar waren
 
 # 3.2.1

@@ -101,6 +101,10 @@
                     "label": "Order number prefix",
                     "tooltipText": "This text is placed before the original order number (e.g MyShop_SW20001). This helps to identify the shop where the payment was made."
                 },
+                "orderNumberSuffix": {
+                    "label": "Order number suffix",
+                    "tooltipText": "This text is placed after the original order number (e.g SW20001_MyShop). This helps to identify the shop where the payment was made."
+                },
                 "loggingLevel": {
                     "label": "Debugging",
                     "tooltipText": "When using advanced debugging, additional data is recorded during checkout to detect potential errors. For temporary use only.",

@@ -110,7 +110,10 @@ class OrderFromOrderBuilderTest extends TestCase
         $customer = $salesChannelContext->getCustomer();
         static::assertNotNull($customer);
 
-        $settings = $this->createSystemConfigServiceMock([Settings::ORDER_NUMBER_PREFIX => 'foo']);
+        $settings = $this->createSystemConfigServiceMock([
+            Settings::ORDER_NUMBER_PREFIX => 'foo',
+            Settings::ORDER_NUMBER_SUFFIX => 'bar',
+        ]);
         $order = $this->createOrderBuilder($settings)->getOrder(
             $paymentTransaction,
             $salesChannelContext,
@@ -120,5 +123,6 @@ class OrderFromOrderBuilderTest extends TestCase
         $invoiceId = $order->getPurchaseUnits()[0]->getInvoiceId();
         static::assertIsString($invoiceId);
         static::assertStringStartsWith('foo', $invoiceId);
+        static::assertStringEndsWith('bar', $invoiceId);
     }
 }

@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.2.2)
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.3.0)
 - PPI-219 - Disable PayPal on Carts with total price of 0
+- PPI-227 - Add possibility to add a suffix to the order number sent to PayPal
 - PPI-304 - Fix Smart Payment Buttons being visible with cart errors
 
 # 3.2.1
