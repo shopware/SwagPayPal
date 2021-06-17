@@ -27,10 +27,10 @@ Module.register('swag-paypal-payment', {
                 path: '/sw/order/paypal/detail/:id',
                 meta: {
                     parentPath: 'sw.order.index',
-                    privilege: 'order.viewer'
-                }
+                    privilege: 'order.viewer',
+                },
             });
         }
         next(currentRoute);
-    }
+    },
 });

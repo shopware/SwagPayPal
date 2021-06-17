@@ -2,7 +2,7 @@ import template from './swag-paypal-payment-action-refund.html.twig';
 import {
     REFUNDED_STATE,
     SALE_RESOURCE_TYPE,
-    CAPTURE_RESOURCE_TYPE
+    CAPTURE_RESOURCE_TYPE,
 } from '../../swag-paypal-payment-consts';
 
 const { Component, Filter } = Shopware;
@@ -14,19 +14,19 @@ Component.register('swag-paypal-payment-action-refund', {
     inject: ['SwagPayPalPaymentService'],
 
     mixins: [
-        'notification'
+        'notification',
     ],
 
     props: {
         paymentResource: {
             type: Object,
-            required: true
+            required: true,
         },
 
         orderId: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
@@ -40,14 +40,14 @@ Component.register('swag-paypal-payment-action-refund', {
             refundReason: '',
             refundInvoiceNumber: '',
             isLoading: true,
-            selectedCaptureId: ''
+            selectedCaptureId: '',
         };
     },
 
     computed: {
         dateFilter() {
             return Filter.getByName('date');
-        }
+        },
     },
 
     created() {
@@ -101,7 +101,7 @@ Component.register('swag-paypal-payment-action-refund', {
                 id: resource.id,
                 refundableAmount: resource.amount.total,
                 currency: resource.amount.currency,
-                type: resourceType
+                type: resourceType,
             };
         },
 
@@ -161,10 +161,10 @@ Component.register('swag-paypal-payment-action-refund', {
                 currency,
                 description,
                 reason,
-                invoiceNumber
+                invoiceNumber,
             ).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('swag-paypal-payment.refundAction.successMessage')
+                    message: this.$tc('swag-paypal-payment.refundAction.successMessage'),
                 });
                 this.isLoading = false;
                 this.$emit('modal-close');
@@ -176,17 +176,17 @@ Component.register('swag-paypal-payment-action-refund', {
                     this.createNotificationError({
                         message: `${errorResponse.response.data.errors[0].title}: ${
                             errorResponse.response.data.errors[0].detail}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } catch (e) {
                     this.createNotificationError({
                         message: `${errorResponse.title}: ${errorResponse.message}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } finally {
                     this.isLoading = false;
                 }
             });
-        }
-    }
+        },
+    },
 });

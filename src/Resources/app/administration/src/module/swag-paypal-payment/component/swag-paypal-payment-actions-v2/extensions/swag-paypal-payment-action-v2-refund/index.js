@@ -10,24 +10,24 @@ Component.register('swag-paypal-payment-action-v2-refund', {
     inject: ['SwagPayPalOrderService'],
 
     mixins: [
-        'notification'
+        'notification',
     ],
 
     props: {
         paypalOrder: {
             type: Object,
-            required: true
+            required: true,
         },
 
         orderTransactionId: {
             type: String,
-            required: true
+            required: true,
         },
 
         paypalPartnerAttributionId: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
@@ -38,14 +38,14 @@ Component.register('swag-paypal-payment-action-v2-refund', {
             refundInvoiceNumber: '',
             refundNoteToPayer: '',
             selectedCaptureId: '',
-            isLoading: true
+            isLoading: true,
         };
     },
 
     computed: {
         dateFilter() {
             return Filter.getByName('date');
-        }
+        },
     },
 
     created() {
@@ -99,10 +99,10 @@ Component.register('swag-paypal-payment-action-v2-refund', {
                 refundAmount,
                 this.refundInvoiceNumber,
                 this.refundNoteToPayer,
-                this.paypalPartnerAttributionId
+                this.paypalPartnerAttributionId,
             ).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('swag-paypal-payment.refundAction.successMessage')
+                    message: this.$tc('swag-paypal-payment.refundAction.successMessage'),
                 });
                 this.isLoading = false;
                 this.$emit('modal-close');
@@ -114,17 +114,17 @@ Component.register('swag-paypal-payment-action-v2-refund', {
                     this.createNotificationError({
                         message: `${errorResponse.response.data.errors[0].title}: ${
                             errorResponse.response.data.errors[0].detail}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } catch (e) {
                     this.createNotificationError({
                         message: `${errorResponse.title}: ${errorResponse.message}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } finally {
                     this.isLoading = false;
                 }
             });
-        }
-    }
+        },
+    },
 });

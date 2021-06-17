@@ -11,7 +11,7 @@ Component.register('swag-paypal-disputes-detail', {
     inject: [
         'SwagPayPalDisputeApiService',
         'systemConfigApiService',
-        'repositoryFactory'
+        'repositoryFactory',
     ],
 
     mixins: ['notification'],
@@ -19,14 +19,14 @@ Component.register('swag-paypal-disputes-detail', {
     props: {
         disputeId: {
             type: String,
-            required: true
+            required: true,
         },
 
         salesChannelId: {
             type: String,
             required: false,
-            default: null
-        }
+            default: null,
+        },
     },
 
     data() {
@@ -34,7 +34,7 @@ Component.register('swag-paypal-disputes-detail', {
             isLoading: false,
             dispute: null,
             resolutionCenterUrl: 'https://www.paypal.com/resolutioncenter',
-            orderModuleLink: null
+            orderModuleLink: null,
         };
     },
 
@@ -49,7 +49,7 @@ Component.register('swag-paypal-disputes-detail', {
 
         dateFilter() {
             return Filter.getByName('date');
-        }
+        },
     },
 
     created() {
@@ -81,7 +81,7 @@ Component.register('swag-paypal-disputes-detail', {
             const errorDetail = errorResponse.response.data.errors[0].detail;
             this.createNotificationError({
                 message: `${this.$tc('swag-paypal-disputes.list.errorTitle')}: ${errorDetail}`,
-                autoClose: false
+                autoClose: false,
             });
             this.isLoading = false;
         },
@@ -144,11 +144,11 @@ Component.register('swag-paypal-disputes-detail', {
             try {
                 Utils.dom.copyToClipboard(JSON.stringify(this.dispute));
                 this.createNotificationInfo({
-                    message: this.$tc('global.sw-field.notification.notificationCopySuccessMessage')
+                    message: this.$tc('global.sw-field.notification.notificationCopySuccessMessage'),
                 });
             } catch (err) {
                 this.createNotificationError({
-                    message: this.$tc('global.sw-field.notification.notificationCopyFailureMessage')
+                    message: this.$tc('global.sw-field.notification.notificationCopyFailureMessage'),
                 });
             }
         },
@@ -157,8 +157,8 @@ Component.register('swag-paypal-disputes-detail', {
             return this.dateFilter(dateTime, {
                 hour: '2-digit',
                 minute: '2-digit',
-                second: '2-digit'
+                second: '2-digit',
             });
-        }
-    }
+        },
+    },
 });

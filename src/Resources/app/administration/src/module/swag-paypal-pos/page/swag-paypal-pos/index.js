@@ -10,11 +10,11 @@ Component.register('swag-paypal-pos', {
 
     inject: [
         'salesChannelService',
-        'repositoryFactory'
+        'repositoryFactory',
     ],
 
     mixins: [
-        'placeholder'
+        'placeholder',
     ],
 
     data() {
@@ -25,13 +25,13 @@ Component.register('swag-paypal-pos', {
             lastRun: null,
             lastCompleteRun: null,
             cloneSalesChannelId: null,
-            buttonConfig: []
+            buttonConfig: [],
         };
     },
 
     metaInfo() {
         return {
-            title: this.title
+            title: this.title,
         };
     },
 
@@ -40,7 +40,7 @@ Component.register('swag-paypal-pos', {
             return [
                 this.$tc('global.sw-admin-menu.textShopwareAdmin'),
                 this.$tc('sw-sales-channel.general.titleMenuItems'),
-                this.$tc('swag-paypal-pos.general.moduleTitle')
+                this.$tc('swag-paypal-pos.general.moduleTitle'),
             ].reverse().join(' | ');
         },
 
@@ -66,13 +66,13 @@ Component.register('swag-paypal-pos', {
             criteria.addAssociation('languages');
 
             return criteria;
-        }
+        },
     },
 
     watch: {
         '$route.params.id'() {
             this.loadSalesChannel();
-        }
+        },
     },
 
     created() {
@@ -157,6 +157,6 @@ Component.register('swag-paypal-pos', {
                 }
                 this.$forceUpdate();
             });
-        }
-    }
+        },
+    },
 });

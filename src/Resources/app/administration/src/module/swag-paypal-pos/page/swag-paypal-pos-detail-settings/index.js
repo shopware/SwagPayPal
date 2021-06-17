@@ -15,25 +15,25 @@ Component.register('swag-paypal-pos-detail-settings', {
         'SwagPayPalPosWebhookRegisterService',
         'salesChannelService',
         'repositoryFactory',
-        'acl'
+        'acl',
     ],
 
     mixins: [
         'swag-paypal-pos-catch-error',
         'placeholder',
-        'notification'
+        'notification',
     ],
 
     props: {
         salesChannel: {
             type: Object,
-            required: true
+            required: true,
         },
         cloneSalesChannelId: {
             type: String,
             required: false,
-            default: null
-        }
+            default: null,
+        },
     },
 
     data() {
@@ -45,7 +45,7 @@ Component.register('swag-paypal-pos-detail-settings', {
             isTestingCredentials: false,
             isTestCredentialsSuccessful: false,
             apiKeyUrl: this.SwagPayPalPosSettingApiService.generateApiUrl(),
-            previousApiKey: this.salesChannel.extensions.paypalPosSalesChannel.apiKey
+            previousApiKey: this.salesChannel.extensions.paypalPosSalesChannel.apiKey,
         };
     },
 
@@ -60,14 +60,14 @@ Component.register('swag-paypal-pos-detail-settings', {
         optionSyncPrices() {
             return {
                 name: this.$tc('swag-paypal-pos.wizard.syncPrices.optionTrueLabel'),
-                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionTrueDescription')
+                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionTrueDescription'),
             };
         },
 
         optionNotSyncPrices() {
             return {
                 name: this.$tc('swag-paypal-pos.wizard.syncPrices.optionFalseLabel'),
-                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionFalseDescription')
+                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionFalseDescription'),
             };
         },
 
@@ -76,22 +76,22 @@ Component.register('swag-paypal-pos-detail-settings', {
                 {
                     value: 2,
                     name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyDescription')
+                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyDescription'),
                 }, {
                     value: 1,
                     name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeDescription')
+                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeDescription'),
                 }, {
                     value: 0,
                     name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotDescription')
-                }
+                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotDescription'),
+                },
             ];
         },
 
         swagPaypalPosSalesChannel() {
             return this.salesChannel.extensions.paypalPosSalesChannel;
-        }
+        },
     },
 
     mounted() {
@@ -147,7 +147,7 @@ Component.register('swag-paypal-pos-detail-settings', {
                     if (this.cloneSalesChannelId !== null) {
                         this.SwagPayPalPosSettingApiService.cloneProductVisibility(
                             this.cloneSalesChannelId,
-                            this.salesChannel.id
+                            this.salesChannel.id,
                         ).catch(this.catchError.bind(this, 'swag-paypal-pos.messageCloneError'));
                     }
                 }).catch(() => {
@@ -156,8 +156,8 @@ Component.register('swag-paypal-pos-detail-settings', {
 
                     this.createNotificationError({
                         message: this.$tc('sw-sales-channel.detail.messageSaveError', 0, {
-                            name: this.salesChannel.name || this.placeholder(this.salesChannel, 'name')
-                        })
+                            name: this.salesChannel.name || this.placeholder(this.salesChannel, 'name'),
+                        }),
                     });
                 }).finally(() => {
                     if (this.swagPaypalPosSalesChannel.mediaDomain === null) {
@@ -200,8 +200,8 @@ Component.register('swag-paypal-pos-detail-settings', {
                     variant: 'primary',
                     action: this.onSave,
                     disabled: false,
-                    isLoading: this.isLoading
-                }
+                    isLoading: this.isLoading,
+                },
             ];
 
             this.$emit('buttons-update', buttonConfig);
@@ -238,10 +238,10 @@ Component.register('swag-paypal-pos-detail-settings', {
             this.$nextTick(() => {
                 this.salesChannel.languages.length = 0;
                 this.salesChannel.languages.push({
-                    id: this.salesChannel.languageId
+                    id: this.salesChannel.languageId,
                 });
                 this.$forceUpdate();
             });
-        }
-    }
+        },
+    },
 });

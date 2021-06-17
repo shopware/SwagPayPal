@@ -21,6 +21,6 @@ Component.override('sw-sales-channel-menu', {
             });
 
             return menuItems;
-        }
-    }
+        },
+    },
 });

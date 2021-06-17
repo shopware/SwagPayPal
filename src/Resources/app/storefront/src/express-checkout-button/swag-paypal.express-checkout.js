@@ -141,7 +141,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          *
          * @type string
          */
-        addErrorUrl: ''
+        addErrorUrl: '',
     };
 
     init() {
@@ -164,7 +164,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         if (!this.options.addProductToCart) {
             return {
                 element: null,
-                disabled: false
+                disabled: false,
             };
         }
 
@@ -172,7 +172,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
         return {
             element,
-            disabled: element.disabled
+            disabled: element.disabled,
         };
     }
 
@@ -242,7 +242,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                 tagline: this.options.tagline,
                 layout: 'horizontal',
                 label: 'checkout',
-                height: 40
+                height: 40,
             },
 
             /**
@@ -258,7 +258,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
             /**
              * Will be called if an error occurs during the payment process.
              */
-            onError: this.onError.bind(this)
+            onError: this.onError.bind(this),
         };
     }
 
@@ -311,7 +311,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
 
     onApprove(data, actions) {
         const requestPayload = {
-            token: data.orderID
+            token: data.orderID,
         };
 
         // Add a loading indicator to the body to prevent the user breaking the checkout process
@@ -322,7 +322,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
             JSON.stringify(requestPayload),
             () => {
                 actions.redirect(this.options.checkoutConfirmUrl);
-            }
+            },
         );
     }
 

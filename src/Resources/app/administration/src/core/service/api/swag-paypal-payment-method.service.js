@@ -18,11 +18,11 @@ class SwagPaypalPaymentMethodServiceService extends ApiService {
         return this.httpClient.post(
             apiRoute,
             {
-                salesChannelId
+                salesChannelId,
             },
             {
-                headers: this.getBasicHeaders()
-            }
+                headers: this.getBasicHeaders(),
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });

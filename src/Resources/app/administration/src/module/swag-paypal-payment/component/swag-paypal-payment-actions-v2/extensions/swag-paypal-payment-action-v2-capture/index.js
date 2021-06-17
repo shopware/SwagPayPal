@@ -9,29 +9,29 @@ Component.register('swag-paypal-payment-action-v2-capture', {
     inject: ['SwagPayPalOrderService'],
 
     mixins: [
-        'notification'
+        'notification',
     ],
 
     props: {
         paypalOrder: {
             type: Object,
-            required: true
+            required: true,
         },
 
         orderTransactionId: {
             type: String,
-            required: true
+            required: true,
         },
 
         paypalPartnerAttributionId: {
             type: String,
-            required: true
+            required: true,
         },
 
         captureableAmount: {
             type: Number,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
@@ -42,14 +42,14 @@ Component.register('swag-paypal-payment-action-v2-capture', {
             captureInvoiceNumber: '',
             captureNoteToPayer: '',
             currencyCode: '',
-            isLoading: true
+            isLoading: true,
         };
     },
 
     computed: {
         showHint() {
             return this.isFinalCapture && this.captureAmount !== this.captureableAmount;
-        }
+        },
     },
 
     created() {
@@ -79,10 +79,10 @@ Component.register('swag-paypal-payment-action-v2-capture', {
                 this.captureInvoiceNumber,
                 this.captureNoteToPayer,
                 this.paypalPartnerAttributionId,
-                this.isFinalCapture
+                this.isFinalCapture,
             ).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('swag-paypal-payment.captureAction.successMessage')
+                    message: this.$tc('swag-paypal-payment.captureAction.successMessage'),
                 });
                 this.isLoading = false;
                 this.$emit('modal-close');
@@ -94,17 +94,17 @@ Component.register('swag-paypal-payment-action-v2-capture', {
                     this.createNotificationError({
                         message: `${errorResponse.response.data.errors[0].title}: ${
                             errorResponse.response.data.errors[0].detail}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } catch (e) {
                     this.createNotificationError({
                         message: `${errorResponse.title}: ${errorResponse.message}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } finally {
                     this.isLoading = false;
                 }
             });
-        }
-    }
+        },
+    },
 });

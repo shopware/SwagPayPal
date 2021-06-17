@@ -9,33 +9,33 @@ Component.register('swag-paypal-pos-wizard-sync-prices', {
     props: {
         salesChannel: {
             type: Object,
-            required: true
+            required: true,
         },
         cloneSalesChannelId: {
             type: String,
             required: false,
-            default: null
+            default: null,
         },
         saveSalesChannel: {
             type: Function,
-            required: true
-        }
+            required: true,
+        },
     },
 
     computed: {
         optionTrue() {
             return {
                 name: this.$tc('swag-paypal-pos.wizard.syncPrices.optionTrueLabel'),
-                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionTrueDescription')
+                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionTrueDescription'),
             };
         },
 
         optionFalse() {
             return {
                 name: this.$tc('swag-paypal-pos.wizard.syncPrices.optionFalseLabel'),
-                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionFalseDescription')
+                description: this.$tc('swag-paypal-pos.wizard.syncPrices.optionFalseDescription'),
             };
-        }
+        },
     },
 
     created() {
@@ -59,7 +59,7 @@ Component.register('swag-paypal-pos-wizard-sync-prices', {
                     label: this.$tc('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
                     action: this.routeBackToSyncLibrary,
-                    disabled: false
+                    disabled: false,
                 },
                 {
                     key: 'next',
@@ -67,8 +67,8 @@ Component.register('swag-paypal-pos-wizard-sync-prices', {
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToFinish,
-                    disabled: false
-                }
+                    disabled: false,
+                },
             ];
 
             this.$emit('buttons-update', buttonConfig);
@@ -77,14 +77,14 @@ Component.register('swag-paypal-pos-wizard-sync-prices', {
         routeBackToSyncLibrary() {
             this.$router.push({
                 name: 'swag.paypal.pos.wizard.syncLibrary',
-                params: { id: this.salesChannel.id }
+                params: { id: this.salesChannel.id },
             });
         },
 
         routeToFinish() {
             this.$router.push({
                 name: 'swag.paypal.pos.wizard.finish',
-                params: { id: this.salesChannel.id }
+                params: { id: this.salesChannel.id },
             });
         },
 
@@ -95,6 +95,6 @@ Component.register('swag-paypal-pos-wizard-sync-prices', {
         toggleLoadingState(state) {
             this.isConnecting = state;
             this.$emit('toggle-loading', state);
-        }
-    }
+        },
+    },
 });

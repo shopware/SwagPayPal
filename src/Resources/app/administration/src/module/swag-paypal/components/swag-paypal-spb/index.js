@@ -6,23 +6,23 @@ Component.register('swag-paypal-spb', {
     template,
 
     inject: [
-        'acl'
+        'acl',
     ],
 
     props: {
         actualConfigData: {
             type: Object,
-            required: true
+            required: true,
         },
         allConfigs: {
             type: Object,
-            required: true
+            required: true,
         },
         selectedSalesChannelId: {
             type: String,
             required: false,
-            default: null
-        }
+            default: null,
+        },
     },
 
     computed: {
@@ -30,34 +30,34 @@ Component.register('swag-paypal-spb', {
             return [
                 {
                     id: 'blue',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.blue')
+                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.blue'),
                 },
                 {
                     id: 'black',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.black')
+                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.black'),
                 },
                 {
                     id: 'gold',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.gold')
+                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.gold'),
                 },
                 {
                     id: 'silver',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.silver')
-                }
+                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.silver'),
+                },
             ];
         },
         buttonShapeOptions() {
             return [
                 {
                     id: 'pill',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonShape.options.pill')
+                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonShape.options.pill'),
                 },
                 {
                     id: 'rect',
-                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonShape.options.rect')
-                }
+                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonShape.options.rect'),
+                },
             ];
-        }
+        },
     },
 
     methods: {
@@ -75,6 +75,6 @@ Component.register('swag-paypal-spb', {
 
         preventSave(mode) {
             this.$emit('preventSave', mode);
-        }
-    }
+        },
+    },
 });

@@ -132,7 +132,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          *
          * @type string
          */
-        addErrorUrl: ''
+        addErrorUrl: '',
     };
 
     init() {
@@ -161,7 +161,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
                 size: this.options.buttonSize,
                 shape: this.options.buttonShape,
                 color: this.options.buttonColor,
-                label: 'checkout'
+                label: 'checkout',
             },
 
             /**
@@ -187,7 +187,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
             /**
              * Will be called if an error occurs during the payment process.
              */
-            onError: this.onError.bind(this)
+            onError: this.onError.bind(this),
         };
     }
 
@@ -213,7 +213,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
                 responseText => {
                     const response = JSON.parse(responseText);
                     resolve(response.token);
-                }
+                },
             );
         });
     }

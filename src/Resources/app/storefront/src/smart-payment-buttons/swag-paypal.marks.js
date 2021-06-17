@@ -44,7 +44,7 @@ export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
          *
          * @type boolean
          */
-        useAlternativePaymentMethods: true
+        useAlternativePaymentMethods: true,
     };
 
     init() {

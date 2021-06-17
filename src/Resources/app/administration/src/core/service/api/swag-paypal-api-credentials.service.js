@@ -13,8 +13,8 @@ class SwagPayPalApiCredentialsService extends ApiService {
                 `_action/${this.getApiBasePath()}/validate-api-credentials`,
                 {
                     params: { clientId, clientSecret, sandboxActive },
-                    headers: headers
-                }
+                    headers: headers,
+                },
             )
             .then((response) => {
                 return ApiService.handleResponse(response);

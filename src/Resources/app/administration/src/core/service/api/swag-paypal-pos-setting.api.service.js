@@ -43,7 +43,7 @@ class SwagPayPalPosSettingApiService extends ApiService {
                 if (data.languageId !== null && (salesChannel.id === null || forceLanguage)) {
                     salesChannel.languages.length = 0;
                     salesChannel.languages.push({
-                        id: data.languageId
+                        id: data.languageId,
                     });
                 } else {
                     delete data.languageId;
@@ -53,12 +53,12 @@ class SwagPayPalPosSettingApiService extends ApiService {
 
                 salesChannel.currencies.length = 0;
                 salesChannel.currencies.push({
-                    id: data.currencyId
+                    id: data.currencyId,
                 });
 
                 salesChannel.countries.length = 0;
                 salesChannel.countries.push({
-                    id: data.countryId
+                    id: data.countryId,
                 });
 
                 return data;
@@ -79,7 +79,7 @@ class SwagPayPalPosSettingApiService extends ApiService {
             .post(
                 `_action/${this.getApiBasePath()}/clone-product-visibility`,
                 { fromSalesChannelId, toSalesChannelId },
-                { headers }
+                { headers },
             ).then((response) => {
                 return ApiService.handleResponse(response);
             });
@@ -100,8 +100,8 @@ class SwagPayPalPosSettingApiService extends ApiService {
                 `${this.getApiBasePath()}/product-count`,
                 {
                     params: { salesChannelId, cloneSalesChannelId },
-                    headers
-                }
+                    headers,
+                },
             ).then((response) => {
                 return ApiService.handleResponse(response);
             });
@@ -116,7 +116,7 @@ class SwagPayPalPosSettingApiService extends ApiService {
             'READ:FINANCE',
             'READ:USERINFO',
             'READ:PRODUCT',
-            'WRITE:PRODUCT'
+            'WRITE:PRODUCT',
         ];
 
         // eslint-disable-next-line max-len

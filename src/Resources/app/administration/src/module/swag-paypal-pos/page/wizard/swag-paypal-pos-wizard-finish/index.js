@@ -7,19 +7,19 @@ Component.register('swag-paypal-pos-wizard-finish', {
     template,
 
     inject: [
-        'SwagPayPalPosApiService'
+        'SwagPayPalPosApiService',
     ],
 
     props: {
         salesChannel: {
             type: Object,
-            required: true
+            required: true,
         },
         cloneSalesChannelId: {
             type: String,
             required: false,
-            default: null
-        }
+            default: null,
+        },
     },
 
     created() {
@@ -50,7 +50,7 @@ Component.register('swag-paypal-pos-wizard-finish', {
                     label: this.$tc('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
                     action: this.routeBackToSyncPrices,
-                    disabled: false
+                    disabled: false,
                 },
                 {
                     key: 'finish',
@@ -58,8 +58,8 @@ Component.register('swag-paypal-pos-wizard-finish', {
                     position: 'right',
                     variant: 'primary',
                     action: this.onFinish,
-                    disabled: false
-                }
+                    disabled: false,
+                },
             ];
 
             this.$emit('buttons-update', buttonConfig);
@@ -68,12 +68,12 @@ Component.register('swag-paypal-pos-wizard-finish', {
         routeBackToSyncPrices() {
             this.$router.push({
                 name: 'swag.paypal.pos.wizard.syncPrices',
-                params: { id: this.salesChannel.id }
+                params: { id: this.salesChannel.id },
             });
         },
 
         onFinish() {
             this.$emit('frw-finish');
-        }
-    }
+        },
+    },
 });

@@ -24,9 +24,9 @@ Mixin.register('swag-paypal-pos-catch-error', {
             } finally {
                 this.createNotification({
                     variant: 'error',
-                    message
+                    message,
                 });
             }
-        }
-    }
+        },
+    },
 });

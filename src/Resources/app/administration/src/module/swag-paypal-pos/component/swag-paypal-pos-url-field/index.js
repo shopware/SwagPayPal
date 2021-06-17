@@ -5,8 +5,8 @@ Component.extend('swag-paypal-pos-url-field', 'sw-url-field', {
         error: {
             type: Object,
             required: false,
-            default: null
-        }
+            default: null,
+        },
     },
 
     watch: {
@@ -18,14 +18,14 @@ Component.extend('swag-paypal-pos-url-field', 'sw-url-field', {
                     this.checkInput(this.currentValue);
                 }
             },
-            immediate: true
+            immediate: true,
         },
 
         errorUrl() {
             if (this.errorUrl === null || this.errorUrl === 'undefined') {
                 this.errorUrl = this.error;
             }
-        }
+        },
     },
 
     methods: {
@@ -41,6 +41,6 @@ Component.extend('swag-paypal-pos-url-field', 'sw-url-field', {
 
         changeMode() {
             // override, so no disabling of SSL is possible
-        }
-    }
+        },
+    },
 });

@@ -22,14 +22,14 @@ module.exports = (baseConf) => {
                 {
                     test: /\.svg$/,
                     include: [
-                        resolve('src/app/assets/icons/svg')
+                        resolve('src/app/assets/icons/svg'),
                     ],
                     loader: 'svg-inline-loader',
                     options: {
-                        removeSVGTagAttrs: false
-                    }
-                }
-            ]
-        }
+                        removeSVGTagAttrs: false,
+                    },
+                },
+            ],
+        },
     };
 };

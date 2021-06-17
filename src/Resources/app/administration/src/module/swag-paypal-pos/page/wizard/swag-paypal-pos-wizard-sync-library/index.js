@@ -7,29 +7,29 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
     template,
 
     inject: [
-        'SwagPayPalPosSettingApiService'
+        'SwagPayPalPosSettingApiService',
     ],
 
     props: {
         salesChannel: {
             type: Object,
-            required: true
+            required: true,
         },
         cloneSalesChannelId: {
             type: String,
             required: false,
-            default: null
+            default: null,
         },
         saveSalesChannel: {
             type: Function,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
         return {
             shopwareProductsCount: 0,
-            posProductsCount: 0
+            posProductsCount: 0,
         };
     },
 
@@ -39,18 +39,18 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
                 {
                     value: 2,
                     name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyDescription')
+                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplacePermanentlyDescription'),
                 }, {
                     value: 1,
                     name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeDescription')
+                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceOneTimeDescription'),
                 }, {
                     value: 0,
                     name: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotLabel'),
-                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotDescription')
-                }
+                    description: this.$tc('swag-paypal-pos.wizard.syncLibrary.optionReplaceNotDescription'),
+                },
             ];
-        }
+        },
     },
 
     created() {
@@ -75,7 +75,7 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
                     label: this.$tc('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
                     action: this.routeBackToProductSelection,
-                    disabled: false
+                    disabled: false,
                 },
                 {
                     key: 'next',
@@ -83,8 +83,8 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToSyncPrices,
-                    disabled: false
-                }
+                    disabled: false,
+                },
             ];
 
             this.$emit('buttons-update', buttonConfig);
@@ -93,14 +93,14 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
         routeBackToProductSelection() {
             this.$router.push({
                 name: 'swag.paypal.pos.wizard.productSelection',
-                params: { id: this.salesChannel.id }
+                params: { id: this.salesChannel.id },
             });
         },
 
         routeToSyncPrices() {
             this.$router.push({
                 name: 'swag.paypal.pos.wizard.syncPrices',
-                params: { id: this.salesChannel.id }
+                params: { id: this.salesChannel.id },
             });
         },
 
@@ -117,13 +117,13 @@ Component.register('swag-paypal-pos-wizard-sync-library', {
             this.toggleLoadingState(true);
             this.SwagPayPalPosSettingApiService.getProductCount(
                 this.salesChannel.id,
-                this.cloneSalesChannelId
+                this.cloneSalesChannelId,
             ).then((response) => {
                 this.shopwareProductsCount = response.localCount;
                 this.posProductsCount = response.remoteCount;
             }).finally(() => {
                 this.toggleLoadingState(false);
             });
-        }
-    }
+        },
+    },
 });

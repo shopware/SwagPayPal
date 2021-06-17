@@ -7,9 +7,9 @@ Shopware.Service('privileges').addPrivilegeMappingEntry({
             privileges: [
                 'sales_channel:read',
                 'sales_channel_payment_method:read',
-                'system_config:read'
+                'system_config:read',
             ],
-            dependencies: []
+            dependencies: [],
         },
         editor: {
             privileges: [
@@ -18,13 +18,13 @@ Shopware.Service('privileges').addPrivilegeMappingEntry({
                 'sales_channel_payment_method:update',
                 'system_config:update',
                 'system_config:create',
-                'system_config:delete'
+                'system_config:delete',
             ],
             dependencies: [
-                'swag_paypal.viewer'
-            ]
-        }
-    }
+                'swag_paypal.viewer',
+            ],
+        },
+    },
 });
 
 Shopware.Service('privileges').addPrivilegeMappingEntry({
@@ -39,28 +39,28 @@ Shopware.Service('privileges').addPrivilegeMappingEntry({
                 'swag_paypal_pos_sales_channel_run:update',
                 'swag_paypal_pos_sales_channel_run:create',
                 'swag_paypal_pos_sales_channel_run_log:read',
-                'sales_channel_payment_method:read'
-            ]
+                'sales_channel_payment_method:read',
+            ],
         },
         editor: {
             privileges: [
                 'swag_paypal_pos_sales_channel:update',
                 'swag_paypal_pos_sales_channel_run:delete',
-                'payment_method:update'
-            ]
+                'payment_method:update',
+            ],
         },
         creator: {
             privileges: [
                 'swag_paypal_pos_sales_channel:create',
                 'payment_method:create',
                 'shipping_method:create',
-                'delivery_time:create'
-            ]
+                'delivery_time:create',
+            ],
         },
         deleter: {
             privileges: [
-                'swag_paypal_pos_sales_channel:delete'
-            ]
-        }
-    }
+                'swag_paypal_pos_sales_channel:delete',
+            ],
+        },
+    },
 });

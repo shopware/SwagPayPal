@@ -10,8 +10,8 @@ class SwagPayPalPaymentService extends ApiService {
         return this.httpClient.get(
             apiRoute,
             {
-                headers: this.getBasicHeaders()
-            }
+                headers: this.getBasicHeaders(),
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -25,11 +25,11 @@ class SwagPayPalPaymentService extends ApiService {
             {
                 captureAmount: captureAmount,
                 currency: currency,
-                captureIsFinal: isFinalCapture
+                captureIsFinal: isFinalCapture,
             },
             {
-                headers: this.getBasicHeaders()
-            }
+                headers: this.getBasicHeaders(),
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -45,11 +45,11 @@ class SwagPayPalPaymentService extends ApiService {
                 currency: currency,
                 description: description,
                 reason: reason,
-                refundInvoiceNumber: invoiceNumber
+                refundInvoiceNumber: invoiceNumber,
             },
             {
-                headers: this.getBasicHeaders()
-            }
+                headers: this.getBasicHeaders(),
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -62,8 +62,8 @@ class SwagPayPalPaymentService extends ApiService {
             apiRoute,
             {},
             {
-                headers: this.getBasicHeaders()
-            }
+                headers: this.getBasicHeaders(),
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });

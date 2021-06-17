@@ -10,25 +10,25 @@ const PluginManager = window.PluginManager;
 PluginManager.register(
     'SwagPayPalExpressButton',
     SwagPayPalExpressCheckoutButton,
-    '[data-swag-paypal-express-button]'
+    '[data-swag-paypal-express-button]',
 );
 PluginManager.register(
     'SwagPayPalSmartPaymentButtons',
     SwagPayPalSmartPaymentButtons,
-    '[data-swag-paypal-smart-payment-buttons]'
+    '[data-swag-paypal-smart-payment-buttons]',
 );
 PluginManager.register(
     'SwagPayPalMarks',
     SwagPayPalMarks,
-    '[data-swag-paypal-marks]'
+    '[data-swag-paypal-marks]',
 );
 PluginManager.register(
     'SwagPayPalPlusPaymentWall',
     SwagPayPalPlusPaymentWall,
-    '[data-swag-paypal-payment-wall]'
+    '[data-swag-paypal-payment-wall]',
 );
 PluginManager.register(
     'SwagPayPalInstallmentBanner',
     SwagPayPalInstallmentBanner,
-    '[data-swag-paypal-installment-banner]'
+    '[data-swag-paypal-installment-banner]',
 );

@@ -9,24 +9,24 @@ Component.register('swag-paypal-pos-wizard-customization', {
     props: {
         salesChannel: {
             type: Object,
-            required: true
+            required: true,
         },
         cloneSalesChannelId: {
             type: String,
             required: false,
-            default: null
+            default: null,
         },
         saveSalesChannel: {
             type: Function,
-            required: true
+            required: true,
         },
         isLoading: {
             type: Boolean,
             required: false,
             default() {
                 return false;
-            }
-        }
+            },
+        },
     },
 
     watch: {
@@ -36,7 +36,7 @@ Component.register('swag-paypal-pos-wizard-customization', {
             }
 
             this.updateButtons();
-        }
+        },
     },
 
     created() {
@@ -61,7 +61,7 @@ Component.register('swag-paypal-pos-wizard-customization', {
                     label: this.$tc('sw-first-run-wizard.general.buttonBack'),
                     position: 'left',
                     action: this.routeBackToConnectionSuccess,
-                    disabled: false
+                    disabled: false,
                 },
                 {
                     key: 'next',
@@ -69,8 +69,8 @@ Component.register('swag-paypal-pos-wizard-customization', {
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToProductSelection,
-                    disabled: this.nextButtonDisabled()
-                }
+                    disabled: this.nextButtonDisabled(),
+                },
             ];
 
             this.$emit('buttons-update', buttonConfig);
@@ -86,14 +86,14 @@ Component.register('swag-paypal-pos-wizard-customization', {
         routeBackToConnectionSuccess() {
             this.$router.push({
                 name: 'swag.paypal.pos.wizard.connectionSuccess',
-                params: { id: this.salesChannel.id }
+                params: { id: this.salesChannel.id },
             });
         },
 
         routeToProductSelection() {
             this.$router.push({
                 name: 'swag.paypal.pos.wizard.productSelection',
-                params: { id: this.salesChannel.id }
+                params: { id: this.salesChannel.id },
             });
         },
 
@@ -107,7 +107,7 @@ Component.register('swag-paypal-pos-wizard-customization', {
         changeLanguage() {
             this.salesChannel.languages.length = 0;
             this.salesChannel.languages.push({
-                id: this.salesChannel.languageId
+                id: this.salesChannel.languageId,
             });
             this.$forceUpdate();
         },
@@ -115,6 +115,6 @@ Component.register('swag-paypal-pos-wizard-customization', {
         toggleLoadingState(state) {
             this.isConnecting = state;
             this.$emit('toggle-loading', state);
-        }
-    }
+        },
+    },
 });

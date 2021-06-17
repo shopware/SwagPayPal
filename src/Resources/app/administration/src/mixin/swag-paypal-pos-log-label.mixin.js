@@ -36,6 +36,6 @@ Mixin.register('swag-paypal-pos-log-label', {
             }
 
             return 'swag-paypal-pos.detail.logs.states.success';
-        }
-    }
+        },
+    },
 });

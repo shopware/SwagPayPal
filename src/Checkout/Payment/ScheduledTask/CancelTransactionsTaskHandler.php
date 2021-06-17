@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Checkout\Payment\ScheduledTask;
 
-use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Defaults;
@@ -99,10 +98,10 @@ class CancelTransactionsTaskHandler extends ScheduledTaskHandler
         $orderTransactionCriteria->addFilter(new RangeFilter('createdAt', ['lte' => $yesterday->format(Defaults::STORAGE_DATE_TIME_FORMAT)]));
         $orderTransactionCriteria->addFilter(new RangeFilter('createdAt', ['gte' => $aWeekAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT)]));
 
-        /** @var OrderTransactionCollection $orderTransactions */
-        $orderTransactions = $this->orderTransactionRepo->search($orderTransactionCriteria, $context)->getEntities();
-        foreach ($orderTransactions as $orderTransaction) {
-            $this->orderTransactionStateHandler->cancel($orderTransaction->getId(), $context);
+        /** @var string[] $orderTransactionIds */
+        $orderTransactionIds = $this->orderTransactionRepo->searchIds($orderTransactionCriteria, $context)->getIds();
+        foreach ($orderTransactionIds as $orderTransactionId) {
+            $this->orderTransactionStateHandler->cancel($orderTransactionId, $context);
         }
     }
 }

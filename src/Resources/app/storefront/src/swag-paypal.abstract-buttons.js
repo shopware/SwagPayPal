@@ -16,7 +16,7 @@ const availableAPMs = [
     'p24',
     'sepa',
     'sofort',
-    'venmo'
+    'venmo',
 ];
 
 export default class SwagPaypalAbstractButtons extends Plugin {
@@ -106,7 +106,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
 
         const requestPayload = {
             _csrf_token: DomAccess.getDataAttribute(this.el, 'data-swag-pay-pal-add-error-token'),
-            error: error
+            error: error,
         };
 
         this._client.post(addErrorUrl, JSON.stringify(requestPayload), () => {

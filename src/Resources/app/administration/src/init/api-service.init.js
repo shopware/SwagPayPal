@@ -20,40 +20,40 @@ const initContainer = Application.getContainer('init');
 
 Application.addServiceProvider(
     'SwagPayPalApiCredentialsService',
-    (container) => new SwagPayPalApiCredentialsService(initContainer.httpClient, container.loginService)
+    (container) => new SwagPayPalApiCredentialsService(initContainer.httpClient, container.loginService),
 );
 
 Application.addServiceProvider(
     'SwagPayPalPosSettingApiService',
-    (container) => new SwagPayPalPosSettingApiService(initContainer.httpClient, container.loginService)
+    (container) => new SwagPayPalPosSettingApiService(initContainer.httpClient, container.loginService),
 );
 
 Application.addServiceProvider(
     'SwagPayPalPosApiService',
-    (container) => new SwagPayPalPosApiService(initContainer.httpClient, container.loginService)
+    (container) => new SwagPayPalPosApiService(initContainer.httpClient, container.loginService),
 );
 
 Application.addServiceProvider(
     'SwagPayPalPosWebhookRegisterService',
-    (container) => new SwagPayPalPosWebhookRegisterService(initContainer.httpClient, container.loginService)
+    (container) => new SwagPayPalPosWebhookRegisterService(initContainer.httpClient, container.loginService),
 );
 
 Application.addServiceProvider(
     'SwagPayPalPaymentService',
-    (container) => new SwagPayPalPaymentService(initContainer.httpClient, container.loginService)
+    (container) => new SwagPayPalPaymentService(initContainer.httpClient, container.loginService),
 );
 
 Application.addServiceProvider(
     'SwagPayPalOrderService',
-    (container) => new SwagPayPalOrderService(initContainer.httpClient, container.loginService)
+    (container) => new SwagPayPalOrderService(initContainer.httpClient, container.loginService),
 );
 
 Application.addServiceProvider(
     'SwagPaypalPaymentMethodServiceService',
-    (container) => new SwagPaypalPaymentMethodServiceService(initContainer.httpClient, container.loginService)
+    (container) => new SwagPaypalPaymentMethodServiceService(initContainer.httpClient, container.loginService),
 );
 
 Application.addServiceProvider(
     'SwagPayPalDisputeApiService',
-    (container) => new SwagPayPalDisputeApiService(initContainer.httpClient, container.loginService)
+    (container) => new SwagPayPalDisputeApiService(initContainer.httpClient, container.loginService),
 );

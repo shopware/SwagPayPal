@@ -42,6 +42,7 @@ use Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoader;
+use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
@@ -57,6 +58,15 @@ use Symfony\Component\Routing\RouterInterface;
 class ExpressCheckoutSubscriberTest extends TestCase
 {
     use ServicesTrait;
+
+    private CartService $cartService;
+
+    public function setUp(): void
+    {
+        /** @var CartService $cartService */
+        $cartService = $this->getContainer()->get(CartService::class);
+        $this->cartService = $cartService;
+    }
 
     public function testGetSubscribedEvents(): void
     {
@@ -183,6 +193,22 @@ class ExpressCheckoutSubscriberTest extends TestCase
         );
     }
 
+    public function testAddExpressCheckoutDataToPageCartPageWithZeroValue(): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext(true);
+        $event = new CheckoutCartPageLoadedEvent(new CheckoutCartPage(), $salesChannelContext, new Request());
+
+        $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+        $cart->setPrice($this->getEmptyCartPrice());
+
+        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
+
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+
+        static::assertNull($actualExpressCheckoutButtonData);
+    }
+
     public function testAddExpressCheckoutDataToPageWithoutPayPalInSalesChannel(): void
     {
         $salesChannelContext = $this->createSalesChannelContext();
@@ -267,9 +293,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
     public function testAddExpressCheckoutDataToPageWithoutCart(): void
     {
         $salesChannelContext = $this->createSalesChannelContext();
-        /** @var CartService $cartService */
-        $cartService = $this->getContainer()->get(CartService::class);
-        $cartService->createNew($salesChannelContext->getToken());
+        $this->cartService->createNew($salesChannelContext->getToken());
         $event = new OffcanvasCartPageLoadedEvent(
             new OffcanvasCartPage(),
             $salesChannelContext,
@@ -477,8 +501,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
             Settings::ECS_DETAIL_ENABLED => !$disableEcsDetail,
         ] : []);
 
-        /** @var CartService $cartService */
-        $cartService = $this->getContainer()->get(CartService::class);
         /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
         /** @var PaymentMethodUtil $paymentMethodUtil */
@@ -486,11 +508,12 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         return new ExpressCheckoutSubscriber(
             new PayPalExpressCheckoutDataService(
-                $cartService,
+                $this->cartService,
                 $this->createLocaleCodeProvider(),
                 $router,
                 $paymentMethodUtil,
-                $settings
+                $settings,
+                new CartPriceService()
             ),
             new SettingsValidationService($settings, new NullLogger()),
             $settings,
@@ -510,8 +533,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
         );
 
         if ($withItemList) {
-            /** @var CartService $cartService */
-            $cartService = $this->getContainer()->get(CartService::class);
             /** @var EntityRepositoryInterface $productRepo */
             $productRepo = $this->getContainer()->get('product.repository');
 
@@ -547,8 +568,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
             $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
 
-            $cart = $cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
-            $cartService->add($cart, $lineItem, $salesChannelContext);
+            $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
+            $this->cartService->add($cart, $lineItem, $salesChannelContext);
         }
 
         /** @var EntityRepositoryInterface $paymentMethodRepo */

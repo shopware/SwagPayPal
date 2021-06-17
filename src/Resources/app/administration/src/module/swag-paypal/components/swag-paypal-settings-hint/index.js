@@ -9,7 +9,7 @@ Component.register('swag-paypal-settings-hint', {
     props: {
         hintText: {
             type: String,
-            required: true
-        }
-    }
+            required: true,
+        },
+    },
 });

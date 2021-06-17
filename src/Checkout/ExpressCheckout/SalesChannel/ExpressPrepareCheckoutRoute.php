@@ -27,7 +27,6 @@ use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\Salutation\SalutationEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -244,14 +243,13 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
             new EqualsFilter('salutationKey', 'not_specified')
         );
 
-        /** @var SalutationEntity|null $salutation */
-        $salutation = $this->salutationRepo->search($criteria, $context)->first();
+        $salutationId = $this->salutationRepo->searchIds($criteria, $context)->firstId();
 
-        if ($salutation === null) {
+        if ($salutationId === null) {
             throw new \RuntimeException('No salutation found in Shopware');
         }
 
-        return $salutation->getId();
+        return $salutationId;
     }
 
     private function getCountryByCode(string $code, Context $context): ?CountryEntity

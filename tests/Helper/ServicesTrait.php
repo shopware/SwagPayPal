@@ -8,6 +8,9 @@
 namespace Swag\PayPal\Test\Helper;
 
 use Psr\Log\NullLogger;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
@@ -145,5 +148,17 @@ trait ServicesTrait
         }
 
         return new DummyWebhook($orderTransactionRepo);
+    }
+
+    private function getEmptyCartPrice(): CartPrice
+    {
+        return new CartPrice(
+            0.0,
+            0.0,
+            0,
+            new CalculatedTaxCollection(),
+            new TaxRuleCollection(),
+            CartPrice::TAX_STATE_GROSS
+        );
     }
 }

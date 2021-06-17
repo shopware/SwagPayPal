@@ -11,5 +11,5 @@ const { Component } = Shopware;
  * <swag-paypal-textarea-field label="Name" placeholder="placeholder goes here..."></swag-paypal-textarea-field>
  */
 Component.extend('swag-paypal-textarea-field', 'sw-textarea-field', {
-    template
+    template,
 });

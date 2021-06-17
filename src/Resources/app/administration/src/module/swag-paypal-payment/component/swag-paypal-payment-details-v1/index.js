@@ -8,13 +8,13 @@ Component.register('swag-paypal-payment-details-v1', {
     props: {
         paymentResource: {
             type: Object,
-            required: true
+            required: true,
         },
 
         orderId: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
@@ -24,7 +24,7 @@ Component.register('swag-paypal-payment-details-v1', {
             updateDateTime: '',
             currency: '',
             amount: {},
-            payerId: ''
+            payerId: '',
         };
     },
 
@@ -38,45 +38,45 @@ Component.register('swag-paypal-payment-details-v1', {
                 {
                     property: 'type',
                     label: this.$tc('swag-paypal-payment.transactionHistory.types.type'),
-                    rawData: true
+                    rawData: true,
                 },
                 {
                     property: 'total',
                     label: this.$tc('swag-paypal-payment.transactionHistory.types.amount'),
-                    rawData: true
+                    rawData: true,
                 },
                 {
                     property: 'id',
                     label: this.$tc('swag-paypal-payment.transactionHistory.types.trackingId'),
-                    rawData: true
+                    rawData: true,
                 },
                 {
                     property: 'status',
                     label: this.$tc('swag-paypal-payment.transactionHistory.types.state'),
-                    rawData: true
+                    rawData: true,
                 },
                 {
                     property: 'transactionFee',
                     label: this.$tc('swag-paypal-payment.transactionHistory.types.transactionFee'),
-                    rawData: true
+                    rawData: true,
                 },
                 {
                     property: 'paymentMode',
                     label: this.$tc('swag-paypal-payment.transactionHistory.types.paymentMode'),
-                    rawData: true
+                    rawData: true,
                 },
                 {
                     property: 'create',
                     label: this.$tc('swag-paypal-payment.transactionHistory.types.createTime'),
-                    rawData: true
+                    rawData: true,
                 },
                 {
                     property: 'update',
                     label: this.$tc('swag-paypal-payment.transactionHistory.types.updateTime'),
-                    rawData: true
-                }
+                    rawData: true,
+                },
             ];
-        }
+        },
     },
 
     created() {
@@ -141,7 +141,7 @@ Component.register('swag-paypal-payment-details-v1', {
                 update: this.formatDate(relatedResource.update_time),
                 transactionFee: transactionFee,
                 status: relatedResource.state,
-                paymentMode: relatedResource.payment_mode
+                paymentMode: relatedResource.payment_mode,
             });
 
             this.relatedResources.sort((a, b) => {
@@ -156,8 +156,8 @@ Component.register('swag-paypal-payment-details-v1', {
             return this.dateFilter(dateTime, {
                 hour: '2-digit',
                 minute: '2-digit',
-                second: '2-digit'
+                second: '2-digit',
             });
-        }
-    }
+        },
+    },
 });

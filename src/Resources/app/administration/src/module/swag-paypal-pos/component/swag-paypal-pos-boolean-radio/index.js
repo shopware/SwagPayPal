@@ -9,14 +9,14 @@ Component.register('swag-paypal-pos-boolean-radio', {
 
     model: {
         prop: 'value',
-        event: 'change'
+        event: 'change',
     },
 
     props: {
         value: {
             type: Boolean,
             required: false,
-            default: true
+            default: true,
         },
 
         optionTrue: {
@@ -24,7 +24,7 @@ Component.register('swag-paypal-pos-boolean-radio', {
             required: true,
             validator(value) {
                 return value.hasOwnProperty('name');
-            }
+            },
         },
 
         optionFalse: {
@@ -32,13 +32,13 @@ Component.register('swag-paypal-pos-boolean-radio', {
             required: true,
             validator(value) {
                 return value.hasOwnProperty('name');
-            }
-        }
+            },
+        },
     },
 
     data() {
         return {
-            inputId: utils.createId()
+            inputId: utils.createId(),
         };
     },
 
@@ -47,12 +47,12 @@ Component.register('swag-paypal-pos-boolean-radio', {
             return [
                 {
                     value: true,
-                    ...this.optionTrue
+                    ...this.optionTrue,
                 },
                 {
                     value: false,
-                    ...this.optionFalse
-                }
+                    ...this.optionFalse,
+                },
             ];
         },
 
@@ -63,11 +63,11 @@ Component.register('swag-paypal-pos-boolean-radio', {
 
             set(val) {
                 this.$emit('change', val);
-            }
+            },
         },
 
         name() {
             return `swag-paypal-pos-boolean-radio-${this.inputId}`;
-        }
-    }
+        },
+    },
 });

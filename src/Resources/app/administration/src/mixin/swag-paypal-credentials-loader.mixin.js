@@ -24,10 +24,10 @@ Mixin.register('swag-paypal-credentials-loader', {
                     'REFUND',
                     'READ_SELLER_DISPUTE',
                     'UPDATE_SELLER_DISPUTE',
-                    'ADVANCED_TRANSACTIONS_SEARCH'
+                    'ADVANCED_TRANSACTIONS_SEARCH',
                 ],
-                displayMode: 'minibrowser'
-            }
+                displayMode: 'minibrowser',
+            },
         };
     },
 
@@ -37,7 +37,7 @@ Mixin.register('swag-paypal-credentials-loader', {
                 partnerId: this.payPalPartnerIdLive,
                 partnerClientId: this.payPalPartnerClientIdLive,
                 returnToPartnerUrl: this.returnUrl(),
-                sellerNonce: this.nonceLive
+                sellerNonce: this.nonceLive,
             });
 
             return `https://www.paypal.com/US/merchantsignup/partner/onboardingentry?${params.toString()}`;
@@ -47,11 +47,11 @@ Mixin.register('swag-paypal-credentials-loader', {
                 partnerId: this.payPalPartnerIdSandbox,
                 partnerClientId: this.payPalPartnerClientIdSandbox,
                 returnToPartnerUrl: this.returnUrl(),
-                sellerNonce: this.nonceSandbox
+                sellerNonce: this.nonceSandbox,
             });
 
             return `https://www.sandbox.paypal.com/US/merchantsignup/partner/onboardingentry?${params.toString()}`;
-        }
+        },
     },
 
     created() {
@@ -59,13 +59,13 @@ Mixin.register('swag-paypal-credentials-loader', {
         window.onboardingCallbackLive = function onboardingCallback(authCode, sharedId) {
             Shopware.Application.getApplicationRoot().$emit(
                 'paypal-onboarding-finish',
-                { authCode, sharedId, sandbox: false }
+                { authCode, sharedId, sandbox: false },
             );
         };
         window.onboardingCallbackSandbox = function onboardingCallbackSandbox(authCode, sharedId) {
             Shopware.Application.getApplicationRoot().$emit(
                 'paypal-onboarding-finish',
-                { authCode, sharedId, sandbox: true }
+                { authCode, sharedId, sandbox: true },
             );
         };
     },
@@ -144,7 +144,7 @@ Mixin.register('swag-paypal-credentials-loader', {
                 authCode,
                 sharedId,
                 sandbox ? this.nonceSandbox : this.nonceLive,
-                sandbox
+                sandbox,
             ).then((response) => {
                 this.isGetCredentialsSuccessful = true;
                 this.onPayPalCredentialsLoadSuccess(response.client_id, response.client_secret, sandbox);
@@ -167,7 +167,7 @@ Mixin.register('swag-paypal-credentials-loader', {
             debug.warn(
                 'swag-paypal-credentials-loader Mixin',
                 'When using the paypal-credentials-loader mixin ' +
-                'you have to implement your custom "onPayPalCredentialsLoadSuccess()" method.'
+                'you have to implement your custom "onPayPalCredentialsLoadSuccess()" method.',
             );
         },
 
@@ -180,9 +180,9 @@ Mixin.register('swag-paypal-credentials-loader', {
             debug.warn(
                 'swag-paypal-credentials-loader Mixin',
                 'When using the paypal-credentials-loader mixin ' +
-                'you have to implement your custom "onPayPalCredentialsLoadFailed()" method.'
+                'you have to implement your custom "onPayPalCredentialsLoadFailed()" method.',
             );
-        }
+        },
 
-    }
+    },
 });

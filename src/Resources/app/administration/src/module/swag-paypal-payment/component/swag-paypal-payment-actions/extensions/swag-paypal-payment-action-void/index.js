@@ -9,24 +9,24 @@ Component.register('swag-paypal-payment-action-void', {
     inject: ['SwagPayPalPaymentService'],
 
     mixins: [
-        'notification'
+        'notification',
     ],
 
     props: {
         paymentResource: {
             type: Object,
-            required: true
+            required: true,
         },
 
         orderId: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
         return {
-            isLoading: false
+            isLoading: false,
         };
     },
 
@@ -39,7 +39,7 @@ Component.register('swag-paypal-payment-action-void', {
 
             this.SwagPayPalPaymentService.voidPayment(this.orderId, resourceType, resourceId, orderId).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('swag-paypal-payment.voidAction.successMessage')
+                    message: this.$tc('swag-paypal-payment.voidAction.successMessage'),
                 });
                 this.isLoading = false;
                 this.closeModal();
@@ -51,12 +51,12 @@ Component.register('swag-paypal-payment-action-void', {
                     this.createNotificationError({
                         message: `${errorResponse.response.data.errors[0].title}: ${
                             errorResponse.response.data.errors[0].detail}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } catch (e) {
                     this.createNotificationError({
                         message: `${errorResponse.title}: ${errorResponse.message}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } finally {
                     this.isLoading = false;
@@ -76,6 +76,6 @@ Component.register('swag-paypal-payment-action-void', {
 
         closeModal() {
             this.$emit('modal-close');
-        }
-    }
+        },
+    },
 });
