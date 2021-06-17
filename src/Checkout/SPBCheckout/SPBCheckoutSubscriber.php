@@ -125,6 +125,10 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
+        if ($confirmPage->getCart()->getErrors()->blockOrder()) {
+            return;
+        }
+
         if ($this->addSuccessMessage($request)) {
             $this->logger->debug('Added success message');
 

@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.2.2)
 - PPI-219 - Disable PayPal on Carts with total price of 0
+- PPI-304 - Fix Smart Payment Buttons being visible with cart errors
 
 # 3.2.1
 - PPI-279, PPI-297 - Extends the partner referral API
