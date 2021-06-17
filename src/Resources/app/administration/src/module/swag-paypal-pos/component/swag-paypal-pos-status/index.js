@@ -10,44 +10,44 @@ Component.register('swag-paypal-pos-status', {
         title: {
             type: String,
             required: false,
-            default: ''
+            default: '',
         },
         status: {
             type: String,
-            required: true
+            required: true,
         },
         disabled: {
             type: Boolean,
             required: false,
-            default: false
+            default: false,
         },
         disabledText: {
             type: String,
             required: false,
-            default: ''
+            default: '',
         },
         icon: {
             type: String,
-            required: true
+            required: true,
         },
         iconAnimated: {
             type: Boolean,
             required: false,
-            default: false
+            default: false,
         },
         subIcon: {
             type: String,
             required: false,
-            default: ''
+            default: '',
         },
         showSubStatus: {
             type: Boolean,
             required: false,
-            default: false
+            default: false,
         },
         isLoading: {
             type: Boolean,
-            required: true
+            required: true,
         },
         variant: {
             type: String,
@@ -55,7 +55,7 @@ Component.register('swag-paypal-pos-status', {
             validValues: ['info', 'warning', 'error', 'success'],
             validator(value) {
                 return ['info', 'warning', 'error', 'success'].includes(value);
-            }
+            },
         },
         subVariant: {
             type: String,
@@ -63,8 +63,8 @@ Component.register('swag-paypal-pos-status', {
             validValues: ['info', 'warning', 'error', 'success'],
             validator(value) {
                 return ['info', 'warning', 'error', 'success'].includes(value);
-            }
-        }
+            },
+        },
     },
 
     computed: {
@@ -72,26 +72,26 @@ Component.register('swag-paypal-pos-status', {
             return {
                 'swag-paypal-pos-status': true,
                 [`swag-paypal-pos-status--${this.variant}`]: true,
-                'swag-paypal-pos-status--disabled': this.disabled
+                'swag-paypal-pos-status--disabled': this.disabled,
             };
         },
 
         iconClasses() {
             return {
                 'swag-paypal-pos-status__icon': true,
-                'swag-paypal-pos-status__icon-animated': this.iconAnimated
+                'swag-paypal-pos-status__icon-animated': this.iconAnimated,
             };
         },
 
         subIconClasses() {
             return [
                 'swag-paypal-pos-status__subicon',
-                `swag-paypal-pos-status--${this.subVariant}`
+                `swag-paypal-pos-status--${this.subVariant}`,
             ];
         },
 
         showSubIcon() {
             return this.subIcon !== null && this.subIcon !== undefined && this.subIcon !== this.icon;
-        }
-    }
+        },
+    },
 });

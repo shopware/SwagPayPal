@@ -11,7 +11,7 @@ Component.register('swag-paypal-payment-detail', {
     inject: [
         'SwagPayPalPaymentService',
         'SwagPayPalOrderService',
-        'repositoryFactory'
+        'repositoryFactory',
     ],
 
     mixins: ['notification'],
@@ -23,7 +23,7 @@ Component.register('swag-paypal-payment-detail', {
             paypalOrder: {},
             paymentResource: {},
             isLoading: true,
-            orderTransactionState: null
+            orderTransactionState: null,
         };
     },
 
@@ -64,7 +64,7 @@ Component.register('swag-paypal-payment-detail', {
 
         showPayPalOrder() {
             return isEmpty(this.paypalOrder) === false;
-        }
+        },
     },
 
     watch: {
@@ -75,7 +75,7 @@ Component.register('swag-paypal-payment-detail', {
 
         'order.orderNumber'() {
             this.emitIdentifier();
-        }
+        },
     },
 
     created() {
@@ -135,12 +135,12 @@ Component.register('swag-paypal-payment-detail', {
                 this.createNotificationError({
                     message: `${this.$tc('swag-paypal-payment.paymentDetails.error.title')}: ${
                         errorResponse.response.data.errors[0].detail}`,
-                    autoClose: false
+                    autoClose: false,
                 });
             } catch (e) {
                 this.createNotificationError({
                     message: `${this.$tc('swag-paypal-payment.paymentDetails.error.title')}: ${errorResponse.message}`,
-                    autoClose: false
+                    autoClose: false,
                 });
             } finally {
                 this.isLoading = false;
@@ -155,6 +155,6 @@ Component.register('swag-paypal-payment-detail', {
         resetDataAttributes() {
             this.isLoading = true;
             this.paypalOrder = {};
-        }
-    }
+        },
+    },
 });

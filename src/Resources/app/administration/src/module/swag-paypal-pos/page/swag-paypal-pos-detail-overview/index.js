@@ -10,29 +10,29 @@ Component.register('swag-paypal-pos-detail-overview', {
     inject: [
         'SwagPayPalPosApiService',
         'salesChannelService',
-        'repositoryFactory'
+        'repositoryFactory',
     ],
 
     mixins: [
-        'placeholder'
+        'placeholder',
     ],
 
     props: {
         salesChannel: {
             type: Object,
             required: false,
-            default: null
+            default: null,
         },
         lastRun: {
             type: Object,
             required: false,
-            default: null
+            default: null,
         },
         lastCompleteRun: {
             type: Object,
             required: false,
-            default: null
-        }
+            default: null,
+        },
     },
 
     data() {
@@ -41,14 +41,14 @@ Component.register('swag-paypal-pos-detail-overview', {
             syncErrors: null,
             syncingRunId: null,
             statusErrorLevel: null,
-            isLoading: false
+            isLoading: false,
         };
     },
 
     computed: {
         runRepository() {
             return this.repositoryFactory.create('swag_paypal_pos_sales_channel_run');
-        }
+        },
     },
 
     watch: {
@@ -57,7 +57,7 @@ Component.register('swag-paypal-pos-detail-overview', {
         },
         lastRun() {
             this.$forceUpdate();
-        }
+        },
     },
 
     created() {
@@ -166,8 +166,8 @@ Component.register('swag-paypal-pos-detail-overview', {
                     variant: 'primary',
                     action: this.onStartSync,
                     disabled: !(this.salesChannel && this.salesChannel.active),
-                    isLoading: this.isSyncing
-                }
+                    isLoading: this.isSyncing,
+                },
             ];
 
             if (syncing) {
@@ -176,12 +176,12 @@ Component.register('swag-paypal-pos-detail-overview', {
                         key: 'abortSync',
                         label: this.$tc('swag-paypal-pos.detail.overview.buttonSyncAbort'),
                         action: this.onSyncAbort,
-                        disabled: !(this.salesChannel && this.salesChannel.active)
-                    }
+                        disabled: !(this.salesChannel && this.salesChannel.active),
+                    },
                 );
             }
 
             this.$emit('buttons-update', buttonConfig);
-        }
-    }
+        },
+    },
 });

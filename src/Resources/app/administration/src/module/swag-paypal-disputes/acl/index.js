@@ -5,9 +5,9 @@ Shopware.Service('privileges').addPrivilegeMappingEntry({
     roles: {
         viewer: {
             privileges: [
-                'sales_channel:read'
+                'sales_channel:read',
             ],
-            dependencies: []
-        }
-    }
+            dependencies: [],
+        },
+    },
 });

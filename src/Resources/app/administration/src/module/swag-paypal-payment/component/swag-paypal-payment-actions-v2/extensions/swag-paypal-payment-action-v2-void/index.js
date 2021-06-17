@@ -9,29 +9,29 @@ Component.register('swag-paypal-payment-action-v2-void', {
     inject: ['SwagPayPalOrderService'],
 
     mixins: [
-        'notification'
+        'notification',
     ],
 
     props: {
         paypalOrder: {
             type: Object,
-            required: true
+            required: true,
         },
 
         orderTransactionId: {
             type: String,
-            required: true
+            required: true,
         },
 
         paypalPartnerAttributionId: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
         return {
-            isLoading: false
+            isLoading: false,
         };
     },
 
@@ -43,10 +43,10 @@ Component.register('swag-paypal-payment-action-v2-void', {
             this.SwagPayPalOrderService.voidAuthorization(
                 this.orderTransactionId,
                 authorization.id,
-                this.paypalPartnerAttributionId
+                this.paypalPartnerAttributionId,
             ).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('swag-paypal-payment.voidAction.successMessage')
+                    message: this.$tc('swag-paypal-payment.voidAction.successMessage'),
                 });
                 this.isLoading = false;
                 this.closeModal();
@@ -58,12 +58,12 @@ Component.register('swag-paypal-payment-action-v2-void', {
                     this.createNotificationError({
                         message: `${errorResponse.response.data.errors[0].title}: ${
                             errorResponse.response.data.errors[0].detail}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } catch (e) {
                     this.createNotificationError({
                         message: `${errorResponse.title}: ${errorResponse.message}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } finally {
                     this.isLoading = false;
@@ -73,6 +73,6 @@ Component.register('swag-paypal-payment-action-v2-void', {
 
         closeModal() {
             this.$emit('modal-close');
-        }
-    }
+        },
+    },
 });

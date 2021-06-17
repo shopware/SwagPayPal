@@ -2,7 +2,7 @@ import template from './swag-paypal-pos-wizard.html.twig';
 import './swag-paypal-pos-wizard.scss';
 import {
     PAYPAL_POS_SALES_CHANNEL_EXTENSION,
-    PAYPAL_POS_SALES_CHANNEL_TYPE_ID
+    PAYPAL_POS_SALES_CHANNEL_TYPE_ID,
 } from '../../../../../constant/swag-paypal.constant';
 
 const { Component, Context } = Shopware;
@@ -16,12 +16,12 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
         'SwagPayPalPosSettingApiService',
         'SwagPayPalPosWebhookRegisterService',
         'salesChannelService',
-        'repositoryFactory'
+        'repositoryFactory',
     ],
 
     mixins: [
         'swag-paypal-pos-catch-error',
-        'notification'
+        'notification',
     ],
 
     data() {
@@ -38,16 +38,16 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
                 'productSelection',
                 'syncLibrary',
                 'syncPrices',
-                'finish'
+                'finish',
             ],
             stepper: {},
-            currentStep: {}
+            currentStep: {},
         };
     },
 
     metaInfo() {
         return {
-            title: this.wizardTitle
+            title: this.wizardTitle,
         };
     },
 
@@ -96,11 +96,11 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
             const params = [
                 this.$tc('global.sw-admin-menu.textShopwareAdmin'),
                 this.$tc('swag-paypal-pos.general.moduleTitle'),
-                this.title
+                this.title,
             ];
 
             return params.reverse().join(' | ');
-        }
+        },
     },
 
     watch: {
@@ -108,7 +108,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
             const toName = to.name.replace('swag.paypal.pos.wizard.', '');
 
             this.currentStep = this.stepper[toName];
-        }
+        },
     },
 
     mounted() {
@@ -143,7 +143,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
                 accumulator[pageName] = {
                     name: `swag.paypal.pos.wizard.${pageName}`,
                     variant: 'large',
-                    navigationIndex: index
+                    navigationIndex: index,
                 };
 
                 if (index === 1) {
@@ -187,7 +187,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
                 this.$router.push({
                     name: 'swag.paypal.pos.detail.overview',
-                    params: { id: this.salesChannel.id }
+                    params: { id: this.salesChannel.id },
                 });
             });
         },
@@ -212,8 +212,8 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
                 this.createNotificationError({
                     message: this.$tc('sw-sales-channel.detail.messageSaveError', 0, {
-                        name: this.salesChannel.name || this.placeholder(this.salesChannel, 'name')
-                    })
+                        name: this.salesChannel.name || this.placeholder(this.salesChannel, 'name'),
+                    }),
                 });
             });
         },
@@ -235,11 +235,11 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
             this.SwagPayPalPosSettingApiService.cloneProductVisibility(
                 this.cloneSalesChannelId,
-                this.salesChannel.id
+                this.salesChannel.id,
             ).catch((errorResponse) => {
                 if (errorResponse.response.data && errorResponse.response.data.errors) {
                     this.createNotificationError({
-                        message: this.$tc('swag-paypal-pos.messageCloneError')
+                        message: this.$tc('swag-paypal-pos.messageCloneError'),
                     });
                 }
             });
@@ -267,15 +267,15 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
                     imageDomain: '',
                     productStreamId: null,
                     syncPrices: true,
-                    replace: 0
-                }
+                    replace: 0,
+                },
             );
 
             this.salesChannelService.generateKey().then((response) => {
                 this.salesChannel.accessKey = response.accessKey;
             }).catch(() => {
                 this.createNotificationError({
-                    message: this.$tc('sw-sales-channel.detail.messageAPIError')
+                    message: this.$tc('sw-sales-channel.detail.messageAPIError'),
                 });
             });
         },
@@ -301,6 +301,6 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
 
         toggleLoading(state) {
             this.isLoading = state;
-        }
-    }
+        },
+    },
 });

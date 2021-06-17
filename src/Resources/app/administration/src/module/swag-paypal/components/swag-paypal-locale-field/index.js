@@ -9,7 +9,7 @@ Component.extend('swag-paypal-locale-field', 'sw-text-field', {
 
     data() {
         return {
-            error: null
+            error: null,
         };
     },
 
@@ -37,12 +37,12 @@ Component.extend('swag-paypal-locale-field', 'sw-text-field', {
             this.preventSave(true);
             this.error = {
                 code: 1,
-                detail: this.$tc('swag-paypal.settingForm.locale-field.error.detail')
+                detail: this.$tc('swag-paypal.settingForm.locale-field.error.detail'),
             };
         },
 
         preventSave(mode) {
             this.$emit('preventSave', mode);
-        }
-    }
+        },
+    },
 });

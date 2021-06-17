@@ -7,28 +7,28 @@ Component.register('swag-paypal-behavior', {
     template,
 
     inject: [
-        'acl'
+        'acl',
     ],
 
     props: {
         actualConfigData: {
             type: Object,
-            required: true
+            required: true,
         },
         allConfigs: {
             type: Object,
-            required: true
+            required: true,
         },
         selectedSalesChannelId: {
             type: String,
             required: false,
-            default: null
-        }
+            default: null,
+        },
     },
 
     data() {
         return {
-            ...constants
+            ...constants,
         };
     },
 
@@ -37,12 +37,12 @@ Component.register('swag-paypal-behavior', {
             return [
                 {
                     id: 'CAPTURE',
-                    name: this.$tc('swag-paypal.settingForm.behavior.intent.CAPTURE')
+                    name: this.$tc('swag-paypal.settingForm.behavior.intent.CAPTURE'),
                 },
                 {
                     id: 'AUTHORIZE',
-                    name: this.$tc('swag-paypal.settingForm.behavior.intent.AUTHORIZE')
-                }
+                    name: this.$tc('swag-paypal.settingForm.behavior.intent.AUTHORIZE'),
+                },
             ];
         },
 
@@ -50,12 +50,12 @@ Component.register('swag-paypal-behavior', {
             return [
                 {
                     id: this.MERCHANT_LOCATION_GERMANY,
-                    name: this.$tc('swag-paypal.settingForm.behavior.merchantLocation.germany')
+                    name: this.$tc('swag-paypal.settingForm.behavior.merchantLocation.germany'),
                 },
                 {
                     id: this.MERCHANT_LOCATION_OTHER,
-                    name: this.$tc('swag-paypal.settingForm.behavior.merchantLocation.other')
-                }
+                    name: this.$tc('swag-paypal.settingForm.behavior.merchantLocation.other'),
+                },
             ];
         },
 
@@ -63,16 +63,16 @@ Component.register('swag-paypal-behavior', {
             return [
                 {
                     id: 'LOGIN',
-                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.login')
+                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.login'),
                 },
                 {
                     id: 'BILLING',
-                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.billing')
+                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.billing'),
                 },
                 {
                     id: 'NO_PREFERENCE',
-                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.no_preference')
-                }
+                    name: this.$tc('swag-paypal.settingForm.behavior.landingPage.options.no_preference'),
+                },
             ];
         },
 
@@ -88,14 +88,14 @@ Component.register('swag-paypal-behavior', {
             return [
                 {
                     value: 300,
-                    label: this.$tc('swag-paypal.settingForm.behavior.loggingLevel.options.basic')
+                    label: this.$tc('swag-paypal.settingForm.behavior.loggingLevel.options.basic'),
                 },
                 {
                     value: 100,
-                    label: this.$tc('swag-paypal.settingForm.behavior.loggingLevel.options.advanced')
-                }
+                    label: this.$tc('swag-paypal.settingForm.behavior.loggingLevel.options.advanced'),
+                },
             ];
-        }
+        },
     },
 
     methods: {
@@ -109,6 +109,6 @@ Component.register('swag-paypal-behavior', {
 
         checkBoolFieldInheritance(value) {
             return typeof value !== 'boolean';
-        }
-    }
+        },
+    },
 });

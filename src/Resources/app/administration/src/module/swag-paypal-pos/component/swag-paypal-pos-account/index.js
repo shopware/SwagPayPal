@@ -8,27 +8,27 @@ Component.register('swag-paypal-pos-account', {
 
     inject: [
         'SwagPayPalPosSettingApiService',
-        'repositoryFactory'
+        'repositoryFactory',
     ],
 
     props: {
         salesChannel: {
             type: Object,
             require: false,
-            default: null
+            default: null,
         },
         lastRun: {
             type: Object,
             require: false,
-            default: null
-        }
+            default: null,
+        },
     },
 
     data() {
         return {
             isLoading: false,
             isError: false,
-            merchantInfo: null
+            merchantInfo: null,
         };
     },
 
@@ -75,13 +75,13 @@ Component.register('swag-paypal-pos-account', {
 
         runRepository() {
             return this.repositoryFactory.create('swag_paypal_pos_sales_channel_run');
-        }
+        },
     },
 
     watch: {
         salesChannel() {
             this.loadMerchantData();
-        }
+        },
     },
 
     created() {
@@ -111,6 +111,6 @@ Component.register('swag-paypal-pos-account', {
                 }).finally(() => {
                     this.isLoading = false;
                 });
-        }
-    }
+        },
+    },
 });

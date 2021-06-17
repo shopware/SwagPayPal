@@ -6,23 +6,23 @@ Component.register('swag-paypal-plus', {
     template,
 
     inject: [
-        'acl'
+        'acl',
     ],
 
     props: {
         actualConfigData: {
             type: Object,
-            required: true
+            required: true,
         },
         allConfigs: {
             type: Object,
-            required: true
+            required: true,
         },
         selectedSalesChannelId: {
             type: String,
             required: false,
-            default: null
-        }
+            default: null,
+        },
     },
 
     methods: {
@@ -36,6 +36,6 @@ Component.register('swag-paypal-plus', {
 
         checkBoolFieldInheritance(value) {
             return typeof value !== 'boolean';
-        }
-    }
+        },
+    },
 });

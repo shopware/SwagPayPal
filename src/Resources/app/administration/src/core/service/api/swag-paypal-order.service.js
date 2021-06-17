@@ -14,7 +14,7 @@ class SwagPayPalOrderService extends ApiService {
 
         return this.httpClient.get(
             apiRoute,
-            this.getDefaultOptions()
+            this.getDefaultOptions(),
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -38,7 +38,7 @@ class SwagPayPalOrderService extends ApiService {
         amount,
         invoiceNumber,
         noteToPayer,
-        partnerAttributionId
+        partnerAttributionId,
     ) {
         const params = `/${orderTransactionId}/${captureId}/${paypalOrderId}`;
         const apiRoute = `${this.getApiBasePath('', '_action')}/refund-capture${params}`;
@@ -47,7 +47,7 @@ class SwagPayPalOrderService extends ApiService {
             currency,
             amount,
             invoiceNumber,
-            noteToPayer
+            noteToPayer,
         });
     }
 
@@ -69,7 +69,7 @@ class SwagPayPalOrderService extends ApiService {
         invoiceNumber,
         noteToPayer,
         partnerAttributionId,
-        isFinal
+        isFinal,
     ) {
         const params = `/${orderTransactionId}/${authorizationId}`;
         const apiRoute = `${this.getApiBasePath('', '_action')}/capture-authorization${params}`;
@@ -79,7 +79,7 @@ class SwagPayPalOrderService extends ApiService {
             amount,
             invoiceNumber,
             noteToPayer,
-            isFinal
+            isFinal,
         });
     }
 
@@ -105,7 +105,7 @@ class SwagPayPalOrderService extends ApiService {
         return this.httpClient.post(
             apiRoute,
             params,
-            this.getDefaultOptions()
+            this.getDefaultOptions(),
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -114,7 +114,7 @@ class SwagPayPalOrderService extends ApiService {
     getDefaultOptions() {
         return {
             headers: this.getBasicHeaders(),
-            version: Shopware.Context.api.apiVersion
+            version: Shopware.Context.api.apiVersion,
         };
     }
 }

@@ -12,6 +12,6 @@ Component.override('sw-sales-channel-modal-grid', {
             const salesChannelType = this.salesChannelTypes.find(type => type.id === salesChannelTypeId);
 
             return salesChannelType.id === PAYPAL_POS_SALES_CHANNEL_TYPE_ID;
-        }
-    }
+        },
+    },
 });

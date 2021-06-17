@@ -13,11 +13,11 @@ Component.register('swag-paypal', {
         'SwagPayPalApiCredentialsService',
         'SwagPaypalPaymentMethodServiceService',
         'repositoryFactory',
-        'acl'
+        'acl',
     ],
 
     mixins: [
-        'notification'
+        'notification',
     ],
 
     data() {
@@ -37,13 +37,13 @@ Component.register('swag-paypal', {
             isSettingDefaultPaymentMethods: false,
             savingDisabled: false,
             messageBlankErrorState: null,
-            ...constants
+            ...constants,
         };
     },
 
     metaInfo() {
         return {
-            title: this.$createTitle()
+            title: this.$createTitle(),
         };
     },
 
@@ -111,7 +111,7 @@ Component.register('swag-paypal', {
         hasError() {
             return (!this.sandboxChecked && !(this.clientIdFilled && this.clientSecretFilled)) ||
                 (this.sandboxChecked && !(this.clientIdSandboxFilled && this.clientSecretSandboxFilled));
-        }
+        },
     },
 
     watch: {
@@ -139,8 +139,8 @@ Component.register('swag-paypal', {
                         || !!defaultConfig['SwagPayPal.settings.sandbox'];
                 }
             },
-            deep: true
-        }
+            deep: true,
+        },
     },
 
     created() {
@@ -154,15 +154,15 @@ Component.register('swag-paypal', {
             const criteria = new Criteria();
             criteria.addFilter(Criteria.equalsAny('typeId', [
                 Defaults.storefrontSalesChannelTypeId,
-                Defaults.apiSalesChannelTypeId
+                Defaults.apiSalesChannelTypeId,
             ]));
 
             this.salesChannelRepository.search(criteria, Shopware.Context.api).then(res => {
                 res.add({
                     id: null,
                     translated: {
-                        name: this.$tc('sw-sales-channel-switch.labelDefaultOption')
-                    }
+                        name: this.$tc('sw-sales-channel-switch.labelDefaultOption'),
+                    },
                 });
 
                 this.salesChannels = res;
@@ -172,7 +172,7 @@ Component.register('swag-paypal', {
 
             this.messageBlankErrorState = {
                 code: 1,
-                detail: this.$tc('swag-paypal.messageNotBlank')
+                detail: this.$tc('swag-paypal.messageNotBlank'),
             };
         },
 
@@ -194,7 +194,7 @@ Component.register('swag-paypal', {
                     const errorMessage = this.$tc('swag-paypal.settingForm.messageWebhookError');
                     response.payPalWebhookErrors.forEach((error) => {
                         this.createNotificationError({
-                            message: `${errorMessage}<br><br><ul><li>${error}</li></ul>`
+                            message: `${errorMessage}<br><br><ul><li>${error}</li></ul>`,
                         });
                     });
                 }
@@ -207,7 +207,7 @@ Component.register('swag-paypal', {
             this.isSettingDefaultPaymentMethods = true;
 
             this.SwagPaypalPaymentMethodServiceService.setDefaultPaymentForSalesChannel(
-                this.$refs.configComponent.selectedSalesChannelId
+                this.$refs.configComponent.selectedSalesChannelId,
             ).then(() => {
                 this.isSettingDefaultPaymentMethods = false;
                 this.isSetDefaultPaymentSuccessful = true;
@@ -221,6 +221,6 @@ Component.register('swag-paypal', {
             }
 
             this.savingDisabled = true;
-        }
-    }
+        },
+    },
 });

@@ -11,9 +11,9 @@ Component.register('swag-paypal-pos-continue-setup', {
             this.$router.push(
                 {
                     name: 'swag.paypal.pos.wizard.customization',
-                    params: { id: this.$route.params.id }
-                }
+                    params: { id: this.$route.params.id },
+                },
             );
-        }
-    }
+        },
+    },
 });

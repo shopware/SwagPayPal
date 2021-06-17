@@ -9,24 +9,24 @@ Component.register('swag-paypal-payment-action-capture', {
     inject: ['SwagPayPalPaymentService'],
 
     mixins: [
-        'notification'
+        'notification',
     ],
 
     props: {
         paymentResource: {
             type: Object,
-            required: true
+            required: true,
         },
 
         maxCaptureValue: {
             type: Number,
-            required: true
+            required: true,
         },
 
         orderId: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
@@ -34,14 +34,14 @@ Component.register('swag-paypal-payment-action-capture', {
             isFinalCapture: true,
             captureValue: this.maxCaptureValue,
             isLoading: true,
-            currency: this.paymentResource.transactions[0].amount.currency
+            currency: this.paymentResource.transactions[0].amount.currency,
         };
     },
 
     computed: {
         showHint() {
             return this.isFinalCapture && this.captureValue !== this.maxCaptureValue;
-        }
+        },
     },
 
     created() {
@@ -67,10 +67,10 @@ Component.register('swag-paypal-payment-action-capture', {
                 resourceId,
                 captureAmount,
                 currency,
-                isFinalCapture
+                isFinalCapture,
             ).then(() => {
                 this.createNotificationSuccess({
-                    message: this.$tc('swag-paypal-payment.captureAction.successMessage')
+                    message: this.$tc('swag-paypal-payment.captureAction.successMessage'),
                 });
                 this.isLoading = false;
                 this.$emit('modal-close');
@@ -82,12 +82,12 @@ Component.register('swag-paypal-payment-action-capture', {
                     this.createNotificationError({
                         message: `${errorResponse.response.data.errors[0].title}: ${
                             errorResponse.response.data.errors[0].detail}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } catch (e) {
                     this.createNotificationError({
                         message: `${errorResponse.title}: ${errorResponse.message}`,
-                        autoClose: false
+                        autoClose: false,
                     });
                 } finally {
                     this.isLoading = false;
@@ -106,6 +106,6 @@ Component.register('swag-paypal-payment-action-capture', {
                 }
             });
             return relatedResourceId;
-        }
-    }
+        },
+    },
 });

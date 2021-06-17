@@ -17,5 +17,5 @@ export default {
     SALE_RESOURCE_TYPE,
     FAILED_STATE,
     DENIED_STATE,
-    CANCELLED_STATE
+    CANCELLED_STATE,
 };

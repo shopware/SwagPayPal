@@ -28,9 +28,9 @@ Module.register('swag-paypal', {
             path: 'index',
             meta: {
                 parentPath: 'sw.settings.index',
-                privilege: 'swag_paypal.viewer'
-            }
-        }
+                privilege: 'swag_paypal.viewer',
+            },
+        },
     },
 
     settingsItem: {
@@ -38,6 +38,6 @@ Module.register('swag-paypal', {
         to: 'swag.paypal.index',
         iconComponent: 'swag-paypal-settings-icon',
         backgroundEnabled: true,
-        privilege: 'swag_paypal.viewer'
-    }
+        privilege: 'swag_paypal.viewer',
+    },
 });

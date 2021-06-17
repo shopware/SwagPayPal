@@ -8,7 +8,7 @@ import {
     CAPTURED_STATE,
     COMPLETED_STATE,
     CANCELLED_STATE,
-    FAILED_STATE
+    FAILED_STATE,
 } from './swag-paypal-payment-consts';
 
 const { Component } = Shopware;
@@ -17,19 +17,19 @@ Component.register('swag-paypal-payment-actions', {
     template,
 
     inject: [
-        'acl'
+        'acl',
     ],
 
     props: {
         paymentResource: {
             type: Object,
-            required: true
+            required: true,
         },
 
         orderId: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
@@ -38,7 +38,7 @@ Component.register('swag-paypal-payment-actions', {
             refundableAmount: 0,
             captureableAmount: 0,
             showVoidButton: false,
-            relatedResources: null
+            relatedResources: null,
         };
     },
 
@@ -145,6 +145,6 @@ Component.register('swag-paypal-payment-actions', {
 
         formatAmount(value) {
             return Number(`${Math.round(`${value}e2`)}e-2`);
-        }
-    }
+        },
+    },
 });

@@ -8,33 +8,33 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
 
     inject: [
         'repositoryFactory',
-        'SwagPayPalPosSettingApiService'
+        'SwagPayPalPosSettingApiService',
     ],
 
     mixin: [
-        'placeholder'
+        'placeholder',
     ],
 
     props: {
         salesChannel: {
             type: Object,
-            required: true
+            required: true,
         },
         cloneSalesChannelId: {
             type: String,
             required: false,
-            default: null
+            default: null,
         },
         saveSalesChannel: {
             type: Function,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
         return {
             posData: null,
-            isFetchingInformation: true
+            isFetchingInformation: true,
         };
     },
 
@@ -49,7 +49,7 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
                     firstName,
                     lastName,
                     fullName: `${firstName} ${lastName}`,
-                    mail
+                    mail,
                 };
             }
             const parts = this.posData.merchantInformation.name.split(' ');
@@ -58,9 +58,9 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
                 firstName: parts[0],
                 lastName: parts[parts.length - 1],
                 fullName: this.posData.merchantInformation.name,
-                mail: this.posData.merchantInformation.contactEmail
+                mail: this.posData.merchantInformation.contactEmail,
             };
-        }
+        },
     },
 
     created() {
@@ -79,7 +79,7 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
                 if (this.salesChannel.languageId === null) {
                     this.salesChannel.languageId = Context.api.systemLanguageId;
                     this.salesChannel.languages.push({
-                        id: Context.api.systemLanguageId
+                        id: Context.api.systemLanguageId,
                     });
                 }
 
@@ -102,8 +102,8 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToCustomization,
-                    disabled: this.isFetchingInformation
-                }
+                    disabled: this.isFetchingInformation,
+                },
             ];
 
             this.$emit('buttons-update', buttonConfig);
@@ -112,20 +112,20 @@ Component.register('swag-paypal-pos-wizard-connection-success', {
         routeToCustomization() {
             this.$router.push({
                 name: 'swag.paypal.pos.wizard.customization',
-                params: { id: this.salesChannel.id }
+                params: { id: this.salesChannel.id },
             });
         },
 
         onDisconnect() {
             this.$router.push({
                 name: 'swag.paypal.pos.wizard.connectionDisconnect',
-                params: { id: this.salesChannel.id }
+                params: { id: this.salesChannel.id },
             });
         },
 
         forceUpdate() {
             this.$forceUpdate();
             this.updateButtons();
-        }
-    }
+        },
+    },
 });

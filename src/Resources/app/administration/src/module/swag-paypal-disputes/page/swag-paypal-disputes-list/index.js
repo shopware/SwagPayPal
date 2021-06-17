@@ -5,7 +5,7 @@ import {
     DISPUTE_STATE_UNDER_PAYPAL_REVIEW,
     DISPUTE_STATE_RESOLVED,
     DISPUTE_STATE_OPEN_INQUIRIES,
-    DISPUTE_STATE_APPEALABLE
+    DISPUTE_STATE_APPEALABLE,
 } from './swag-paypal-disputes-consts';
 import './swag-paypal-disputes-list.scss';
 
@@ -18,7 +18,7 @@ Component.register('swag-paypal-disputes-list', {
 
     inject: [
         'SwagPayPalDisputeApiService',
-        'systemConfigApiService'
+        'systemConfigApiService',
     ],
 
     mixins: ['notification'],
@@ -30,35 +30,35 @@ Component.register('swag-paypal-disputes-list', {
             disputeStates: [
                 {
                     value: DISPUTE_STATE_REQUIRED_ACTION,
-                    label: this.formatTechnicalText(DISPUTE_STATE_REQUIRED_ACTION)
+                    label: this.formatTechnicalText(DISPUTE_STATE_REQUIRED_ACTION),
                 },
                 {
                     value: DISPUTE_STATE_REQUIRED_OTHER_PARTY_ACTION,
-                    label: this.formatTechnicalText(DISPUTE_STATE_REQUIRED_OTHER_PARTY_ACTION)
+                    label: this.formatTechnicalText(DISPUTE_STATE_REQUIRED_OTHER_PARTY_ACTION),
                 },
                 {
                     value: DISPUTE_STATE_UNDER_PAYPAL_REVIEW,
-                    label: this.formatTechnicalText(DISPUTE_STATE_UNDER_PAYPAL_REVIEW)
+                    label: this.formatTechnicalText(DISPUTE_STATE_UNDER_PAYPAL_REVIEW),
                 },
                 {
                     value: DISPUTE_STATE_RESOLVED,
-                    label: this.formatTechnicalText(DISPUTE_STATE_RESOLVED)
+                    label: this.formatTechnicalText(DISPUTE_STATE_RESOLVED),
                 },
                 {
                     value: DISPUTE_STATE_OPEN_INQUIRIES,
-                    label: this.formatTechnicalText(DISPUTE_STATE_OPEN_INQUIRIES)
+                    label: this.formatTechnicalText(DISPUTE_STATE_OPEN_INQUIRIES),
                 },
                 {
                     value: DISPUTE_STATE_APPEALABLE,
-                    label: this.formatTechnicalText(DISPUTE_STATE_APPEALABLE)
-                }
+                    label: this.formatTechnicalText(DISPUTE_STATE_APPEALABLE),
+                },
             ],
             disputeStateFilter: [],
             salesChannelId: null,
             total: 0,
             limit: 10,
             page: 1,
-            resolutionCenterUrl: 'https://www.paypal.com/resolutioncenter'
+            resolutionCenterUrl: 'https://www.paypal.com/resolutioncenter',
         };
     },
 
@@ -70,38 +70,38 @@ Component.register('swag-paypal-disputes-list', {
         disputesColumns() {
             return [
                 {
-                    property: 'link'
+                    property: 'link',
                 },
                 {
                     property: 'dispute_id',
-                    label: this.$tc('swag-paypal-disputes.common.dispute_id')
+                    label: this.$tc('swag-paypal-disputes.common.dispute_id'),
                 },
                 {
                     property: 'update_time',
-                    label: this.$tc('swag-paypal-disputes.common.update_time')
+                    label: this.$tc('swag-paypal-disputes.common.update_time'),
                 },
                 {
                     property: 'response_due_date',
-                    label: this.$tc('swag-paypal-disputes.common.response_due_date.label')
+                    label: this.$tc('swag-paypal-disputes.common.response_due_date.label'),
                 },
                 {
                     property: 'status',
-                    label: this.$tc('swag-paypal-disputes.common.status')
+                    label: this.$tc('swag-paypal-disputes.common.status'),
                 },
                 {
                     property: 'dispute_life_cycle_stage',
-                    label: this.$tc('swag-paypal-disputes.common.dispute_life_cycle_stage')
+                    label: this.$tc('swag-paypal-disputes.common.dispute_life_cycle_stage'),
                 },
                 {
                     property: 'dispute_amount',
-                    label: this.$tc('swag-paypal-disputes.common.dispute_amount')
-                }
+                    label: this.$tc('swag-paypal-disputes.common.dispute_amount'),
+                },
             ];
         },
 
         visibleDisputes() {
             return this.disputes.slice((this.page - 1) * this.limit, (this.page - 1) * this.limit + this.limit);
-        }
+        },
     },
 
     created() {
@@ -163,7 +163,7 @@ Component.register('swag-paypal-disputes-list', {
             const errorDetail = errorResponse.response.data.errors[0].detail;
             this.createNotificationError({
                 message: `${this.$tc('swag-paypal-disputes.list.errorTitle')}: ${errorDetail}`,
-                autoClose: false
+                autoClose: false,
             });
             this.isLoading = false;
         },
@@ -179,7 +179,7 @@ Component.register('swag-paypal-disputes-list', {
                 year: undefined,
                 hour: '2-digit',
                 minute: '2-digit',
-                second: '2-digit'
+                second: '2-digit',
             });
         },
 
@@ -213,6 +213,6 @@ Component.register('swag-paypal-disputes-list', {
 
         formatDate(dateTime, options = { hour: '2-digit', minute: '2-digit', second: '2-digit' }) {
             return this.dateFilter(dateTime, options);
-        }
-    }
+        },
+    },
 });

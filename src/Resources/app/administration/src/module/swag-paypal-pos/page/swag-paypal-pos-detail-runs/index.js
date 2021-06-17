@@ -10,21 +10,21 @@ Component.register('swag-paypal-pos-detail-runs', {
     inject: [
         'SwagPayPalPosApiService',
         'repositoryFactory',
-        'acl'
+        'acl',
     ],
 
     mixins: [
         'swag-paypal-pos-catch-error',
         'notification',
-        'listing'
+        'listing',
     ],
 
     props: {
         salesChannel: {
             type: Object,
             required: false,
-            default: null
-        }
+            default: null,
+        },
     },
 
     data() {
@@ -36,7 +36,7 @@ Component.register('swag-paypal-pos-detail-runs', {
             isLoading: false,
             isCleaningLog: false,
             showModal: false,
-            currentRunId: ''
+            currentRunId: '',
         };
     },
 
@@ -50,19 +50,19 @@ Component.register('swag-paypal-pos-detail-runs', {
                 property: 'task',
                 dataIndex: 'task',
                 label: 'swag-paypal-pos.detail.runs.columns.task',
-                sortable: true
+                sortable: true,
             }, {
                 property: 'state',
                 dataIndex: 'logs.level',
                 label: 'swag-paypal-pos.detail.runs.columns.state',
-                sortable: true
+                sortable: true,
             }, {
                 property: 'date',
                 dataIndex: 'finishedAt',
                 label: 'swag-paypal-pos.detail.runs.columns.date',
-                sortable: true
+                sortable: true,
             }];
-        }
+        },
     },
 
     created() {
@@ -165,6 +165,6 @@ Component.register('swag-paypal-pos-detail-runs', {
             }
 
             return 'swag-paypal-pos.detail.runs.states.successful';
-        }
-    }
+        },
+    },
 });

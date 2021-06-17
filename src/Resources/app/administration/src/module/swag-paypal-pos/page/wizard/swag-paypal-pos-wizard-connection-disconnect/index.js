@@ -8,34 +8,34 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
 
     inject: [
         'repositoryFactory',
-        'SwagPayPalPosSettingApiService'
+        'SwagPayPalPosSettingApiService',
     ],
 
     mixin: [
         'placeholder',
-        'notification'
+        'notification',
     ],
 
     props: {
         salesChannel: {
             type: Object,
-            required: true
+            required: true,
         },
         cloneSalesChannelId: {
             type: String,
             required: false,
-            default: null
+            default: null,
         },
         saveSalesChannel: {
             type: Function,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
         return {
             posData: null,
-            isFetchingInformation: true
+            isFetchingInformation: true,
         };
     },
 
@@ -54,7 +54,7 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
                     firstName,
                     lastName,
                     fullName: `${firstName} ${lastName}`,
-                    mail
+                    mail,
                 };
             }
             const parts = this.posData.merchantInformation.name.split(' ');
@@ -63,9 +63,9 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
                 firstName: parts[0],
                 lastName: parts[parts.length - 1],
                 fullName: this.posData.merchantInformation.name,
-                mail: this.posData.merchantInformation.contactEmail
+                mail: this.posData.merchantInformation.contactEmail,
             };
-        }
+        },
     },
 
     created() {
@@ -97,7 +97,7 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
                     label: this.$tc('global.default.cancel'),
                     position: 'right',
                     action: this.routeBackToConnectionSuccess,
-                    disabled: false
+                    disabled: false,
                 },
                 {
                     key: 'next',
@@ -105,8 +105,8 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
                     position: 'right',
                     variant: 'danger',
                     action: this.onDisconnect,
-                    disabled: this.isFetchingInformation
-                }
+                    disabled: this.isFetchingInformation,
+                },
             ];
 
             this.$emit('buttons-update', buttonConfig);
@@ -115,7 +115,7 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
         routeBackToConnectionSuccess() {
             this.$router.push({
                 name: 'swag.paypal.pos.wizard.connectionSuccess',
-                params: { id: this.salesChannel.id }
+                params: { id: this.salesChannel.id },
             });
         },
 
@@ -131,7 +131,7 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
                 this.$router.push({ name: 'swag.paypal.pos.wizard.connection' });
             }).catch(() => {
                 this.createNotificationError({
-                    message: this.$tc('swag-paypal-pos.wizard.connectionDisconnect.disconnectErrorMessage')
+                    message: this.$tc('swag-paypal-pos.wizard.connectionDisconnect.disconnectErrorMessage'),
                 });
             });
         },
@@ -139,6 +139,6 @@ Component.register('swag-paypal-pos-wizard-connection-disconnect', {
         forceUpdate() {
             this.$forceUpdate();
             this.updateButtons();
-        }
-    }
+        },
+    },
 });

@@ -6,68 +6,68 @@ Component.register('swag-paypal-credentials', {
     template,
 
     inject: [
-        'acl'
+        'acl',
     ],
 
     mixins: [
         'notification',
-        'swag-paypal-credentials-loader'
+        'swag-paypal-credentials-loader',
     ],
 
     props: {
         actualConfigData: {
             type: Object,
-            required: true
+            required: true,
         },
         allConfigs: {
             type: Object,
-            required: true
+            required: true,
         },
         selectedSalesChannelId: {
             type: String,
             required: false,
-            default: null
+            default: null,
         },
         clientIdErrorState: {
             type: Object,
             required: false,
-            default: null
+            default: null,
         },
         clientSecretErrorState: {
             type: Object,
             required: false,
-            default: null
+            default: null,
         },
         clientIdSandboxErrorState: {
             type: Object,
             required: false,
-            default: null
+            default: null,
         },
         clientSecretSandboxErrorState: {
             type: Object,
             required: false,
-            default: null
+            default: null,
         },
         clientIdFilled: {
             type: Boolean,
-            required: true
+            required: true,
         },
         clientSecretFilled: {
             type: Boolean,
-            required: true
+            required: true,
         },
         clientIdSandboxFilled: {
             type: Boolean,
-            required: true
+            required: true,
         },
         clientSecretSandboxFilled: {
             type: Boolean,
-            required: true
+            required: true,
         },
         isLoading: {
             type: Boolean,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
@@ -75,7 +75,7 @@ Component.register('swag-paypal-credentials', {
             isTestingLive: false,
             isTestingSandbox: false,
             isTestLiveSuccessful: false,
-            isTestSandboxSuccessful: false
+            isTestSandboxSuccessful: false,
         };
     },
 
@@ -86,7 +86,7 @@ Component.register('swag-paypal-credentials', {
 
         testSandboxButtonDisabled() {
             return this.isLoading || !this.clientSecretSandboxFilled || !this.clientIdSandboxFilled || this.isTestingSandbox;
-        }
+        },
     },
 
     methods: {
@@ -127,7 +127,7 @@ Component.register('swag-paypal-credentials', {
             this.SwagPayPalApiCredentialsService.validateApiCredentials(
                 clientId,
                 clientSecret,
-                sandbox
+                sandbox,
             ).then((response) => {
                 const credentialsValid = response.credentialsValid;
 
@@ -148,7 +148,7 @@ Component.register('swag-paypal-credentials', {
                     }).join(' / ');
 
                     this.createNotificationError({
-                        message: message
+                        message: message,
                     });
 
                     if (sandbox) {
@@ -182,8 +182,8 @@ Component.register('swag-paypal-credentials', {
             }
             this.createNotificationError({
                 message: this.$tc('swag-paypal.settingForm.credentials.button.messageFetchedError'),
-                duration: 10000
+                duration: 10000,
             });
-        }
-    }
+        },
+    },
 });

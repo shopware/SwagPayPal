@@ -87,7 +87,7 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
          *
          * @type string
          */
-        isConfirmPageKey: 'swag-paypal-installment-banner-is-confirm'
+        isConfirmPageKey: 'swag-paypal-installment-banner-is-confirm',
     };
 
     init() {
@@ -123,12 +123,12 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
                 color: this.options.color,
                 ratio: this.options.ratio,
                 logo: {
-                    type: this.options.logoType
+                    type: this.options.logoType,
                 },
                 text: {
-                    color: this.options.textColor
-                }
-            }
+                    color: this.options.textColor,
+                },
+            },
         };
     }
 }

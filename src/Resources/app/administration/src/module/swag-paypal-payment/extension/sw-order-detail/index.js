@@ -12,7 +12,7 @@ Component.override('sw-order-detail', {
 
     data() {
         return {
-            isPayPalPayment: false
+            isPayPalPayment: false,
         };
     },
 
@@ -24,7 +24,7 @@ Component.override('sw-order-detail', {
         // TODO PPI-74 - Remove
         showTabs() {
             return true;
-        }
+        },
     },
 
     watch: {
@@ -58,8 +58,8 @@ Component.override('sw-order-detail', {
                     }
                 });
             },
-            immediate: true
-        }
+            immediate: true,
+        },
     },
 
     methods: {
@@ -72,8 +72,8 @@ Component.override('sw-order-detail', {
                 (paymentMethod) => {
                     this.isPayPalPayment = paymentMethod.formattedHandlerIdentifier === paypalFormattedHandlerIdentifier ||
                         paymentMethod.formattedHandlerIdentifier === paypalPuiFormattedHandlerIdentifier;
-                }
+                },
             );
-        }
-    }
+        },
+    },
 });

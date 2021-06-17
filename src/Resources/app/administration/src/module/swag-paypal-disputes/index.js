@@ -20,8 +20,8 @@ Module.register('swag-paypal-disputes', {
             component: 'swag-paypal-disputes-list',
             path: 'index',
             meta: {
-                privilege: 'swag_paypal_disputes.viewer'
-            }
+                privilege: 'swag_paypal_disputes.viewer',
+            },
         },
 
         detail: {
@@ -31,15 +31,15 @@ Module.register('swag-paypal-disputes', {
                 default(route) {
                     return {
                         disputeId: route.params.disputeId,
-                        salesChannelId: route.params.salesChannelId
+                        salesChannelId: route.params.salesChannelId,
                     };
-                }
+                },
             },
             meta: {
                 privilege: 'swag_paypal_disputes.viewer',
-                parentPath: 'swag.paypal.disputes.index'
-            }
-        }
+                parentPath: 'swag.paypal.disputes.index',
+            },
+        },
     },
 
     navigation: [{
@@ -47,6 +47,6 @@ Module.register('swag-paypal-disputes', {
         path: 'swag.paypal.disputes.index',
         label: 'swag-paypal-disputes.general.mainMenuItemGeneral',
         parent: 'sw-customer',
-        privilege: 'swag_paypal_disputes.viewer'
-    }]
+        privilege: 'swag_paypal_disputes.viewer',
+    }],
 });

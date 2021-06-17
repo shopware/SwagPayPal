@@ -166,7 +166,7 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
          *
          * @type string|null
          */
-        orderId: null
+        orderId: null,
     };
 
     init() {
@@ -189,7 +189,7 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
             surcharging: this.options.surcharging,
             showLoadingIndicator: this.options.showLoadingIndicator,
             showPuiOnSandbox: this.options.showPuiOnSandbox,
-            onLoad: this.onPaymentSelectionLoad
+            onLoad: this.onPaymentSelectionLoad,
         });
     }
 
@@ -234,7 +234,7 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         const params = {
             orderId: order.id,
             paypalPaymentId: this.options.paypalPaymentId,
-            paypalToken: this.options.paypalToken
+            paypalToken: this.options.paypalToken,
         };
         params[this.options.isEnabledParameterName] = true;
 

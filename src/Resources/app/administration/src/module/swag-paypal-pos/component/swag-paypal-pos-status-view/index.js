@@ -9,31 +9,31 @@ Component.register('swag-paypal-pos-status-view', {
         lastFinishedRun: {
             type: Object,
             required: false,
-            default: null
+            default: null,
         },
         lastCompleteRun: {
             type: Object,
             required: false,
-            default: null
+            default: null,
         },
         isLoading: {
             type: Boolean,
-            default: false
+            default: false,
         },
         isSyncing: {
             type: Boolean,
-            default: false
+            default: false,
         },
         salesChannel: {
             type: Object,
             required: false,
-            default: null
+            default: null,
         },
         syncErrors: {
             type: Array,
             required: false,
-            default: null
-        }
+            default: null,
+        },
     },
 
     data() {
@@ -45,8 +45,8 @@ Component.register('swag-paypal-pos-status-view', {
                 warning: 'default-badge-warning',
                 error: 'default-basic-x-line',
                 success: 'default-basic-checkmark-line',
-                noRunYet: 'default-action-more-horizontal'
-            }
+                noRunYet: 'default-action-more-horizontal',
+            },
         };
     },
 
@@ -106,7 +106,7 @@ Component.register('swag-paypal-pos-status-view', {
 
         disabled() {
             return this.salesChannel !== null && this.salesChannel.id !== null && this.salesChannel.active === false;
-        }
+        },
     },
 
     watch: {
@@ -114,14 +114,14 @@ Component.register('swag-paypal-pos-status-view', {
             handler() {
                 this.statusErrorLevel = this.getHighestLevel(this.lastFinishedRun);
             },
-            immediate: true
+            immediate: true,
         },
         lastCompleteRun: {
             handler() {
                 this.statusCompleteErrorLevel = this.getHighestLevel(this.lastCompleteRun);
             },
-            immediate: true
-        }
+            immediate: true,
+        },
     },
 
     methods: {
@@ -144,6 +144,6 @@ Component.register('swag-paypal-pos-status-view', {
             }
 
             return 'success';
-        }
-    }
+        },
+    },
 });

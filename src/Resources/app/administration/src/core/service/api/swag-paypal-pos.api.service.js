@@ -4,7 +4,7 @@ class SwagPayPalPosApiService extends ApiService {
     constructor(httpClient, loginService, apiEndpoint = 'paypal/pos') {
         super(httpClient, loginService, apiEndpoint);
         this.basicConfig = {
-            timeout: 300000
+            timeout: 300000,
         };
     }
 
@@ -16,8 +16,8 @@ class SwagPayPalPosApiService extends ApiService {
             null,
             {
                 ...this.basicConfig,
-                headers
-            }
+                headers,
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -31,8 +31,8 @@ class SwagPayPalPosApiService extends ApiService {
             null,
             {
                 ...this.basicConfig,
-                headers
-            }
+                headers,
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -46,8 +46,8 @@ class SwagPayPalPosApiService extends ApiService {
             null,
             {
                 ...this.basicConfig,
-                headers
-            }
+                headers,
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -61,8 +61,8 @@ class SwagPayPalPosApiService extends ApiService {
             null,
             {
                 ...this.basicConfig,
-                headers
-            }
+                headers,
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -76,8 +76,8 @@ class SwagPayPalPosApiService extends ApiService {
             null,
             {
                 ...this.basicConfig,
-                headers
-            }
+                headers,
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -91,8 +91,8 @@ class SwagPayPalPosApiService extends ApiService {
             null,
             {
                 ...this.basicConfig,
-                headers
-            }
+                headers,
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -106,8 +106,8 @@ class SwagPayPalPosApiService extends ApiService {
             null,
             {
                 ...this.basicConfig,
-                headers
-            }
+                headers,
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });
@@ -121,8 +121,8 @@ class SwagPayPalPosApiService extends ApiService {
             {
                 ...this.basicConfig,
                 headers,
-                params: { page, limit }
-            }
+                params: { page, limit },
+            },
         ).then((response) => {
             return ApiService.handleResponse(response);
         });

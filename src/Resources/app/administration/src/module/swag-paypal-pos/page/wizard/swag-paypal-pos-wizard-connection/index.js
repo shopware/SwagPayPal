@@ -7,37 +7,37 @@ Component.register('swag-paypal-pos-wizard-connection', {
     template,
 
     inject: [
-        'SwagPayPalPosSettingApiService'
+        'SwagPayPalPosSettingApiService',
     ],
 
     mixins: [
         'notification',
-        'swag-paypal-pos-catch-error'
+        'swag-paypal-pos-catch-error',
     ],
 
     props: {
         salesChannel: {
             type: Object,
-            required: true
+            required: true,
         },
         cloneSalesChannelId: {
             type: String,
             required: false,
-            default: null
+            default: null,
         },
         isLoading: {
             type: Boolean,
             required: false,
             default() {
                 return false;
-            }
-        }
+            },
+        },
     },
 
     data() {
         return {
             isConnecting: false,
-            apiKeyUrl: this.SwagPayPalPosSettingApiService.generateApiUrl()
+            apiKeyUrl: this.SwagPayPalPosSettingApiService.generateApiUrl(),
         };
     },
 
@@ -48,7 +48,7 @@ Component.register('swag-paypal-pos-wizard-connection', {
             }
 
             this.updateButtons();
-        }
+        },
     },
 
     created() {
@@ -73,8 +73,8 @@ Component.register('swag-paypal-pos-wizard-connection', {
                     position: 'right',
                     variant: 'primary',
                     action: this.routeToConnectionSuccess,
-                    disabled: this.isLoading || !(this.salesChannel.extensions.paypalPosSalesChannel.apiKey)
-                }
+                    disabled: this.isLoading || !(this.salesChannel.extensions.paypalPosSalesChannel.apiKey),
+                },
             ];
 
             this.$emit('buttons-update', buttonConfig);
@@ -90,7 +90,7 @@ Component.register('swag-paypal-pos-wizard-connection', {
                     this.$router.push({ name: 'swag.paypal.pos.wizard.connectionSuccess' });
                 }
             }).catch(
-                this.catchError.bind(this, null)
+                this.catchError.bind(this, null),
             ).finally(() => {
                 this.toggleLoadingState(false);
             });
@@ -104,6 +104,6 @@ Component.register('swag-paypal-pos-wizard-connection', {
         toggleLoadingState(state) {
             this.isConnecting = state;
             this.$emit('toggle-loading', state);
-        }
-    }
+        },
+    },
 });

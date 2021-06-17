@@ -10,44 +10,44 @@ Component.register('swag-paypal-payment-actions-v2', {
     template,
 
     inject: [
-        'acl'
+        'acl',
     ],
 
     props: {
         paypalOrder: {
             type: Object,
-            required: true
+            required: true,
         },
 
         orderTransactionId: {
             type: String,
-            required: true
+            required: true,
         },
 
         paypalPartnerAttributionId: {
             type: String,
-            required: true
+            required: true,
         },
 
         refundableAmount: {
             type: Number,
-            required: true
+            required: true,
         },
 
         captureableAmount: {
             type: Number,
-            required: true
+            required: true,
         },
 
         showVoidButton: {
             type: Boolean,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
         return {
-            modalType: ''
+            modalType: '',
         };
     },
 
@@ -58,6 +58,6 @@ Component.register('swag-paypal-payment-actions-v2', {
 
         closeModal() {
             this.modalType = '';
-        }
-    }
+        },
+    },
 });

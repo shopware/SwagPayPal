@@ -18,6 +18,6 @@ Component.override('sw-sales-channel-modal', {
 
         isPayPalPosSalesChannel(salesChannelTypeId) {
             return salesChannelTypeId === PAYPAL_POS_SALES_CHANNEL_TYPE_ID;
-        }
-    }
+        },
+    },
 });

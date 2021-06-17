@@ -9,20 +9,20 @@ Component.register('swag-paypal-pos-detail-logs', {
 
     inject: [
         'SwagPayPalPosApiService',
-        'repositoryFactory'
+        'repositoryFactory',
     ],
 
     mixins: [
         'notification',
         'swag-paypal-pos-log-label',
-        'listing'
+        'listing',
     ],
 
     props: {
         runId: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
@@ -33,7 +33,7 @@ Component.register('swag-paypal-pos-detail-logs', {
             sortDirection: 'DESC',
             loadingLogs: false,
             isLoading: false,
-            disableRouteParams: true
+            disableRouteParams: true,
         };
     },
 
@@ -48,20 +48,20 @@ Component.register('swag-paypal-pos-detail-logs', {
                 dataIndex: 'createdAt',
                 label: 'swag-paypal-pos.detail.syncedProducts.columns.date',
                 width: '140px',
-                sortable: true
+                sortable: true,
             }, {
                 property: 'state',
                 dataIndex: 'level',
                 label: 'swag-paypal-pos.detail.syncedProducts.columns.state',
                 width: '120px',
-                sortable: true
+                sortable: true,
             }, {
                 property: 'message',
                 dataIndex: 'message',
                 label: 'swag-paypal-pos.detail.logs.columnLastSync',
-                sortable: true
+                sortable: true,
             }];
-        }
+        },
     },
 
     methods: {
@@ -103,6 +103,6 @@ Component.register('swag-paypal-pos-detail-logs', {
             }
 
             return this.getLabel(item.level);
-        }
-    }
+        },
+    },
 });

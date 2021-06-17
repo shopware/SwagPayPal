@@ -7,19 +7,19 @@ Component.register('swag-paypal-pos-detail-synced-products', {
     template,
 
     inject: [
-        'SwagPayPalPosApiService'
+        'SwagPayPalPosApiService',
     ],
 
     mixins: [
         'swag-paypal-pos-log-label',
-        'listing'
+        'listing',
     ],
 
     props: {
         salesChannel: {
             type: Object,
-            required: true
-        }
+            required: true,
+        },
     },
 
     data() {
@@ -30,26 +30,26 @@ Component.register('swag-paypal-pos-detail-synced-products', {
             actions: [
                 {
                     label: 'swag-paypal-pos.detail.syncedProducts.actions.productDetails',
-                    callback: this.onProductDetails
-                }
+                    callback: this.onProductDetails,
+                },
             ],
             columns: [
                 {
                     property: 'name',
                     label: 'swag-paypal-pos.detail.syncedProducts.columns.name',
-                    sortable: false
+                    sortable: false,
                 },
                 {
                     property: 'state',
                     label: 'swag-paypal-pos.detail.syncedProducts.columns.state',
-                    sortable: false
+                    sortable: false,
                 },
                 {
                     property: 'date',
                     label: 'swag-paypal-pos.detail.syncedProducts.columns.date',
-                    sortable: false
-                }
-            ]
+                    sortable: false,
+                },
+            ],
         };
     },
 
@@ -74,7 +74,7 @@ Component.register('swag-paypal-pos-detail-synced-products', {
             return this.SwagPayPalPosApiService.getProductLog(
                 this.salesChannel.id,
                 params.page,
-                params.limit
+                params.limit,
             ).then((result) => {
                 this.products = Object.values(result.elements);
                 this.total = result.total;
@@ -87,9 +87,9 @@ Component.register('swag-paypal-pos-detail-synced-products', {
                 {
                     name: 'sw.product.detail.base',
                     params: {
-                        id: item.id
-                    }
-                }
+                        id: item.id,
+                    },
+                },
             );
         },
 
@@ -113,6 +113,6 @@ Component.register('swag-paypal-pos-detail-synced-products', {
 
         getLevel(item) {
             return item.extensions.paypalPosLog[0] ? item.extensions.paypalPosLog[0].level : 200;
-        }
-    }
+        },
+    },
 });
