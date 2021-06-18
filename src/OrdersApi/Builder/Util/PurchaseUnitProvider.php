@@ -76,7 +76,8 @@ class PurchaseUnitProvider
 
         if ($orderNumber !== null && $this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelContext->getSalesChannelId())) {
             $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelContext->getSalesChannelId());
-            $orderNumber = $orderNumberPrefix . $orderNumber;
+            $orderNumberSuffix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_SUFFIX, $salesChannelContext->getSalesChannelId());
+            $orderNumber = $orderNumberPrefix . $orderNumber . $orderNumberSuffix;
             $purchaseUnit->setInvoiceId($orderNumber);
         }
 

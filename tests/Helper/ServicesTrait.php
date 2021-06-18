@@ -77,6 +77,7 @@ trait ServicesTrait
             Settings::CLIENT_ID => 'TestClientId',
             Settings::CLIENT_SECRET => 'TestClientSecret',
             Settings::ORDER_NUMBER_PREFIX => OrderPaymentBuilderTest::TEST_ORDER_NUMBER_PREFIX,
+            Settings::ORDER_NUMBER_SUFFIX => OrderPaymentBuilderTest::TEST_ORDER_NUMBER_SUFFIX,
             Settings::BRAND_NAME => 'Test Brand',
         ]);
     }

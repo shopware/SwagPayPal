@@ -28,6 +28,7 @@ final class Settings
     public const LANDING_PAGE = self::SYSTEM_CONFIG_DOMAIN . 'landingPage';
     public const SEND_ORDER_NUMBER = self::SYSTEM_CONFIG_DOMAIN . 'sendOrderNumber';
     public const ORDER_NUMBER_PREFIX = self::SYSTEM_CONFIG_DOMAIN . 'orderNumberPrefix';
+    public const ORDER_NUMBER_SUFFIX = self::SYSTEM_CONFIG_DOMAIN . 'orderNumberSuffix';
     public const MERCHANT_LOCATION = self::SYSTEM_CONFIG_DOMAIN . 'merchantLocation';
     public const ECS_DETAIL_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'ecsDetailEnabled';
     public const ECS_CART_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'ecsCartEnabled';

@@ -28,9 +28,10 @@ class OrderPaymentBuilderTest extends TestCase
     use PaymentTransactionTrait;
     use ServicesTrait;
 
-    public const TEST_ORDER_NUMBER = 'TEST_12345';
+    public const TEST_ORDER_NUMBER = 'TEST_12345_TEST';
     public const TEST_ORDER_NUMBER_WITHOUT_PREFIX = '12345';
     public const TEST_ORDER_NUMBER_PREFIX = 'TEST_';
+    public const TEST_ORDER_NUMBER_SUFFIX = '_TEST';
     public const TEST_ORDER_ID = 'test-order-id';
     public const EXPECTED_ITEM_NAME = 'Aerodynamic Paper Ginger Vitro';
     public const EXPECTED_PRODUCT_NUMBER = '0716562764cd43389abe16faad1838b8';
@@ -297,11 +298,12 @@ class OrderPaymentBuilderTest extends TestCase
         static::assertSame(self::TEST_ORDER_NUMBER, $payment['transactions'][0]['invoice_number']);
     }
 
-    public function testGetPaymentWithOrderNumberWithoutPrefix(): void
+    public function testGetPaymentWithOrderNumberWithoutPrefixOrSuffix(): void
     {
         $settings = $this->createDefaultSystemConfig([
             Settings::SEND_ORDER_NUMBER => true,
             Settings::ORDER_NUMBER_PREFIX => '',
+            Settings::ORDER_NUMBER_SUFFIX => '',
         ]);
 
         $paymentBuilder = $this->createPaymentBuilder($settings);
