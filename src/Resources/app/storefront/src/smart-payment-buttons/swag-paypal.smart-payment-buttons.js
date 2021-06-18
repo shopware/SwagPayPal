@@ -206,13 +206,22 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
             formData.set('orderId', orderId);
         }
 
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             this._client.post(
                 this.options.createOrderUrl,
                 formData,
-                responseText => {
-                    const response = JSON.parse(responseText);
-                    resolve(response.token);
+                (responseText, request) => {
+                    PageLoadingIndicatorUtil.create();
+                    if (request.status >= 400) {
+                        reject(responseText);
+                    }
+
+                    try {
+                        const response = JSON.parse(responseText);
+                        resolve(response.token);
+                    } catch (error) {
+                        reject(error);
+                    }
                 },
             );
         });
@@ -230,10 +239,8 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         this.confirmOrderForm.submit();
     }
 
-    /**
-     * @deprecated tag:v4.0.0 - will be removed without replacement
-     */
     onCancel() {
+        this.createError(null, true);
     }
 
     onClick(data, actions) {

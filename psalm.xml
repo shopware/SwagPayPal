@@ -58,6 +58,7 @@
                 <referencedClass name="Swag\PayPal\Setting\Service\SettingsService"/>
                 <referencedClass name="Swag\PayPal\Setting\Service\SettingsServiceInterface"/>
                 <referencedClass name="Swag\PayPal\Setting\SwagPayPalSettingStruct"/>
+                <file name="tests/Checkout/ErrorControllerTest.php"/>
                 <file name="tests/Setting/SwagPayPalSettingStructValidatorTest.php"/>
                 <file name="tests/Setting/SwagPayPalSettingStructTest.php"/>
                 <file name="src/Setting/Service/SettingsService.php"/>

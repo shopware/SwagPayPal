@@ -100,17 +100,18 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
             'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
             'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $salesChannelId)),
             'addProductToCart' => $addProductToCart,
-            'contextSwitchUrl' => $this->generateRoute('store-api.switch-context'),
+            'contextSwitchUrl' => $this->router->generate('store-api.switch-context'),
             'payPaLPaymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
-            'createOrderUrl' => $this->generateRoute('store-api.paypal.express.create_order'),
-            'deleteCartUrl' => $this->generateRoute('store-api.checkout.cart.delete'),
-            'prepareCheckoutUrl' => $this->generateRoute('store-api.paypal.express.prepare_checkout'),
+            'createOrderUrl' => $this->router->generate('store-api.paypal.express.create_order'),
+            'deleteCartUrl' => $this->router->generate('store-api.checkout.cart.delete'),
+            'prepareCheckoutUrl' => $this->router->generate('store-api.paypal.express.prepare_checkout'),
             'checkoutConfirmUrl' => $this->router->generate(
                 'frontend.checkout.confirm.page',
                 [PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true],
                 RouterInterface::ABSOLUTE_URL
             ),
-            'addErrorUrl' => $this->router->generate('payment.paypal.add_error'),
+            'addErrorUrl' => $this->router->generate('store-api.paypal.error'),
+            'cancelRedirectUrl' => $this->router->generate($addProductToCart ? 'frontend.checkout.cart.page' : 'frontend.checkout.register.page'),
         ]);
     }
 
@@ -125,10 +126,5 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
             '_',
             $this->localeCodeProvider->getLocaleCodeFromContext($context)
         );
-    }
-
-    private function generateRoute(string $routeName): string
-    {
-        return $this->router->generate($routeName);
     }
 }

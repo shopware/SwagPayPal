@@ -1,6 +1,5 @@
 /* eslint-disable import/no-unresolved */
 
-import HttpClient from 'src/service/http-client.service';
 import StoreApiClient from 'src/service/store-api-client.service';
 import DomAccess from 'src/helper/dom-access.helper';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
@@ -142,11 +141,17 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          * @type string
          */
         addErrorUrl: '',
+
+        /**
+         * URL for redirecting to after user cancels
+         *
+         * @type string
+         */
+        cancelRedirectUrl: '',
     };
 
     init() {
         this._client = new StoreApiClient();
-        this._httpClient = new HttpClient();
         this.createButton();
     }
 
@@ -256,6 +261,11 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
             onApprove: this.onApprove.bind(this),
 
             /**
+             * Will be called if the user cancels the checkout.
+             */
+            onCancel: this.onCancel.bind(this),
+
+            /**
              * Will be called if an error occurs during the payment process.
              */
             onError: this.onError.bind(this),
@@ -268,16 +278,31 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     createOrder() {
         const switchPaymentMethodData = { paymentMethodId: this.options.payPaLPaymentMethodId };
 
-        return new Promise(resolve => {
-            this._client.patch(this.options.contextSwitchUrl, JSON.stringify(switchPaymentMethodData), () => {
-                if (this.options.addProductToCart) {
-                    return this.addProductToCart().then(() => {
-                        resolve(this._createOrder());
-                    });
-                }
+        return new Promise((resolve, reject) => {
+            this._client.patch(
+                this.options.contextSwitchUrl,
+                JSON.stringify(switchPaymentMethodData),
+                (responseText, request) => {
+                    if (request.status >= 400) {
+                        reject(responseText);
+                    }
 
-                return resolve(this._createOrder());
-            });
+                    return Promise.resolve().then(() => {
+                        if (this.options.addProductToCart) {
+                            return this.addProductToCart();
+                        }
+
+                        return Promise.resolve();
+                    }).then(() => {
+                        return this._createOrder();
+                    }).then(token => {
+                        resolve(token);
+                    })
+                        .catch((error) => {
+                            reject(error);
+                        });
+                },
+            );
         });
     }
 
@@ -285,10 +310,18 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
      * @return {Promise}
      */
     _createOrder() {
-        return new Promise(resolve => {
-            this._client.post(this.options.createOrderUrl, new FormData(), responseText => {
-                const response = JSON.parse(responseText);
-                resolve(response.token);
+        return new Promise((resolve, reject) => {
+            this._client.post(this.options.createOrderUrl, new FormData(), (responseText, request) => {
+                if (request.status >= 400) {
+                    reject(responseText);
+                }
+
+                try {
+                    const response = JSON.parse(responseText);
+                    resolve(response.token);
+                } catch (error) {
+                    reject(error);
+                }
             });
         });
     }
@@ -320,13 +353,21 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         this._client.post(
             this.options.prepareCheckoutUrl,
             JSON.stringify(requestPayload),
-            () => {
-                actions.redirect(this.options.checkoutConfirmUrl);
+            (response, request) => {
+                if (request.status < 400) {
+                    return actions.redirect(this.options.checkoutConfirmUrl);
+                }
+
+                return this.createError(response, false, this.options.cancelRedirectUrl);
             },
         );
     }
 
-    onError() {
-        this.createError();
+    onError(error) {
+        this.createError(error);
+    }
+
+    onCancel(error) {
+        this.createError(error, true, this.options.cancelRedirectUrl);
     }
 }

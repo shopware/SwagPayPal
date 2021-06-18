@@ -19,6 +19,7 @@
         <service id="Swag\PayPal\Setting\Service\SettingsService">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <deprecated>tag:v4.0.0 - The "%service_id%" is deprecated and will be removed.</deprecated>
         </service>
 
         <service id="Swag\PayPal\Setting\Service\SettingsValidationService">

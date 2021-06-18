@@ -89,7 +89,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         return config;
     }
 
-    createError(error) {
+    createError(error, cancel = false, redirect = '') {
         if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && typeof this._client === 'undefined') {
             console.error('No StoreApiClient defined in child plugin class');
             return;
@@ -106,14 +106,19 @@ export default class SwagPaypalAbstractButtons extends Plugin {
 
         const requestPayload = {
             _csrf_token: DomAccess.getDataAttribute(this.el, 'data-swag-pay-pal-add-error-token'),
-            error: error,
+            error,
+            cancel,
         };
 
         this._client.post(addErrorUrl, JSON.stringify(requestPayload), () => {
-            window.onbeforeunload = () => {
-                window.scrollTo(0, 0);
-            };
-            window.location.reload();
+            if (!redirect) {
+                window.onbeforeunload = () => {
+                    window.scrollTo(0, 0);
+                };
+                window.location.reload();
+            } else {
+                window.location = redirect;
+            }
         });
     }
 }

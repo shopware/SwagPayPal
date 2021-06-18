@@ -1,7 +1,8 @@
 {
     "paypal": {
         "general": {
-            "paymentError": "An error occurred during the payment process. Please try again later or choose another payment method."
+            "paymentCancel": "The PayPal payment process has been cancelled. Please try again or choose another payment method.",
+            "paymentError": "An error occurred during the PayPal payment process. Please try again later or choose another payment method."
         },
         "payUponInvoice": {
             "instructions": {
