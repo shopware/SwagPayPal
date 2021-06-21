@@ -66,11 +66,8 @@
                 },
                 "intent": {
                     "label": "Payment acquisition",
-                    "sale": "Complete payment immediately (Sale)",
-                    "authorize": "Delayed payment collection (Auth-Capture)",
-                    "order": "Delayed payment collection (Order-Auth-Capture)",
-                    "CAPTURE": "Complete payment immediately (CAPTURE)",
-                    "AUTHORIZE": "Delayed payment collection (AUTHORIZE)"
+                    "CAPTURE": "Automatic payment collection (intent CAPTURE)",
+                    "AUTHORIZE": "Manual payment collection (intent AUTHORIZE)"
                 },
                 "submitCart": {
                     "label": "Submit cart",
@@ -95,15 +92,15 @@
                 },
                 "sendOrderNumber": {
                     "label": "Submit order number",
-                    "helpText": "If this option is active, the order number will be submitted to PayPal at checkout."
+                    "helpText": "If this option is active, the order number will be submitted to PayPal as invoice ID at checkout."
                 },
                 "orderNumberPrefix": {
                     "label": "Order number prefix",
-                    "tooltipText": "This text is placed before the original order number (e.g MyShop_SW20001). This helps to identify the shop where the payment was made."
+                    "tooltipText": "This text is placed before the original order number (e.g MyShop_SW20001). This helps to identify the shop where the payment was made. You can find it as invoice ID in your PayPal dashboard."
                 },
                 "orderNumberSuffix": {
                     "label": "Order number suffix",
-                    "tooltipText": "This text is placed after the original order number (e.g SW20001_MyShop). This helps to identify the shop where the payment was made."
+                    "tooltipText": "This text is placed after the original order number (e.g SW20001_MyShop). This helps to identify the shop where the payment was made. You can find it as invoice ID in your PayPal dashboard."
                 },
                 "loggingLevel": {
                     "label": "Debugging",
