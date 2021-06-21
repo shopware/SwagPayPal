@@ -66,11 +66,8 @@
                 },
                 "intent": {
                     "label": "Zahlungsabschluss",
-                    "sale": "Zahlung sofort abschließen (Sale)",
-                    "authorize": "Zeitverzögerter Zahlungseinzug (Auth-Capture)",
-                    "order": "Zeitverzögerter Zahlungseinzug (Order-Auth-Capture)",
-                    "CAPTURE": "Zahlung sofort abschließen (CAPTURE)",
-                    "AUTHORIZE": "Zeitverzögerter Zahlungseinzug (AUTHORIZE)"
+                    "CAPTURE": "Automatischer Zahlungseinzug (Intent CAPTURE)",
+                    "AUTHORIZE": "Manueller Zahlungseinzug (Intent AUTHORIZE)"
                 },
                 "submitCart": {
                     "label": "Warenkorb übertragen",
@@ -95,15 +92,15 @@
                 },
                 "sendOrderNumber": {
                     "label": "Bestellnummer übertragen",
-                    "helpText": "Wenn diese Option aktiv ist, wird beim Checkout die Bestellnummer an PayPal übertragen."
+                    "helpText": "Wenn diese Option aktiv ist, wird beim Checkout die Bestellnummer an PayPal als Rechnungsnummer übertragen."
                 },
                 "orderNumberPrefix": {
                     "label": "Bestellnummer-Präfix",
-                    "tooltipText": "Dieser Text wird vor die ursprüngliche Bestellnummer gehängt (z.B. MeinShop_SW20001). Das hilft dabei der Identifizierung des Shops, in dem die Zahlung ausgeführt wurde."
+                    "tooltipText": "Dieser Text wird vor die ursprüngliche Bestellnummer gehängt (z.B. MeinShop_SW20001). Das hilft dabei der Identifizierung des Shops, in dem die Zahlung ausgeführt wurde. Du findest diese als Rechnungsnummer in Deinem PayPal-Dashboard."
                 },
                 "orderNumberSuffix": {
                     "label": "Bestellnummer-Suffix",
-                    "tooltipText": "Dieser Text wird an die ursprüngliche Bestellnummer gehängt (z.B. SW20001_MeinShop). Das hilft dabei der Identifizierung des Shops, in dem die Zahlung ausgeführt wurde."
+                    "tooltipText": "Dieser Text wird an die ursprüngliche Bestellnummer gehängt (z.B. SW20001_MeinShop). Das hilft dabei der Identifizierung des Shops, in dem die Zahlung ausgeführt wurde. Du findest diese als Rechnungsnummer in Deinem PayPal-Dashboard."
                 },
                 "loggingLevel": {
                     "label": "Protokollierung",
