@@ -366,7 +366,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertTrue($spbExtension->getUseAlternativePaymentMethods());
         static::assertSame('/store-api/paypal/spb/create-order', $spbExtension->getCreateOrderUrl());
         static::assertStringContainsString('/checkout/confirm', $spbExtension->getCheckoutConfirmUrl());
-        static::assertStringContainsString('/paypal/add-error', $spbExtension->getAddErrorUrl());
+        static::assertSame('/store-api/paypal/error', $spbExtension->getAddErrorUrl());
 
         if ($event instanceof AccountEditOrderPageLoadedEvent) {
             $accountOrderEditUrl = $spbExtension->getAccountOrderEditUrl();

@@ -93,7 +93,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         /** @var RouterInterface $router */
         $router = $container->get('router');
 
-        $this->systemConfigService = $this->createSystemConfigServiceMock();
+        $this->systemConfigService = $this->createDefaultSystemConfig();
 
         $this->expressCheckoutDataService = new PayPalExpressCheckoutDataService(
             $this->cartService,
@@ -116,6 +116,21 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     public function testGetExpressCheckoutButtonDataWithoutCart(): void
     {
         $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);
+        $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext);
+
+        static::assertNull($expressCheckoutButtonData);
+    }
+
+    public function testGetExpressCheckoutButtonDataWithZeroValueCart(): void
+    {
+        $taxId = $this->createTaxId(Context::createDefaultContext());
+        $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);
+        $productId = $this->getProductId($salesChannelContext->getContext(), $taxId, true);
+        $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
+
+        $cart = $this->cartService->createNew($salesChannelContext->getToken());
+        $this->cartService->add($cart, $lineItem, $salesChannelContext);
+
         $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext);
 
         static::assertNull($expressCheckoutButtonData);
@@ -156,7 +171,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     /**
      * @dataProvider dataProviderTestGetExpressCheckoutButtonDataWithCredentials
      */
-    public function testGetExpressCheckoutButtonDataWithCredentials(bool $withSettingsLocale): void
+    public function testGetExpressCheckoutButtonDataWithCredentials(bool $withSettingsLocale, bool $addToCart): void
     {
         $taxId = $this->createTaxId(Context::createDefaultContext());
         $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);
@@ -173,7 +188,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $this->systemConfigService->set(Settings::ECS_BUTTON_LANGUAGE_ISO, 'zz_ZZ');
         }
 
-        $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext);
+        $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext, $addToCart);
 
         static::assertNotNull($expressCheckoutButtonData);
         static::assertTrue($expressCheckoutButtonData->getProductDetailEnabled());
@@ -191,12 +206,14 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame(self::CLIENT_ID, $expressCheckoutButtonData->getClientId());
         static::assertSame('EUR', $expressCheckoutButtonData->getCurrency());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $expressCheckoutButtonData->getIntent());
-        static::assertFalse($expressCheckoutButtonData->getAddProductToCart());
+        static::assertSame($addToCart, $expressCheckoutButtonData->getAddProductToCart());
         static::assertSame('/store-api/paypal/express/create-order', $expressCheckoutButtonData->getCreateOrderUrl());
         static::assertSame('/store-api/checkout/cart', $expressCheckoutButtonData->getDeleteCartUrl());
         static::assertSame('/store-api/paypal/express/prepare-checkout', $expressCheckoutButtonData->getPrepareCheckoutUrl());
         static::assertStringContainsString('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());
-        static::assertStringContainsString('/store-api/context', $expressCheckoutButtonData->getContextSwitchUrl());
+        static::assertSame('/store-api/context', $expressCheckoutButtonData->getContextSwitchUrl());
+        static::assertSame('/store-api/paypal/error', $expressCheckoutButtonData->getAddErrorUrl());
+        static::assertSame($addToCart ? '/checkout/cart' : '/checkout/register', $expressCheckoutButtonData->getCancelRedirectUrl());
         static::assertNotNull($expressCheckoutButtonData->getPayPaLPaymentMethodId());
         static::assertSame(
             $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
@@ -207,16 +224,14 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     public function dataProviderTestGetExpressCheckoutButtonDataWithCredentials(): array
     {
         return [
-            [
-                false,
-            ],
-            [
-                true,
-            ],
+            [false, false],
+            [true, false],
+            [false, true],
+            [true, true],
         ];
     }
 
-    private function getProductId(Context $context, string $taxId): string
+    private function getProductId(Context $context, string $taxId, bool $priceZero = false): string
     {
         $id = Uuid::randomHex();
 
@@ -232,7 +247,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
                     'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
                 ],
             ],
-            'price' => [['currencyId' => Defaults::CURRENCY, 'gross' => 15, 'net' => 10, 'linked' => false]],
+            'price' => [['currencyId' => Defaults::CURRENCY, 'gross' => $priceZero ? 0 : 15, 'net' => $priceZero ? 0 : 10, 'linked' => false]],
             'manufacturer' => ['name' => 'test'],
             'tax' => ['id' => $taxId],
         ];

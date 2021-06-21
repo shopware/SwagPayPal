@@ -20,10 +20,15 @@
 
         <service id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
 
-        <service id="Swag\PayPal\Checkout\ErrorController" public="true">
+        <service id="Swag\PayPal\Checkout\SalesChannel\ErrorRoute" public="true">
             <argument type="service" id="session"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\ErrorController" public="true">
+            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\ErrorRoute"/>
+            <deprecated>tag:v4.0.0 - The "%service_id%" is deprecated and will be removed.</deprecated>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
