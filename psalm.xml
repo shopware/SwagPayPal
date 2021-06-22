@@ -94,6 +94,7 @@
                 <referencedMethod name="Swag\PayPal\RestApi\Client\TokenClientFactory::createTokenClient"/>
                 <referencedMethod name="Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface::getToken"/>
                 <referencedMethod name="Swag\PayPal\Webhook\WebhookServiceInterface::deregisterWebhook"/>
+                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber::addExpressCheckoutDataToCmsPage"/>
             </errorLevel>
         </DeprecatedMethod>
 

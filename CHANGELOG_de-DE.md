@@ -1,7 +1,8 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.3.0)
+# 3.3.0
 - PPI-219 - PayPal wird jetzt deaktiviert, wenn der Warenkorbwert 0 ist
 - PPI-227 - Die an PayPal gesendete Bestellnummer kann nun mit einem Suffix versehen werden
 - PPI-281 - Verbessertes Storefront-Verhalten bei Abbrüchen und Fehlern bei Express Checkout & Smart Payment Buttons
+- PPI-289 - Behebt ein Problem, bei dem der Express Checkout Button für eingeloggte Nutzer sichtbar war
 - PPI-304 - Behebt ein Problem, bei dem die Smart Payment Buttons trotz Warenkorb-Fehlern sichtbar waren
 
 # 3.2.1

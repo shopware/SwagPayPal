@@ -79,8 +79,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
             ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             SearchPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
 
-            CmsPageLoadedEvent::class => 'addExpressCheckoutDataToCmsPage',
-
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
             GuestWishlistPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
 
