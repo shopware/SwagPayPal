@@ -140,6 +140,13 @@
             </errorLevel>
         </UnresolvableInclude>
 
+        <UndefinedClass>
+            <errorLevel type="info">
+                <!-- Can be removed when min-Version is 6.4.2.0 -->
+                <referencedClass name="Shopware\Storefront\Event\SwitchBuyBoxVariantEvent"/>
+            </errorLevel>
+        </UndefinedClass>
+
         <PossiblyNullReference>
             <errorLevel type="info">
                 <!-- Psalm does not recognize the markTestSkipped method call as terminating -->

@@ -16,13 +16,16 @@ use Shopware\Core\Content\Cms\CmsPageCollection;
 use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Event\SwitchBuyBoxVariantEvent;
 use Shopware\Storefront\Page\Account\Login\AccountLoginPage;
 use Shopware\Storefront\Page\Account\Login\AccountLoginPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
@@ -81,6 +84,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
             GuestWishlistPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
+
+            SwitchBuyBoxVariantEvent::class => 'addExpressCheckoutDataToBuyBoxSwitch',
 
             'framework.validation.address.create' => 'disableAddressValidation',
             'framework.validation.customer.create' => 'disableCustomerValidation',
@@ -345,6 +350,55 @@ class ExpressCheckoutSubscriberTest extends TestCase
         static::assertNotNull($cmsPage);
         /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
         $actualExpressCheckoutButtonData = $cmsPage->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        static::assertNull($actualExpressCheckoutButtonData);
+    }
+
+    public function testAddExpressCheckoutDataToBuyBoxSwitchEvent(): void
+    {
+        if (!\class_exists(SwitchBuyBoxVariantEvent::class)) {
+            static::markTestSkipped('Buy Box event only exists starting with Shopware 6.4.2.0');
+        }
+
+        $event = $this->createBuyBoxSwitchEvent();
+
+        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToBuyBoxSwitch($event);
+
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $event->getProduct()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        $this->assertExpressCheckoutButtonData(
+            $this->getExpectedExpressCheckoutButtonDataForAddProductEvents(),
+            $actualExpressCheckoutButtonData
+        );
+    }
+
+    public function testAddExpressCheckoutDataToBuyBoxSwitchWithInactivePaymentMethod(): void
+    {
+        if (!\class_exists(SwitchBuyBoxVariantEvent::class)) {
+            static::markTestSkipped('Buy Box event only exists starting with Shopware 6.4.2.0');
+        }
+
+        $event = $this->createBuyBoxSwitchEvent(false);
+
+        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToBuyBoxSwitch($event);
+
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $event->getProduct()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+        static::assertNull($actualExpressCheckoutButtonData);
+    }
+
+    public function testAddExpressCheckoutDataToBuyBoxSwitchWithoutPayPalInSalesChannel(): void
+    {
+        if (!\class_exists(SwitchBuyBoxVariantEvent::class)) {
+            static::markTestSkipped('Buy Box event only exists starting with Shopware 6.4.2.0');
+        }
+
+        $event = $this->createBuyBoxSwitchEvent();
+        $event->getSalesChannelContext()->getSalesChannel()->setId(Uuid::randomHex());
+
+        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToBuyBoxSwitch($event);
+
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $event->getProduct()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
@@ -623,6 +677,23 @@ class ExpressCheckoutSubscriberTest extends TestCase
             new Request(),
             $result,
             $this->createSalesChannelContext(true, $paymentMethodActive)
+        );
+    }
+
+    private function createBuyBoxSwitchEvent(bool $paymentMethodActive = true): SwitchBuyBoxVariantEvent
+    {
+        $salesChannelContext = $this->createSalesChannelContext(true, $paymentMethodActive);
+
+        /** @var SalesChannelRepositoryInterface $productRepo */
+        $productRepo = $this->getContainer()->get('sales_channel.product.repository');
+        $product = $productRepo->search(new Criteria(), $salesChannelContext)->first();
+
+        return new SwitchBuyBoxVariantEvent(
+            Uuid::randomHex(),
+            $product,
+            new PropertyGroupCollection(),
+            new Request(),
+            $salesChannelContext
         );
     }
 

@@ -6,6 +6,10 @@ parameters:
     tmpDir: var/cache/phpstan
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: false
+
+    # should be removed with min-Version: 6.4.2.0
+    reportUnmatchedIgnoredErrors: false
+
     symfony:
         constant_hassers: false
         # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
@@ -22,6 +26,9 @@ parameters:
             message: '#Cannot call method getBool\(\) on Shopware\\Core\\System\\SystemConfig\\SystemConfigService\|null#'
             path: src/PaymentsApi/Builder/CartPaymentBuilder.php
             count: 1
+        -   # can be deleted after min-Version is 6.4.2.0
+            message: '#Shopware\\Storefront\\Event\\SwitchBuyBoxVariantEvent#'
+            path: .
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
