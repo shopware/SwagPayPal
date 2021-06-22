@@ -13,6 +13,7 @@ use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Framework\Validation\BuildValidationEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Storefront\Event\SwitchBuyBoxVariantEvent;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoadedEvent;
@@ -73,6 +74,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
             GuestWishlistPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
+
+            SwitchBuyBoxVariantEvent::class => 'addExpressCheckoutDataToBuyBoxSwitch',
 
             'framework.validation.address.create' => 'disableAddressValidation',
             'framework.validation.customer.create' => 'disableCustomerValidation',
@@ -140,6 +143,21 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         }
 
         $event->getPagelet()->addExtension(
+            self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
+            $expressCheckoutButtonData
+        );
+    }
+
+    public function addExpressCheckoutDataToBuyBoxSwitch(SwitchBuyBoxVariantEvent $event): void
+    {
+        $salesChannelContext = $event->getSalesChannelContext();
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, \get_class($event), true);
+
+        if ($expressCheckoutButtonData === null) {
+            return;
+        }
+
+        $event->getProduct()->addExtension(
             self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
             $expressCheckoutButtonData
         );
@@ -240,6 +258,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             case CmsPageLoadedEvent::class:
             case SearchPageLoadedEvent::class:
             case GuestWishlistPageletLoadedEvent::class:
+            case SwitchBuyBoxVariantEvent::class:
                 return $this->systemConfigService->getBool(Settings::ECS_LISTING_ENABLED, $salesChannelId);
             default:
                 return false;

@@ -2,6 +2,7 @@
 - PPI-219 - Disable PayPal on Carts with total price of 0
 - PPI-227 - Add possibility to add a suffix to the order number sent to PayPal
 - PPI-281 - Improved storefront behaviour of Express Checkout & Smart Payment Button cancellations and errors
+- PPI-287 - Fix issue where Express button was not shown in CMS buy box elements after variant switching
 - PPI-289 - Fix issue where the Express Checkout button could be visible to logged in customers
 - PPI-304 - Fix Smart Payment Buttons being visible with cart errors
 
