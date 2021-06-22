@@ -71,8 +71,6 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             SearchPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
 
-            CmsPageLoadedEvent::class => 'addExpressCheckoutDataToCmsPage',
-
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
             GuestWishlistPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
 
@@ -105,6 +103,9 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         $this->logger->debug('Added data to page {page}', ['page' => \get_class($event)]);
     }
 
+    /**
+     * @deprecated tag:v4.0.0 - will be removed. Use \Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute instead
+     */
     public function addExpressCheckoutDataToCmsPage(CmsPageLoadedEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();

@@ -41,5 +41,13 @@
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute" decorates="Shopware\Core\Content\Category\SalesChannel\CategoryRoute" decoration-priority="-2000" public="true">
+            <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute.inner"/>
+            <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
+        </service>
     </services>
 </container>
