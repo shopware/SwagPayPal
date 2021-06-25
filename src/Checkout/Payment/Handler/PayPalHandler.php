@@ -166,7 +166,7 @@ class PayPalHandler extends AbstractPaymentHandler
             } else {
                 $response = $this->orderResource->authorize($paypalOrderId, $salesChannelId, $partnerAttributionId);
                 if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
-                    // ToDo: Replace after NEXT-13973 is in min-version
+                    // ToDo PPI-314 - Replace after NEXT-13973 is in min-version
                     $this->setTransactionToAuthorize($transactionId, $context);
                 }
             }
@@ -193,7 +193,7 @@ class PayPalHandler extends AbstractPaymentHandler
             } else {
                 $response = $this->orderResource->authorize($paypalOrderId, $salesChannelId, $partnerAttributionId);
                 if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
-                    // ToDo: Replace after NEXT-13973 is in min-version
+                    // ToDo PPI-314 - Replace after NEXT-13973 is in min-version
                     $this->setTransactionToAuthorize($transactionId, $context);
                 }
             }
@@ -231,7 +231,7 @@ class PayPalHandler extends AbstractPaymentHandler
     }
 
     /**
-     * ToDo: Replace after NEXT-13973 is in min-Version
+     * ToDo PPI-314 - Replace after NEXT-13973 is in min-Version
      */
     private function setTransactionToAuthorize(string $transactionId, Context $context): void
     {
