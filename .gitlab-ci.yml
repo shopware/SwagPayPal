@@ -11,7 +11,7 @@ variables:
     MYSQL_CMD: mysqld
 
 stages:
-    - Static analysis
+    - Static validation
     - Testing
 
 default:
@@ -35,7 +35,7 @@ Check built JS files:
             - master
             - schedules
             - pipelines
-    stage: Static analysis
+    stage: Static validation
     services:
         -   name: mysql:5.7
             alias: mysql
@@ -57,8 +57,8 @@ Check built JS files:
             fi
     allow_failure: true
 
-Static analyze:
-    stage: Static analysis
+Static validation:
+    stage: Static validation
     only:
         refs:
             - merge_requests
@@ -90,8 +90,9 @@ Static analyze:
                 make administration-lint
                 make storefront-lint
             fi
+        - cd $CI_PROJECT_DIR/development
+        - php bin/console snippets:validate
         # ToDo tag:v4.0.0 - use again
-        # - cd $CI_PROJECT_DIR/development
         # - php bin/console dal:validate
     parallel:
         matrix:
@@ -146,13 +147,13 @@ PHPUnit:
             allow_failure: true
     parallel:
         matrix:
-            # ToDo: Use working MariaDB version with https://jira.mariadb.org/browse/MDEV-25672 fixed
+            # ToDo - Use working MariaDB version with https://jira.mariadb.org/browse/MDEV-25672 fixed
             -   MYSQL_IMAGE: mariadb:10.4.18
                 DEV_IMAGE: shopware/development:8.0-composer-2
                 CORE_BRANCH: [ "6.4.0.0", "6.4.1.0", "trunk" ]
             -   MYSQL_IMAGE:
                     - mysql:5.7
-                    # ToDo: Use working MariaDB version with https://jira.mariadb.org/browse/MDEV-25672 fixed
+                    # ToDo - Use working MariaDB version with https://jira.mariadb.org/browse/MDEV-25672 fixed
                     - mariadb:10.3.28
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
                 CORE_BRANCH: [ "6.4.0.0", "6.4.1.0", "trunk" ]
