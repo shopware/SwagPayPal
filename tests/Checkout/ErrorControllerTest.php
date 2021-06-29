@@ -16,6 +16,7 @@ use Swag\PayPal\Test\Mock\LoggerMock;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ErrorControllerTest extends TestCase
@@ -25,8 +26,7 @@ class ErrorControllerTest extends TestCase
     public function testAddErrorMessage(): void
     {
         $container = $this->getContainer();
-        /** @var Session $session */
-        $session = $container->get('session');
+        $session = new Session(new MockArraySessionStorage());
         /** @var TranslatorInterface $translator */
         $translator = $container->get('translator');
         $logger = new LoggerMock();

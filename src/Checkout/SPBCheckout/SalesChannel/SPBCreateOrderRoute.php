@@ -38,35 +38,17 @@ class SPBCreateOrderRoute extends AbstractSPBCreateOrderRoute
 {
     private const FAKE_URL = 'https://www.example.com/';
 
-    /**
-     * @var OrderFromCartBuilder
-     */
-    private $orderFromCartBuilder;
+    private OrderFromCartBuilder $orderFromCartBuilder;
 
-    /**
-     * @var OrderFromOrderBuilder
-     */
-    private $orderFromOrderBuilder;
+    private OrderFromOrderBuilder $orderFromOrderBuilder;
 
-    /**
-     * @var CartService
-     */
-    private $cartService;
+    private CartService $cartService;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderRepository;
+    private EntityRepositoryInterface $orderRepository;
 
-    /**
-     * @var OrderResource
-     */
-    private $orderResource;
+    private OrderResource $orderResource;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         CartService $cartService,
@@ -119,10 +101,10 @@ class SPBCreateOrderRoute extends AbstractSPBCreateOrderRoute
             }
 
             $orderId = $request->request->get('orderId');
-            if ($orderId === null) {
-                $paypalOrder = $this->getOrderFromCart($salesChannelContext, $customer);
-            } else {
+            if (\is_string($orderId)) {
                 $paypalOrder = $this->getOrderFromOrder($orderId, $salesChannelContext, $customer);
+            } else {
+                $paypalOrder = $this->getOrderFromCart($salesChannelContext, $customer);
             }
 
             $salesChannelId = $salesChannelContext->getSalesChannel()->getId();

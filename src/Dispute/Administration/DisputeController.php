@@ -25,10 +25,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DisputeController extends AbstractController
 {
-    /**
-     * @var DisputeResource
-     */
-    private $disputeResource;
+    private DisputeResource $disputeResource;
 
     public function __construct(DisputeResource $disputeResource)
     {
@@ -125,9 +122,17 @@ class DisputeController extends AbstractController
      */
     private function validateSalesChannelId(Request $request): ?string
     {
+        /** @var string|int|float|null $salesChannelId */ // Remove once SW 6.4.3.0 is min version
         $salesChannelId = $request->query->get('salesChannelId');
+        if ($salesChannelId === null) {
+            return null;
+        }
 
-        if ($salesChannelId !== null && Uuid::isValid($salesChannelId) === false) {
+        if (!\is_string($salesChannelId)) {
+            throw new InvalidRequestParameterException('salesChannelId');
+        }
+
+        if (Uuid::isValid($salesChannelId) === false) {
             throw new InvalidSalesChannelIdException($salesChannelId);
         }
 
@@ -139,12 +144,19 @@ class DisputeController extends AbstractController
      */
     private function validateDisputeStateFilter(Request $request): ?string
     {
+        /** @var string|int|float|null $disputeStateFilter */ // Remove once SW 6.4.3.0 is min version
         $disputeStateFilter = $request->query->get('disputeStateFilter');
-        if ($disputeStateFilter !== null) {
-            foreach (\explode(',', $disputeStateFilter) as $disputeStateFilterItem) {
-                if (!\in_array($disputeStateFilterItem, Item::DISPUTE_STATES, true)) {
-                    throw new InvalidRequestParameterException('disputeStateFilter');
-                }
+        if ($disputeStateFilter === null) {
+            return null;
+        }
+
+        if (!\is_string($disputeStateFilter)) {
+            throw new InvalidRequestParameterException('disputeStateFilter');
+        }
+
+        foreach (\explode(',', $disputeStateFilter) as $disputeStateFilterItem) {
+            if (!\in_array($disputeStateFilterItem, Item::DISPUTE_STATES, true)) {
+                throw new InvalidRequestParameterException('disputeStateFilter');
             }
         }
 

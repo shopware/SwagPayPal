@@ -10,7 +10,7 @@ namespace Swag\PayPal\Pos\Setting;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
+use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Swag\PayPal\Pos\Exception\ExistingPosAccountException;
 use Swag\PayPal\Pos\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
@@ -29,30 +29,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SettingsController extends AbstractController
 {
-    /**
-     * @var ApiCredentialService
-     */
-    private $apiCredentialService;
+    private ApiCredentialService $apiCredentialService;
 
-    /**
-     * @var InformationFetchService
-     */
-    private $informationFetchService;
+    private InformationFetchService $informationFetchService;
 
-    /**
-     * @var InformationDefaultService
-     */
-    private $informationDefaultService;
+    private InformationDefaultService $informationDefaultService;
 
-    /**
-     * @var ProductVisibilityCloneService
-     */
-    private $productVisibilityCloneService;
+    private ProductVisibilityCloneService $productVisibilityCloneService;
 
-    /**
-     * @var ProductCountService
-     */
-    private $productCountService;
+    private ProductCountService $productCountService;
 
     public function __construct(
         ApiCredentialService $apiService,
@@ -79,8 +64,8 @@ class SettingsController extends AbstractController
     public function validateApiCredentials(Request $request, Context $context): JsonResponse
     {
         $apiKey = $request->request->get('apiKey');
-        if ($apiKey === null) {
-            throw new MissingRequestParameterException('apiKey');
+        if (!\is_string($apiKey)) {
+            throw new InvalidRequestParameterException('apiKey');
         }
 
         $salesChannelId = $request->request->getAlnum('salesChannelId');
@@ -107,8 +92,8 @@ class SettingsController extends AbstractController
     public function fetchInformation(Request $request, Context $context): JsonResponse
     {
         $apiKey = $request->request->get('apiKey');
-        if ($apiKey === null) {
-            throw new MissingRequestParameterException('apiKey');
+        if (!\is_string($apiKey)) {
+            throw new InvalidRequestParameterException('apiKey');
         }
 
         $information = new AdditionalInformation();

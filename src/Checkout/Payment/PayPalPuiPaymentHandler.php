@@ -123,12 +123,12 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
         }
 
         $payerId = $request->query->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
-        if ($payerId === null) {
+        if (!\is_string($payerId)) {
             throw new MissingRequestParameterException(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
         }
 
         $paymentId = $request->query->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
-        if ($paymentId === null) {
+        if (!\is_string($paymentId)) {
             throw new MissingRequestParameterException(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID);
         }
 

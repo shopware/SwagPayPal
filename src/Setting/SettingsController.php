@@ -9,7 +9,7 @@ namespace Swag\PayPal\Setting;
 
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
+use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Swag\PayPal\Setting\Service\ApiCredentialServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,10 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class SettingsController extends AbstractController
 {
-    /**
-     * @var ApiCredentialServiceInterface
-     */
-    private $apiCredentialService;
+    private ApiCredentialServiceInterface $apiCredentialService;
 
     public function __construct(ApiCredentialServiceInterface $apiService)
     {
@@ -39,13 +36,13 @@ class SettingsController extends AbstractController
     public function validateApiCredentials(Request $request): JsonResponse
     {
         $clientId = $request->query->get('clientId');
-        if ($clientId === null) {
-            throw new MissingRequestParameterException('clientId');
+        if (!\is_string($clientId)) {
+            throw new InvalidRequestParameterException('clientId');
         }
 
         $clientSecret = $request->query->get('clientSecret');
-        if ($clientSecret === null) {
-            throw new MissingRequestParameterException('clientSecret');
+        if (!\is_string($clientSecret)) {
+            throw new InvalidRequestParameterException('clientSecret');
         }
 
         $sandboxActive = $request->query->getBoolean('sandboxActive');

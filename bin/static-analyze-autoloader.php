@@ -21,7 +21,7 @@ if (\is_array($files)) {
             if (\file_exists($pathToCmsExtensions)) {
                 require_once $pathToCmsExtensions;
             } else {
-                echo "Please execute 'composer dump-autoload' in your CmsExtensions directory\n";
+                echo "Please execute 'composer dump-autoload --dev' in your CmsExtensions directory\n";
             }
         }
     }

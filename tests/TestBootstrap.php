@@ -37,7 +37,7 @@ $pluginVendorDir = __DIR__ . '/../vendor';
 if (is_dir($pluginVendorDir)) {
     require_once $pluginVendorDir . '/autoload.php';
 } else {
-    echo 'vendor directory not found. Please execute "composer dump-autoload"';
+    echo 'vendor directory not found. Please execute "composer dump-autoload --dev"';
     exit(1);
 }
 

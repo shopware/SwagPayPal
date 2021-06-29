@@ -43,50 +43,23 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
     public const EXPRESS_CHECKOUT_ACTIVE = 'payPalExpressCheckoutActive';
     public const PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID = 'payPalEcsCartData';
 
-    /**
-     * @var RegisterRoute
-     */
-    private $registerRoute;
+    private RegisterRoute $registerRoute;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $countryRepo;
+    private EntityRepositoryInterface $countryRepo;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salutationRepo;
+    private EntityRepositoryInterface $salutationRepo;
 
-    /**
-     * @var AccountService
-     */
-    private $accountService;
+    private AccountService $accountService;
 
-    /**
-     * @var AbstractSalesChannelContextFactory
-     */
-    private $salesChannelContextFactory;
+    private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 
-    /**
-     * @var OrderResource
-     */
-    private $orderResource;
+    private OrderResource $orderResource;
 
-    /**
-     * @var CartService
-     */
-    private $cartService;
+    private CartService $cartService;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         RegisterRoute $registerRoute,
@@ -144,7 +117,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
             $this->logger->debug('Started', ['request' => $request->request->all()]);
             $paypalOrderId = $request->request->get(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
 
-            if ($paypalOrderId === null) {
+            if (!\is_string($paypalOrderId)) {
                 throw new MissingRequestParameterException(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN);
             }
 
