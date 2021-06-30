@@ -1,3 +1,6 @@
+# 3.3.1
+- PPI-316 - Fix issue when changing default language after plugin install
+
 # 3.3.0
 - PPI-219 - Disable PayPal on Carts with total price of 0
 - PPI-227 - Add possibility to add a suffix to the order number sent to PayPal
