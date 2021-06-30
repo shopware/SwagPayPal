@@ -1,3 +1,6 @@
+# 3.3.1
+- PPI-316 - Behebt ein Problem beim Wechseln der Standardsprache nach der Plugininstallation
+
 # 3.3.0
 - PPI-219 - PayPal wird jetzt deaktiviert, wenn der Warenkorbwert 0 ist
 - PPI-227 - Die an PayPal gesendete Bestellnummer kann nun mit einem Suffix versehen werden
