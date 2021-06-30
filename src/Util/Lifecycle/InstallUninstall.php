@@ -141,9 +141,11 @@ class InstallUninstall
             'translations' => [
                 'de-DE' => [
                     'description' => 'Bezahlung per PayPal - einfach, schnell und sicher.',
+                    'name' => 'PayPal',
                 ],
                 'en-GB' => [
                     'description' => 'Payment via PayPal - easy, fast and secure.',
+                    'name' => 'PayPal',
                 ],
             ],
         ];
