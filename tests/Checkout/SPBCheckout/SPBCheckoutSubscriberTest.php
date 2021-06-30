@@ -38,6 +38,7 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -51,15 +52,11 @@ class SPBCheckoutSubscriberTest extends TestCase
 
     private const TEST_CLIENT_ID = 'testClientId';
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    /**
-     * @var string
-     */
-    private $paypalPaymentMethodId;
+    private string $paypalPaymentMethodId;
+
+    private Session $session;
 
     protected function setUp(): void
     {
@@ -67,6 +64,7 @@ class SPBCheckoutSubscriberTest extends TestCase
         $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->paypalPaymentMethodId = (string) $paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
+        $this->session = new Session(new MockArraySessionStorage());
     }
 
     protected function tearDown(): void
@@ -170,12 +168,18 @@ class SPBCheckoutSubscriberTest extends TestCase
         $subscriber = $this->createSubscriber();
         $event = $this->createConfirmPageLoadedEvent();
         $event->getRequest()->query->set(AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME, 'testOrderId');
+        $event->getRequest()->setSession($this->session);
         $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
         static::assertFalse($event->getPage()->hasExtension(SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID));
-        /** @var Session $session */
-        $session = $this->getContainer()->get('session');
+        $requestStack = $this->getContainer()->get('request_stack');
+        static::assertNotNull($requestStack);
+        $requestStack->push($event->getRequest());
+        $request = $requestStack->getMasterRequest();
+        static::assertNotNull($request);
+        $session = $request->getSession();
+        static::assertInstanceOf(Session::class, $session);
         $flashBag = $session->getFlashBag();
         static::assertCount(1, $flashBag->get('success'));
     }
@@ -281,8 +285,6 @@ class SPBCheckoutSubscriberTest extends TestCase
             $settings
         );
 
-        /** @var Session $session */
-        $session = $this->getContainer()->get('session');
         /** @var TranslatorInterface $translator */
         $translator = $this->getContainer()->get('translator');
 
@@ -291,7 +293,7 @@ class SPBCheckoutSubscriberTest extends TestCase
             $settings,
             $spbDataService,
             $this->paymentMethodUtil,
-            $session,
+            $this->session,
             $translator,
             new NullLogger()
         );

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-composer dump-autoload
+composer dump-autoload --dev
 php "`dirname \"$0\"`"/phpstan-config-generator.php
 php ../../../dev-ops/analyze/vendor/bin/phpstan analyze --configuration phpstan.neon src tests
 

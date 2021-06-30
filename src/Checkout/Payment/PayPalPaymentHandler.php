@@ -195,9 +195,9 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         $partnerAttributionId = $this->getPartnerAttributionId($isExpressCheckout, $isSPBCheckout, $isPlus);
         $orderDataPatchNeeded = $isExpressCheckout || $isSPBCheckout || $isPlus;
 
-        if ($paymentId) {
+        if (\is_string($paymentId)) {
             $payerId = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
-            if ($payerId === null) {
+            if (!\is_string($payerId)) {
                 throw new MissingRequestParameterException(self::PAYPAL_REQUEST_PARAMETER_PAYER_ID);
             }
 
@@ -215,7 +215,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         }
 
         $token = $request->query->get(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
-        if ($token === null) {
+        if (!\is_string($token)) {
             throw new MissingRequestParameterException(self::PAYPAL_REQUEST_PARAMETER_TOKEN);
         }
 

@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Administration;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Administration\PayPalPaymentMethodController;
@@ -30,7 +31,7 @@ class PayPalPaymentMethodControllerTest extends TestCase
         $paymentMethodUtil = new PaymentMethodUtil(new PaymentMethodRepoMock(), $salesChannelRepoMock);
         $context = Context::createDefaultContext();
 
-        $response = (new PayPalPaymentMethodController($paymentMethodUtil))
+        $response = $this->createPayPalPaymentMethodController($salesChannelRepoMock, $paymentMethodUtil)
             ->setPayPalPaymentMethodAsSalesChannelDefault(new Request(), $context);
         static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
 
@@ -43,5 +44,29 @@ class PayPalPaymentMethodControllerTest extends TestCase
         $payPalPaymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId($context);
         static::assertNotNull($payPalPaymentMethodId);
         static::assertSame($payPalPaymentMethodId, $updateData['paymentMethodId']);
+    }
+
+    public function testSetPayPalPaymentMethodInvalidParameter(): void
+    {
+        $request = new Request([], ['salesChannelId' => true]);
+        $context = Context::createDefaultContext();
+
+        $this->expectException(InvalidRequestParameterException::class);
+        $this->expectExceptionMessage('The parameter "salesChannelId" is invalid.');
+        $this->createPayPalPaymentMethodController()->setPayPalPaymentMethodAsSalesChannelDefault($request, $context);
+    }
+
+    private function createPayPalPaymentMethodController(
+        ?SalesChannelRepoMock $salesChannelRepoMock = null,
+        ?PaymentMethodUtil $paymentMethodUtil = null
+    ): PayPalPaymentMethodController {
+        if ($salesChannelRepoMock === null) {
+            $salesChannelRepoMock = new SalesChannelRepoMock();
+        }
+        if ($paymentMethodUtil === null) {
+            $paymentMethodUtil = new PaymentMethodUtil(new PaymentMethodRepoMock(), $salesChannelRepoMock);
+        }
+
+        return new PayPalPaymentMethodController($paymentMethodUtil);
     }
 }

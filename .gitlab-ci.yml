@@ -24,7 +24,8 @@ default:
         - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git development/custom/plugins/SwagCmsExtensions --branch $CMS_EXTENSION_BRANCH
         - unzip -q plugin.zip -d development/custom/plugins/SwagPayPal
         - cd development
-        - composer dump-autoload -d custom/plugins/SwagCmsExtensions
+        - composer self-update
+        - composer dump-autoload --dev -d custom/plugins/SwagCmsExtensions
         - cp -v dev-ops/gitlab/.psh.yaml.override .
         - /entrypoint supervisord > /dev/null 2>&1 &
 
@@ -78,7 +79,7 @@ Static validation:
                 php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.php src tests
                 php ../../../dev-ops/analyze/vendor/bin/ecs check --config=easy-coding-standard.php
             fi
-        - composer dump-autoload
+        - composer dump-autoload --dev
         - php bin/phpstan-config-generator.php
         - php ../../../dev-ops/analyze/vendor/bin/phpstan analyze --configuration phpstan.neon src tests
         - php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.xml --threads=$(nproc) --diff --show-info=false
@@ -121,7 +122,7 @@ PHPUnit:
         - php bin/console plugin:install --activate SwagPayPal
         - php bin/console plugin:install --activate SwagCmsExtensions
         - ./psh.phar init-test-databases
-        - composer dump-autoload -d custom/plugins/SwagPayPal
+        - composer dump-autoload --dev -d custom/plugins/SwagPayPal
         - touch custom/plugins/SwagPayPal/vendor/composer/InstalledVersions.php
         - php -d pcov.enabled=1 -d pcov.directory=$CI_PROJECT_DIR
             vendor/bin/phpunit
@@ -147,14 +148,12 @@ PHPUnit:
             allow_failure: true
     parallel:
         matrix:
-            # ToDo - Use working MariaDB version with https://jira.mariadb.org/browse/MDEV-25672 fixed
-            -   MYSQL_IMAGE: mariadb:10.4.18
+            -   MYSQL_IMAGE: mariadb:10.4
                 DEV_IMAGE: shopware/development:8.0-composer-2
                 CORE_BRANCH: [ "6.4.0.0", "6.4.1.0", "trunk" ]
             -   MYSQL_IMAGE:
                     - mysql:5.7
-                    # ToDo - Use working MariaDB version with https://jira.mariadb.org/browse/MDEV-25672 fixed
-                    - mariadb:10.3.28
+                    - mariadb:10.3
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
                 CORE_BRANCH: [ "6.4.0.0", "6.4.1.0", "trunk" ]
                 RUN_IN_MR: "false"

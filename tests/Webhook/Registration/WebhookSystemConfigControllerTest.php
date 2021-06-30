@@ -31,25 +31,13 @@ class WebhookSystemConfigControllerTest extends TestCase
     private const OTHER_CLIENT_ID = 'otherClientId';
     private const OTHER_CLIENT_SECRET = 'otherClientSecret';
 
-    /**
-     * @var ConfigurationService
-     */
-    private $configurationService;
+    private ConfigurationService $configurationService;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var SystemConfigController
-     */
-    private $undecoratedController;
+    private SystemConfigController $undecoratedController;
 
-    /**
-     * @var WebhookServiceMock
-     */
-    private $webhookService;
+    private WebhookServiceMock $webhookService;
 
     protected function setUp(): void
     {

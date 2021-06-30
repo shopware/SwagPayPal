@@ -22,10 +22,7 @@ class WebhookSystemConfigController extends SystemConfigController
 {
     public const WEBHOOK_ERRORS_KEY = 'payPalWebhookErrors';
 
-    /**
-     * @var WebhookSystemConfigHelper
-     */
-    private $webhookSystemConfigHelper;
+    private WebhookSystemConfigHelper $webhookSystemConfigHelper;
 
     public function __construct(
         ConfigurationService $configurationService,
@@ -42,7 +39,7 @@ class WebhookSystemConfigController extends SystemConfigController
     public function saveConfiguration(Request $request): JsonResponse
     {
         $salesChannelId = $request->query->get('salesChannelId');
-        if ($salesChannelId === null || $salesChannelId === '') {
+        if (!\is_string($salesChannelId) || $salesChannelId === '') {
             $salesChannelId = 'null';
         }
         $data = [$salesChannelId => $request->request->all()];
@@ -67,6 +64,7 @@ class WebhookSystemConfigController extends SystemConfigController
      */
     public function batchSaveConfiguration(Request $request): JsonResponse
     {
+        /** @var array<string, array<string, mixed>> $data */
         $data = $request->request->all();
         $errors = $this->webhookSystemConfigHelper->checkWebhookBefore($data);
 
