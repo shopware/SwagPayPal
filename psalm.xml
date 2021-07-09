@@ -187,6 +187,14 @@
             </errorLevel>
         </PropertyTypeCoercion>
 
+        <UnnecessaryVarAnnotation>
+            <errorLevel type="info">
+                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
+                <!-- And with it the annotations Psalm complains about in this file -->
+                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
+            </errorLevel>
+        </UnnecessaryVarAnnotation>
+
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>
         <MissingConstructor errorLevel="info"/>

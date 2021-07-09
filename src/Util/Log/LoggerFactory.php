@@ -21,10 +21,22 @@ class LoggerFactory
 {
     protected const DEFAULT_LEVEL = Logger::WARNING;
     private const LOG_FORMAT = "[%datetime%] %channel%.%level_name%: %extra.class%::%extra.function% (%extra.line%): %message% %context% %extra%\n";
+    private const ALLOWED_LOG_LEVEL = [
+        Logger::DEBUG,
+        Logger::INFO,
+        Logger::WARNING,
+        Logger::ERROR,
+        Logger::CRITICAL,
+        Logger::ALERT,
+        Logger::EMERGENCY,
+    ];
 
+    /**
+     * @phpstan-var Logger::DEBUG|Logger::INFO|Logger::WARNING|Logger::ERROR|Logger::CRITICAL|Logger::ALERT|Logger::EMERGENCY
+     */
     protected int $logLevel = self::DEFAULT_LEVEL;
 
-    private string $rotatingFilePathPattern = '';
+    private string $rotatingFilePathPattern;
 
     private int $defaultFileRotationCount;
 
@@ -40,7 +52,7 @@ class LoggerFactory
 
         try {
             $setting = $systemConfigService->getInt(Settings::LOGGING_LEVEL);
-            if ($setting > 0) {
+            if (\in_array($setting, self::ALLOWED_LOG_LEVEL, true)) {
                 $this->logLevel = $setting;
             }
         } catch (\Throwable $e) {
