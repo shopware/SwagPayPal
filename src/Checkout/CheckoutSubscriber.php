@@ -8,7 +8,10 @@
 namespace Swag\PayPal\Checkout;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Payment\Cart\Error\PaymentMethodBlockedError;
+use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
+use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -41,6 +44,7 @@ class CheckoutSubscriber implements EventSubscriberInterface
     {
         return [
             CheckoutConfirmPageLoadedEvent::class => ['onConfirmPageLoaded', 1],
+            AccountEditOrderPageLoadedEvent::class => ['onEditOrderPageLoaded', 1],
         ];
     }
 
@@ -50,12 +54,21 @@ class CheckoutSubscriber implements EventSubscriberInterface
         $this->checkForCartValue($event);
     }
 
-    private function checkForMissingSettings(CheckoutConfirmPageLoadedEvent $event): void
+    public function onEditOrderPageLoaded(AccountEditOrderPageLoadedEvent $event): void
+    {
+        $this->checkForMissingSettings($event);
+        $this->checkForOrderValue($event);
+    }
+
+    /**
+     * @param AccountEditOrderPageLoadedEvent|CheckoutConfirmPageLoadedEvent $event
+     */
+    private function checkForMissingSettings(PageLoadedEvent $event): void
     {
         try {
             $this->settingsValidationService->validate($event->getSalesChannelContext()->getSalesChannel()->getId());
         } catch (PayPalSettingsInvalidException $e) {
-            $this->logger->info('PayPal is removed from the available Payment Methods: {message}', ['message' => $e->getMessage()]);
+            $this->logger->info('PayPal is removed from the available payment methods: {message}', ['message' => $e->getMessage()]);
             $this->removePayPalPaymentMethodFromConfirmPage($event);
         }
     }
@@ -63,19 +76,40 @@ class CheckoutSubscriber implements EventSubscriberInterface
     private function checkForCartValue(CheckoutConfirmPageLoadedEvent $event): void
     {
         if ($this->cartPriceService->isZeroValueCart($event->getPage()->getCart())) {
+            $this->logger->info('PayPal is removed from the available payment methods, because the amount of the cart is zero');
             $this->removePayPalPaymentMethodFromConfirmPage($event);
         }
     }
 
-    private function removePayPalPaymentMethodFromConfirmPage(CheckoutConfirmPageLoadedEvent $event): void
+    private function checkForOrderValue(AccountEditOrderPageLoadedEvent $event): void
     {
-        $paymentMethodCollection = $event->getPage()->getPaymentMethods();
+        $order = $event->getPage()->getOrder();
+
+        if ($order->getPrice()->getTotalPrice() === 0.0) {
+            $this->logger->info('PayPal is removed from the available payment methods, because the amount of the order is zero');
+            $this->removePayPalPaymentMethodFromConfirmPage($event);
+        }
+    }
+
+    /**
+     * @param AccountEditOrderPageLoadedEvent|CheckoutConfirmPageLoadedEvent $event
+     */
+    private function removePayPalPaymentMethodFromConfirmPage(PageLoadedEvent $event): void
+    {
+        $paymentMethods = $event->getPage()->getPaymentMethods();
 
         $payPalPaymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($event->getContext());
         if ($payPalPaymentMethodId === null) {
             return;
         }
 
-        $paymentMethodCollection->remove($payPalPaymentMethodId);
+        if ($event->getSalesChannelContext()->getPaymentMethod()->getId() === $payPalPaymentMethodId) {
+            $paymentMethod = $paymentMethods->get($payPalPaymentMethodId);
+            if ($paymentMethod !== null && $event instanceof CheckoutConfirmPageLoadedEvent) {
+                $event->getPage()->getCart()->addErrors(new PaymentMethodBlockedError((string) $paymentMethod->getTranslation('name')));
+            }
+        }
+
+        $paymentMethods->remove($payPalPaymentMethodId);
     }
 }

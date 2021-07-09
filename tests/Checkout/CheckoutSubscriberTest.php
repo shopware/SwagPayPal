@@ -10,12 +10,15 @@ namespace Swag\PayPal\Test\Checkout;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
+use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
@@ -23,6 +26,7 @@ use Swag\PayPal\Checkout\CheckoutSubscriber;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -30,6 +34,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class CheckoutSubscriberTest extends TestCase
 {
+    use CartTrait;
     use ServicesTrait;
 
     private CheckoutSubscriber $checkoutSubscriber;
@@ -50,7 +55,13 @@ class CheckoutSubscriberTest extends TestCase
         );
     }
 
-    public function testInvalidCredentials(): void
+    public function testEvents(): void
+    {
+        $events = CheckoutSubscriber::getSubscribedEvents();
+        static::assertCount(2, $events);
+    }
+
+    public function testConfirmPageInvalidCredentials(): void
     {
         $event = $this->getCheckoutConfirmPageEvent(Generator::createCart());
         $this->settings->delete(Settings::CLIENT_ID);
@@ -60,7 +71,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertCount(0, $event->getPage()->getPaymentMethods());
     }
 
-    public function testExistingCredentials(): void
+    public function testConfirmPageExistingCredentials(): void
     {
         $event = $this->getCheckoutConfirmPageEvent(Generator::createCart());
         $this->checkoutSubscriber->onConfirmPageLoaded($event);
@@ -68,7 +79,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertCount(1, $event->getPage()->getPaymentMethods());
     }
 
-    public function testDoesRemoveWithCartWithValueZeroAndPayPalInactive(): void
+    public function testConfirmPageDoesRemoveWithCartWithValueZeroAndPayPalInactive(): void
     {
         $cart = Generator::createCart();
         $cart->getLineItems()->remove('A');
@@ -80,7 +91,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertCount(0, $event->getPage()->getPaymentMethods());
     }
 
-    public function testDoesNotRemoveWithEmptyCart(): void
+    public function testConfirmPageDoesNotRemoveWithEmptyCart(): void
     {
         $cart = Generator::createCart();
         $cart->getLineItems()->remove('A');
@@ -93,7 +104,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertCount(1, $event->getPage()->getPaymentMethods());
     }
 
-    public function testDoesRemoveWithCartWithValueZeroAndPayPalActive(): void
+    public function testConfirmPageDoesRemoveWithCartWithValueZeroAndPayPalActive(): void
     {
         $cart = Generator::createCart();
         $cart->getLineItems()->remove('A');
@@ -105,7 +116,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertCount(0, $event->getPage()->getPaymentMethods());
     }
 
-    public function testDoesNotRemoveWithNormalCart(): void
+    public function testConfirmPageDoesNotRemoveWithNormalCart(): void
     {
         $cart = Generator::createCart();
 
@@ -115,7 +126,7 @@ class CheckoutSubscriberTest extends TestCase
         static::assertCount(1, $event->getPage()->getPaymentMethods());
     }
 
-    public function testDoesNotRemoveWithNormalCartAndPayPalSelected(): void
+    public function testConfirmPageDoesNotRemoveWithNormalCartAndPayPalSelected(): void
     {
         $cart = Generator::createCart();
 
@@ -125,19 +136,29 @@ class CheckoutSubscriberTest extends TestCase
         static::assertCount(1, $event->getPage()->getPaymentMethods());
     }
 
+    public function testOrderEditPageInvalidCredentials(): void
+    {
+        $event = $this->getOrderEditPageEvent();
+        $this->settings->delete(Settings::CLIENT_ID);
+        $this->settings->delete(Settings::CLIENT_SECRET);
+        $this->checkoutSubscriber->onEditOrderPageLoaded($event);
+
+        static::assertCount(0, $event->getPage()->getPaymentMethods());
+    }
+
+    public function testOrderEditPageDoesRemoveWithCartWithValueZeroAndPayPalActive(): void
+    {
+        $event = $this->getOrderEditPageEvent();
+        $event->getPage()->getOrder()->setPrice($this->createCartPrice(0.0, 0.0, 0.0));
+        $this->checkoutSubscriber->onEditOrderPageLoaded($event);
+
+        static::assertCount(0, $event->getPage()->getPaymentMethods());
+    }
+
     private function getCheckoutConfirmPageEvent(Cart $cart, bool $payPalSelected = true): CheckoutConfirmPageLoadedEvent
     {
-        /** @var EntityRepositoryInterface $paymentMethodRepository */
-        $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
-
         $context = Context::createDefaultContext();
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('handlerIdentifier', PayPalPaymentHandler::class));
-
-        /** @var PaymentMethodCollection $paymentMethods */
-        $paymentMethods = $paymentMethodRepository->search($criteria, $context)->getEntities();
-
-        static::assertCount(1, $paymentMethods);
+        $paymentMethods = $this->getPaymentMethods($context);
 
         $salesChannelContext = Generator::createSalesChannelContext(
             $context,
@@ -157,5 +178,49 @@ class CheckoutSubscriberTest extends TestCase
         $page->setCart($cart);
 
         return new CheckoutConfirmPageLoadedEvent($page, $salesChannelContext, new Request());
+    }
+
+    private function getOrderEditPageEvent(): AccountEditOrderPageLoadedEvent
+    {
+        $context = Context::createDefaultContext();
+
+        $paymentMethods = $this->getPaymentMethods($context);
+
+        $salesChannelContext = Generator::createSalesChannelContext(
+            $context,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            $paymentMethods->first()
+        );
+
+        $page = new AccountEditOrderPage();
+        $page->setPaymentMethods($paymentMethods);
+        $order = new OrderEntity();
+        $order->setPrice($this->createCartPrice(20.0, 20.0, 20.0));
+        $page->setOrder($order);
+
+        return new AccountEditOrderPageLoadedEvent($page, $salesChannelContext, new Request());
+    }
+
+    private function getPaymentMethods(Context $context): PaymentMethodCollection
+    {
+        /** @var EntityRepositoryInterface $paymentMethodRepository */
+        $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('handlerIdentifier', PayPalPaymentHandler::class));
+
+        /** @var PaymentMethodCollection $paymentMethods */
+        $paymentMethods = $paymentMethodRepository->search($criteria, $context)->getEntities();
+
+        static::assertCount(1, $paymentMethods);
+
+        return $paymentMethods;
     }
 }

@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.3.2)
+- PPI-322 - Verbessert das Entfernen von PayPal von den verfügbaren Zahlungsarten, wenn die Zugangsdaten ungültig sind
+
 # 3.3.1
 - PPI-316 - Behebt ein Problem beim Wechseln der Standardsprache nach der Plugininstallation
 

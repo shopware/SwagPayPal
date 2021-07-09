@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.3.2)
+- PPI-322 - Improve removal of PayPal from available payment methods if credentials are invalid 
+
 # 3.3.1
 - PPI-316 - Fix issue when changing default language after plugin install
 
