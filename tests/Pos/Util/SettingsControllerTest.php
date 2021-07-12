@@ -7,7 +7,10 @@
 
 namespace Swag\PayPal\Test\Pos\Util;
 
+use Doctrine\DBAL\Connection;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Defaults;
@@ -17,13 +20,19 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Swag\PayPal\Pos\Api\Exception\PosTokenException;
 use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 use Swag\PayPal\Pos\Exception\ExistingPosAccountException;
 use Swag\PayPal\Pos\MessageQueue\Handler\CloneVisibilityHandler;
+use Swag\PayPal\Pos\MessageQueue\Handler\SyncManagerHandler;
+use Swag\PayPal\Pos\MessageQueue\Manager\ImageSyncManager;
+use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
+use Swag\PayPal\Pos\MessageQueue\Manager\ProductSyncManager;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Resource\TokenResource;
 use Swag\PayPal\Pos\Resource\UserResource;
@@ -43,37 +52,32 @@ use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
 use Swag\PayPal\Test\Pos\Mock\Client\TokenClientFactoryMock;
 use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\ProductVisibilityRepoMock;
+use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
+use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
+use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 use Symfony\Component\HttpFoundation\Request;
 
 class SettingsControllerTest extends TestCase
 {
-    use KernelTestBehaviour;
+    use IntegrationTestBehaviour;
 
     private const FROM_SALES_CHANNEL = 'salesChannelA';
     private const TO_SALES_CHANNEL = 'salesChannelB';
     private const LOCAL_PRODUCT_COUNT = 5;
 
-    /**
-     * @var ProductVisibilityRepoMock
-     */
-    private $productVisibilityRepository;
+    private ProductVisibilityRepoMock $productVisibilityRepository;
 
-    /**
-     * @var MessageBusMock
-     */
-    private $messageBus;
+    private MessageBusMock $messageBus;
 
-    /**
-     * @var SalesChannelProductRepoMock
-     */
-    private $salesChannelProductRepository;
+    private SalesChannelProductRepoMock $salesChannelProductRepository;
 
-    /**
-     * @var SalesChannelRepoMock
-     */
-    private $salesChannelRepository;
+    private SalesChannelRepoMock $salesChannelRepository;
+
+    private RunRepoMock $runRepository;
+
+    private RunServiceMock $runService;
 
     public function testValidateCredentialsValid(): void
     {
@@ -126,6 +130,9 @@ class SettingsControllerTest extends TestCase
         $context = Context::createDefaultContext();
         $settingsController = $this->getSettingsController();
 
+        $this->salesChannelRepository->getMockEntityWithNoTypeId()->setId(self::TO_SALES_CHANNEL);
+        $this->salesChannelRepository->addMockEntity($this->salesChannelRepository->getMockEntityWithNoTypeId());
+
         $this->productVisibilityRepository->createMockEntity(self::FROM_SALES_CHANNEL, 30);
         $this->productVisibilityRepository->createMockEntity(self::FROM_SALES_CHANNEL, 30);
         $this->productVisibilityRepository->createMockEntity(self::FROM_SALES_CHANNEL, 30);
@@ -140,11 +147,28 @@ class SettingsControllerTest extends TestCase
         ]), $context);
 
         $this->messageBus->execute([
-            new CloneVisibilityHandler($this->productVisibilityRepository),
+            new CloneVisibilityHandler(
+                $this->runService,
+                new Logger('test'),
+                $this->productVisibilityRepository
+            ),
+            new SyncManagerHandler(
+                $this->messageBus,
+                $this->runService,
+                new NullLogger(),
+                $this->createMock(ImageSyncManager::class),
+                $this->createMock(InventorySyncManager::class),
+                $this->createMock(ProductSyncManager::class)
+            ),
         ]);
 
         static::assertCount(3, $this->productVisibilityRepository->filterBySalesChannelId(self::FROM_SALES_CHANNEL));
         static::assertCount(3, $this->productVisibilityRepository->filterBySalesChannelId(self::TO_SALES_CHANNEL));
+
+        /** @var PosSalesChannelRunEntity|null $run */
+        $run = $this->runRepository->search(new Criteria(), $context)->first();
+        static::assertNotNull($run);
+        static::assertSame(PosSalesChannelRunDefinition::STATUS_FINISHED, $run->getStatus());
     }
 
     public function testProductCount(): void
@@ -222,6 +246,13 @@ class SettingsControllerTest extends TestCase
 
         $this->productVisibilityRepository = new ProductVisibilityRepoMock();
         $this->messageBus = new MessageBusMock();
+        $this->runRepository = new RunRepoMock();
+        $this->runService = new RunServiceMock(
+            $this->runRepository,
+            new RunLogRepoMock(),
+            $this->createMock(Connection::class),
+            new Logger('test')
+        );
 
         $this->salesChannelProductRepository = new SalesChannelProductRepoMock();
         $this->salesChannelRepository = new SalesChannelRepoMock();
@@ -259,7 +290,9 @@ class SettingsControllerTest extends TestCase
             ),
             new ProductVisibilityCloneService(
                 $this->messageBus,
-                $this->productVisibilityRepository
+                $this->productVisibilityRepository,
+                $this->runService,
+                $this->salesChannelRepository
             ),
             new ProductCountService(
                 new ProductResource(new PosClientFactoryMock()),

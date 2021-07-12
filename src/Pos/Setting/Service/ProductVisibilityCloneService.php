@@ -14,29 +14,37 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\Count
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Routing\Exception\SalesChannelNotFoundException;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Swag\PayPal\Pos\MessageQueue\Handler\SyncManagerHandler;
 use Swag\PayPal\Pos\MessageQueue\Message\CloneVisibilityMessage;
+use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\Run\RunService;
+use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class ProductVisibilityCloneService
 {
     private const CLONE_CHUNK_SIZE = 500;
 
-    /**
-     * @var MessageBusInterface
-     */
-    private $messageBus;
+    private MessageBusInterface $messageBus;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $productVisibilityRepository;
+    private EntityRepositoryInterface $productVisibilityRepository;
+
+    private RunService $runService;
+
+    private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
         MessageBusInterface $messageBus,
-        EntityRepositoryInterface $productVisibilityRepository
+        EntityRepositoryInterface $productVisibilityRepository,
+        RunService $runService,
+        EntityRepositoryInterface $salesChannelRepository
     ) {
         $this->messageBus = $messageBus;
         $this->productVisibilityRepository = $productVisibilityRepository;
+        $this->runService = $runService;
+        $this->salesChannelRepository = $salesChannelRepository;
     }
 
     public function cloneProductVisibility(
@@ -68,6 +76,18 @@ class ProductVisibilityCloneService
             throw new InvalidAggregationQueryException('Could not aggregate product visibility');
         }
 
+        $runId = $this->runService->startRun($toSalesChannelId, 'cloneVisibility', $context);
+        $messageCount = 0;
+
+        $criteria = new Criteria([$toSalesChannelId]);
+        $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
+        /** @var SalesChannelEntity|null $salesChannel */
+        $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
+
+        if ($salesChannel === null) {
+            throw new SalesChannelNotFoundException();
+        }
+
         while ($offset < $aggregate->getCount()) {
             $message = new CloneVisibilityMessage();
             $message->setContext($context);
@@ -75,9 +95,22 @@ class ProductVisibilityCloneService
             $message->setOffset($offset);
             $message->setFromSalesChannelId($fromSalesChannelId);
             $message->setToSalesChannelId($toSalesChannelId);
+            $message->setSalesChannel($salesChannel);
+            $message->setRunId($runId);
             $this->messageBus->dispatch($message);
 
             $offset += self::CLONE_CHUNK_SIZE;
+            ++$messageCount;
         }
+
+        $this->runService->setMessageCount($messageCount, $runId, $context);
+
+        $managerMessage = new SyncManagerMessage();
+        $managerMessage->setContext($context);
+        $managerMessage->setSalesChannel($salesChannel);
+        $managerMessage->setRunId($runId);
+        $managerMessage->setSteps([SyncManagerHandler::SYNC_CLONE_VISIBILITY]);
+        $managerMessage->setCurrentStep(1);
+        $this->messageBus->dispatch($managerMessage);
     }
 }

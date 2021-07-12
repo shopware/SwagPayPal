@@ -77,7 +77,7 @@ Component.register('swag-paypal-pos-detail-runs', {
         getListCriteria() {
             const criteria = new Criteria(this.page, this.limit);
             criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
-            criteria.addFilter(Criteria.not('AND', [Criteria.equals('finishedAt', null)]));
+            criteria.addFilter(Criteria.not('AND', [Criteria.equals('status', 'in_progress')]));
 
             criteria.addAssociation('logs');
             criteria.getAssociation('logs').limit = 1;
@@ -128,8 +128,12 @@ Component.register('swag-paypal-pos-detail-runs', {
         },
 
         getLabelVariant(item) {
-            if (item.abortedByUser) {
+            if (item.status === 'cancelled') {
                 return 'info';
+            }
+
+            if (item.status === 'failed') {
+                return 'danger';
             }
 
             if (item.logs.length <= 0) {
@@ -152,8 +156,12 @@ Component.register('swag-paypal-pos-detail-runs', {
         },
 
         getLabel(item) {
-            if (item.abortedByUser) {
+            if (item.status === 'cancelled') {
                 return 'swag-paypal-pos.detail.runs.states.aborted';
+            }
+
+            if (item.status === 'failed') {
+                return 'swag-paypal-pos.detail.runs.states.failed';
             }
 
             if (item.logs.length <= 0) {

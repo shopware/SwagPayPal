@@ -9,23 +9,14 @@ namespace Swag\PayPal\Pos\MessageQueue\Handler;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\SumAggregation;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
+use Swag\PayPal\Pos\Exception\MessageQueueTimeoutException;
 use Swag\PayPal\Pos\Exception\UnknownSyncStepException;
 use Swag\PayPal\Pos\MessageQueue\Manager\ImageSyncManager;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\Pos\MessageQueue\Manager\ProductSyncManager;
-use Swag\PayPal\Pos\MessageQueue\Message\CloneVisibilityMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\Sync\ImageSyncMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\Sync\InventorySyncMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductCleanupSyncMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductSingleSyncMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductVariantSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\Pos\Run\RunService;
 use Symfony\Component\Messenger\Envelope;
@@ -37,46 +28,24 @@ class SyncManagerHandler extends AbstractMessageHandler
     public const SYNC_PRODUCT = 'product';
     public const SYNC_IMAGE = 'image';
     public const SYNC_INVENTORY = 'inventory';
+    public const SYNC_CLONE_VISIBILITY = 'cloneVisibility';
     private const QUEUED_DELAY = 2000;
+    private const QUEUE_RETRIES = 5; // about 2 minutes
 
-    /**
-     * @var MessageBusInterface
-     */
-    private $messageBus;
+    private MessageBusInterface $messageBus;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $messageQueueStatsRepository;
+    private RunService $runService;
 
-    /**
-     * @var RunService
-     */
-    private $runService;
+    private LoggerInterface $logger;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private ImageSyncManager $imageSyncManager;
 
-    /**
-     * @var ImageSyncManager
-     */
-    private $imageSyncManager;
+    private InventorySyncManager $inventorySyncManager;
 
-    /**
-     * @var InventorySyncManager
-     */
-    private $inventorySyncManager;
-
-    /**
-     * @var ProductSyncManager
-     */
-    private $productSyncManager;
+    private ProductSyncManager $productSyncManager;
 
     public function __construct(
         MessageBusInterface $messageBus,
-        EntityRepositoryInterface $messageQueueStatsRepository,
         RunService $runService,
         LoggerInterface $logger,
         ImageSyncManager $imageSyncManager,
@@ -84,7 +53,6 @@ class SyncManagerHandler extends AbstractMessageHandler
         ProductSyncManager $productSyncManager
     ) {
         $this->messageBus = $messageBus;
-        $this->messageQueueStatsRepository = $messageQueueStatsRepository;
         $this->runService = $runService;
         $this->logger = $logger;
         $this->imageSyncManager = $imageSyncManager;
@@ -104,30 +72,15 @@ class SyncManagerHandler extends AbstractMessageHandler
             return;
         }
 
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('name', [
-            CloneVisibilityMessage::class,
-            ImageSyncMessage::class,
-            InventorySyncMessage::class,
-            ProductSingleSyncMessage::class,
-            ProductVariantSyncMessage::class,
-            ProductCleanupSyncMessage::class,
-        ]));
-        $criteria->addAggregation(new SumAggregation('totalSize', 'size'));
-
-        /** @var SumResult|null $queued */
-        $queued = $this->messageQueueStatsRepository->aggregate($criteria, $context)->get('totalSize');
-
-        if ($queued !== null && $queued->getSum() > 0) {
-            $envelope = new Envelope($message, [
-                new DelayStamp(self::QUEUED_DELAY),
-            ]);
-            $this->messageBus->dispatch($envelope);
-
-            return;
-        }
-
         try {
+            if ($message->getMessageRetries() > self::QUEUE_RETRIES) {
+                throw new MessageQueueTimeoutException();
+            }
+
+            if (!$this->isReadyForNextStep($message)) {
+                return;
+            }
+
             $steps = $message->getSteps();
             $currentStep = $message->getCurrentStep();
 
@@ -137,19 +90,23 @@ class SyncManagerHandler extends AbstractMessageHandler
                 return;
             }
 
-            $this->buildMessages(
+            $messageCount = $this->createMessages(
                 $steps[$currentStep],
                 $runId,
                 $message->getSalesChannel(),
                 $context
             );
 
+            $this->runService->setMessageCount($messageCount, $runId, $context);
+
             $message->setCurrentStep($currentStep + 1);
+            $message->setLastMessageCount($messageCount);
+            $message->setMessageRetries(0);
 
             $this->messageBus->dispatch($message);
         } catch (\Throwable $e) {
             $this->logger->critical($e->__toString());
-            $this->runService->finishRun($runId, $context);
+            $this->runService->finishRun($runId, $context, false, PosSalesChannelRunDefinition::STATUS_FAILED);
         } finally {
             $this->runService->writeLog($runId, $context);
         }
@@ -162,23 +119,40 @@ class SyncManagerHandler extends AbstractMessageHandler
         ];
     }
 
-    private function buildMessages(string $step, string $runId, SalesChannelEntity $salesChannel, Context $context): void
+    private function createMessages(string $step, string $runId, SalesChannelEntity $salesChannel, Context $context): int
     {
         switch ($step) {
             case self::SYNC_IMAGE:
-                $this->imageSyncManager->buildMessages($salesChannel, $context, $runId);
-
-                return;
+                return $this->imageSyncManager->createMessages($salesChannel, $context, $runId);
             case self::SYNC_INVENTORY:
-                $this->inventorySyncManager->buildMessages($salesChannel, $context, $runId);
-
-                return;
+                return $this->inventorySyncManager->createMessages($salesChannel, $context, $runId);
             case self::SYNC_PRODUCT:
-                $this->productSyncManager->buildMessages($salesChannel, $context, $runId);
-
-                return;
+                return $this->productSyncManager->createMessages($salesChannel, $context, $runId);
             default:
                 throw new UnknownSyncStepException($step);
         }
+    }
+
+    private function isReadyForNextStep(SyncManagerMessage $message): bool
+    {
+        $currentMessageCount = $this->runService->getActualMessageCount($message->getContext());
+
+        if ($currentMessageCount <= 0) {
+            return true;
+        }
+
+        if ($message->getLastMessageCount() === $currentMessageCount) {
+            $message->setMessageRetries($message->getMessageRetries() + 1);
+        } else {
+            $message->setLastMessageCount($currentMessageCount);
+        }
+
+        $envelope = new Envelope($message, [
+            new DelayStamp(self::QUEUED_DELAY * (2 ** $message->getMessageRetries())),
+        ]);
+
+        $this->messageBus->dispatch($envelope);
+
+        return false;
     }
 }

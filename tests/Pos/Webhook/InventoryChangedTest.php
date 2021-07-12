@@ -7,6 +7,7 @@
 
 namespace SwagPayPalTestPosUtil;
 
+use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -19,7 +20,6 @@ use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Resource\InventoryResource;
 use Swag\PayPal\Pos\Resource\SubscriptionResource;
-use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalWebhookCalculator;
 use Swag\PayPal\Pos\Sync\Inventory\LocalUpdater;
@@ -37,6 +37,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\ProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
+use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 use Swag\PayPal\Test\Pos\Webhook\_fixtures\InventoryChangeFixture;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Router;
@@ -77,9 +78,10 @@ class InventoryChangedTest extends TestCase
 
         $inventoryChangedHandler = new InventoryChangedHandler(
             new ApiKeyDecoder(),
-            new RunService(
+            new RunServiceMock(
                 new RunRepoMock(),
                 new RunLogRepoMock(),
+                $this->createMock(Connection::class),
                 new Logger('test')
             ),
             $localCalculator,

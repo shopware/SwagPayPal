@@ -7,71 +7,51 @@
 
 namespace Swag\PayPal\Test\Pos\Run;
 
-use Monolog\Logger;
 use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 use Swag\PayPal\Pos\MessageQueue\Handler\SyncManagerHandler;
 use Swag\PayPal\Pos\MessageQueue\Manager\ImageSyncManager;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\Pos\MessageQueue\Manager\ProductSyncManager;
-use Swag\PayPal\Pos\MessageQueue\Message\CloneVisibilityMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\Sync\ImageSyncMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\Sync\InventorySyncMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductCleanupSyncMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductSingleSyncMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductVariantSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Run\Task\CompleteTask;
-use Swag\PayPal\Pos\Schedule\InventorySyncTask;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
-use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
-use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 
 class SyncManagerTest extends TestCase
 {
-    use KernelTestBehaviour;
+    use IntegrationTestBehaviour;
     use SalesChannelTrait;
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
-    /**
-     * @var SalesChannelEntity
-     */
-    private $salesChannel;
+    private SalesChannelEntity $salesChannel;
 
-    /**
-     * @var CompleteTask
-     */
-    private $task;
+    private CompleteTask $task;
 
-    /**
-     * @var MessageBusMock
-     */
-    private $messageBus;
+    private MessageBusMock $messageBus;
 
-    /**
-     * @var SyncManagerHandler
-     */
-    private $syncManagerHandler;
+    private SyncManagerHandler $syncManagerHandler;
+
+    private RunService $runService;
 
     public function setUp(): void
     {
         $this->messageBus = new MessageBusMock();
+        $this->context = Context::createDefaultContext();
 
-        $runService = new RunService(
-            new RunRepoMock(),
-            new RunLogRepoMock(),
-            new Logger('test')
-        );
+        /** @var RunService $runService */
+        $runService = $this->getContainer()->get(RunService::class);
+        $this->runService = $runService;
 
         $this->task = new CompleteTask($this->messageBus, $runService);
 
@@ -80,24 +60,23 @@ class SyncManagerTest extends TestCase
 
         $imageSyncer = $this->createMock(ImageSyncManager::class);
         $imageSyncer
-            ->expects(static::once())
-            ->method('buildMessages')
-            ->with($this->salesChannel, $this->context, static::isType(IsType::TYPE_STRING));
+            ->method('createMessages')
+            ->with($this->salesChannel, $this->context, static::isType(IsType::TYPE_STRING))
+            ->willReturn(0);
         $inventorySyncer = $this->createMock(InventorySyncManager::class);
         $inventorySyncer
-            ->expects(static::once())
-            ->method('buildMessages')
-            ->with($this->salesChannel, $this->context, static::isType(IsType::TYPE_STRING));
+            ->method('createMessages')
+            ->with($this->salesChannel, $this->context, static::isType(IsType::TYPE_STRING))
+            ->willReturn(0);
         $productSyncer = $this->createMock(ProductSyncManager::class);
         $productSyncer
-            ->expects(static::exactly(2))
-            ->method('buildMessages')
-            ->with($this->salesChannel, $this->context, static::isType(IsType::TYPE_STRING));
+            ->method('createMessages')
+            ->with($this->salesChannel, $this->context, static::isType(IsType::TYPE_STRING))
+            ->willReturn(1, 0);
 
         $this->syncManagerHandler = new SyncManagerHandler(
             $this->messageBus,
-            $this->messageBus->getMessageQueueStatsRepository(),
-            $runService,
+            $this->runService,
             new NullLogger(),
             $imageSyncer,
             $inventorySyncer,
@@ -105,51 +84,44 @@ class SyncManagerTest extends TestCase
         );
     }
 
-    public function testStart(): void
+    public function testWaitOnce(): void
     {
-        $this->task->execute($this->salesChannel, $this->context);
+        $runId = $this->task->execute($this->salesChannel, $this->context);
+        $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_IN_PROGRESS, 0, $runId);
 
-        $this->messageBus->execute([$this->syncManagerHandler]);
-    }
-
-    public function dataProviderWaitingMessageClasses(): array
-    {
-        return [
-            [CloneVisibilityMessage::class, true],
-            [ImageSyncMessage::class, true],
-            [InventorySyncMessage::class, true],
-            [ProductSingleSyncMessage::class, true],
-            [ProductVariantSyncMessage::class, true],
-            [ProductCleanupSyncMessage::class, true],
-            [InventorySyncTask::class, false],
-        ];
-    }
-
-    /**
-     * @dataProvider dataProviderWaitingMessageClasses
-     */
-    public function testWait(string $waitingClass, bool $waits): void
-    {
-        static::assertSame(0, $this->messageBus->getMessageQueueStatsRepository()->getTotalWaitingMessages());
-
-        $this->task->execute($this->salesChannel, $this->context);
-        $this->messageBus->getMessageQueueStatsRepository()->modifyMessageStat($waitingClass, 1);
-
-        static::assertSame(2, $this->messageBus->getMessageQueueStatsRepository()->getTotalWaitingMessages());
+        $this->runService->setMessageCount(1, $runId, $this->context);
         $this->assertMessageStep(0);
+        $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_IN_PROGRESS, 1, $runId);
 
         $this->messageBus->execute([$this->syncManagerHandler], false);
 
-        $this->assertMessageStep($waits ? 0 : 1);
-        $this->messageBus->getMessageQueueStatsRepository()->modifyMessageStat($waitingClass, -1);
+        $this->assertMessageStep(0);
+        $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_IN_PROGRESS, 1, $runId);
+        $this->runService->decrementMessageCount($runId);
+        $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_IN_PROGRESS, 0, $runId);
+
+        $this->messageBus->execute([$this->syncManagerHandler], false);
         static::assertSame(1, $this->messageBus->getMessageQueueStatsRepository()->getTotalWaitingMessages());
-
-        $this->messageBus->execute([$this->syncManagerHandler], false);
-        $this->assertMessageStep($waits ? 1 : 2);
+        $this->assertMessageStep(1);
+        $this->runService->decrementMessageCount($runId);
 
         $this->messageBus->execute([$this->syncManagerHandler]);
-
         static::assertSame(0, $this->messageBus->getMessageQueueStatsRepository()->getTotalWaitingMessages());
+        $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_FINISHED, 0, $runId);
+    }
+
+    public function testWaitForeverAndAbort(): void
+    {
+        $runId = $this->task->execute($this->salesChannel, $this->context);
+        $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_IN_PROGRESS, 0, $runId);
+
+        $this->runService->setMessageCount(1, $runId, $this->context);
+        $this->assertMessageStep(0);
+        $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_IN_PROGRESS, 1, $runId);
+
+        $this->messageBus->execute([$this->syncManagerHandler]);
+        static::assertSame(0, $this->messageBus->getMessageQueueStatsRepository()->getTotalWaitingMessages());
+        $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_FAILED, 0, $runId);
     }
 
     private function assertMessageStep(int $int): void
@@ -159,5 +131,18 @@ class SyncManagerTest extends TestCase
         $message = $envelope->getMessage();
         static::assertInstanceOf(SyncManagerMessage::class, $message);
         static::assertSame($int, $message->getCurrentStep());
+    }
+
+    private function assertRunStatus(string $status, int $count, string $runId): void
+    {
+        /** @var EntityRepositoryInterface $runRepository */
+        $runRepository = $this->getContainer()->get('swag_paypal_pos_sales_channel_run.repository');
+
+        /** @var PosSalesChannelRunEntity|null $run */
+        $run = $runRepository->search(new Criteria([$runId]), $this->context)->first();
+        static::assertNotNull($run);
+
+        static::assertSame($count, $run->getMessageCount());
+        static::assertSame($status, $run->getStatus());
     }
 }

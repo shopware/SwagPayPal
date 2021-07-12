@@ -29,6 +29,7 @@
                 <file name="src/Webhook/Handler/*.php"/>
                 <file name="src/Pos/Sync/Product/Util/ProductGroupingCollection.php"/>
                 <file name="src/Pos/DataAbstractionLayer/Entity/*Collection.php"/>
+                <file name="src/Pos/MessageQueue/Handler/*Handler.php"/>
                 <file name="src/Pos/MessageQueue/Handler/Sync/*Handler.php"/>
                 <file name="src/Pos/Webhook/Handler/*Handler.php"/>
             </errorLevel>
@@ -95,6 +96,8 @@
                 <referencedMethod name="Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface::getToken"/>
                 <referencedMethod name="Swag\PayPal\Webhook\WebhookServiceInterface::deregisterWebhook"/>
                 <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber::addExpressCheckoutDataToCmsPage"/>
+                <referencedMethod name="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity::getAbortedByUser"/>
+                <referencedMethod name="Swag\PayPal\Pos\Run\RunService::finishRun"/>
             </errorLevel>
         </DeprecatedMethod>
 
@@ -117,6 +120,7 @@
                 <referencedProperty name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::$systemConfigService"/>
                 <referencedProperty name="Swag\PayPal\PaymentsApi\Builder\AbstractPaymentBuilder::$settingsService"/>
                 <referencedProperty name="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper::$settingsService"/>
+                <referencedProperty name="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity::$abortedByUser"/>
             </errorLevel>
         </DeprecatedProperty>
 

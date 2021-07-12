@@ -23,5 +23,13 @@ abstract class AbstractSyncManager
         $this->messageBus = $messageBus;
     }
 
-    abstract public function buildMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): void;
+    /**
+     * @deprecated tag:v4.0.0 - will be removed, use and/or implement createMessages instead
+     */
+    public function buildMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): void
+    {
+        $this->createMessages($salesChannel, $context, $runId);
+    }
+
+    abstract public function createMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): int;
 }

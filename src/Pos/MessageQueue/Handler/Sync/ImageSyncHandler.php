@@ -18,15 +18,9 @@ use Swag\PayPal\Pos\Sync\ImageSyncer;
 
 class ImageSyncHandler extends AbstractSyncHandler
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $posMediaRepository;
+    private EntityRepositoryInterface $posMediaRepository;
 
-    /**
-     * @var ImageSyncer
-     */
-    private $imageSyncer;
+    private ImageSyncer $imageSyncer;
 
     public function __construct(
         RunService $runService,

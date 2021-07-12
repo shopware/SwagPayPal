@@ -5,14 +5,14 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Swag\PayPal\Pos\MessageQueue\Handler\CloneVisibilityHandler">
+        <service id="Swag\PayPal\Pos\MessageQueue\Handler\CloneVisibilityHandler"
+                 parent="Swag\PayPal\Pos\MessageQueue\Handler\Sync\AbstractSyncHandler">
             <argument type="service" id="product_visibility.repository"/>
             <tag name="messenger.message_handler" />
         </service>
 
         <service id="Swag\PayPal\Pos\MessageQueue\Handler\SyncManagerHandler">
             <argument type="service" id="messenger.bus.shopware"/>
-            <argument type="service" id="message_queue_stats.repository"/>
             <argument type="service" id="Swag\PayPal\Pos\Run\RunService"/>
             <argument type="service" id="Swag\PayPal\Pos\Run\Logger"/>
             <argument type="service" id="Swag\PayPal\Pos\MessageQueue\Manager\ImageSyncManager"/>

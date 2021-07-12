@@ -133,7 +133,7 @@ Component.register('swag-paypal-pos', {
         loadLastRun(needComplete = false) {
             const criteria = new Criteria(1, 1);
             criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
-            criteria.addFilter(Criteria.not('AND', [Criteria.equals('finishedAt', null)]));
+            criteria.addFilter(Criteria.not('AND', [Criteria.equals('status', 'in_progress')]));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
 
             if (needComplete) {

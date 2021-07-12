@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
+use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -44,7 +45,6 @@ use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\InventorySyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\Pos\Resource\InventoryResource;
-use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\Inventory\StockSubscriber;
 use Swag\PayPal\Pos\Sync\ProductSelection;
@@ -59,6 +59,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
+use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 use Symfony\Component\Messenger\MessageBus;
 
 class StockSubscriberTest extends TestCase
@@ -166,9 +167,10 @@ class StockSubscriberTest extends TestCase
             $inventoryContextFactory
         );
 
-        $runService = new RunService(
+        $runService = new RunServiceMock(
             new RunRepoMock(),
             new RunLogRepoMock(),
+            $this->createMock(Connection::class),
             new Logger('test')
         );
 

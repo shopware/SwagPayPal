@@ -150,16 +150,34 @@ PHPUnit:
         matrix:
             -   MYSQL_IMAGE: mariadb:10.4
                 DEV_IMAGE: shopware/development:8.0-composer-2
-                CORE_BRANCH: [ "6.4.0.0", "6.4.2.0", "trunk" ]
+                CORE_BRANCH: [ "6.4.2.1", "trunk" ]
+            -   MYSQL_IMAGE: mariadb:10.4
+                DEV_IMAGE: shopware/development:8.0-composer-2
+                CORE_BRANCH: "6.4.0.0"
+                CMS_EXTENSION_BRANCH: "2.1-sw6.4.0.0"
             -   MYSQL_IMAGE:
                     - mysql:5.7
                     - mariadb:10.3
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                CORE_BRANCH: [ "6.4.0.0", "6.4.2.0", "trunk" ]
+                CORE_BRANCH: [ "6.4.2.1", "trunk" ]
+                RUN_IN_MR: "false"
+            -   MYSQL_IMAGE:
+                    - mysql:5.7
+                    - mariadb:10.3
+                DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
+                CORE_BRANCH: "6.4.0.0"
+                CMS_EXTENSION_BRANCH: "2.1-sw6.4.0.0"
                 RUN_IN_MR: "false"
             -   MYSQL_IMAGE:
                     - mysql:8.0.19
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                CORE_BRANCH: [ "6.4.0.0", "6.4.2.0", "trunk" ]
+                CORE_BRANCH: [ "6.4.2.1", "trunk" ]
+                MYSQL_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
+                RUN_IN_MR: "false"
+            -   MYSQL_IMAGE:
+                    - mysql:8.0.19
+                DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
+                CORE_BRANCH: "6.4.0.0"
+                CMS_EXTENSION_BRANCH: "2.1-sw6.4.0.0"
                 MYSQL_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
                 RUN_IN_MR: "false"

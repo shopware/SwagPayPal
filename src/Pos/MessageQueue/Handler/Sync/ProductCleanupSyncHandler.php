@@ -22,25 +22,13 @@ class ProductCleanupSyncHandler extends AbstractSyncHandler
 {
     use PosSalesChannelTrait;
 
-    /**
-     * @var ProductSelection
-     */
-    private $productSelection;
+    private ProductSelection $productSelection;
 
-    /**
-     * @var SalesChannelRepositoryInterface
-     */
-    private $productRepository;
+    private SalesChannelRepositoryInterface $productRepository;
 
-    /**
-     * @var ProductSyncer
-     */
-    private $productSyncer;
+    private ProductSyncer $productSyncer;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $posSalesChannelRepository;
+    private EntityRepositoryInterface $posSalesChannelRepository;
 
     public function __construct(
         RunService $runService,

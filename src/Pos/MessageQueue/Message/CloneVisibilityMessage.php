@@ -10,7 +10,7 @@ namespace Swag\PayPal\Pos\MessageQueue\Message;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits\OffsetTrait;
 
-class CloneVisibilityMessage
+class CloneVisibilityMessage extends AbstractSyncMessage
 {
     use OffsetTrait;
 

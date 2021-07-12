@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Sync;
 
+use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -27,7 +28,6 @@ use Swag\PayPal\Pos\Exception\MediaDomainNotSetException;
 use Swag\PayPal\Pos\MessageQueue\Handler\Sync\ImageSyncHandler;
 use Swag\PayPal\Pos\MessageQueue\Manager\ImageSyncManager;
 use Swag\PayPal\Pos\Resource\ImageResource;
-use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\ImageSyncer;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
@@ -36,6 +36,7 @@ use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\PosMediaRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
+use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 
 class ImageSyncerTest extends TestCase
 {
@@ -90,9 +91,10 @@ class ImageSyncerTest extends TestCase
         );
 
         $messageBus = new MessageBusMock();
-        $runService = new RunService(
+        $runService = new RunServiceMock(
             new RunRepoMock(),
             new RunLogRepoMock(),
+            $this->createMock(Connection::class),
             new Logger('test')
         );
 
@@ -112,7 +114,7 @@ class ImageSyncerTest extends TestCase
 
         $runId = $runService->startRun(Defaults::SALES_CHANNEL, 'image', $context);
 
-        $imageSyncManager->buildMessages($salesChannel, $context, $runId);
+        $imageSyncManager->createMessages($salesChannel, $context, $runId);
         $messageBus->execute([$imageSyncHandler]);
 
         static::assertSame(self::POS_IMAGE_URL, $mediaA->getUrl());
@@ -145,9 +147,10 @@ class ImageSyncerTest extends TestCase
         );
 
         $messageBus = new MessageBusMock();
-        $runService = new RunService(
+        $runService = new RunServiceMock(
             new RunRepoMock(),
             new RunLogRepoMock(),
+            $this->createMock(Connection::class),
             new Logger('test')
         );
 
@@ -161,7 +164,7 @@ class ImageSyncerTest extends TestCase
         $runId = $runService->startRun(Defaults::SALES_CHANNEL, 'image', $context);
 
         $this->expectException(MediaDomainNotSetException::class);
-        $imageSyncManager->buildMessages($salesChannel, $context, $runId);
+        $imageSyncManager->createMessages($salesChannel, $context, $runId);
     }
 
     private function createUrlGenerator(): UrlGeneratorInterface
