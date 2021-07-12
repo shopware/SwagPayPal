@@ -20,19 +20,20 @@ use Swag\PayPal\Setting\Settings;
 class LoggerFactory
 {
     protected const DEFAULT_LEVEL = Logger::WARNING;
-    private const LOG_FORMAT = "[%datetime%] %channel%.%level_name%: %extra.class%::%extra.function% (%extra.line%): %message% %context% %extra%\n";
-    private const ALLOWED_LOG_LEVEL = [
+    protected const ALLOWED_LOG_LEVEL = [
         Logger::DEBUG,
         Logger::INFO,
+        Logger::NOTICE,
         Logger::WARNING,
         Logger::ERROR,
         Logger::CRITICAL,
         Logger::ALERT,
         Logger::EMERGENCY,
     ];
+    private const LOG_FORMAT = "[%datetime%] %channel%.%level_name%: %extra.class%::%extra.function% (%extra.line%): %message% %context% %extra%\n";
 
     /**
-     * @phpstan-var Logger::DEBUG|Logger::INFO|Logger::WARNING|Logger::ERROR|Logger::CRITICAL|Logger::ALERT|Logger::EMERGENCY
+     * @phpstan-var Logger::DEBUG|Logger::INFO|Logger::NOTICE|Logger::WARNING|Logger::ERROR|Logger::CRITICAL|Logger::ALERT|Logger::EMERGENCY
      */
     protected int $logLevel = self::DEFAULT_LEVEL;
 
