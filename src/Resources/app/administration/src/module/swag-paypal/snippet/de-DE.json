@@ -139,7 +139,8 @@
                         "blue": "Blau",
                         "black": "Schwarz",
                         "gold": "Gold",
-                        "silver": "Silber"
+                        "silver": "Silber",
+                        "white": "Weiß"
                     }
                 },
                 "ecsButtonShape": {
