@@ -14,15 +14,9 @@ use Swag\PayPal\Pos\Run\RunService;
 
 abstract class AbstractSyncHandler extends AbstractMessageHandler
 {
-    /**
-     * @var RunService
-     */
-    private $runService;
+    private RunService $runService;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         RunService $runService,
@@ -50,6 +44,7 @@ abstract class AbstractSyncHandler extends AbstractMessageHandler
             $this->logger->critical($e->__toString());
             $this->runService->finishRun($runId, $context);
         } finally {
+            $this->runService->decrementMessageCount($runId);
             $this->runService->writeLog($runId, $context);
         }
     }

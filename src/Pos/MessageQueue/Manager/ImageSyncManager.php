@@ -45,7 +45,7 @@ class ImageSyncManager extends AbstractSyncManager
         $this->imageSyncer = $imageSyncer;
     }
 
-    public function buildMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): void
+    public function createMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): int
     {
         $domain = $this->getPosSalesChannel($salesChannel)->getMediaDomain();
 
@@ -63,6 +63,7 @@ class ImageSyncManager extends AbstractSyncManager
         }
 
         $offset = 0;
+        $messageCount = 0;
 
         while ($offset < $aggregate->getCount()) {
             $message = new ImageSyncMessage();
@@ -72,8 +73,11 @@ class ImageSyncManager extends AbstractSyncManager
             $message->setOffset($offset);
             $message->setSalesChannel($salesChannel);
             $this->messageBus->dispatch($message);
+            ++$messageCount;
 
             $offset += self::CHUNK_SIZE;
         }
+
+        return $messageCount;
     }
 }

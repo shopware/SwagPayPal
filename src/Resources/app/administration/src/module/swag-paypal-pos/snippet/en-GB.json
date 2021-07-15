@@ -113,10 +113,12 @@
                 "productTask": "Product",
                 "inventoryTask": "Inventory",
                 "imageTask": "Image",
+                "cloneVisibilityTask": "Product visibility",
                 "states": {
                     "withWarnings": "Completed with warnings",
                     "successful": "Completed",
-                    "aborted": "Aborted by user"
+                    "aborted": "Aborted by user",
+                    "failed": "Failed"
                 },
                 "actions": {
                     "showDetails": "Show details"

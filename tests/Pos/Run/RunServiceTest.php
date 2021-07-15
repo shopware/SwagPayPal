@@ -7,73 +7,75 @@
 
 namespace Swag\PayPal\Test\Pos\Run;
 
+use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogEntity;
 use Swag\PayPal\Pos\Run\LoggerFactory;
 use Swag\PayPal\Pos\Run\RunService;
-use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
-use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 
 class RunServiceTest extends TestCase
 {
+    use IntegrationTestBehaviour;
+
     private const TEST_MESSAGE = 'test';
 
-    /**
-     * @var RunRepoMock
-     */
-    private $runRepository;
+    private EntityRepositoryInterface $runRepository;
 
-    /**
-     * @var RunLogRepoMock
-     */
-    private $logRepository;
+    private EntityRepositoryInterface $logRepository;
 
-    /**
-     * @var Logger
-     */
-    private $logger;
+    private Logger $logger;
 
-    /**
-     * @var RunService
-     */
-    private $runService;
+    private RunService $runService;
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
     public function setUp(): void
     {
-        $this->runRepository = new RunRepoMock();
-        $this->logRepository = new RunLogRepoMock();
+        /** @var EntityRepositoryInterface $runRepository */
+        $runRepository = $this->getContainer()->get('swag_paypal_pos_sales_channel_run.repository');
+        $this->runRepository = $runRepository;
+        /** @var EntityRepositoryInterface $logRepository */
+        $logRepository = $this->getContainer()->get('swag_paypal_pos_sales_channel_run_log.repository');
+        $this->logRepository = $logRepository;
+        /** @var Connection $connection */
+        $connection = $this->getContainer()->get(Connection::class);
         $this->context = Context::createDefaultContext();
 
         $this->logger = (new LoggerFactory())->createLogger();
-        $this->runService = new RunService($this->runRepository, $this->logRepository, $this->logger);
+        $this->runService = new RunService($this->runRepository, $this->logRepository, $connection, $this->logger);
     }
 
     public function testLogProcessAddLogWithoutProduct(): void
     {
-        $run = $this->runRepository->getFirstRun();
-        static::assertNull($run);
+        $context = Context::createDefaultContext();
         $runId = $this->runService->startRun(Defaults::SALES_CHANNEL, 'complete', $this->context);
-        $run = $this->runRepository->getFirstRun();
-        static::assertNotNull($run);
+        static::assertNotNull($this->runRepository->searchIds(new Criteria([$runId]), $context)->firstId());
 
         $this->logger->info(self::TEST_MESSAGE);
 
         $this->runService->writeLog($runId, $this->context);
         $this->runService->finishRun($runId, $this->context);
 
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
+        static::assertNotNull($run);
+        static::assertInstanceOf(PosSalesChannelRunEntity::class, $run);
         static::assertNotNull($run->getFinishedAt());
 
-        $logEntry = $this->logRepository->getCollection()->first();
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('runId', $runId));
+        $logEntry = $this->logRepository->search($criteria, $context)->first();
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
         static::assertEquals(Logger::INFO, $logEntry->getLevel());
@@ -85,25 +87,25 @@ class RunServiceTest extends TestCase
 
     public function testLogProcessAddLogWithProduct(): void
     {
-        $run = $this->runRepository->getFirstRun();
-        static::assertNull($run);
+        $context = Context::createDefaultContext();
         $runId = $this->runService->startRun(Defaults::SALES_CHANNEL, 'complete', $this->context);
-        $run = $this->runRepository->getFirstRun();
-        static::assertNotNull($run);
+        static::assertNotNull($this->runRepository->searchIds(new Criteria([$runId]), $context)->firstId());
 
-        $product = new SalesChannelProductEntity();
-        $product->setId(Uuid::randomHex());
-        $product->setVersionId(Uuid::randomHex());
-        $product->setParentId(Uuid::randomHex());
-
+        $product = $this->createProduct($context);
+        static::assertNotNull($product);
         $this->logger->info(self::TEST_MESSAGE, ['product' => $product]);
 
         $this->runService->writeLog($runId, $this->context);
         $this->runService->finishRun($runId, $this->context);
 
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
+        static::assertNotNull($run);
+        static::assertInstanceOf(PosSalesChannelRunEntity::class, $run);
         static::assertNotNull($run->getFinishedAt());
 
-        $logEntry = $this->logRepository->getCollection()->first();
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('runId', $runId));
+        $logEntry = $this->logRepository->search($criteria, $context)->first();
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
         static::assertEquals(Logger::INFO, $logEntry->getLevel());
@@ -115,20 +117,34 @@ class RunServiceTest extends TestCase
 
     public function testAbortRun(): void
     {
-        $this->runService->startRun(Defaults::SALES_CHANNEL, 'complete', $this->context);
+        $context = Context::createDefaultContext();
+        $runId = $this->runService->startRun(Defaults::SALES_CHANNEL, 'complete', $this->context);
+        static::assertNotNull($this->runRepository->searchIds(new Criteria([$runId]), $context)->firstId());
 
-        $run = $this->runRepository->getFirstRun();
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
         static::assertNotNull($run);
+        static::assertInstanceOf(PosSalesChannelRunEntity::class, $run);
         static::assertNull($run->getFinishedAt());
-        static::assertCount(0, $this->logRepository->getCollection());
+        static::assertSame(PosSalesChannelRunDefinition::STATUS_IN_PROGRESS, $run->getStatus());
         static::assertFalse($run->getAbortedByUser());
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('runId', $runId));
+        $logEntry = $this->logRepository->search($criteria, $context)->first();
+        static::assertNull($logEntry);
 
         $this->runService->abortRun($run->getId(), $this->context);
 
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
+        static::assertNotNull($run);
+        static::assertInstanceOf(PosSalesChannelRunEntity::class, $run);
         static::assertNotNull($run->getFinishedAt());
+        static::assertSame(PosSalesChannelRunDefinition::STATUS_CANCELLED, $run->getStatus());
         static::assertTrue($run->getAbortedByUser());
 
-        $logEntry = $this->logRepository->getCollection()->first();
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('runId', $runId));
+        $logEntry = $this->logRepository->search($criteria, $context)->first();
         static::assertNotNull($logEntry);
         static::assertInstanceOf(PosSalesChannelRunLogEntity::class, $logEntry);
         static::assertEquals(Logger::EMERGENCY, $logEntry->getLevel());
@@ -150,5 +166,39 @@ class RunServiceTest extends TestCase
     public function testIsRunActiveNoRun(): void
     {
         static::assertFalse($this->runService->isRunActive(Uuid::randomHex(), $this->context));
+    }
+
+    protected function createProduct(Context $context): ?ProductEntity
+    {
+        /** @var EntityRepositoryInterface $productRepository */
+        $productRepository = $this->getContainer()->get('product.repository');
+
+        $data = [
+            'name' => 'Test product',
+            'productNumber' => '123456789',
+            'stock' => 1,
+            'price' => [
+                ['currencyId' => Defaults::CURRENCY, 'gross' => 19.99, 'net' => 10, 'linked' => false],
+            ],
+            'manufacturer' => ['name' => 'shopware AG'],
+            'tax' => ['id' => $this->getValidTaxId(), 'name' => 'testTaxRate', 'taxRate' => 15],
+            'categories' => [
+                ['name' => 'Test category'],
+            ],
+            'visibilities' => [
+                [
+                    'salesChannelId' => Defaults::SALES_CHANNEL,
+                    'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
+                ],
+            ],
+        ];
+
+        $data['parent'] = $data;
+        $data['id'] = Uuid::randomHex();
+        $data['productNumber'] = 'aProductNumber';
+
+        $productRepository->upsert([$data], $context);
+
+        return $productRepository->search(new Criteria([$data['id']]), $context)->first();
     }
 }

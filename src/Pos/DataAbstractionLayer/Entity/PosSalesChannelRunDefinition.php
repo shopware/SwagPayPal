@@ -8,13 +8,13 @@
 namespace Swag\PayPal\Pos\DataAbstractionLayer\Entity;
 
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\Field\BoolField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\DateTimeField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\FkField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\CascadeDelete;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
@@ -23,6 +23,11 @@ use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 class PosSalesChannelRunDefinition extends EntityDefinition
 {
     public const ENTITY_NAME = 'swag_paypal_pos_sales_channel_run';
+
+    public const STATUS_IN_PROGRESS = 'in_progress';
+    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_FAILED = 'failed';
+    public const STATUS_FINISHED = 'finished';
 
     public function getEntityName(): string
     {
@@ -39,6 +44,14 @@ class PosSalesChannelRunDefinition extends EntityDefinition
         return PosSalesChannelRunCollection::class;
     }
 
+    public function getDefaults(): array
+    {
+        return [
+            'status' => self::STATUS_IN_PROGRESS,
+            'messageCount' => 0,
+        ];
+    }
+
     protected function defineFields(): FieldCollection
     {
         return new FieldCollection([
@@ -46,8 +59,9 @@ class PosSalesChannelRunDefinition extends EntityDefinition
             (new FkField('sales_channel_id', 'salesChannelId', SalesChannelDefinition::class))->addFlags(new Required()),
 
             (new StringField('task', 'task', 16))->addFlags(new Required()),
+            (new StringField('status', 'status'))->addFlags(new Required()),
+            (new IntField('message_count', 'messageCount'))->addFlags(new Required()),
             (new DateTimeField('finished_at', 'finishedAt')),
-            new BoolField('aborted_by_user', 'abortedByUser'),
 
             (new OneToManyAssociationField('logs', PosSalesChannelRunLogDefinition::class, 'run_id'))->addFlags(new CascadeDelete()),
         ]);

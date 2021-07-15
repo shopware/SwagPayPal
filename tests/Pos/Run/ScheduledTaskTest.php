@@ -7,16 +7,17 @@
 
 namespace Swag\PayPal\Test\Pos\Run;
 
+use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogCollection;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\Pos\Run\Administration\LogCleaner;
-use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Run\Task\CompleteTask;
 use Swag\PayPal\Pos\Run\Task\InventoryTask;
 use Swag\PayPal\Pos\Schedule\CleanUpLogTask;
@@ -29,9 +30,12 @@ use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
+use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 
 class ScheduledTaskTest extends TestCase
 {
+    use IntegrationTestBehaviour;
+
     public function testCompleteSync(): void
     {
         $salesChannelRepoMock = new SalesChannelRepoMock();
@@ -39,7 +43,7 @@ class ScheduledTaskTest extends TestCase
 
         $messageBus = new MessageBusMock();
         $runRepository = new RunRepoMock();
-        $runService = new RunService($runRepository, new RunLogRepoMock(), new Logger('test'));
+        $runService = new RunServiceMock($runRepository, new RunLogRepoMock(), $this->createMock(Connection::class), new Logger('test'));
         $completeTask = new CompleteTask($messageBus, $runService);
 
         $taskHandler = new CompleteSyncTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $completeTask);
@@ -65,7 +69,7 @@ class ScheduledTaskTest extends TestCase
 
         $messageBus = new MessageBusMock();
         $runRepository = new RunRepoMock();
-        $runService = new RunService($runRepository, new RunLogRepoMock(), new Logger('test'));
+        $runService = new RunServiceMock($runRepository, new RunLogRepoMock(), $this->createMock(Connection::class), new Logger('test'));
         $inventoryTask = new InventoryTask($messageBus, $runService);
 
         $taskHandler = new InventorySyncTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $inventoryTask);

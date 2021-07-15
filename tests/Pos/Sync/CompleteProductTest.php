@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Sync;
 
+use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -46,7 +47,6 @@ use Swag\PayPal\Pos\MessageQueue\Handler\Sync\ProductVariantSyncHandler;
 use Swag\PayPal\Pos\MessageQueue\Manager\ProductSyncManager;
 use Swag\PayPal\Pos\Resource\ImageResource;
 use Swag\PayPal\Pos\Resource\ProductResource;
-use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 use Swag\PayPal\Pos\Sync\Context\ProductContextFactory;
 use Swag\PayPal\Pos\Sync\ImageSyncer;
@@ -71,6 +71,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
+use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 
 class CompleteProductTest extends TestCase
 {
@@ -108,9 +109,10 @@ class CompleteProductTest extends TestCase
 
         $messageBus = new MessageBusMock();
 
-        $runService = new RunService(
+        $runService = new RunServiceMock(
             new RunRepoMock(),
             new RunLogRepoMock(),
+            $this->createMock(Connection::class),
             new Logger('test')
         );
 
@@ -244,7 +246,7 @@ class CompleteProductTest extends TestCase
         $existingMedia = $posMediaRepository->createMockEntity($mediaA, Defaults::SALES_CHANNEL, 'lookupKey', self::MEDIA_UPLOADED_URL);
         $removeableMedia = $posMediaRepository->createMockEntity($mediaC, Defaults::SALES_CHANNEL);
 
-        $productSyncManager->buildMessages(
+        $productSyncManager->createMessages(
             $salesChannel,
             $context,
             $runService->startRun(Defaults::SALES_CHANNEL, 'product', $context)

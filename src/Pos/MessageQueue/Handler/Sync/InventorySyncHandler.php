@@ -19,20 +19,11 @@ use Swag\PayPal\Pos\Sync\InventorySyncer;
 
 class InventorySyncHandler extends AbstractSyncHandler
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $productRepository;
+    private EntityRepositoryInterface $productRepository;
 
-    /**
-     * @var InventoryContextFactory
-     */
-    private $inventoryContextFactory;
+    private InventoryContextFactory $inventoryContextFactory;
 
-    /**
-     * @var InventorySyncer
-     */
-    private $inventorySyncer;
+    private InventorySyncer $inventorySyncer;
 
     public function __construct(
         RunService $runService,

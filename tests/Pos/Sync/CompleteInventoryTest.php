@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Sync;
 
+use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -21,7 +22,6 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\MessageQueue\Handler\Sync\InventorySyncHandler;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\Pos\Resource\InventoryResource;
-use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalCalculator;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\RemoteCalculator;
@@ -39,6 +39,7 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\ProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
+use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 
 class CompleteInventoryTest extends TestCase
 {
@@ -59,7 +60,7 @@ class CompleteInventoryTest extends TestCase
         );
 
         /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get('Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory');
+        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
 
         $messageBus = new MessageBusMock();
 
@@ -74,9 +75,10 @@ class CompleteInventoryTest extends TestCase
             $inventoryContextFactory
         );
 
-        $runService = new RunService(
+        $runService = new RunServiceMock(
             new RunRepoMock(),
             new RunLogRepoMock(),
+            $this->createMock(Connection::class),
             new Logger('test')
         );
 
@@ -148,7 +150,7 @@ class CompleteInventoryTest extends TestCase
         $inventoryRepository->createMockEntity($productE, Defaults::SALES_CHANNEL, 4);
         $inventoryRepository->createMockEntity($productG, Defaults::SALES_CHANNEL, 3);
 
-        $inventorySyncManager->buildMessages(
+        $inventorySyncManager->createMessages(
             $salesChannel,
             $context,
             $runService->startRun(Defaults::SALES_CHANNEL, 'inventory', $context)

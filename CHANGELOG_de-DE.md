@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.3.2)
+- PPI-321 - Verbessert den Ablauf bei Zettle-Synchronisationen
 - PPI-322 - Verbessert das Entfernen von PayPal von den verfügbaren Zahlungsarten, wenn die Zugangsdaten ungültig sind
 
 # 3.3.1

@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
@@ -28,6 +29,15 @@ class RunRepoMock extends AbstractRepoMock implements EntityRepositoryInterface
 
     public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
     {
+        $sum = 0;
+        /** @var PosSalesChannelRunEntity $entity */
+        foreach ($this->search($criteria, $context)->getEntities() as $entity) {
+            $sum += $entity->getMessageCount();
+        }
+
+        return new AggregationResultCollection([
+            new SumResult('totalMessages', $sum),
+        ]);
     }
 
     public function searchIds(Criteria $criteria, Context $context): IdSearchResult

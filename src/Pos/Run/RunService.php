@@ -7,37 +7,36 @@
 
 namespace Swag\PayPal\Pos\Run;
 
+use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\SumAggregation;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 
 class RunService
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $runRepository;
+    private EntityRepositoryInterface $runRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $logRepository;
+    private EntityRepositoryInterface $logRepository;
 
-    /**
-     * @var Logger
-     */
-    private $logger;
+    private Connection $connection;
+
+    private Logger $logger;
 
     public function __construct(
         EntityRepositoryInterface $runRepository,
         EntityRepositoryInterface $logRepository,
+        Connection $connection,
         Logger $logger
     ) {
         $this->runRepository = $runRepository;
         $this->logRepository = $logRepository;
+        $this->connection = $connection;
         $this->logger = $logger;
     }
 
@@ -78,15 +77,21 @@ class RunService
         $logHandler->flush();
     }
 
-    public function finishRun(string $runId, Context $context, bool $abortedByUser = false): void
+    /**
+     * @deprecated tag:v4.0.0 - parameter $abortedByUser will be removed, use $status = PosSalesChannelRunDefinition::STATUS_CANCELLED
+     */
+    public function finishRun(string $runId, Context $context, bool $abortedByUser = false, string $status = PosSalesChannelRunDefinition::STATUS_FINISHED): void
     {
         $data = [
             'id' => $runId,
             'finishedAt' => new \DateTime(),
+            'status' => $status,
+            'messageCount' => 0,
         ];
 
         if ($abortedByUser) {
             $data['abortedByUser'] = true;
+            $data['status'] = PosSalesChannelRunDefinition::STATUS_CANCELLED;
         }
 
         $this->runRepository->update([$data], $context);
@@ -96,7 +101,7 @@ class RunService
     {
         $this->logger->emergency('This sync has been aborted.');
         $this->writeLog($runId, $context);
-        $this->finishRun($runId, $context, true);
+        $this->finishRun($runId, $context, true, PosSalesChannelRunDefinition::STATUS_CANCELLED);
     }
 
     public function isRunActive(string $runId, Context $context): bool
@@ -108,7 +113,38 @@ class RunService
             return false;
         }
 
-        return $run->getFinishedAt() === null;
+        return $run->getStatus() === PosSalesChannelRunDefinition::STATUS_IN_PROGRESS;
+    }
+
+    public function getActualMessageCount(Context $context): int
+    {
+        $criteria = new Criteria();
+        $criteria->addAggregation(new SumAggregation('totalMessages', 'messageCount'));
+
+        /** @var SumResult|null $queued */
+        $queued = $this->runRepository->aggregate($criteria, $context)->get('totalMessages');
+
+        if ($queued === null || $queued->getSum() <= 0) {
+            return 0;
+        }
+
+        return (int) $queued->getSum();
+    }
+
+    public function setMessageCount(int $messageCount, string $runId, Context $context): void
+    {
+        $this->runRepository->update([[
+            'id' => $runId,
+            'messageCount' => $messageCount,
+        ]], $context);
+    }
+
+    public function decrementMessageCount(string $runId): void
+    {
+        $this->connection->executeUpdate(
+            'UPDATE `swag_paypal_pos_sales_channel_run` SET `message_count` = GREATEST(0, `message_count` - 1) WHERE `id` = :runId',
+            ['runId' => Uuid::fromHexToBytes($runId)],
+        );
     }
 
     private function getLogHandler(): ?LogHandler

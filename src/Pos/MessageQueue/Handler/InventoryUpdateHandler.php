@@ -23,25 +23,13 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class InventoryUpdateHandler extends AbstractMessageHandler
 {
-    /**
-     * @var RunService
-     */
-    private $runService;
+    private RunService $runService;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
-    /**
-     * @var InventorySyncManager
-     */
-    private $inventorySyncManager;
+    private InventorySyncManager $inventorySyncManager;
 
-    /**
-     * @var MessageBusInterface
-     */
-    private $messageBus;
+    private MessageBusInterface $messageBus;
 
     public function __construct(
         RunService $runService,
@@ -65,7 +53,9 @@ class InventoryUpdateHandler extends AbstractMessageHandler
         foreach ($this->getSalesChannels($context) as $salesChannel) {
             $runId = $this->runService->startRun($salesChannel->getId(), InventoryTask::TASK_NAME_INVENTORY, $context);
 
-            $this->inventorySyncManager->buildMessages($salesChannel, $context, $runId, $message->getIds());
+            $messageCount = $this->inventorySyncManager->createMessages($salesChannel, $context, $runId, $message->getIds());
+
+            $this->runService->setMessageCount($messageCount, $runId, $context);
 
             $managerMessage = new SyncManagerMessage();
             $managerMessage->setContext($context);

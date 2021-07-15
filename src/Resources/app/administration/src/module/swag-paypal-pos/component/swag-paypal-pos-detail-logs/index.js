@@ -90,7 +90,7 @@ Component.register('swag-paypal-pos-detail-logs', {
         },
 
         getLabelVariantForItem(item) {
-            if (item.posSalesChannelRun && item.posSalesChannelRun.abortedByUser) {
+            if (item.posSalesChannelRun && item.posSalesChannelRun.status === 'cancelled') {
                 return 'info';
             }
 
@@ -98,7 +98,7 @@ Component.register('swag-paypal-pos-detail-logs', {
         },
 
         getLabelForItem(item) {
-            if (item.posSalesChannelRun && item.posSalesChannelRun.abortedByUser) {
+            if (item.posSalesChannelRun && item.posSalesChannelRun.status === 'cancelled') {
                 return 'swag-paypal-pos.detail.logs.states.aborted';
             }
 

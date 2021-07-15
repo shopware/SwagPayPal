@@ -52,7 +52,7 @@ class InventorySyncManager extends AbstractSyncManager
         $this->inventoryContextFactory = $inventoryContextFactory;
     }
 
-    public function buildMessages(SalesChannelEntity $salesChannel, Context $context, string $runId, ?array $reducedIds = null): void
+    public function createMessages(SalesChannelEntity $salesChannel, Context $context, string $runId, ?array $reducedIds = null): int
     {
         $salesChannelContext = $this->productSelection->getSalesChannelContext($salesChannel);
 
@@ -68,24 +68,30 @@ class InventorySyncManager extends AbstractSyncManager
 
         $productIds = $this->productRepository->searchIds($criteria, $salesChannelContext)->getIds();
         if (empty($productIds)) {
-            return;
+            return 0;
         }
 
         $inventoryContext = $this->inventoryContextFactory->getContext($salesChannel, $context);
 
         $accumulatedIds = [];
+        $messageCount = 0;
+
         foreach ($productIds as $id) {
             $accumulatedIds[] = $id;
 
             if (\count($accumulatedIds) >= self::CHUNK_SIZE) {
                 $this->createMessage($context, $inventoryContext, $salesChannel, $runId, $accumulatedIds, $parentIds);
+                ++$messageCount;
                 $accumulatedIds = [];
             }
         }
 
         if (\count($accumulatedIds) > 0) {
             $this->createMessage($context, $inventoryContext, $salesChannel, $runId, $accumulatedIds, $parentIds);
+            ++$messageCount;
         }
+
+        return $messageCount;
     }
 
     private function createMessage(

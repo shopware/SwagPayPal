@@ -113,10 +113,12 @@
                 "productTask": "Produkt",
                 "inventoryTask": "Inventar",
                 "imageTask": "Bilder",
+                "cloneVisibilityTask": "Produktsichtbarkeit",
                 "states": {
                     "withWarnings": "Mit Warnungen abgeschlossen",
                     "successful": "Abgeschlossen",
-                    "aborted": "Durch Benutzer abgebrochen"
+                    "aborted": "Durch Benutzer abgebrochen",
+                    "failed": "Fehlgeschlagen"
                 },
                 "actions": {
                     "showDetails": "Details anzeigen"

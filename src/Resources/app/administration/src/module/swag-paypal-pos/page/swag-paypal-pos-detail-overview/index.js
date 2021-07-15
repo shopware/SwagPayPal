@@ -102,7 +102,7 @@ Component.register('swag-paypal-pos-detail-overview', {
             }
 
             this.runRepository.get(this.syncingRunId, Shopware.Context.api).then((entity) => {
-                if (entity !== null && entity.finishedAt === null) {
+                if (entity !== null && entity.status === 'in_progress') {
                     setTimeout(this.updateSync, 1500);
                     return;
                 }
@@ -145,7 +145,7 @@ Component.register('swag-paypal-pos-detail-overview', {
 
             const criteria = new Criteria(1, 1);
             criteria.addFilter(Criteria.equals('salesChannelId', this.salesChannel.id));
-            criteria.addFilter(Criteria.equals('finishedAt', null));
+            criteria.addFilter(Criteria.equals('status', 'in_progress'));
             criteria.addSorting(Criteria.sort('createdAt', 'DESC'));
 
             this.runRepository.search(criteria, Shopware.Context.api).then((result) => {

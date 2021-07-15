@@ -34,7 +34,13 @@ class PosSalesChannelRunEntity extends Entity
      */
     protected $finishedAt;
 
+    protected string $status = PosSalesChannelRunDefinition::STATUS_IN_PROGRESS;
+
+    protected int $messageCount = 0;
+
     /**
+     * @deprecated tag:v4.0.0 - will be removed, use status === PosSalesChannelRunDefinition::STATUS_CANCELLED instead
+     *
      * @var bool
      */
     protected $abortedByUser = false;
@@ -79,13 +85,43 @@ class PosSalesChannelRunEntity extends Entity
         $this->finishedAt = $finishedAt;
     }
 
-    public function getAbortedByUser(): bool
+    public function getStatus(): string
     {
-        return $this->abortedByUser;
+        return $this->status;
     }
 
+    public function setStatus(string $status): void
+    {
+        $this->status = $status;
+        $this->abortedByUser = $status === PosSalesChannelRunDefinition::STATUS_CANCELLED;
+    }
+
+    public function getMessageCount(): int
+    {
+        return $this->messageCount;
+    }
+
+    public function setMessageCount(int $messageCount): void
+    {
+        $this->messageCount = $messageCount;
+    }
+
+    /**
+     * @deprecated tag:v4.0.0 - will be removed, use getStatus() === PosSalesChannelRunDefinition::STATUS_CANCELLED instead
+     */
+    public function getAbortedByUser(): bool
+    {
+        return $this->status === PosSalesChannelRunDefinition::STATUS_CANCELLED || $this->abortedByUser;
+    }
+
+    /**
+     * @deprecated tag:v4.0.0 - will be removed, use setStatus(PosSalesChannelRunDefinition::STATUS_CANCELLED) instead
+     */
     public function setAbortedByUser(bool $abortedByUser): void
     {
+        if ($abortedByUser) {
+            $this->status = PosSalesChannelRunDefinition::STATUS_CANCELLED;
+        }
         $this->abortedByUser = $abortedByUser;
     }
 }

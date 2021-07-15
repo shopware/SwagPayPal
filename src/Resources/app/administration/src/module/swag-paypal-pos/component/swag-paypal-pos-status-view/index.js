@@ -97,7 +97,7 @@ Component.register('swag-paypal-pos-status-view', {
                 }
             }
 
-            if (this.lastFinishedRun && this.lastFinishedRun.abortedByUser && !this.isSyncing) {
+            if (this.lastFinishedRun && this.lastFinishedRun.status === 'cancelled' && !this.isSyncing) {
                 title = this.$tc('swag-paypal-pos.detail.overview.status.message.aborted');
             }
 
@@ -130,7 +130,7 @@ Component.register('swag-paypal-pos-status-view', {
                 return null;
             }
 
-            if (run.abortedByUser) {
+            if (run.status === 'cancelled') {
                 return 'info';
             }
 
