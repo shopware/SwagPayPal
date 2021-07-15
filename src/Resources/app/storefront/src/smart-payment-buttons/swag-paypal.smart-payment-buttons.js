@@ -211,7 +211,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
                 this.options.createOrderUrl,
                 formData,
                 (responseText, request) => {
-                    PageLoadingIndicatorUtil.create();
                     if (request.status >= 400) {
                         reject(responseText);
                     }

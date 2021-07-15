@@ -2,6 +2,7 @@
 - PPI-228 - Weiß als Farbe für ECS- und SPB-Buttons hinzugefügt
 - PPI-321 - Verbessert den Ablauf bei Zettle-Synchronisationen
 - PPI-322 - Verbessert das Entfernen von PayPal von den verfügbaren Zahlungsarten, wenn die Zugangsdaten ungültig sind
+- PPI-323 - Behebt Probleme mit dem Spinner bei Smart Payment Buttons
 
 # 3.3.1
 - PPI-316 - Behebt ein Problem beim Wechseln der Standardsprache nach der Plugininstallation
