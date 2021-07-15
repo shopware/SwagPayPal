@@ -44,6 +44,10 @@ Component.register('swag-paypal-spb', {
                     id: 'silver',
                     name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.silver'),
                 },
+                {
+                    id: 'white',
+                    name: this.$tc('swag-paypal.settingForm.express.ecsButtonColor.options.white'),
+                },
             ];
         },
         buttonShapeOptions() {

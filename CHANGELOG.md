@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION (3.3.2)
+- PPI-228 - Added color white as choice for ECS and SPB buttons
 - PPI-321 - Improve Zettle synchronisation behaviour
 - PPI-322 - Improve removal of PayPal from available payment methods if credentials are invalid
 
