@@ -38,7 +38,7 @@ class SwagPayPal extends Plugin
     public const SALES_CHANNEL_POS_EXTENSION = 'paypalPosSalesChannel';
     public const PRODUCT_LOG_POS_EXTENSION = 'paypalPosLog';
     public const PRODUCT_SYNC_POS_EXTENSION = 'paypalPosSync';
-    public const POS_PARTNER_CLIENT_ID = '456dadab-3085-4fa3-bf2b-a2efd01c3593';
+    public const POS_PARTNER_CLIENT_ID = '48804990-9c6d-4579-9c39-eae6d93e5f94';
     public const POS_PARTNER_IDENTIFIER = 'shopware';
 
     private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_READ = 'swag_paypal_pos_sales_channel:read';
