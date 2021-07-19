@@ -20,25 +20,13 @@ class LocalUpdaterTest extends TestCase
 {
     use UpdaterTrait;
 
-    /**
-     * @var MockObject
-     */
-    private $productRepository;
+    private MockObject $productRepository;
 
-    /**
-     * @var MockObject
-     */
-    private $stockUpdater;
+    private MockObject $stockUpdater;
 
-    /**
-     * @var MockObject
-     */
-    private $logger;
+    private MockObject $logger;
 
-    /**
-     * @var LocalUpdater
-     */
-    private $localUpdater;
+    private LocalUpdater $localUpdater;
 
     public function setUp(): void
     {

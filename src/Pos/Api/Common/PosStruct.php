@@ -83,8 +83,13 @@ abstract class PosStruct implements \JsonSerializable
     {
         $data = [];
 
-        foreach (\get_object_vars($this) as $property => $value) {
-            $data[$property] = $value;
+        foreach (\array_keys(\get_class_vars(static::class)) as $property) {
+            try {
+                $data[$property] = $this->$property;
+                /* @phpstan-ignore-next-line */
+            } catch (\Error $error) {
+                $data[$property] = null;
+            }
         }
 
         return $data;

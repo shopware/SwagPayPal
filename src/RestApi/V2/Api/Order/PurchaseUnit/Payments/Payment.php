@@ -17,36 +17,50 @@ abstract class Payment extends PayPalApiStruct
     public const MAX_LENGTH_NOTE_TO_PAYER = 255;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $status;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $id;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Money|null
      */
     protected $amount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $customId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Link[]
      */
     protected $links;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $createTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $updateTime;

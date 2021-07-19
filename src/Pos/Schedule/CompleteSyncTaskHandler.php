@@ -14,10 +14,7 @@ use Swag\PayPal\Pos\Run\Task\CompleteTask;
 
 class CompleteSyncTaskHandler extends AbstractSyncTaskHandler
 {
-    /**
-     * @var CompleteTask
-     */
-    private $completeTask;
+    private CompleteTask $completeTask;
 
     public function __construct(
         EntityRepositoryInterface $scheduledTaskRepository,

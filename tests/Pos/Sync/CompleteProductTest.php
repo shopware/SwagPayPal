@@ -244,7 +244,7 @@ class CompleteProductTest extends TestCase
         static::assertCount(4, $posProductRepository->getCollection());
 
         $existingMedia = $posMediaRepository->createMockEntity($mediaA, Defaults::SALES_CHANNEL, 'lookupKey', self::MEDIA_UPLOADED_URL);
-        $removeableMedia = $posMediaRepository->createMockEntity($mediaC, Defaults::SALES_CHANNEL);
+        $removableMedia = $posMediaRepository->createMockEntity($mediaC, Defaults::SALES_CHANNEL);
 
         $productSyncManager->createMessages(
             $salesChannel,
@@ -279,7 +279,7 @@ class CompleteProductTest extends TestCase
 
         static::assertCount(2, $posMediaRepository->getCollection());
         static::assertContains($existingMedia, $posMediaRepository->getCollection());
-        static::assertNotContains($removeableMedia, $posMediaRepository->getCollection());
+        static::assertNotContains($removableMedia, $posMediaRepository->getCollection());
     }
 
     private function getTax(): TaxEntity

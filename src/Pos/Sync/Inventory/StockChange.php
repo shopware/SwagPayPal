@@ -13,10 +13,7 @@ class StockChange extends Struct
 {
     public const STOCK_CHANGE_EXTENSION = 'stockChange';
 
-    /**
-     * @var int
-     */
-    private $stockChange;
+    private int $stockChange;
 
     public function __construct(int $stockChange)
     {

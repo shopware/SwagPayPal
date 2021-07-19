@@ -28,46 +28,64 @@ class PosSalesChannelEntity extends Entity
     ];
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $salesChannelId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var SalesChannelEntity|null
      */
     protected $salesChannel;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $productStreamId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ProductStreamEntity|null
      */
     protected $productStream;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $apiKey;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $mediaDomain;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $webhookSigningKey;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var bool
      */
     protected $syncPrices;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var int
      */
     protected $replace;

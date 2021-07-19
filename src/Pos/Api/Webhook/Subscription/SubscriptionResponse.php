@@ -12,46 +12,64 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 class SubscriptionResponse extends PosStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $uuid;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $transportName;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string[]
      */
     protected $eventNames;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $updated;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $destination;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $contactEmail;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $status;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $signingKey;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $clientId;

@@ -16,41 +16,57 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 class Transaction extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Amount
      */
     protected $amount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Payee
      */
     protected $payee;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ItemList|null
      */
     protected $itemList;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var RelatedResource[]
      */
     protected $relatedResources;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $invoiceNumber;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $softDescriptor;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $description;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $custom;

@@ -19,16 +19,22 @@ class PosApiError extends PosStruct
     public const ERROR_TYPE_SUBSCRIPTION_NOT_EXISTS = 'SUBSCRIPTION_NOT_FOUND';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $developerMessage;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $errorType;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Violation[]|null
      */
     protected $violations;

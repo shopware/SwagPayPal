@@ -17,20 +17,11 @@ use Swag\PayPal\Pos\Sync\Inventory\Calculator\RemoteCalculator;
 
 class RemoteUpdater
 {
-    /**
-     * @var InventoryResource
-     */
-    private $inventoryResource;
+    private InventoryResource $inventoryResource;
 
-    /**
-     * @var RemoteCalculator
-     */
-    private $remoteCalculator;
+    private RemoteCalculator $remoteCalculator;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         InventoryResource $inventoryResource,

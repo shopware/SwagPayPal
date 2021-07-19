@@ -12,6 +12,8 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Sale\Transact
 class Sale extends RelatedResource
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var TransactionFee
      */
     protected $transactionFee;

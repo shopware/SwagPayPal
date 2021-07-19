@@ -16,46 +16,64 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 class Order extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $createTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $updateTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $id;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $intent;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Payer
      */
     protected $payer;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PurchaseUnit[]
      */
     protected $purchaseUnits;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ApplicationContext
      */
     protected $applicationContext;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $status;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Link[]
      */
     protected $links;

@@ -28,10 +28,7 @@ class PlusPaymentFinalizeControllerTest extends TestCase
 {
     use IntegrationTestBehaviour;
 
-    /**
-     * @var MockObject
-     */
-    private $orderTransactionStateHandler;
+    private MockObject $orderTransactionStateHandler;
 
     public function testFinalizeTransaction(): void
     {

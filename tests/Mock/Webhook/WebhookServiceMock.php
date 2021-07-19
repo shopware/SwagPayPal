@@ -25,12 +25,12 @@ class WebhookServiceMock implements WebhookServiceInterface
     /**
      * @var string[]
      */
-    private $registrations = [];
+    private array $registrations = [];
 
     /**
      * @var string[]
      */
-    private $deregistrations = [];
+    private array $deregistrations = [];
 
     private SystemConfigService $systemConfigService;
 

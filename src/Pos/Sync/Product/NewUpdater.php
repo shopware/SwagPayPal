@@ -16,15 +16,9 @@ use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
 
 class NewUpdater
 {
-    /**
-     * @var ProductResource
-     */
-    private $productResource;
+    private ProductResource $productResource;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(ProductResource $productResource, LoggerInterface $logger)
     {

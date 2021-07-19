@@ -15,7 +15,7 @@ class LocalWebhookCalculator implements LocalCalculatorInterface
     /**
      * @var int[]
      */
-    private $fixedUpdates;
+    private array $fixedUpdates;
 
     public function addFixedUpdate(string $productId, int $amount): void
     {

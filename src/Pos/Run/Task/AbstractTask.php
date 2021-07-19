@@ -15,15 +15,9 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 abstract class AbstractTask
 {
-    /**
-     * @var MessageBusInterface
-     */
-    private $messageBus;
+    private MessageBusInterface $messageBus;
 
-    /**
-     * @var RunService
-     */
-    private $runService;
+    private RunService $runService;
 
     public function __construct(
         MessageBusInterface $messageBus,

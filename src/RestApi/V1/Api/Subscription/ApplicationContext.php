@@ -22,31 +22,43 @@ class ApplicationContext extends PayPalApiStruct
     public const USER_ACTION_TYPE_CONTINUE = 'CONTINUE';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $userAction = self::USER_ACTION_TYPE_SUBSCRIBE_NOW;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $brandName;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $locale;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $shippingPreference = 'SET_PROVIDED_ADDRESS';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $returnUrl;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $cancelUrl;

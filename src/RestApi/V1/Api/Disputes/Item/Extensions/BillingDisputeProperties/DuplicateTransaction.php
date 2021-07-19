@@ -13,11 +13,15 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties
 class DuplicateTransaction extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var bool
      */
     protected $receivedDuplicate;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var OriginalTransaction
      */
     protected $originalTransaction;

@@ -13,11 +13,15 @@ use Swag\PayPal\Pos\Api\Image\BulkImageUploadResponse\Uploaded;
 class BulkImageUploadResponse extends PosStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Uploaded[]
      */
     protected $uploaded;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string[]
      */
     protected $invalid;

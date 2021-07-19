@@ -14,10 +14,7 @@ use Swag\PayPal\Pos\Client\TokenClientFactory;
 
 class TokenClientFactoryMock extends TokenClientFactory
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct()
     {

@@ -38,10 +38,7 @@ class GuzzleClientMock implements ClientInterface
 {
     public const GENERAL_CLIENT_EXCEPTION_MESSAGE = 'generalClientExceptionMessage';
 
-    /**
-     * @var array
-     */
-    private $config;
+    private array $config;
 
     public function __construct(array $config)
     {

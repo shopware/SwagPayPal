@@ -13,26 +13,36 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 class PosSalesChannelMediaEntity extends Entity
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $salesChannelId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $mediaId;
 
     /**
-     * @var MediaEntity
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
+     * @var MediaEntity|null
      */
-    protected $media;
+    protected $media = null;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $lookupKey;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $url;
@@ -57,12 +67,12 @@ class PosSalesChannelMediaEntity extends Entity
         $this->mediaId = $mediaId;
     }
 
-    public function getMedia(): MediaEntity
+    public function getMedia(): ?MediaEntity
     {
         return $this->media;
     }
 
-    public function setMedia(MediaEntity $media): void
+    public function setMedia(?MediaEntity $media): void
     {
         $this->media = $media;
     }

@@ -24,25 +24,13 @@ class InventoryContextFactoryTest extends TestCase
 {
     use InventoryTrait;
 
-    /**
-     * @var InventoryContextFactory
-     */
-    private $inventoryContextFactory;
+    private InventoryContextFactory $inventoryContextFactory;
 
-    /**
-     * @var PosInventoryRepoMock
-     */
-    private $inventoryRepository;
+    private PosInventoryRepoMock $inventoryRepository;
 
-    /**
-     * @var MockObject
-     */
-    private $inventoryResource;
+    private MockObject $inventoryResource;
 
-    /**
-     * @var SalesChannelEntity
-     */
-    private $salesChannel;
+    private SalesChannelEntity $salesChannel;
 
     public function setUp(): void
     {

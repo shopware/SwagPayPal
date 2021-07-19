@@ -33,30 +33,15 @@ use Symfony\Component\Routing\RouterInterface;
 
 class PlusPaymentFinalizeController extends AbstractController
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderTransactionRepo;
+    private RouterInterface $router;
 
-    /**
-     * @var AsynchronousPaymentHandlerInterface
-     */
-    private $paymentHandler;
+    private EntityRepositoryInterface $orderTransactionRepo;
 
-    /**
-     * @var OrderTransactionStateHandler
-     */
-    private $transactionStateHandler;
+    private AsynchronousPaymentHandlerInterface $paymentHandler;
 
-    /**
-     * @var RouterInterface
-     */
-    private $router;
+    private OrderTransactionStateHandler $transactionStateHandler;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepo,

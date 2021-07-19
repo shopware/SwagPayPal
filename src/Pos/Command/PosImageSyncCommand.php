@@ -17,10 +17,7 @@ class PosImageSyncCommand extends AbstractPosCommand
 {
     protected static $defaultName = 'swag:paypal:pos:sync:images';
 
-    /**
-     * @var ImageTask
-     */
-    private $imageTask;
+    private ImageTask $imageTask;
 
     public function __construct(
         EntityRepositoryInterface $salesChannelRepository,

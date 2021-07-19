@@ -35,50 +35,23 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PosSyncController extends AbstractController
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
-    /**
-     * @var CompleteTask
-     */
-    private $completeTask;
+    private CompleteTask $completeTask;
 
-    /**
-     * @var ProductTask
-     */
-    private $productTask;
+    private ProductTask $productTask;
 
-    /**
-     * @var ImageTask
-     */
-    private $imageTask;
+    private ImageTask $imageTask;
 
-    /**
-     * @var InventoryTask
-     */
-    private $inventoryTask;
+    private InventoryTask $inventoryTask;
 
-    /**
-     * @var LogCleaner
-     */
-    private $logCleaner;
+    private LogCleaner $logCleaner;
 
-    /**
-     * @var RunService
-     */
-    private $runService;
+    private RunService $runService;
 
-    /**
-     * @var ProductSelection
-     */
-    private $productSelection;
+    private ProductSelection $productSelection;
 
-    /**
-     * @var SyncResetter
-     */
-    private $syncResetter;
+    private SyncResetter $syncResetter;
 
     public function __construct(
         EntityRepositoryInterface $salesChannelRepository,

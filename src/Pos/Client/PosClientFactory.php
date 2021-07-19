@@ -13,15 +13,9 @@ use Swag\PayPal\Pos\Resource\TokenResource;
 
 class PosClientFactory
 {
-    /**
-     * @var TokenResource
-     */
-    private $tokenResource;
+    private TokenResource $tokenResource;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(TokenResource $tokenResource, LoggerInterface $logger)
     {

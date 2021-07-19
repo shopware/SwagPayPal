@@ -13,11 +13,15 @@ use Swag\PayPal\Pos\Api\Webhook\Payload\AbstractPayload\AbstractUpdated;
 abstract class AbstractPayload extends PosStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $organizationUuid;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var AbstractUpdated
      */
     protected $updated;

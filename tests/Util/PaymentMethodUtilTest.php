@@ -20,15 +20,9 @@ class PaymentMethodUtilTest extends TestCase
 {
     public const SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD = '4ce46b49d1904a5db0b41573e9355b51';
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    /**
-     * @var SalesChannelRepoMock
-     */
-    private $salesChannelRepoMock;
+    private SalesChannelRepoMock $salesChannelRepoMock;
 
     protected function setUp(): void
     {

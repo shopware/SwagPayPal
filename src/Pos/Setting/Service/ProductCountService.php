@@ -25,25 +25,13 @@ use Swag\PayPal\SwagPayPal;
 
 class ProductCountService
 {
-    /**
-     * @var ProductResource
-     */
-    private $productResource;
+    private ProductResource $productResource;
 
-    /**
-     * @var ProductSelection
-     */
-    private $productSelection;
+    private ProductSelection $productSelection;
 
-    /**
-     * @var SalesChannelRepositoryInterface
-     */
-    private $productRepository;
+    private SalesChannelRepositoryInterface $productRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
         ProductResource $productResource,

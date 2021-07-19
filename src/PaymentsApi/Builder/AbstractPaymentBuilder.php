@@ -37,21 +37,29 @@ abstract class AbstractPaymentBuilder
     protected $settings;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var LocaleCodeProvider
      */
     protected $localeCodeProvider;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PriceFormatter
      */
     protected $priceFormatter;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var LoggerInterface
      */
     protected $logger;

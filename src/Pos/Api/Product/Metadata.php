@@ -13,11 +13,15 @@ use Swag\PayPal\Pos\Api\Product\Metadata\Source;
 class Metadata extends PosStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var bool
      */
     protected $inPos;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Source
      */
     protected $source;

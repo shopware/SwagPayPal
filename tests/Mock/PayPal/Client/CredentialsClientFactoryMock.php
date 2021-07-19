@@ -13,10 +13,7 @@ use Swag\PayPal\RestApi\Client\CredentialsClientFactory;
 
 class CredentialsClientFactoryMock extends CredentialsClientFactory
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(LoggerInterface $logger)
     {

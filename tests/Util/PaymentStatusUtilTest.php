@@ -40,25 +40,13 @@ class PaymentStatusUtilTest extends TestCase
     private const FIRST_TRANSACTION_ID = '9535b385fc7544f08e21b8b74b52ff4a';
     private const SECOND_TRANSACTION_ID = '8535b385fc7544f08e21b8b74b52ff4a';
 
-    /**
-     * @var PaymentStatusUtil
-     */
-    private $paymentStatusUtil;
+    private PaymentStatusUtil $paymentStatusUtil;
 
-    /**
-     * @var StateMachineRegistry
-     */
-    private $stateMachineRegistry;
+    private StateMachineRegistry $stateMachineRegistry;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderRepository;
+    private EntityRepositoryInterface $orderRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderTransactionRepository;
+    private EntityRepositoryInterface $orderTransactionRepository;
 
     protected function setUp(): void
     {

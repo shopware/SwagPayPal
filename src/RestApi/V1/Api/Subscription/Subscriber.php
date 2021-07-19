@@ -21,21 +21,29 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress;
 class Subscriber extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Name
      */
     protected $name;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $emailAddress;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $payerId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ShippingAddress|null
      */
     protected $shippingAddress;

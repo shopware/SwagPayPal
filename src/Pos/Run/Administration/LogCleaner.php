@@ -18,10 +18,7 @@ class LogCleaner
     private const LOG_RETENTION_PERIOD = 30;
     private const LOG_RETENTION_PER_PRODUCT = 3;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $runRepository;
+    private EntityRepositoryInterface $runRepository;
 
     public function __construct(EntityRepositoryInterface $runRepository)
     {

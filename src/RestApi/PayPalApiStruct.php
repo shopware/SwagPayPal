@@ -84,10 +84,15 @@ abstract class PayPalApiStruct implements \JsonSerializable
         $data = [];
         $nameConverter = new CamelCaseToSnakeCaseNameConverter();
 
-        foreach (\get_object_vars($this) as $property => $value) {
+        foreach (\array_keys(\get_class_vars(static::class)) as $property) {
             $snakeCasePropertyName = $nameConverter->normalize($property);
 
-            $data[$snakeCasePropertyName] = $value;
+            try {
+                $data[$snakeCasePropertyName] = $this->$property;
+                /* @phpstan-ignore-next-line */
+            } catch (\Error $error) {
+                $data[$snakeCasePropertyName] = null;
+            }
         }
 
         return $data;

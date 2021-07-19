@@ -12,16 +12,22 @@ use Shopware\Core\Framework\Struct\Struct;
 class SPBMarksData extends Struct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $clientId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $paymentMethodId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var bool
      */
     protected $useAlternativePaymentMethods;

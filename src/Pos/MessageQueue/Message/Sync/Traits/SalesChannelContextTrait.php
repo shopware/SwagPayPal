@@ -12,6 +12,8 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 trait SalesChannelContextTrait
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var SalesChannelContext
      */
     private $salesChannelContext;

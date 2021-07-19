@@ -27,20 +27,14 @@ class RunTaskTest extends TestCase
     use KernelTestBehaviour;
     use SalesChannelTrait;
 
-    /**
-     * @var MessageBusMock
-     */
-    private $messageBus;
+    private MessageBusMock $messageBus;
 
-    /**
-     * @var MockObject
-     */
-    private $runService;
+    private MockObject $runService;
 
     /**
      * @var AbstractTask[]
      */
-    private $tasks;
+    private array $tasks;
 
     public function setUp(): void
     {

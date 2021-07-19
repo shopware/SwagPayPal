@@ -13,11 +13,15 @@ use Swag\PayPal\RestApi\V2\Api\Order\Payer\Phone\PhoneNumber;
 class Phone extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $phoneType;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PhoneNumber
      */
     protected $phoneNumber;

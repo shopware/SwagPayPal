@@ -21,25 +21,19 @@ use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 
 class DeletedUpdaterTest extends AbstractProductSyncTest
 {
-    /**
-     * @var ProductContextMock
-     */
-    private $productContext;
+    private ProductContextMock $productContext;
+
+    private PosSalesChannelProductEntity $posProductEntity;
 
     /**
-     * @var PosSalesChannelProductEntity
+     * @var MockObject&ProductResource
      */
-    private $posProductEntity;
+    private ProductResource $productResource;
 
     /**
-     * @var MockObject|ProductResource
+     * @var MockObject&LoggerInterface
      */
-    private $productResource;
-
-    /**
-     * @var MockObject|LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function setUp(): void
     {

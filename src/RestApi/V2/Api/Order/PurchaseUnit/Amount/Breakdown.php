@@ -19,36 +19,50 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\TaxTotal;
 class Breakdown extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ItemTotal
      */
     protected $itemTotal;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Shipping
      */
     protected $shipping;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Handling
      */
     protected $handling;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var TaxTotal|null
      */
     protected $taxTotal;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Insurance
      */
     protected $insurance;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ShippingDiscount
      */
     protected $shippingDiscount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Discount
      */
     protected $discount;

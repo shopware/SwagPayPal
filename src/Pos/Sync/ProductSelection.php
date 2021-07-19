@@ -23,20 +23,11 @@ use Swag\PayPal\SwagPayPal;
 
 class ProductSelection
 {
-    /**
-     * @var SalesChannelRepositoryInterface
-     */
-    private $productRepository;
+    private SalesChannelRepositoryInterface $productRepository;
 
-    /**
-     * @var ProductStreamBuilderInterface
-     */
-    private $productStreamBuilder;
+    private ProductStreamBuilderInterface $productStreamBuilder;
 
-    /**
-     * @var AbstractSalesChannelContextFactory
-     */
-    private $salesChannelContextFactory;
+    private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 
     public function __construct(
         SalesChannelRepositoryInterface $productRepository,

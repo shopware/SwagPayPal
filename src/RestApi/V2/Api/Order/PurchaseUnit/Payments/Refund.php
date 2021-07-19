@@ -12,16 +12,22 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableB
 class Refund extends Payment
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $invoiceId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $noteToPayer;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var SellerPayableBreakdown
      */
     protected $sellerPayableBreakdown;

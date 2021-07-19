@@ -14,11 +14,15 @@ use Swag\PayPal\RestApi\V1\Api\Common\Link;
 abstract class RelatedResource extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $id;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $state;

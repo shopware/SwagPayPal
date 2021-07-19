@@ -12,20 +12,11 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 abstract class AbstractSyncMessage
 {
-    /**
-     * @var SalesChannelEntity
-     */
-    private $salesChannel;
+    private SalesChannelEntity $salesChannel;
 
-    /**
-     * @var string
-     */
-    private $runId;
+    private string $runId;
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
     public function getSalesChannel(): SalesChannelEntity
     {

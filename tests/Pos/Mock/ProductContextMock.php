@@ -18,10 +18,7 @@ use Swag\PayPal\Pos\Sync\Context\ProductContext;
 
 class ProductContextMock extends ProductContext
 {
-    /**
-     * @var int
-     */
-    private $status;
+    private int $status;
 
     public function __construct(
         SalesChannelEntity $salesChannelEntity,

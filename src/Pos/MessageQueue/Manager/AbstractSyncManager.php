@@ -14,6 +14,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 abstract class AbstractSyncManager
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var MessageBusInterface
      */
     protected $messageBus;

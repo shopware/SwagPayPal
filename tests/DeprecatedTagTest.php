@@ -15,10 +15,8 @@ class DeprecatedTagTest extends TestCase
 {
     /**
      * white list file path segments for ignored paths
-     *
-     * @var array
      */
-    private $whiteList = [
+    private array $whiteList = [
         'tests/DeprecatedTagTest.php',
         'coverage/',
         'Resources/public/',

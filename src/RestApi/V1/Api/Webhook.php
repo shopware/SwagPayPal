@@ -13,41 +13,57 @@ use Swag\PayPal\RestApi\V1\Api\Webhook\Link;
 class Webhook extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $id;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $resourceType;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $eventType;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $summary;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Webhook\Resource
      */
     protected $resource;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $createTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Link[]
      */
     protected $links;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $eventVersion;

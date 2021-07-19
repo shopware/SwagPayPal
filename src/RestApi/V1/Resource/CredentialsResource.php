@@ -15,20 +15,11 @@ use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 
 class CredentialsResource
 {
-    /**
-     * @var TokenClientFactory
-     */
-    private $tokenClientFactory;
+    private TokenClientFactory $tokenClientFactory;
 
-    /**
-     * @var CredentialsClientFactory
-     */
-    private $credentialsClientFactory;
+    private CredentialsClientFactory $credentialsClientFactory;
 
-    /**
-     * @var TokenValidator
-     */
-    private $tokenValidator;
+    private TokenValidator $tokenValidator;
 
     public function __construct(
         TokenClientFactory $tokenClientFactory,

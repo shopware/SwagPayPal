@@ -17,10 +17,7 @@ class PosProductSyncCommand extends AbstractPosCommand
 {
     protected static $defaultName = 'swag:paypal:pos:sync:product';
 
-    /**
-     * @var ProductTask
-     */
-    private $productTask;
+    private ProductTask $productTask;
 
     public function __construct(
         EntityRepositoryInterface $salesChannelRepository,

@@ -17,25 +17,13 @@ use Swag\PayPal\Pos\Sync\Context\ProductContext;
 
 class VariantConverter
 {
-    /**
-     * @var UuidConverter
-     */
-    private $uuidConverter;
+    private UuidConverter $uuidConverter;
 
-    /**
-     * @var PriceConverter
-     */
-    private $priceConverter;
+    private PriceConverter $priceConverter;
 
-    /**
-     * @var PresentationConverter
-     */
-    private $presentationConverter;
+    private PresentationConverter $presentationConverter;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         UuidConverter $uuidConverter,

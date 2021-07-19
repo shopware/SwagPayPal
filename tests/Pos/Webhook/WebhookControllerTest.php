@@ -45,20 +45,11 @@ class WebhookControllerTest extends TestCase
 
     private const INVALID_EVENT_NAME = 'ThisIsNotAnEvent';
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
-    /**
-     * @var SalesChannelEntity
-     */
-    private $salesChannel;
+    private SalesChannelEntity $salesChannel;
 
-    /**
-     * @var WebhookController
-     */
-    private $webhookController;
+    private WebhookController $webhookController;
 
     public function setUp(): void
     {

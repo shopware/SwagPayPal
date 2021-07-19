@@ -14,10 +14,7 @@ use Shopware\Core\System\Language\LanguageCollection;
 
 class LocaleCodeProvider
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $languageRepository;
+    private EntityRepositoryInterface $languageRepository;
 
     public function __construct(EntityRepositoryInterface $languageRepository)
     {

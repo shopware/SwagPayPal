@@ -25,15 +25,9 @@ class ImageSyncManager extends AbstractSyncManager
 
     public const CHUNK_SIZE = 250;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $posMediaRepository;
+    private EntityRepositoryInterface $posMediaRepository;
 
-    /**
-     * @var ImageSyncer
-     */
-    private $imageSyncer;
+    private ImageSyncer $imageSyncer;
 
     public function __construct(
         MessageBusInterface $messageBus,

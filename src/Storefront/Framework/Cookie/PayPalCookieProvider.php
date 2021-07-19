@@ -11,10 +11,7 @@ use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 
 class PayPalCookieProvider implements CookieProviderInterface
 {
-    /**
-     * @var CookieProviderInterface
-     */
-    private $original;
+    private CookieProviderInterface $original;
 
     public function __construct(CookieProviderInterface $cookieProvider)
     {

@@ -17,46 +17,64 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping;
 class PurchaseUnit extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $referenceId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Amount
      */
     protected $amount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Payee
      */
     protected $payee;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $description;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $customId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $invoiceId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Item[]|null
      */
     protected $items;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Shipping
      */
     protected $shipping;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Payments
      */
     protected $payments;

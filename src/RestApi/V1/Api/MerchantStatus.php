@@ -12,16 +12,22 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class MerchantStatus extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var bool
      */
     protected $paymentsReceivable;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $primaryEmail;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var bool
      */
     protected $primaryEmailConfirmed;

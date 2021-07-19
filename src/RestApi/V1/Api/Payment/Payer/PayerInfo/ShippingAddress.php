@@ -12,6 +12,8 @@ use Swag\PayPal\RestApi\V1\Api\Common\Address;
 class ShippingAddress extends Address
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $recipientName;

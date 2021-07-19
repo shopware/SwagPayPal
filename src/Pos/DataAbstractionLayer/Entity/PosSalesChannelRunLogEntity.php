@@ -15,6 +15,8 @@ class PosSalesChannelRunLogEntity extends Entity
     use EntityIdTrait;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $runId;
@@ -27,26 +29,36 @@ class PosSalesChannelRunLogEntity extends Entity
     protected $run;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PosSalesChannelRunEntity|null
      */
     protected $posSalesChannelRun;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var int
      */
     protected $level;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $message;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $productId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $productVersionId;

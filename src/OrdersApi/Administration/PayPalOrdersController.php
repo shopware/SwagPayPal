@@ -40,40 +40,19 @@ class PayPalOrdersController extends AbstractController
     public const REQUEST_PARAMETER_PARTNER_ATTRIBUTION_ID = 'partnerAttributionId';
     public const REQUEST_PARAMETER_IS_FINAL = 'isFinal';
 
-    /**
-     * @var OrderResource
-     */
-    private $orderResource;
+    private OrderResource $orderResource;
 
-    /**
-     * @var AuthorizationResource
-     */
-    private $authorizationResource;
+    private AuthorizationResource $authorizationResource;
 
-    /**
-     * @var CaptureResource
-     */
-    private $captureResource;
+    private CaptureResource $captureResource;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderTransactionRepository;
+    private EntityRepositoryInterface $orderTransactionRepository;
 
-    /**
-     * @var RefundResource
-     */
-    private $refundResource;
+    private RefundResource $refundResource;
 
-    /**
-     * @var PaymentStatusUtilV2
-     */
-    private $paymentStatusUtil;
+    private PaymentStatusUtilV2 $paymentStatusUtil;
 
-    /**
-     * @var CaptureRefundCreator
-     */
-    private $captureRefundCreator;
+    private CaptureRefundCreator $captureRefundCreator;
 
     public function __construct(
         OrderResource $orderResource,

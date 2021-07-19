@@ -41,126 +41,176 @@ class Item extends PayPalApiStruct
     ];
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $disputeId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $createTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $updateTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var DisputedTransaction[]|null
      */
     protected $disputedTransactions;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $reason;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $status;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $disputeState;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var DisputeAmount
      */
     protected $disputeAmount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $externalReasonCode;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var DisputeOutcome|null
      */
     protected $disputeOutcome;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Adjudication[]
      */
     protected $adjudications;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var MoneyMovement[]
      */
     protected $moneyMovements;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $disputeLifeCycleStage;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $disputeChannel;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Message[]|null
      */
     protected $messages;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Extensions
      */
     protected $extensions;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Evidence[]|null
      */
     protected $evidences;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $buyerResponseDueDate;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $sellerResponseDueDate;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Offer|null
      */
     protected $offer;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var RefundDetails|null
      */
     protected $refundDetails;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var CommunicationDetails|null
      */
     protected $communicationDetails;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PartnerAction[]|null
      */
     protected $partnerActions;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var SupportingInfo[]|null
      */
     protected $supportingInfo;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Link[]
      */
     protected $links;

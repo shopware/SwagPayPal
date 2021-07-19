@@ -21,26 +21,36 @@ use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle\PricingScheme;
 class BillingCycle extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Frequency
      */
     protected $frequency;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $tenureType;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var int
      */
     protected $sequence;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PricingScheme
      */
     protected $pricingScheme;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var int
      */
     protected $totalCycles;

@@ -22,20 +22,11 @@ class ApiCredentialService
 {
     use PosSalesChannelTrait;
 
-    /**
-     * @var TokenResource
-     */
-    private $tokenResource;
+    private TokenResource $tokenResource;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
-    /**
-     * @var ApiKeyDecoder
-     */
-    private $apiKeyDecoder;
+    private ApiKeyDecoder $apiKeyDecoder;
 
     public function __construct(
         TokenResource $tokenResource,

@@ -12,11 +12,15 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 class Source extends PosStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var bool
      */
     protected $external;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $name;

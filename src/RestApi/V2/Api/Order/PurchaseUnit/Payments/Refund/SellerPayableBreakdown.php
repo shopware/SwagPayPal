@@ -16,21 +16,29 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableB
 class SellerPayableBreakdown extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var GrossAmount
      */
     protected $grossAmount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PaypalFee
      */
     protected $paypalFee;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var NetAmount
      */
     protected $netAmount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var TotalRefundedAmount
      */
     protected $totalRefundedAmount;

@@ -20,10 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class CaptureRefundCreator
 {
-    /**
-     * @var PriceFormatter
-     */
-    private $priceFormatter;
+    private PriceFormatter $priceFormatter;
 
     public function __construct(PriceFormatter $priceFormatter)
     {

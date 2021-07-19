@@ -13,9 +13,9 @@ use Shopware\Core\Content\Product\ProductEntity;
 class LogHandler extends AbstractProcessingHandler
 {
     /**
-     * @var mixed[]
+     * @var mixed[][]
      */
-    private $logs;
+    private array $logs;
 
     public function __construct()
     {

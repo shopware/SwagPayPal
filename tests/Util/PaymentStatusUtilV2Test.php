@@ -38,25 +38,13 @@ class PaymentStatusUtilV2Test extends TestCase
     use KernelTestBehaviour;
     use OrderFixture;
 
-    /**
-     * @var StateMachineRegistry
-     */
-    private $stateMachineRegistry;
+    private StateMachineRegistry $stateMachineRegistry;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderTransactionRepository;
+    private EntityRepositoryInterface $orderTransactionRepository;
 
-    /**
-     * @var PaymentStatusUtilV2
-     */
-    private $paymentStatusUtil;
+    private PaymentStatusUtilV2 $paymentStatusUtil;
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
     protected function setUp(): void
     {

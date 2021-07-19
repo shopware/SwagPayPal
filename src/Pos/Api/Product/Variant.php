@@ -15,46 +15,64 @@ use Swag\PayPal\Pos\Api\Product\Variant\Price;
 class Variant extends PosStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $uuid;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $name;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $description;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $sku;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $barcode;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Price
      */
     protected $price;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var CostPrice
      */
     protected $costPrice;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Option[]|null
      */
     protected $options;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Presentation
      */
     protected $presentation;

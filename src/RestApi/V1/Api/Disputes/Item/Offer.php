@@ -15,21 +15,29 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\SellerOfferedAmount;
 class Offer extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var BuyerRequestedAmount
      */
     protected $buyerRequestedAmount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var SellerOfferedAmount
      */
     protected $sellerOfferedAmount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $offerType;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var History[]|null
      */
     protected $history;

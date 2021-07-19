@@ -14,12 +14,9 @@ class InventoryUpdateMessage
     /**
      * @var string[]
      */
-    private $ids;
+    private array $ids;
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
     public function getIds(): array
     {

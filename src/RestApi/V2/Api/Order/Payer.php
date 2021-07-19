@@ -15,26 +15,36 @@ use Swag\PayPal\RestApi\V2\Api\Order\Payer\Phone;
 class Payer extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Name
      */
     protected $name;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $emailAddress;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $payerId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Phone|null
      */
     protected $phone;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Address
      */
     protected $address;

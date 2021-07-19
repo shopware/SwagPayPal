@@ -14,26 +14,36 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo;
 class Evidence extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $evidenceType;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var EvidenceInfo
      */
     protected $evidenceInfo;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Document[]
      */
     protected $documents;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $notes;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $itemId;

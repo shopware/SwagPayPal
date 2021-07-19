@@ -15,7 +15,7 @@ class UpdateProductFixture
     /**
      * @var PosStruct[]
      */
-    public static $lastUpdatedProducts = [];
+    public static array $lastUpdatedProducts = [];
 
     public static function put(?PosStruct $data): ?array
     {

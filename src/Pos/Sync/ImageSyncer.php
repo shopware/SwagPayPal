@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Pos\Sync;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Content\Media\Exception\MediaNotFoundException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -30,25 +31,13 @@ class ImageSyncer
 {
     use PosSalesChannelTrait;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $posMediaRepository;
+    private EntityRepositoryInterface $posMediaRepository;
 
-    /**
-     * @var MediaConverter
-     */
-    private $mediaConverter;
+    private MediaConverter $mediaConverter;
 
-    /**
-     * @var ImageResource
-     */
-    private $imageResource;
+    private ImageResource $imageResource;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityRepositoryInterface $posMediaRepository,
@@ -81,17 +70,23 @@ class ImageSyncer
         $bulkUpload = new BulkImageUpload();
 
         foreach ($entityCollection as $entity) {
+            $media = $entity->getMedia();
+
+            if ($media === null) {
+                throw new MediaNotFoundException($entity->getMediaId());
+            }
+
             try {
                 /* @var PosSalesChannelMediaEntity $entity */
-                $upload = $this->mediaConverter->convert($domain, $entity->getMedia(), $entity->getLookupKey());
+                $upload = $this->mediaConverter->convert($domain, $media, $entity->getLookupKey());
 
                 $bulkUpload->addImageUpload($upload);
             } catch (InvalidMediaTypeException $invalidMediaTypeException) {
                 $this->logger->warning(
                     'Media Type {mimeType} is not supported by Zettle. Skipping image {fileName}.',
                     [
-                        'mimeType' => $entity->getMedia()->getMimeType(),
-                        'fileName' => $entity->getMedia()->getFileName() . '.' . $entity->getMedia()->getFileExtension(),
+                        'mimeType' => $media->getMimeType(),
+                        'fileName' => $media->getFileName() . '.' . $media->getFileExtension(),
                     ]
                 );
             }
@@ -170,8 +165,14 @@ class ImageSyncer
         if (\is_string($urlPath)) {
             $posMedia = $posMediaCollection->filter(
                 static function (PosSalesChannelMediaEntity $entity) use ($urlPath) {
-                    return \mb_strpos($urlPath, $entity->getMedia()->getUrl()) !== false
-                        || \mb_strpos($entity->getMedia()->getUrl(), $urlPath) !== false;
+                    $media = $entity->getMedia();
+
+                    if ($media === null) {
+                        throw new MediaNotFoundException($entity->getMediaId());
+                    }
+
+                    return \mb_strpos($urlPath, $media->getUrl()) !== false
+                        || \mb_strpos($media->getUrl(), $urlPath) !== false;
                 }
             )->first();
         } else {
@@ -186,9 +187,15 @@ class ImageSyncer
             return null;
         }
 
+        $media = $posMedia->getMedia();
+
+        if ($media === null) {
+            throw new MediaNotFoundException($posMedia->getMediaId());
+        }
+
         return [
             'salesChannelId' => $salesChannelId,
-            'mediaId' => $posMedia->getMedia()->getId(),
+            'mediaId' => $media->getId(),
             'lookupKey' => $uploaded->getImageLookupKey(),
             'url' => \current($uploaded->getImageUrls()),
         ];

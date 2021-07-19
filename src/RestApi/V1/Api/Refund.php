@@ -17,76 +17,106 @@ use Swag\PayPal\RestApi\V1\Api\Refund\TotalRefundedAmount;
 class Refund extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Amount
      */
     protected $amount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $invoiceNumber;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $description;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $reason;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $id;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $createTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $updateTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $state;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var RefundFromTransactionFee
      */
     protected $refundFromTransactionFee;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var TotalRefundedAmount
      */
     protected $totalRefundedAmount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var RefundFromReceivedAmount
      */
     protected $refundFromReceivedAmount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $saleId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $captureId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $parentPayment;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Link[]
      */
     protected $links;

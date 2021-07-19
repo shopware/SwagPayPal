@@ -16,15 +16,9 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class PayPalV1ItemFromOrderEvent extends Event
 {
-    /**
-     * @var Item
-     */
-    private $payPalLineItem;
+    private Item $payPalLineItem;
 
-    /**
-     * @var OrderLineItemEntity
-     */
-    private $originalShopwareLineItem;
+    private OrderLineItemEntity $originalShopwareLineItem;
 
     public function __construct(Item $payPalLineItem, OrderLineItemEntity $originalShopwareLineItem)
     {

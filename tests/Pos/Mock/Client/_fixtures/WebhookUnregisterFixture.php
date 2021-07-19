@@ -13,10 +13,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 
 class WebhookUnregisterFixture
 {
-    /**
-     * @var bool
-     */
-    public static $sent = false;
+    public static bool $sent = false;
 
     public static function delete(string $resourceUri): ?array
     {

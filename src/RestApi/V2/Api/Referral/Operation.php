@@ -15,11 +15,15 @@ class Operation extends PayPalApiStruct
     public const OPERATION_TYPE_API_INTEGRATION = 'API_INTEGRATION';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $operation = self::OPERATION_TYPE_API_INTEGRATION;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ApiIntegrationPreference
      */
     protected $apiIntegrationPreference;

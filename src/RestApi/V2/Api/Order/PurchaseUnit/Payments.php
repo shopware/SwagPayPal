@@ -15,16 +15,22 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 class Payments extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Authorization[]|null
      */
     protected $authorizations;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Capture[]|null
      */
     protected $captures;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Refund[]|null
      */
     protected $refunds;

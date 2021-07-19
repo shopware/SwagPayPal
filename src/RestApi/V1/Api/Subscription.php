@@ -24,66 +24,92 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber;
 class Subscription extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $id;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $planId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $startTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $quantity;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ShippingAmount
      */
     protected $shippingAmount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Subscriber
      */
     protected $subscriber;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var BillingInfo|null
      */
     protected $billingInfo;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ApplicationContext
      */
     protected $applicationContext;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $status;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $statusUpdateTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $createTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $updateTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Link[]
      */
     protected $links;

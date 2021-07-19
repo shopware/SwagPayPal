@@ -26,30 +26,15 @@ class InventorySyncerTest extends TestCase
 {
     use InventoryTrait;
 
-    /**
-     * @var InventorySyncer
-     */
-    private $inventorySyncer;
+    private InventorySyncer $inventorySyncer;
 
-    /**
-     * @var MockObject
-     */
-    private $inventoryRepository;
+    private MockObject $inventoryRepository;
 
-    /**
-     * @var MockObject
-     */
-    private $localUpdater;
+    private MockObject $localUpdater;
 
-    /**
-     * @var MockObject
-     */
-    private $remoteUpdater;
+    private MockObject $remoteUpdater;
 
-    /**
-     * @var InventoryContext
-     */
-    private $inventoryContext;
+    private InventoryContext $inventoryContext;
 
     public function setUp(): void
     {

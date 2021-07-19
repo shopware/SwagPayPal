@@ -22,15 +22,9 @@ use Swag\PayPal\Webhook\WebhookEventTypes;
 
 class CaptureRefunded extends AbstractWebhookHandler
 {
-    /**
-     * @var PaymentStatusUtilV2
-     */
-    private $paymentStatusUtil;
+    private PaymentStatusUtilV2 $paymentStatusUtil;
 
-    /**
-     * @var OrderResource
-     */
-    private $orderResource;
+    private OrderResource $orderResource;
 
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepository,

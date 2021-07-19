@@ -22,11 +22,15 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress\Name;
 class ShippingAddress extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Name|null
      */
     protected $name;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Address|null
      */
     protected $address;

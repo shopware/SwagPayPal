@@ -13,21 +13,29 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Payer\PayerInfo;
 class Payer extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $paymentMethod;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $status;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PayerInfo
      */
     protected $payerInfo;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $externalSelectedFundingInstrumentType;

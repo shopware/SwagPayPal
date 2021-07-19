@@ -12,10 +12,7 @@ namespace Swag\PayPal\Test\Mock;
  */
 class DummyCollection implements \IteratorAggregate
 {
-    /**
-     * @var array
-     */
-    private $data;
+    private array $data;
 
     public function __construct(array $data)
     {

@@ -17,7 +17,7 @@ class ProductVariantSyncMessage extends AbstractSyncMessage
     /**
      * @var string[]
      */
-    private $ids;
+    private array $ids;
 
     public function getIds(): array
     {

@@ -27,20 +27,11 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
 class SalesChannelRepoMock extends AbstractRepoMock implements EntityRepositoryInterface
 {
-    /**
-     * @var SalesChannelEntity
-     */
-    private $mockEntity;
+    private SalesChannelEntity $mockEntity;
 
-    /**
-     * @var SalesChannelEntity
-     */
-    private $mockEntityWithNoTypeId;
+    private SalesChannelEntity $mockEntityWithNoTypeId;
 
-    /**
-     * @var SalesChannelEntity
-     */
-    private $mockInactiveEntity;
+    private SalesChannelEntity $mockInactiveEntity;
 
     public function __construct()
     {

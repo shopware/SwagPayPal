@@ -22,36 +22,50 @@ use Swag\PayPal\RestApi\V1\Api\Plan\Taxes;
 class Plan extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $productId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $name;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $description;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $status;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var BillingCycle[]
      */
     protected $billingCycles = [];
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PaymentPreferences
      */
     protected $paymentPreferences;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Taxes
      */
     protected $taxes;

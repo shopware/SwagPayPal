@@ -22,26 +22,36 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\OutstandingBalance;
 class BillingInfo extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var OutstandingBalance
      */
     protected $outstandingBalance;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var CycleExecution[]
      */
     protected $cycleExecutions = [];
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var LastPayment
      */
     protected $lastPayment;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $nextBillingTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var int
      */
     protected $failedPaymentsCount;

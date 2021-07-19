@@ -37,50 +37,23 @@ class Update
 {
     use PosSalesChannelTrait;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfig;
+    private SystemConfigService $systemConfig;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $customFieldRepository;
+    private EntityRepositoryInterface $customFieldRepository;
 
-    /**
-     * @var WebhookServiceInterface|null
-     */
-    private $webhookService;
+    private ?WebhookServiceInterface $webhookService;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $paymentRepository;
+    private EntityRepositoryInterface $paymentRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelTypeRepository;
+    private EntityRepositoryInterface $salesChannelTypeRepository;
 
-    /**
-     * @var InformationDefaultService|null
-     */
-    private $informationDefaultService;
+    private ?InformationDefaultService $informationDefaultService;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $shippingRepository;
+    private EntityRepositoryInterface $shippingRepository;
 
-    /**
-     * @var PosWebhookService|null
-     */
-    private $posWebhookService;
+    private ?PosWebhookService $posWebhookService;
 
     public function __construct(
         SystemConfigService $systemConfig,

@@ -11,10 +11,7 @@ use Psr\Log\LoggerInterface;
 
 class CredentialsClientFactory
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(LoggerInterface $logger)
     {

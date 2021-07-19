@@ -18,10 +18,7 @@ class ProductResource
 {
     public const DELETION_CHUNK_SIZE = 100;
 
-    /**
-     * @var PosClientFactory
-     */
-    private $posClientFactory;
+    private PosClientFactory $posClientFactory;
 
     public function __construct(PosClientFactory $posClientFactory)
     {

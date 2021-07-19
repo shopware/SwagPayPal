@@ -30,15 +30,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class OrderFromCartBuilder extends AbstractOrderBuilder
 {
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         SettingsServiceInterface $settingsService,

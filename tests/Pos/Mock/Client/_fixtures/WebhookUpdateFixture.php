@@ -15,10 +15,7 @@ use Swag\PayPal\Pos\Api\Webhook\Subscription\UpdateSubscription;
 
 class WebhookUpdateFixture
 {
-    /**
-     * @var bool
-     */
-    public static $sent = false;
+    public static bool $sent = false;
 
     public static function put(string $resourceUri, PosStruct $data): ?array
     {

@@ -13,10 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SystemConfigControllerMock extends SystemConfigController
 {
-    /**
-     * @var Request|null
-     */
-    private $lastRequest;
+    private ?Request $lastRequest;
 
     public function __construct()
     {

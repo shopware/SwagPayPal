@@ -14,7 +14,7 @@ class WebhookRegistry
     /**
      * @var WebhookHandler[]
      */
-    private $registeredWebhooks;
+    private array $registeredWebhooks;
 
     public function __construct(\IteratorAggregate $webhooks)
     {

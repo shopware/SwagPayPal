@@ -19,10 +19,7 @@ use Swag\PayPal\Webhook\WebhookEventTypes;
 
 class CaptureCompleted extends AbstractWebhookHandler
 {
-    /**
-     * @var PaymentStatusUtilV2
-     */
-    private $paymentStatusUtil;
+    private PaymentStatusUtilV2 $paymentStatusUtil;
 
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepository,

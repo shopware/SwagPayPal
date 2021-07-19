@@ -32,40 +32,19 @@ class PosSyncControllerTest extends TestCase
 {
     private const INVALID_CHANNEL_ID = 'notASalesChannelId';
 
-    /**
-     * @var PosSyncController
-     */
-    private $posSyncController;
+    private PosSyncController $posSyncController;
 
-    /**
-     * @var SalesChannelRepoMock
-     */
-    private $salesChannelRepoMock;
+    private SalesChannelRepoMock $salesChannelRepoMock;
 
-    /**
-     * @var MockObject
-     */
-    private $logCleaner;
+    private MockObject $logCleaner;
 
-    /**
-     * @var MockObject
-     */
-    private $productSelection;
+    private MockObject $productSelection;
 
-    /**
-     * @var MockObject
-     */
-    private $runService;
+    private MockObject $runService;
 
-    /**
-     * @var MessageBusMock
-     */
-    private $messageBus;
+    private MessageBusMock $messageBus;
 
-    /**
-     * @var MockObject
-     */
-    private $syncResetter;
+    private MockObject $syncResetter;
 
     protected function setUp(): void
     {

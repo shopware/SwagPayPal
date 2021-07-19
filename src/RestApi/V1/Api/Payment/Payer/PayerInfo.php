@@ -13,36 +13,50 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Payer\PayerInfo\ShippingAddress;
 class PayerInfo extends ExecutePayerInfo
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $email;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $firstName;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $lastName;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var BillingAddress|null
      */
     protected $billingAddress;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ShippingAddress
      */
     protected $shippingAddress;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $phone;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $countryCode;

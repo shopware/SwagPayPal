@@ -24,25 +24,13 @@ use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;
 
 class InformationFetchService
 {
-    /**
-     * @var UserResource
-     */
-    private $userResource;
+    private UserResource $userResource;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $countryRepository;
+    private EntityRepositoryInterface $countryRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $currencyRepository;
+    private EntityRepositoryInterface $currencyRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $languageRepository;
+    private EntityRepositoryInterface $languageRepository;
 
     public function __construct(
         UserResource $userResource,

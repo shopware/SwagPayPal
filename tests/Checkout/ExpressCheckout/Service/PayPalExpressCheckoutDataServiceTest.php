@@ -20,6 +20,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
+use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -41,35 +42,17 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
 
     private const CLIENT_ID = 'someClientId';
 
-    /**
-     * @var ExpressCheckoutDataServiceInterface
-     */
-    private $expressCheckoutDataService;
+    private ExpressCheckoutDataServiceInterface $expressCheckoutDataService;
 
-    /**
-     * @var SalesChannelContextFactory
-     */
-    private $salesChannelContextFactory;
+    private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 
-    /**
-     * @var CartService
-     */
-    private $cartService;
+    private CartService $cartService;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $productRepository;
+    private EntityRepositoryInterface $productRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $customerRepository;
+    private EntityRepositoryInterface $customerRepository;
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PaymentMethodUtil $paymentMethodUtil;
 
     private SystemConfigService $systemConfigService;
 

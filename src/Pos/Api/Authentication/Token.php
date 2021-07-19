@@ -15,11 +15,15 @@ final class Token extends PosStruct
      * The access token issued by Zettle. After the access token
      * expires (see $expiresIn), you must request a new access token.
      *
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $accessToken;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $refreshToken;
@@ -27,12 +31,16 @@ final class Token extends PosStruct
     /**
      * The lifetime of the access token, in seconds.
      *
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var int
      */
     protected $expiresIn;
 
     /**
      * Calculated expiration date
+     *
+     * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var \DateTime
      */

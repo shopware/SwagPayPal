@@ -19,7 +19,7 @@ trait InventoryTrait
     /**
      * @var string[]
      */
-    protected $locations = [
+    protected array $locations = [
         'STORE' => 'storeUuid',
         'BIN' => 'binUuid',
         'SUPPLIER' => 'supplierUuid',

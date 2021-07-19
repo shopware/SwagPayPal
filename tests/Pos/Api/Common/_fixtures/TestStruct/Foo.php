@@ -11,15 +11,9 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class Foo extends PosStruct
 {
-    /**
-     * @var string
-     */
-    protected $fooBaz;
+    protected string $fooBaz;
 
-    /**
-     * @var string
-     */
-    protected $fooBoo;
+    protected string $fooBoo;
 
     protected function setFooBaz(string $fooBaz): void
     {

@@ -17,10 +17,7 @@ class LocaleCodeProviderTest extends TestCase
 {
     use ServicesTrait;
 
-    /**
-     * @var LocaleCodeProvider
-     */
-    private $localeCodeProvider;
+    private LocaleCodeProvider $localeCodeProvider;
 
     protected function setUp(): void
     {

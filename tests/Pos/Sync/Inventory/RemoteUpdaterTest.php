@@ -27,20 +27,11 @@ class RemoteUpdaterTest extends TestCase
 {
     use UpdaterTrait;
 
-    /**
-     * @var MockObject
-     */
-    private $inventoryResource;
+    private MockObject $inventoryResource;
 
-    /**
-     * @var MockObject
-     */
-    private $logger;
+    private MockObject $logger;
 
-    /**
-     * @var RemoteUpdater
-     */
-    private $remoteUpdater;
+    private RemoteUpdater $remoteUpdater;
 
     public function setUp(): void
     {

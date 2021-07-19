@@ -14,11 +14,15 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Link;
 class Disputes extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Item[]|null
      */
     protected $items;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Link[]
      */
     protected $links;

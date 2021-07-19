@@ -12,10 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PosTokenException extends PosException
 {
-    /**
-     * @var PosTokenError
-     */
-    private $tokenError;
+    private PosTokenError $tokenError;
 
     public function __construct(
         PosTokenError $tokenError,

@@ -18,25 +18,13 @@ use Swag\PayPal\Pos\Sync\Inventory\StockChange;
 
 class InventorySyncer
 {
-    /**
-     * @var InventoryContextFactory
-     */
-    private $inventoryContextFactory;
+    private InventoryContextFactory $inventoryContextFactory;
 
-    /**
-     * @var LocalUpdater
-     */
-    private $localUpdater;
+    private LocalUpdater $localUpdater;
 
-    /**
-     * @var RemoteUpdater
-     */
-    private $remoteUpdater;
+    private RemoteUpdater $remoteUpdater;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $inventoryRepository;
+    private EntityRepositoryInterface $inventoryRepository;
 
     public function __construct(
         InventoryContextFactory $inventoryContextFactory,

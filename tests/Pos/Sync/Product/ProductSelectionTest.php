@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Pos\Sync\Product;
 
-use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilderInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -26,30 +25,11 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 
 class ProductSelectionTest extends AbstractProductSyncTest
 {
-    /**
-     * @var MockObject
-     */
-    private $productContextFactory;
+    private SalesChannelProductRepoMock $productRepository;
 
-    /**
-     * @var ProductContextMock
-     */
-    private $productContext;
+    private SalesChannelEntity $salesChannel;
 
-    /**
-     * @var SalesChannelProductRepoMock
-     */
-    private $productRepository;
-
-    /**
-     * @var SalesChannelEntity
-     */
-    private $salesChannel;
-
-    /**
-     * @var ProductSelection
-     */
-    private $productSelection;
+    private ProductSelection $productSelection;
 
     public function setUp(): void
     {
@@ -57,9 +37,9 @@ class ProductSelectionTest extends AbstractProductSyncTest
 
         $this->salesChannel = $this->getSalesChannel($context);
 
-        $this->productContext = new ProductContextMock($this->salesChannel, $context);
-        $this->productContextFactory = $this->createMock(ProductContextFactory::class);
-        $this->productContextFactory->method('getContext')->willReturn($this->productContext);
+        $productContext = new ProductContextMock($this->salesChannel, $context);
+        $productContextFactory = $this->createMock(ProductContextFactory::class);
+        $productContextFactory->method('getContext')->willReturn($productContext);
 
         $productStreamBuilder = $this->createStub(ProductStreamBuilderInterface::class);
         $productStreamBuilder->method('buildFilters')->willReturn(

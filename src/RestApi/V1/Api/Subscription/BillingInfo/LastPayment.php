@@ -20,11 +20,15 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\LastPayment\Amount;
 class LastPayment extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Amount
      */
     protected $amount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $time;

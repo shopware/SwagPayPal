@@ -34,35 +34,23 @@ class PosCommandTest extends TestCase
 {
     private const INVALID_CHANNEL_ID = 'notASalesChannelId';
 
-    /**
-     * @var SalesChannelRepoMock
-     */
-    private $salesChannelRepoMock;
+    private SalesChannelRepoMock $salesChannelRepoMock;
 
     /**
-     * @var MockObject|RunService
+     * @var MockObject&RunService
      */
-    private $runService;
+    private RunService $runService;
 
-    /**
-     * @var MockObject
-     */
-    private $logCleaner;
+    private MockObject $logCleaner;
 
-    /**
-     * @var MockObject
-     */
-    private $syncResetter;
+    private MockObject $syncResetter;
 
     /**
      * @var AbstractPosCommand[]
      */
-    private $commands;
+    private array $commands;
 
-    /**
-     * @var MessageBusMock
-     */
-    private $messageBus;
+    private MessageBusMock $messageBus;
 
     protected function setUp(): void
     {

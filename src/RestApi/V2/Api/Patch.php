@@ -16,21 +16,29 @@ class Patch extends PayPalApiStruct
     public const OPERATION_REMOVE = 'remove';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $op;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $path;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var int|float|string|bool|array|null
      */
     protected $value;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $from;

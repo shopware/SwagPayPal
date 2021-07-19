@@ -14,11 +14,15 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo\TrackingInfo;
 class EvidenceInfo extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var TrackingInfo[]
      */
     protected $trackingInfo;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var RefundId[]
      */
     protected $refundIds;

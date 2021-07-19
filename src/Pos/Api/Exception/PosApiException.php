@@ -12,10 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PosApiException extends PosException
 {
-    /**
-     * @var PosApiError
-     */
-    private $apiError;
+    private PosApiError $apiError;
 
     public function __construct(
         PosApiError $apiError,

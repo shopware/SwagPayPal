@@ -14,10 +14,7 @@ use Swag\PayPal\Pos\Exception\InvalidMediaTypeException;
 
 class MediaConverter
 {
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $urlGenerator;
+    private UrlGeneratorInterface $urlGenerator;
 
     public function __construct(UrlGeneratorInterface $urlGenerator)
     {

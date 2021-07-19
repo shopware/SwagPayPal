@@ -12,11 +12,15 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 class Property extends PosStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $value;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $imageUrl;

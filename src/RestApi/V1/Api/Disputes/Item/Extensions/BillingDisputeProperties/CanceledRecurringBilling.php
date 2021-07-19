@@ -14,11 +14,15 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties
 class CanceledRecurringBilling extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ExpectedRefund
      */
     protected $expectedRefund;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var CancellationDetails
      */
     protected $cancellationDetails;

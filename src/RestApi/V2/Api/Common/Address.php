@@ -15,6 +15,8 @@ abstract class Address extends PayPalApiStruct
      * The first line of the address. For example, number or street. For example, 173 Drury Lane.
      * Required for data entry and compliance and risk checks. Must contain the full address.
      *
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $addressLine_1;
@@ -22,12 +24,16 @@ abstract class Address extends PayPalApiStruct
     /**
      * The second line of the address. For example, suite or apartment number.
      *
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $addressLine_2;
 
     /**
      * A city, town, or village. Smaller than $adminArea1
+     *
+     * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
      */
@@ -37,16 +43,22 @@ abstract class Address extends PayPalApiStruct
      * The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision.
      * Format for postal delivery. For example, CA and not California.
      *
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $adminArea_1;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $postalCode;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $countryCode;
