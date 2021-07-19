@@ -15,21 +15,29 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingOption;
 class ItemList extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ShippingAddress
      */
     protected $shippingAddress;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Item[]
      */
     protected $items;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ShippingOption[]
      */
     protected $shippingOptions;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $shippingPhoneNumber;

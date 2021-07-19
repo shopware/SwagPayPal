@@ -21,25 +21,13 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 
 class CancelTransactionsTaskHandler extends ScheduledTaskHandler
 {
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderTransactionRepo;
+    private EntityRepositoryInterface $orderTransactionRepo;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $stateMachineStateRepo;
+    private EntityRepositoryInterface $stateMachineStateRepo;
 
-    /**
-     * @var OrderTransactionStateHandler
-     */
-    private $orderTransactionStateHandler;
+    private OrderTransactionStateHandler $orderTransactionStateHandler;
 
     public function __construct(
         EntityRepositoryInterface $scheduledTaskRepository,

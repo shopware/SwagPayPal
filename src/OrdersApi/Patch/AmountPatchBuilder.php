@@ -18,10 +18,7 @@ use Swag\PayPal\RestApi\V2\Api\Patch;
  */
 class AmountPatchBuilder
 {
-    /**
-     * @var AmountProvider
-     */
-    private $amountProvider;
+    private AmountProvider $amountProvider;
 
     public function __construct(AmountProvider $amountProvider)
     {

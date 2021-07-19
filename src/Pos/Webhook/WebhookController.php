@@ -35,20 +35,11 @@ class WebhookController extends AbstractController
 {
     use PosSalesChannelTrait;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var WebhookService
-     */
-    private $webhookService;
+    private WebhookService $webhookService;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
         LoggerInterface $logger,

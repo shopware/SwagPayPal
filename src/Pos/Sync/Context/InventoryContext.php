@@ -20,55 +20,28 @@ use Swag\PayPal\SwagPayPal;
 
 class InventoryContext
 {
-    /**
-     * @var PosSalesChannelInventoryCollection
-     */
-    private $localInventory;
+    private PosSalesChannelInventoryCollection $localInventory;
 
-    /**
-     * @var UuidConverter
-     */
-    private $uuidConverter;
+    private UuidConverter $uuidConverter;
 
-    /**
-     * @var SalesChannelEntity
-     */
-    private $salesChannel;
+    private SalesChannelEntity $salesChannel;
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
-    /**
-     * @var Status
-     */
-    private $remoteInventory;
+    private Status $remoteInventory;
 
-    /**
-     * @var string
-     */
-    private $storeUuid;
+    private string $storeUuid;
 
-    /**
-     * @var string
-     */
-    private $supplierUuid;
+    private string $supplierUuid;
 
-    /**
-     * @var string
-     */
-    private $binUuid;
+    private string $binUuid;
 
-    /**
-     * @var string
-     */
-    private $soldUuid;
+    private string $soldUuid;
 
     /**
      * @var string[]|null
      */
-    private $productIds;
+    private ?array $productIds;
 
     public function __construct(
         UuidConverter $uuidConverter,
@@ -90,6 +63,7 @@ class InventoryContext
         $this->remoteInventory = $remoteInventory;
         $this->localInventory = $localInventory;
         $this->context = $context;
+        $this->productIds = null;
     }
 
     public function getSingleRemoteInventory(ProductEntity $productEntity, bool $ignoreTracking = false): ?int

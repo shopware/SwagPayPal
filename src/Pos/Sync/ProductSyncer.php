@@ -20,35 +20,17 @@ use Swag\PayPal\Pos\Sync\Product\UnsyncedChecker;
 
 class ProductSyncer
 {
-    /**
-     * @var ProductConverter
-     */
-    private $productConverter;
+    private ProductConverter $productConverter;
 
-    /**
-     * @var ProductContextFactory
-     */
-    private $productContextFactory;
+    private ProductContextFactory $productContextFactory;
 
-    /**
-     * @var NewUpdater
-     */
-    private $newUpdater;
+    private NewUpdater $newUpdater;
 
-    /**
-     * @var OutdatedUpdater
-     */
-    private $outdatedUpdater;
+    private OutdatedUpdater $outdatedUpdater;
 
-    /**
-     * @var DeletedUpdater
-     */
-    private $deletedUpdater;
+    private DeletedUpdater $deletedUpdater;
 
-    /**
-     * @var UnsyncedChecker
-     */
-    private $unsyncedChecker;
+    private UnsyncedChecker $unsyncedChecker;
 
     public function __construct(
         ProductConverter $productConverter,

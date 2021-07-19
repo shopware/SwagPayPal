@@ -14,41 +14,57 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\MerchandizeDisputeProper
 class Extensions extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var bool
      */
     protected $merchantContacted;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $merchantContactedOutcome;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $merchantContactedTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $merchantContactedMode;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $buyerContactedTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $buyerContactedChannel;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var BillingDisputeProperties
      */
     protected $billingDisputeProperties;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var MerchandizeDisputeProperties
      */
     protected $merchandizeDisputeProperties;

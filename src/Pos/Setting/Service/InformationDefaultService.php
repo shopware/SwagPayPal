@@ -25,40 +25,19 @@ class InformationDefaultService
     public const POS_PAYMENT_METHOD_ID = 'abab06a108014a37b5f49c9a4d8943db';
     public const POS_SHIPPING_METHOD_ID = '405481da0a20443e94ce45f52b1af776';
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $customerGroupRepository;
+    private EntityRepositoryInterface $customerGroupRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $categoryRepository;
+    private EntityRepositoryInterface $categoryRepository;
 
-    /**
-     * @var PluginIdProvider
-     */
-    private $pluginIdProvider;
+    private PluginIdProvider $pluginIdProvider;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $paymentMethodRepository;
+    private EntityRepositoryInterface $paymentMethodRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $ruleRepository;
+    private EntityRepositoryInterface $ruleRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $shippingMethodRepository;
+    private EntityRepositoryInterface $shippingMethodRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $deliveryTimeRepository;
+    private EntityRepositoryInterface $deliveryTimeRepository;
 
     public function __construct(
         EntityRepositoryInterface $customerGroupRepository,

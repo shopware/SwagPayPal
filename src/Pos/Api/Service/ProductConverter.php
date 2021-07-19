@@ -21,35 +21,17 @@ use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
 
 class ProductConverter
 {
-    /**
-     * @var UuidConverter
-     */
-    private $uuidConverter;
+    private UuidConverter $uuidConverter;
 
-    /**
-     * @var CategoryConverter
-     */
-    private $categoryConverter;
+    private CategoryConverter $categoryConverter;
 
-    /**
-     * @var VariantConverter
-     */
-    private $variantConverter;
+    private VariantConverter $variantConverter;
 
-    /**
-     * @var OptionGroupConverter
-     */
-    private $optionGroupConverter;
+    private OptionGroupConverter $optionGroupConverter;
 
-    /**
-     * @var PresentationConverter
-     */
-    private $presentationConverter;
+    private PresentationConverter $presentationConverter;
 
-    /**
-     * @var MetadataGenerator
-     */
-    private $metadataGenerator;
+    private MetadataGenerator $metadataGenerator;
 
     public function __construct(
         UuidConverter $uuidConverter,

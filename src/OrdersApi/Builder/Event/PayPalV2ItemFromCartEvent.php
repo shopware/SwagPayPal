@@ -16,15 +16,9 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class PayPalV2ItemFromCartEvent extends Event
 {
-    /**
-     * @var Item
-     */
-    private $payPalLineItem;
+    private Item $payPalLineItem;
 
-    /**
-     * @var LineItem
-     */
-    private $originalShopwareLineItem;
+    private LineItem $originalShopwareLineItem;
 
     public function __construct(Item $payPalLineItem, LineItem $originalShopwareLineItem)
     {

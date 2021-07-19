@@ -15,11 +15,15 @@ final class Token extends PayPalApiStruct
      * Scopes expressed in the form of resource URL endpoints. The value of the scope parameter
      * is expressed as a list of space-delimited, case-sensitive strings.
      *
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     private $scope;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     private $nonce;
@@ -27,6 +31,8 @@ final class Token extends PayPalApiStruct
     /**
      * The access token issued by PayPal. After the access token
      * expires (see $expiresIn), you must request a new access token.
+     *
+     * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
      */
@@ -36,11 +42,15 @@ final class Token extends PayPalApiStruct
      * The type of the token issued as described in OAuth2.0 RFC6749,
      * Section 7.1. Value is case insensitive.
      *
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     private $tokenType;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     private $appId;
@@ -48,12 +58,16 @@ final class Token extends PayPalApiStruct
     /**
      * The lifetime of the access token, in seconds.
      *
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var int
      */
     private $expiresIn;
 
     /**
      * Calculated expiration date
+     *
+     * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var \DateTime
      */

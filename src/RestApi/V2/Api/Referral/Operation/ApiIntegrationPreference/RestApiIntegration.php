@@ -16,16 +16,22 @@ class RestApiIntegration extends PayPalApiStruct
     public const INTEGRATION_TYPE_THIRD_PARTY = 'THIRD_PARTY';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $integrationMethod = self::INTEGRATION_METHOD_TYPE_PAYPAL;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $integrationType = self::INTEGRATION_TYPE_THIRD_PARTY;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ThirdPartyDetails
      */
     protected $thirdPartyDetails;

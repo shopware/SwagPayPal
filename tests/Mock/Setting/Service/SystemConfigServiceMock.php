@@ -15,7 +15,7 @@ class SystemConfigServiceMock extends SystemConfigService
     /**
      * @var mixed[][]
      */
-    private $data;
+    private array $data;
 
     public function __construct()
     {

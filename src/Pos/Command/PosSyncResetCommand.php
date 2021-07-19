@@ -17,10 +17,7 @@ class PosSyncResetCommand extends AbstractPosCommand
 {
     protected static $defaultName = 'swag:paypal:pos:sync:reset';
 
-    /**
-     * @var SyncResetter
-     */
-    private $resetSyncService;
+    private SyncResetter $resetSyncService;
 
     public function __construct(
         EntityRepositoryInterface $salesChannelRepository,

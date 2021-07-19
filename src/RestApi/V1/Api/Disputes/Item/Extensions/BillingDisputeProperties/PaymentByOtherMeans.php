@@ -12,21 +12,29 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class PaymentByOtherMeans extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var bool
      */
     protected $chargeDifferentFromOriginal;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var bool
      */
     protected $receivedDuplicate;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $paymentMethod;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $paymentInstrumentSuffix;

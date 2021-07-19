@@ -10,11 +10,15 @@ namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 class Refund extends RelatedResource
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $saleId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $captureId;

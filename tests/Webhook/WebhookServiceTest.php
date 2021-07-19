@@ -38,10 +38,7 @@ class WebhookServiceTest extends TestCase
     public const ALREADY_EXISTING_WEBHOOK_ID = 'alreadyExistingTestWebhookId';
     public const ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN = 'testWebhookExecuteToken';
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderTransactionRepo;
+    private EntityRepositoryInterface $orderTransactionRepo;
 
     protected function setUp(): void
     {

@@ -26,36 +26,50 @@ class ProductContext
     public const PRODUCT_CURRENT = 2;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var SalesChannelEntity
      */
     protected $salesChannel;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PosSalesChannelProductCollection
      */
     protected $posProductCollection;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PosSalesChannelMediaCollection
      */
     protected $posMediaCollection;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Context
      */
     protected $context;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var array
      */
     protected $productChanges;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var array
      */
     protected $productRemovals;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var array
      */
     protected $mediaRequests;

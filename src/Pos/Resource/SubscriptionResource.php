@@ -18,10 +18,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 
 class SubscriptionResource
 {
-    /**
-     * @var PosClientFactory
-     */
-    private $posClientFactory;
+    private PosClientFactory $posClientFactory;
 
     public function __construct(PosClientFactory $posClientFactory)
     {

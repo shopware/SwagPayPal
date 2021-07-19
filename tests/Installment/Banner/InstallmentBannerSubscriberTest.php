@@ -56,20 +56,11 @@ class InstallmentBannerSubscriberTest extends TestCase
     private const PRODUCT_PRICE = 678.9;
     private const ADVANCED_PRODUCT_PRICE = 111.22;
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    /**
-     * @var string
-     */
-    private $payPalPaymentMethodId;
+    private string $payPalPaymentMethodId;
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
     protected function setUp(): void
     {

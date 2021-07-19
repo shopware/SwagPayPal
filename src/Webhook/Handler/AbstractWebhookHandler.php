@@ -26,11 +26,15 @@ use Swag\PayPal\Webhook\WebhookHandler;
 abstract class AbstractWebhookHandler implements WebhookHandler
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var EntityRepositoryInterface
      */
     protected $orderTransactionRepository;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var OrderTransactionStateHandler
      */
     protected $orderTransactionStateHandler;

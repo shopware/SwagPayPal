@@ -25,25 +25,13 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 {
-    /**
-     * @var CartService
-     */
-    private $cartService;
+    private CartService $cartService;
 
-    /**
-     * @var OrderFromCartBuilder
-     */
-    private $orderFromCartBuilder;
+    private OrderFromCartBuilder $orderFromCartBuilder;
 
-    /**
-     * @var OrderResource
-     */
-    private $orderResource;
+    private OrderResource $orderResource;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         CartService $cartService,

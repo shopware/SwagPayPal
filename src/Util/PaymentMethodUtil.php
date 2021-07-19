@@ -22,15 +22,9 @@ use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
 
 class PaymentMethodUtil
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $paymentRepository;
+    private EntityRepositoryInterface $paymentRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
         EntityRepositoryInterface $paymentRepository,

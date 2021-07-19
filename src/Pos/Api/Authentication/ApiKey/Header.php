@@ -17,6 +17,8 @@ class Header extends PosStruct
     /**
      * Key ID
      *
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $kid;
@@ -24,12 +26,16 @@ class Header extends PosStruct
     /**
      * Type
      *
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $typ;
 
     /**
      * Algorithm
+     *
+     * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
      */

@@ -23,30 +23,21 @@ use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 
 class UnsyncedCheckerTest extends AbstractProductSyncTest
 {
-    /**
-     * @var ProductContextMock
-     */
-    private $productContext;
+    private ProductContextMock $productContext;
+
+    private PosSalesChannelProductEntity $posProductEntity;
+
+    private Product $posProduct;
 
     /**
-     * @var PosSalesChannelProductEntity
+     * @var MockObject&ProductResource
      */
-    private $posProductEntity;
+    private ProductResource $productResource;
 
     /**
-     * @var Product
+     * @var MockObject&LoggerInterface
      */
-    private $posProduct;
-
-    /**
-     * @var MockObject|ProductResource
-     */
-    private $productResource;
-
-    /**
-     * @var MockObject|LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function setUp(): void
     {

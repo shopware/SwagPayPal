@@ -13,6 +13,8 @@ use Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestA
 class ApiIntegrationPreference extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var RestApiIntegration
      */
     protected $restApiIntegration;

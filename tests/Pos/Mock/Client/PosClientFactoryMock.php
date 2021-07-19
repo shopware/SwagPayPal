@@ -17,20 +17,11 @@ use Swag\PayPal\Test\Mock\CacheMock;
 
 class PosClientFactoryMock extends PosClientFactory
 {
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var TokenResource
-     */
-    private $tokenResource;
+    private TokenResource $tokenResource;
 
-    /**
-     * @var PosClientMock|null
-     */
-    private $posClient;
+    private ?PosClientMock $posClient = null;
 
     public function __construct()
     {

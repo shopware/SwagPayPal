@@ -16,20 +16,11 @@ use Swag\PayPal\Pos\Sync\Context\ProductContext;
 
 class UnsyncedChecker
 {
-    /**
-     * @var ProductResource
-     */
-    private $productResource;
+    private ProductResource $productResource;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * @var UuidConverter
-     */
-    private $uuidConverter;
+    private UuidConverter $uuidConverter;
 
     public function __construct(
         ProductResource $productResource,

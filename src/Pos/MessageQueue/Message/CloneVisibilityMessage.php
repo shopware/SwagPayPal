@@ -14,20 +14,11 @@ class CloneVisibilityMessage extends AbstractSyncMessage
 {
     use OffsetTrait;
 
-    /**
-     * @var string
-     */
-    private $fromSalesChannelId;
+    private string $fromSalesChannelId;
 
-    /**
-     * @var string
-     */
-    private $toSalesChannelId;
+    private string $toSalesChannelId;
 
-    /**
-     * @var Context
-     */
-    private $context;
+    private Context $context;
 
     public function getFromSalesChannelId(): string
     {

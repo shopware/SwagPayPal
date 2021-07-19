@@ -17,10 +17,7 @@ class PosInventorySyncCommand extends AbstractPosCommand
 {
     protected static $defaultName = 'swag:paypal:pos:sync:inventory';
 
-    /**
-     * @var InventoryTask
-     */
-    private $inventoryTask;
+    private InventoryTask $inventoryTask;
 
     public function __construct(
         EntityRepositoryInterface $salesChannelRepository,

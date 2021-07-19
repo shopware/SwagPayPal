@@ -14,15 +14,12 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 class MessageBusMock implements MessageBusInterface
 {
-    /**
-     * @var MessageQueueStatsRepoMock
-     */
-    private $messageQueueStatsRepository;
+    private MessageQueueStatsRepoMock $messageQueueStatsRepository;
 
     /**
      * @var Envelope[]
      */
-    private $envelopes = [];
+    private array $envelopes = [];
 
     public function __construct()
     {

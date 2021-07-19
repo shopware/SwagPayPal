@@ -10,11 +10,15 @@ namespace Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits;
 trait OffsetTrait
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var int
      */
     private $limit;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var int
      */
     private $offset;

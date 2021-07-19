@@ -13,31 +13,43 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\SellerReceiva
 class Capture extends Payment
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $invoiceId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string|null
      */
     protected $noteToPayer;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var SellerProtection
      */
     protected $sellerProtection;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var bool
      */
     protected $finalCapture;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var SellerReceivableBreakdown
      */
     protected $sellerReceivableBreakdown;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $disbursementMode;

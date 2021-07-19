@@ -12,7 +12,7 @@ class DeleteProductsFixture
     /**
      * @var string[]|null
      */
-    public static $deletedUuids;
+    public static ?array $deletedUuids = null;
 
     public static function delete(string $query): ?array
     {

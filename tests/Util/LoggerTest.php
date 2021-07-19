@@ -21,10 +21,7 @@ class LoggerTest extends TestCase
 
     private const LOGGER_PREFIX = 'swag_paypal_logger_test';
 
-    /**
-     * @var string
-     */
-    private $logsDir;
+    private string $logsDir;
 
     public function setUp(): void
     {

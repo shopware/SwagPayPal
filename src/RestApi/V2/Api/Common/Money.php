@@ -12,11 +12,15 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 abstract class Money extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $currencyCode;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $value;

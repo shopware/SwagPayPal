@@ -12,16 +12,22 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Capture\Trans
 class Capture extends RelatedResource
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $custom;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var TransactionFee
      */
     protected $transactionFee;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $invoiceNumber;

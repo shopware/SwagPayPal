@@ -17,10 +17,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 
 class InventoryResource
 {
-    /**
-     * @var PosClientFactory
-     */
-    private $posClientFactory;
+    private PosClientFactory $posClientFactory;
 
     public function __construct(PosClientFactory $posClientFactory)
     {

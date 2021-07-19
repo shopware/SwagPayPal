@@ -20,7 +20,7 @@ class DummyWebhook implements WebhookHandler
 
     public const ORDER_TRANSACTION_UPDATE_DATA_KEY = 'dummyWebhookInvoked';
 
-    private $orderTransactionRepo;
+    private OrderTransactionRepoMock $orderTransactionRepo;
 
     public function __construct(OrderTransactionRepoMock $orderTransactionRepo)
     {

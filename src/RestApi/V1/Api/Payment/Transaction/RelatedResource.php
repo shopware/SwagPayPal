@@ -24,26 +24,36 @@ class RelatedResource extends PayPalApiStruct
     public const CAPTURE = 'capture';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Sale|null
      */
     protected $sale;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Authorization|null
      */
     protected $authorization;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Order|null
      */
     protected $order;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Refund|null
      */
     protected $refund;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Capture|null
      */
     protected $capture;

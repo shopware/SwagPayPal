@@ -15,7 +15,7 @@ class CreateProductFixture
     /**
      * @var PosStruct[]
      */
-    public static $lastCreatedProducts = [];
+    public static array $lastCreatedProducts = [];
 
     public static function post(?PosStruct $data): ?array
     {

@@ -14,16 +14,22 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\MerchandizeDisputeProper
 class MerchandizeDisputeProperties extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $issueType;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ProductDetails
      */
     protected $productDetails;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ServiceDetails
      */
     protected $serviceDetails;

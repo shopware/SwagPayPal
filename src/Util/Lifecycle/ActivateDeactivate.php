@@ -20,35 +20,17 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 
 class ActivateDeactivate
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $paymentRepository;
+    private EntityRepositoryInterface $paymentRepository;
 
-    /**
-     * @var PaymentMethodUtil
-     */
-    private $paymentMethodUtil;
+    private PaymentMethodUtil $paymentMethodUtil;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelTypeRepository;
+    private EntityRepositoryInterface $salesChannelTypeRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $shippingRepository;
+    private EntityRepositoryInterface $shippingRepository;
 
-    /**
-     * @var PaymentMethodRepositoryDecorator
-     */
-    private $paymentMethodRepoDecorator;
+    private PaymentMethodRepositoryDecorator $paymentMethodRepoDecorator;
 
     public function __construct(
         PaymentMethodUtil $paymentMethodUtil,

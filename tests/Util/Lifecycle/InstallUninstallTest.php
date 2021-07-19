@@ -29,10 +29,7 @@ class InstallUninstallTest extends TestCase
 
     use KernelTestBehaviour;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $ruleRepository;
+    private EntityRepositoryInterface $ruleRepository;
 
     protected function setUp(): void
     {

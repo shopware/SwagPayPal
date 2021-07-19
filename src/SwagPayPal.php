@@ -51,10 +51,7 @@ class SwagPayPal extends Plugin
     private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_DELETE = 'swag_paypal_pos_sales_channel_run:delete';
     private const PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_RUN_LOG_READ = 'swag_paypal_pos_sales_channel_run_log:read';
 
-    /**
-     * @var ActivateDeactivate
-     */
-    private $activateDeactivate;
+    private ActivateDeactivate $activateDeactivate;
 
     /**
      * @Required

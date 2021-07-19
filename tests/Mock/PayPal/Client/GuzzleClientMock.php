@@ -73,15 +73,9 @@ class GuzzleClientMock implements ClientInterface
     public const GET_WEBHOOK_URL = 'testWebhookUrl';
     public const TEST_WEBHOOK_ID = 'testWebhookId';
 
-    /**
-     * @var array
-     */
-    private $data;
+    private array $data;
 
-    /**
-     * @var array
-     */
-    private $config;
+    private array $config;
 
     public function __construct(array $config)
     {

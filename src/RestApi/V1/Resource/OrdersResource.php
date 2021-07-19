@@ -15,10 +15,7 @@ use Swag\PayPal\RestApi\V1\RequestUriV1;
 
 class OrdersResource
 {
-    /**
-     * @var PayPalClientFactoryInterface
-     */
-    private $payPalClientFactory;
+    private PayPalClientFactoryInterface $payPalClientFactory;
 
     public function __construct(PayPalClientFactoryInterface $payPalClientFactory)
     {

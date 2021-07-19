@@ -22,36 +22,50 @@ class Referral extends PayPalApiStruct
     protected BusinessEntity $businessEntity;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $preferredLanguageCode;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $trackingId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PartnerConfigOverride
      */
     protected $partnerConfigOverride;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Operation[]
      */
     protected $operations;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string[]
      */
     protected $products = [self::PRODUCT_TYPE_PPCP];
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var LegalConsent[]
      */
     protected $legalConsents;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Link[]
      */
     protected $links;

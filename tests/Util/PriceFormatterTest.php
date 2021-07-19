@@ -12,10 +12,7 @@ use Swag\PayPal\Util\PriceFormatter;
 
 class PriceFormatterTest extends TestCase
 {
-    /**
-     * @var PriceFormatter
-     */
-    protected $priceFormatter;
+    protected PriceFormatter $priceFormatter;
 
     public function setUp(): void
     {

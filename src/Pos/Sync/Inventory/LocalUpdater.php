@@ -16,25 +16,13 @@ use Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalCalculatorInterface;
 
 class LocalUpdater
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $productRepository;
+    private EntityRepositoryInterface $productRepository;
 
-    /**
-     * @var LocalCalculatorInterface
-     */
-    private $localCalculator;
+    private LocalCalculatorInterface $localCalculator;
 
-    /**
-     * @var StockUpdater
-     */
-    private $stockUpdater;
+    private StockUpdater $stockUpdater;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         EntityRepositoryInterface $productRepository,

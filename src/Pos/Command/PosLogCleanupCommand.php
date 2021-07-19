@@ -17,10 +17,7 @@ class PosLogCleanupCommand extends AbstractPosCommand
 {
     protected static $defaultName = 'swag:paypal:pos:log:cleanup';
 
-    /**
-     * @var LogCleaner
-     */
-    private $logCleaner;
+    private LogCleaner $logCleaner;
 
     public function __construct(
         EntityRepositoryInterface $salesChannelRepository,

@@ -20,15 +20,9 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductCollection
 
 class ProductContextFactory
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $posProductRepository;
+    private EntityRepositoryInterface $posProductRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $posMediaRepository;
+    private EntityRepositoryInterface $posMediaRepository;
 
     public function __construct(
         EntityRepositoryInterface $posProductRepository,

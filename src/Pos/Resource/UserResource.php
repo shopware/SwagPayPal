@@ -14,10 +14,7 @@ use Swag\PayPal\Pos\Client\PosClientFactory;
 
 class UserResource
 {
-    /**
-     * @var PosClientFactory
-     */
-    private $posClientFactory;
+    private PosClientFactory $posClientFactory;
 
     public function __construct(PosClientFactory $posClientFactory)
     {

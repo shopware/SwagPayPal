@@ -36,20 +36,11 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
     use OrderFixture;
     use OrderTransactionTrait;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    protected $orderTransactionRepository;
+    protected EntityRepositoryInterface $orderTransactionRepository;
 
-    /**
-     * @var StateMachineRegistry
-     */
-    protected $stateMachineRegistry;
+    protected StateMachineRegistry $stateMachineRegistry;
 
-    /**
-     * @var AbstractWebhookHandler
-     */
-    private $webhookHandler;
+    private AbstractWebhookHandler $webhookHandler;
 
     protected function setUp(): void
     {

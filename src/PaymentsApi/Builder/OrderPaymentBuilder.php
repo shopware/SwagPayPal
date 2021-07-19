@@ -34,10 +34,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPaymentBuilderInterface
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $currencyRepository;
+    private EntityRepositoryInterface $currencyRepository;
 
     public function __construct(
         SettingsServiceInterface $settingsService,

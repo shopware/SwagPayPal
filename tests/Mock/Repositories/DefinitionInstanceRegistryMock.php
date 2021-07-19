@@ -13,25 +13,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
 {
-    /**
-     * @var LanguageRepoMock
-     */
-    private $languageRepo;
+    private LanguageRepoMock $languageRepo;
 
-    /**
-     * @var SalesChannelRepoMock
-     */
-    private $salesChannelRepo;
+    private SalesChannelRepoMock $salesChannelRepo;
 
-    /**
-     * @var OrderTransactionRepoMock
-     */
-    private $orderTransactionRepo;
+    private OrderTransactionRepoMock $orderTransactionRepo;
 
-    /**
-     * @var SystemConfigRepoMock
-     */
-    private $systemConfigRepo;
+    private SystemConfigRepoMock $systemConfigRepo;
 
     public function __construct(array $elements, ContainerInterface $container)
     {

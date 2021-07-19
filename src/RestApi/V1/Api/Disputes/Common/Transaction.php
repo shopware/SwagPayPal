@@ -13,56 +13,78 @@ use Swag\PayPal\RestApi\V1\Api\Common\Money;
 abstract class Transaction extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $buyerTransactionId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $sellerTransactionId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $referenceId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $createTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $transactionStatus;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Money
      */
     protected $grossAmount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $invoiceNumber;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $custom;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Buyer
      */
     protected $buyer;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Seller
      */
     protected $seller;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Item[]
      */
     protected $items;

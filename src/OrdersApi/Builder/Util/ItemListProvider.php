@@ -19,20 +19,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ItemListProvider
 {
-    /**
-     * @var PriceFormatter
-     */
-    private $priceFormatter;
+    private PriceFormatter $priceFormatter;
 
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         PriceFormatter $priceFormatter,

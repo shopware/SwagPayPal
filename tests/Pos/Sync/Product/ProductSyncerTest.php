@@ -31,50 +31,23 @@ use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 
 class ProductSyncerTest extends AbstractProductSyncTest
 {
-    /**
-     * @var MockObject
-     */
-    private $productContextFactory;
+    private MockObject $productContextFactory;
 
-    /**
-     * @var ProductContextMock
-     */
-    private $productContext;
+    private ProductContextMock $productContext;
 
-    /**
-     * @var ProductSyncer
-     */
-    private $pruductSyncer;
+    private ProductSyncer $pruductSyncer;
 
-    /**
-     * @var MockObject
-     */
-    private $productResource;
+    private MockObject $productResource;
 
-    /**
-     * @var SalesChannelEntity
-     */
-    private $salesChannel;
+    private SalesChannelEntity $salesChannel;
 
-    /**
-     * @var MockObject
-     */
-    private $newUpdater;
+    private MockObject $newUpdater;
 
-    /**
-     * @var MockObject
-     */
-    private $outdatedUpdater;
+    private MockObject $outdatedUpdater;
 
-    /**
-     * @var MockObject
-     */
-    private $deletedUpdater;
+    private MockObject $deletedUpdater;
 
-    /**
-     * @var MockObject
-     */
-    private $unsyncedChecker;
+    private MockObject $unsyncedChecker;
 
     public function setUp(): void
     {

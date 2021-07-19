@@ -13,30 +13,18 @@ use Swag\PayPal\Test\Pos\Api\Common\_fixtures\TestStruct\Foo;
 
 class TestStruct extends PosStruct
 {
-    /**
-     * @var string
-     */
-    protected $id;
+    protected string $id;
 
-    /**
-     * @var Bar
-     */
-    protected $bar;
+    protected Bar $bar;
 
     /**
      * @var Foo[]
      */
-    protected $foo;
+    protected array $foo;
 
-    /**
-     * @var object
-     */
-    protected $notExistingClass;
+    protected object $notExistingClass;
 
-    /**
-     * @var array
-     */
-    protected $notExistingCollectionClass;
+    protected array $notExistingCollectionClass;
 
     protected function setId(string $id): void
     {
@@ -56,10 +44,7 @@ class TestStruct extends PosStruct
         $this->foo = $foo;
     }
 
-    /**
-     * @param object $notExistingClass
-     */
-    protected function setNotExistingClass($notExistingClass): void
+    protected function setNotExistingClass(object $notExistingClass): void
     {
         $this->notExistingClass = $notExistingClass;
     }

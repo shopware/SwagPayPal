@@ -17,20 +17,11 @@ class TokenResource implements TokenResourceInterface
 {
     private const CACHE_ID = 'paypal_auth_';
 
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cache;
+    private CacheItemPoolInterface $cache;
 
-    /**
-     * @var TokenClientFactory
-     */
-    private $tokenClientFactory;
+    private TokenClientFactory $tokenClientFactory;
 
-    /**
-     * @var TokenValidator
-     */
-    private $tokenValidator;
+    private TokenValidator $tokenValidator;
 
     public function __construct(
         CacheItemPoolInterface $cache,

@@ -13,11 +13,15 @@ use Swag\PayPal\RestApi\V1\Api\CreateWebhooks\EventType;
 class CreateWebhooks extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $url;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var EventType[]
      */
     protected $eventTypes;

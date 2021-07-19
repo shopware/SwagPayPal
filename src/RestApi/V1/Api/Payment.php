@@ -19,61 +19,85 @@ use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 class Payment extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $id;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $intent = PaymentIntentV1::SALE;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $state;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $cart;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Payer
      */
     protected $payer;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Transaction[]
      */
     protected $transactions;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $createTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $updateTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Link[]
      */
     protected $links;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var RedirectUrls
      */
     protected $redirectUrls;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ApplicationContext
      */
     protected $applicationContext;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var PaymentInstruction|null
      */
     protected $paymentInstruction;

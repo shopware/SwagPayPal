@@ -29,10 +29,7 @@ class SalesChannelRepoMock implements EntityRepositoryInterface
 {
     public const SALES_CHANNEL_NAME = 'SwagPayPal Test SalesChannel';
 
-    /**
-     * @var array
-     */
-    private $updateData = [];
+    private array $updateData = [];
 
     public function getDefinition(): EntityDefinition
     {

@@ -25,20 +25,11 @@ use Swag\PayPal\RestApi\V1\Api\Refund;
 
 class PaymentStatusUtil
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderRepository;
+    private EntityRepositoryInterface $orderRepository;
 
-    /**
-     * @var OrderTransactionStateHandler
-     */
-    private $orderTransactionStateHandler;
+    private OrderTransactionStateHandler $orderTransactionStateHandler;
 
-    /**
-     * @var PriceFormatter
-     */
-    private $priceFormatter;
+    private PriceFormatter $priceFormatter;
 
     public function __construct(
         EntityRepositoryInterface $orderRepository,

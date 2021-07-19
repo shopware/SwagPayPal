@@ -12,11 +12,15 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class Payee extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $merchantId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $email;

@@ -15,10 +15,7 @@ use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 
 class RemoteCalculator
 {
-    /**
-     * @var UuidConverter
-     */
-    private $uuidConverter;
+    private UuidConverter $uuidConverter;
 
     public function __construct(UuidConverter $uuidConverter)
     {

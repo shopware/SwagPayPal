@@ -14,10 +14,7 @@ use Swag\PayPal\Pos\Run\Administration\LogCleaner;
 
 class CleanUpLogTaskHandler extends AbstractSyncTaskHandler
 {
-    /**
-     * @var LogCleaner
-     */
-    private $logCleaner;
+    private LogCleaner $logCleaner;
 
     public function __construct(
         EntityRepositoryInterface $scheduledTaskRepository,

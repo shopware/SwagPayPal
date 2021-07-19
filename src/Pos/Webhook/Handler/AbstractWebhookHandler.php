@@ -19,10 +19,7 @@ abstract class AbstractWebhookHandler implements WebhookHandler
 {
     use PosSalesChannelTrait;
 
-    /**
-     * @var ApiKeyDecoder
-     */
-    private $apiKeyDecoder;
+    private ApiKeyDecoder $apiKeyDecoder;
 
     public function __construct(ApiKeyDecoder $apiKeyDecoder)
     {

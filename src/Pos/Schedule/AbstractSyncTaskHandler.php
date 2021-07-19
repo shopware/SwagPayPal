@@ -18,10 +18,7 @@ use Swag\PayPal\SwagPayPal;
 
 abstract class AbstractSyncTaskHandler extends ScheduledTaskHandler
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
         EntityRepositoryInterface $scheduledTaskRepository,

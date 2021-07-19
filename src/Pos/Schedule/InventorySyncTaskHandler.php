@@ -14,10 +14,7 @@ use Swag\PayPal\Pos\Run\Task\InventoryTask;
 
 class InventorySyncTaskHandler extends AbstractSyncTaskHandler
 {
-    /**
-     * @var InventoryTask
-     */
-    private $inventoryTask;
+    private InventoryTask $inventoryTask;
 
     public function __construct(
         EntityRepositoryInterface $scheduledTaskRepository,

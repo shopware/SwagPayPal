@@ -27,40 +27,19 @@ use Swag\PayPal\Pos\Webhook\WebhookEventNames;
 
 class InventoryChangedHandler extends AbstractWebhookHandler
 {
-    /**
-     * @var RunService
-     */
-    private $runService;
+    private RunService $runService;
 
-    /**
-     * @var LocalWebhookCalculator
-     */
-    private $localCalculator;
+    private LocalWebhookCalculator $localCalculator;
 
-    /**
-     * @var LocalUpdater
-     */
-    private $localUpdater;
+    private LocalUpdater $localUpdater;
 
-    /**
-     * @var InventorySyncer
-     */
-    private $inventorySyncer;
+    private InventorySyncer $inventorySyncer;
 
-    /**
-     * @var InventoryContextFactory
-     */
-    private $inventoryContextFactory;
+    private InventoryContextFactory $inventoryContextFactory;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $productRepository;
+    private EntityRepositoryInterface $productRepository;
 
-    /**
-     * @var UuidConverter
-     */
-    private $uuidConverter;
+    private UuidConverter $uuidConverter;
 
     public function __construct(
         ApiKeyDecoder $apiKeyDecoder,

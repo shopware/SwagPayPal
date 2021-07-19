@@ -30,10 +30,7 @@ class WebhookResourceTest extends TestCase
 
     public const TEST_URL_ALREADY_EXISTS = 'alreadyExistingTestUrl';
 
-    /**
-     * @var PayPalClientFactoryMock
-     */
-    private $clientFactory;
+    private PayPalClientFactoryMock $clientFactory;
 
     public function testCreateWebhook(): void
     {

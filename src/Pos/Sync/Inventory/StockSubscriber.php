@@ -36,20 +36,11 @@ class StockSubscriber implements EventSubscriberInterface
      */
     private const DELAY = 10000;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderLineItemRepository;
+    private EntityRepositoryInterface $orderLineItemRepository;
 
-    /**
-     * @var MessageBusInterface
-     */
-    private $messageBus;
+    private MessageBusInterface $messageBus;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(
         EntityRepositoryInterface $orderLineItemRepository,

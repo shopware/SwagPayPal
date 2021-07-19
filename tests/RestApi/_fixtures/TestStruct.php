@@ -13,30 +13,18 @@ use Swag\PayPal\Test\RestApi\_fixtures\TestStruct\Foo;
 
 class TestStruct extends PayPalApiStruct
 {
-    /**
-     * @var string
-     */
-    protected $id;
+    protected string $id;
 
-    /**
-     * @var Bar
-     */
-    protected $bar;
+    protected Bar $bar;
 
     /**
      * @var Foo[]
      */
-    protected $foo;
+    protected array $foo;
 
-    /**
-     * @var object
-     */
-    protected $notExistingClass;
+    protected object $notExistingClass;
 
-    /**
-     * @var array
-     */
-    protected $notExistingCollectionClass;
+    protected array $notExistingCollectionClass;
 
     protected function setId(string $id): void
     {

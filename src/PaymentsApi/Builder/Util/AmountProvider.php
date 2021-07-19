@@ -14,10 +14,7 @@ use Swag\PayPal\Util\PriceFormatter;
 
 class AmountProvider
 {
-    /**
-     * @var PriceFormatter
-     */
-    private $priceFormatter;
+    private PriceFormatter $priceFormatter;
 
     public function __construct(PriceFormatter $priceFormatter)
     {

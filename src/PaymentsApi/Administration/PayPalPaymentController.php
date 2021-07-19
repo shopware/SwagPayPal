@@ -46,45 +46,21 @@ class PayPalPaymentController extends AbstractController
     public const REQUEST_PARAMETER_DESCRIPTION = 'description';
     public const REQUEST_PARAMETER_REASON = 'reason';
 
-    /**
-     * @var PaymentResource
-     */
-    private $paymentResource;
+    private PaymentResource $paymentResource;
 
-    /**
-     * @var SaleResource
-     */
-    private $saleResource;
+    private SaleResource $saleResource;
 
-    /**
-     * @var AuthorizationResource
-     */
-    private $authorizationResource;
+    private AuthorizationResource $authorizationResource;
 
-    /**
-     * @var OrdersResource
-     */
-    private $ordersResource;
+    private OrdersResource $ordersResource;
 
-    /**
-     * @var CaptureResource
-     */
-    private $captureResource;
+    private CaptureResource $captureResource;
 
-    /**
-     * @var PaymentStatusUtil
-     */
-    private $paymentStatusUtil;
+    private PaymentStatusUtil $paymentStatusUtil;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderRepository;
+    private EntityRepositoryInterface $orderRepository;
 
-    /**
-     * @var PriceFormatter
-     */
-    private $priceFormatter;
+    private PriceFormatter $priceFormatter;
 
     public function __construct(
         PaymentResource $paymentResource,

@@ -34,20 +34,11 @@ class ProductSyncManager extends AbstractSyncManager
 {
     public const CHUNK_SIZE = 50;
 
-    /**
-     * @var ProductSelection
-     */
-    private $productSelection;
+    private ProductSelection $productSelection;
 
-    /**
-     * @var SalesChannelRepositoryInterface
-     */
-    private $productRepository;
+    private SalesChannelRepositoryInterface $productRepository;
 
-    /**
-     * @var ImageSyncer
-     */
-    private $imageSyncer;
+    private ImageSyncer $imageSyncer;
 
     public function __construct(
         MessageBusInterface $messageBus,

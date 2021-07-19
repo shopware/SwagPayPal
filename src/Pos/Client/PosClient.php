@@ -20,10 +20,7 @@ use Swag\PayPal\SwagPayPal;
 
 class PosClient extends AbstractClient
 {
-    /**
-     * @var TokenResource
-     */
-    private $tokenResource;
+    private TokenResource $tokenResource;
 
     public function __construct(string $baseUri, TokenResource $tokenResource, OAuthCredentials $credentials, LoggerInterface $logger)
     {

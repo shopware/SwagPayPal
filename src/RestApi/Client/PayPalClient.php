@@ -19,10 +19,7 @@ use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 
 class PayPalClient extends AbstractClient implements PayPalClientInterface
 {
-    /**
-     * @var TokenResourceInterface
-     */
-    private $tokenResource;
+    private TokenResourceInterface $tokenResource;
 
     /**
      * @deprecated tag:v4.0.0 - parameter $settings will be removed, parameter $credentials will replace it in position 2 and be non-nullable

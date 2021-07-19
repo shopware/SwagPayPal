@@ -31,10 +31,7 @@ class PayUponInvoiceSubscriberTest extends TestCase
 {
     use ServicesTrait;
 
-    /**
-     * @var SalesChannelContext
-     */
-    private $salesChannelContext;
+    private SalesChannelContext $salesChannelContext;
 
     protected function setUp(): void
     {

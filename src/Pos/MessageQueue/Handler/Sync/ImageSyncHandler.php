@@ -49,8 +49,10 @@ class ImageSyncHandler extends AbstractSyncHandler
             ->getEntities()
             ->filter(
                 static function (PosSalesChannelMediaEntity $entity) {
+                    $media = $entity->getMedia();
+
                     return $entity->getUrl() === null
-                        || $entity->getCreatedAt() < $entity->getMedia()->getUpdatedAt();
+                        || ($media !== null && $entity->getCreatedAt() < $media->getUpdatedAt());
                 }
             );
 

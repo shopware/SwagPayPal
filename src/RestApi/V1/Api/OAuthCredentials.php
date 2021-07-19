@@ -10,11 +10,15 @@ namespace Swag\PayPal\RestApi\V1\Api;
 class OAuthCredentials
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $restId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $restSecret;

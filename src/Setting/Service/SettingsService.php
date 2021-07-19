@@ -21,15 +21,9 @@ class SettingsService implements SettingsServiceInterface
 {
     public const SYSTEM_CONFIG_DOMAIN = Settings::SYSTEM_CONFIG_DOMAIN;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
+    private SystemConfigService $systemConfigService;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(SystemConfigService $systemConfigService, LoggerInterface $logger)
     {

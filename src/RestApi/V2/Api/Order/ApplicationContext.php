@@ -28,31 +28,43 @@ class ApplicationContext extends PayPalApiStruct
     public const USER_ACTION_PAY_NOW = 'PAY_NOW';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $brandName;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $landingPage = self::LANDING_PAGE_TYPE_NO_PREFERENCE;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $shippingPreference = self::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $userAction = self::USER_ACTION_PAY_NOW;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $returnUrl;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $cancelUrl;

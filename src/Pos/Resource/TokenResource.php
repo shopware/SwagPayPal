@@ -16,15 +16,9 @@ class TokenResource
 {
     private const CACHE_ID = 'pos_auth_';
 
-    /**
-     * @var CacheItemPoolInterface
-     */
-    private $cache;
+    private CacheItemPoolInterface $cache;
 
-    /**
-     * @var TokenClientFactory
-     */
-    private $tokenClientFactory;
+    private TokenClientFactory $tokenClientFactory;
 
     public function __construct(CacheItemPoolInterface $cache, TokenClientFactory $tokenClientFactory)
     {

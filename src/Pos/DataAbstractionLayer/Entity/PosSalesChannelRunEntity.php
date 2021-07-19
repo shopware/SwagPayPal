@@ -15,21 +15,29 @@ class PosSalesChannelRunEntity extends Entity
     use EntityIdTrait;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $salesChannelId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $task;
 
     /**
-     * @var PosSalesChannelRunLogCollection
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
+     * @var PosSalesChannelRunLogCollection|null
      */
-    protected $logs;
+    protected $logs = null;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var \DateTimeInterface|null
      */
     protected $finishedAt;
@@ -65,12 +73,12 @@ class PosSalesChannelRunEntity extends Entity
         $this->task = $task;
     }
 
-    public function getLogs(): PosSalesChannelRunLogCollection
+    public function getLogs(): ?PosSalesChannelRunLogCollection
     {
         return $this->logs;
     }
 
-    public function setLogs(PosSalesChannelRunLogCollection $logs): void
+    public function setLogs(?PosSalesChannelRunLogCollection $logs): void
     {
         $this->logs = $logs;
     }

@@ -11,10 +11,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 
 class Foo extends PayPalApiStruct
 {
-    /**
-     * @var string
-     */
-    protected $fooBaz;
+    protected string $fooBaz;
 
     protected function setFooBaz(string $fooBaz): void
     {

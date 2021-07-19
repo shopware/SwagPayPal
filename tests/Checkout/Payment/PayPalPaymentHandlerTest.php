@@ -90,20 +90,11 @@ class PayPalPaymentHandlerTest extends TestCase
     private const TEST_AMOUNT = '860.00';
     private const TEST_SHIPPING = '4.99';
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $orderTransactionRepo;
+    private EntityRepositoryInterface $orderTransactionRepo;
 
-    /**
-     * @var StateMachineRegistry
-     */
-    private $stateMachineRegistry;
+    private StateMachineRegistry $stateMachineRegistry;
 
-    /**
-     * @var PayPalClientFactoryMock
-     */
-    private $clientFactory;
+    private PayPalClientFactoryMock $clientFactory;
 
     protected function setUp(): void
     {

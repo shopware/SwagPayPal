@@ -23,20 +23,11 @@ use Swag\PayPal\SwagPayPal;
 
 class InventoryContextFactory
 {
-    /**
-     * @var InventoryResource
-     */
-    private $inventoryResource;
+    private InventoryResource $inventoryResource;
 
-    /**
-     * @var UuidConverter
-     */
-    private $uuidConverter;
+    private UuidConverter $uuidConverter;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $inventoryRepository;
+    private EntityRepositoryInterface $inventoryRepository;
 
     public function __construct(
         InventoryResource $inventoryResource,

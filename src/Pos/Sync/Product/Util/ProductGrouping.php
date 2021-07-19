@@ -12,20 +12,14 @@ use Swag\PayPal\Pos\Api\Product;
 
 class ProductGrouping
 {
-    /**
-     * @var SalesChannelProductEntity
-     */
-    private $identifyingEntity;
+    private SalesChannelProductEntity $identifyingEntity;
 
     /**
      * @var SalesChannelProductEntity[]
      */
-    private $variantEntities = [];
+    private array $variantEntities = [];
 
-    /**
-     * @var Product
-     */
-    private $product;
+    private Product $product;
 
     public function __construct(SalesChannelProductEntity $product)
     {

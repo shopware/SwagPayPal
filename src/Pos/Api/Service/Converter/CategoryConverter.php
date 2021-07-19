@@ -12,10 +12,7 @@ use Swag\PayPal\Pos\Api\Product\Category;
 
 class CategoryConverter
 {
-    /**
-     * @var UuidConverter
-     */
-    private $uuidConverter;
+    private UuidConverter $uuidConverter;
 
     public function __construct(UuidConverter $uuidConverter)
     {

@@ -13,16 +13,22 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payee\DisplayData;
 class Payee extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $emailAddress;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $merchantId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var DisplayData
      */
     protected $displayData;

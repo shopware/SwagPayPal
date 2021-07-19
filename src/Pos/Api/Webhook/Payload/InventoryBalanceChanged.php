@@ -12,11 +12,15 @@ use Swag\PayPal\Pos\Api\Webhook\Payload\InventoryBalanceChanged\Balance;
 class InventoryBalanceChanged extends AbstractPayload
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Balance[]
      */
     protected $balanceBefore;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var Balance[]
      */
     protected $balanceAfter;

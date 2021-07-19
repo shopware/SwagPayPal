@@ -20,6 +20,8 @@ class ThirdPartyDetails extends PayPalApiStruct
     public const FEATURE_TYPE_DELAY_FUNDS_DISBURSEMENT = 'DELAY_FUNDS_DISBURSEMENT';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string[]
      */
     protected $features = [

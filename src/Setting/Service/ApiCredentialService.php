@@ -17,10 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ApiCredentialService implements ApiCredentialServiceInterface
 {
-    /**
-     * @var CredentialsResource
-     */
-    private $credentialsResource;
+    private CredentialsResource $credentialsResource;
 
     public function __construct(CredentialsResource $credentialsResource)
     {

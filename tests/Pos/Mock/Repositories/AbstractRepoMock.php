@@ -20,10 +20,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 abstract class AbstractRepoMock
 {
-    /**
-     * @var EntityCollection
-     */
-    protected $entityCollection;
+    protected EntityCollection $entityCollection;
 
     public function __construct()
     {

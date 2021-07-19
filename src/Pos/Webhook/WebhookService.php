@@ -33,35 +33,17 @@ class WebhookService
 
     private const EMAIL_CONFIG_KEY = 'core.basicInformation.email';
 
-    /**
-     * @var SubscriptionResource
-     */
-    private $subscriptionResource;
+    private SubscriptionResource $subscriptionResource;
 
-    /**
-     * @var RouterInterface
-     */
-    private $router;
+    private RouterInterface $router;
 
-    /**
-     * @var WebhookRegistry
-     */
-    private $webhookRegistry;
+    private WebhookRegistry $webhookRegistry;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
+    private EntityRepositoryInterface $salesChannelRepository;
 
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfig;
+    private SystemConfigService $systemConfig;
 
-    /**
-     * @var UuidConverter
-     */
-    private $uuidConverter;
+    private UuidConverter $uuidConverter;
 
     public function __construct(
         SubscriptionResource $subscriptionResource,

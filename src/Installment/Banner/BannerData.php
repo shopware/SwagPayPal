@@ -12,49 +12,62 @@ use Shopware\Core\Framework\Struct\Struct;
 class BannerData extends Struct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $clientId;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var float
      */
     protected $amount;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $currency;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $layout = 'text';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $color = 'blue';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $ratio = '8x1';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $logoType = 'primary';
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $textColor = 'black';
 
-    /**
-     * @var string
-     */
-    private $paymentMethodId;
+    private string $paymentMethodId;
 
     public function __construct(
         string $paymentMethodId,

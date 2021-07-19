@@ -12,10 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PosException extends ShopwareHttpException
 {
-    /**
-     * @var int|null
-     */
-    private $posStatusCode;
+    private int $posStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
 
     public function __construct(
         string $name,
@@ -31,7 +28,7 @@ class PosException extends ShopwareHttpException
 
     public function getStatusCode(): int
     {
-        return $this->posStatusCode ?? parent::getStatusCode();
+        return $this->posStatusCode;
     }
 
     public function getErrorCode(): string

@@ -12,26 +12,36 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 abstract class ProductDetails extends PayPalApiStruct
 {
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $productReceived;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $productReceivedTime;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var SubReason[]
      */
     protected $subReasons;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var string
      */
     protected $purchaseUrl;
 
     /**
+     * @deprecated tag:v4.0.0 - will be strongly typed
+     *
      * @var ReturnDetails
      */
     protected $returnDetails;

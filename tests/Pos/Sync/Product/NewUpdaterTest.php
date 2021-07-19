@@ -24,25 +24,19 @@ use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 
 class NewUpdaterTest extends AbstractProductSyncTest
 {
-    /**
-     * @var ProductContextMock
-     */
-    private $productContext;
+    private ProductContextMock $productContext;
+
+    private ProductGroupingCollection $productGroupingCollection;
 
     /**
-     * @var ProductGroupingCollection
+     * @var MockObject&ProductResource
      */
-    private $productGroupingCollection;
+    private ProductResource $productResource;
 
     /**
-     * @var MockObject|ProductResource
+     * @var MockObject&LoggerInterface
      */
-    private $productResource;
-
-    /**
-     * @var MockObject|LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function setUp(): void
     {

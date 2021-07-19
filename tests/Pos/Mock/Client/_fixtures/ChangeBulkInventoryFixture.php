@@ -16,10 +16,7 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
 class ChangeBulkInventoryFixture
 {
-    /**
-     * @var bool
-     */
-    public static $called = false;
+    public static bool $called = false;
 
     public static function post(?PosStruct $changes): array
     {

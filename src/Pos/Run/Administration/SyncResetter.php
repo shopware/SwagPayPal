@@ -15,25 +15,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class SyncResetter
 {
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $posProductRepository;
+    private EntityRepositoryInterface $posProductRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $posInventoryRepository;
+    private EntityRepositoryInterface $posInventoryRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $posMediaRepository;
+    private EntityRepositoryInterface $posMediaRepository;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $posRunRepository;
+    private EntityRepositoryInterface $posRunRepository;
 
     public function __construct(
         EntityRepositoryInterface $posProductRepository,

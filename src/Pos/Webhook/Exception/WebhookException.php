@@ -14,10 +14,8 @@ class WebhookException extends ShopwareHttpException
 {
     /**
      * @see WebhookEventNames
-     *
-     * @var string
      */
-    private $eventName;
+    private string $eventName;
 
     public function __construct(string $eventName, string $message, array $parameters = [])
     {
