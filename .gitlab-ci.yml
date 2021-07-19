@@ -181,3 +181,21 @@ PHPUnit:
                 CMS_EXTENSION_BRANCH: "2.1-sw6.4.0.0"
                 MYSQL_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
                 RUN_IN_MR: "false"
+
+Administration Jest:
+    stage: Testing
+    timeout: 1h 00m
+    dependencies: []
+    variables:
+        PROJECT_ROOT: $CI_PROJECT_DIR/development
+        PLUGINNAME: "SwagPaypal"
+    services:
+        -   name: mariadb:10.3
+            alias: mysql
+    script:
+        - ./psh.phar init
+        - php bin/console plugin:refresh
+        - php bin/console plugin:install --activate $PLUGINNAME -c
+        - npm --prefix $(pwd)/custom/plugins/$PLUGINNAME/src/Resources/app/administration/ clean-install
+        - npm --prefix $(pwd)/vendor/shopware/platform/src/Administration/Resources/app/administration clean-install
+        - ADMIN_PATH=$(pwd)/vendor/shopware/platform/src/Administration/Resources/app/administration/ npm --prefix $(pwd)/custom/plugins/$PLUGINNAME/src/Resources/app/administration/ run unit
