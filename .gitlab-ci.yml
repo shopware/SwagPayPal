@@ -184,11 +184,17 @@ PHPUnit:
 
 Administration Jest:
     stage: Testing
-    timeout: 1h 00m
+    only:
+        refs:
+            - merge_requests
+            - master
+            - schedules
+            - pipelines
+    timeout: 0h 30m
     dependencies: []
     variables:
         PROJECT_ROOT: $CI_PROJECT_DIR/development
-        PLUGINNAME: "SwagPaypal"
+        PLUGINNAME: "SwagPayPal"
     services:
         -   name: mariadb:10.3
             alias: mysql

@@ -52,9 +52,14 @@ class AmountProvider
                     $currencyCode,
                     $shippingCosts,
                     $totalAmount->getCalculatedTaxes(),
-                    $isNet
+                    $isNet,
+                    (float) $amount->getValue()
                 )
             );
+
+            if ($amount->getBreakdown() === null) {
+                $purchaseUnit->setItems(null);
+            }
         }
 
         return $amount;
@@ -69,8 +74,10 @@ class AmountProvider
         string $currencyCode,
         CalculatedPrice $shippingCosts,
         CalculatedTaxCollection $taxes,
-        bool $isNet
-    ): Breakdown {
+        bool $isNet,
+        float $amountValue
+    ): ?Breakdown {
+        $accumulatedAmountValue = 0.0;
         $itemTotalValue = 0.0;
         $discountValue = 0.0;
         $newItems = [];
@@ -88,21 +95,29 @@ class AmountProvider
         $itemTotal = new ItemTotal();
         $itemTotal->setCurrencyCode($currencyCode);
         $itemTotal->setValue($this->priceFormatter->formatPrice($itemTotalValue));
+        $accumulatedAmountValue += (float) $itemTotal->getValue();
 
         $shipping = new BreakdownShipping();
         $shipping->setCurrencyCode($currencyCode);
         $shipping->setValue($this->priceFormatter->formatPrice($shippingCosts->getTotalPrice()));
+        $accumulatedAmountValue += (float) $shipping->getValue();
 
         $taxTotal = null;
         if ($isNet) {
             $taxTotal = new TaxTotal();
             $taxTotal->setCurrencyCode($currencyCode);
             $taxTotal->setValue($this->priceFormatter->formatPrice($taxes->getAmount()));
+            $accumulatedAmountValue += (float) $taxTotal->getValue();
         }
 
         $discount = new Discount();
         $discount->setCurrencyCode($currencyCode);
         $discount->setValue($this->priceFormatter->formatPrice($discountValue));
+        $accumulatedAmountValue -= (float) $discount->getValue();
+
+        if ($accumulatedAmountValue !== $amountValue) {
+            return null;
+        }
 
         $breakdown = new Breakdown();
         $breakdown->setItemTotal($itemTotal);

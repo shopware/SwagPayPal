@@ -3,6 +3,7 @@
 - PPI-321 - Improve Zettle synchronisation behaviour
 - PPI-322 - Improve removal of PayPal from available payment methods if credentials are invalid
 - PPI-323 - Fix issues with loading spinner with Smart Payment Buttons
+- PPI-329 - Fix rounding issues in PayPal API v2 requests
 
 # 3.3.1
 - PPI-316 - Fix issue when changing default language after plugin install
