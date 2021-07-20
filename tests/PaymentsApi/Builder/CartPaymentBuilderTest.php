@@ -37,6 +37,7 @@ class CartPaymentBuilderTest extends TestCase
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
         $cart = $this->createCart('');
         $product = $this->createLineItem(null);
+        $product->setPrice(null);
         $cart->add($product);
 
         $payment = $this->createCartPaymentBuilder()->getPayment($cart, $salesChannelContext, '', true);

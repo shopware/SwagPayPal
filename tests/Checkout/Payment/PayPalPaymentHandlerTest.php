@@ -216,7 +216,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
             $this->getContainer(),
             new PaymentMethodCollection()
         );
-        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID, $transactionId);
         $paypalOrderId = GetOrderCapture::ID;
         $dataBag = new RequestDataBag([
             PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,

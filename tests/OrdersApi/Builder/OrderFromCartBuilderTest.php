@@ -68,7 +68,11 @@ class OrderFromCartBuilderTest extends TestCase
     public function testGetOrderWithItemWithoutPrice(): void
     {
         $salesChannelContext = $this->createSalesChannelContext();
-        $cart = $this->createCartWithLineItem();
+        $cart = $this->createCart('', true, 0.0, 0.0);
+        $lineItem = $this->createLineItem(null);
+        $lineItem->setPrice(null);
+        $cart->add($lineItem);
+
         $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
 
         static::assertSame([], $order->getPurchaseUnits()[0]->getItems());
@@ -83,9 +87,20 @@ class OrderFromCartBuilderTest extends TestCase
         static::assertNull($order->getPurchaseUnits()[0]->getAmount()->getBreakdown());
     }
 
+    public function testGetOrderWithMismatchingAmount(): void
+    {
+        $cart = $this->createCartWithLineItem(new CalculatedPrice(5.0, 5.95, new CalculatedTaxCollection(), new TaxRuleCollection()));
+        $salesChannelContext = $this->createSalesChannelContext();
+
+        $order = $this->createOrderFromCartBuilder([Settings::SUBMIT_CART => false])->getOrder($cart, $salesChannelContext, null);
+        static::assertNull($order->getPurchaseUnits()[0]->getAmount()->getBreakdown());
+        static::assertNull($order->getPurchaseUnits()[0]->getItems());
+    }
+
     public function testGetOrderWithProductWithZeroPrice(): void
     {
         $cart = $this->createCartWithLineItem(new CalculatedPrice(0, 0, new CalculatedTaxCollection(), new TaxRuleCollection()));
+        $cart->setPrice($this->createCartPrice(0.0, 0.0, 0.0));
         $salesChannelContext = $this->createSalesChannelContext();
         $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
 
@@ -99,7 +114,7 @@ class OrderFromCartBuilderTest extends TestCase
     {
         $salesChannelContext = $this->createSalesChannelContext();
 
-        $cart = $this->createCart('');
+        $cart = $this->createCart('', true, 9.84, 9.84);
         $discount = new CalculatedPrice(-2.5, -2.5, new CalculatedTaxCollection(), new TaxRuleCollection());
         $productPrice = new CalculatedPrice(12.34, 12.34, new CalculatedTaxCollection(), new TaxRuleCollection());
         $cart->add($this->createLineItem($discount, LineItem::PROMOTION_LINE_ITEM_TYPE));
@@ -117,7 +132,7 @@ class OrderFromCartBuilderTest extends TestCase
     {
         $salesChannelContext = $this->createSalesChannelContext();
 
-        $cart = $this->createCart('');
+        $cart = $this->createCart('', true, 12.34, 12.34);
         $productPrice = new CalculatedPrice(12.34, 12.34, new CalculatedTaxCollection(), new TaxRuleCollection());
         $productName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam volu';
         $cartLineItem = $this->createLineItem($productPrice);
@@ -136,7 +151,7 @@ class OrderFromCartBuilderTest extends TestCase
     {
         $salesChannelContext = $this->createSalesChannelContext();
 
-        $cart = $this->createCart('');
+        $cart = $this->createCart('', true, 12.34, 12.34);
         $productPrice = new CalculatedPrice(12.34, 12.34, new CalculatedTaxCollection(), new TaxRuleCollection());
         $productNumber = 'SW-100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
         $cartLineItem = $this->createLineItem($productPrice);
@@ -158,7 +173,8 @@ class OrderFromCartBuilderTest extends TestCase
         $productTax = 31.93;
         $taxRate = 19.0;
 
-        $cart = $this->createCart('');
+        $cart = $this->createCart('', true, $productNetPrice, $productNetPrice + $productTax);
+        $cart->add($this->createLineItem(new CalculatedPrice($productNetPrice, $productNetPrice, new CalculatedTaxCollection(), new TaxRuleCollection())));
         $cartPrice = new CartPrice(
             $productNetPrice,
             $productNetPrice + $productTax,
@@ -217,7 +233,7 @@ class OrderFromCartBuilderTest extends TestCase
 
     private function createCartWithLineItem(?CalculatedPrice $lineItemPrice = null): Cart
     {
-        $cart = $this->createCart('');
+        $cart = $this->createCart('', true, $lineItemPrice ? $lineItemPrice->getTotalPrice() : 9.0, $lineItemPrice ? $lineItemPrice->getTotalPrice() : 10.9);
         $cart->add($this->createLineItem($lineItemPrice));
 
         return $cart;
