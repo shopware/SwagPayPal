@@ -32,6 +32,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * @deprecated tag:v5.0.0 - will be removed, unbranded APMs will be introduced in v4.0.0 as replacement
+ *
  * @RouteScope(scopes={"store-api"})
  */
 class SPBCreateOrderRoute extends AbstractSPBCreateOrderRoute

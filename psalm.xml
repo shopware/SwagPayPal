@@ -65,6 +65,17 @@
                 <file name="src/Setting/Service/SettingsService.php"/>
                 <file name="src/Setting/Service/SettingsServiceInterface.php"/>
                 <file name="src/Setting/SwagPayPalSettingStructValidator.php"/>
+                <!-- <deprecated> tag:v5.0.0 - remove with 5.0.0 -->
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData"/>
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber"/>
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\SPBMarksData"/>
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\SPBMarksSubscriber"/>
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService"/>
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataServiceInterface"/>
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataService"/>
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataServiceInterface"/>
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\SalesChannel\AbstractSPBCreateOrderRoute"/>
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute"/>
             </errorLevel>
         </DeprecatedClass>
 
@@ -72,6 +83,9 @@
             <errorLevel type="info">
                 <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
                 <file name="src/Setting/Service/SettingsService.php"/>
+                <!-- <deprecated> tag:v5.0.0 - remove with 5.0.0 -->
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataServiceInterface"/>
+                <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataServiceInterface"/>
             </errorLevel>
         </DeprecatedInterface>
 

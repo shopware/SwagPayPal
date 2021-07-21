@@ -16,6 +16,9 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
+/**
+ * @deprecated tag:v5.0.0 - will be removed, unbranded APMs will be introduced in v4.0.0 as replacement
+ */
 class SPBMarksDataService implements SPBMarksDataServiceInterface
 {
     private SettingsValidationServiceInterface $settingsValidationService;
