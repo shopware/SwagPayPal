@@ -47,7 +47,7 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
         ?string $salesChannelId,
         string $partnerAttributionId = PartnerAttributionId::PAYPAL_CLASSIC
     ): PayPalClientInterface {
-        $key = $salesChannelId ?? 'null';
+        $key = ($salesChannelId ?? 'null') . $partnerAttributionId;
 
         if (!isset($this->payPalClients[$key])) {
             $this->payPalClients[$key] = new PayPalClient(
