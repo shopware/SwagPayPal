@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-330 - Verbessert Nachkommastellen-Verhalten der Zettle-Synchronisation
+
 # 3.4.0
 - PPI-228 - Weiß als Farbe für ECS- und SPB-Buttons hinzugefügt
 - PPI-321 - Verbessert den Ablauf bei Zettle-Synchronisationen

@@ -13,6 +13,8 @@ use Swag\PayPal\Pos\Api\Product\Variant\Price;
 
 class PriceConverter
 {
+    private const DEFAULT_DECIMALS = 2;
+
     public function convert(CalculatedPrice $price, CurrencyEntity $currency): Price
     {
         return $this->convertFloat($price->getTotalPrice(), $currency);
@@ -22,9 +24,9 @@ class PriceConverter
     {
         $newPrice = new Price();
 
-        $precision = 10 ** ($currency->getItemRounding()->getDecimals());
+        $precision = 10 ** self::DEFAULT_DECIMALS;
 
-        $newPrice->setAmount((int) ($price * $precision));
+        $newPrice->setAmount((int) \round($price * $precision));
         $newPrice->setCurrencyId($currency->getIsoCode());
 
         return $newPrice;
