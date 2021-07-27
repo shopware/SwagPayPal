@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Content\Cms\CmsPageCollection;
 use Shopware\Core\Content\Cms\CmsPageEntity;
@@ -91,6 +92,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
             'framework.validation.customer.create' => 'disableCustomerValidation',
 
             CheckoutConfirmPageLoadedEvent::class => 'onCheckoutConfirmLoaded',
+
+            CustomerEvents::MAPPING_REGISTER_CUSTOMER => 'addPayerIdToCustomer',
         ];
 
         static::assertSame($expectedEvents, $subscribedEvents);

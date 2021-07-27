@@ -7,6 +7,10 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: false
 
+    # should be removed with min-Version: 6.4.3.0
+    excludePaths:
+        - tests/Mock/DIContainerMock.php
+
     # should be removed with min-Version: 6.4.2.0
     reportUnmatchedIgnoredErrors: false
 
