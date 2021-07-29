@@ -8,8 +8,10 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Content\Cms\CmsPageCollection;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
+use Shopware\Core\Framework\Event\DataMappingEvent;
 use Shopware\Core\Framework\Validation\BuildValidationEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -25,8 +27,8 @@ use Shopware\Storefront\Page\Search\SearchPageLoadedEvent;
 use Shopware\Storefront\Pagelet\PageletLoadedEvent;
 use Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
-use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -81,6 +83,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             'framework.validation.customer.create' => 'disableCustomerValidation',
 
             CheckoutConfirmPageLoadedEvent::class => 'onCheckoutConfirmLoaded',
+
+            CustomerEvents::MAPPING_REGISTER_CUSTOMER => 'addPayerIdToCustomer',
         ];
     }
 
@@ -165,7 +169,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     public function disableAddressValidation(BuildValidationEvent $event): void
     {
-        if (!$event->getContext()->hasExtension(ExpressPrepareCheckoutRoute::EXPRESS_CHECKOUT_ACTIVE)) {
+        if (!$event->getContext()->hasExtension(ExpressCustomerService::EXPRESS_CHECKOUT_ACTIVE)) {
             return;
         }
 
@@ -176,13 +180,25 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     public function disableCustomerValidation(BuildValidationEvent $event): void
     {
-        if (!$event->getContext()->hasExtension(ExpressPrepareCheckoutRoute::EXPRESS_CHECKOUT_ACTIVE)) {
+        if (!$event->getContext()->hasExtension(ExpressCustomerService::EXPRESS_CHECKOUT_ACTIVE)) {
             return;
         }
 
         $event->getDefinition()->set('birthdayDay')
                                ->set('birthdayMonth')
                                ->set('birthdayYear');
+    }
+
+    public function addPayerIdToCustomer(DataMappingEvent $event): void
+    {
+        if (!$event->getContext()->hasExtension(ExpressCustomerService::EXPRESS_CHECKOUT_ACTIVE)) {
+            return;
+        }
+
+        $input = $event->getInput();
+        $output = $event->getOutput();
+        $output['customFields'][ExpressCustomerService::EXPRESS_PAYER_ID] = $input->get(ExpressCustomerService::EXPRESS_PAYER_ID);
+        $event->setOutput($output);
     }
 
     public function onCheckoutConfirmLoaded(CheckoutConfirmPageLoadedEvent $event): void

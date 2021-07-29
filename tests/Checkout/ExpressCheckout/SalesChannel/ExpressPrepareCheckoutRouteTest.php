@@ -23,6 +23,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
+use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
@@ -117,26 +118,33 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         $registerRoute = $this->getContainer()->get(RegisterRoute::class);
         /** @var EntityRepositoryInterface $countryRepo */
         $countryRepo = $this->getContainer()->get('country.repository');
+        /** @var EntityRepositoryInterface $countryStateRepo */
+        $countryStateRepo = $this->getContainer()->get('country_state.repository');
         /** @var EntityRepositoryInterface $salutationRepo */
         $salutationRepo = $this->getContainer()->get('salutation.repository');
+        /** @var EntityRepositoryInterface $customerRepo */
+        $customerRepo = $this->getContainer()->get('customer.repository');
         /** @var AccountService $accountService */
         $accountService = $this->getContainer()->get(AccountService::class);
         /** @var SalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
 
         $orderResource = $this->createOrderResource($settings);
 
         return new ExpressPrepareCheckoutRoute(
-            $registerRoute,
-            $countryRepo,
-            $salutationRepo,
-            $accountService,
+            new ExpressCustomerService(
+                $registerRoute,
+                $countryRepo,
+                $countryStateRepo,
+                $salutationRepo,
+                $customerRepo,
+                $accountService,
+                $settings,
+                new NullLogger()
+            ),
             $salesChannelContextFactory,
             $orderResource,
             $cartService,
-            $systemConfigService,
             new NullLogger()
         );
     }

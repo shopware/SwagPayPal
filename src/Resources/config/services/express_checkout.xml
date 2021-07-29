@@ -15,13 +15,20 @@
         </service>
 
         <service id="Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute" public="true">
-            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
-            <argument type="service" id="country.repository"/>
-            <argument type="service" id="salutation.repository"/>
-            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\AccountService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService">
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute"/>
+            <argument type="service" id="country.repository"/>
+            <argument type="service" id="country_state.repository"/>
+            <argument type="service" id="salutation.repository"/>
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\AccountService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
         </service>
