@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-5 - Setzen von PayPal als Standardzahlungsart im Ersteinrichtungs-Assistent implementiert
 - PPI-77 - Ersetzt Snippets in der Administration durch `global.defaults`
 - PPI-330 - Verbessert Nachkommastellen-Verhalten der Zettle-Synchronisation
 

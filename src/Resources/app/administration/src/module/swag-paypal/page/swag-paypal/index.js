@@ -11,7 +11,7 @@ Component.register('swag-paypal', {
 
     inject: [
         'SwagPayPalApiCredentialsService',
-        'SwagPaypalPaymentMethodServiceService',
+        'SwagPaypalPaymentMethodService',
         'repositoryFactory',
         'acl',
     ],
@@ -206,7 +206,7 @@ Component.register('swag-paypal', {
         onSetPaymentMethodDefault() {
             this.isSettingDefaultPaymentMethods = true;
 
-            this.SwagPaypalPaymentMethodServiceService.setDefaultPaymentForSalesChannel(
+            this.SwagPaypalPaymentMethodService.setDefaultPaymentForSalesChannel(
                 this.$refs.configComponent.selectedSalesChannelId,
             ).then(() => {
                 this.isSettingDefaultPaymentMethods = false;
