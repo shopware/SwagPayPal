@@ -45,6 +45,7 @@ Check built JS files:
         - php bin/console plugin:install --activate SwagPayPal
         - ./psh.phar storefront:install-dependencies
         - ./psh.phar administration:build
+        - npm --prefix custom/plugins/SwagPayPal/src/Resources/app/storefront/ clean-install
         - ./psh.phar storefront:build
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - >
@@ -88,6 +89,7 @@ Static validation:
                 cd $CI_PROJECT_DIR/development
                 ./psh.phar administration:init --APP_ENV="dev"
                 cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
+                npm --prefix src/Resources/app/storefront/ clean-install
                 make administration-lint
                 make storefront-lint
             fi

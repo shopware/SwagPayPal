@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-5 - Implement Set PayPal as default pamyent method in First Run Wizard
 - PPI-77 - Replaced snippets in administration by `global.defaults`
+- PPI-293 - Improved PayPal script loading in Storefront
 - PPI-330 - Improve Zettle decimal precision behavior
 
 # 3.4.0
