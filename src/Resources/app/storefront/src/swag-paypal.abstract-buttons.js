@@ -2,6 +2,7 @@
 
 import Plugin from 'src/plugin-system/plugin.class';
 import DomAccess from 'src/helper/dom-access.helper';
+import { loadScript } from '@paypal/paypal-js';
 import SwagPayPalScriptLoading from './swag-paypal.script-loading';
 
 const availableAPMs = [
@@ -35,14 +36,8 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         }
 
         this.constructor.scriptLoading.loadingScript = true;
-        const scriptOptions = this.getScriptUrlOptions();
-        const payPalScriptUrl = `https://www.paypal.com/sdk/js?client-id=${this.options.clientId}${scriptOptions}`;
-        const payPalScript = document.createElement('script');
-        payPalScript.type = 'text/javascript';
-        payPalScript.src = payPalScriptUrl;
 
-        payPalScript.addEventListener('load', this.callCallbacks.bind(this), false);
-        document.head.appendChild(payPalScript);
+        loadScript(this.getScriptOptions()).then(this.callCallbacks.bind(this));
     }
 
     callCallbacks() {
@@ -57,6 +52,30 @@ export default class SwagPaypalAbstractButtons extends Plugin {
     }
 
     /**
+     * @return {Object}
+     */
+    getScriptOptions() {
+        const config = {
+            components: 'marks,buttons,messages',
+            'client-id': this.options.clientId,
+            commit: !!this.options.commit,
+            locale: this.options.languageIso,
+            currency: this.options.currency,
+            intent: this.options.intent,
+        };
+
+        if (this.options.useAlternativePaymentMethods === false) {
+            config['disable-funding'] = availableAPMs.join(',');
+        } else if (Array.isArray(this.options.disabledAlternativePaymentMethods)) {
+            config['disable-funding'] = this.options.disabledAlternativePaymentMethods.join(',');
+        }
+
+        return config;
+    }
+
+    /**
+     * @deprecated tag:v4.0.0 - will be removed, use getScriptOptions instead
+     *
      * @return {string}
      */
     getScriptUrlOptions() {
