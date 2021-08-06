@@ -26,7 +26,6 @@
         },
         "messageNotBlank": "This value should not be blank.",
         "settingForm": {
-            "save": "Save",
             "testLive": "Test API credentials",
             "testSandbox": "Test sandbox API credentials",
             "credentials": {

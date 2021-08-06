@@ -26,7 +26,6 @@
         },
         "messageNotBlank": "Dieser Wert darf nicht leer sein.",
         "settingForm": {
-            "save": "Speichern",
             "testLive": "API-Zugangsdaten testen",
             "testSandbox": "Sandbox-API-Zugangsdaten testen",
             "credentials": {

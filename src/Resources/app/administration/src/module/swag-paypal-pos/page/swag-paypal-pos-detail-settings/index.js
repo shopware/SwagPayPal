@@ -196,7 +196,7 @@ Component.register('swag-paypal-pos-detail-settings', {
             const buttonConfig = [
                 {
                     key: 'save',
-                    label: this.$tc('swag-paypal-pos.detail.save'),
+                    label: this.$tc('global.default.save'),
                     variant: 'primary',
                     action: this.onSave,
                     disabled: false,
