@@ -1,27 +1,37 @@
 import template from './sw-first-run-wizard-paypal-credentials.html.twig';
 import './sw-first-run-wizard-paypal-credentials.scss';
 
-const { Component, Mixin } = Shopware;
+const { Component } = Shopware;
 
 Component.override('sw-first-run-wizard-paypal-credentials', {
     template,
 
-    inject: ['systemConfigApiService'],
+    inject: [
+        'systemConfigApiService',
+        'SwagPaypalPaymentMethodService',
+    ],
 
     mixins: [
-        Mixin.getByName('notification'),
-        Mixin.getByName('swag-paypal-credentials-loader'),
+        'notification',
+        'swag-paypal-credentials-loader',
     ],
 
     data() {
         return {
             config: {},
-            clientIdFilled: false,
-            clientSecretFilled: false,
-            clientIdSandboxFilled: false,
-            clientSecretSandboxFilled: false,
-            sandboxChecked: false,
             isLoading: false,
+            setDefault: false,
+
+            /** @deprecated tag:v4.0.0 - will be removed, use computed instead */
+            clientIdFilled: false,
+            /** @deprecated tag:v4.0.0 - will be removed, use computed instead */
+            clientSecretFilled: false,
+            /** @deprecated tag:v4.0.0 - will be removed, use computed instead */
+            clientIdSandboxFilled: false,
+            /** @deprecated tag:v4.0.0 - will be removed, use computed instead */
+            clientSecretSandboxFilled: false,
+            /** @deprecated tag:v4.0.0 - will be removed, use computed instead */
+            sandboxChecked: false,
         };
     },
 
@@ -51,16 +61,18 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         },
 
         credentialsProvided() {
-            return (!this.sandboxChecked && this.credentialsProvidedLive)
-                || (this.sandboxChecked && this.credentialsProvidedSandbox);
+            return (!this.sandboxMode && this.credentialsProvidedLive)
+                || (this.sandboxMode && this.credentialsProvidedSandbox);
         },
 
         credentialsProvidedLive() {
-            return this.clientIdFilled && this.clientSecretFilled;
+            return !!this.config['SwagPayPal.settings.clientId']
+                && !!this.config['SwagPayPal.settings.clientSecret'];
         },
 
         credentialsProvidedSandbox() {
-            return this.clientIdSandboxFilled && this.clientSecretSandboxFilled;
+            return !!this.config['SwagPayPal.settings.clientIdSandbox']
+                && !!this.config['SwagPayPal.settings.clientSecretSandbox'];
         },
     },
 
@@ -129,19 +141,16 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
                 });
             }
 
-            return this.testApiCredentials().then(result => {
-                if (result === 'success') {
-                    return this.saveConfig().then(() => {
-                        this.$emit('frw-redirect', 'sw.first.run.wizard.index.plugins');
+            return this.testApiCredentials()
+                .then(() => {
+                    return this.saveConfig();
+                }).then(() => {
+                    this.$emit('frw-redirect', 'sw.first.run.wizard.index.plugins');
 
-                        return Promise.resolve(false);
-                    }).catch(() => {
-                        return Promise.resolve(true);
-                    });
-                }
-
-                return Promise.resolve(true);
-            });
+                    return Promise.resolve(false);
+                }).catch(() => {
+                    return Promise.resolve(true);
+                });
         },
 
         fetchPayPalConfig() {
@@ -157,9 +166,16 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
 
         saveConfig() {
             this.isLoading = true;
-            return this.systemConfigApiService.saveValues(this.config, null).then(() => {
-                this.isLoading = false;
-            });
+            return this.systemConfigApiService.saveValues(this.config, null)
+                .then(() => {
+                    if (this.setDefault) {
+                        return this.SwagPaypalPaymentMethodService.setDefaultPaymentForSalesChannel();
+                    }
+
+                    return Promise.resolve();
+                }).then(() => {
+                    this.isLoading = false;
+                });
         },
 
         testApiCredentials() {
@@ -176,10 +192,10 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
 
                     if (credentialsValid) {
                         this.isLoading = false;
-                        return 'success';
+                        return Promise.resolve();
                     }
 
-                    return 'error';
+                    return Promise.reject();
                 }).catch((errorResponse) => {
                     if (errorResponse.response.data && errorResponse.response.data.errors) {
                         const message = errorResponse.response.data.errors.map((error) => {
@@ -189,13 +205,10 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
                         this.createNotificationError({
                             message: message,
                         });
-                        this.createNotificationError({
-                            message: message,
-                        });
                         this.isLoading = false;
                     }
 
-                    return 'error';
+                    return Promise.reject();
                 });
         },
 

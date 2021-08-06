@@ -10,7 +10,7 @@ import SwagPayPalPaymentService
     from '../core/service/api/swag-paypal-payment.service';
 import SwagPayPalOrderService
     from '../core/service/api/swag-paypal-order.service';
-import SwagPaypalPaymentMethodServiceService
+import SwagPaypalPaymentMethodService
     from '../core/service/api/swag-paypal-payment-method.service';
 import SwagPayPalDisputeApiService from '../core/service/api/swag-paypal-dispute.api.service';
 
@@ -49,8 +49,16 @@ Application.addServiceProvider(
 );
 
 Application.addServiceProvider(
+    'SwagPaypalPaymentMethodService',
+    (container) => new SwagPaypalPaymentMethodService(initContainer.httpClient, container.loginService),
+);
+
+/**
+ * @deprecated tag:v4.0.0 - will be removed, use SwagPaypalPaymentMethodService instead
+ */
+Application.addServiceProvider(
     'SwagPaypalPaymentMethodServiceService',
-    (container) => new SwagPaypalPaymentMethodServiceService(initContainer.httpClient, container.loginService),
+    (container) => new SwagPaypalPaymentMethodService(initContainer.httpClient, container.loginService),
 );
 
 Application.addServiceProvider(

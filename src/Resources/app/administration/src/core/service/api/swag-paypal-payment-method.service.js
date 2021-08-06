@@ -1,12 +1,12 @@
 const ApiService = Shopware.Classes.ApiService;
 
-class SwagPaypalPaymentMethodServiceService extends ApiService {
+class SwagPaypalPaymentMethodService extends ApiService {
     constructor(httpClient, loginService, apiEndpoint = 'paypal') {
         super(httpClient, loginService, apiEndpoint);
     }
 
     /**
-     * Set's the default payment method to PayPal for the given Saleschannel id.
+     * Sets the default payment method to PayPal for the given Sales Channel id.
      *
      * @param {String|null} salesChannelId
      *
@@ -29,4 +29,4 @@ class SwagPaypalPaymentMethodServiceService extends ApiService {
     }
 }
 
-export default SwagPaypalPaymentMethodServiceService;
+export default SwagPaypalPaymentMethodService;
