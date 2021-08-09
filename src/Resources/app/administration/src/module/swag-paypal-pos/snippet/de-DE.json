@@ -215,7 +215,8 @@
             }
         },
         "authentication": {
-            "messageTestError": "Die Zugangsdaten konnten nicht validiert werden.",
+            "messageTestError": "Die Zugangsdaten konnten nicht validiert werden",
+            "messageDuplicateError": "Dieser Zettle-Account wurde bereits in einem anderen Verkaufskanal verwendet",
             "labelApiKey": "API-Schlüssel",
             "placeholderApiKey": "API-Schüssel eingeben ...",
             "apiKeyDescription": "Ein API-Schlüssel funktioniert wie ein Passwort. Shopware verwendet Deinen Zettle-API-Schlüssel, um eine sichere Verbindung zu Deinem Zettle-Konto herzustellen.",

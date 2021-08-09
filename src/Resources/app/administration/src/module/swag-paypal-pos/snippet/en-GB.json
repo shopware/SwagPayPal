@@ -215,7 +215,8 @@
             }
         },
         "authentication": {
-            "messageTestError": "The credentials could not be validated.",
+            "messageTestError": "The credentials could not be validated",
+            "messageDuplicateError": "This Zettle account has already been configured in another Sales Channel",
             "labelApiKey": "API key",
             "placeholderApiKey": "Enter API key...",
             "apiKeyDescription": "API keys function like passwords. Shopware will use your Zettle API key to establish a secure connection to your Zettle account.",

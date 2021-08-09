@@ -90,7 +90,7 @@ Component.register('swag-paypal-pos-wizard-connection', {
                     this.$router.push({ name: 'swag.paypal.pos.wizard.connectionSuccess' });
                 }
             }).catch(
-                this.catchError.bind(this, null),
+                this.catchError.bind(this, 'swag-paypal-pos.authentication.messageTestError'),
             ).finally(() => {
                 this.toggleLoadingState(false);
             });

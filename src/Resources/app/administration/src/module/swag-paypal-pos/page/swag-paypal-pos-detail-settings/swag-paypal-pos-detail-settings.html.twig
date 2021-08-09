@@ -79,7 +79,6 @@
                             v-model="salesChannel.extensions.paypalPosSalesChannel.replace"
                             :label="$tc('swag-paypal-pos.wizard.syncLibrary.description')"
                             class="swag-paypal-pos-boolean-radio"
-                            :name="name"
                             :options="optionsReplace"
                             :disabled="!acl.can('sales_channel.editor')"
                             @input="forceUpdate">
