@@ -20,7 +20,7 @@ class ExistingPosAccountException extends ShopwareHttpException
         parent::__construct(
             'This Zettle account has already been configured in the Sales Channel {{ salesChannelIds }}.',
             ['salesChannelIds' => \implode(', ', \array_map(static function ($id, $name) {
-                return \sprintf('"%s" (%s)', $name, $id);
+                return \sprintf('"%s": %s', $name, $id);
             }, \array_keys($salesChannelNames), $salesChannelNames))]
         );
     }
