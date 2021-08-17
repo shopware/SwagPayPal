@@ -15,6 +15,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
@@ -92,7 +93,8 @@ class PaymentStatusUtilV2
 
             $this->reopenTransaction($stateMachineState, $transactionId, $context);
             // If the previous state is "paid_partially", "paid" is currently not allowed as direct transition
-            if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_IN_PROGRESS) {
+            if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_IN_PROGRESS
+             && $stateMachineState->getTechnicalName() !== PayPalPaymentHandler::ORDER_TRANSACTION_STATE_AUTHORIZED) {
                 $this->orderTransactionStateHandler->process($transactionId, $context);
             }
             $this->orderTransactionStateHandler->paid($transactionId, $context);

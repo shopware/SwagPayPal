@@ -19,7 +19,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
@@ -29,6 +29,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\Amount as RefundAmount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\TotalRefundedAmount;
+use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Util\PriceFormatter;
 
@@ -37,8 +38,7 @@ class PaymentStatusUtilV2Test extends TestCase
     use DatabaseTransactionBehaviour;
     use KernelTestBehaviour;
     use OrderFixture;
-
-    private StateMachineRegistry $stateMachineRegistry;
+    use StateMachineStateTrait;
 
     private EntityRepositoryInterface $orderTransactionRepository;
 
@@ -49,10 +49,6 @@ class PaymentStatusUtilV2Test extends TestCase
     protected function setUp(): void
     {
         $container = $this->getContainer();
-
-        /** @var StateMachineRegistry $stateMachineRegistry */
-        $stateMachineRegistry = $container->get(StateMachineRegistry::class);
-        $this->stateMachineRegistry = $stateMachineRegistry;
 
         /** @var EntityRepositoryInterface $orderTransactionRepository */
         $orderTransactionRepository = $container->get('order_transaction.repository');
@@ -248,10 +244,11 @@ class PaymentStatusUtilV2Test extends TestCase
                         'calculatedTaxes' => [],
                         'taxRules' => [],
                     ],
-                    'stateId' => $this->stateMachineRegistry->getInitialState(
-                        OrderTransactionStates::STATE_MACHINE,
+                    'stateId' => $this->getOrderTransactionStateIdByTechnicalName(
+                        PayPalPaymentHandler::ORDER_TRANSACTION_STATE_AUTHORIZED,
+                        $this->getContainer(),
                         $this->context
-                    )->getId(),
+                    ),
                 ],
             ];
 

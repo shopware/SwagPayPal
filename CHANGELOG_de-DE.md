@@ -4,6 +4,7 @@
 - PPI-126 - Fehlerdarstellung bei Authorisierungsfehlern in Zettle verbessert
 - PPI-293 - Skript-Ladevorgang in der Storefront verbessert
 - PPI-330 - Verbessert Nachkommastellen-Verhalten der Zettle-Synchronisation
+- PPI-334 - Behebt ein Problem, bei dem eine Fehlermeldung beim verzögerten Zahlungseinzug erschien
 
 # 3.4.0
 - PPI-228 - Weiß als Farbe für ECS- und SPB-Buttons hinzugefügt
