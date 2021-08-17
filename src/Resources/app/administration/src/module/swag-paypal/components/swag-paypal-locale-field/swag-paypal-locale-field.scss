@@ -10,20 +10,3 @@
     line-height: 22px;
     margin-top: 6px;
 }
-
-.swag-paypal-locale-field__text-href {
-    color: $color-darkgray-200;
-    text-decoration: underline;
-
-    &:visited{
-        color: $color-darkgray-500;
-    }
-
-    &:hover{
-        color: $color-shopware-brand-400;
-    }
-}
-
-.swag-paypal-locale-field__text-icon {
-    margin-left: 4px;
-}

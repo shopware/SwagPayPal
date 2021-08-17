@@ -143,19 +143,14 @@
                             {% endblock %}
 
                             {% block swag_paypal_pos_detail_settings_credentials_apikey_description_link %}
-                                <a v-if="acl.can('sales_channel.editor')"
-                                   :href="apiKeyUrl"
-                                   target="_blank"
-                                   class="link swag-paypal-pos-detail-settings__apikey-description-link">
+                                <sw-external-link v-if="acl.can('sales_channel.editor')"
+                                                  :href="apiKeyUrl"
+                                                  class="swag-paypal-pos-detail-settings__apikey-description-link">
 
                                     {% block swag_paypal_pos_detail_settings_credentials_apikey_description_link_text %}
                                         {{ $tc('swag-paypal-pos.authentication.buttonGenerateKey') }}
-                                        <sw-icon class="swag-paypal-pos-detail-settings__link-icon"
-                                                 name="default-action-external"
-                                                 size="10px">
-                                        </sw-icon>
                                     {% endblock %}
-                                </a>
+                                </sw-external-link>
                             {% endblock %}
                         </div>
                     {% endblock %}

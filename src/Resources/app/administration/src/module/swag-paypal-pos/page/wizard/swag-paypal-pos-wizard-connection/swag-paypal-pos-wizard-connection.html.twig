@@ -37,18 +37,13 @@
                 {% endblock %}
 
                 {% block swag_paypal_pos_wizard_connection_apikey_description_link %}
-                    <a :href="apiKeyUrl"
-                       target="_blank"
-                       class="link swag-paypal-pos-wizard-connection__apikey-description-link">
+                    <sw-external-link :href="apiKeyUrl"
+                                      class="swag-paypal-pos-wizard-connection__apikey-description-link">
 
                         {% block swag_paypal_pos_wizard_connection_apikey_description_link_text %}
                             {{ $tc('swag-paypal-pos.authentication.buttonGenerateKey') }}
-                            <sw-icon class="swag-paypal-pos-wizard-connection__link-icon"
-                                     name="default-action-external"
-                                     size="10px">
-                            </sw-icon>
                         {% endblock %}
-                    </a>
+                    </sw-external-link>
                 {% endblock %}
             </div>
         {% endblock %}

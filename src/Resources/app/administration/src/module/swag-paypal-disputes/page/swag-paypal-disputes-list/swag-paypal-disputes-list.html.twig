@@ -35,12 +35,8 @@
                                       :showActions="false"
                                       :showSelection="false">
 
+                            {# @deprecated tag:v4.0.0 - will be removed without replacement #}
                             {% block swag_paypal_disputes_list_content_grid_column_link %}
-                                <template #column-link="{ item }">
-                                    <a :href="getExternalDetailPageLink(item)" target="_blank" rel="noopener">
-                                        <sw-icon name="small-arrow-small-external" size="12px"></sw-icon>
-                                    </a>
-                                </template>
                             {% endblock %}
 
                             {% block swag_paypal_disputes_list_content_grid_column_update_time %}

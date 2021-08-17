@@ -34,18 +34,14 @@
                     {% endblock %}
 
                     {% block swag_paypal_locale_field_information_href %}
-                        <a class="swag-paypal-locale-field__text-href"
-                           href="https://developer.paypal.com/docs/api/reference/locale-codes/"
-                           target="_blank">
+                        <sw-external-link class="swag-paypal-locale-field__text-href"
+                                          href="https://developer.paypal.com/docs/api/reference/locale-codes/">
                             {{ $tc('swag-paypal.settingForm.locale-field.infobox.href') }}
-                        </a>
+                        </sw-external-link>
                     {% endblock %}
 
+                    {# @deprecated tag:v4.0.0 - will be removed without replacement #}
                     {% block swag_paypal_locale_field_information_icon %}
-                        <sw-icon class="swag-paypal-locale-field__text-icon"
-                                 name="default-action-external"
-                                 size="7.5">
-                        </sw-icon>
                     {% endblock %}
 
                 </p>

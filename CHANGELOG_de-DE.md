@@ -1,10 +1,11 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 3.5.0
 - PPI-5 - Setzen von PayPal als Standardzahlungsart im Ersteinrichtungs-Assistent implementiert
 - PPI-77 - Ersetzt Snippets in der Administration durch `global.defaults`
 - PPI-126 - Fehlerdarstellung bei Authorisierungsfehlern in Zettle verbessert
 - PPI-293 - Skript-Ladevorgang in der Storefront verbessert
 - PPI-330 - Verbessert Nachkommastellen-Verhalten der Zettle-Synchronisation
 - PPI-334 - Behebt ein Problem, bei dem eine Fehlermeldung beim verzögerten Zahlungseinzug erschien
+- PPI-339 - Behebt ein Problem, bei dem doppelte Symbole für externe Links in der Administration dargestellt wurden
 
 # 3.4.0
 - PPI-228 - Weiß als Farbe für ECS- und SPB-Buttons hinzugefügt

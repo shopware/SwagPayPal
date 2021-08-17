@@ -70,9 +70,6 @@ Component.register('swag-paypal-disputes-list', {
         disputesColumns() {
             return [
                 {
-                    property: 'link',
-                },
-                {
                     property: 'dispute_id',
                     label: this.$tc('swag-paypal-disputes.common.dispute_id'),
                 },
