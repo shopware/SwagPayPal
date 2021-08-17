@@ -31,21 +31,18 @@
                                 {% endblock %}
 
                                 {% block swag_paypal_pos_account_grid_container_info_link %}
-                                    <a href="https://my.zettle.com"
-                                       target="_blank"
-                                       class="link swag-paypal-pos-account__manage-link">
+                                    <sw-external-link href="https://my.zettle.com"
+                                                      class="swag-paypal-pos-account__manage-link">
 
                                         {% block swag_paypal_pos_account_grid_container_info_link_text %}
                                             {{ $tc('swag-paypal-pos.account.manageAccount') }}
                                         {% endblock %}
 
+                                        {# @deprecated tag:v4.0.0 - will be removed without replacement #}
                                         {% block swag_paypal_pos_account_grid_container_info_link_icon %}
-                                            <sw-icon class="swag-paypal-pos-account__manage-link-icon"
-                                                     name="default-action-external"
-                                                     size="10px">
-                                            </sw-icon>
                                         {% endblock %}
-                                    </a>
+
+                                    </sw-external-link>
                                 {% endblock %}
 
                                 {% block swag_paypal_pos_account_grid_container_info_edit_button %}

@@ -28,15 +28,10 @@
                                 {{ $tc('swag-paypal-pos.gettingStarted.readerText') }}
 
                                 {% block swag_paypal_pos_getting_started_reader_description_link %}
-                                    <a :href="$tc('swag-paypal-pos.gettingStarted.readerLinkTarget')"
-                                       target="_blank"
-                                       class="link swag-paypal-pos-getting-started__description-text-link">
+                                    <sw-external-link :href="$tc('swag-paypal-pos.gettingStarted.readerLinkTarget')"
+                                                      class="swag-paypal-pos-getting-started__description-text-link">
                                         {{ $tc('swag-paypal-pos.gettingStarted.readerLinkText') }}
-                                        <sw-icon class="swag-paypal-pos-getting-started__description-link-icon"
-                                                 name="default-action-external"
-                                                 size="10px">
-                                        </sw-icon>
-                                    </a>
+                                    </sw-external-link>
                                 {% endblock %}
                             </div>
                         {% endblock %}
