@@ -2,6 +2,7 @@
 - PPI-5 - Implement Set PayPal as default payment method in First Run Wizard
 - PPI-77 - Replaced snippets in administration by `global.defaults`
 - PPI-126 - Improved error messaging for authorization errors in Zettle
+- PPI-270 - Express Checkout does not create duplicate guest customers anymore
 - PPI-293 - Improved PayPal script loading in Storefront
 - PPI-330 - Improve Zettle decimal precision behavior
 - PPI-334 - Fixes error on delayed capture in Administration
