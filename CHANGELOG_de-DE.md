@@ -2,6 +2,7 @@
 - PPI-5 - Setzen von PayPal als Standardzahlungsart im Ersteinrichtungs-Assistent implementiert
 - PPI-77 - Ersetzt Snippets in der Administration durch `global.defaults`
 - PPI-126 - Fehlerdarstellung bei Authorisierungsfehlern in Zettle verbessert
+- PPI-270 - Der Express Checkout erstellt keine doppelten Gastkonten mehr
 - PPI-293 - Skript-Ladevorgang in der Storefront verbessert
 - PPI-330 - Verbessert Nachkommastellen-Verhalten der Zettle-Synchronisation
 - PPI-334 - Behebt ein Problem, bei dem eine Fehlermeldung beim verzögerten Zahlungseinzug erschien
