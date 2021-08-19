@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Subscription;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
+ * @OA\Schema(schema="swag_paypal_v1_subscription_application_context")
  * @codeCoverageIgnore
  * @experimental
  *
@@ -25,6 +27,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V1\Api\Subscription\ApplicationContext::USER_ACTION_TYPE_SUBSCRIBE_NOW)
      */
     protected $userAction = self::USER_ACTION_TYPE_SUBSCRIBE_NOW;
 
@@ -32,6 +35,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $brandName;
 
@@ -39,6 +43,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $locale;
 
@@ -46,6 +51,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string", default="SET_PROVIDED_ADDRESS")
      */
     protected $shippingPreference = 'SET_PROVIDED_ADDRESS';
 
@@ -53,6 +59,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $returnUrl;
 
@@ -60,6 +67,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $cancelUrl;
 

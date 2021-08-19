@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V2\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
@@ -14,6 +15,9 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Payment;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\Api\Webhook\Link;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_webhook")
+ */
 class Webhook extends PayPalApiStruct
 {
     public const RESOURCE_TYPE_AUTHORIZATION = 'authorization';
@@ -24,6 +28,7 @@ class Webhook extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $id;
 
@@ -31,6 +36,7 @@ class Webhook extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $createTime;
 
@@ -38,6 +44,7 @@ class Webhook extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $resourceType;
 
@@ -45,6 +52,7 @@ class Webhook extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $eventType;
 
@@ -52,6 +60,7 @@ class Webhook extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $summary;
 
@@ -59,6 +68,7 @@ class Webhook extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Authorization|Capture|Refund|null
+     * @OA\Property(oneOf={}, nullable=true)
      */
     protected $resource;
 
@@ -66,6 +76,7 @@ class Webhook extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Link[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
     protected $links;
 
@@ -73,6 +84,7 @@ class Webhook extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $eventVersion;
 
@@ -80,6 +92,7 @@ class Webhook extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $resourceVersion;
 

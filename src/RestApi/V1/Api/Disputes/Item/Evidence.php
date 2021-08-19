@@ -7,16 +7,21 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\Document;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_evidence")
+ */
 class Evidence extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $evidenceType;
 
@@ -24,6 +29,7 @@ class Evidence extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var EvidenceInfo
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_evidence_info")
      */
     protected $evidenceInfo;
 
@@ -31,6 +37,7 @@ class Evidence extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Document[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_document"})
      */
     protected $documents;
 
@@ -38,6 +45,7 @@ class Evidence extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $notes;
 
@@ -45,6 +53,7 @@ class Evidence extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $itemId;
 

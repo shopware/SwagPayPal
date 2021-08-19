@@ -7,15 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\SellerProtection;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\SellerReceivableBreakdown;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_order_capture")
+ */
 class Capture extends Payment
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $invoiceId;
 
@@ -23,6 +28,7 @@ class Capture extends Payment
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $noteToPayer;
 
@@ -30,6 +36,7 @@ class Capture extends Payment
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var SellerProtection
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_capture_seller_protection")
      */
     protected $sellerProtection;
 
@@ -37,6 +44,7 @@ class Capture extends Payment
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var bool
+     * @OA\Property(type="boolean")
      */
     protected $finalCapture;
 
@@ -44,6 +52,7 @@ class Capture extends Payment
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var SellerReceivableBreakdown
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_capture_seller_receivable_breakdown")
      */
     protected $sellerReceivableBreakdown;
 
@@ -51,6 +60,7 @@ class Capture extends Payment
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $disbursementMode;
 

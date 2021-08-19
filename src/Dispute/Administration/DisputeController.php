@@ -11,6 +11,7 @@ use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
@@ -33,11 +34,12 @@ class DisputeController extends AbstractController
     }
 
     /**
+     * @Since("2.2.0")
      * @OA\Get(
      *     path="/paypal/dispute",
      *     description="Loads a list of PayPal disputes",
      *     operationId="disputeList",
-     *     tags={"Admin API", "PayPal", "Disputes"},
+     *     tags={"Admin API", "PayPal"},
      *     @OA\Parameter(
      *         parameter="salesChannelId",
      *         name="salesChannelId",
@@ -55,7 +57,7 @@ class DisputeController extends AbstractController
      *     @OA\Response(
      *         response="200",
      *         description="List of PayPal disputes",
-     *         @OA\JsonContent(type="array")
+     *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_disputes")
      *     )
      * )
      * @Route(
@@ -76,11 +78,12 @@ class DisputeController extends AbstractController
     }
 
     /**
+     * @Since("2.2.0")
      * @OA\Get(
      *     path="/paypal/dispute/{disputeId}",
      *     description="Loads the dispute details of the given PayPal dispute ID",
      *     operationId="disputeDetails",
-     *     tags={"Admin API", "PayPal", "Disputes"},
+     *     tags={"Admin API", "PayPal"},
      *     @OA\Parameter(
      *         parameter="disputeId",
      *         name="disputeId",
@@ -99,7 +102,7 @@ class DisputeController extends AbstractController
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal dispute",
-     *         @OA\JsonContent(type="array")
+     *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_disputes_item")
      *     )
      * )
      * @Route(

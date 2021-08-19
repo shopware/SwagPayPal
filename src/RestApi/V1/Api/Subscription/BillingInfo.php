@@ -7,12 +7,14 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Subscription;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\CycleExecution;
 use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\LastPayment;
 use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\OutstandingBalance;
 
 /**
+ * @OA\Schema(schema="swag_paypal_v1_subscription_billing_info")
  * @codeCoverageIgnore
  * @experimental
  *
@@ -25,6 +27,7 @@ class BillingInfo extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var OutstandingBalance
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
     protected $outstandingBalance;
 
@@ -32,6 +35,7 @@ class BillingInfo extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var CycleExecution[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_subscription_cycle_execution"})
      */
     protected $cycleExecutions = [];
 
@@ -39,6 +43,7 @@ class BillingInfo extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var LastPayment
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_last_payment")
      */
     protected $lastPayment;
 
@@ -46,6 +51,7 @@ class BillingInfo extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $nextBillingTime;
 
@@ -53,6 +59,7 @@ class BillingInfo extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var int
+     * @OA\Property(type="integer")
      */
     protected $failedPaymentsCount;
 

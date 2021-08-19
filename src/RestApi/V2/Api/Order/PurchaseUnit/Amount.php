@@ -7,15 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\V2\Api\Common\Money;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_order_amount")
+ */
 class Amount extends Money
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Breakdown|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_breakdown", nullable=true)
      */
     protected $breakdown;
 

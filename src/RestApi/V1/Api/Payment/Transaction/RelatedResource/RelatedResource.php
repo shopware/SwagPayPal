@@ -7,16 +7,21 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Common\Amount;
 use Swag\PayPal\RestApi\V1\Api\Common\Link;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_transaction_abstract_related_resource")
+ */
 abstract class RelatedResource extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $id;
 
@@ -24,51 +29,61 @@ abstract class RelatedResource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $state;
 
     /**
      * @var Amount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
      */
     protected $amount;
 
     /**
      * @var string
+     * @OA\Property(type="string")
      */
     protected $paymentMode;
 
     /**
      * @var string
+     * @OA\Property(type="string")
      */
     protected $createTime;
 
     /**
      * @var string
+     * @OA\Property(type="string")
      */
     protected $updateTime;
 
     /**
      * @var string
+     * @OA\Property(type="string")*
      */
     protected $protectionEligibility;
 
     /**
      * @var string
+     * @OA\Property(type="string")
      */
     protected $protectionEligibilityType;
 
     /**
      * @var string
+     * @OA\Property(type="string")
      */
     protected $receiptId;
 
     /**
      * @var string
+     * @OA\Property(type="string")
      */
     protected $parentPayment;
 
     /**
      * @var Link[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected $links;
 

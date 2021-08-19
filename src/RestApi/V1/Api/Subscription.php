@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Subscription\ApplicationContext;
 use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo;
@@ -15,6 +16,7 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\ShippingAmount;
 use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber;
 
 /**
+ * @OA\Schema(schema="swag_paypal_v1_subscription")
  * @codeCoverageIgnore
  * @experimental
  *
@@ -27,6 +29,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $id;
 
@@ -34,6 +37,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $planId;
 
@@ -41,6 +45,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $startTime;
 
@@ -48,6 +53,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $quantity;
 
@@ -55,6 +61,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ShippingAmount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
     protected $shippingAmount;
 
@@ -62,6 +69,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Subscriber
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_subscriber")
      */
     protected $subscriber;
 
@@ -69,6 +77,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var BillingInfo|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_billing_info", nullable=true)
      */
     protected $billingInfo;
 
@@ -76,6 +85,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ApplicationContext
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_application_context")
      */
     protected $applicationContext;
 
@@ -83,6 +93,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $status;
 
@@ -90,6 +101,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $statusUpdateTime;
 
@@ -97,6 +109,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $createTime;
 
@@ -104,6 +117,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $updateTime;
 
@@ -111,6 +125,7 @@ class Subscription extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Link[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected $links;
 

@@ -7,15 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Referral\Operation;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestApiIntegration;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_referral_api_integration_preference")
+ */
 class ApiIntegrationPreference extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var RestApiIntegration
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_referral_rest_api_integration")
      */
     protected $restApiIntegration;
 

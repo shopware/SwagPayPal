@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V2\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Referral\BusinessEntity;
 use Swag\PayPal\RestApi\V2\Api\Referral\LegalConsent;
@@ -14,17 +15,24 @@ use Swag\PayPal\RestApi\V2\Api\Referral\Link;
 use Swag\PayPal\RestApi\V2\Api\Referral\Operation;
 use Swag\PayPal\RestApi\V2\Api\Referral\PartnerConfigOverride;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_referral")
+ */
 class Referral extends PayPalApiStruct
 {
     public const PRODUCT_TYPE_EXPRESS_CHECKOUT = 'EXPRESS_CHECKOUT';
     public const PRODUCT_TYPE_PPCP = 'PPCP';
 
+    /**
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_referral_business_entity")
+     */
     protected BusinessEntity $businessEntity;
 
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $preferredLanguageCode;
 
@@ -32,6 +40,7 @@ class Referral extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $trackingId;
 
@@ -39,6 +48,7 @@ class Referral extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var PartnerConfigOverride
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_referral_partner_config_override")
      */
     protected $partnerConfigOverride;
 
@@ -46,6 +56,7 @@ class Referral extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Operation[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_referral_operation"})
      */
     protected $operations;
 
@@ -53,6 +64,7 @@ class Referral extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string[]
+     * @OA\Property(type="array", items={"type": "string"})
      */
     protected $products = [self::PRODUCT_TYPE_PPCP];
 
@@ -60,6 +72,7 @@ class Referral extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var LegalConsent[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_referral_legal_consent"})
      */
     protected $legalConsents;
 
@@ -67,6 +80,7 @@ class Referral extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Link[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
     protected $links;
 

@@ -11,6 +11,7 @@ use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,6 +43,7 @@ class ErrorRoute extends AbstractErrorRoute
     }
 
     /**
+     * @Since("3.3.0")
      * @OA\Post(
      *     path="/store-api/paypal/error",
      *     description="Adds an error message to a flashbag and logs the error",

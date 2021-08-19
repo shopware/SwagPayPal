@@ -7,12 +7,18 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
+use OpenApi\Annotations as OA;
+
+/**
+ * @OA\Schema(schema="swag_paypal_v1_oauth_credentials")
+ */
 class OAuthCredentials
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $restId;
 
@@ -20,9 +26,13 @@ class OAuthCredentials
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $restSecret;
 
+    /**
+     * @OA\Property(type="string")
+     */
     protected string $url;
 
     public function __toString(): string

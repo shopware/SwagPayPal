@@ -7,17 +7,22 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingAddress;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingOption;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_transaction_item_list")
+ */
 class ItemList extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ShippingAddress
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_shipping_address")
      */
     protected $shippingAddress;
 
@@ -25,6 +30,7 @@ class ItemList extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Item[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_item"})
      */
     protected $items;
 
@@ -32,6 +38,7 @@ class ItemList extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ShippingOption[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_shipping_option"})
      */
     protected $shippingOptions;
 
@@ -39,6 +46,7 @@ class ItemList extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $shippingPhoneNumber;
 

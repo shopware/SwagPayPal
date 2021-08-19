@@ -7,11 +7,13 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Plan;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle\Frequency;
 use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle\PricingScheme;
 
 /**
+ * @OA\Schema(schema="swag_paypal_v1_plan_billing_cycle")
  * @codeCoverageIgnore
  * @experimental
  *
@@ -24,6 +26,7 @@ class BillingCycle extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Frequency
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_plan_frequency")
      */
     protected $frequency;
 
@@ -31,6 +34,7 @@ class BillingCycle extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $tenureType;
 
@@ -38,6 +42,7 @@ class BillingCycle extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var int
+     * @OA\Property(type="integer")
      */
     protected $sequence;
 
@@ -45,6 +50,7 @@ class BillingCycle extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var PricingScheme
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_plan_pricing_scheme")
      */
     protected $pricingScheme;
 
@@ -52,6 +58,7 @@ class BillingCycle extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var int
+     * @OA\Property(type="integer")
      */
     protected $totalCycles;
 

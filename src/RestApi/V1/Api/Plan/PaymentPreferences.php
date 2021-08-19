@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Plan;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
+ * @OA\Schema(schema="swag_paypal_v1_plan_payment_preferences")
  * @codeCoverageIgnore
  * @experimental
  *
@@ -22,6 +24,7 @@ class PaymentPreferences extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var bool
+     * @OA\Property(type="boolean")
      */
     protected $autoBillOutstanding;
 
@@ -29,6 +32,7 @@ class PaymentPreferences extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var int
+     * @OA\Property(type="integer")
      */
     protected $paymentFailureThreshold;
 

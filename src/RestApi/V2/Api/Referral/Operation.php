@@ -7,9 +7,13 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Referral;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_referral_operation")
+ */
 class Operation extends PayPalApiStruct
 {
     public const OPERATION_TYPE_API_INTEGRATION = 'API_INTEGRATION';
@@ -18,6 +22,7 @@ class Operation extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Referral\Operation::OPERATION_TYPE_API_INTEGRATION)
      */
     protected $operation = self::OPERATION_TYPE_API_INTEGRATION;
 
@@ -25,6 +30,7 @@ class Operation extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ApiIntegrationPreference
+     * @OA\Property(ref="#/components/swag_paypal_v2_referral_api_integration_preference")
      */
     protected $apiIntegrationPreference;
 

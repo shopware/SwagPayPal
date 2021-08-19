@@ -7,16 +7,21 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\MerchandizeDisputeProperties;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_extensions")
+ */
 class Extensions extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var bool
+     * @OA\Property(type="boolean")
      */
     protected $merchantContacted;
 
@@ -24,6 +29,7 @@ class Extensions extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $merchantContactedOutcome;
 
@@ -31,6 +37,7 @@ class Extensions extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $merchantContactedTime;
 
@@ -38,6 +45,7 @@ class Extensions extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $merchantContactedMode;
 
@@ -45,6 +53,7 @@ class Extensions extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $buyerContactedTime;
 
@@ -52,6 +61,7 @@ class Extensions extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $buyerContactedChannel;
 
@@ -59,6 +69,7 @@ class Extensions extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var BillingDisputeProperties
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_billing_dispute_properties")
      */
     protected $billingDisputeProperties;
 
@@ -66,6 +77,7 @@ class Extensions extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var MerchandizeDisputeProperties
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_merchandize_dispute_properties")
      */
     protected $merchandizeDisputeProperties;
 

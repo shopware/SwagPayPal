@@ -7,8 +7,12 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_order_application_context")
+ */
 class ApplicationContext extends PayPalApiStruct
 {
     public const LANDING_PAGE_TYPE_LOGIN = 'LOGIN';
@@ -31,6 +35,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $brandName;
 
@@ -38,6 +43,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE)
      */
     protected $landingPage = self::LANDING_PAGE_TYPE_NO_PREFERENCE;
 
@@ -45,6 +51,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS)
      */
     protected $shippingPreference = self::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS;
 
@@ -52,6 +59,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::USER_ACTION_PAY_NOW)
      */
     protected $userAction = self::USER_ACTION_PAY_NOW;
 
@@ -59,6 +67,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $returnUrl;
 
@@ -66,6 +75,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $cancelUrl;
 

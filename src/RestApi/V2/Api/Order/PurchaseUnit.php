@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
@@ -14,12 +15,16 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payee;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_order_purchase_unit")
+ */
 class PurchaseUnit extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $referenceId;
 
@@ -27,6 +32,7 @@ class PurchaseUnit extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Amount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_amount")
      */
     protected $amount;
 
@@ -34,6 +40,7 @@ class PurchaseUnit extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Payee
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payee")
      */
     protected $payee;
 
@@ -41,6 +48,7 @@ class PurchaseUnit extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $description;
 
@@ -48,6 +56,7 @@ class PurchaseUnit extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $customId;
 
@@ -55,6 +64,7 @@ class PurchaseUnit extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $invoiceId;
 
@@ -62,6 +72,7 @@ class PurchaseUnit extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Item[]|null
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_item"}, nullable=true)
      */
     protected $items;
 
@@ -69,6 +80,7 @@ class PurchaseUnit extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Shipping
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_shipping")
      */
     protected $shipping;
 
@@ -76,6 +88,7 @@ class PurchaseUnit extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Payments
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payments")
      */
     protected $payments;
 

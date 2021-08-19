@@ -7,15 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\CreateWebhooks\EventType;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_create_webhooks")
+ */
 class CreateWebhooks extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $url;
 
@@ -23,6 +28,7 @@ class CreateWebhooks extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var EventType[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_create_webhooks_event_type"})
      */
     protected $eventTypes;
 

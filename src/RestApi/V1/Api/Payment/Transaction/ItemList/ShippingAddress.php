@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\V1\Api\Common\Address;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_transaction_shipping_address")
+ */
 class ShippingAddress extends Address
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $recipientName;
 

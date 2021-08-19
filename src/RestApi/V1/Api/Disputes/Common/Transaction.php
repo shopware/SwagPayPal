@@ -7,15 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Common;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Common\Money;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_common_transaction")
+ */
 abstract class Transaction extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $buyerTransactionId;
 
@@ -23,6 +28,7 @@ abstract class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $sellerTransactionId;
 
@@ -30,6 +36,7 @@ abstract class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $referenceId;
 
@@ -37,6 +44,7 @@ abstract class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")*
      */
     protected $createTime;
 
@@ -44,6 +52,7 @@ abstract class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $transactionStatus;
 
@@ -51,6 +60,7 @@ abstract class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Money
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
     protected $grossAmount;
 
@@ -58,6 +68,7 @@ abstract class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $invoiceNumber;
 
@@ -65,6 +76,7 @@ abstract class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $custom;
 
@@ -72,6 +84,7 @@ abstract class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Buyer
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_buyer")
      */
     protected $buyer;
 
@@ -79,6 +92,7 @@ abstract class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Seller
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_seller")
      */
     protected $seller;
 
@@ -86,6 +100,7 @@ abstract class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Item[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_item"})
      */
     protected $items;
 

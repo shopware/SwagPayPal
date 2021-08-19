@@ -22,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\SwagPayPal;
@@ -59,6 +60,7 @@ class PlusPaymentFinalizeController extends AbstractController
 
     /**
      * @RouteScope(scopes={"storefront"})
+     * @Since("0.9.0")
      * @Route(
      *     "/paypal/plus/payment/finalize-transaction",
      *     name="payment.paypal.plus.finalize.transaction",

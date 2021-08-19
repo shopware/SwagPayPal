@@ -7,8 +7,12 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_transaction_item")
+ */
 class Item extends PayPalApiStruct
 {
     public const MAX_LENGTH_NAME = 127;
@@ -18,6 +22,7 @@ class Item extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $name;
 
@@ -25,6 +30,7 @@ class Item extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $currency;
 
@@ -32,6 +38,7 @@ class Item extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $price;
 
@@ -39,6 +46,7 @@ class Item extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var int
+     * @OA\Property(type="integer")
      */
     protected $quantity;
 
@@ -46,6 +54,7 @@ class Item extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $sku;
 
@@ -53,6 +62,7 @@ class Item extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $tax;
 

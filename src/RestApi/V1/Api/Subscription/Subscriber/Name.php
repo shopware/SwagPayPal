@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
+ * @OA\Schema(schema="swag_paypal_v1_subscription_name")
  * @codeCoverageIgnore
  * @experimental
  *
@@ -22,6 +24,7 @@ class Name extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $givenName;
 
@@ -29,6 +32,7 @@ class Name extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $surname;
 

@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
+ * @OA\Schema(schema="swag_paypal_v1_subscription_cycle_execution")
  * @codeCoverageIgnore
  * @experimental
  *
@@ -22,6 +24,7 @@ class CycleExecution extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $tenureType;
 
@@ -29,6 +32,7 @@ class CycleExecution extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var int
+     * @OA\Property(type="integer")
      */
     protected $sequence;
 
@@ -36,6 +40,7 @@ class CycleExecution extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var int
+     * @OA\Property(type="integer")
      */
     protected $cyclesCompleted;
 
@@ -43,6 +48,7 @@ class CycleExecution extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var int
+     * @OA\Property(type="integer")
      */
     protected $cyclesRemaining;
 
@@ -50,6 +56,7 @@ class CycleExecution extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var int
+     * @OA\Property(type="integer")
      */
     protected $totalCycles;
 

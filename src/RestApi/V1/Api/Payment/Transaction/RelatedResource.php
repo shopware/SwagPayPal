@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Authorization;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Capture;
@@ -15,6 +16,9 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Refund;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Sale;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_transaction_related_resource")
+ */
 class RelatedResource extends PayPalApiStruct
 {
     public const SALE = PaymentIntentV1::SALE;
@@ -27,6 +31,7 @@ class RelatedResource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Sale|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_sale", nullable=true)
      */
     protected $sale;
 
@@ -34,6 +39,7 @@ class RelatedResource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Authorization|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_authorization", nullable=true)
      */
     protected $authorization;
 
@@ -41,6 +47,7 @@ class RelatedResource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Order|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_order", nullable=true)
      */
     protected $order;
 
@@ -48,6 +55,7 @@ class RelatedResource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Refund|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_refund", nullable=true)
      */
     protected $refund;
 
@@ -55,6 +63,7 @@ class RelatedResource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Capture|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_capture", nullable=true)
      */
     protected $capture;
 

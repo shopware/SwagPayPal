@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_recipient_banking_instruction")
+ */
 class RecipientBankingInstruction extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $bankName;
 
@@ -22,6 +27,7 @@ class RecipientBankingInstruction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $accountHolderName;
 
@@ -29,6 +35,7 @@ class RecipientBankingInstruction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $internationalBankAccountNumber;
 
@@ -36,6 +43,7 @@ class RecipientBankingInstruction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $bankIdentifierCode;
 

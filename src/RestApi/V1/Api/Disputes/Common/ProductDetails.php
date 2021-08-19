@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Common;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_common_product_details")
+ */
 abstract class ProductDetails extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $productReceived;
 
@@ -22,6 +27,7 @@ abstract class ProductDetails extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $productReceivedTime;
 
@@ -29,6 +35,7 @@ abstract class ProductDetails extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var SubReason[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_sub_reason"})
      */
     protected $subReasons;
 
@@ -36,6 +43,7 @@ abstract class ProductDetails extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $purchaseUrl;
 
@@ -43,6 +51,7 @@ abstract class ProductDetails extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ReturnDetails
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_return_details")
      */
     protected $returnDetails;
 

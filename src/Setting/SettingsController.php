@@ -9,6 +9,7 @@ namespace Swag\PayPal\Setting;
 
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Swag\PayPal\Setting\Service\ApiCredentialServiceInterface;
@@ -30,6 +31,7 @@ class SettingsController extends AbstractController
     }
 
     /**
+     * @Since("0.9.0")
      * @Route("/api/_action/paypal/validate-api-credentials", name="api.action.paypal.validate.api.credentials", methods={"GET"})
      * @Acl({"swag_paypal.viewer"})
      */
@@ -53,6 +55,7 @@ class SettingsController extends AbstractController
     }
 
     /**
+     * @Since("0.10.0")
      * @Route("/api/_action/paypal/get-api-credentials", name="api.action.paypal.get.api.credentials", methods={"POST"})
      * @Acl({"swag_paypal.editor"})
      */

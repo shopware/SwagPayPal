@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization\SellerProtection;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_order_authorization")
+ */
 class Authorization extends Payment
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var SellerProtection
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_authorization_seller_protection")
      */
     protected $sellerProtection;
 
@@ -22,6 +27,7 @@ class Authorization extends Payment
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $expirationTime;
 

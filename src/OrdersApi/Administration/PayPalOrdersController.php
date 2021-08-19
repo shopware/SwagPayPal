@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Annotation\Since;
 use Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\AuthorizationResource;
@@ -73,6 +74,7 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
+     * @Since("2.0.0")
      * @OA\Get(
      *     path="/paypal-v2/order/{orderTransactionId}/{paypalOrderId}",
      *     description="Loads the order details of the given PayPal order ID",
@@ -97,7 +99,7 @@ class PayPalOrdersController extends AbstractController
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal order",
-     *         @OA\JsonContent(type="array")
+     *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order")
      *     )
      * )
      * @Route(
@@ -118,6 +120,7 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
+     * @Since("2.0.0")
      * @OA\Get(
      *     path="/paypal-v2/authorization/{orderTransactionId}/{authorizationId}",
      *     description="Loads the authorization details of the given PayPal authorization ID",
@@ -142,7 +145,7 @@ class PayPalOrdersController extends AbstractController
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal authorization",
-     *         @OA\JsonContent(type="array")
+     *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order_authorization")
      *     )
      * )
      * @Route(
@@ -163,6 +166,7 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
+     * @Since("2.0.0")
      * @OA\Get(
      *     path="/paypal-v2/capture/{orderTransactionId}/{captureId}",
      *     description="Loads the capture details of the given PayPal capture ID",
@@ -187,7 +191,7 @@ class PayPalOrdersController extends AbstractController
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal capture",
-     *         @OA\JsonContent(type="array")
+     *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order_capture")
      *     )
      * )
      * @Route(
@@ -208,6 +212,7 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
+     * @Since("2.0.0")
      * @OA\Get(
      *     path="/paypal-v2/refund/{orderTransactionId}/{refundId}",
      *     description="Loads the refund details of the given PayPal refund ID",
@@ -232,7 +237,7 @@ class PayPalOrdersController extends AbstractController
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal refund",
-     *         @OA\JsonContent(type="array")
+     *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order_refund")
      *     )
      * )
      * @Route(
@@ -253,6 +258,7 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
+     * @Since("2.0.0")
      * @OA\Post(
      *     path="/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}",
      *     description="Refunds the PayPal capture and sets the state of the Shopware order transaction accordingly",
@@ -294,7 +300,7 @@ class PayPalOrdersController extends AbstractController
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal refund",
-     *         @OA\JsonContent(type="array")
+     *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order_refund")
      *     )
      * )
      * @Route(
@@ -330,6 +336,7 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
+     * @Since("2.0.0")
      * @OA\Post(
      *     path="/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}",
      *     description="Captures the PayPal authorization and sets the state of the Shopware order transaction accordingly",
@@ -364,7 +371,7 @@ class PayPalOrdersController extends AbstractController
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal capture",
-     *         @OA\JsonContent(type="array")
+     *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v2_order_capture")
      *     )
      * )
      * @Route(
@@ -396,6 +403,7 @@ class PayPalOrdersController extends AbstractController
     }
 
     /**
+     * @Since("2.0.0")
      * @OA\Post(
      *     path="/_action/paypal-v2/void-authorization/{orderTransactionId}/{authorizationId}",
      *     description="Voids the PayPal authorization and sets the state of the Shopware order transaction accordingly",

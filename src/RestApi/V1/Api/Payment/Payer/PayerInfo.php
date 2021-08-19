@@ -7,15 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Payer;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\V1\Api\Payment\Payer\PayerInfo\BillingAddress;
 use Swag\PayPal\RestApi\V1\Api\Payment\Payer\PayerInfo\ShippingAddress;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_payer_info")
+ */
 class PayerInfo extends ExecutePayerInfo
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $email;
 
@@ -23,6 +28,7 @@ class PayerInfo extends ExecutePayerInfo
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $firstName;
 
@@ -30,6 +36,7 @@ class PayerInfo extends ExecutePayerInfo
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $lastName;
 
@@ -37,6 +44,7 @@ class PayerInfo extends ExecutePayerInfo
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var BillingAddress|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_address", nullable=true)
      */
     protected $billingAddress;
 
@@ -44,6 +52,7 @@ class PayerInfo extends ExecutePayerInfo
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ShippingAddress
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_payer_info_shipping_address")
      */
     protected $shippingAddress;
 
@@ -51,6 +60,7 @@ class PayerInfo extends ExecutePayerInfo
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $phone;
 
@@ -58,6 +68,7 @@ class PayerInfo extends ExecutePayerInfo
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $countryCode;
 

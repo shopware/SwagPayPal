@@ -7,8 +7,12 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestApiIntegration;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_referral_third_party_details")
+ */
 class ThirdPartyDetails extends PayPalApiStruct
 {
     public const FEATURE_TYPE_PAYMENT = 'PAYMENT';
@@ -23,6 +27,7 @@ class ThirdPartyDetails extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string[]
+     * @OA\Property(type="array", items={"type": "string"})
      */
     protected $features = [
         self::FEATURE_TYPE_PAYMENT,

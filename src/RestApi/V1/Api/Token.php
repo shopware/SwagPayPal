@@ -7,8 +7,12 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_token")
+ */
 final class Token extends PayPalApiStruct
 {
     /**
@@ -18,6 +22,7 @@ final class Token extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     private $scope;
 
@@ -25,6 +30,7 @@ final class Token extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     private $nonce;
 
@@ -35,6 +41,7 @@ final class Token extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     private $accessToken;
 
@@ -45,6 +52,7 @@ final class Token extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     private $tokenType;
 
@@ -52,6 +60,7 @@ final class Token extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     private $appId;
 
@@ -61,6 +70,7 @@ final class Token extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var int
+     * @OA\Property(type="integer")
      */
     private $expiresIn;
 
@@ -70,6 +80,7 @@ final class Token extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var \DateTime
+     * @OA\Property(type="date")
      */
     private $expireDateTime;
 
