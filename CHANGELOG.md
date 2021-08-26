@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-252 - Improved error handling for Webhooks
+
 # 3.5.0
 - PPI-5 - Implement Set PayPal as default payment method in First Run Wizard
 - PPI-77 - Replaced snippets in administration by `global.defaults`
