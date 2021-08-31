@@ -7,9 +7,13 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestApiIntegration\ThirdPartyDetails;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_referral_rest_api_integration")
+ */
 class RestApiIntegration extends PayPalApiStruct
 {
     public const INTEGRATION_METHOD_TYPE_PAYPAL = 'PAYPAL';
@@ -19,6 +23,10 @@ class RestApiIntegration extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(
+     *     type="string",
+     *     default=Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestApiIntegration::INTEGRATION_METHOD_TYPE_PAYPAL
+     * )
      */
     protected $integrationMethod = self::INTEGRATION_METHOD_TYPE_PAYPAL;
 
@@ -26,6 +34,10 @@ class RestApiIntegration extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(
+     *     type="string",
+     *     default=Swag\PayPal\RestApi\V2\Api\Referral\Operation\ApiIntegrationPreference\RestApiIntegration::INTEGRATION_TYPE_THIRD_PARTY
+     * )
      */
     protected $integrationType = self::INTEGRATION_TYPE_THIRD_PARTY;
 
@@ -33,6 +45,7 @@ class RestApiIntegration extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ThirdPartyDetails
+     * @OA\Property(ref="#/components/swag_paypal_v2_referral_third_party_details")
      */
     protected $thirdPartyDetails;
 

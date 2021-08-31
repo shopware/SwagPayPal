@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CreditNotProcessed\AgreedRefundDetails;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CreditNotProcessed\CancellationDetails;
@@ -14,12 +15,16 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CreditNotProcessed\ProductDetails;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CreditNotProcessed\ServiceDetails;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_cretid_not_processed")
+ */
 class CreditNotProcessed extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $issueType;
 
@@ -27,6 +32,7 @@ class CreditNotProcessed extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ExpectedRefund
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
     protected $expectedRefund;
 
@@ -34,6 +40,7 @@ class CreditNotProcessed extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var CancellationDetails
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_cancellation_details")
      */
     protected $cancellationDetails;
 
@@ -41,6 +48,7 @@ class CreditNotProcessed extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ProductDetails
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_product_details")
      */
     protected $productDetails;
 
@@ -48,6 +56,7 @@ class CreditNotProcessed extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ServiceDetails
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_service_details")
      */
     protected $serviceDetails;
 
@@ -55,6 +64,7 @@ class CreditNotProcessed extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var AgreedRefundDetails
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_aggred_refund_details")
      */
     protected $agreedRefundDetails;
 

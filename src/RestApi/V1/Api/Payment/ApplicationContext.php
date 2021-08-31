@@ -7,8 +7,12 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_application_context")
+ */
 class ApplicationContext extends PayPalApiStruct
 {
     public const LANDING_PAGE_TYPE_LOGIN = 'Login';
@@ -25,6 +29,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $brandName;
 
@@ -32,6 +37,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $locale;
 
@@ -39,6 +45,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $landingPage;
 
@@ -46,6 +53,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string", default="SET_PROVIDED_ADDRESS")
      */
     protected $shippingPreference = 'SET_PROVIDED_ADDRESS';
 
@@ -53,6 +61,7 @@ class ApplicationContext extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext::USER_ACTION_TYPE_COMMIT)
      */
     protected $userAction = self::USER_ACTION_TYPE_COMMIT;
 

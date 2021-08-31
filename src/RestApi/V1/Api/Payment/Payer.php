@@ -7,15 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Payment\Payer\PayerInfo;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_payer")
+ */
 class Payer extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $paymentMethod;
 
@@ -23,6 +28,7 @@ class Payer extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $status;
 
@@ -30,6 +36,7 @@ class Payer extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var PayerInfo
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_payer_info")
      */
     protected $payerInfo;
 
@@ -37,6 +44,7 @@ class Payer extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $externalSelectedFundingInstrumentType;
 

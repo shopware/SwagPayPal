@@ -7,18 +7,23 @@
 
 namespace Swag\PayPal\RestApi\V2\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\Link;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_order")
+ */
 class Order extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $createTime;
 
@@ -26,6 +31,7 @@ class Order extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $updateTime;
 
@@ -33,6 +39,7 @@ class Order extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $id;
 
@@ -40,6 +47,7 @@ class Order extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $intent;
 
@@ -47,6 +55,7 @@ class Order extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Payer
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payer")
      */
     protected $payer;
 
@@ -54,6 +63,7 @@ class Order extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var PurchaseUnit[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit"})
      */
     protected $purchaseUnits;
 
@@ -61,6 +71,7 @@ class Order extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ApplicationContext
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_application_context")
      */
     protected $applicationContext;
 
@@ -68,6 +79,7 @@ class Order extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $status;
 
@@ -75,6 +87,7 @@ class Order extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Link[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
     protected $links;
 

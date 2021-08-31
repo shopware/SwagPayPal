@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Annotation\Since;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Api\Capture\Amount as CaptureAmount;
@@ -83,6 +84,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
+     * @Since("0.10.0")
      * @OA\Get(
      *     path="/paypal/payment-details/{orderId}/{paymentId}",
      *     description="Loads the Payment details of the given PayPal ID",
@@ -105,7 +107,7 @@ class PayPalPaymentController extends AbstractController
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal payment",
-     *         @OA\JsonContent(type="array")
+     *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_payment")
      *     )
      * )
      * @Route("/api/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"})
@@ -119,6 +121,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
+     * @Since("1.5.1")
      * @OA\Get(
      *     path="/paypal/resource-details/{resourceType}/{resourceId}/{orderId}",
      *     description="Loads the PayPal resource details of the given resource ID",
@@ -148,7 +151,12 @@ class PayPalPaymentController extends AbstractController
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal resource",
-     *         @OA\JsonContent(type="array")
+     *         @OA\JsonContent(oneOf={
+     *             @OA\Schema(ref="#/components/schemas/swag_paypal_v1_payment_transaction_sale"),
+     *             @OA\Schema(ref="#/components/schemas/swag_paypal_v1_payment_transaction_authorization"),
+     *             @OA\Schema(ref="#/components/schemas/swag_paypal_v1_payment_transaction_order"),
+     *             @OA\Schema(ref="#/components/schemas/swag_paypal_v1_capture")
+     *         })
      *     )
      * )
      * @Route("/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}", name="api.paypal.resource_details", methods={"GET"})
@@ -182,6 +190,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
+     * @Since("0.9.0")
      * @Route("/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"})
      * @Acl({"order.editor"})
      *
@@ -225,6 +234,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
+     * @Since("0.9.0")
      * @Route("/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"})
      * @Acl({"order.editor"})
      *
@@ -263,6 +273,7 @@ class PayPalPaymentController extends AbstractController
     }
 
     /**
+     * @Since("0.9.0")
      * @Route("/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"})
      * @Acl({"order.editor"})
      *

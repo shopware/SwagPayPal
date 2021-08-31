@@ -7,8 +7,12 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Common;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_common_address")
+ */
 abstract class Address extends PayPalApiStruct
 {
     /**
@@ -18,6 +22,7 @@ abstract class Address extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $addressLine_1;
 
@@ -27,6 +32,7 @@ abstract class Address extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $addressLine_2;
 
@@ -36,6 +42,7 @@ abstract class Address extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $adminArea_2;
 
@@ -46,6 +53,7 @@ abstract class Address extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $adminArea_1;
 
@@ -53,6 +61,7 @@ abstract class Address extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $postalCode;
 
@@ -60,6 +69,7 @@ abstract class Address extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $countryCode;
 

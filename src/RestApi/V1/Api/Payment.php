@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
 use Swag\PayPal\RestApi\V1\Api\Payment\Link;
@@ -16,12 +17,16 @@ use Swag\PayPal\RestApi\V1\Api\Payment\RedirectUrls;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment")
+ */
 class Payment extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $id;
 
@@ -29,6 +34,7 @@ class Payment extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string", default=Swag\PayPal\RestApi\V1\PaymentIntentV1::SALE)
      */
     protected $intent = PaymentIntentV1::SALE;
 
@@ -36,6 +42,7 @@ class Payment extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $state;
 
@@ -43,6 +50,7 @@ class Payment extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $cart;
 
@@ -50,6 +58,7 @@ class Payment extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Payer
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_payer")
      */
     protected $payer;
 
@@ -57,6 +66,7 @@ class Payment extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Transaction[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction"})
      */
     protected $transactions;
 
@@ -64,6 +74,7 @@ class Payment extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $createTime;
 
@@ -71,6 +82,7 @@ class Payment extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $updateTime;
 
@@ -78,6 +90,7 @@ class Payment extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Link[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected $links;
 
@@ -85,6 +98,7 @@ class Payment extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var RedirectUrls
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_redirect_urls")
      */
     protected $redirectUrls;
 
@@ -92,6 +106,7 @@ class Payment extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ApplicationContext
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_application_context")
      */
     protected $applicationContext;
 
@@ -99,6 +114,7 @@ class Payment extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var PaymentInstruction|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_payment_instruction", nullable=true)
      */
     protected $paymentInstruction;
 

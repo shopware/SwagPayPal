@@ -7,17 +7,22 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Webhook;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook\Resource\Amount;
 use Swag\PayPal\RestApi\V1\Api\Webhook\Resource\Link;
 use Swag\PayPal\RestApi\V1\Api\Webhook\Resource\TransactionFee;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_webhook_resource")
+ */
 class Resource extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $id;
 
@@ -25,6 +30,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $parentPayment;
 
@@ -32,6 +38,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $billingAgreementId;
 
@@ -39,6 +46,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $saleId;
 
@@ -46,6 +54,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $refundReasonCode;
 
@@ -53,6 +62,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $updateTime;
 
@@ -60,6 +70,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Amount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
      */
     protected $amount;
 
@@ -67,6 +78,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $paymentMode;
 
@@ -74,6 +86,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $createTime;
 
@@ -81,6 +94,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $clearingTime;
 
@@ -88,6 +102,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $protectionEligibilityType;
 
@@ -95,6 +110,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $protectionEligibility;
 
@@ -102,6 +118,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var TransactionFee
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
     protected $transactionFee;
 
@@ -109,6 +126,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $invoiceNumber;
 
@@ -116,6 +134,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Link[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected $links;
 
@@ -123,6 +142,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $state;
 
@@ -130,6 +150,7 @@ class Resource extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $merchantId;
 

@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Sale\TransactionFee;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_transaction_sale")
+ */
 class Sale extends RelatedResource
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var TransactionFee
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
     protected $transactionFee;
 

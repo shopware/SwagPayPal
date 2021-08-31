@@ -7,11 +7,15 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction\Amount;
 use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction\Link;
 use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction\RecipientBankingInstruction;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_payment_instruction")
+ */
 class PaymentInstruction extends PayPalApiStruct
 {
     public const TYPE_INVOICE = 'PAY_UPON_INVOICE';
@@ -20,6 +24,7 @@ class PaymentInstruction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $referenceNumber;
 
@@ -27,6 +32,7 @@ class PaymentInstruction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var RecipientBankingInstruction
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_recipient_banking_instruction")
      */
     protected $recipientBankingInstruction;
 
@@ -34,6 +40,7 @@ class PaymentInstruction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Amount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
     protected $amount;
 
@@ -41,6 +48,7 @@ class PaymentInstruction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $paymentDueDate;
 
@@ -48,6 +56,7 @@ class PaymentInstruction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $instructionType;
 
@@ -55,6 +64,7 @@ class PaymentInstruction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Link[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected $links;
 

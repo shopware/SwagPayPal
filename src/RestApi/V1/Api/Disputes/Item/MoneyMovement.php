@@ -7,15 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\MoneyMovement\Amount;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_money_movement")
+ */
 class MoneyMovement extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $affectedParty;
 
@@ -23,6 +28,7 @@ class MoneyMovement extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Amount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
     protected $amount;
 
@@ -30,6 +36,7 @@ class MoneyMovement extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $initiatedTime;
 
@@ -37,6 +44,7 @@ class MoneyMovement extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $type;
 
@@ -44,6 +52,7 @@ class MoneyMovement extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $reason;
 

@@ -7,17 +7,22 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Capture\Amount;
 use Swag\PayPal\RestApi\V1\Api\Capture\Link;
 use Swag\PayPal\RestApi\V1\Api\Capture\TransactionFee;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_capture")
+ */
 class Capture extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Amount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
      */
     protected $amount;
 
@@ -25,6 +30,7 @@ class Capture extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var bool
+     * @OA\Property(type="boolean")
      */
     protected $isFinalCapture;
 
@@ -32,6 +38,7 @@ class Capture extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $id;
 
@@ -39,6 +46,7 @@ class Capture extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $state;
 
@@ -46,6 +54,7 @@ class Capture extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $reasonCode;
 
@@ -53,6 +62,7 @@ class Capture extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $parentPayment;
 
@@ -60,6 +70,7 @@ class Capture extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var TransactionFee
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
     protected $transactionFee;
 
@@ -67,6 +78,7 @@ class Capture extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $createTime;
 
@@ -74,6 +86,7 @@ class Capture extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $updateTime;
 
@@ -81,6 +94,7 @@ class Capture extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Link[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected $links;
 

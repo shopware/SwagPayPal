@@ -7,12 +7,14 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle;
 use Swag\PayPal\RestApi\V1\Api\Plan\PaymentPreferences;
 use Swag\PayPal\RestApi\V1\Api\Plan\Taxes;
 
 /**
+ * @OA\Schema(schema="swag_paypal_v1_plan")
  * @codeCoverageIgnore
  * @experimental
  *
@@ -25,6 +27,7 @@ class Plan extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $productId;
 
@@ -32,6 +35,7 @@ class Plan extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $name;
 
@@ -39,6 +43,7 @@ class Plan extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $description;
 
@@ -46,6 +51,7 @@ class Plan extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $status;
 
@@ -53,6 +59,7 @@ class Plan extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var BillingCycle[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_plan_billing_cycle"})
      */
     protected $billingCycles = [];
 
@@ -60,6 +67,7 @@ class Plan extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var PaymentPreferences
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_plan_payment_preferences")
      */
     protected $paymentPreferences;
 
@@ -67,6 +75,7 @@ class Plan extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Taxes
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_plan_taxes")
      */
     protected $taxes;
 

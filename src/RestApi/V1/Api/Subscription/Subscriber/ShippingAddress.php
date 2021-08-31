@@ -8,11 +8,13 @@ declare(strict_types=1);
 
 namespace Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress\Address;
 use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress\Name;
 
 /**
+ * @OA\Schema(schema="swag_paypal_v1_subscription_shipping_address")
  * @codeCoverageIgnore
  * @experimental
  *
@@ -25,6 +27,7 @@ class ShippingAddress extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Name|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_shipping_address_name", nullable=true)
      */
     protected $name;
 
@@ -32,6 +35,7 @@ class ShippingAddress extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Address|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_shipping_address_address", nullable=true)
      */
     protected $address;
 

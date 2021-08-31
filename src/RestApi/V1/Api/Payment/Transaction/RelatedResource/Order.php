@@ -7,12 +7,18 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 
+use OpenApi\Annotations as OA;
+
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_transaction_order")
+ */
 class Order extends RelatedResource
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $reasonCode;
 

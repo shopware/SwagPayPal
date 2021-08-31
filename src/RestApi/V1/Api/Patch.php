@@ -7,8 +7,12 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_patch")
+ */
 class Patch extends PayPalApiStruct
 {
     public const OPERATION_ADD = 'add';
@@ -18,6 +22,7 @@ class Patch extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $op;
 
@@ -25,6 +30,7 @@ class Patch extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $path;
 
@@ -32,6 +38,7 @@ class Patch extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var array|string
+     * @OA\Property(oneOf={"string", "array"})
      */
     protected $value;
 

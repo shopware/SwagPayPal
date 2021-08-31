@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Common;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_common_details")
+ */
 abstract class Details extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $subtotal;
 
@@ -22,6 +27,7 @@ abstract class Details extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $shipping;
 
@@ -29,6 +35,7 @@ abstract class Details extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $tax;
 
@@ -36,6 +43,7 @@ abstract class Details extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $handlingFee;
 
@@ -43,6 +51,7 @@ abstract class Details extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $shippingDiscount;
 
@@ -50,6 +59,7 @@ abstract class Details extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $discount;
 
@@ -57,6 +67,7 @@ abstract class Details extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $insurance;
 

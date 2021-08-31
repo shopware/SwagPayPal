@@ -7,15 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputeOutcome\AmountRefunded;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_dispute_outcome")
+ */
 class DisputeOutcome extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $outcomeCode;
 
@@ -23,6 +28,7 @@ class DisputeOutcome extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var AmountRefunded
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
     protected $amountRefunded;
 

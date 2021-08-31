@@ -10,6 +10,7 @@ namespace Swag\PayPal\Pos\Setting;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Swag\PayPal\Pos\Exception\ExistingPosAccountException;
 use Swag\PayPal\Pos\Setting\Service\ApiCredentialService;
@@ -54,6 +55,7 @@ class SettingsController extends AbstractController
     }
 
     /**
+     * @Since("1.9.0")
      * @Route(
      *     "/api/_action/paypal/pos/validate-api-credentials",
      *     name="api.action.paypal.pos.validate.api.credentials",
@@ -82,6 +84,7 @@ class SettingsController extends AbstractController
     }
 
     /**
+     * @Since("1.9.0")
      * @Route(
      *     "/api/paypal/pos/fetch-information",
      *     name="api.paypal.pos.fetch.information",
@@ -104,6 +107,7 @@ class SettingsController extends AbstractController
     }
 
     /**
+     * @Since("1.9.0")
      * @Route(
      *     "/api/_action/paypal/pos/clone-product-visibility",
      *     name="api.action.paypal.pos.clone.product.visibility",
@@ -122,6 +126,7 @@ class SettingsController extends AbstractController
     }
 
     /**
+     * @Since("1.9.0")
      * @Route(
      *     "/api/paypal/pos/product-count",
      *     name="api.paypal.pos.product.count",

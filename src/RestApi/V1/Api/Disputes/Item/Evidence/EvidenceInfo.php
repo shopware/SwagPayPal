@@ -7,16 +7,21 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo\RefundId;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo\TrackingInfo;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_evidence_info")
+ */
 class EvidenceInfo extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var TrackingInfo[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_tracking_info"})
      */
     protected $trackingInfo;
 
@@ -24,6 +29,7 @@ class EvidenceInfo extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var RefundId[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_refund_id"})
      */
     protected $refundIds;
 

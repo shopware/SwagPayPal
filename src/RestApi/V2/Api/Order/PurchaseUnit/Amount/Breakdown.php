@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Discount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Handling;
@@ -16,12 +17,16 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Shipping;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\ShippingDiscount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\TaxTotal;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_order_breakdown")
+ */
 class Breakdown extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ItemTotal
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
     protected $itemTotal;
 
@@ -29,6 +34,7 @@ class Breakdown extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Shipping
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
     protected $shipping;
 
@@ -36,6 +42,7 @@ class Breakdown extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Handling
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
     protected $handling;
 
@@ -43,6 +50,7 @@ class Breakdown extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var TaxTotal|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money", nullable=true)
      */
     protected $taxTotal;
 
@@ -50,6 +58,7 @@ class Breakdown extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Insurance
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
     protected $insurance;
 
@@ -57,6 +66,7 @@ class Breakdown extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ShippingDiscount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
     protected $shippingDiscount;
 
@@ -64,6 +74,7 @@ class Breakdown extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Discount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
     protected $discount;
 

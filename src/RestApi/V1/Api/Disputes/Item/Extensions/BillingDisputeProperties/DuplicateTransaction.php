@@ -7,15 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\DuplicateTransaction\OriginalTransaction;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_duplicate_transaction")
+ */
 class DuplicateTransaction extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var bool
+     * @OA\Property(type="boolean")
      */
     protected $receivedDuplicate;
 
@@ -23,6 +28,7 @@ class DuplicateTransaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var OriginalTransaction
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_transaction")
      */
     protected $originalTransaction;
 

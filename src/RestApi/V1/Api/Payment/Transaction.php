@@ -7,18 +7,23 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Amount;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Payee;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_transaction")
+ */
 class Transaction extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Amount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
      */
     protected $amount;
 
@@ -26,6 +31,7 @@ class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Payee
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_payee")
      */
     protected $payee;
 
@@ -33,6 +39,7 @@ class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ItemList|null
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_item_list", nullable=true)
      */
     protected $itemList;
 
@@ -40,6 +47,7 @@ class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var RelatedResource[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_related_resource"})
      */
     protected $relatedResources;
 
@@ -47,6 +55,7 @@ class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string|null
+     * @OA\Property(type="string", nullable=true)
      */
     protected $invoiceNumber;
 
@@ -54,6 +63,7 @@ class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $softDescriptor;
 
@@ -61,6 +71,7 @@ class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $description;
 
@@ -68,6 +79,7 @@ class Transaction extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $custom;
 

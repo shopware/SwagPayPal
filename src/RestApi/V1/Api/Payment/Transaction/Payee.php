@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_payment_transaction_payee")
+ */
 class Payee extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $merchantId;
 
@@ -22,6 +27,7 @@ class Payee extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $email;
 

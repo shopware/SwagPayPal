@@ -7,16 +7,21 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CanceledRecurringBilling\CancellationDetails;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CanceledRecurringBilling\ExpectedRefund;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_canceled_recurring_billing")
+ */
 class CanceledRecurringBilling extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var ExpectedRefund
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
     protected $expectedRefund;
 
@@ -24,6 +29,7 @@ class CanceledRecurringBilling extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var CancellationDetails
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_cancellation_details")
      */
     protected $cancellationDetails;
 

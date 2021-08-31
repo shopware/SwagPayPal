@@ -7,17 +7,22 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\BuyerRequestedAmount;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\History;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\SellerOfferedAmount;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_offer")
+ */
 class Offer extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var BuyerRequestedAmount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
     protected $buyerRequestedAmount;
 
@@ -25,6 +30,7 @@ class Offer extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var SellerOfferedAmount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
     protected $sellerOfferedAmount;
 
@@ -32,6 +38,7 @@ class Offer extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $offerType;
 
@@ -39,6 +46,7 @@ class Offer extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var History[]|null
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_offer_history"}, nullable=true)
      */
     protected $history;
 

@@ -7,15 +7,20 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\IncorrectTransactionAmount\CorrectTransactionAmount;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_incorrect_transaction_amount")
+ */
 class IncorrectTransactionAmount extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var CorrectTransactionAmount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
     protected $correctTransactionAmount;
 
@@ -23,6 +28,7 @@ class IncorrectTransactionAmount extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $correctTransactionTime;
 

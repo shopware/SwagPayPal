@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Common;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_common_amount")
+ */
 abstract class Amount extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $total;
 
@@ -22,6 +27,7 @@ abstract class Amount extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $currency;
 
@@ -29,6 +35,7 @@ abstract class Amount extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Details
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_details")
      */
     protected $details;
 

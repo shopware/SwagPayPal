@@ -7,9 +7,11 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
+ * @OA\Schema(schema="swag_paypal_v1_plan_frequency")
  * @codeCoverageIgnore
  * @experimental
  *
@@ -22,6 +24,7 @@ class Frequency extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $intervalUnit;
 
@@ -29,6 +32,7 @@ class Frequency extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var int
+     * @OA\Property(type="integer")
      */
     protected $intervalCount;
 

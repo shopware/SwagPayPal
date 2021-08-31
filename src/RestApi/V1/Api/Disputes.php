@@ -7,16 +7,21 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Link;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes")
+ */
 class Disputes extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Item[]|null
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_item"}, nullable=true)
      */
     protected $items;
 
@@ -24,6 +29,7 @@ class Disputes extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Link[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected $links;
 

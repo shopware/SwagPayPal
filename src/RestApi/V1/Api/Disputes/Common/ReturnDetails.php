@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Common;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_common_return_details")
+ */
 abstract class ReturnDetails extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $returnTime;
 
@@ -22,6 +27,7 @@ abstract class ReturnDetails extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $mode;
 
@@ -29,6 +35,7 @@ abstract class ReturnDetails extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var bool
+     * @OA\Property(type="boolean")
      */
     protected $receipt;
 
@@ -36,6 +43,7 @@ abstract class ReturnDetails extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $returnConfirmationNumber;
 
@@ -43,6 +51,7 @@ abstract class ReturnDetails extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var bool
+     * @OA\Property(type="boolean")
      */
     protected $returned;
 

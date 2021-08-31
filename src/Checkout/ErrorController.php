@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Checkout;
 
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Annotation\Since;
 use Swag\PayPal\Checkout\SalesChannel\AbstractErrorRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,6 +30,7 @@ class ErrorController extends AbstractController
     }
 
     /**
+     * @Since("1.7.0")
      * @Route(
      *     "/paypal/add-error",
      *     name="payment.paypal.add_error",

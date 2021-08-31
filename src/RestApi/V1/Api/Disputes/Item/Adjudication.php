@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_adjudication")
+ */
 class Adjudication extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $type;
 
@@ -22,6 +27,7 @@ class Adjudication extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $adjudicationTime;
 
@@ -29,6 +35,7 @@ class Adjudication extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $reason;
 
@@ -36,6 +43,7 @@ class Adjudication extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $disputeLifeCycleStage;
 

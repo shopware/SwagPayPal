@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Common\Transaction;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_disputed_transaction")
+ */
 class DisputedTransaction extends Transaction
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var bool
+     * @OA\Property(type="boolean")
      */
     protected $sellerProtectionEligible;
 

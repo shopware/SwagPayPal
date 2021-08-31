@@ -12,6 +12,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
+use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\ContextTokenResponse;
@@ -64,6 +65,7 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
     }
 
     /**
+     * @Since("2.0.0")
      * @OA\Post(
      *     path="/store-api/paypal/express/prepare-checkout",
      *     description="Loggs in a guest customer, with the data of a paypal order",

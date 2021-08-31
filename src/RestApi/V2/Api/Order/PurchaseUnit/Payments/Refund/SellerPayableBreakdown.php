@@ -7,18 +7,23 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\GrossAmount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\NetAmount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\PaypalFee;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\TotalRefundedAmount;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_order_refund_seller_paypable_breakdown")
+ */
 class SellerPayableBreakdown extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var GrossAmount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
     protected $grossAmount;
 
@@ -26,6 +31,7 @@ class SellerPayableBreakdown extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var PaypalFee
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
     protected $paypalFee;
 
@@ -33,6 +39,7 @@ class SellerPayableBreakdown extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var NetAmount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
     protected $netAmount;
 
@@ -40,6 +47,7 @@ class SellerPayableBreakdown extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var TotalRefundedAmount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
     protected $totalRefundedAmount;
 

@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\RestApi\V1\Api;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Refund\Amount;
 use Swag\PayPal\RestApi\V1\Api\Refund\Link;
@@ -14,12 +15,16 @@ use Swag\PayPal\RestApi\V1\Api\Refund\RefundFromReceivedAmount;
 use Swag\PayPal\RestApi\V1\Api\Refund\RefundFromTransactionFee;
 use Swag\PayPal\RestApi\V1\Api\Refund\TotalRefundedAmount;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_refund")
+ */
 class Refund extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Amount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
      */
     protected $amount;
 
@@ -27,6 +32,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $invoiceNumber;
 
@@ -34,6 +40,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $description;
 
@@ -41,6 +48,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $reason;
 
@@ -48,6 +56,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $id;
 
@@ -55,6 +64,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $createTime;
 
@@ -62,6 +72,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $updateTime;
 
@@ -69,6 +80,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $state;
 
@@ -76,6 +88,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var RefundFromTransactionFee
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
     protected $refundFromTransactionFee;
 
@@ -83,6 +96,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var TotalRefundedAmount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
     protected $totalRefundedAmount;
 
@@ -90,6 +104,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var RefundFromReceivedAmount
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
     protected $refundFromReceivedAmount;
 
@@ -97,6 +112,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $saleId;
 
@@ -104,6 +120,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $captureId;
 
@@ -111,6 +128,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $parentPayment;
 
@@ -118,6 +136,7 @@ class Refund extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var Link[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected $links;
 

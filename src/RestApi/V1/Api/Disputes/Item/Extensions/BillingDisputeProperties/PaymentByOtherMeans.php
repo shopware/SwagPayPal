@@ -7,14 +7,19 @@
 
 namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties;
 
+use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_payment_by_other_means")
+ */
 class PaymentByOtherMeans extends PayPalApiStruct
 {
     /**
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var bool
+     * @OA\Property(type="boolean")
      */
     protected $chargeDifferentFromOriginal;
 
@@ -22,6 +27,7 @@ class PaymentByOtherMeans extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var bool
+     * @OA\Property(type="boolean")
      */
     protected $receivedDuplicate;
 
@@ -29,6 +35,7 @@ class PaymentByOtherMeans extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $paymentMethod;
 
@@ -36,6 +43,7 @@ class PaymentByOtherMeans extends PayPalApiStruct
      * @deprecated tag:v4.0.0 - will be strongly typed
      *
      * @var string
+     * @OA\Property(type="string")
      */
     protected $paymentInstrumentSuffix;
 
