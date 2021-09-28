@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-252 - Fehlerbehebung von Webhooks verbessert
+- PPI-352 - Behebt ein Problem mit Zettle Webhooks bei POS-Verkäufen
 
 # 3.5.0
 - PPI-5 - Setzen von PayPal als Standardzahlungsart im Ersteinrichtungs-Assistent implementiert

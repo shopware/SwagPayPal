@@ -47,11 +47,12 @@ class OpenApiTest extends TestCase
         $reader = new AnnotationReader();
 
         foreach ($finder as $file) {
-            if (!$file->getRealPath()) {
+            $path = $file->getRealPath();
+            if (!$path) {
                 continue;
             }
 
-            $path = \str_replace($swagPayPalPath, '', $file->getRealPath());
+            $path = \str_replace($swagPayPalPath, '', $path);
             $path = \str_replace('/', '\\', $path);
             $path = \str_replace('.php', '', $path);
 

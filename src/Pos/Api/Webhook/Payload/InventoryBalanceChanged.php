@@ -8,22 +8,21 @@
 namespace Swag\PayPal\Pos\Api\Webhook\Payload;
 
 use Swag\PayPal\Pos\Api\Webhook\Payload\InventoryBalanceChanged\Balance;
+use Swag\PayPal\Pos\Api\Webhook\Payload\InventoryBalanceChanged\Updated;
 
 class InventoryBalanceChanged extends AbstractPayload
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Balance[]
      */
-    protected $balanceBefore;
+    protected array $balanceBefore;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Balance[]
      */
-    protected $balanceAfter;
+    protected array $balanceAfter;
+
+    protected Updated $updated;
 
     /**
      * @return Balance[]
@@ -55,5 +54,15 @@ class InventoryBalanceChanged extends AbstractPayload
     public function setBalanceAfter(array $balanceAfter): void
     {
         $this->balanceAfter = $balanceAfter;
+    }
+
+    public function getUpdated(): Updated
+    {
+        return $this->updated;
+    }
+
+    public function setUpdated(Updated $updated): void
+    {
+        $this->updated = $updated;
     }
 }

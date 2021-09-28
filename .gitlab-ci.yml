@@ -4,7 +4,8 @@ variables:
     MYSQL_ROOT_PASSWORD: app
     WEB_DOCUMENT_ROOT: $CI_PROJECT_DIR/development/public
     DEV_IMAGE: shopware/development:7.4-composer-2
-    CORE_BRANCH: "trunk"
+    PLATFORM_BRANCH: "trunk"
+    DEVELOPMENT_BRANCH: "trunk"
     CMS_EXTENSION_BRANCH: "master"
     RUN_IN_MR: "true"
     MYSQL_IMAGE: mysql:5.7
@@ -18,9 +19,9 @@ default:
     image: $DEV_IMAGE
     before_script:
         - zip -rq plugin.zip .
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/development.git --branch $DEVELOPMENT_BRANCH
         - rm -rf development/platform
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $CORE_BRANCH
+        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git development/platform --branch $PLATFORM_BRANCH
         - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git development/custom/plugins/SwagCmsExtensions --branch $CMS_EXTENSION_BRANCH
         - unzip -q plugin.zip -d development/custom/plugins/SwagPayPal
         - cd development
@@ -76,7 +77,7 @@ Static validation:
         - cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
         - if [[ -n $CI_COMMIT_BRANCH ]]; then bin/check-todos.sh $CI_COMMIT_BRANCH; else bin/check-todos.sh $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME; fi
         - >
-            if [[ $CORE_BRANCH = "trunk" ]]; then
+            if [[ $PLATFORM_BRANCH = "trunk" ]]; then
                 php ../../../dev-ops/analyze/vendor/bin/ecs check --config=../../../vendor/shopware/platform/easy-coding-standard.php src tests
                 php ../../../dev-ops/analyze/vendor/bin/ecs check --config=easy-coding-standard.php
             fi
@@ -85,7 +86,7 @@ Static validation:
         - php ../../../dev-ops/analyze/vendor/bin/phpstan analyze --configuration phpstan.neon src tests
         - php ../../../dev-ops/analyze/vendor/bin/psalm --config=psalm.xml --threads=$(nproc) --diff --show-info=false
         - >
-            if [[ $CORE_BRANCH = "trunk" ]]; then
+            if [[ $PLATFORM_BRANCH = "trunk" ]]; then
                 cd $CI_PROJECT_DIR/development
                 ./psh.phar administration:init --APP_ENV="dev"
                 cd $CI_PROJECT_DIR/development/custom/plugins/SwagPayPal
@@ -99,13 +100,11 @@ Static validation:
         # - php bin/console dal:validate
     parallel:
         matrix:
-            -   DEV_IMAGE:
-                - shopware/development:7.4-composer-2
-                - shopware/development:8.0-composer-2
-            -   CORE_BRANCH:
-                - 6.4.0.0
-                - 6.4.4.0
-                - trunk
+            -   PLATFORM_BRANCH: "6.4.0.0"
+                DEVELOPMENT_BRANCH: "6.4.1.2"
+                DEV_IMAGE: ["shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2"]
+            -   PLATFORM_BRANCH: ["6.4.5.0", "trunk"]
+                DEV_IMAGE: ["shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2"]
 
 PHPUnit:
     stage: Testing
@@ -152,34 +151,37 @@ PHPUnit:
         matrix:
             -   MYSQL_IMAGE: mariadb:10.4
                 DEV_IMAGE: shopware/development:8.0-composer-2
-                CORE_BRANCH: [ "6.4.4.0", "trunk" ]
+                PLATFORM_BRANCH: [ "6.4.5.0", "trunk" ]
             -   MYSQL_IMAGE: mariadb:10.4
                 DEV_IMAGE: shopware/development:8.0-composer-2
-                CORE_BRANCH: "6.4.0.0"
+                PLATFORM_BRANCH: "6.4.0.0"
+                DEVELOPMENT_BRANCH: "6.4.0.0"
                 CMS_EXTENSION_BRANCH: "2.1-sw6.4.0.0"
             -   MYSQL_IMAGE:
                     - mysql:5.7
                     - mariadb:10.3
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                CORE_BRANCH: [ "6.4.4.0", "trunk" ]
+                PLATFORM_BRANCH: [ "6.4.5.0", "trunk" ]
                 RUN_IN_MR: "false"
             -   MYSQL_IMAGE:
                     - mysql:5.7
                     - mariadb:10.3
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                CORE_BRANCH: "6.4.0.0"
+                PLATFORM_BRANCH: "6.4.0.0"
+                DEVELOPMENT_BRANCH: "6.4.0.0"
                 CMS_EXTENSION_BRANCH: "2.1-sw6.4.0.0"
                 RUN_IN_MR: "false"
             -   MYSQL_IMAGE:
                     - mysql:8.0.19
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                CORE_BRANCH: [ "6.4.4.0", "trunk" ]
+                PLATFORM_BRANCH: [ "6.4.5.0", "trunk" ]
                 MYSQL_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
                 RUN_IN_MR: "false"
             -   MYSQL_IMAGE:
                     - mysql:8.0.19
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                CORE_BRANCH: "6.4.0.0"
+                PLATFORM_BRANCH: "6.4.0.0"
+                DEVELOPMENT_BRANCH: "6.4.0.0"
                 CMS_EXTENSION_BRANCH: "2.1-sw6.4.0.0"
                 MYSQL_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
                 RUN_IN_MR: "false"
