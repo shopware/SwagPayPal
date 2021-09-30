@@ -25,76 +25,51 @@ class Webhook extends PayPalApiStruct
     public const RESOURCE_TYPE_REFUND = 'refund';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $id;
+    protected string $id;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $createTime;
+    protected string $createTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $resourceType;
+    protected string $resourceType;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $eventType;
+    protected string $eventType;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $summary;
+    protected string $summary;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Authorization|Capture|Refund|null
      * @OA\Property(oneOf={}, nullable=true)
      */
     protected $resource;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Link[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
-    protected $links;
+    protected array $links;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $eventVersion;
+    protected string $eventVersion;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $resourceVersion;
+    protected string $resourceVersion;
 
     /**
      * @return static

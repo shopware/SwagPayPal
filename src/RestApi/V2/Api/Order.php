@@ -20,76 +20,51 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 class Order extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $createTime;
+    protected string $createTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $updateTime;
+    protected string $updateTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $id;
+    protected string $id;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $intent;
+    protected string $intent;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Payer
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payer")
      */
-    protected $payer;
+    protected Payer $payer;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var PurchaseUnit[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit"})
      */
-    protected $purchaseUnits;
+    protected array $purchaseUnits;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ApplicationContext
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_application_context")
      */
-    protected $applicationContext;
+    protected ApplicationContext $applicationContext;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $status;
+    protected string $status;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Link[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
-    protected $links;
+    protected array $links;
 
     public function getCreateTime(): string
     {

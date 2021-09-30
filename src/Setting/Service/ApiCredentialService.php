@@ -32,10 +32,10 @@ class ApiCredentialService implements ApiCredentialServiceInterface
         $credentials = new OAuthCredentials();
         $credentials->setRestId($clientId);
         $credentials->setRestSecret($clientSecret);
-        $url = $sandboxActive ? BaseURL::SANDBOX : BaseURL::LIVE;
+        $credentials->setUrl($sandboxActive ? BaseURL::SANDBOX : BaseURL::LIVE);
 
         try {
-            return $this->credentialsResource->testApiCredentials($credentials, $url);
+            return $this->credentialsResource->testApiCredentials($credentials);
         } catch (PayPalApiException $payPalApiException) {
             if ($payPalApiException->getStatusCode() === Response::HTTP_UNAUTHORIZED) {
                 throw new PayPalInvalidApiCredentialsException();

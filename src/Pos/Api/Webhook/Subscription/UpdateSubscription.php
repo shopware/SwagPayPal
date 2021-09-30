@@ -12,25 +12,13 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 class UpdateSubscription extends PosStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var string[]
      */
-    protected $eventNames;
+    protected array $eventNames;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $destination;
+    protected string $destination;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $contactEmail;
+    protected string $contactEmail;
 
     /**
      * @return string[]

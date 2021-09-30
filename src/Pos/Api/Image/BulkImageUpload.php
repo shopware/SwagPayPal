@@ -13,11 +13,9 @@ use Swag\PayPal\Pos\Api\Image\BulkImageUpload\ImageUpload;
 class BulkImageUpload extends PosStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var ImageUpload[]
      */
-    protected $imageUploads = [];
+    protected array $imageUploads = [];
 
     /**
      * @return ImageUpload[]

@@ -17,13 +17,11 @@ use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromCartEvent;
-use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -34,16 +32,17 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
 
     private LoggerInterface $logger;
 
+    private PriceFormatter $priceFormatter;
+
     public function __construct(
-        SettingsServiceInterface $settingsService,
         PriceFormatter $priceFormatter,
-        AmountProvider $amountProvider,
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger
     ) {
-        parent::__construct($settingsService, $priceFormatter, $amountProvider, $systemConfigService, $purchaseUnitProvider);
+        parent::__construct($systemConfigService, $purchaseUnitProvider);
+        $this->priceFormatter = $priceFormatter;
         $this->eventDispatcher = $eventDispatcher;
         $this->logger = $logger;
     }
@@ -56,7 +55,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
     ): Order {
         $order = new Order();
 
-        $intent = $this->getIntent(null, $salesChannelContext->getSalesChannelId());
+        $intent = $this->getIntent($salesChannelContext->getSalesChannelId());
         if ($customer !== null) {
             $payer = $this->createPayer($customer);
             $order->setPayer($payer);
@@ -80,16 +79,6 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         $cartTransaction = $cart->getTransactions()->first();
         if ($cartTransaction === null) {
             throw new InvalidTransactionException('');
-        }
-
-        if ($this->systemConfigService === null) {
-            // this can not occur, since this child's constructor is not nullable
-            throw new \RuntimeException('No system settings available');
-        }
-
-        if ($this->purchaseUnitProvider === null) {
-            // this can not occur, since this child's constructor is not nullable
-            throw new \RuntimeException('No purchase unit provider available');
         }
 
         $submitCart = ($isExpressCheckoutProcess && $this->systemConfigService->getBool(Settings::ECS_SUBMIT_CART, $salesChannelContext->getSalesChannelId()))

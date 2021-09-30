@@ -13,11 +13,11 @@ use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 
 class TokenClientMock extends TokenClient
 {
-    public function __construct(OAuthCredentials $credentials, string $url, LoggerInterface $logger)
+    public function __construct(OAuthCredentials $credentials, LoggerInterface $logger)
     {
-        parent::__construct($credentials, $url, $logger);
+        parent::__construct($credentials, $logger);
         $this->client = new GuzzleClientMock([
-            'base_uri' => $url,
+            'base_uri' => $credentials->getUrl(),
             'headers' => [
                 'Authorization' => (string) $credentials,
             ],

@@ -20,68 +20,44 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 class Transaction extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Amount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
      */
-    protected $amount;
+    protected Amount $amount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Payee
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_payee")
      */
-    protected $payee;
+    protected Payee $payee;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ItemList|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_item_list", nullable=true)
      */
-    protected $itemList;
+    protected ?ItemList $itemList = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var RelatedResource[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_related_resource"})
      */
-    protected $relatedResources;
+    protected array $relatedResources;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $invoiceNumber;
+    protected ?string $invoiceNumber = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $softDescriptor;
+    protected string $softDescriptor;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $description;
+    protected string $description;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $custom;
+    protected string $custom;
 
     public function getAmount(): Amount
     {

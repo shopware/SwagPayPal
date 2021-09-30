@@ -16,12 +16,9 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class ExecutePayerInfo extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $payerId;
+    protected string $payerId;
 
     public function getPayerId(): string
     {

@@ -15,20 +15,14 @@ use OpenApi\Annotations as OA;
 class OAuthCredentials
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $restId;
+    protected string $restId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $restSecret;
+    protected string $restSecret;
 
     /**
      * @OA\Property(type="string")

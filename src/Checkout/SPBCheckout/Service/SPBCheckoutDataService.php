@@ -11,7 +11,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
@@ -45,17 +44,6 @@ class SPBCheckoutDataService implements SPBCheckoutDataServiceInterface
         $this->localeCodeProvider = $localeCodeProvider;
         $this->router = $router;
         $this->systemConfigService = $systemConfigService;
-    }
-
-    /**
-     * @deprecated tag:v4.0.0 - will be removed, use buildCheckoutData instead
-     */
-    public function getCheckoutData(
-        SalesChannelContext $context,
-        SwagPayPalSettingStruct $settings,
-        ?string $orderId = null
-    ): SPBCheckoutButtonData {
-        return $this->buildCheckoutData($context, $orderId);
     }
 
     public function buildCheckoutData(

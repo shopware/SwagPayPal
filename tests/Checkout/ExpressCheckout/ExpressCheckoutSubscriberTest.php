@@ -13,9 +13,6 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
-use Shopware\Core\Content\Cms\CmsPageCollection;
-use Shopware\Core\Content\Cms\CmsPageEntity;
-use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Defaults;
@@ -313,49 +310,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
         static::assertNull($actualExpressCheckoutButtonData);
     }
 
-    public function testAddExpressCheckoutDataToCmsPageCmsPageLoadedEvent(): void
-    {
-        $event = $this->createCmsPageLoadedEvent();
-
-        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToCmsPage($event);
-
-        $cmsPage = $event->getResult()->first();
-        static::assertNotNull($cmsPage);
-        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $cmsPage->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
-        $this->assertExpressCheckoutButtonData(
-            $this->getExpectedExpressCheckoutButtonDataForAddProductEvents(),
-            $actualExpressCheckoutButtonData
-        );
-    }
-
-    public function testAddExpressCheckoutDataToCmsPageCmsWithInactivePaymentMethod(): void
-    {
-        $event = $this->createCmsPageLoadedEvent(true, false);
-
-        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToCmsPage($event);
-
-        $cmsPage = $event->getResult()->first();
-        static::assertNotNull($cmsPage);
-        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $cmsPage->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
-        static::assertNull($actualExpressCheckoutButtonData);
-    }
-
-    public function testAddExpressCheckoutDataToCmsPageCmsWithoutPayPalInSalesChannel(): void
-    {
-        $event = $this->createCmsPageLoadedEvent();
-        $event->getSalesChannelContext()->getSalesChannel()->setId(Uuid::randomHex());
-
-        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToCmsPage($event);
-
-        $cmsPage = $event->getResult()->first();
-        static::assertNotNull($cmsPage);
-        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $cmsPage->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
-        static::assertNull($actualExpressCheckoutButtonData);
-    }
-
     public function testAddExpressCheckoutDataToBuyBoxSwitchEvent(): void
     {
         if (!\class_exists(SwitchBuyBoxVariantEvent::class)) {
@@ -403,16 +357,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
         /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
         $actualExpressCheckoutButtonData = $event->getProduct()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
         static::assertNull($actualExpressCheckoutButtonData);
-    }
-
-    public function testAddExpressCheckoutDataToCmsPageCmsWithoutCmsPage(): void
-    {
-        $event = $this->createCmsPageLoadedEvent(false);
-
-        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToCmsPage($event);
-
-        $cmsPage = $event->getResult()->first();
-        static::assertNull($cmsPage);
     }
 
     public function testAddExpressCheckoutDataToPageletQuickviewPageletLoadedEvent(): void
@@ -663,24 +607,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
         $salesChannelContext->getSalesChannel()->setPaymentMethods($paymentMethods);
 
         return $salesChannelContext;
-    }
-
-    private function createCmsPageLoadedEvent(bool $hasCmsPage = true, bool $paymentMethodActive = true): CmsPageLoadedEvent
-    {
-        $cmsPages = [];
-        if ($hasCmsPage) {
-            $cmsPage = new CmsPageEntity();
-            $cmsPage->setId('cms-page-test-id');
-            $cmsPages[] = $cmsPage;
-        }
-
-        $result = new CmsPageCollection($cmsPages);
-
-        return new CmsPageLoadedEvent(
-            new Request(),
-            $result,
-            $this->createSalesChannelContext(true, $paymentMethodActive)
-        );
     }
 
     private function createBuyBoxSwitchEvent(bool $paymentMethodActive = true): SwitchBuyBoxVariantEvent

@@ -9,7 +9,6 @@ namespace Swag\PayPal\Checkout\ExpressCheckout;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
-use Shopware\Core\Content\Cms\CmsPageCollection;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Framework\Event\DataMappingEvent;
 use Shopware\Core\Framework\Validation\BuildValidationEvent;
@@ -108,33 +107,6 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             $expressCheckoutButtonData
         );
         $this->logger->debug('Added data to page {page}', ['page' => \get_class($event)]);
-    }
-
-    /**
-     * @deprecated tag:v4.0.0 - will be removed. Use \Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute instead
-     */
-    public function addExpressCheckoutDataToCmsPage(CmsPageLoadedEvent $event): void
-    {
-        $salesChannelContext = $event->getSalesChannelContext();
-        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, \get_class($event), true);
-
-        if ($expressCheckoutButtonData === null) {
-            return;
-        }
-
-        /** @var CmsPageCollection $pages */
-        $pages = $event->getResult();
-
-        $cmsPage = $pages->first();
-
-        if ($cmsPage === null) {
-            return;
-        }
-
-        $cmsPage->addExtension(
-            self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
-            $expressCheckoutButtonData
-        );
     }
 
     public function addExpressCheckoutDataToPagelet(PageletLoadedEvent $event): void

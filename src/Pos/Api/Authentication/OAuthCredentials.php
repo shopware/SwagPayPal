@@ -9,12 +9,7 @@ namespace Swag\PayPal\Pos\Api\Authentication;
 
 class OAuthCredentials
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $apiKey;
+    protected string $apiKey;
 
     public function getApiKey(): string
     {

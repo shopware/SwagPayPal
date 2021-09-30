@@ -11,19 +11,9 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class Price extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
-     */
-    protected $amount;
+    protected int $amount;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $currencyId;
+    protected string $currencyId;
 
     public function getAmount(): int
     {

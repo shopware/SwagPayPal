@@ -21,20 +21,14 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class Name extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $givenName;
+    protected string $givenName;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $surname;
+    protected string $surname;
 
     public function getGivenName(): string
     {

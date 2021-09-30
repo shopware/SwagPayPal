@@ -15,20 +15,14 @@ use OpenApi\Annotations as OA;
 class Refund extends RelatedResource
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $saleId;
+    protected string $saleId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $captureId;
+    protected string $captureId;
 
     public function getSaleId(): string
     {

@@ -17,60 +17,39 @@ use Swag\PayPal\RestApi\V1\Api\Common\Money;
 abstract class Item extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $itemId;
+    protected string $itemId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $itemDescription;
+    protected string $itemDescription;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $itemQuantity;
+    protected string $itemQuantity;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $partnerTransactionId;
+    protected string $partnerTransactionId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $reason;
+    protected string $reason;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Money
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $disputeAmount;
+    protected Money $disputeAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $notes;
+    protected string $notes;
 
     public function getItemId(): string
     {

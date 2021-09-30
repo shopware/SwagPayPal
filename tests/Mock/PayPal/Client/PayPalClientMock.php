@@ -20,7 +20,7 @@ class PayPalClientMock extends PayPalClient
         OAuthCredentials $credentials,
         LoggerInterface $logger
     ) {
-        parent::__construct($tokenResource, null, $logger, PartnerAttributionId::PAYPAL_CLASSIC, $credentials);
+        parent::__construct($tokenResource, $logger, PartnerAttributionId::PAYPAL_CLASSIC, $credentials);
         $this->client = new GuzzleClientMock([]);
     }
 

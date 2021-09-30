@@ -53,14 +53,6 @@ Application.addServiceProvider(
     (container) => new SwagPaypalPaymentMethodService(initContainer.httpClient, container.loginService),
 );
 
-/**
- * @deprecated tag:v4.0.0 - will be removed, use SwagPaypalPaymentMethodService instead
- */
-Application.addServiceProvider(
-    'SwagPaypalPaymentMethodServiceService',
-    (container) => new SwagPaypalPaymentMethodService(initContainer.httpClient, container.loginService),
-);
-
 Application.addServiceProvider(
     'SwagPayPalDisputeApiService',
     (container) => new SwagPayPalDisputeApiService(initContainer.httpClient, container.loginService),

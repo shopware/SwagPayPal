@@ -16,30 +16,18 @@ class Header extends PosStruct
 {
     /**
      * Key ID
-     *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      */
-    protected $kid;
+    protected string $kid;
 
     /**
      * Type
-     *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      */
-    protected $typ;
+    protected string $typ;
 
     /**
      * Algorithm
-     *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      */
-    protected $alg;
+    protected string $alg;
 
     public function getKid(): string
     {

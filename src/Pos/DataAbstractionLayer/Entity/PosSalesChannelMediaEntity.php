@@ -12,40 +12,15 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 
 class PosSalesChannelMediaEntity extends Entity
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $salesChannelId;
+    protected string $salesChannelId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $mediaId;
+    protected string $mediaId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var MediaEntity|null
-     */
-    protected $media = null;
+    protected ?MediaEntity $media = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $lookupKey;
+    protected ?string $lookupKey = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $url;
+    protected ?string $url = null;
 
     public function getSalesChannelId(): string
     {

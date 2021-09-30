@@ -33,12 +33,12 @@ class TokenResource implements TokenResourceInterface
         $this->tokenValidator = $tokenValidator;
     }
 
-    public function getToken(OAuthCredentials $credentials, string $url): Token
+    public function getToken(OAuthCredentials $credentials): Token
     {
         $cacheId = \md5((string) $credentials);
         $token = $this->getTokenFromCache($cacheId);
         if ($token === null || !$this->tokenValidator->isTokenValid($token)) {
-            $tokenClient = $this->tokenClientFactory->createTokenClient($credentials, $url);
+            $tokenClient = $this->tokenClientFactory->createTokenClient($credentials);
 
             $token = new Token();
             $token->assign($tokenClient->getToken());

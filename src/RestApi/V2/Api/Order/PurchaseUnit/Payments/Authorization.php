@@ -16,20 +16,14 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization\SellerP
 class Authorization extends Payment
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var SellerProtection
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_authorization_seller_protection")
      */
-    protected $sellerProtection;
+    protected SellerProtection $sellerProtection;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $expirationTime;
+    protected string $expirationTime;
 
     public function getSellerProtection(): SellerProtection
     {

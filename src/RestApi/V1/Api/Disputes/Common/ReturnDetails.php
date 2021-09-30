@@ -16,44 +16,29 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 abstract class ReturnDetails extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $returnTime;
+    protected string $returnTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $mode;
+    protected string $mode;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $receipt;
+    protected bool $receipt;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $returnConfirmationNumber;
+    protected string $returnConfirmationNumber;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $returned;
+    protected bool $returned;
 
     public function getReturnTime(): string
     {

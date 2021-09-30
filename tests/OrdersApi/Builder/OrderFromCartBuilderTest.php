@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
@@ -25,7 +24,6 @@ use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
-use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -207,14 +205,11 @@ class OrderFromCartBuilderTest extends TestCase
     private function createOrderFromCartBuilder(array $settings = []): OrderFromCartBuilder
     {
         $systemConfig = $this->createDefaultSystemConfig($settings);
-        $settingsService = new SettingsService($systemConfig, new NullLogger());
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
 
         return new OrderFromCartBuilder(
-            $settingsService,
             $priceFormatter,
-            $amountProvider,
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $systemConfig),
             new EventDispatcherMock(),

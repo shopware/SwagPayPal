@@ -16,28 +16,19 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class CommunicationDetails extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $email;
+    protected string $email;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $note;
+    protected string $note;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $timePosted;
+    protected string $timePosted;
 
     public function getEmail(): string
     {

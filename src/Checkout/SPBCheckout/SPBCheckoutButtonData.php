@@ -14,103 +14,36 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class SPBCheckoutButtonData extends Struct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $clientId;
+    protected string $clientId;
+
+    protected string $languageIso;
+
+    protected string $currency;
+
+    protected string $intent;
+
+    protected string $buttonColor;
+
+    protected string $buttonShape;
+
+    protected string $paymentMethodId;
+
+    protected bool $useAlternativePaymentMethods;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $languageIso;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $currency;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $intent;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $buttonColor;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $buttonShape;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $paymentMethodId;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
-     */
-    protected $useAlternativePaymentMethods;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var string[]
      */
-    protected $disabledAlternativePaymentMethods;
+    protected array $disabledAlternativePaymentMethods;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $createOrderUrl;
+    protected string $createOrderUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $checkoutConfirmUrl;
+    protected string $checkoutConfirmUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $addErrorUrl;
+    protected string $addErrorUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $orderId;
+    protected ?string $orderId = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $accountOrderEditUrl;
+    protected ?string $accountOrderEditUrl = null;
 
     public function getClientId(): string
     {

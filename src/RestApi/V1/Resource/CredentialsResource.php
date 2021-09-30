@@ -44,9 +44,9 @@ class CredentialsResource
         return $credentialsClient->getCredentials($accessToken, $partnerId);
     }
 
-    public function testApiCredentials(OAuthCredentials $credentials, string $url): bool
+    public function testApiCredentials(OAuthCredentials $credentials): bool
     {
-        $tokenClient = $this->tokenClientFactory->createTokenClient($credentials, $url);
+        $tokenClient = $this->tokenClientFactory->createTokenClient($credentials);
 
         $token = new Token();
         $token->assign($tokenClient->getToken());

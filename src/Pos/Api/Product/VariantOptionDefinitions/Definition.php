@@ -12,19 +12,12 @@ use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions\Definition\Property;
 
 class Definition extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $name;
+    protected string $name;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Property[]
      */
-    protected $properties = [];
+    protected array $properties = [];
 
     public function setName(string $name): void
     {

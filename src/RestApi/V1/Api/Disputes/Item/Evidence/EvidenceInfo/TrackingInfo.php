@@ -16,36 +16,24 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class TrackingInfo extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $carrierName;
+    protected string $carrierName;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $carrierNameOther;
+    protected string $carrierNameOther;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $trackingUrl;
+    protected string $trackingUrl;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $trackingNumber;
+    protected string $trackingNumber;
 
     public function getCarrierName(): string
     {

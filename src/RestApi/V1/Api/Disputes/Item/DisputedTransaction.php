@@ -16,12 +16,9 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Common\Transaction;
 class DisputedTransaction extends Transaction
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $sellerProtectionEligible;
+    protected bool $sellerProtectionEligible;
 
     public function isSellerProtectionEligible(): bool
     {

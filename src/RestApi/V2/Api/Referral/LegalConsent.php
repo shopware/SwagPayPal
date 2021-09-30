@@ -18,20 +18,14 @@ class LegalConsent extends PayPalApiStruct
     public const CONSENT_TYPE_SHARE_DATA = 'SHARE_DATA_CONSENT';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Referral\LegalConsent::CONSENT_TYPE_SHARE_DATA)
      */
-    protected $type = self::CONSENT_TYPE_SHARE_DATA;
+    protected string $type = self::CONSENT_TYPE_SHARE_DATA;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $granted = true;
+    protected bool $granted = true;
 
     public function getType(): string
     {

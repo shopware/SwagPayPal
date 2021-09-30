@@ -17,83 +17,41 @@ class Payload extends PosStruct
 {
     /**
      * Issuer
-     *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      */
-    protected $iss;
+    protected string $iss;
 
     /**
      * Audience
-     *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      */
-    protected $aud;
+    protected string $aud;
 
     /**
      * Expiration time
-     *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      */
-    protected $exp;
+    protected string $exp;
 
     /**
      * Subject
-     *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      */
-    protected $sub;
+    protected string $sub;
 
     /**
      * Issued At
-     *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      */
-    protected $iat;
+    protected string $iat;
+
+    protected bool $renewed;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
-     */
-    protected $renewed;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var string[]
      */
-    protected $scope;
+    protected array $scope;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var User
-     */
-    protected $user;
+    protected User $user;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $type;
+    protected string $type;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $clientId;
+    protected string $clientId;
 
     public function getIss(): string
     {

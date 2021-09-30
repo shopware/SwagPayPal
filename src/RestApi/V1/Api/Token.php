@@ -19,70 +19,49 @@ final class Token extends PayPalApiStruct
      * Scopes expressed in the form of resource URL endpoints. The value of the scope parameter
      * is expressed as a list of space-delimited, case-sensitive strings.
      *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    private $scope;
+    private string $scope;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    private $nonce;
+    private string $nonce;
 
     /**
      * The access token issued by PayPal. After the access token
      * expires (see $expiresIn), you must request a new access token.
      *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    private $accessToken;
+    private string $accessToken;
 
     /**
      * The type of the token issued as described in OAuth2.0 RFC6749,
      * Section 7.1. Value is case insensitive.
      *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    private $tokenType;
+    private string $tokenType;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    private $appId;
+    private string $appId;
 
     /**
      * The lifetime of the access token, in seconds.
      *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
      * @OA\Property(type="integer")
      */
-    private $expiresIn;
+    private int $expiresIn;
 
     /**
      * Calculated expiration date
      *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var \DateTime
      * @OA\Property(type="date")
      */
-    private $expireDateTime;
+    private \DateTime $expireDateTime;
 
     /**
      * @return static

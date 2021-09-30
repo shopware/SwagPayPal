@@ -16,20 +16,14 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class AgreedRefundDetails extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $merchantAgreedRefund;
+    protected bool $merchantAgreedRefund;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $merchantAgreedRefundTime;
+    protected string $merchantAgreedRefundTime;
 
     public function isMerchantAgreedRefund(): bool
     {

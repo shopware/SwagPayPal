@@ -19,44 +19,29 @@ use Swag\PayPal\RestApi\V2\Api\Order\Payer\Phone;
 class Payer extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Name
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_name")
      */
-    protected $name;
+    protected Name $name;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $emailAddress;
+    protected string $emailAddress;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $payerId;
+    protected string $payerId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Phone|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_phone", nullable=true)
      */
-    protected $phone;
+    protected ?Phone $phone = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Address
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_address")
      */
-    protected $address;
+    protected Address $address;
 
     public function getEmailAddress(): string
     {

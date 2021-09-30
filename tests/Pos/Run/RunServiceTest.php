@@ -126,7 +126,6 @@ class RunServiceTest extends TestCase
         static::assertInstanceOf(PosSalesChannelRunEntity::class, $run);
         static::assertNull($run->getFinishedAt());
         static::assertSame(PosSalesChannelRunDefinition::STATUS_IN_PROGRESS, $run->getStatus());
-        static::assertFalse($run->getAbortedByUser());
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('runId', $runId));
@@ -140,7 +139,6 @@ class RunServiceTest extends TestCase
         static::assertInstanceOf(PosSalesChannelRunEntity::class, $run);
         static::assertNotNull($run->getFinishedAt());
         static::assertSame(PosSalesChannelRunDefinition::STATUS_CANCELLED, $run->getStatus());
-        static::assertTrue($run->getAbortedByUser());
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('runId', $runId));

@@ -32,13 +32,6 @@ Component.register('swag-paypal-pos-wizard-finish', {
             this.setTitle();
         },
 
-        /**
-         * @deprecated tag:v4.0.0 will be removed
-         */
-        triggerCompleteSync() {
-            this.SwagPayPalPosApiService.startCompleteSync(this.salesChannel.id);
-        },
-
         setTitle() {
             this.$emit('frw-set-title', this.$tc('swag-paypal-pos.wizard.finish.modalTitle'));
         },

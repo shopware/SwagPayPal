@@ -28,44 +28,29 @@ class RelatedResource extends PayPalApiStruct
     public const CAPTURE = 'capture';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Sale|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_sale", nullable=true)
      */
-    protected $sale;
+    protected ?Sale $sale = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Authorization|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_authorization", nullable=true)
      */
-    protected $authorization;
+    protected ?Authorization $authorization = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Order|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_order", nullable=true)
      */
-    protected $order;
+    protected ?Order $order = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Refund|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_refund", nullable=true)
      */
-    protected $refund;
+    protected ?Refund $refund = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Capture|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_capture", nullable=true)
      */
-    protected $capture;
+    protected ?Capture $capture = null;
 
     public function getSale(): ?Sale
     {

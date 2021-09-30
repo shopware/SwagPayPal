@@ -18,44 +18,30 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo;
 class Evidence extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $evidenceType;
+    protected string $evidenceType;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var EvidenceInfo
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_evidence_info")
      */
-    protected $evidenceInfo;
+    protected EvidenceInfo $evidenceInfo;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Document[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_document"})
      */
-    protected $documents;
+    protected array $documents;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $notes;
+    protected string $notes;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $itemId;
+    protected string $itemId;
 
     public function getEvidenceType(): string
     {

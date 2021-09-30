@@ -20,36 +20,24 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableB
 class SellerPayableBreakdown extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var GrossAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $grossAmount;
+    protected GrossAmount $grossAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PaypalFee
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $paypalFee;
+    protected PaypalFee $paypalFee;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var NetAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $netAmount;
+    protected NetAmount $netAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var TotalRefundedAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $totalRefundedAmount;
+    protected TotalRefundedAmount $totalRefundedAmount;
 
     public function getGrossAmount(): GrossAmount
     {

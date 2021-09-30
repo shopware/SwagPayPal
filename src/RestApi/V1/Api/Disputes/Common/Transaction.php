@@ -17,92 +17,60 @@ use Swag\PayPal\RestApi\V1\Api\Common\Money;
 abstract class Transaction extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $buyerTransactionId;
+    protected string $buyerTransactionId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $sellerTransactionId;
+    protected string $sellerTransactionId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $referenceId;
+    protected string $referenceId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")*
      */
-    protected $createTime;
+    protected string $createTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $transactionStatus;
+    protected string $transactionStatus;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Money
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $grossAmount;
+    protected Money $grossAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $invoiceNumber;
+    protected string $invoiceNumber;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $custom;
+    protected string $custom;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Buyer
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_buyer")
      */
-    protected $buyer;
+    protected Buyer $buyer;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Seller
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_seller")
      */
-    protected $seller;
+    protected Seller $seller;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Item[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_item"})
      */
-    protected $items;
+    protected array $items;
 
     public function getBuyerTransactionId(): string
     {

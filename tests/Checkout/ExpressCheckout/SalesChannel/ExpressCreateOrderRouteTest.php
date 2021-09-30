@@ -15,7 +15,6 @@ use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
-use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
@@ -46,14 +45,11 @@ class ExpressCreateOrderRouteTest extends TestCase
             Settings::CLIENT_SECRET => 'testClientSecret',
         ]);
 
-        $settingsService = new SettingsService($systemConfig, new NullLogger());
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
 
         $orderFromCartBuilder = new OrderFromCartBuilder(
-            $settingsService,
             $priceFormatter,
-            $amountProvider,
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $systemConfig),
             new EventDispatcherMock(),

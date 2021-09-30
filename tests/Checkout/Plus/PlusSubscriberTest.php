@@ -38,7 +38,6 @@ use Swag\PayPal\Checkout\Plus\PlusSubscriber;
 use Swag\PayPal\Checkout\Plus\Service\PlusDataService;
 use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
-use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
@@ -435,7 +434,6 @@ class PlusSubscriberTest extends TestCase
             Settings::PLUS_CHECKOUT_ENABLED => $plusEnabled,
         ] : []);
 
-        $settingsService = new SettingsService($settings, new NullLogger());
         /** @var LocaleCodeProvider $localeCodeProvider */
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
         /** @var RouterInterface $router */
@@ -450,7 +448,6 @@ class PlusSubscriberTest extends TestCase
 
         $plusDataService = new PlusDataService(
             new CartPaymentBuilder(
-                $settingsService,
                 $localeCodeProvider,
                 $priceFormatter,
                 $eventDispatcher,
@@ -458,7 +455,6 @@ class PlusSubscriberTest extends TestCase
                 $settings
             ),
             new OrderPaymentBuilder(
-                $settingsService,
                 $localeCodeProvider,
                 $priceFormatter,
                 $eventDispatcher,

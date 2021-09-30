@@ -23,36 +23,24 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress;
 class Subscriber extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Name
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_name")
      */
-    protected $name;
+    protected Name $name;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $emailAddress;
+    protected string $emailAddress;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $payerId;
+    protected string $payerId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ShippingAddress|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_shipping_address", nullable=true)
      */
-    protected $shippingAddress;
+    protected ?ShippingAddress $shippingAddress = null;
 
     public function getName(): Name
     {

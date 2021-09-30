@@ -15,12 +15,9 @@ use OpenApi\Annotations as OA;
 class Order extends RelatedResource
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $reasonCode;
+    protected string $reasonCode;
 
     public function getReasonCode(): string
     {

@@ -27,68 +27,23 @@ class PosSalesChannelEntity extends Entity
         self::REPLACE_OFF,
     ];
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $salesChannelId;
+    protected string $salesChannelId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var SalesChannelEntity|null
-     */
-    protected $salesChannel;
+    protected ?SalesChannelEntity $salesChannel = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $productStreamId;
+    protected ?string $productStreamId = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ProductStreamEntity|null
-     */
-    protected $productStream;
+    protected ?ProductStreamEntity $productStream = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $apiKey;
+    protected string $apiKey;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $mediaDomain;
+    protected ?string $mediaDomain = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $webhookSigningKey;
+    protected ?string $webhookSigningKey = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
-     */
-    protected $syncPrices;
+    protected bool $syncPrices;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
-     */
-    protected $replace;
+    protected int $replace;
 
     public function getSalesChannelId(): string
     {

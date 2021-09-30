@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\PaymentsApi\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
@@ -16,7 +15,6 @@ use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder;
-use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
@@ -97,13 +95,10 @@ class CartPaymentBuilderTest extends TestCase
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
         ]);
-
-        $settingsService = new SettingsService($settings, new NullLogger());
         /** @var LocaleCodeProvider $localeCodeProvider */
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
 
         return new CartPaymentBuilder(
-            $settingsService,
             $localeCodeProvider,
             new PriceFormatter(),
             new EventDispatcherMock(),

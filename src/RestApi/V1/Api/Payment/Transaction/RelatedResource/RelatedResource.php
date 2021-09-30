@@ -18,74 +18,60 @@ use Swag\PayPal\RestApi\V1\Api\Common\Link;
 abstract class RelatedResource extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $id;
+    protected string $id;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $state;
+    protected string $state;
 
     /**
-     * @var Amount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
      */
-    protected $amount;
+    protected Amount $amount;
 
     /**
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $paymentMode;
+    protected string $paymentMode;
 
     /**
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $createTime;
+    protected string $createTime;
 
     /**
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $updateTime;
+    protected string $updateTime;
 
     /**
-     * @var string
      * @OA\Property(type="string")*
      */
-    protected $protectionEligibility;
+    protected string $protectionEligibility;
 
     /**
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $protectionEligibilityType;
+    protected string $protectionEligibilityType;
 
     /**
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $receiptId;
+    protected string $receiptId;
 
     /**
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $parentPayment;
+    protected string $parentPayment;
 
     /**
      * @var Link[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected $links;
+    protected array $links;
 
     public function getId(): string
     {

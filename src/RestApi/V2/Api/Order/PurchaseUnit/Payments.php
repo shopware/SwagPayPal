@@ -19,28 +19,22 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 class Payments extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Authorization[]|null
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_authorization"}, nullable=true)
      */
-    protected $authorizations;
+    protected ?array $authorizations = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Capture[]|null
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_capture"}, nullable=true)
      */
-    protected $captures;
+    protected ?array $captures = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Refund[]|null
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_refund"}, nullable=true)
      */
-    protected $refunds;
+    protected ?array $refunds = null;
 
     /**
      * @return Authorization[]|null

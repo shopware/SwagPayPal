@@ -16,26 +16,14 @@ class ProductChange extends PosStruct
     public const TRACKING_STOP = 'STOP_TRACKING';
     public const TRACKING_NOCHANGE = 'NO_CHANGE';
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $productUuid;
+    protected string $productUuid;
+
+    protected string $trackingStatusChange;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $trackingStatusChange;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var VariantChange[]
      */
-    protected $variantChanges = [];
+    protected array $variantChanges = [];
 
     public function getProductUuid(): string
     {

@@ -17,20 +17,14 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties
 class IncorrectTransactionAmount extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var CorrectTransactionAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $correctTransactionAmount;
+    protected CorrectTransactionAmount $correctTransactionAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $correctTransactionTime;
+    protected string $correctTransactionTime;
 
     public function getCorrectTransactionAmount(): CorrectTransactionAmount
     {

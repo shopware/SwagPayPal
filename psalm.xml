@@ -55,16 +55,6 @@
 
         <DeprecatedClass>
             <errorLevel type="info">
-                <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
-                <referencedClass name="Swag\PayPal\Setting\Service\SettingsService"/>
-                <referencedClass name="Swag\PayPal\Setting\Service\SettingsServiceInterface"/>
-                <referencedClass name="Swag\PayPal\Setting\SwagPayPalSettingStruct"/>
-                <file name="tests/Checkout/ErrorControllerTest.php"/>
-                <file name="tests/Setting/SwagPayPalSettingStructValidatorTest.php"/>
-                <file name="tests/Setting/SwagPayPalSettingStructTest.php"/>
-                <file name="src/Setting/Service/SettingsService.php"/>
-                <file name="src/Setting/Service/SettingsServiceInterface.php"/>
-                <file name="src/Setting/SwagPayPalSettingStructValidator.php"/>
                 <!-- <deprecated> tag:v5.0.0 - remove with 5.0.0 -->
                 <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData"/>
                 <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber"/>
@@ -81,8 +71,6 @@
 
         <DeprecatedInterface>
             <errorLevel type="info">
-                <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
-                <file name="src/Setting/Service/SettingsService.php"/>
                 <!-- <deprecated> tag:v5.0.0 - remove with 5.0.0 -->
                 <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataServiceInterface"/>
                 <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataServiceInterface"/>
@@ -94,27 +82,7 @@
                 <!-- <deprecated> tag:v5.0.0 - remove with Shopware 6.5 compatibility -->
                 <referencedMethod name="Shopware\Core\Framework\Struct\Collection::getIterator"/>
                 <referencedMethod name="Shopware\Core\System\SalesChannel\SalesChannelContext::getFallbackCustomerGroup"/>
-                <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
                 <referencedMethod name="Doctrine\DBAL\Connection::executeUpdate"/>
-                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService::getExpressCheckoutButtonData"/>
-                <referencedMethod name="Swag\PayPal\Checkout\Plus\Service\PlusDataService::getPlusData"/>
-                <referencedMethod name="Swag\PayPal\Checkout\Plus\Service\PlusDataService::getPlusDataFromOrder"/>
-                <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService::getCheckoutData"/>
-                <referencedMethod name="Swag\PayPal\Installment\Banner\Service\BannerDataService::getInstallmentBannerData"/>
-                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::__construct"/>
-                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::createApplicationContext"/>
-                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::getIntent"/>
-                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::getBrandName"/>
-                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::getLandingPageType"/>
-                <referencedMethod name="Swag\PayPal\PaymentsApi\Builder\AbstractPaymentBuilder::__construct"/>
-                <referencedMethod name="Swag\PayPal\RestApi\Client\PayPalClient::__construct"/>
-                <referencedMethod name="Swag\PayPal\RestApi\Client\TokenClient::__construct"/>
-                <referencedMethod name="Swag\PayPal\RestApi\Client\TokenClientFactory::createTokenClient"/>
-                <referencedMethod name="Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface::getToken"/>
-                <referencedMethod name="Swag\PayPal\Webhook\WebhookServiceInterface::deregisterWebhook"/>
-                <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber::addExpressCheckoutDataToCmsPage"/>
-                <referencedMethod name="Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity::getAbortedByUser"/>
-                <referencedMethod name="Swag\PayPal\Pos\Run\RunService::finishRun"/>
             </errorLevel>
         </DeprecatedMethod>
 
@@ -122,7 +90,6 @@
             <errorLevel type="info">
                 <!-- <deprecated> tag:v5.0.0 - remove with Shopware 6.5 compatibility due to usage of Defaults::SALES_CHANNEL -->
                 <directory name="tests"/>
-                <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
                 <file name="src/Checkout/Payment/PayPalPaymentHandler.php"/>
                 <file name="src/Util/PaymentStatusUtilV2.php"/>
                 <file name="tests/Checkout/Payment/ScheduledTask/CancelTransactionsTaskHandlerTest.php"/>
@@ -130,14 +97,6 @@
                 <file name="tests/Util/PaymentStatusUtilV2Test.php"/>
             </errorLevel>
         </DeprecatedConstant>
-
-        <DeprecatedProperty>
-            <errorLevel type="info">
-                <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
-                <directory name="src"/>
-                <directory name="tests"/>
-            </errorLevel>
-        </DeprecatedProperty>
 
         <PossiblyInvalidArgument>
             <errorLevel type="info">

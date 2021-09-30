@@ -16,28 +16,19 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Capture\Trans
 class Capture extends RelatedResource
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $custom;
+    protected string $custom;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var TransactionFee
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected $transactionFee;
+    protected TransactionFee $transactionFee;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $invoiceNumber;
+    protected string $invoiceNumber;
 
     public function getCustom(): string
     {

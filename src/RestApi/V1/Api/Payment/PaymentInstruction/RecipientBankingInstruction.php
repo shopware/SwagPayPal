@@ -16,36 +16,24 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class RecipientBankingInstruction extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $bankName;
+    protected string $bankName;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $accountHolderName;
+    protected string $accountHolderName;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $internationalBankAccountNumber;
+    protected string $internationalBankAccountNumber;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $bankIdentifierCode;
+    protected string $bankIdentifierCode;
 
     public function getBankName(): string
     {

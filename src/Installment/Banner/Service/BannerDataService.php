@@ -18,7 +18,6 @@ use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
 class BannerDataService implements BannerDataServiceInterface
@@ -34,14 +33,11 @@ class BannerDataService implements BannerDataServiceInterface
     }
 
     /**
-     * @deprecated tag:v4.0.0 - parameter $settings will be removed
-     *
      * @param CheckoutCartPage|CheckoutConfirmPage|CheckoutRegisterPage|OffcanvasCartPage|ProductPage|FooterPagelet|QuickviewPagelet $page
      */
     public function getInstallmentBannerData(
         $page,
-        SalesChannelContext $salesChannelContext,
-        ?SwagPayPalSettingStruct $settings = null
+        SalesChannelContext $salesChannelContext
     ): BannerData {
         $amount = 0.0;
 

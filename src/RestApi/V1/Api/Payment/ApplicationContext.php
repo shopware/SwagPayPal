@@ -26,44 +26,29 @@ class ApplicationContext extends PayPalApiStruct
     public const USER_ACTION_TYPE_CONTINUE = 'continue';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $brandName;
+    protected string $brandName;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $locale;
+    protected string $locale;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $landingPage;
+    protected string $landingPage;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string", default="SET_PROVIDED_ADDRESS")
      */
-    protected $shippingPreference = 'SET_PROVIDED_ADDRESS';
+    protected string $shippingPreference = 'SET_PROVIDED_ADDRESS';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string", default=Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext::USER_ACTION_TYPE_COMMIT)
      */
-    protected $userAction = self::USER_ACTION_TYPE_COMMIT;
+    protected string $userAction = self::USER_ACTION_TYPE_COMMIT;
 
     public function getBrandName(): string
     {

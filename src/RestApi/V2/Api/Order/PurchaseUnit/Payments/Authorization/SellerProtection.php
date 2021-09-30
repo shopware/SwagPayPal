@@ -16,20 +16,15 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class SellerProtection extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $status;
+    protected string $status;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var string[]
      * @OA\Property(type="array", items={"type": "string"})
      */
-    protected $disputeCategories;
+    protected array $disputeCategories;
 
     public function getStatus(): string
     {

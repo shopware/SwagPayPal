@@ -16,7 +16,6 @@ use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
@@ -49,17 +48,6 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->systemConfigService = $systemConfigService;
         $this->cartPriceService = $cartPriceService;
-    }
-
-    /**
-     * @deprecated tag:v4.0.0 - will be removed, use buildExpressCheckoutButtonData instead
-     */
-    public function getExpressCheckoutButtonData(
-        SalesChannelContext $salesChannelContext,
-        SwagPayPalSettingStruct $settings,
-        bool $addProductToCart = false
-    ): ?ExpressCheckoutButtonData {
-        return $this->buildExpressCheckoutButtonData($salesChannelContext, $addProductToCart);
     }
 
     public function buildExpressCheckoutButtonData(
@@ -101,7 +89,7 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
             'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $salesChannelId)),
             'addProductToCart' => $addProductToCart,
             'contextSwitchUrl' => $this->router->generate('store-api.switch-context'),
-            'payPaLPaymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
+            'payPalPaymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
             'createOrderUrl' => $this->router->generate('store-api.paypal.express.create_order'),
             'deleteCartUrl' => $this->router->generate('store-api.checkout.cart.delete'),
             'prepareCheckoutUrl' => $this->router->generate('store-api.paypal.express.prepare_checkout'),

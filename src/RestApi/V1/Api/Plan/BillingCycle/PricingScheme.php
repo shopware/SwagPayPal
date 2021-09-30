@@ -22,12 +22,9 @@ use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle\PricingScheme\FixedPrice;
 class PricingScheme extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var FixedPrice
      * @OA\Property(ref="#/components/schema/swag_paypal_v1_common_money")
      */
-    protected $fixedPrice;
+    protected FixedPrice $fixedPrice;
 
     public function getFixedPrice(): FixedPrice
     {

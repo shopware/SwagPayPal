@@ -16,28 +16,19 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 abstract class Seller extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $email;
+    protected string $email;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $merchantId;
+    protected string $merchantId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $name;
+    protected string $name;
 
     public function getEmail(): string
     {

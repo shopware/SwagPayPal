@@ -17,20 +17,14 @@ use Swag\PayPal\RestApi\V2\Api\Order\Payer\Phone\PhoneNumber;
 class Phone extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $phoneType;
+    protected string $phoneType;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PhoneNumber
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_phone_number")
      */
-    protected $phoneNumber;
+    protected PhoneNumber $phoneNumber;
 
     public function getPhoneType(): string
     {

@@ -11,40 +11,18 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class CreateSubscription extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $uuid;
+    protected string $uuid;
+
+    protected string $transportName;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $transportName;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var string[]
      */
-    protected $eventNames;
+    protected array $eventNames;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $destination;
+    protected string $destination;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $contactEmail;
+    protected string $contactEmail;
 
     public function getUuid(): string
     {

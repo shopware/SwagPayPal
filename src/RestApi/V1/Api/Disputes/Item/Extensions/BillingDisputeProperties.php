@@ -21,44 +21,29 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties
 class BillingDisputeProperties extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var DuplicateTransaction
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_duplicate_transaction")
      */
-    protected $duplicateTransaction;
+    protected DuplicateTransaction $duplicateTransaction;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var IncorrectTransactionAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_incorrect_transaction_amount")
      */
-    protected $incorrectTransactionAmount;
+    protected IncorrectTransactionAmount $incorrectTransactionAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PaymentByOtherMeans
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_payment_by_other_means")
      */
-    protected $paymentByOtherMeans;
+    protected PaymentByOtherMeans $paymentByOtherMeans;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var CreditNotProcessed
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_cretid_not_processed")
      */
-    protected $creditNotProcessed;
+    protected CreditNotProcessed $creditNotProcessed;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var CanceledRecurringBilling
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_canceled_recurring_billing")
      */
-    protected $canceledRecurringBilling;
+    protected CanceledRecurringBilling $canceledRecurringBilling;
 
     public function getDuplicateTransaction(): DuplicateTransaction
     {

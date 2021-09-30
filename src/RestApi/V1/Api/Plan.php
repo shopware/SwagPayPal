@@ -24,60 +24,40 @@ use Swag\PayPal\RestApi\V1\Api\Plan\Taxes;
 class Plan extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $productId;
+    protected string $productId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $name;
+    protected string $name;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $description;
+    protected ?string $description = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $status;
+    protected string $status;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var BillingCycle[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_plan_billing_cycle"})
      */
-    protected $billingCycles = [];
+    protected array $billingCycles = [];
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PaymentPreferences
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_plan_payment_preferences")
      */
-    protected $paymentPreferences;
+    protected PaymentPreferences $paymentPreferences;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Taxes
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_plan_taxes")
      */
-    protected $taxes;
+    protected Taxes $taxes;
 
     public function getProductId(): string
     {

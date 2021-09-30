@@ -13,7 +13,6 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Test\Webhook\WebhookControllerTest;
 use Swag\PayPal\Webhook\Exception\WebhookException;
@@ -46,7 +45,7 @@ class WebhookServiceMock implements WebhookServiceInterface
         return WebhookService::WEBHOOK_CREATED;
     }
 
-    public function deregisterWebhook(?string $salesChannelId, ?SwagPayPalSettingStruct $settings = null): string
+    public function deregisterWebhook(?string $salesChannelId): string
     {
         $this->deregistrations[] = $salesChannelId ?? 'null';
 

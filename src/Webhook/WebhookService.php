@@ -16,7 +16,6 @@ use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -24,16 +23,6 @@ use Symfony\Component\Routing\RouterInterface;
 
 class WebhookService implements WebhookServiceInterface
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be removed, use Settings::WEBHOOK_EXECUTE_TOKEN instead
-     */
-    public const WEBHOOK_TOKEN_CONFIG_KEY = 'webhookExecuteToken';
-
-    /**
-     * @deprecated tag:v4.0.0 - will be removed, use Settings::WEBHOOK_ID instead
-     */
-    public const WEBHOOK_ID_KEY = 'webhookId';
-
     public const WEBHOOK_CREATED = 'created';
     public const WEBHOOK_UPDATED = 'updated';
     public const WEBHOOK_DELETED = 'deleted';
@@ -119,17 +108,11 @@ class WebhookService implements WebhookServiceInterface
         $webhookHandler->invoke($webhook, $context);
     }
 
-    /**
-     * @deprecated tag:v4.0.0 - parameter $settings will be removed
-     */
-    public function deregisterWebhook(?string $salesChannelId, ?SwagPayPalSettingStruct $settings = null): string
+    public function deregisterWebhook(?string $salesChannelId): string
     {
         $webhookId = $this->systemConfigService->getString(Settings::WEBHOOK_ID, $salesChannelId);
-        if ($settings !== null) {
-            $webhookId = $settings->getWebhookId();
-        }
 
-        if ($webhookId === null || $webhookId === '') {
+        if ($webhookId === '') {
             return WebhookService::NO_WEBHOOK_ACTION_REQUIRED;
         }
 

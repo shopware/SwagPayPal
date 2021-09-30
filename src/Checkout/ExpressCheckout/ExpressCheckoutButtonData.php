@@ -11,145 +11,45 @@ use Shopware\Core\Framework\Struct\Struct;
 
 class ExpressCheckoutButtonData extends Struct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
-     */
-    protected $productDetailEnabled;
+    protected bool $productDetailEnabled;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
-     */
-    protected $offCanvasEnabled;
+    protected bool $offCanvasEnabled;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
-     */
-    protected $loginEnabled;
+    protected bool $loginEnabled;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
-     */
-    protected $listingEnabled;
+    protected bool $listingEnabled;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $buttonColor;
+    protected string $buttonColor;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $buttonShape;
+    protected string $buttonShape;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $languageIso;
+    protected string $languageIso;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
-     */
-    protected $cartEnabled;
+    protected bool $cartEnabled;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $clientId;
+    protected string $clientId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $currency;
+    protected string $currency;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $intent;
+    protected string $intent;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
-     */
-    protected $addProductToCart;
+    protected bool $addProductToCart;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $contextSwitchUrl;
+    protected string $contextSwitchUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $payPaLPaymentMethodId;
+    protected ?string $payPalPaymentMethodId = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $createOrderUrl;
+    protected string $createOrderUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $deleteCartUrl;
+    protected string $deleteCartUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $prepareCheckoutUrl;
+    protected string $prepareCheckoutUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $checkoutConfirmUrl;
+    protected string $checkoutConfirmUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $addErrorUrl;
+    protected string $addErrorUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $cancelRedirectUrl;
+    protected string $cancelRedirectUrl;
 
     public function getProductDetailEnabled(): bool
     {
@@ -221,9 +121,9 @@ class ExpressCheckoutButtonData extends Struct
         return $this->contextSwitchUrl;
     }
 
-    public function getPayPaLPaymentMethodId(): ?string
+    public function getPayPalPaymentMethodId(): ?string
     {
-        return $this->payPaLPaymentMethodId;
+        return $this->payPalPaymentMethodId;
     }
 
     public function getCreateOrderUrl(): string

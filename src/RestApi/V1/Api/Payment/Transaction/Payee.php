@@ -16,20 +16,14 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class Payee extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $merchantId;
+    protected string $merchantId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $email;
+    protected string $email;
 
     public function getMerchantId(): string
     {

@@ -19,84 +19,55 @@ use Swag\PayPal\RestApi\V1\Api\Capture\TransactionFee;
 class Capture extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Amount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
      */
-    protected $amount;
+    protected Amount $amount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $isFinalCapture;
+    protected bool $isFinalCapture;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $id;
+    protected string $id;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $state;
+    protected string $state;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $reasonCode;
+    protected string $reasonCode;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $parentPayment;
+    protected string $parentPayment;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var TransactionFee
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected $transactionFee;
+    protected TransactionFee $transactionFee;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $createTime;
+    protected string $createTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $updateTime;
+    protected string $updateTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Link[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected $links;
+    protected array $links;
 
     public function getAmount(): Amount
     {

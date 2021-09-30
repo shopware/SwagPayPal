@@ -44,7 +44,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     public const PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
 
     /**
-     * @deprecated tag:v4.0.0 Will be removed with min 6.4.1.0 without replacement. Check for other usages on removal.
+     * @deprecated tag:v5.0.0 Will be removed with min 6.4.1.0 without replacement. Check for other usages on removal.
      */
     public const ORDER_TRANSACTION_STATE_AUTHORIZED = 'authorized';
     public const FINALIZED_ORDER_TRANSACTION_STATES = [

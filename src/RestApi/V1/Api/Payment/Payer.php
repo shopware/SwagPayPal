@@ -17,36 +17,24 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Payer\PayerInfo;
 class Payer extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $paymentMethod;
+    protected string $paymentMethod;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $status;
+    protected string $status;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PayerInfo
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_payer_info")
      */
-    protected $payerInfo;
+    protected PayerInfo $payerInfo;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $externalSelectedFundingInstrumentType;
+    protected string $externalSelectedFundingInstrumentType;
 
     public function getPaymentMethod(): string
     {

@@ -19,11 +19,8 @@ class TokenClientFactory
         $this->logger = $logger;
     }
 
-    /**
-     * @deprecated tag:v4.0.0 - parameter $url will be removed, is placed in OAuthCredentials now
-     */
-    public function createTokenClient(OAuthCredentials $credentials, string $url): TokenClient
+    public function createTokenClient(OAuthCredentials $credentials): TokenClient
     {
-        return new TokenClient($credentials, $url, $this->logger);
+        return new TokenClient($credentials, $this->logger);
     }
 }

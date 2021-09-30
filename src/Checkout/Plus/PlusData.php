@@ -11,103 +11,33 @@ use Shopware\Core\Framework\Struct\Struct;
 
 class PlusData extends Struct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $approvalUrl;
+    protected string $approvalUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $customerCountryIso;
+    protected string $customerCountryIso;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $mode;
+    protected string $mode;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $customerSelectedLanguage;
+    protected string $customerSelectedLanguage;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $paymentMethodId;
+    protected string $paymentMethodId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $paypalPaymentId;
+    protected string $paypalPaymentId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $paypalToken;
+    protected string $paypalToken;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $checkoutOrderUrl;
+    protected string $checkoutOrderUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $handlePaymentUrl;
+    protected string $handlePaymentUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $setPaymentRouteUrl;
+    protected string $setPaymentRouteUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $contextSwitchUrl;
+    protected string $contextSwitchUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $isEnabledParameterName;
+    protected string $isEnabledParameterName;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $languageId;
+    protected string $languageId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $orderId;
+    protected ?string $orderId = null;
 
     public function getApprovalUrl(): string
     {

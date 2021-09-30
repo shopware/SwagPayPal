@@ -17,8 +17,6 @@ use Swag\PayPal\RestApi\V2\Api\Referral\BusinessEntity\Address;
 class BusinessEntity extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Address[]
      * @OA\Property(type="array", items={"$ref": "swag_paypal_v2_referral_address"})
      */

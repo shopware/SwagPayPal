@@ -14,44 +14,17 @@ class PosSalesChannelRunEntity extends Entity
 {
     use EntityIdTrait;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $salesChannelId;
+    protected string $salesChannelId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $task;
+    protected string $task;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PosSalesChannelRunLogCollection|null
-     */
-    protected $logs = null;
+    protected ?PosSalesChannelRunLogCollection $logs = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var \DateTimeInterface|null
-     */
-    protected $finishedAt;
+    protected ?\DateTimeInterface $finishedAt = null;
 
     protected string $status = PosSalesChannelRunDefinition::STATUS_IN_PROGRESS;
 
     protected int $messageCount = 0;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be removed, use status === PosSalesChannelRunDefinition::STATUS_CANCELLED instead
-     *
-     * @var bool
-     */
-    protected $abortedByUser = false;
 
     public function getSalesChannelId(): string
     {
@@ -78,7 +51,7 @@ class PosSalesChannelRunEntity extends Entity
         return $this->logs;
     }
 
-    public function setLogs(?PosSalesChannelRunLogCollection $logs): void
+    public function setLogs(PosSalesChannelRunLogCollection $logs): void
     {
         $this->logs = $logs;
     }
@@ -101,7 +74,6 @@ class PosSalesChannelRunEntity extends Entity
     public function setStatus(string $status): void
     {
         $this->status = $status;
-        $this->abortedByUser = $status === PosSalesChannelRunDefinition::STATUS_CANCELLED;
     }
 
     public function getMessageCount(): int
@@ -112,24 +84,5 @@ class PosSalesChannelRunEntity extends Entity
     public function setMessageCount(int $messageCount): void
     {
         $this->messageCount = $messageCount;
-    }
-
-    /**
-     * @deprecated tag:v4.0.0 - will be removed, use getStatus() === PosSalesChannelRunDefinition::STATUS_CANCELLED instead
-     */
-    public function getAbortedByUser(): bool
-    {
-        return $this->status === PosSalesChannelRunDefinition::STATUS_CANCELLED || $this->abortedByUser;
-    }
-
-    /**
-     * @deprecated tag:v4.0.0 - will be removed, use setStatus(PosSalesChannelRunDefinition::STATUS_CANCELLED) instead
-     */
-    public function setAbortedByUser(bool $abortedByUser): void
-    {
-        if ($abortedByUser) {
-            $this->status = PosSalesChannelRunDefinition::STATUS_CANCELLED;
-        }
-        $this->abortedByUser = $abortedByUser;
     }
 }
