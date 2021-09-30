@@ -12,7 +12,7 @@ class GetOrderCapture
     public const ID = '9XG87361JT539825B';
     public const PAYER_EMAIL_ADDRESS = 'customer-de@shopware.com';
     public const PAYER_NAME_GIVEN_NAME = 'Test given name';
-    public const PAYER_NAME_SURNAME = 'Test surname';
+    public const PAYER_NAME_SURNAME = 'Surname';
     public const PAYER_ADDRESS_ADDRESS_LINE_1 = 'Ebbinghoff 10';
     public const PAYER_ADDRESS_ADMIN_AREA_2 = 'Schöppingen';
     public const PAYER_PHONE_NUMBER = '01234123456789';
@@ -59,13 +59,14 @@ class GetOrderCapture
                     ],
                     'shipping' => [
                         'name' => [
-                            'full_name' => 'Test Test',
+                            'full_name' => \sprintf('%s %s', self::PAYER_NAME_GIVEN_NAME, self::PAYER_NAME_SURNAME),
                         ],
                         'address' => [
-                            'address_line_1' => 'Ebbinghoff 10',
-                            'admin_area_2' => 'Schöppingen',
+                            'address_line_1' => self::PAYER_ADDRESS_ADDRESS_LINE_1,
+                            'admin_area_1' => 'NY',
+                            'admin_area_2' => self::PAYER_ADDRESS_ADMIN_AREA_2,
                             'postal_code' => '48624',
-                            'country_code' => 'DE',
+                            'country_code' => 'US',
                         ],
                     ],
                 ],
