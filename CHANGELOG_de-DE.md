@@ -1,6 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-252 - Fehlerbehebung von Webhooks verbessert
-- PPI-343 - Behebt ein Problem, wenn der Kundenname sich vom Versandanschriftname unterscheidet
 - PPI-352 - Behebt ein Problem mit Zettle Webhooks bei POS-Verkäufen
 
 # 3.5.0
