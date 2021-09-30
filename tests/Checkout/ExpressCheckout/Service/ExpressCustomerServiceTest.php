@@ -37,6 +37,8 @@ class ExpressCustomerServiceTest extends TestCase
         $order->assign(GetOrderCapture::get());
         $customer = $this->doLogin($order);
 
+        static::assertSame($customer->getDefaultBillingAddressId(), $customer->getDefaultShippingAddressId());
+
         static::assertSame(GetOrderCapture::PAYER_NAME_GIVEN_NAME, $customer->getFirstName());
         static::assertSame(GetOrderCapture::PAYER_NAME_SURNAME, $customer->getLastName());
 
@@ -57,6 +59,20 @@ class ExpressCustomerServiceTest extends TestCase
         static::assertSame(GetOrderCapture::PAYER_PHONE_NUMBER, $address->getPhoneNumber());
     }
 
+    public function testLoginNewCustomerWithSeparateShippingAddress(): void
+    {
+        $order = new Order();
+        $order->assign(GetOrderCapture::get());
+        $order->getPurchaseUnits()[0]->getShipping()->getName()->setFullName('Some One');
+        $order->getPurchaseUnits()[0]->getShipping()->getAddress()->setCountryCode('DE');
+        $customer = $this->doLogin($order);
+
+        $addresses = $customer->getAddresses();
+        static::assertNotNull($addresses);
+        static::assertCount(2, $addresses);
+        static::assertNotSame($customer->getDefaultBillingAddressId(), $customer->getDefaultShippingAddressId());
+    }
+
     public function testLoginSameAccount(): void
     {
         $order = new Order();
@@ -65,10 +81,28 @@ class ExpressCustomerServiceTest extends TestCase
         $secondCustomer = $this->doLogin($order);
 
         static::assertSame($firstCustomer->getId(), $secondCustomer->getId());
+        static::assertSame($secondCustomer->getDefaultBillingAddressId(), $secondCustomer->getDefaultShippingAddressId());
 
         $addresses = $secondCustomer->getAddresses();
         static::assertNotNull($addresses);
         static::assertCount(1, $addresses);
+    }
+
+    public function testLoginSameAccountNewShippingAddress(): void
+    {
+        $order = new Order();
+        $order->assign(GetOrderCapture::get());
+        $order->getPurchaseUnits()[0]->getShipping()->getName()->setFullName('Some One');
+        $order->getPurchaseUnits()[0]->getShipping()->getAddress()->setCountryCode('DE');
+        $firstCustomer = $this->doLogin($order);
+        $secondCustomer = $this->doLogin($order);
+
+        static::assertSame($firstCustomer->getId(), $secondCustomer->getId());
+
+        $addresses = $secondCustomer->getAddresses();
+        static::assertNotNull($addresses);
+        static::assertCount(2, $addresses);
+        static::assertNotSame($secondCustomer->getDefaultBillingAddressId(), $secondCustomer->getDefaultShippingAddressId());
     }
 
     public function testLoginSameAccountWithDifferentAddress(): void
