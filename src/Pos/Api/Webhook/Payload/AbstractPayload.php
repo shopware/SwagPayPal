@@ -8,23 +8,10 @@
 namespace Swag\PayPal\Pos\Api\Webhook\Payload;
 
 use Swag\PayPal\Pos\Api\Common\PosStruct;
-use Swag\PayPal\Pos\Api\Webhook\Payload\AbstractPayload\AbstractUpdated;
 
 abstract class AbstractPayload extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $organizationUuid;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var AbstractUpdated
-     */
-    protected $updated;
+    protected string $organizationUuid;
 
     public function getOrganizationUuid(): string
     {
@@ -34,15 +21,5 @@ abstract class AbstractPayload extends PosStruct
     public function setOrganizationUuid(string $organizationUuid): void
     {
         $this->organizationUuid = $organizationUuid;
-    }
-
-    public function getUpdated(): AbstractUpdated
-    {
-        return $this->updated;
-    }
-
-    public function setUpdated(AbstractUpdated $updated): void
-    {
-        $this->updated = $updated;
     }
 }

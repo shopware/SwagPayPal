@@ -91,6 +91,9 @@
 
         <DeprecatedMethod>
             <errorLevel type="info">
+                <!-- <deprecated> tag:v5.0.0 - remove with Shopware 6.5 compatibility -->
+                <referencedMethod name="Shopware\Core\Framework\Struct\Collection::getIterator"/>
+                <referencedMethod name="Shopware\Core\System\SalesChannel\SalesChannelContext::getFallbackCustomerGroup"/>
                 <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
                 <referencedMethod name="Doctrine\DBAL\Connection::executeUpdate"/>
                 <referencedMethod name="Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService::getExpressCheckoutButtonData"/>
@@ -117,6 +120,8 @@
 
         <DeprecatedConstant>
             <errorLevel type="info">
+                <!-- <deprecated> tag:v5.0.0 - remove with Shopware 6.5 compatibility due to usage of Defaults::SALES_CHANNEL -->
+                <directory name="tests"/>
                 <!-- <deprecated> tag:v4.0.0 - remove with 4.0.0 -->
                 <file name="src/Checkout/Payment/PayPalPaymentHandler.php"/>
                 <file name="src/Util/PaymentStatusUtilV2.php"/>

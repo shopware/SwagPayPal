@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-252 - Improved error handling for Webhooks
+- PPI-352 - Fixes issue with failing Zettle webhooks on POS sale
 
 # 3.5.0
 - PPI-5 - Implement Set PayPal as default payment method in First Run Wizard

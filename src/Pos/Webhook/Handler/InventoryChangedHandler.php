@@ -27,6 +27,8 @@ use Swag\PayPal\Pos\Webhook\WebhookEventNames;
 
 class InventoryChangedHandler extends AbstractWebhookHandler
 {
+    private ApiKeyDecoder $apiKeyDecoder;
+
     private RunService $runService;
 
     private LocalWebhookCalculator $localCalculator;
@@ -51,7 +53,7 @@ class InventoryChangedHandler extends AbstractWebhookHandler
         EntityRepositoryInterface $productRepository,
         UuidConverter $uuidConverter
     ) {
-        parent::__construct($apiKeyDecoder);
+        $this->apiKeyDecoder = $apiKeyDecoder;
         $this->runService = $runService;
         $this->localCalculator = $localCalculator;
         $this->localUpdater = $localUpdater;
@@ -82,6 +84,10 @@ class InventoryChangedHandler extends AbstractWebhookHandler
      */
     public function execute(AbstractPayload $payload, SalesChannelEntity $salesChannel, Context $context): void
     {
+        if ($this->isOwnClientId($payload->getUpdated()->getClientUuid(), $salesChannel)) {
+            return;
+        }
+
         $inventoryContext = $this->inventoryContextFactory->getContext($salesChannel, $context);
 
         $productIds = [];
@@ -142,5 +148,18 @@ class InventoryChangedHandler extends AbstractWebhookHandler
         $this->localCalculator->addFixedUpdate($productUuid, $change);
 
         return $productUuid;
+    }
+
+    private function isOwnClientId(?string $reportedClientId, SalesChannelEntity $salesChannel): bool
+    {
+        if ($reportedClientId === null) {
+            return false;
+        }
+
+        $apiKey = $this->getPosSalesChannel($salesChannel)->getApiKey();
+
+        $ownClientId = $this->apiKeyDecoder->decode($apiKey)->getPayload()->getClientId();
+
+        return $reportedClientId === $ownClientId;
     }
 }
