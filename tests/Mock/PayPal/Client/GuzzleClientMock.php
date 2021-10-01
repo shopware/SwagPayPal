@@ -238,6 +238,7 @@ class GuzzleClientMock implements ClientInterface
             }
 
             if (\mb_strpos($resourceUri, ExpressPrepareCheckoutRouteTest::TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES) !== false) {
+                $orderCapture['purchase_units'][0]['shipping']['address']['country_code'] = 'NL';
                 $orderCapture['payer']['address']['country_code'] = 'NL';
 
                 return $orderCapture;
