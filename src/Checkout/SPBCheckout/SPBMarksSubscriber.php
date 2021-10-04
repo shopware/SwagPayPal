@@ -16,9 +16,6 @@ use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRout
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-/**
- * @deprecated tag:v5.0.0 - will be removed, unbranded APMs will be introduced in v4.0.0 as replacement
- */
 class SPBMarksSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID = 'payPalSpbMarksData';
