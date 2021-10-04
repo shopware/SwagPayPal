@@ -79,6 +79,13 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         disabledAlternativePaymentMethods: [],
 
         /**
+         * This option toggles if the pay later button should be shown
+         *
+         * @type boolean
+         */
+        showPayLater: true,
+
+        /**
          * URL to create a new PayPal order
          *
          * @type string

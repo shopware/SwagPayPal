@@ -44,6 +44,7 @@ final class Settings
     public const SPB_BUTTON_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonColor';
     public const SPB_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonShape';
     public const SPB_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonLanguageIso';
+    public const SPB_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'spbShowPayLater';
     public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
     public const INSTALLMENT_BANNER_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled';
     public const MERCHANT_PAYER_ID = self::SYSTEM_CONFIG_DOMAIN . 'merchantPayerId';
@@ -68,6 +69,7 @@ final class Settings
         self::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED => true,
         self::SPB_BUTTON_COLOR => 'gold',
         self::SPB_BUTTON_SHAPE => 'rect',
+        self::SPB_SHOW_PAY_LATER => true,
         self::PLUS_CHECKOUT_ENABLED => true,
         self::INSTALLMENT_BANNER_ENABLED => true,
         self::LOGGING_LEVEL => Logger::WARNING,

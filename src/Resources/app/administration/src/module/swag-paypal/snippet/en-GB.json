@@ -176,6 +176,9 @@
                 "spbAlternativePaymentMethodsEnabled": {
                     "label": "Enable the alternative payment methods for the Smart Payment Buttons.",
                     "helpText": "Alternative payment methods are, Creditcards, Invoice and more."
+                },
+                "spbShowPayLater": {
+                    "label": "Display Pay Later as separate button"
                 }
             },
             "plus": {

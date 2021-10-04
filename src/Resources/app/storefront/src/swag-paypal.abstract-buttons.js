@@ -70,6 +70,10 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             config['disable-funding'] = this.options.disabledAlternativePaymentMethods.join(',');
         }
 
+        if (this.options.showPayLater === true) {
+            config['enable-funding'] = 'paylater';
+        }
+
         return config;
     }
 

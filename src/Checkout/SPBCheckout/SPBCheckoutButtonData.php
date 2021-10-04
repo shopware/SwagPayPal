@@ -32,6 +32,8 @@ class SPBCheckoutButtonData extends Struct
      */
     protected array $disabledAlternativePaymentMethods;
 
+    protected bool $showPayLater;
+
     protected string $createOrderUrl;
 
     protected string $checkoutConfirmUrl;
@@ -101,6 +103,11 @@ class SPBCheckoutButtonData extends Struct
     public function setDisabledAlternativePaymentMethods(array $disabledAlternativePaymentMethods): void
     {
         $this->disabledAlternativePaymentMethods = $disabledAlternativePaymentMethods;
+    }
+
+    public function getShowPayLater(): bool
+    {
+        return $this->showPayLater;
     }
 
     public function getCreateOrderUrl(): string

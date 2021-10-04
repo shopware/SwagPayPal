@@ -41,6 +41,24 @@
                     </sw-inherit-wrapper>
                 {% endblock %}
 
+                {% block swag_paypal_content_card_channel_config_spb_settings_show_pay_later %}
+                    <sw-inherit-wrapper
+                        v-model="actualConfigData['SwagPayPal.settings.spbShowPayLater']"
+                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.spbShowPayLater']"
+                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                        <template #content="props">
+                            <sw-switch-field name="SwagPayPal.settings.spbShowPayLater"
+                                             bordered
+                                             :mapInheritance="props"
+                                             :label="$tc('swag-paypal.settingForm.spb.spbShowPayLater.label')"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                                             :value="props.currentValue"
+                                             @change="props.updateCurrentValue">
+                            </sw-switch-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
                 {% block swag_paypal_content_card_channel_config_spb_settings_button_color %}
                     <sw-inherit-wrapper
                         v-model="actualConfigData['SwagPayPal.settings.spbButtonColor']"
