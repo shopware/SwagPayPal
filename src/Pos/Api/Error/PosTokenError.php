@@ -11,19 +11,9 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class PosTokenError extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $error;
+    protected string $error;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $errorDescription;
+    protected string $errorDescription;
 
     public function getError(): string
     {

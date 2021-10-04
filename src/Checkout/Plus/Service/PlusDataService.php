@@ -23,7 +23,6 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Swag\PayPal\Util\PaymentTokenExtractor;
@@ -64,13 +63,9 @@ class PlusDataService
         $this->systemConfigService = $systemConfigService;
     }
 
-    /**
-     * @deprecated tag:v4.0.0 - parameter $settings will be removed
-     */
     public function getPlusData(
         Cart $cart,
-        SalesChannelContext $salesChannelContext,
-        ?SwagPayPalSettingStruct $settings = null
+        SalesChannelContext $salesChannelContext
     ): ?PlusData {
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
@@ -83,13 +78,9 @@ class PlusDataService
         return $this->getPlusDataFromPayment($payment, $salesChannelContext, $customer);
     }
 
-    /**
-     * @deprecated tag:v4.0.0 - parameter $settings will be removed
-     */
     public function getPlusDataFromOrder(
         OrderEntity $order,
-        SalesChannelContext $salesChannelContext,
-        ?SwagPayPalSettingStruct $settings = null
+        SalesChannelContext $salesChannelContext
     ): ?PlusData {
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {

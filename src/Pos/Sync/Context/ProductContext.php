@@ -25,54 +25,19 @@ class ProductContext
     public const PRODUCT_OUTDATED = 1;
     public const PRODUCT_CURRENT = 2;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var SalesChannelEntity
-     */
-    protected $salesChannel;
+    protected SalesChannelEntity $salesChannel;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PosSalesChannelProductCollection
-     */
-    protected $posProductCollection;
+    protected PosSalesChannelProductCollection $posProductCollection;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PosSalesChannelMediaCollection
-     */
-    protected $posMediaCollection;
+    protected PosSalesChannelMediaCollection $posMediaCollection;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Context
-     */
-    protected $context;
+    protected Context $context;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var array
-     */
-    protected $productChanges;
+    protected array $productChanges;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var array
-     */
-    protected $productRemovals;
+    protected array $productRemovals;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var array
-     */
-    protected $mediaRequests;
+    protected array $mediaRequests;
 
     public function __construct(
         SalesChannelEntity $salesChannel,

@@ -26,7 +26,6 @@ use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
@@ -37,7 +36,6 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
     private EntityRepositoryInterface $currencyRepository;
 
     public function __construct(
-        SettingsServiceInterface $settingsService,
         LocaleCodeProvider $localeCodeProvider,
         PriceFormatter $priceFormatter,
         EventDispatcherInterface $eventDispatcher,
@@ -45,7 +43,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         SystemConfigService $systemConfigService,
         EntityRepositoryInterface $currencyRepository
     ) {
-        parent::__construct($settingsService, $localeCodeProvider, $priceFormatter, $eventDispatcher, $logger, $systemConfigService);
+        parent::__construct($localeCodeProvider, $priceFormatter, $eventDispatcher, $logger, $systemConfigService);
         $this->currencyRepository = $currencyRepository;
     }
 
@@ -95,11 +93,6 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
             $currency
         );
         $transaction->setAmount($amount);
-
-        if ($this->systemConfigService === null) {
-            // this can not occur, since this child's constructor is not nullable
-            throw new \RuntimeException('No system settings available');
-        }
 
         if ($this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelContext->getSalesChannelId())) {
             $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelContext->getSalesChannelId());

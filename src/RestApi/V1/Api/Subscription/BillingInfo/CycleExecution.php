@@ -21,44 +21,29 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class CycleExecution extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $tenureType;
+    protected string $tenureType;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
      * @OA\Property(type="integer")
      */
-    protected $sequence;
+    protected int $sequence;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
      * @OA\Property(type="integer")
      */
-    protected $cyclesCompleted;
+    protected int $cyclesCompleted;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
      * @OA\Property(type="integer")
      */
-    protected $cyclesRemaining;
+    protected int $cyclesRemaining;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
      * @OA\Property(type="integer")
      */
-    protected $totalCycles;
+    protected int $totalCycles;
 
     public function getTenureType(): string
     {

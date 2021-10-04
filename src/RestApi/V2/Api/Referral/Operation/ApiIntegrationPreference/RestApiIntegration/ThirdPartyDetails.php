@@ -24,12 +24,10 @@ class ThirdPartyDetails extends PayPalApiStruct
     public const FEATURE_TYPE_DELAY_FUNDS_DISBURSEMENT = 'DELAY_FUNDS_DISBURSEMENT';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var string[]
      * @OA\Property(type="array", items={"type": "string"})
      */
-    protected $features = [
+    protected array $features = [
         self::FEATURE_TYPE_PAYMENT,
         self::FEATURE_TYPE_REFUND,
         self::FEATURE_TYPE_ACCESS_MERCHANT_INFORMATION,

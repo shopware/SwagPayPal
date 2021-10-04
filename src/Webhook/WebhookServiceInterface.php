@@ -11,17 +11,13 @@ use Shopware\Core\Framework\Context;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\Webhook as WebhookV1;
 use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 
 interface WebhookServiceInterface
 {
     public function registerWebhook(?string $salesChannelId): string;
 
-    /**
-     * @deprecated tag:v4.0.0 - parameter $settings will be removed
-     */
-    public function deregisterWebhook(?string $salesChannelId, ?SwagPayPalSettingStruct $settings = null): string;
+    public function deregisterWebhook(?string $salesChannelId): string;
 
     /**
      * @param WebhookV1|WebhookV2 $webhook

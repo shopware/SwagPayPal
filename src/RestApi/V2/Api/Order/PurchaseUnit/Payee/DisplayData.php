@@ -16,12 +16,9 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class DisplayData extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $brandName;
+    protected string $brandName;
 
     public function getBrandName(): string
     {

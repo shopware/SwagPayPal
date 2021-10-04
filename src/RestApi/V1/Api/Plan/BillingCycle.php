@@ -23,44 +23,29 @@ use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle\PricingScheme;
 class BillingCycle extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Frequency
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_plan_frequency")
      */
-    protected $frequency;
+    protected Frequency $frequency;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $tenureType;
+    protected string $tenureType;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
      * @OA\Property(type="integer")
      */
-    protected $sequence;
+    protected int $sequence;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PricingScheme
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_plan_pricing_scheme")
      */
-    protected $pricingScheme;
+    protected PricingScheme $pricingScheme;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
      * @OA\Property(type="integer")
      */
-    protected $totalCycles;
+    protected int $totalCycles;
 
     public function getFrequency(): Frequency
     {

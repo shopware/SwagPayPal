@@ -17,20 +17,14 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties
 class DuplicateTransaction extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $receivedDuplicate;
+    protected bool $receivedDuplicate;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var OriginalTransaction
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_transaction")
      */
-    protected $originalTransaction;
+    protected OriginalTransaction $originalTransaction;
 
     public function isReceivedDuplicate(): bool
     {

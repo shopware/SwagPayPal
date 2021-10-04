@@ -16,28 +16,19 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableB
 class Refund extends Payment
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $invoiceId;
+    protected ?string $invoiceId = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $noteToPayer;
+    protected ?string $noteToPayer = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var SellerPayableBreakdown
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_refund_seller_paypable_breakdown")
      */
-    protected $sellerPayableBreakdown;
+    protected SellerPayableBreakdown $sellerPayableBreakdown;
 
     public function getInvoiceId(): ?string
     {

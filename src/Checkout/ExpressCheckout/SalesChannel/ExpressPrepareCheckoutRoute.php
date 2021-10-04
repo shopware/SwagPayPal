@@ -29,10 +29,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be removed, use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService::EXPRESS_CHECKOUT_ACTIVE instead
-     */
-    public const EXPRESS_CHECKOUT_ACTIVE = 'payPalExpressCheckoutActive';
     public const PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID = 'payPalEcsCartData';
 
     private ExpressCustomerService $expressCustomerService;

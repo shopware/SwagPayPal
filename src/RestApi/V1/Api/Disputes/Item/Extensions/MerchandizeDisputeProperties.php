@@ -18,28 +18,19 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\MerchandizeDisputeProper
 class MerchandizeDisputeProperties extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $issueType;
+    protected string $issueType;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ProductDetails
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_product_details")
      */
-    protected $productDetails;
+    protected ProductDetails $productDetails;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ServiceDetails
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_service_details")
      */
-    protected $serviceDetails;
+    protected ServiceDetails $serviceDetails;
 
     public function getIssueType(): string
     {

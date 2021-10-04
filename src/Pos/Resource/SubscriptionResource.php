@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Pos\Resource;
 
-use Swag\PayPal\Pos\Api\MerchantInformation;
 use Swag\PayPal\Pos\Api\PosBaseURL;
 use Swag\PayPal\Pos\Api\PosRequestUri;
 use Swag\PayPal\Pos\Api\Webhook\Subscription\CreateSubscription;
@@ -23,25 +22,6 @@ class SubscriptionResource
     public function __construct(PosClientFactory $posClientFactory)
     {
         $this->posClientFactory = $posClientFactory;
-    }
-
-    /**
-     * @deprecated tag:v4.0.0 will be removed, use UserResource instead
-     */
-    public function getMerchantInformation(string $apiKey): ?MerchantInformation
-    {
-        $client = $this->posClientFactory->getPosClient(PosBaseURL::SECURE, $apiKey);
-
-        $response = $client->sendGetRequest(PosRequestUri::MERCHANT_INFORMATION);
-
-        if ($response === null) {
-            return null;
-        }
-
-        $information = new MerchantInformation();
-        $information->assign($response);
-
-        return $information;
     }
 
     public function createWebhook(PosSalesChannelEntity $salesChannelEntity, CreateSubscription $createSubscription): ?SubscriptionResponse

@@ -13,11 +13,9 @@ use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions\Definition;
 class VariantOptionDefinitions extends PosStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Definition[]
      */
-    protected $definitions = [];
+    protected array $definitions = [];
 
     public function getDefinitions(): array
     {

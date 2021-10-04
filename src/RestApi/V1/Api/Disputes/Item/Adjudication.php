@@ -16,36 +16,24 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class Adjudication extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $type;
+    protected string $type;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $adjudicationTime;
+    protected string $adjudicationTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $reason;
+    protected string $reason;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $disputeLifeCycleStage;
+    protected string $disputeLifeCycleStage;
 
     public function getType(): string
     {

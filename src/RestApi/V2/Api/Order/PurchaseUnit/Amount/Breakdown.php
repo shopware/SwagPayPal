@@ -23,60 +23,39 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\TaxTotal;
 class Breakdown extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ItemTotal
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $itemTotal;
+    protected ItemTotal $itemTotal;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Shipping
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $shipping;
+    protected Shipping $shipping;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Handling
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $handling;
+    protected Handling $handling;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var TaxTotal|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money", nullable=true)
      */
-    protected $taxTotal;
+    protected ?TaxTotal $taxTotal = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Insurance
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $insurance;
+    protected Insurance $insurance;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ShippingDiscount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $shippingDiscount;
+    protected ShippingDiscount $shippingDiscount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Discount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $discount;
+    protected Discount $discount;
 
     public function getItemTotal(): ItemTotal
     {

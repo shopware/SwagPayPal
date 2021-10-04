@@ -11,26 +11,11 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class ImageUpload extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $imageFormat;
+    protected string $imageFormat;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $imageUrl;
+    protected string $imageUrl;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $imageLookupKey;
+    protected ?string $imageLookupKey = null;
 
     public function getImageFormat(): string
     {

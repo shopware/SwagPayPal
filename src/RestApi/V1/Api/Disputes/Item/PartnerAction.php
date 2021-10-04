@@ -17,60 +17,39 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\PartnerAction\Amount;
 class PartnerAction extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $id;
+    protected string $id;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $name;
+    protected string $name;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $createTime;
+    protected string $createTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $updateTime;
+    protected string $updateTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $dueTime;
+    protected string $dueTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $status;
+    protected string $status;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Amount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $amount;
+    protected Amount $amount;
 
     public function getId(): string
     {

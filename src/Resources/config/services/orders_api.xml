@@ -23,9 +23,7 @@
         </service>
 
         <service id="Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder">
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
             <argument type="service" id="event_dispatcher"/>
@@ -33,9 +31,6 @@
         </service>
 
         <service id="Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder">
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
-            <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider"/>
@@ -56,10 +51,6 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
-        <service id="Swag\PayPal\OrdersApi\Patch\AmountPatchBuilder">
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AmountProvider"/>
-        </service>
-
         <service id="Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder"/>
 
         <service id="Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder"/>
@@ -67,9 +58,5 @@
         <service id="Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder">
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
         </service>
-
-        <service id="Swag\PayPal\OrdersApi\Patch\ShippingAddressPatchBuilder"/>
-
-        <service id="Swag\PayPal\OrdersApi\Patch\ShippingNamePatchBuilder"/>
     </services>
 </container>

@@ -11,40 +11,15 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class VariantChange extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $productUuid;
+    protected string $productUuid;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $variantUuid;
+    protected string $variantUuid;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $fromLocationUuid;
+    protected string $fromLocationUuid;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $toLocationUuid;
+    protected string $toLocationUuid;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
-     */
-    protected $change;
+    protected int $change;
 
     public function getProductUuid(): string
     {

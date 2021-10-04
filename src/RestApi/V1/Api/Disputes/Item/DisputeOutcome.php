@@ -17,20 +17,14 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputeOutcome\AmountRefunded;
 class DisputeOutcome extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $outcomeCode;
+    protected string $outcomeCode;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var AmountRefunded
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $amountRefunded;
+    protected AmountRefunded $amountRefunded;
 
     public function getOutcomeCode(): string
     {

@@ -24,44 +24,30 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\OutstandingBalance;
 class BillingInfo extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var OutstandingBalance
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $outstandingBalance;
+    protected OutstandingBalance $outstandingBalance;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var CycleExecution[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_subscription_cycle_execution"})
      */
-    protected $cycleExecutions = [];
+    protected array $cycleExecutions = [];
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var LastPayment
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_last_payment")
      */
-    protected $lastPayment;
+    protected LastPayment $lastPayment;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $nextBillingTime;
+    protected ?string $nextBillingTime = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
      * @OA\Property(type="integer")
      */
-    protected $failedPaymentsCount;
+    protected int $failedPaymentsCount;
 
     public function getOutstandingBalance(): OutstandingBalance
     {

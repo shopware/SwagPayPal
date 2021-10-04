@@ -11,26 +11,14 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class Uploaded extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $imageLookupKey;
+    protected string $imageLookupKey;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var string[]
      */
-    protected $imageUrls;
+    protected array $imageUrls;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $source;
+    protected string $source;
 
     public function getImageLookupKey(): string
     {

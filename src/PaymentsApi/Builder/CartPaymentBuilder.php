@@ -22,7 +22,6 @@ use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
@@ -31,14 +30,13 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBuilderInterface
 {
     public function __construct(
-        SettingsServiceInterface $settingsService,
         LocaleCodeProvider $localeCodeProvider,
         PriceFormatter $priceFormatter,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger,
         SystemConfigService $systemConfigService
     ) {
-        parent::__construct($settingsService, $localeCodeProvider, $priceFormatter, $eventDispatcher, $logger, $systemConfigService);
+        parent::__construct($localeCodeProvider, $priceFormatter, $eventDispatcher, $logger, $systemConfigService);
     }
 
     public function getPayment(
@@ -84,11 +82,6 @@ class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBu
         $shippingCostsTotal = $cart->getShippingCosts()->getTotalPrice();
         $amount = (new AmountProvider($this->priceFormatter))->createAmount($transactionAmount, $shippingCostsTotal, $currency);
         $transaction->setAmount($amount);
-
-        if ($this->systemConfigService === null) {
-            // this can not occur, since this child's constructor is not nullable
-            throw new \RuntimeException('No system settings available');
-        }
 
         $itemListValid = true;
         // If its an express checkout process, use the ecs submit cart option

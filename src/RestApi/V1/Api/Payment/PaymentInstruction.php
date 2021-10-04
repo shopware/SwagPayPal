@@ -21,52 +21,35 @@ class PaymentInstruction extends PayPalApiStruct
     public const TYPE_INVOICE = 'PAY_UPON_INVOICE';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $referenceNumber;
+    protected string $referenceNumber;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var RecipientBankingInstruction
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_recipient_banking_instruction")
      */
-    protected $recipientBankingInstruction;
+    protected RecipientBankingInstruction $recipientBankingInstruction;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Amount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected $amount;
+    protected Amount $amount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $paymentDueDate;
+    protected string $paymentDueDate;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $instructionType;
+    protected string $instructionType;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Link[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected $links;
+    protected array $links;
 
     public function getReferenceNumber(): string
     {

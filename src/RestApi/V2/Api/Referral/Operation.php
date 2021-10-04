@@ -19,20 +19,14 @@ class Operation extends PayPalApiStruct
     public const OPERATION_TYPE_API_INTEGRATION = 'API_INTEGRATION';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Referral\Operation::OPERATION_TYPE_API_INTEGRATION)
      */
-    protected $operation = self::OPERATION_TYPE_API_INTEGRATION;
+    protected string $operation = self::OPERATION_TYPE_API_INTEGRATION;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ApiIntegrationPreference
      * @OA\Property(ref="#/components/swag_paypal_v2_referral_api_integration_preference")
      */
-    protected $apiIntegrationPreference;
+    protected ApiIntegrationPreference $apiIntegrationPreference;
 
     public function getOperation(): string
     {

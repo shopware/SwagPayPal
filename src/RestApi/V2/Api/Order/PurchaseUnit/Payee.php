@@ -17,28 +17,19 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payee\DisplayData;
 class Payee extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $emailAddress;
+    protected string $emailAddress;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $merchantId;
+    protected string $merchantId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var DisplayData
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_display_data")
      */
-    protected $displayData;
+    protected DisplayData $displayData;
 
     public function getEmailAddress(): string
     {

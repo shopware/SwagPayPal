@@ -17,44 +17,30 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties
 abstract class ServiceDetails extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $description;
+    protected string $description;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $serviceStarted;
+    protected string $serviceStarted;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $note;
+    protected string $note;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var SubReason[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_sub_reason"})
      */
-    protected $subReasons;
+    protected array $subReasons;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $purchaseUrl;
+    protected string $purchaseUrl;
 
     public function getDescription(): string
     {

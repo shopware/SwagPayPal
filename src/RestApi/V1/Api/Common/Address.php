@@ -16,60 +16,39 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 abstract class Address extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $line1;
+    protected string $line1;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $line2;
+    protected ?string $line2 = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $city;
+    protected string $city;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $countryCode;
+    protected string $countryCode;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $postalCode;
+    protected string $postalCode;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $state;
+    protected ?string $state = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $phone;
+    protected ?string $phone = null;
 
     public function getLine1(): string
     {

@@ -23,100 +23,66 @@ use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 class Payment extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $id;
+    protected string $id;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string", default=Swag\PayPal\RestApi\V1\PaymentIntentV1::SALE)
      */
-    protected $intent = PaymentIntentV1::SALE;
+    protected string $intent = PaymentIntentV1::SALE;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $state;
+    protected string $state;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $cart;
+    protected string $cart;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Payer
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_payer")
      */
-    protected $payer;
+    protected Payer $payer;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Transaction[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction"})
      */
-    protected $transactions;
+    protected array $transactions;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $createTime;
+    protected string $createTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $updateTime;
+    protected string $updateTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Link[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected $links;
+    protected array $links;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var RedirectUrls
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_redirect_urls")
      */
-    protected $redirectUrls;
+    protected RedirectUrls $redirectUrls;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ApplicationContext
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_application_context")
      */
-    protected $applicationContext;
+    protected ApplicationContext $applicationContext;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PaymentInstruction|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_payment_instruction", nullable=true)
      */
-    protected $paymentInstruction;
+    protected ?PaymentInstruction $paymentInstruction = null;
 
     public function getId(): string
     {

@@ -17,52 +17,34 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\SellerReceiva
 class Capture extends Payment
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $invoiceId;
+    protected ?string $invoiceId = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $noteToPayer;
+    protected ?string $noteToPayer = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var SellerProtection
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_capture_seller_protection")
      */
-    protected $sellerProtection;
+    protected SellerProtection $sellerProtection;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $finalCapture;
+    protected bool $finalCapture;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var SellerReceivableBreakdown
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_capture_seller_receivable_breakdown")
      */
-    protected $sellerReceivableBreakdown;
+    protected SellerReceivableBreakdown $sellerReceivableBreakdown;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $disbursementMode;
+    protected string $disbursementMode;
 
     public function getInvoiceId(): ?string
     {

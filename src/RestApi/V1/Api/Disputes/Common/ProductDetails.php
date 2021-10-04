@@ -16,44 +16,30 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 abstract class ProductDetails extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $productReceived;
+    protected string $productReceived;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $productReceivedTime;
+    protected string $productReceivedTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var SubReason[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_sub_reason"})
      */
-    protected $subReasons;
+    protected array $subReasons;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $purchaseUrl;
+    protected string $purchaseUrl;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ReturnDetails
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_return_details")
      */
-    protected $returnDetails;
+    protected ReturnDetails $returnDetails;
 
     public function getProductReceived(): string
     {

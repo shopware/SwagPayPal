@@ -19,24 +19,16 @@ class Patch extends PayPalApiStruct
     public const OPERATION_REPLACE = 'replace';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $op;
+    protected string $op;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $path;
+    protected string $path;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var array|string
      * @OA\Property(oneOf={"string", "array"})
      */

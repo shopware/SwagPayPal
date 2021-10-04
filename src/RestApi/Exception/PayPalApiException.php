@@ -15,23 +15,23 @@ class PayPalApiException extends ShopwareHttpException
     public const ERROR_CODE_DUPLICATE_ORDER_NUMBER = 'DUPLICATE_TRANSACTION';
     public const ERROR_CODE_DUPLICATE_INVOICE_ID = 'DUPLICATE_INVOICE_ID';
 
-    private ?int $payPalApiStatusCode;
+    private int $payPalApiStatusCode;
 
     public function __construct(
         string $name,
         string $message,
         int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR
     ) {
+        $this->payPalApiStatusCode = $payPalApiStatusCode;
         parent::__construct(
             'The error "{{ name }}" occurred with the following message: {{ message }}',
             ['name' => $name, 'message' => $message]
         );
-        $this->payPalApiStatusCode = $payPalApiStatusCode;
     }
 
     public function getStatusCode(): int
     {
-        return $this->payPalApiStatusCode ?? parent::getStatusCode();
+        return $this->payPalApiStatusCode;
     }
 
     public function getErrorCode(): string

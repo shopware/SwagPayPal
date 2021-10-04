@@ -18,20 +18,16 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Link;
 class Disputes extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Item[]|null
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_item"}, nullable=true)
      */
-    protected $items;
+    protected ?array $items = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Link[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected $links;
+    protected array $links;
 
     /**
      * @return Item[]|null

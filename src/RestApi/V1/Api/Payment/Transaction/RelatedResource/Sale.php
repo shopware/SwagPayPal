@@ -16,12 +16,9 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource\Sale\Transact
 class Sale extends RelatedResource
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var TransactionFee
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected $transactionFee;
+    protected TransactionFee $transactionFee;
 
     public function getTransactionFee(): TransactionFee
     {

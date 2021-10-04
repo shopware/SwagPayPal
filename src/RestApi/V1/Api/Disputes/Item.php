@@ -45,204 +45,137 @@ class Item extends PayPalApiStruct
     ];
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $disputeId;
+    protected string $disputeId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $createTime;
+    protected string $createTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $updateTime;
+    protected string $updateTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var DisputedTransaction[]|null
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_disputed_transaction"}, nullable=true)
      */
-    protected $disputedTransactions;
+    protected ?array $disputedTransactions = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $reason;
+    protected string $reason;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $status;
+    protected string $status;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $disputeState;
+    protected ?string $disputeState = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var DisputeAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $disputeAmount;
+    protected DisputeAmount $disputeAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $externalReasonCode;
+    protected ?string $externalReasonCode = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var DisputeOutcome|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_dispute_outcome", nullable=true)
      */
-    protected $disputeOutcome;
+    protected ?DisputeOutcome $disputeOutcome = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Adjudication[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_adjudication"})
      */
-    protected $adjudications;
+    protected array $adjudications;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var MoneyMovement[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_money_movement"})
      */
-    protected $moneyMovements;
+    protected array $moneyMovements;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $disputeLifeCycleStage;
+    protected string $disputeLifeCycleStage;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $disputeChannel;
+    protected ?string $disputeChannel = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Message[]|null
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_message"}, nullable=true)
      */
-    protected $messages;
+    protected ?array $messages = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Extensions
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions")
      */
-    protected $extensions;
+    protected Extensions $extensions;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Evidence[]|null
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence"}, nullable=true)
      */
-    protected $evidences;
+    protected ?array $evidences = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $buyerResponseDueDate;
+    protected ?string $buyerResponseDueDate = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $sellerResponseDueDate;
+    protected ?string $sellerResponseDueDate = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Offer|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_offer", nullable=true)
      */
-    protected $offer;
+    protected ?Offer $offer = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var RefundDetails|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_refund_details", nullable=true)
      */
-    protected $refundDetails;
+    protected ?RefundDetails $refundDetails = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var CommunicationDetails|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_communication_details", nullable=true)
      */
-    protected $communicationDetails;
+    protected ?CommunicationDetails $communicationDetails = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var PartnerAction[]|null
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_partner_action"}, nullable=true)
      */
-    protected $partnerActions;
+    protected ?array $partnerActions = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var SupportingInfo[]|null
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_supporting_info"}, nullable=true)
      */
-    protected $supportingInfo;
+    protected ?array $supportingInfo = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Link[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected $links;
+    protected array $links;
 
     public function getDisputeId(): string
     {

@@ -11,33 +11,13 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 
 class PosSalesChannelProductEntity extends Entity
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $salesChannelId;
+    protected string $salesChannelId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $productId;
+    protected string $productId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $productVersionId;
+    protected string $productVersionId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $checksum;
+    protected string $checksum;
 
     public function getSalesChannelId(): string
     {

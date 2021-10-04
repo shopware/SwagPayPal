@@ -17,12 +17,9 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\RefundDetails\AllowedRefundAmount;
 class RefundDetails extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var AllowedRefundAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $allowedRefundAmount;
+    protected AllowedRefundAmount $allowedRefundAmount;
 
     public function getAllowedRefundAmount(): AllowedRefundAmount
     {

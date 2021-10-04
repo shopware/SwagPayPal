@@ -16,20 +16,14 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 abstract class Money extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $currencyCode;
+    protected string $currencyCode;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $value;
+    protected string $value;
 
     public function getCurrencyCode(): string
     {

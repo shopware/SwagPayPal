@@ -11,26 +11,11 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class Violation extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $propertyName;
+    protected string $propertyName;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $developerMessage;
+    protected string $developerMessage;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $constraintType;
+    protected string $constraintType;
 
     public function toString(): string
     {

@@ -12,8 +12,5 @@ use Swag\PayPal\RestApi\V1\Api\Token;
 
 interface TokenResourceInterface
 {
-    /**
-     * @deprecated tag:v4.0.0 - parameter $url will be removed, is placed in OAuthCredentials now
-     */
-    public function getToken(OAuthCredentials $credentials, string $url): Token;
+    public function getToken(OAuthCredentials $credentials): Token;
 }

@@ -22,52 +22,34 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class Address extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $addressLine_1;
+    protected ?string $addressLine_1 = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $addressLine_2;
+    protected ?string $addressLine_2 = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)*
      */
-    protected $adminArea_1;
+    protected ?string $adminArea_1 = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $adminArea_2;
+    protected ?string $adminArea_2 = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $postalCode;
+    protected ?string $postalCode = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $countryCode;
+    protected string $countryCode;
 
     public function getAddressLine1(): ?string
     {

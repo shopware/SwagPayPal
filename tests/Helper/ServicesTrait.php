@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Test\Helper;
 
-use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
@@ -20,7 +19,6 @@ use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\DummyCollection;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
@@ -91,10 +89,7 @@ trait ServicesTrait
     {
         $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
 
-        $settingsService = new SettingsService($systemConfig, new NullLogger());
-
         return new OrderPaymentBuilder(
-            $settingsService,
             new LocaleCodeProviderMock(new EntityRepositoryMock()),
             new PriceFormatter(),
             new EventDispatcherMock(),
@@ -108,14 +103,10 @@ trait ServicesTrait
     {
         $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
 
-        $settingsService = new SettingsService($systemConfig, new NullLogger());
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
 
         return new OrderFromOrderBuilder(
-            $settingsService,
-            $priceFormatter,
-            $amountProvider,
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $systemConfig),
             new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock())

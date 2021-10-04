@@ -21,17 +21,6 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
             config: {},
             isLoading: false,
             setDefault: false,
-
-            /** @deprecated tag:v4.0.0 - will be removed, use computed instead */
-            clientIdFilled: false,
-            /** @deprecated tag:v4.0.0 - will be removed, use computed instead */
-            clientSecretFilled: false,
-            /** @deprecated tag:v4.0.0 - will be removed, use computed instead */
-            clientIdSandboxFilled: false,
-            /** @deprecated tag:v4.0.0 - will be removed, use computed instead */
-            clientSecretSandboxFilled: false,
-            /** @deprecated tag:v4.0.0 - will be removed, use computed instead */
-            sandboxChecked: false,
         };
     },
 
@@ -73,20 +62,6 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         credentialsProvidedSandbox() {
             return !!this.config['SwagPayPal.settings.clientIdSandbox']
                 && !!this.config['SwagPayPal.settings.clientSecretSandbox'];
-        },
-    },
-
-    watch: {
-        config: {
-            handler() {
-                this.clientIdFilled = !!this.config['SwagPayPal.settings.clientId'];
-                this.clientSecretFilled = !!this.config['SwagPayPal.settings.clientSecret'];
-                this.clientIdSandboxFilled = !!this.config['SwagPayPal.settings.clientIdSandbox'];
-                this.clientSecretSandboxFilled = !!this.config['SwagPayPal.settings.clientSecretSandbox'];
-                this.sandboxChecked = !!this.config['SwagPayPal.settings.sandbox'];
-            },
-            deep: true,
-            immediately: true,
         },
     },
 

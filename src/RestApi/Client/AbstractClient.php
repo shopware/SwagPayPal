@@ -15,19 +15,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractClient
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ClientInterface
-     */
-    protected $client;
+    protected ClientInterface $client;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
+    protected LoggerInterface $logger;
 
     public function __construct(ClientInterface $client, LoggerInterface $logger)
     {

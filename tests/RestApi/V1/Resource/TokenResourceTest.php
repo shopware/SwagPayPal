@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
@@ -22,7 +23,7 @@ class TokenResourceTest extends TestCase
 {
     public function testGetToken(): void
     {
-        $token = $this->getTokenResource(false)->getToken(new OAuthCredentials(), 'url');
+        $token = $this->getTokenResource(false)->getToken($this->getCredentials());
 
         $dateNow = new \DateTime('now');
 
@@ -33,7 +34,7 @@ class TokenResourceTest extends TestCase
 
     public function testGetTokenFromCache(): void
     {
-        $token = $this->getTokenResource()->getToken(new OAuthCredentials(), 'url');
+        $token = $this->getTokenResource()->getToken($this->getCredentials());
 
         static::assertSame(CacheItemWithTokenMock::ACCESS_TOKEN, $token->getAccessToken());
         static::assertSame(CreateTokenResponseFixture::TOKEN_TYPE, $token->getTokenType());
@@ -53,5 +54,15 @@ class TokenResourceTest extends TestCase
             new TokenClientFactoryMock($logger),
             new TokenValidator()
         );
+    }
+
+    private function getCredentials(): OAuthCredentials
+    {
+        $credentials = new OAuthCredentials();
+        $credentials->setRestId('restId');
+        $credentials->setRestSecret('restSecret');
+        $credentials->setUrl(BaseURL::SANDBOX);
+
+        return $credentials;
     }
 }

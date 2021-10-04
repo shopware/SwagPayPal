@@ -13,26 +13,11 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class ApiKey extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Header
-     */
-    protected $header;
+    protected Header $header;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Payload
-     */
-    protected $payload;
+    protected Payload $payload;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $signature;
+    protected string $signature;
 
     public function getHeader(): Header
     {

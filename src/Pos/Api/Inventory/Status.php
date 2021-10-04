@@ -12,26 +12,17 @@ use Swag\PayPal\Pos\Api\Inventory\Status\Variant;
 
 class Status extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $locationUuid;
+    protected string $locationUuid;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var string[]
      */
-    protected $trackedProducts;
+    protected array $trackedProducts;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Variant[]
      */
-    protected $variants = [];
+    protected array $variants = [];
 
     public function getLocationUuid(): string
     {

@@ -16,28 +16,19 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 abstract class Amount extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $total;
+    protected string $total;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $currency;
+    protected string $currency;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Details
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_details")
      */
-    protected $details;
+    protected Details $details;
 
     public function getDetails(): Details
     {

@@ -16,68 +16,26 @@ use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions;
 
 class Product extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $uuid;
+    protected string $uuid;
+
+    protected string $name;
+
+    protected string $description;
+
+    protected Category $category;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Category
-     */
-    protected $category;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Variant[]
      */
-    protected $variants = [];
+    protected array $variants = [];
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var VariantOptionDefinitions|null
-     */
-    protected $variantOptionDefinitions;
+    protected ?VariantOptionDefinitions $variantOptionDefinitions = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var float
-     */
-    protected $vatPercentage;
+    protected float $vatPercentage;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Presentation
-     */
-    protected $presentation;
+    protected Presentation $presentation;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Metadata
-     */
-    protected $metadata;
+    protected Metadata $metadata;
 
     public function getUuid(): string
     {

@@ -21,52 +21,34 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties
 class CreditNotProcessed extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $issueType;
+    protected string $issueType;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ExpectedRefund
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $expectedRefund;
+    protected ExpectedRefund $expectedRefund;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var CancellationDetails
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_cancellation_details")
      */
-    protected $cancellationDetails;
+    protected CancellationDetails $cancellationDetails;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ProductDetails
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_product_details")
      */
-    protected $productDetails;
+    protected ProductDetails $productDetails;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ServiceDetails
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_common_service_details")
      */
-    protected $serviceDetails;
+    protected ServiceDetails $serviceDetails;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var AgreedRefundDetails
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_aggred_refund_details")
      */
-    protected $agreedRefundDetails;
+    protected AgreedRefundDetails $agreedRefundDetails;
 
     public function getIssueType(): string
     {

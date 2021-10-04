@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 4.0.0
 - PPI-252 - Improved error handling for Webhooks
+- PPI-327 - Improved data type structure
 - PPI-343 - Fixes error when the customer account name differs from the shipping address name
 - PPI-352 - Fixes issue with failing Zettle webhooks on POS sale
 

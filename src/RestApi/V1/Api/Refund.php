@@ -21,124 +21,80 @@ use Swag\PayPal\RestApi\V1\Api\Refund\TotalRefundedAmount;
 class Refund extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Amount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_amount")
      */
-    protected $amount;
+    protected Amount $amount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $invoiceNumber;
+    protected string $invoiceNumber;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $description;
+    protected string $description;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $reason;
+    protected string $reason;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $id;
+    protected string $id;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $createTime;
+    protected string $createTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $updateTime;
+    protected string $updateTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $state;
+    protected string $state;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var RefundFromTransactionFee
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected $refundFromTransactionFee;
+    protected RefundFromTransactionFee $refundFromTransactionFee;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var TotalRefundedAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected $totalRefundedAmount;
+    protected TotalRefundedAmount $totalRefundedAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var RefundFromReceivedAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected $refundFromReceivedAmount;
+    protected RefundFromReceivedAmount $refundFromReceivedAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $saleId;
+    protected string $saleId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $captureId;
+    protected string $captureId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $parentPayment;
+    protected string $parentPayment;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Link[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected $links;
+    protected array $links;
 
     public function getAmount(): Amount
     {

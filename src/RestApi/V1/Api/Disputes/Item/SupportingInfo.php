@@ -16,28 +16,19 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class SupportingInfo extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $notes;
+    protected string $notes;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $source;
+    protected string $source;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $providedTime;
+    protected string $providedTime;
 
     public function getNotes(): string
     {

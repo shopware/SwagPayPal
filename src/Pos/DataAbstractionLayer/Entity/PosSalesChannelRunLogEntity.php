@@ -14,54 +14,17 @@ class PosSalesChannelRunLogEntity extends Entity
 {
     use EntityIdTrait;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $runId;
+    protected string $runId;
 
-    /**
-     * @deprecated tag:v4.0.0, since 3.0.1 use $posSalesChannelRun instead
-     *
-     * @var PosSalesChannelRunEntity|null
-     */
-    protected $run;
+    protected ?PosSalesChannelRunEntity $posSalesChannelRun = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PosSalesChannelRunEntity|null
-     */
-    protected $posSalesChannelRun;
+    protected int $level;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
-     */
-    protected $level;
+    protected string $message;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $message;
+    protected ?string $productId = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $productId;
-
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $productVersionId;
+    protected ?string $productVersionId = null;
 
     public function getRunId(): string
     {
@@ -71,22 +34,6 @@ class PosSalesChannelRunLogEntity extends Entity
     public function setRunId(string $runId): void
     {
         $this->runId = $runId;
-    }
-
-    /**
-     * @deprecated tag:v4.0.0, since 3.0.1 use getPosSalesChannelRun() instead
-     */
-    public function getRun(): ?PosSalesChannelRunEntity
-    {
-        return $this->getPosSalesChannelRun();
-    }
-
-    /**
-     * @deprecated tag:v4.0.0, since 3.0.1 use setPosSalesChannelRun() instead
-     */
-    public function setRun(?PosSalesChannelRunEntity $run): void
-    {
-        $this->setPosSalesChannelRun($run);
     }
 
     public function getPosSalesChannelRun(): ?PosSalesChannelRunEntity

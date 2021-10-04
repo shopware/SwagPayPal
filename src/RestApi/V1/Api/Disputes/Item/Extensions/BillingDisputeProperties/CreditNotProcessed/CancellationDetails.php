@@ -16,36 +16,24 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class CancellationDetails extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $cancellationDate;
+    protected string $cancellationDate;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $cancellationNumber;
+    protected string $cancellationNumber;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $cancelled;
+    protected bool $cancelled;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $cancellationMode;
+    protected string $cancellationMode;
 
     public function getCancellationDate(): string
     {

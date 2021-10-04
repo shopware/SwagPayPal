@@ -21,76 +21,50 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping;
 class PurchaseUnit extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $referenceId;
+    protected string $referenceId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Amount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_amount")
      */
-    protected $amount;
+    protected Amount $amount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Payee
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payee")
      */
-    protected $payee;
+    protected Payee $payee;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $description;
+    protected string $description;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $customId;
+    protected ?string $customId = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $invoiceId;
+    protected ?string $invoiceId = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Item[]|null
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_item"}, nullable=true)
      */
-    protected $items;
+    protected ?array $items = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Shipping
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_shipping")
      */
-    protected $shipping;
+    protected Shipping $shipping;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Payments
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payments")
      */
-    protected $payments;
+    protected Payments $payments;
 
     public function getReferenceId(): string
     {

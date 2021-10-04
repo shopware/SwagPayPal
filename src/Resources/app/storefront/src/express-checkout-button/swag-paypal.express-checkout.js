@@ -105,7 +105,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         /**
          * @type string
          */
-        payPaLPaymentMethodId: '',
+        payPalPaymentMethodId: '',
 
         /**
          * URL to create a new PayPal order
@@ -276,7 +276,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
      * @return {Promise}
      */
     createOrder() {
-        const switchPaymentMethodData = { paymentMethodId: this.options.payPaLPaymentMethodId };
+        const switchPaymentMethodData = { paymentMethodId: this.options.payPalPaymentMethodId };
 
         return new Promise((resolve, reject) => {
             this._client.patch(

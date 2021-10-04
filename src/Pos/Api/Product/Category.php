@@ -11,19 +11,9 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class Category extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $uuid;
+    protected string $uuid;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $name;
+    protected string $name;
 
     public function getUuid(): string
     {

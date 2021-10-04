@@ -73,41 +73,6 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         return config;
     }
 
-    /**
-     * @deprecated tag:v4.0.0 - will be removed, use getScriptOptions instead
-     *
-     * @return {string}
-     */
-    getScriptUrlOptions() {
-        let config = '&components=marks,buttons,messages';
-
-        if (typeof this.options.commit !== 'undefined') {
-            config += `&commit=${this.options.commit}`;
-        }
-
-        if (this.options.languageIso) {
-            config += `&locale=${this.options.languageIso}`;
-        }
-
-        if (this.options.currency) {
-            config += `&currency=${this.options.currency}`;
-        }
-
-        if (this.options.intent) {
-            config += `&intent=${this.options.intent}`;
-        }
-
-        if (this.options.useAlternativePaymentMethods !== undefined && !this.options.useAlternativePaymentMethods) {
-            config += `&disable-funding=${availableAPMs.join(',')}`;
-        } else if (this.options.disabledAlternativePaymentMethods !== undefined
-                && this.options.disabledAlternativePaymentMethods.length > 0
-        ) {
-            config += `&disable-funding=${this.options.disabledAlternativePaymentMethods.join(',')}`;
-        }
-
-        return config;
-    }
-
     createError(error, cancel = false, redirect = '') {
         if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && typeof this._client === 'undefined') {
             console.error('No StoreApiClient defined in child plugin class');

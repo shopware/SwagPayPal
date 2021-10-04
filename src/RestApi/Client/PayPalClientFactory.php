@@ -52,7 +52,6 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
         if (!isset($this->payPalClients[$key])) {
             $this->payPalClients[$key] = new PayPalClient(
                 $this->tokenResource,
-                null,
                 $this->logger,
                 $partnerAttributionId,
                 $this->createCredentialsObject($salesChannelId)

@@ -15,20 +15,14 @@ use OpenApi\Annotations as OA;
 class Authorization extends RelatedResource
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $reasonCode;
+    protected string $reasonCode;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $validUntil;
+    protected string $validUntil;
 
     public function getReasonCode(): string
     {

@@ -20,7 +20,6 @@
         </service>
 
         <service id="Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder">
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
             <argument type="service" id="event_dispatcher"/>
@@ -30,7 +29,6 @@
         </service>
 
         <service id="Swag\PayPal\PaymentsApi\Builder\CartPaymentBuilder">
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsService"/>
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="Swag\PayPal\Util\PriceFormatter"/>
             <argument type="service" id="event_dispatcher"/>

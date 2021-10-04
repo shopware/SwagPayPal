@@ -11,61 +11,21 @@ use Shopware\Core\Framework\Struct\Struct;
 
 class AdditionalInformation extends Struct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $countryId;
+    protected string $countryId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $currencyId;
+    protected string $currencyId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $languageId;
+    protected ?string $languageId = null;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $customerGroupId;
+    protected string $customerGroupId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $navigationCategoryId;
+    protected string $navigationCategoryId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $shippingMethodId;
+    protected string $shippingMethodId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $paymentMethodId;
+    protected string $paymentMethodId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var array
-     */
-    protected $merchantInformation;
+    protected array $merchantInformation;
 
     public function setCountryId(string $countryId): void
     {

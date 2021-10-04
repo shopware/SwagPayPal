@@ -18,68 +18,44 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\MerchandizeDisputeProper
 class Extensions extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $merchantContacted;
+    protected bool $merchantContacted;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $merchantContactedOutcome;
+    protected string $merchantContactedOutcome;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $merchantContactedTime;
+    protected string $merchantContactedTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $merchantContactedMode;
+    protected string $merchantContactedMode;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $buyerContactedTime;
+    protected string $buyerContactedTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $buyerContactedChannel;
+    protected string $buyerContactedChannel;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var BillingDisputeProperties
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_billing_dispute_properties")
      */
-    protected $billingDisputeProperties;
+    protected BillingDisputeProperties $billingDisputeProperties;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var MerchandizeDisputeProperties
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_merchandize_dispute_properties")
      */
-    protected $merchandizeDisputeProperties;
+    protected MerchandizeDisputeProperties $merchandizeDisputeProperties;
 
     public function isMerchantContacted(): bool
     {

@@ -11,40 +11,15 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 abstract class Balance extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $organizationUuid;
+    protected string $organizationUuid;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $locationUuid;
+    protected string $locationUuid;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $productUuid;
+    protected string $productUuid;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $variantUuid;
+    protected string $variantUuid;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
-     */
-    protected $balance;
+    protected int $balance;
 
     public function getOrganizationUuid(): string
     {

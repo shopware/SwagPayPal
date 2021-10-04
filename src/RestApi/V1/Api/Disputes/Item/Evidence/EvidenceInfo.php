@@ -18,20 +18,16 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence\EvidenceInfo\TrackingInfo;
 class EvidenceInfo extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var TrackingInfo[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_tracking_info"})
      */
-    protected $trackingInfo;
+    protected array $trackingInfo;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var RefundId[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_refund_id"})
      */
-    protected $refundIds;
+    protected array $refundIds;
 
     /**
      * @return TrackingInfo[]

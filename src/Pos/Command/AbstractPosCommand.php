@@ -21,12 +21,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractPosCommand extends Command
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var EntityRepositoryInterface
-     */
-    protected $salesChannelRepository;
+    protected EntityRepositoryInterface $salesChannelRepository;
 
     public function __construct(EntityRepositoryInterface $salesChannelRepository)
     {

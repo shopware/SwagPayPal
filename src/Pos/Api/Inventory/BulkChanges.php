@@ -12,19 +12,12 @@ use Swag\PayPal\Pos\Api\Inventory\BulkChanges\ProductChange;
 
 class BulkChanges extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
-     */
-    protected $returnBalanceForLocationUuid;
+    protected ?string $returnBalanceForLocationUuid = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var ProductChange[]
      */
-    protected $productChanges = [];
+    protected array $productChanges = [];
 
     public function getReturnBalanceForLocationUuid(): ?string
     {

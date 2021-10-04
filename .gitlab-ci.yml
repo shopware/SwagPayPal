@@ -96,8 +96,7 @@ Static validation:
             fi
         - cd $CI_PROJECT_DIR/development
         - php bin/console snippets:validate
-        # ToDo tag:v4.0.0 - use again
-        # - php bin/console dal:validate
+        - php bin/console dal:validate
     parallel:
         matrix:
             -   PLATFORM_BRANCH: "6.4.0.0"

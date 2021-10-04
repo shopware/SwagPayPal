@@ -26,108 +26,70 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber;
 class Subscription extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $id;
+    protected string $id;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $planId;
+    protected string $planId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $startTime;
+    protected string $startTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $quantity;
+    protected string $quantity;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ShippingAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $shippingAmount;
+    protected ShippingAmount $shippingAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Subscriber
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_subscriber")
      */
-    protected $subscriber;
+    protected Subscriber $subscriber;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var BillingInfo|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_billing_info", nullable=true)
      */
-    protected $billingInfo;
+    protected ?BillingInfo $billingInfo = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ApplicationContext
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_application_context")
      */
-    protected $applicationContext;
+    protected ApplicationContext $applicationContext;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $status;
+    protected string $status;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $statusUpdateTime;
+    protected string $statusUpdateTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $createTime;
+    protected string $createTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $updateTime;
+    protected string $updateTime;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Link[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected $links;
+    protected array $links;
 
     public function getId(): string
     {

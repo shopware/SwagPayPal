@@ -19,36 +19,26 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingOption;
 class ItemList extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ShippingAddress
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_transaction_shipping_address")
      */
-    protected $shippingAddress;
+    protected ShippingAddress $shippingAddress;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Item[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_item"})
      */
-    protected $items;
+    protected array $items;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var ShippingOption[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_shipping_option"})
      */
-    protected $shippingOptions;
+    protected array $shippingOptions;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $shippingPhoneNumber;
+    protected string $shippingPhoneNumber;
 
     public function getShippingAddress(): ShippingAddress
     {

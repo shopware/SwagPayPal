@@ -22,20 +22,14 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\LastPayment\Amount;
 class LastPayment extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Amount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $amount;
+    protected Amount $amount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $time;
+    protected string $time;
 
     public function getAmount(): Amount
     {

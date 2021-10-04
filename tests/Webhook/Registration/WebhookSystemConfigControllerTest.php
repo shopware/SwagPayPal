@@ -14,7 +14,6 @@ use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
 use Shopware\Core\System\SystemConfig\Service\ConfigurationService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Setting\Service\SettingsService;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -240,15 +239,11 @@ class WebhookSystemConfigControllerTest extends TestCase
 
     private function createWebhookSystemConfigController(): WebhookSystemConfigController
     {
-        /** @var SettingsService $settingsService */
-        $settingsService = $this->getContainer()->get(SettingsService::class);
-
         return new WebhookSystemConfigController(
             $this->configurationService,
             $this->systemConfigService,
             new WebhookSystemConfigHelper(
                 new NullLogger(),
-                $settingsService,
                 $this->webhookService,
                 $this->systemConfigService,
                 new SettingsValidationService($this->systemConfigService, new NullLogger())

@@ -19,59 +19,41 @@ abstract class Address extends PayPalApiStruct
      * The first line of the address. For example, number or street. For example, 173 Drury Lane.
      * Required for data entry and compliance and risk checks. Must contain the full address.
      *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $addressLine_1;
+    protected ?string $addressLine_1 = null;
 
     /**
      * The second line of the address. For example, suite or apartment number.
      *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $addressLine_2;
+    protected ?string $addressLine_2 = null;
 
     /**
      * A city, town, or village. Smaller than $adminArea1
      *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $adminArea_2;
+    protected ?string $adminArea_2 = null;
 
     /**
      * The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision.
      * Format for postal delivery. For example, CA and not California.
      *
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $adminArea_1;
+    protected ?string $adminArea_1 = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $postalCode;
+    protected ?string $postalCode = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $countryCode;
+    protected string $countryCode;
 
     public function getAddressLine1(): ?string
     {

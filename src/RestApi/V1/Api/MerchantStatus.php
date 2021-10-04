@@ -16,28 +16,19 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class MerchantStatus extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $paymentsReceivable;
+    protected bool $paymentsReceivable;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $primaryEmail;
+    protected string $primaryEmail;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $primaryEmailConfirmed;
+    protected bool $primaryEmailConfirmed;
 
     public function getPaymentsReceivable(): bool
     {

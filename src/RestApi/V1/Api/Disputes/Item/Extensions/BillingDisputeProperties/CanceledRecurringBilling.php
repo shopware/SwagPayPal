@@ -18,20 +18,14 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties
 class CanceledRecurringBilling extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ExpectedRefund
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $expectedRefund;
+    protected ExpectedRefund $expectedRefund;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var CancellationDetails
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_cancellation_details")
      */
-    protected $cancellationDetails;
+    protected CancellationDetails $cancellationDetails;
 
     public function getExpectedRefund(): ExpectedRefund
     {

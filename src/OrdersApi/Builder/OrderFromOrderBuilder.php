@@ -14,29 +14,23 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Util\PriceFormatter;
 
 class OrderFromOrderBuilder extends AbstractOrderBuilder
 {
     private ItemListProvider $itemListProvider;
 
     public function __construct(
-        SettingsServiceInterface $settingsService,
-        PriceFormatter $priceFormatter,
-        AmountProvider $amountProvider,
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,
         ItemListProvider $itemListProvider
     ) {
-        parent::__construct($settingsService, $priceFormatter, $amountProvider, $systemConfigService, $purchaseUnitProvider);
+        parent::__construct($systemConfigService, $purchaseUnitProvider);
         $this->itemListProvider = $itemListProvider;
     }
 
@@ -45,7 +39,7 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
         SalesChannelContext $salesChannelContext,
         CustomerEntity $customer
     ): Order {
-        $intent = $this->getIntent(null, $salesChannelContext->getSalesChannelId());
+        $intent = $this->getIntent($salesChannelContext->getSalesChannelId());
         $payer = $this->createPayer($customer);
         $purchaseUnit = $this->createPurchaseUnit(
             $salesChannelContext,
@@ -71,16 +65,6 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
         OrderTransactionEntity $orderTransaction,
         CustomerEntity $customer
     ): PurchaseUnit {
-        if ($this->systemConfigService === null) {
-            // this can not occur, since this child's constructor is not nullable
-            throw new \RuntimeException('No system settings available');
-        }
-
-        if ($this->purchaseUnitProvider === null) {
-            // this can not occur, since this child's constructor is not nullable
-            throw new \RuntimeException('No purchase unit provider available');
-        }
-
         $submitCart = $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId());
 
         $items = $submitCart ? $this->itemListProvider->getItemList($salesChannelContext->getCurrency(), $order) : null;

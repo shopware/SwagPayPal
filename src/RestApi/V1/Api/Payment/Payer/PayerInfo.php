@@ -17,60 +17,39 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Payer\PayerInfo\ShippingAddress;
 class PayerInfo extends ExecutePayerInfo
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $email;
+    protected string $email;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $firstName;
+    protected string $firstName;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $lastName;
+    protected string $lastName;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var BillingAddress|null
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_address", nullable=true)
      */
-    protected $billingAddress;
+    protected ?BillingAddress $billingAddress = null;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var ShippingAddress
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_payment_payer_info_shipping_address")
      */
-    protected $shippingAddress;
+    protected ShippingAddress $shippingAddress;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $phone;
+    protected string $phone;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $countryCode;
+    protected string $countryCode;
 
     public function getEmail(): string
     {

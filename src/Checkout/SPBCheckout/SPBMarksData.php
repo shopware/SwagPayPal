@@ -14,42 +14,17 @@ use Shopware\Core\Framework\Struct\Struct;
  */
 class SPBMarksData extends Struct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $clientId;
+    protected string $clientId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $paymentMethodId;
+    protected string $paymentMethodId;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
-     */
-    protected $useAlternativePaymentMethods;
+    protected bool $useAlternativePaymentMethods;
 
     protected string $languageIso;
 
     protected string $currency;
 
     protected string $intent;
-
-    /**
-     * @deprecated tag:v4.0.0 - parametrized constructor will be removed. Use assign() instead
-     */
-    public function __construct(string $clientId = '', string $paymentMethodId = '', bool $useAlternativePaymentMethods = true)
-    {
-        $this->clientId = $clientId;
-        $this->paymentMethodId = $paymentMethodId;
-        $this->useAlternativePaymentMethods = $useAlternativePaymentMethods;
-    }
 
     public function getClientId(): string
     {

@@ -15,13 +15,10 @@ use Swag\PayPal\RestApi\V1\RequestUriV1;
 
 class TokenClient extends AbstractClient
 {
-    /**
-     * @deprecated tag:v4.0.0 - parameter $url will be removed
-     */
-    public function __construct(OAuthCredentials $credentials, string $url, LoggerInterface $logger)
+    public function __construct(OAuthCredentials $credentials, LoggerInterface $logger)
     {
         $client = new Client([
-            'base_uri' => $url !== '' ? $url : $credentials->getUrl(),
+            'base_uri' => $credentials->getUrl(),
             'headers' => [
                 'PayPal-Partner-Attribution-Id' => PartnerAttributionId::PAYPAL_CLASSIC,
                 'Authorization' => (string) $credentials,

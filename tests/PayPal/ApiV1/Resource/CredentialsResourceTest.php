@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\PayPal\ApiV1\Resource;
 
 use PHPUnit\Framework\TestCase;
+use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
@@ -25,7 +26,11 @@ class CredentialsResourceTest extends TestCase
             new CredentialsClientFactoryMock($logger),
             new TokenValidator()
         );
-        $result = $credentialsResource->testApiCredentials(new OAuthCredentials(), 'url');
+        $credentials = new OAuthCredentials();
+        $credentials->setRestId('restId');
+        $credentials->setRestSecret('restSecret');
+        $credentials->setUrl(BaseURL::SANDBOX);
+        $result = $credentialsResource->testApiCredentials($credentials);
 
         static::assertTrue($result);
     }

@@ -9,10 +9,8 @@ namespace Swag\PayPal\Webhook\Registration;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Setting\Service\SettingsServiceInterface;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Setting\SwagPayPalSettingStruct;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
 class WebhookSystemConfigHelper
@@ -28,11 +26,6 @@ class WebhookSystemConfigHelper
 
     private LoggerInterface $logger;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be removed
-     */
-    private SettingsServiceInterface $settingsService;
-
     private WebhookServiceInterface $webhookService;
 
     private SystemConfigService $systemConfigService;
@@ -41,24 +34,14 @@ class WebhookSystemConfigHelper
 
     public function __construct(
         LoggerInterface $logger,
-        SettingsServiceInterface $settingsService,
         WebhookServiceInterface $webhookService,
         SystemConfigService $systemConfigService,
         SettingsValidationServiceInterface $settingsValidationService
     ) {
         $this->logger = $logger;
-        $this->settingsService = $settingsService;
         $this->webhookService = $webhookService;
         $this->systemConfigService = $systemConfigService;
         $this->settingsValidationService = $settingsValidationService;
-    }
-
-    /**
-     * @deprecated tag:v4.0.0 - will be removed
-     */
-    public function configHasPayPalSettings(array $kvs): bool
-    {
-        return !empty(\array_intersect(\array_keys($kvs), self::WEBHOOK_KEYS));
     }
 
     /**
@@ -131,49 +114,6 @@ class WebhookSystemConfigHelper
                 $errors[] = $e;
                 $this->logger->error($e->getMessage(), ['error' => $e]);
             }
-        }
-
-        return $errors;
-    }
-
-    /**
-     * @deprecated tag:v4.0.0 - will be removed
-     */
-    public function checkWebhook(SwagPayPalSettingStruct $oldSettings, ?string $salesChannelId): array
-    {
-        $errors = [];
-        $newSettings = $this->settingsService->getSettings($salesChannelId, false);
-
-        $oldSettingsFiltered = \array_filter(
-            $oldSettings->jsonSerialize(),
-            static function (string $key) {
-                return \in_array(Settings::SYSTEM_CONFIG_DOMAIN . $key, self::WEBHOOK_KEYS, true);
-            },
-            \ARRAY_FILTER_USE_KEY
-        );
-
-        $newSettingsFiltered = \array_filter(
-            $newSettings->jsonSerialize(),
-            static function (string $key) {
-                return \in_array(Settings::SYSTEM_CONFIG_DOMAIN . $key, self::WEBHOOK_KEYS, true);
-            },
-            \ARRAY_FILTER_USE_KEY
-        );
-
-        if (!empty(\array_diff_assoc($oldSettingsFiltered, $newSettingsFiltered))) {
-            try {
-                $this->webhookService->deregisterWebhook($salesChannelId, $oldSettings);
-            } catch (\Throwable $e) {
-                $errors[] = $e;
-                $this->logger->error($e->getMessage(), ['error' => $e]);
-            }
-        }
-
-        try {
-            $this->webhookService->registerWebhook($salesChannelId);
-        } catch (\Throwable $e) {
-            $errors[] = $e;
-            $this->logger->error($e->getMessage(), ['error' => $e]);
         }
 
         return $errors;

@@ -19,36 +19,25 @@ use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\SellerOfferedAmount;
 class Offer extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var BuyerRequestedAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $buyerRequestedAmount;
+    protected BuyerRequestedAmount $buyerRequestedAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var SellerOfferedAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected $sellerOfferedAmount;
+    protected SellerOfferedAmount $sellerOfferedAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $offerType;
+    protected string $offerType;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var History[]|null
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_offer_history"}, nullable=true)
      */
-    protected $history;
+    protected ?array $history = null;
 
     public function getBuyerRequestedAmount(): BuyerRequestedAmount
     {

@@ -16,20 +16,14 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class RedirectUrls extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $returnUrl;
+    protected string $returnUrl;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $cancelUrl;
+    protected string $cancelUrl;
 
     public function getReturnUrl(): string
     {

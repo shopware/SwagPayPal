@@ -44,8 +44,6 @@ class PosSalesChannelRunLogDefinition extends EntityDefinition
             (new IdField('id', 'id'))->addFlags(new PrimaryKey(), new Required()),
             (new FkField('run_id', 'runId', PosSalesChannelRunDefinition::class))->addFlags(new Required()),
 
-            /* @deprecated tag:v4.0.0 - run will be removed, use posSalesChannelRun instead */
-            (new ManyToOneAssociationField('run', 'run_id', PosSalesChannelRunDefinition::class)),
             (new ManyToOneAssociationField('posSalesChannelRun', 'run_id', PosSalesChannelRunDefinition::class)),
 
             (new IntField('level', 'level'))->addFlags(new Required()),

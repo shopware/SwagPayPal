@@ -11,33 +11,13 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class User extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $userType;
+    protected string $userType;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $uuid;
+    protected string $uuid;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $orgUuid;
+    protected string $orgUuid;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $userRole;
+    protected string $userRole;
 
     public function getUserType(): string
     {

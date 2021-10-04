@@ -24,52 +24,34 @@ class ApplicationContext extends PayPalApiStruct
     public const USER_ACTION_TYPE_CONTINUE = 'CONTINUE';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string", default=Swag\PayPal\RestApi\V1\Api\Subscription\ApplicationContext::USER_ACTION_TYPE_SUBSCRIBE_NOW)
      */
-    protected $userAction = self::USER_ACTION_TYPE_SUBSCRIBE_NOW;
+    protected string $userAction = self::USER_ACTION_TYPE_SUBSCRIBE_NOW;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $brandName;
+    protected string $brandName;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $locale;
+    protected string $locale;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string", default="SET_PROVIDED_ADDRESS")
      */
-    protected $shippingPreference = 'SET_PROVIDED_ADDRESS';
+    protected string $shippingPreference = 'SET_PROVIDED_ADDRESS';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $returnUrl;
+    protected string $returnUrl;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $cancelUrl;
+    protected string $cancelUrl;
 
     public function getUserAction(): string
     {

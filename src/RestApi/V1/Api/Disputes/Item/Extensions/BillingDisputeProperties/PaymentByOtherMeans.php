@@ -16,36 +16,24 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 class PaymentByOtherMeans extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $chargeDifferentFromOriginal;
+    protected bool $chargeDifferentFromOriginal;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var bool
      * @OA\Property(type="boolean")
      */
-    protected $receivedDuplicate;
+    protected bool $receivedDuplicate;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $paymentMethod;
+    protected string $paymentMethod;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $paymentInstrumentSuffix;
+    protected string $paymentInstrumentSuffix;
 
     public function isChargeDifferentFromOriginal(): bool
     {

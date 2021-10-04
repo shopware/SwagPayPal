@@ -11,19 +11,9 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class Property extends PosStruct
 {
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $value;
+    protected string $value;
 
-    /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
-     */
-    protected $imageUrl;
+    protected string $imageUrl;
 
     public function getValue(): string
     {

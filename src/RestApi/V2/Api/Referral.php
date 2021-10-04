@@ -29,60 +29,43 @@ class Referral extends PayPalApiStruct
     protected BusinessEntity $businessEntity;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $preferredLanguageCode;
+    protected string $preferredLanguageCode;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $trackingId;
+    protected string $trackingId;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var PartnerConfigOverride
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_referral_partner_config_override")
      */
-    protected $partnerConfigOverride;
+    protected PartnerConfigOverride $partnerConfigOverride;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Operation[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_referral_operation"})
      */
-    protected $operations;
+    protected array $operations;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var string[]
      * @OA\Property(type="array", items={"type": "string"})
      */
-    protected $products = [self::PRODUCT_TYPE_PPCP];
+    protected array $products = [self::PRODUCT_TYPE_PPCP];
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var LegalConsent[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_referral_legal_consent"})
      */
-    protected $legalConsents;
+    protected array $legalConsents;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var Link[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
-    protected $links;
+    protected array $links;
 
     public function getBusinessEntity(): BusinessEntity
     {

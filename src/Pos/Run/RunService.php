@@ -77,10 +77,7 @@ class RunService
         $logHandler->flush();
     }
 
-    /**
-     * @deprecated tag:v4.0.0 - parameter $abortedByUser will be removed, use $status = PosSalesChannelRunDefinition::STATUS_CANCELLED
-     */
-    public function finishRun(string $runId, Context $context, bool $abortedByUser = false, string $status = PosSalesChannelRunDefinition::STATUS_FINISHED): void
+    public function finishRun(string $runId, Context $context, string $status = PosSalesChannelRunDefinition::STATUS_FINISHED): void
     {
         $data = [
             'id' => $runId,
@@ -89,11 +86,6 @@ class RunService
             'messageCount' => 0,
         ];
 
-        if ($abortedByUser) {
-            $data['abortedByUser'] = true;
-            $data['status'] = PosSalesChannelRunDefinition::STATUS_CANCELLED;
-        }
-
         $this->runRepository->update([$data], $context);
     }
 
@@ -101,7 +93,7 @@ class RunService
     {
         $this->logger->emergency('This sync has been aborted.');
         $this->writeLog($runId, $context);
-        $this->finishRun($runId, $context, true, PosSalesChannelRunDefinition::STATUS_CANCELLED);
+        $this->finishRun($runId, $context, PosSalesChannelRunDefinition::STATUS_CANCELLED);
     }
 
     public function isRunActive(string $runId, Context $context): bool

@@ -32,52 +32,34 @@ class ApplicationContext extends PayPalApiStruct
     public const USER_ACTION_PAY_NOW = 'PAY_NOW';
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $brandName;
+    protected string $brandName;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE)
      */
-    protected $landingPage = self::LANDING_PAGE_TYPE_NO_PREFERENCE;
+    protected string $landingPage = self::LANDING_PAGE_TYPE_NO_PREFERENCE;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS)
      */
-    protected $shippingPreference = self::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS;
+    protected string $shippingPreference = self::SHIPPING_PREFERENCE_SET_PROVIDED_ADDRESS;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string", default=Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext::USER_ACTION_PAY_NOW)
      */
-    protected $userAction = self::USER_ACTION_PAY_NOW;
+    protected string $userAction = self::USER_ACTION_PAY_NOW;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $returnUrl;
+    protected string $returnUrl;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $cancelUrl;
+    protected string $cancelUrl;
 
     public function getBrandName(): string
     {

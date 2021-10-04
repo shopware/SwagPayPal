@@ -17,20 +17,15 @@ use Swag\PayPal\RestApi\V1\Api\CreateWebhooks\EventType;
 class CreateWebhooks extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $url;
+    protected string $url;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
      * @var EventType[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_create_webhooks_event_type"})
      */
-    protected $eventTypes;
+    protected array $eventTypes;
 
     public function getUrl(): string
     {

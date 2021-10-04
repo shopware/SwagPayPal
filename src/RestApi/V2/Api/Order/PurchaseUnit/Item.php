@@ -21,44 +21,29 @@ class Item extends PayPalApiStruct
     public const MAX_LENGTH_SKU = 127;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string
      * @OA\Property(type="string")
      */
-    protected $name;
+    protected string $name;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var UnitAmount
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $unitAmount;
+    protected UnitAmount $unitAmount;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var Tax
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected $tax;
+    protected Tax $tax;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var int
      * @OA\Property(type="integer")
      */
-    protected $quantity;
+    protected int $quantity;
 
     /**
-     * @deprecated tag:v4.0.0 - will be strongly typed
-     *
-     * @var string|null
      * @OA\Property(type="string", nullable=true)
      */
-    protected $sku;
+    protected ?string $sku = null;
 
     public function getName(): string
     {
