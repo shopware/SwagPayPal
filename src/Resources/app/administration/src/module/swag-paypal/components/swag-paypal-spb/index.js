@@ -2,9 +2,6 @@ import template from './swag-paypal-spb.html.twig';
 
 const { Component } = Shopware;
 
-/**
- * @deprecated tag:v5.0.0 - will be removed, unbranded APMs will be introduced in v4.0.0 as replacement
- */
 Component.register('swag-paypal-spb', {
     template,
 

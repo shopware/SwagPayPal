@@ -9,9 +9,6 @@ namespace Swag\PayPal\Checkout\SPBCheckout;
 
 use Shopware\Core\Framework\Struct\Struct;
 
-/**
- * @deprecated tag:v5.0.0 - will be removed, unbranded APMs will be introduced in v4.0.0 as replacement
- */
 class SPBCheckoutButtonData extends Struct
 {
     protected string $clientId;

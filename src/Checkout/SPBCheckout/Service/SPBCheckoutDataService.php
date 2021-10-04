@@ -15,9 +15,6 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
-/**
- * @deprecated tag:v5.0.0 - will be removed, unbranded APMs will be introduced in v4.0.0 as replacement
- */
 class SPBCheckoutDataService implements SPBCheckoutDataServiceInterface
 {
     private const APM_BLIK = 'blik';
