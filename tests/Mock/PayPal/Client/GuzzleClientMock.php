@@ -232,20 +232,19 @@ class GuzzleClientMock implements ClientInterface
             }
 
             if (\mb_strpos($resourceUri, ExpressPrepareCheckoutRouteTest::TEST_PAYMENT_ID_WITHOUT_STATE) !== false) {
-                $orderCapture['payer']['address']['admin_area_1'] = null;
+                $orderCapture['purchase_units'][0]['shipping']['address']['admin_area_1'] = null;
 
                 return $orderCapture;
             }
 
             if (\mb_strpos($resourceUri, ExpressPrepareCheckoutRouteTest::TEST_PAYMENT_ID_WITH_COUNTRY_WITHOUT_STATES) !== false) {
                 $orderCapture['purchase_units'][0]['shipping']['address']['country_code'] = 'NL';
-                $orderCapture['payer']['address']['country_code'] = 'NL';
 
                 return $orderCapture;
             }
 
             if (\mb_strpos($resourceUri, ExpressPrepareCheckoutRouteTest::TEST_PAYMENT_ID_WITH_STATE_NOT_FOUND) !== false) {
-                $orderCapture['payer']['address']['admin_area_1'] = 'XY';
+                $orderCapture['purchase_units'][0]['shipping']['address']['admin_area_1'] = 'XY';
 
                 return $orderCapture;
             }
