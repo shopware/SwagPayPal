@@ -25,9 +25,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\Payer;
 
 class ExpressCustomerService
 {
@@ -146,74 +144,42 @@ class ExpressCustomerService
     {
         $salutationId = $this->getSalutationId($salesChannelContext->getContext());
 
-        $billingAddress = $this->getBillingAddressData($paypalOrder, $salesChannelContext->getContext(), $salutationId);
-        $shippingAddress = $this->getShippingAddressData($paypalOrder, $salesChannelContext->getContext(), $salutationId);
-
-        $dataBag = new RequestDataBag([
+        return new RequestDataBag([
             'guest' => true,
             'storefrontUrl' => $this->getStorefrontUrl($salesChannelContext),
             'salutationId' => $salutationId,
             'email' => $paypalOrder->getPayer()->getEmailAddress(),
             'firstName' => $paypalOrder->getPayer()->getName()->getGivenName(),
             'lastName' => $paypalOrder->getPayer()->getName()->getSurname(),
-            'billingAddress' => $billingAddress,
+            'billingAddress' => $this->getAddressData($paypalOrder, $salesChannelContext->getContext(), $salutationId),
             'acceptedDataProtection' => true,
             self::EXPRESS_PAYER_ID => $paypalOrder->getPayer()->getPayerId(),
         ]);
-
-        if (!empty(\array_diff($billingAddress, $shippingAddress))) {
-            $dataBag->set('shippingAddress', new RequestDataBag($shippingAddress));
-        }
-
-        return $dataBag;
     }
 
-    private function getBillingAddressData(Order $order, Context $context, ?string $salutationId = null): array
+    private function getAddressData(Order $order, Context $context, ?string $salutationId = null): array
     {
         $payer = $order->getPayer();
-        $address = $payer->getAddress();
-        if ($address->getAddressLine1() === null && $address->getPostalCode() === null) {
-            $address = $order->getPurchaseUnits()[0]->getShipping()->getAddress();
+        if (!empty($order->getPurchaseUnits())) {
+            $shipping = $order->getPurchaseUnits()[0]->getShipping();
+            $address = $shipping->getAddress();
+            $names = \explode(' ', $shipping->getName()->getFullName());
+            $lastName = \array_pop($names);
+            $firstName = \implode(' ', $names);
+        } else {
+            $address = $payer->getAddress();
+            $firstName = $payer->getName()->getGivenName();
+            $lastName = $payer->getName()->getSurname();
         }
 
-        return \array_merge(
-            $this->getBasicAddressData($address, $payer, $context, $salutationId),
-            [
-                'firstName' => $payer->getName()->getGivenName(),
-                'lastName' => $payer->getName()->getSurname(),
-            ]
-        );
-    }
-
-    private function getShippingAddressData(Order $order, Context $context, ?string $salutationId = null): array
-    {
-        if (empty($order->getPurchaseUnits())) {
-            return $this->getBillingAddressData($order, $context, $salutationId);
-        }
-
-        $shipping = $order->getPurchaseUnits()[0]->getShipping();
-        $address = $shipping->getAddress();
-        $names = \explode(' ', $shipping->getName()->getFullName());
-        $lastName = \array_pop($names);
-        $firstName = \implode(' ', $names);
-
-        return \array_merge(
-            $this->getBasicAddressData($address, $order->getPayer(), $context, $salutationId),
-            [
-                'firstName' => $firstName,
-                'lastName' => $lastName,
-            ]
-        );
-    }
-
-    private function getBasicAddressData(Address $address, Payer $payer, Context $context, ?string $salutationId = null): array
-    {
         $countryCode = $address->getCountryCode();
         $countryId = $this->getCountryId($countryCode, $context);
         $countryStateId = $this->getCountryStateId($countryId, $countryCode, $address->getAdminArea1(), $context);
         $phone = $payer->getPhone();
 
         return [
+            'firstName' => $firstName,
+            'lastName' => $lastName,
             'salutationId' => $salutationId,
             'street' => $address->getAddressLine1(),
             'zipcode' => $address->getPostalCode(),
@@ -295,44 +261,40 @@ class ExpressCustomerService
 
     private function updateCustomer(CustomerEntity $customer, Order $paypalOrder, SalesChannelContext $salesChannelContext): void
     {
-        $billingAddressData = $this->getBillingAddressData($paypalOrder, $salesChannelContext->getContext());
-        $shippingAddressData = $this->getShippingAddressData($paypalOrder, $salesChannelContext->getContext());
+        $addressData = $this->getAddressData(
+            $paypalOrder,
+            $salesChannelContext->getContext()
+        );
 
-        $matchingBillingAddress = null;
-        $matchingShippingAddress = null;
+        $matchingAddress = null;
 
         $addresses = $customer->getAddresses();
         if ($addresses !== null) {
             foreach ($addresses as $address) {
-                if ($this->isIdenticalAddress($address, $billingAddressData)) {
-                    $matchingBillingAddress = $address;
-                }
-                if ($this->isIdenticalAddress($address, $shippingAddressData)) {
-                    $matchingShippingAddress = $address;
+                if ($this->isIdenticalAddress($address, $addressData)) {
+                    $matchingAddress = $address;
+
+                    break;
                 }
             }
         }
 
-        $billingAddressId = $matchingBillingAddress === null ? Uuid::randomHex() : $matchingBillingAddress->getId();
-        $shippingAddressId = $matchingShippingAddress === null ? Uuid::randomHex() : $matchingShippingAddress->getId();
-        if (empty(\array_diff($billingAddressData, $shippingAddressData))) {
-            $shippingAddressId = $billingAddressId;
-        }
+        $addressId = $matchingAddress === null ? Uuid::randomHex() : $matchingAddress->getId();
         $salutationId = $this->getSalutationId($salesChannelContext->getContext());
 
         $customerData = [
             'id' => $customer->getId(),
-            'defaultShippingAddress' => \array_merge($shippingAddressData, [
-                'id' => $shippingAddressId,
-                'salutationId' => $salutationId,
-            ]),
-            'defaultBillingAddress' => \array_merge($billingAddressData, [
-                'id' => $billingAddressId,
-                'salutationId' => $salutationId,
-            ]),
+            'defaultShippingAddressId' => $addressId,
+            'defaultBillingAddressId' => $addressId,
             'firstName' => $paypalOrder->getPayer()->getName()->getGivenName(),
             'lastName' => $paypalOrder->getPayer()->getName()->getSurname(),
             'salutationId' => $salutationId,
+            'addresses' => [
+                \array_merge($addressData, [
+                    'id' => $addressId,
+                    'salutationId' => $salutationId,
+                ]),
+            ],
         ];
 
         $this->customerRepository->update([$customerData], $salesChannelContext->getContext());
