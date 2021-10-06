@@ -45,6 +45,13 @@ export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
          * @type boolean
          */
         useAlternativePaymentMethods: true,
+
+        /**
+         * This option specifies if selected APMs should be hidden
+         *
+         * @type string[]
+         */
+        disabledAlternativePaymentMethods: [],
     };
 
     init() {
