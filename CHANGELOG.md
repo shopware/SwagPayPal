@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-366 - Improved payment error handling
+
 # 4.0.0
 - PPI-252 - Improved error handling for Webhooks
 - PPI-327 - Improved data type structure

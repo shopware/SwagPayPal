@@ -222,6 +222,10 @@ class GuzzleClientMock implements ClientInterface
                 return GetRefundedOrderCapture::get();
             }
 
+            if (\mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED) !== false) {
+                return GetRefundedOrderCapture::get();
+            }
+
             if (\mb_substr($resourceUri, -17) === GetOrderAuthorization::ID) {
                 return GetOrderAuthorization::get();
             }
@@ -413,6 +417,10 @@ class GuzzleClientMock implements ClientInterface
                 throw $this->createClientExceptionDuplicateOrderNumber();
             }
 
+            if (\mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED) !== false) {
+                throw $this->createClientExceptionInstrumentDeclined();
+            }
+
             if (\mb_substr($resourceUri, -8) === '/capture') {
                 return CaptureOrderCapture::get();
             }
@@ -584,6 +592,16 @@ class GuzzleClientMock implements ClientInterface
         $jsonString = $this->ensureValidJson([
             'name' => 'UNPROCESSABLE_ENTITY',
             'message' => 'The requested action could not be performed, semantically incorrect, or failed business validation.: Duplicate Invoice ID detected. To avoid a potential duplicate transaction your account setting requires that Invoice Id be unique for each transaction. DUPLICATE_INVOICE_ID',
+        ]);
+
+        return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    private function createClientExceptionInstrumentDeclined(): ClientException
+    {
+        $jsonString = $this->ensureValidJson([
+            'name' => 'UNPROCESSABLE_ENTITY',
+            'message' => 'The requested action could not be completed, was semantically incorrect, or failed business validation. The instrument presented  was either declined by the processor or bank, or it can\'t be used for this payment. INSTRUMENT_DECLINED ',
         ]);
 
         return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_UNPROCESSABLE_ENTITY);

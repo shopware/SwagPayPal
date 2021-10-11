@@ -201,25 +201,35 @@ class PlusPuiHandler
         } catch (PayPalApiException $e) {
             $parameters = $e->getParameters();
             if (!isset($parameters['name']) || $parameters['name'] !== PayPalApiException::ERROR_CODE_DUPLICATE_ORDER_NUMBER) {
-                throw $e;
+                throw new AsyncPaymentFinalizeException(
+                    $transactionId,
+                    \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
+                );
             }
 
             $this->logger->warning('Duplicate order number {orderNumber} detected. Retrying payment without order number.', ['orderNumber' => $orderNumber]);
 
-            $this->paymentResource->patch(
-                [
-                    $this->orderNumberPatchBuilder->createOrderNumberPatch(null),
-                ],
-                $paymentId,
-                $salesChannelId
-            );
+            try {
+                $this->paymentResource->patch(
+                    [
+                        $this->orderNumberPatchBuilder->createOrderNumberPatch(null),
+                    ],
+                    $paymentId,
+                    $salesChannelId
+                );
 
-            $response = $this->paymentResource->execute(
-                $payerId,
-                $paymentId,
-                $salesChannelId,
-                $partnerAttributionId
-            );
+                $response = $this->paymentResource->execute(
+                    $payerId,
+                    $paymentId,
+                    $salesChannelId,
+                    $partnerAttributionId
+                );
+            } catch (\Exception $e) {
+                throw new AsyncPaymentFinalizeException(
+                    $transactionId,
+                    \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
+                );
+            }
         } catch (\Exception $e) {
             throw new AsyncPaymentFinalizeException(
                 $transactionId,
