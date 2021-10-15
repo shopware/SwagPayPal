@@ -173,29 +173,39 @@ class PayPalHandler extends AbstractPaymentHandler
         } catch (PayPalApiException $e) {
             if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
                 || (\mb_strpos($e->getMessage(), PayPalApiException::ERROR_CODE_DUPLICATE_INVOICE_ID) === false)) {
-                throw $e;
+                throw new AsyncPaymentFinalizeException(
+                    $transactionId,
+                    \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
+                );
             }
 
             $this->logger->warning('Duplicate order number {orderNumber} detected. Retrying payment without order number.', ['orderNumber' => $orderNumber]);
 
-            $this->orderResource->update(
-                [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
-                $paypalOrderId,
-                $salesChannelId,
-                $partnerAttributionId
-            );
+            try {
+                $this->orderResource->update(
+                    [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
+                    $paypalOrderId,
+                    $salesChannelId,
+                    $partnerAttributionId
+                );
 
-            if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {
-                $response = $this->orderResource->capture($paypalOrderId, $salesChannelId, $partnerAttributionId);
-                if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
-                    $this->orderTransactionStateHandler->paid($transactionId, $context);
+                if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {
+                    $response = $this->orderResource->capture($paypalOrderId, $salesChannelId, $partnerAttributionId);
+                    if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
+                        $this->orderTransactionStateHandler->paid($transactionId, $context);
+                    }
+                } else {
+                    $response = $this->orderResource->authorize($paypalOrderId, $salesChannelId, $partnerAttributionId);
+                    if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
+                        // ToDo PPI-314 - Replace after NEXT-13973 is in min-version
+                        $this->setTransactionToAuthorize($transactionId, $context);
+                    }
                 }
-            } else {
-                $response = $this->orderResource->authorize($paypalOrderId, $salesChannelId, $partnerAttributionId);
-                if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
-                    // ToDo PPI-314 - Replace after NEXT-13973 is in min-version
-                    $this->setTransactionToAuthorize($transactionId, $context);
-                }
+            } catch (\Exception $e) {
+                throw new AsyncPaymentFinalizeException(
+                    $transactionId,
+                    \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
+                );
             }
         } catch (\Exception $e) {
             throw new AsyncPaymentFinalizeException(

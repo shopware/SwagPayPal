@@ -84,6 +84,7 @@ class PayPalPaymentHandlerTest extends TestCase
     public const PAYER_ID_DUPLICATE_TRANSACTION = 'testPayerIdDuplicateTransaction';
     public const PAYPAL_PATCH_THROWS_EXCEPTION = 'invalidId';
     public const PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER = 'paypalOrderIdDuplicateOrderNumber';
+    public const PAYPAL_ORDER_ID_INSTRUMENT_DECLINED = 'paypalOrderIdInstrumentDeclined';
     private const TEST_CUSTOMER_STREET = 'Ebbinghoff 10';
     private const TEST_CUSTOMER_FIRST_NAME = 'Max';
     private const TEST_CUSTOMER_LAST_NAME = 'Mustermann';
@@ -550,6 +551,19 @@ An error occurred during the communication with PayPal');
         // state does only exist in > 6.4.1.0
         $this->assertFinalizeRequest($request, PayPalPaymentHandler::ORDER_TRANSACTION_STATE_AUTHORIZED);
         $this->assertCustomFields(GetAuthorization::ID);
+    }
+
+    public function testFinalizePayPalOrderCaptureWithException(): void
+    {
+        $request = new Request([
+            PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => self::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED,
+        ]);
+
+        $this->expectException(AsyncPaymentFinalizeException::class);
+        $this->expectExceptionMessage('The asynchronous payment finalize was interrupted due to the following error:
+An error occurred during the communication with PayPal');
+
+        $this->assertFinalizeRequest($request);
     }
 
     public function testFinalizePayPalOrderPatchOrderNumber(): void
