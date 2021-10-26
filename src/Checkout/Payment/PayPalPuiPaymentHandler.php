@@ -85,7 +85,11 @@ class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
             throw new AsyncPaymentProcessException($transactionId, $exception->getMessage());
         }
 
-        $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
+        if (\method_exists($this->orderTransactionStateHandler, 'processUnconfirmed')) {
+            $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
+        } else {
+            $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
+        }
 
         try {
             $response = $this->plusPuiHandler->handlePuiPayment($transaction, $salesChannelContext, $customer);

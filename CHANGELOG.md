@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-350 - Enable after order process for unconfirmed payments with Shopware 6.4.4.0 or greater
 - PPI-356 - Improved plugin extensibility
 - PPI-366 - Improved payment error handling
 

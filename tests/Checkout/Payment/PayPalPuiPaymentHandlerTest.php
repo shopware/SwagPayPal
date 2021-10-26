@@ -77,7 +77,12 @@ class PayPalPuiPaymentHandlerTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
 
         $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
-        $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
+
+        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed')) {
+            $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
+        } else {
+            $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
+        }
     }
 
     public function testPayWithoutCustomer(): void
