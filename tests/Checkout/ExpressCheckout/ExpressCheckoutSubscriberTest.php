@@ -630,11 +630,11 @@ class ExpressCheckoutSubscriberTest extends TestCase
     {
         $salesChannelContext = $this->createSalesChannelContext(true, $paymentMethodActive);
 
-        /** @var EntityRepositoryInterface $productRepo */
-        $productRepo = $this->getContainer()->get('product.repository');
-        $product = $productRepo->search(new Criteria(), $salesChannelContext->getContext())->first();
+        /** @var SalesChannelRepositoryInterface $productRepo */
+        $productRepo = $this->getContainer()->get('sales_channel.product.repository');
+        $productId = $productRepo->searchIds(new Criteria(), $salesChannelContext)->firstId();
 
-        $request = new Request([], [], ['productId' => $product->getId()]);
+        $request = new Request([], [], ['productId' => $productId]);
 
         /** @var QuickviewPageletLoader|null $quickViewLoader */
         $quickViewLoader = $this->getContainer()->get(
