@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-356 - Improved plugin extensibility
 - PPI-366 - Improved payment error handling
 
 # 4.0.0

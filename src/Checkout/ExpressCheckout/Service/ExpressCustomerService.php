@@ -10,8 +10,8 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\Service;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
+use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
-use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -42,7 +42,7 @@ class ExpressCustomerService
         'additionalAddressLine1',
     ];
 
-    private RegisterRoute $registerRoute;
+    private AbstractRegisterRoute $registerRoute;
 
     private EntityRepositoryInterface $countryRepository;
 
@@ -59,7 +59,7 @@ class ExpressCustomerService
     private LoggerInterface $logger;
 
     public function __construct(
-        RegisterRoute $registerRoute,
+        AbstractRegisterRoute $registerRoute,
         EntityRepositoryInterface $countryRepository,
         EntityRepositoryInterface $countryStateRepository,
         EntityRepositoryInterface $salutationRepository,
