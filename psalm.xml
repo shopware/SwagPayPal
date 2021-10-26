@@ -101,6 +101,13 @@
             </errorLevel>
         </UndefinedClass>
 
+        <UndefinedConstant>
+            <errorLevel type="info">
+                <file name="tests/Checkout/Payment/PayPalPaymentHandlerTest.php"/>
+                <file name="tests/Checkout/Payment/PayPalPuiPaymentHandlerTest.php"/>
+            </errorLevel>
+        </UndefinedConstant>
+
         <UnsafeInstantiation>
             <errorLevel type="info">
                 <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>

@@ -29,6 +29,9 @@ parameters:
         -   # can be deleted after min-Version is 6.4.2.0
             message: '#Shopware\\Storefront\\Event\\SwitchBuyBoxVariantEvent#'
             path: .
+        -   # can be deleted after min-Version is 6.4.4.0
+            message: '#Access to undefined constant Shopware\\Core\\Checkout\\Order\\Aggregate\\OrderTransaction\\OrderTransactionStates::STATE_UNCONFIRMED#'
+            path: tests
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

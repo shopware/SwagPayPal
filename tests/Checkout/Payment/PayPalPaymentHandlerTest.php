@@ -131,7 +131,11 @@ class PayPalPaymentHandlerTest extends TestCase
             $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID]
         );
 
-        $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
+        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed')) {
+            $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
+        } else {
+            $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
+        }
     }
 
     public function testPayWithPlus(): void
@@ -182,7 +186,11 @@ class PayPalPaymentHandlerTest extends TestCase
             }
         }
 
-        $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
+        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed')) {
+            $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
+        } else {
+            $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
+        }
     }
 
     public function testPayWithPlusThrowsException(): void
@@ -262,7 +270,11 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         static::assertSame(self::TEST_SHIPPING, $patchValue['amount']['breakdown']['shipping']['value']);
         static::assertSame(1, $patchValue['items'][0]['quantity']);
 
-        $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
+        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed')) {
+            $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
+        } else {
+            $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
+        }
     }
 
     public function testPayWithEcsThrowsException(): void
