@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-346 - Behebt Rundungsfehler im Zahlungseinzugsfenster in der Administration
 - PPI-350 - Aktivieren des Zahlungsprozess nach einer Bestellung für unbestätigte Zahlungen ab Shopware 6.4.4.0
 - PPI-356 - Verbesserte Plugin-Erweiterbarkeit
 - PPI-366 - Verbesserte Fehlerbehandlung bei Zahlungen
