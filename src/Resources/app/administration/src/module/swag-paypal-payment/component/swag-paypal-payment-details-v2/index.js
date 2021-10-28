@@ -148,6 +148,7 @@ Component.register('swag-paypal-payment-details-v2', {
             }
 
             this.refundableAmount = this.formatAmount(this.refundableAmount);
+            this.captureableAmount = this.formatAmount(this.captureableAmount);
         },
 
         pushPayment(type, payment) {
