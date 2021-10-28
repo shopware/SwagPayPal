@@ -1,4 +1,5 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-344 - Fix issue with invalid phone numbers with API v1 payments
 - PPI-346 - Fix rounding issues in payment capture modal in Administration
 - PPI-350 - Enable after order process for unconfirmed payments with Shopware 6.4.4.0 or greater
 - PPI-356 - Improved plugin extensibility
