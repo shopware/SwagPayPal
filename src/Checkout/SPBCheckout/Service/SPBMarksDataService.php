@@ -67,6 +67,7 @@ class SPBMarksDataService implements SPBMarksDataServiceInterface
             'clientId' => $clientId,
             'paymentMethodId' => (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
             'useAlternativePaymentMethods' => $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId),
+            'showPayLater' => $this->systemConfigService->getBool(Settings::SPB_SHOW_PAY_LATER, $salesChannelId),
             'languageIso' => $this->getButtonLanguage($salesChannelContext),
             'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
             'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $salesChannelId)),

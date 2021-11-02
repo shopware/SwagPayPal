@@ -52,6 +52,13 @@ export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
          * @type string[]
          */
         disabledAlternativePaymentMethods: [],
+
+        /**
+         * This option toggles if pay later should be shown
+         *
+         * @type boolean
+         */
+        showPayLater: true,
     };
 
     init() {

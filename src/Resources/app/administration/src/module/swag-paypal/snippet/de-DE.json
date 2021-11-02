@@ -176,6 +176,9 @@
                 "spbAlternativePaymentMethodsEnabled": {
                     "label": "Aktiviert die alternativen Zahlungsarten der Smart Payment Buttons.",
                     "helpText": "Die alternativen Zahlungsarten sind, Kreditkarten, SEPA und mehr."
+                },
+                "spbShowPayLater": {
+                    "label": "Später Bezahlen als eigenen Button anzeigen"
                 }
             },
             "plus": {

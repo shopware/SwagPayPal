@@ -22,6 +22,8 @@ class SPBMarksData extends Struct
      */
     protected array $disabledAlternativePaymentMethods = [];
 
+    protected bool $showPayLater = true;
+
     protected string $languageIso;
 
     protected string $currency;
@@ -59,6 +61,11 @@ class SPBMarksData extends Struct
     public function setDisabledAlternativePaymentMethods(array $disabledAlternativePaymentMethods): void
     {
         $this->disabledAlternativePaymentMethods = $disabledAlternativePaymentMethods;
+    }
+
+    public function isShowPayLater(): bool
+    {
+        return $this->showPayLater;
     }
 
     public function getLanguageIso(): string

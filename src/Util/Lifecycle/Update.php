@@ -102,6 +102,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '3.0.0', '<')) {
             $this->updateTo300($updateContext->getContext());
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '4.1.0', '<')) {
+            $this->updateTo410();
+        }
     }
 
     private function updateTo110(): void
@@ -264,6 +268,11 @@ class Update
         } catch (PosApiException | WebhookNotRegisteredException $exception) {
             // do nothing, if the Sales Channel is not correctly configured
         }
+    }
+
+    private function updateTo410(): void
+    {
+        $this->systemConfig->set(Settings::SPB_SHOW_PAY_LATER, true);
     }
 
     private function changePaymentHandlerIdentifier(Context $context): void
