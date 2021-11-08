@@ -21,7 +21,11 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
 use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
+use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
+use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
+use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -63,76 +67,16 @@ class SwagPayPal extends Plugin
 
     public function install(InstallContext $installContext): void
     {
-        /** @var EntityRepositoryInterface $systemConfigRepository */
-        $systemConfigRepository = $this->container->get('system_config.repository');
-        /** @var EntityRepositoryInterface $paymentRepository */
-        $paymentRepository = $this->container->get('payment_method.repository');
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->container->get('sales_channel.repository');
-        /** @var EntityRepositoryInterface $ruleRepository */
-        $ruleRepository = $this->container->get('rule.repository');
-        /** @var EntityRepositoryInterface $countryRepository */
-        $countryRepository = $this->container->get('country.repository');
-        /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->container->get(PluginIdProvider::class);
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->container->get(SystemConfigService::class);
-        /** @var Connection $connection */
-        $connection = $this->container->get(Connection::class);
-
-        (new InstallUninstall(
-            $systemConfigRepository,
-            $paymentRepository,
-            $salesChannelRepository,
-            $ruleRepository,
-            $countryRepository,
-            $pluginIdProvider,
-            $systemConfigService,
-            $connection,
-            static::class
-        ))->install($installContext->getContext());
+        $this->getInstaller()->install($installContext->getContext());
 
         parent::install($installContext);
     }
 
     public function uninstall(UninstallContext $uninstallContext): void
     {
-        $context = $uninstallContext->getContext();
-        /** @var EntityRepositoryInterface $paymentRepository */
-        $paymentRepository = $this->container->get('payment_method.repository');
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->container->get('sales_channel.repository');
-
-        if ($uninstallContext->keepUserData()) {
-            parent::uninstall($uninstallContext);
-
-            return;
+        if (!$uninstallContext->keepUserData()) {
+            $this->getInstaller()->uninstall($uninstallContext->getContext());
         }
-
-        /** @var EntityRepositoryInterface $systemConfigRepository */
-        $systemConfigRepository = $this->container->get('system_config.repository');
-        /** @var EntityRepositoryInterface $countryRepository */
-        $countryRepository = $this->container->get('country.repository');
-        /** @var EntityRepositoryInterface $ruleRepository */
-        $ruleRepository = $this->container->get('rule.repository');
-        /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->container->get(PluginIdProvider::class);
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->container->get(SystemConfigService::class);
-        /** @var Connection $connection */
-        $connection = $this->container->get(Connection::class);
-
-        (new InstallUninstall(
-            $systemConfigRepository,
-            $paymentRepository,
-            $salesChannelRepository,
-            $ruleRepository,
-            $countryRepository,
-            $pluginIdProvider,
-            $systemConfigService,
-            $connection,
-            static::class
-        ))->uninstall($context);
 
         parent::uninstall($uninstallContext);
     }
@@ -143,8 +87,8 @@ class SwagPayPal extends Plugin
         $systemConfigService = $this->container->get(SystemConfigService::class);
         /** @var EntityRepositoryInterface $customFieldRepository */
         $customFieldRepository = $this->container->get(\sprintf('%s.repository', (new CustomFieldDefinition())->getEntityName()));
-        /** @var EntityRepositoryInterface $paymentRepository */
-        $paymentRepository = $this->container->get('payment_method.repository');
+        /** @var EntityRepositoryInterface $paymentMethodRepository */
+        $paymentMethodRepository = $this->container->get('payment_method.repository');
         /** @var WebhookService|null $webhookService */
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         /** @var EntityRepositoryInterface $salesChannelRepository */
@@ -157,17 +101,32 @@ class SwagPayPal extends Plugin
         $shippingRepository = $this->container->get('shipping_method.repository');
         /** @var PosWebhookService|null $posWebhookService */
         $posWebhookService = $this->container->get(PosWebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        /** @var EntityRepositoryInterface $ruleRepository */
+        $ruleRepository = $this->container->get('rule.repository');
+        /** @var PluginIdProvider $pluginIdProvider */
+        $pluginIdProvider = $this->container->get(PluginIdProvider::class);
+        /** @var PaymentMethodInstaller|null $paymentMethodInstaller */
+        $paymentMethodInstaller = $this->container->get(PaymentMethodInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
 
         (new Update(
             $systemConfigService,
-            $paymentRepository,
+            $paymentMethodRepository,
             $customFieldRepository,
             $webhookService,
             $salesChannelRepository,
             $salesChannelTypeRepository,
             $informationDefaultService,
             $shippingRepository,
-            $posWebhookService
+            $posWebhookService,
+            $paymentMethodInstaller ?? new PaymentMethodInstaller(
+                $paymentMethodRepository,
+                $ruleRepository,
+                $pluginIdProvider,
+                new PaymentMethodDataRegistry(
+                    $paymentMethodRepository,
+                    $this->container,
+                ),
+            ),
         ))->update($updateContext);
 
         parent::update($updateContext);
@@ -213,5 +172,35 @@ class SwagPayPal extends Plugin
                 self::PAYPAL_POS_SALES_CHANNEL_PRIVILEGE_DELETE,
             ],
         ];
+    }
+
+    private function getInstaller(): InstallUninstall
+    {
+        /** @var EntityRepositoryInterface $systemConfigRepository */
+        $systemConfigRepository = $this->container->get('system_config.repository');
+        /** @var EntityRepositoryInterface $paymentMethodRepository */
+        $paymentMethodRepository = $this->container->get('payment_method.repository');
+        /** @var EntityRepositoryInterface $ruleRepository */
+        $ruleRepository = $this->container->get('rule.repository');
+        /** @var PluginIdProvider $pluginIdProvider */
+        $pluginIdProvider = $this->container->get(PluginIdProvider::class);
+        /** @var SystemConfigService $systemConfigService */
+        $systemConfigService = $this->container->get(SystemConfigService::class);
+        /** @var Connection $connection */
+        $connection = $this->container->get(Connection::class);
+
+        return new InstallUninstall(
+            new PaymentMethodInstaller(
+                $paymentMethodRepository,
+                $ruleRepository,
+                $pluginIdProvider,
+                new PaymentMethodDataRegistry(
+                    $paymentMethodRepository,
+                    $this->container,
+                ),
+            ),
+            new SettingsInstaller($systemConfigRepository, $systemConfigService),
+            new PosInstaller($connection)
+        );
     }
 }

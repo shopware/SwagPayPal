@@ -29,6 +29,8 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
@@ -55,6 +57,8 @@ class Update
 
     private ?PosWebhookService $posWebhookService;
 
+    private PaymentMethodInstaller $paymentMethodInstaller;
+
     public function __construct(
         SystemConfigService $systemConfig,
         EntityRepositoryInterface $paymentRepository,
@@ -64,7 +68,8 @@ class Update
         EntityRepositoryInterface $salesChannelTypeRepository,
         ?InformationDefaultService $informationDefaultService,
         EntityRepositoryInterface $shippingRepository,
-        ?PosWebhookService $posWebhookService
+        ?PosWebhookService $posWebhookService,
+        PaymentMethodInstaller $paymentMethodInstaller
     ) {
         $this->systemConfig = $systemConfig;
         $this->customFieldRepository = $customFieldRepository;
@@ -75,6 +80,7 @@ class Update
         $this->informationDefaultService = $informationDefaultService;
         $this->shippingRepository = $shippingRepository;
         $this->posWebhookService = $posWebhookService;
+        $this->paymentMethodInstaller = $paymentMethodInstaller;
     }
 
     public function update(UpdateContext $updateContext): void
@@ -105,6 +111,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '4.1.0', '<')) {
             $this->updateTo410();
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '4.9.0', '<')) {
+            $this->updateToREPLACE_GLOBALLY_WITH_NEXT_VERSION($updateContext->getContext());
         }
     }
 
@@ -273,6 +283,11 @@ class Update
     private function updateTo410(): void
     {
         $this->systemConfig->set(Settings::SPB_SHOW_PAY_LATER, true);
+    }
+
+    private function updateToREPLACE_GLOBALLY_WITH_NEXT_VERSION(Context $context): void
+    {
+        $this->paymentMethodInstaller->install(ACDCMethodData::class, $context);
     }
 
     private function changePaymentHandlerIdentifier(Context $context): void

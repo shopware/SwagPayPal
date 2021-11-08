@@ -42,6 +42,9 @@ class PaymentMethodUtil
         return $this->paymentRepository->searchIds($criteria, $context)->firstId();
     }
 
+    /**
+     * @deprecated tag:v5.0.0 - will be removed without replacement
+     */
     public function getPayPalPuiPaymentMethodId(Context $context): ?string
     {
         $criteria = new Criteria();

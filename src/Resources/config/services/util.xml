@@ -28,7 +28,6 @@
             <argument type="service" id="language.repository"/>
         </service>
 
-
         <service id="Swag\PayPal\Util\Log\LoggerFactory">
             <argument type="string">%kernel.logs_dir%/%%s_%kernel.environment%.log</argument>
             <argument>%shopware.logger.file_rotation_count%</argument>
@@ -44,12 +43,50 @@
         </service>
 
         <service id="Swag\PayPal\Util\Lifecycle\ActivateDeactivate">
-            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\State\PosStateService"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService">
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
             <argument type="service" id="payment_method.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\State\PosStateService">
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="sales_channel_type.repository"/>
             <argument type="service" id="shipping_method.repository"/>
             <argument type="service" id="Shopware\Core\Checkout\Payment\DataAbstractionLayer\PaymentMethodRepositoryDecorator"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller" public="true">
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="rule.repository"/>
+            <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry">
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="service_container"/>
+            <argument type="tagged_iterator" tag="swag.paypal.payment.method.data"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData" abstract="true">
+            <argument type="service" id="service_container"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\PayPalPuiMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
         </service>
     </services>
 </container>

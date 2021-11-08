@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Util\Lifecycle;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
+use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -17,6 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Migration\MigrationCollectionLoader;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\CustomField\CustomFieldDefinition;
@@ -46,6 +48,8 @@ use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
 use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
+use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\Routing\Router;
@@ -323,12 +327,16 @@ class UpdateTest extends TestCase
     ): Update {
         /** @var EntityRepositoryInterface $customFieldRepository */
         $customFieldRepository = $this->getContainer()->get(CustomFieldDefinition::ENTITY_NAME . '.repository');
+        /** @var EntityRepositoryInterface $ruleRepository */
+        $ruleRepository = $this->getContainer()->get(RuleDefinition::ENTITY_NAME . '.repository');
         /** @var EntityRepositoryInterface $salesChannelTypeRepository */
         $salesChannelTypeRepository = $this->getContainer()->get(SalesChannelTypeDefinition::ENTITY_NAME . '.repository');
         /** @var InformationDefaultService|null $informationDefaultService */
         $informationDefaultService = $this->getContainer()->get(InformationDefaultService::class);
         /** @var EntityRepositoryInterface $shippingRepository */
         $shippingRepository = $this->getContainer()->get('shipping_method.repository');
+        /** @var PluginIdProvider $pluginIdProvider */
+        $pluginIdProvider = $this->getContainer()->get(PluginIdProvider::class);
 
         return new Update(
             $systemConfigService,
@@ -339,7 +347,16 @@ class UpdateTest extends TestCase
             $salesChannelTypeRepository,
             $informationDefaultService,
             $shippingRepository,
-            $posWebhookService
+            $posWebhookService,
+            new PaymentMethodInstaller(
+                $this->paymentMethodRepository,
+                $ruleRepository,
+                $pluginIdProvider,
+                new PaymentMethodDataRegistry(
+                    $this->paymentMethodRepository,
+                    $this->getContainer(),
+                ),
+            )
         );
     }
 
