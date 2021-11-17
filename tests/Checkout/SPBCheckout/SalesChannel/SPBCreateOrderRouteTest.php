@@ -18,6 +18,7 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -142,12 +143,14 @@ class SPBCreateOrderRouteTest extends TestCase
         );
 
         return new SPBCreateOrderRoute(
-            $cartService,
-            new OrderRepositoryMock(),
-            $this->createOrderBuilder($systemConfig),
-            $orderFromCartBuilder,
-            new OrderResource($this->createPayPalClientFactory()),
-            new NullLogger()
+            new CreateOrderRoute(
+                $cartService,
+                new OrderRepositoryMock(),
+                $this->createOrderBuilder($systemConfig),
+                $orderFromCartBuilder,
+                new OrderResource($this->createPayPalClientFactory()),
+                new NullLogger()
+            )
         );
     }
 }

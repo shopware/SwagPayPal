@@ -116,6 +116,8 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         /**
          * Selector of the selected payment method
          *
+         * @deprecated tag:v5.0.0 - will be removed without replacement
+         *
          * @type string
          */
         checkedPaymentMethodSelector: 'input.payment-method-input[checked=checked]',
@@ -207,7 +209,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         }
 
         const formData = FormSerializeUtil.serialize(this.confirmOrderForm);
-
+        formData.set('product', 'spb');
         const orderId = this.options.orderId;
         if (orderId !== null) {
             formData.set('orderId', orderId);

@@ -28,6 +28,7 @@ use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CaptureAuthorizationResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CaptureOrdersResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ClientTokenResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateTokenResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentAuthorizeResponseFixture;
@@ -223,7 +224,10 @@ class GuzzleClientMock implements ClientInterface
             }
 
             if (\mb_strpos($resourceUri, PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED) !== false) {
-                return GetRefundedOrderCapture::get();
+                $orderCapture = GetRefundedOrderCapture::get();
+                $orderCapture['id'] = PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_INSTRUMENT_DECLINED;
+
+                return $orderCapture;
             }
 
             if (\mb_substr($resourceUri, -17) === GetOrderAuthorization::ID) {
@@ -231,7 +235,13 @@ class GuzzleClientMock implements ClientInterface
             }
 
             $orderCapture = GetOrderCapture::get();
-            if (\mb_substr($resourceUri, -17) === GetOrderCapture::ID || \mb_substr($resourceUri, -33) === PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER) {
+            if (\mb_substr($resourceUri, -17) === GetOrderCapture::ID) {
+                return $orderCapture;
+            }
+
+            if (\mb_substr($resourceUri, -33) === PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER) {
+                $orderCapture['id'] = PayPalPaymentHandlerTest::PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER;
+
                 return $orderCapture;
             }
 
@@ -396,6 +406,10 @@ class GuzzleClientMock implements ClientInterface
 
         if (\mb_strpos($resourceUri, RequestUriV1::ORDERS_RESOURCE) !== false && \mb_substr($resourceUri, -8) === '/do-void') {
             return VoidOrderResponseFixture::get();
+        }
+
+        if (\mb_strpos($resourceUri, RequestUriV1::CLIENT_TOKEN_RESOURCE) !== false) {
+            return ClientTokenResponseFixture::get();
         }
 
         throw new \RuntimeException('No fixture defined for ' . $resourceUri);

@@ -4,6 +4,7 @@ import SwagPayPalSmartPaymentButtons from './smart-payment-buttons/swag-paypal.s
 import SwagPayPalMarks from './smart-payment-buttons/swag-paypal.marks';
 import SwagPayPalPlusPaymentWall from './plus/payment-wall';
 import SwagPayPalInstallmentBanner from './installment/swag-paypal.installment-banner';
+import SwagPaypalAcdcFields from './smart-payment-buttons/swag-paypal.acdc-fields';
 
 // Register them via the existing PluginManager
 const PluginManager = window.PluginManager;
@@ -16,6 +17,11 @@ PluginManager.register(
     'SwagPayPalSmartPaymentButtons',
     SwagPayPalSmartPaymentButtons,
     '[data-swag-paypal-smart-payment-buttons]',
+);
+PluginManager.register(
+    'SwagPaypalAcdcFields',
+    SwagPaypalAcdcFields,
+    '[data-swag-paypal-acdc-fields]',
 );
 PluginManager.register(
     'SwagPayPalMarks',

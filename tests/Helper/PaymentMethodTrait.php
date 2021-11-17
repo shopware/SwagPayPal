@@ -13,7 +13,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 
 trait PaymentMethodTrait
 {
-    protected function addPayPalToDefaultsSalesChannel(string $paypalPaymentMethodId, ?Context $context = null): void
+    protected function addPaymentMethodToDefaultsSalesChannel(string $paypalPaymentMethodId, ?Context $context = null): void
     {
         if ($context === null) {
             $context = Context::createDefaultContext();
@@ -34,7 +34,7 @@ trait PaymentMethodTrait
         ], $context);
     }
 
-    protected function removePayPalFromDefaultsSalesChannel(string $paypalPaymentMethodId, ?Context $context = null): void
+    protected function removePaymentMethodFromDefaultsSalesChannel(string $paypalPaymentMethodId, ?Context $context = null): void
     {
         if ($context === null) {
             $context = Context::createDefaultContext();

@@ -7,26 +7,95 @@
 
 namespace Swag\PayPal\Checkout\Payment\Method;
 
-use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\SynchronousPaymentHandlerInterface;
+use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
+use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
+use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 
-class ACDCHandler extends AbstractPaymentMethodHandler implements AsynchronousPaymentHandlerInterface
+class ACDCHandler extends AbstractPaymentMethodHandler implements SynchronousPaymentHandlerInterface
 {
-    public function pay(AsyncPaymentTransactionStruct $transaction, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): RedirectResponse
-    {
-        throw new AsyncPaymentProcessException($transaction->getOrderTransaction()->getId(), 'not implemented yet');
-        // TODO: Implement pay() method.
+    private OrderExecuteService $orderExecuteService;
+
+    private OrderPatchService $orderPatchService;
+
+    private TransactionDataService $transactionDataService;
+
+    private OrderTransactionStateHandler $orderTransactionStateHandler;
+
+    private SettingsValidationServiceInterface $settingsValidationService;
+
+    private LoggerInterface $logger;
+
+    public function __construct(
+        SettingsValidationServiceInterface $settingsValidationService,
+        OrderTransactionStateHandler $orderTransactionStateHandler,
+        OrderExecuteService $orderExecuteService,
+        OrderPatchService $orderPatchService,
+        TransactionDataService $transactionDataService,
+        LoggerInterface $logger
+    ) {
+        $this->settingsValidationService = $settingsValidationService;
+        $this->orderTransactionStateHandler = $orderTransactionStateHandler;
+        $this->orderPatchService = $orderPatchService;
+        $this->orderExecuteService = $orderExecuteService;
+        $this->transactionDataService = $transactionDataService;
+        $this->logger = $logger;
     }
 
-    public function finalize(AsyncPaymentTransactionStruct $transaction, Request $request, SalesChannelContext $salesChannelContext): void
+    public function pay(SyncPaymentTransactionStruct $transaction, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): void
     {
-        throw new AsyncPaymentFinalizeException($transaction->getOrderTransaction()->getId(), 'not implemented yet');
-        // TODO: Implement finalize() method.
+        $transactionId = $transaction->getOrderTransaction()->getId();
+        $paypalOrderId = $dataBag->get(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+
+        if (!$paypalOrderId) {
+            throw new SyncPaymentProcessException($transactionId, 'Missing PayPal order id');
+        }
+
+        try {
+            $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
+
+            if (\method_exists($this->orderTransactionStateHandler, 'processUnconfirmed')) {
+                $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
+            } else {
+                $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
+            }
+
+            $this->transactionDataService->setOrderId(
+                $transactionId,
+                $paypalOrderId,
+                PartnerAttributionId::PAYPAL_PPCP,
+                $salesChannelContext->getContext()
+            );
+
+            $this->orderPatchService->patchOrderData(
+                $transaction->getOrderTransaction()->getId(),
+                $transaction->getOrder()->getOrderNumber(),
+                $paypalOrderId,
+                PartnerAttributionId::PAYPAL_PPCP,
+                $salesChannelContext->getSalesChannelId()
+            );
+
+            $paypalOrder = $this->orderExecuteService->executeOrder(
+                $transactionId,
+                $paypalOrderId,
+                $salesChannelContext->getSalesChannelId(),
+                $salesChannelContext->getContext(),
+                PartnerAttributionId::PAYPAL_PPCP,
+            );
+
+            $this->transactionDataService->setResourceId($paypalOrder, $transactionId, $salesChannelContext->getContext());
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage());
+
+            throw new SyncPaymentProcessException($transactionId, $e->getMessage());
+        }
     }
 }

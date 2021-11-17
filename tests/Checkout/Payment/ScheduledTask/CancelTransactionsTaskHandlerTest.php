@@ -16,7 +16,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\ScheduledTask\CancelTransactionsTaskHandler;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
@@ -100,7 +99,7 @@ class CancelTransactionsTaskHandlerTest extends TestCase
         $context = Context::createDefaultContext();
         $container = $this->getContainer();
 
-        $transactionId = $this->getTransactionId($context, $container, PayPalPaymentHandler::ORDER_TRANSACTION_STATE_AUTHORIZED);
+        $transactionId = $this->getTransactionId($context, $container, OrderTransactionStates::STATE_AUTHORIZED);
 
         $twoDaysAgo = new \DateTime('now -2 days');
         $twoDaysAgo = $twoDaysAgo->setTimezone(new \DateTimeZone('UTC'));
@@ -120,7 +119,7 @@ class CancelTransactionsTaskHandlerTest extends TestCase
         static::assertNotNull($transaction);
 
         $cancelledStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            PayPalPaymentHandler::ORDER_TRANSACTION_STATE_AUTHORIZED,
+            OrderTransactionStates::STATE_AUTHORIZED,
             $container,
             $context
         );

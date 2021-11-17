@@ -53,7 +53,7 @@ class CartValidatorTest extends TestCase
         $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
 
         if ($paymentMethodId) {
-            $this->removePayPalFromDefaultsSalesChannel($paymentMethodId);
+            $this->removePaymentMethodFromDefaultsSalesChannel($paymentMethodId);
         }
     }
 
@@ -116,7 +116,7 @@ class CartValidatorTest extends TestCase
         $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
 
         if ($paymentMethodId) {
-            $this->addPayPalToDefaultsSalesChannel($paymentMethodId);
+            $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
         }
 
         return $this->salesChannelContextFactory->create(

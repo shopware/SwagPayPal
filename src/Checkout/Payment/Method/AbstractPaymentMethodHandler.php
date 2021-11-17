@@ -9,4 +9,5 @@ namespace Swag\PayPal\Checkout\Payment\Method;
 
 abstract class AbstractPaymentMethodHandler
 {
+    public const PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME = 'paypalOrderId';
 }

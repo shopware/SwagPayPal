@@ -35,7 +35,7 @@ trait CheckoutRouteTrait
         $context = Context::createDefaultContext();
         $paymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId($context);
         if ($paymentMethodId !== null) {
-            $this->removePayPalFromDefaultsSalesChannel($paymentMethodId, $context);
+            $this->removePaymentMethodFromDefaultsSalesChannel($paymentMethodId, $context);
         }
     }
 

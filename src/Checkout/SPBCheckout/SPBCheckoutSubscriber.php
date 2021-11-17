@@ -16,8 +16,7 @@ use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
-use Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler;
-use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
+use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataServiceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -167,8 +166,8 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             $storefrontRequest->request->get(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID)
         );
         $storeApiRequest->request->set(
-            AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME,
-            $storefrontRequest->request->get(AbstractPaymentHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)
+            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME,
+            $storefrontRequest->request->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)
         );
         $this->logger->debug('Added request parameter');
     }
@@ -199,7 +198,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     private function addSuccessMessage(Request $request): bool
     {
         $requestQuery = $request->query;
-        if ($requestQuery->has(EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
+        if ($requestQuery->has(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
             $this->session->getFlashBag()->add('success', $this->translator->trans('paypal.smartPaymentButtons.confirmPageHint'));
 
             return true;

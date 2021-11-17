@@ -63,7 +63,7 @@ class SPBCheckoutDataService implements SPBCheckoutDataServiceInterface
             'paymentMethodId' => $paymentMethodId,
             'useAlternativePaymentMethods' => $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId),
             'showPayLater' => $this->systemConfigService->getBool(Settings::SPB_SHOW_PAY_LATER, $salesChannelId),
-            'createOrderUrl' => $this->router->generate('store-api.paypal.spb.create_order'),
+            'createOrderUrl' => $this->router->generate('store-api.paypal.create_order'),
             'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
             'addErrorUrl' => $this->router->generate('store-api.paypal.error'),
         ]);

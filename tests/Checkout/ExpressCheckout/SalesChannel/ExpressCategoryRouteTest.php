@@ -38,7 +38,7 @@ class ExpressCategoryRouteTest extends TestCase
         $paymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
 
         if ($paymentMethodId) {
-            $this->removePayPalFromDefaultsSalesChannel($paymentMethodId);
+            $this->removePaymentMethodFromDefaultsSalesChannel($paymentMethodId);
         }
     }
 
@@ -145,9 +145,9 @@ class ExpressCategoryRouteTest extends TestCase
         static::assertNotNull($paymentMethodId);
 
         if ($inSalesChannel) {
-            $this->addPayPalToDefaultsSalesChannel($paymentMethodId);
+            $this->addPaymentMethodToDefaultsSalesChannel($paymentMethodId);
         } else {
-            $this->removePayPalFromDefaultsSalesChannel($paymentMethodId);
+            $this->removePaymentMethodFromDefaultsSalesChannel($paymentMethodId);
         }
 
         $salesChannelContext = $salesChannelContextFactory->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);

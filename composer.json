@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "shopware/core": "~6.4.0"
+        "shopware/core": "~6.4.2"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",

@@ -23,6 +23,10 @@
             <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
         </service>
 
+        <service id="Swag\PayPal\RestApi\V1\Resource\IdentityResource">
+            <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
+        </service>
+
         <service id="Swag\PayPal\RestApi\V1\Resource\OrdersResource">
             <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
         </service>

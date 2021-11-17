@@ -3,6 +3,8 @@
 {% block component_payment_method_description %}
     {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBMarksData spbCheckoutMarksData #}
     {% set spbCheckoutMarksData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID')] %}
+    {# @var \Swag\PayPal\Checkout\ACDC\ACDCCheckoutFieldData acdcFieldData #}
+    {% set acdcFieldData = page.extensions[constant('Swag\\PayPal\\Checkout\\ACDC\\ACDCCheckoutSubscriber::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
 
     {% if spbCheckoutMarksData and spbCheckoutMarksData.paymentMethodId is same as(payment.id) %}
         <div class="payment-method-description"
@@ -14,6 +16,23 @@
         {% endif %}
     {% else %}
         {{ parent() }}
+
+        {% if acdcFieldData and acdcFieldData.paymentMethodId is same as(payment.id) %}
+            <div id="paypal-acdc-form" class="d-none">
+                <div>
+                    <label for="paypal-acdc-number">Card Number</label>
+                    <div id="paypal-acdc-number"></div>
+                </div>
+                <div>
+                    <label for="paypal-acdc-expiration">Expiration Date</label>
+                    <div id="paypal-acdc-expiration"></div>
+                </div>
+                <div>
+                    <label for="paypal-acdc-cvv">CVV</label>
+                    <div id="paypal-acdc-cvv"></div>
+                </div>
+            </div>
+        {% endif %}
     {% endif %}
 
     {# @var \Swag\PayPal\Checkout\Plus\PlusData payPalPlusData #}

@@ -81,6 +81,11 @@
                 <!-- will be removed with PPI-388-->
                 <referencedClass name="Shopware\Core\Framework\MessageQueue\MessageQueueStatsDefinition"/>
                 <referencedClass name="Shopware\Core\Framework\MessageQueue\MessageQueueStatsEntity"/>
+
+                <!-- <deprecated> tag:v5.0.0 - remove -->
+                <referencedClass name="Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler"/>
+                <file name="tests/Checkout/SPBCheckout/SalesChannel/SPBCreateOrderRouteTest.php"/>
+                <file name="src/Checkout/SPBCheckout/SalesChannel/SPBCreateOrderRoute.php"/>
             </errorLevel>
         </DeprecatedClass>
 
@@ -104,13 +109,6 @@
             </errorLevel>
         </UnresolvableInclude>
 
-        <UndefinedClass>
-            <errorLevel type="info">
-                <!-- Can be removed when min-Version is 6.4.2.0 -->
-                <referencedClass name="Shopware\Storefront\Event\SwitchBuyBoxVariantEvent"/>
-            </errorLevel>
-        </UndefinedClass>
-
         <UndefinedConstant>
             <errorLevel type="info">
                 <file name="tests/Checkout/Payment/PayPalPaymentHandlerTest.php"/>
@@ -131,35 +129,6 @@
                 <file name="src/Checkout/TokenResponse.php"/>
             </errorLevel>
         </NonInvariantDocblockPropertyType>
-
-        <InvalidStringClass>
-            <errorLevel type="info">
-                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
-                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
-            </errorLevel>
-        </InvalidStringClass>
-
-        <ArgumentTypeCoercion>
-            <errorLevel type="info">
-                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
-                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
-            </errorLevel>
-        </ArgumentTypeCoercion>
-
-        <PropertyTypeCoercion>
-            <errorLevel type="info">
-                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
-                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
-            </errorLevel>
-        </PropertyTypeCoercion>
-
-        <UnnecessaryVarAnnotation>
-            <errorLevel type="info">
-                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
-                <!-- And with it the annotations Psalm complains about in this file -->
-                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
-            </errorLevel>
-        </UnnecessaryVarAnnotation>
 
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>

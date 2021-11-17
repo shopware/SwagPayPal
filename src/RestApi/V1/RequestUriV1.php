@@ -18,6 +18,7 @@ final class RequestUriV1
     public const TOKEN_RESOURCE = 'v1/oauth2/token';
 
     public const CREDENTIALS_RESOURCE = 'v1/customer/partners/%s/merchant-integrations/credentials';
+    public const CLIENT_TOKEN_RESOURCE = 'v1/identity/generate-token';
 
     public const WEBHOOK_RESOURCE = 'v1/notifications/webhooks';
 

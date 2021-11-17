@@ -73,7 +73,7 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     protected function tearDown(): void
     {
-        $this->removePayPalFromDefaultsSalesChannel($this->payPalPaymentMethodId);
+        $this->removePaymentMethodFromDefaultsSalesChannel($this->payPalPaymentMethodId);
     }
 
     public function testGetSubscribedEvents(): void
@@ -326,7 +326,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     private function createSalesChannelContext(bool $withPayPalInContext = true): SalesChannelContext
     {
         if (!$withPayPalInContext) {
-            $this->removePayPalFromDefaultsSalesChannel($this->payPalPaymentMethodId);
+            $this->removePaymentMethodFromDefaultsSalesChannel($this->payPalPaymentMethodId);
         }
 
         /** @var EntityRepositoryInterface $repository */

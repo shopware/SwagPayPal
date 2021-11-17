@@ -56,7 +56,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
      */
     getScriptOptions() {
         const config = {
-            components: 'marks,buttons,messages',
+            components: 'buttons,marks,messages,hosted-fields',
             'client-id': this.options.clientId,
             commit: !!this.options.commit,
             locale: this.options.languageIso,
@@ -72,6 +72,10 @@ export default class SwagPaypalAbstractButtons extends Plugin {
 
         if (this.options.showPayLater === true) {
             config['enable-funding'] = 'paylater';
+        }
+
+        if (this.options.clientToken) {
+            config['data-client-token'] = this.options.clientToken;
         }
 
         return config;

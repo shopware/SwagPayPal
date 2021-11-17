@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -138,6 +139,14 @@ trait PaymentTransactionTrait
             default:
                 $order->setId(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);
         }
+
+        $address = new OrderAddressEntity();
+        $address->setFirstName('Some');
+        $address->setLastName('One');
+        $address->setStreet('Street 1');
+        $address->setZipcode('12345');
+        $address->setCity('City');
+        $order->setBillingAddress($address);
 
         return $order;
     }

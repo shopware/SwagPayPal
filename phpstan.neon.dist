@@ -11,7 +11,7 @@ parameters:
     excludePaths:
         - tests/Mock/DIContainerMock.php
 
-    # should be removed with min-Version: 6.4.2.0
+    # should be removed with min-Version: 6.4.4.0
     reportUnmatchedIgnoredErrors: false
 
     symfony:
@@ -26,9 +26,6 @@ parameters:
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
-        -   # can be deleted after min-Version is 6.4.2.0
-            message: '#Shopware\\Storefront\\Event\\SwitchBuyBoxVariantEvent#'
-            path: .
         -   # can be deleted after min-Version is 6.4.4.0
             message: '#Access to undefined constant Shopware\\Core\\Checkout\\Order\\Aggregate\\OrderTransaction\\OrderTransactionStates::STATE_UNCONFIRMED#'
             path: tests

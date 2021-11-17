@@ -29,7 +29,11 @@ use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
+use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
+use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
+use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
@@ -229,7 +233,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         $paypalOrderId = GetOrderCapture::ID;
         $dataBag = new RequestDataBag([
             PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
-            EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $paypalOrderId,
+            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $paypalOrderId,
         ]);
 
         $response = $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
@@ -290,7 +294,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
         $dataBag = new RequestDataBag([
             PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true,
-            EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_PATCH_THROWS_EXCEPTION,
+            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => self::PAYPAL_PATCH_THROWS_EXCEPTION,
         ]);
 
         $this->expectException(AsyncPaymentProcessException::class);
@@ -315,7 +319,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         $paypalOrderId = GetOrderCapture::ID;
         $dataBag = new RequestDataBag([
             PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID => true,
-            EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $paypalOrderId,
+            AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $paypalOrderId,
         ]);
 
         $response = $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
@@ -561,7 +565,7 @@ An error occurred during the communication with PayPal');
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => GetOrderAuthorization::ID,
         ]);
         // state does only exist in > 6.4.1.0
-        $this->assertFinalizeRequest($request, PayPalPaymentHandler::ORDER_TRANSACTION_STATE_AUTHORIZED);
+        $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_AUTHORIZED);
         $this->assertCustomFields(GetAuthorization::ID);
     }
 
@@ -679,17 +683,28 @@ An error occurred during the communication with PayPal');
                 new PurchaseUnitPatchBuilder(new PurchaseUnitProvider(new AmountProvider($priceFormatter), $systemConfig)),
                 $orderResource,
                 new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock()),
+                new TransactionDataService($this->orderTransactionRepo),
                 $logger
             ),
             new PayPalHandler(
                 $this->orderTransactionRepo,
                 $this->createOrderBuilder($systemConfig),
                 $orderResource,
-                $orderTransactionStateHandler,
-                $systemConfig,
-                new OrderNumberPatchBuilderV2(),
-                new CustomIdPatchBuilder(),
-                $this->stateMachineRegistry,
+                new OrderExecuteService(
+                    $orderResource,
+                    $orderTransactionStateHandler,
+                    new OrderNumberPatchBuilderV2(),
+                    $logger
+                ),
+                new OrderPatchService(
+                    new CustomIdPatchBuilder(),
+                    $systemConfig,
+                    new OrderNumberPatchBuilderV2(),
+                    $orderResource,
+                ),
+                new TransactionDataService(
+                    $this->orderTransactionRepo,
+                ),
                 $logger
             ),
             new PlusPuiHandler(

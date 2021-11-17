@@ -13,12 +13,8 @@
         </service>
 
         <service id="Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute" public="true">
-            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
-            <argument type="service" id="order.repository"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder"/>
-            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <deprecated>tag:v5.0.0 - %service_id% will be removed, use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute instead</deprecated>
+            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber">
