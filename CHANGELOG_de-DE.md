@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 4.1.0
 - PPI-344 - Behebt ein Problem mit ungültigen Telefonnummern mit API v1 Zahlungen
 - PPI-346 - Behebt Rundungsfehler im Zahlungseinzugsfenster in der Administration
 - PPI-350 - Aktivieren des Zahlungsprozess nach einer Bestellung für unbestätigte Zahlungen ab Shopware 6.4.4.0
