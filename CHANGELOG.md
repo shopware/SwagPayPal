@@ -4,6 +4,7 @@
 - PPI-350 - Enable after order process for unconfirmed payments with Shopware 6.4.4.0 or greater
 - PPI-356 - Improved plugin extensibility
 - PPI-366 - Improved payment error handling
+- PPI-367 - Change wording of Sales Channel footer link text
 
 # 4.0.0
 - PPI-252 - Improved error handling for Webhooks
