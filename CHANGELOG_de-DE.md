@@ -4,6 +4,7 @@
 - PPI-350 - Aktivieren des Zahlungsprozess nach einer Bestellung für unbestätigte Zahlungen ab Shopware 6.4.4.0
 - PPI-356 - Verbesserte Plugin-Erweiterbarkeit
 - PPI-366 - Verbesserte Fehlerbehandlung bei Zahlungen
+- PPI-367 - Verbesserte Formulierung der Fußzeile von Sales Channels
 
 # 4.0.0
 - PPI-252 - Fehlerbehebung von Webhooks verbessert

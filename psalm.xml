@@ -71,8 +71,18 @@
                 <file name="tests/Checkout/Payment/ScheduledTask/CancelTransactionsTaskHandlerTest.php"/>
                 <file name="tests/Checkout/Payment/PayPalPaymentHandlerTest.php"/>
                 <file name="tests/Util/PaymentStatusUtilV2Test.php"/>
+
+
             </errorLevel>
         </DeprecatedConstant>
+
+        <DeprecatedClass>
+            <errorLevel type="info">
+                <!-- will be removed with PPI-388-->
+                <referencedClass name="Shopware\Core\Framework\MessageQueue\MessageQueueStatsDefinition"/>
+                <referencedClass name="Shopware\Core\Framework\MessageQueue\MessageQueueStatsEntity"/>
+            </errorLevel>
+        </DeprecatedClass>
 
         <PossiblyInvalidArgument>
             <errorLevel type="info">
