@@ -24,6 +24,13 @@
                 "paymentNote": "%companyName% has assigned the claim against you to PayPal (Europe) S.à r.l. et Cie, S.C.A. as part of a current factoring agreement. Payments with debt discharging effect can only be made to PayPal (Europe) S.à r.l. et Cie, S.C.A."
             }
         },
+        "acdc": {
+            "cardNumber": "Card number",
+            "expiration": "Expiration date (MM/YY)",
+            "cvv": "Security code (CVV)",
+            "cardholderName": "Card holder name",
+            "zip": "Billing postal code"
+        },
         "smartPaymentButtons": {
             "confirmPageHint": "Your payment has been created. Please complete it, by confirming your order.",
             "description": "Pay easy, fast and secure - Please choose one of these payment methods on the confirm page."

@@ -24,6 +24,13 @@
                 "paymentNote": "%companyName% hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.à r.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.à r.l. et Cie, S.C.A. geleistet werden."
             }
         },
+        "acdc": {
+            "cardNumber": "Kartennummer",
+            "expiration": "Ablaufdatum (MM/JJ)",
+            "cvv": "Sicherheitscode (CVV)",
+            "cardholderName": "Name des Karteninhabers",
+            "zip": "Postleitzahl"
+        },
         "smartPaymentButtons": {
             "confirmPageHint": "Ihre Zahlung wurde erstellt. Bitte schließen Sie sie ab, indem Sie Ihre Bestellung bestätigen.",
             "description":  "Einfach, schnell und sicher bezahlen - Bitte wählen Sie eine dieser Zahlungsmethoden auf der Bestellabschlussseite."

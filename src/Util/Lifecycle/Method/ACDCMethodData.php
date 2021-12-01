@@ -16,11 +16,11 @@ class ACDCMethodData extends AbstractMethodData
     {
         return [
             'de-DE' => [
-                'description' => 'Mit Kredit- oder Debitkarte zahlen, unterstützt durch PayPal',
+                'description' => '',
                 'name' => 'Kredit- oder Debitkarte',
             ],
             'en-GB' => [
-                'description' => 'Payment with credit or debit card, powered by PayPal',
+                'description' => '',
                 'name' => 'Credit or debit card',
             ],
         ];

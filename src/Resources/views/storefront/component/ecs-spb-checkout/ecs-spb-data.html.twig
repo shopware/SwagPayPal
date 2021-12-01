@@ -28,9 +28,12 @@
 
     {% elseif acdcFieldData and acdcFieldData.paymentMethodId is same as(context.paymentMethod.id) %}
 
-        <div data-swag-paypal-acdc-fields="true"
-             data-swag-paypal-acdc-fields-options="{{ acdcFieldData|json_encode }}">
-        </div>
+        {% block swag_paypal_ecs_spb_data_acdc_fields %}
+            <div data-swag-paypal-acdc-fields="true"
+                 data-swag-paypal-acdc-fields-options="{{ acdcFieldData|json_encode }}"
+                 data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
+            </div>
+        {% endblock %}
 
     {% endif %}
 {% endblock %}
