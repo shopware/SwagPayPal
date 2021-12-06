@@ -6,8 +6,7 @@
 
     <services>
         <service id="Swag\PayPal\Checkout\CheckoutSubscriber">
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
-            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
             <tag name="kernel.event_subscriber"/>
@@ -15,6 +14,8 @@
 
         <service id="Swag\PayPal\Checkout\Cart\Validation\CartValidator">
             <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
             <tag name="shopware.cart.validator"/>
         </service>
 
@@ -35,6 +36,16 @@
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
         </service>
 
+        <service id="Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute"
+                 decorates="Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRoute"
+                 public="true">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
+        </service>
+
         <service id="Swag\PayPal\Checkout\Payment\Method\ACDCHandler">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
@@ -42,7 +53,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
-            <tag name="shopware.payment.method.async"/>
+            <tag name="shopware.payment.method.sync"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\PayPalPaymentHandler">

@@ -26,6 +26,7 @@ use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
 use Swag\PayPal\Util\Lifecycle\InstallUninstall;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -103,10 +104,15 @@ class SwagPayPal extends Plugin
         $posWebhookService = $this->container->get(PosWebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         /** @var EntityRepositoryInterface $ruleRepository */
         $ruleRepository = $this->container->get('rule.repository');
+        /** @var EntityRepositoryInterface $ruleConditionRepository */
+        $ruleConditionRepository = $this->container->get('rule_condition.repository');
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         /** @var PaymentMethodInstaller|null $paymentMethodInstaller */
         $paymentMethodInstaller = $this->container->get(PaymentMethodInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        /** @var PaymentMethodStateService|null $paymentMethodStateService */
+        $paymentMethodStateService = $this->container->get(PaymentMethodStateService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        $paymentMethodDataRegistry = new PaymentMethodDataRegistry($paymentMethodRepository, $this->container);
 
         (new Update(
             $systemConfigService,
@@ -121,12 +127,14 @@ class SwagPayPal extends Plugin
             $paymentMethodInstaller ?? new PaymentMethodInstaller(
                 $paymentMethodRepository,
                 $ruleRepository,
+                $ruleConditionRepository,
                 $pluginIdProvider,
-                new PaymentMethodDataRegistry(
-                    $paymentMethodRepository,
-                    $this->container,
-                ),
+                $paymentMethodDataRegistry,
             ),
+            $paymentMethodStateService ?? new PaymentMethodStateService(
+                $paymentMethodDataRegistry,
+                $paymentMethodRepository,
+            )
         ))->update($updateContext);
 
         parent::update($updateContext);
@@ -182,6 +190,8 @@ class SwagPayPal extends Plugin
         $paymentMethodRepository = $this->container->get('payment_method.repository');
         /** @var EntityRepositoryInterface $ruleRepository */
         $ruleRepository = $this->container->get('rule.repository');
+        /** @var EntityRepositoryInterface $ruleConditionRepository */
+        $ruleConditionRepository = $this->container->get('rule_condition.repository');
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         /** @var SystemConfigService $systemConfigService */
@@ -193,6 +203,7 @@ class SwagPayPal extends Plugin
             new PaymentMethodInstaller(
                 $paymentMethodRepository,
                 $ruleRepository,
+                $ruleConditionRepository,
                 $pluginIdProvider,
                 new PaymentMethodDataRegistry(
                     $paymentMethodRepository,

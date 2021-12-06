@@ -17,6 +17,9 @@ use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @deprecated tag:v5.0.0 - will be removed
+ */
 class PayUponInvoiceSubscriber implements EventSubscriberInterface
 {
     private SettingsValidationServiceInterface $settingsValidationService;
@@ -34,7 +37,7 @@ class PayUponInvoiceSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'sales_channel.payment_method.search.result.loaded' => ['onSearchResultLoaded', -1],
+            //'sales_channel.payment_method.search.result.loaded' => ['onSearchResultLoaded', -1],
         ];
     }
 

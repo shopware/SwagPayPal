@@ -21,7 +21,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
-use Swag\PayPal\Util\Lifecycle\Method\PayPalPuiMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 
 class PaymentMethodInstallerTest extends TestCase
 {
@@ -30,6 +30,8 @@ class PaymentMethodInstallerTest extends TestCase
 
     private EntityRepositoryInterface $ruleRepository;
 
+    private EntityRepositoryInterface $ruleConditionRepository;
+
     private EntityRepositoryInterface $paymentMethodRepository;
 
     protected function setUp(): void
@@ -37,6 +39,9 @@ class PaymentMethodInstallerTest extends TestCase
         /** @var EntityRepositoryInterface $ruleRepository */
         $ruleRepository = $this->getContainer()->get('rule.repository');
         $this->ruleRepository = $ruleRepository;
+        /** @var EntityRepositoryInterface $ruleConditionRepository */
+        $ruleConditionRepository = $this->getContainer()->get('rule_condition.repository');
+        $this->ruleConditionRepository = $ruleConditionRepository;
         /** @var EntityRepositoryInterface $paymentMethodRepository */
         $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
         $this->paymentMethodRepository = $paymentMethodRepository;
@@ -50,7 +55,7 @@ class PaymentMethodInstallerTest extends TestCase
         $context = Context::createDefaultContext();
         $installer = $this->createInstaller($useContainer);
 
-        $ruleName = (new PayPalPuiMethodData($this->getContainer()))->getRuleData($context)['name'] ?? 'invalid';
+        $ruleName = (new PUIMethodData($this->getContainer()))->getRuleData($context)['name'] ?? 'invalid';
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('name', $ruleName));
@@ -118,19 +123,16 @@ class PaymentMethodInstallerTest extends TestCase
             return $installer;
         }
 
-        /** @var EntityRepositoryInterface $paymentMethodRepository */
-        $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
-        /** @var EntityRepositoryInterface $ruleRepository */
-        $ruleRepository = $this->getContainer()->get('rule.repository');
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->getContainer()->get(PluginIdProvider::class);
 
         return new PaymentMethodInstaller(
-            $paymentMethodRepository,
-            $ruleRepository,
+            $this->paymentMethodRepository,
+            $this->ruleRepository,
+            $this->ruleConditionRepository,
             $pluginIdProvider,
             new PaymentMethodDataRegistry(
-                $paymentMethodRepository,
+                $this->paymentMethodRepository,
                 $this->getContainer(),
             )
         );

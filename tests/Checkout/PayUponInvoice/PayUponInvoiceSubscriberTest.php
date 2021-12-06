@@ -49,7 +49,7 @@ class PayUponInvoiceSubscriberTest extends TestCase
         $payUponInvoiceSubscriber = $this->getSubscriber();
 
         $expectedResult = [
-            'sales_channel.payment_method.search.result.loaded' => ['onSearchResultLoaded', -1],
+            //'sales_channel.payment_method.search.result.loaded' => ['onSearchResultLoaded', -1],
         ];
 
         static::assertSame($expectedResult, $payUponInvoiceSubscriber::getSubscribedEvents());

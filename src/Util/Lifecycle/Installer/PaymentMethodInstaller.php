@@ -23,6 +23,8 @@ class PaymentMethodInstaller
 
     private EntityRepositoryInterface $ruleRepository;
 
+    private EntityRepositoryInterface $ruleConditionRepository;
+
     private PluginIdProvider $pluginIdProvider;
 
     private PaymentMethodDataRegistry $methodDataRegistry;
@@ -30,11 +32,13 @@ class PaymentMethodInstaller
     public function __construct(
         EntityRepositoryInterface $paymentMethodRepository,
         EntityRepositoryInterface $ruleRepository,
+        EntityRepositoryInterface $ruleConditionRepository,
         PluginIdProvider $pluginIdProvider,
         PaymentMethodDataRegistry $methodDataRegistry
     ) {
         $this->paymentMethodRepository = $paymentMethodRepository;
         $this->ruleRepository = $ruleRepository;
+        $this->ruleConditionRepository = $ruleConditionRepository;
         $this->pluginIdProvider = $pluginIdProvider;
         $this->methodDataRegistry = $methodDataRegistry;
     }
@@ -74,6 +78,10 @@ class PaymentMethodInstaller
         $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass(SwagPayPal::class, $context);
 
         $data = $this->getPaymentMethodData($method, $pluginId, $context);
+
+        if (\array_key_exists('availabilityRule', $data) && \is_array($data['availabilityRule']) && \is_string($data['availabilityRule']['id'])) {
+            $this->removeExistingRuleConditions($data['availabilityRule']['id'], $context);
+        }
 
         // due to NEXT-12900, we write translations separately
         $translationData = [
@@ -162,5 +170,21 @@ class PaymentMethodInstaller
         }
 
         return $data;
+    }
+
+    private function removeExistingRuleConditions(string $ruleId, Context $context): void
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('ruleId', $ruleId));
+
+        $result = $this->ruleConditionRepository->searchIds($criteria, $context);
+
+        if ($result->getTotal() === 0) {
+            return;
+        }
+
+        $this->ruleConditionRepository->delete(\array_map(static function ($id) {
+            return ['id' => $id];
+        }, $result->getIds()), $context);
     }
 }

@@ -17,7 +17,9 @@ use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Validation\CartValidator;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -33,6 +35,8 @@ class CartValidatorTest extends TestCase
 
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 
+    private SystemConfigService $systemConfig;
+
     public function setUp(): void
     {
         /** @var CartValidator $validator */
@@ -46,6 +50,14 @@ class CartValidatorTest extends TestCase
         /** @var AbstractSalesChannelContextFactory $salesChannelContextFactory */
         $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
         $this->salesChannelContextFactory = $salesChannelContextFactory;
+
+        /** @var SystemConfigService $systemConfig */
+        $systemConfig = $this->getContainer()->get(SystemConfigService::class);
+        $this->systemConfig = $systemConfig;
+
+        foreach ($this->getDefaultConfigData() as $key => $value) {
+            $systemConfig->set($key, $value);
+        }
     }
 
     public function tearDown(): void
@@ -109,6 +121,20 @@ class CartValidatorTest extends TestCase
         $this->validator->validate($cart, $errors, $context);
 
         static::assertEmpty($errors->getElements());
+    }
+
+    public function testValidateWithInvalidCredentials(): void
+    {
+        $cart = Generator::createCart();
+        $context = $this->getSalesChannelContext();
+        $errors = new ErrorCollection();
+
+        $this->systemConfig->delete(Settings::CLIENT_ID);
+        $this->systemConfig->delete(Settings::CLIENT_SECRET);
+
+        $this->validator->validate($cart, $errors, $context);
+
+        static::assertCount(1, $errors->getElements());
     }
 
     private function getSalesChannelContext(): SalesChannelContext

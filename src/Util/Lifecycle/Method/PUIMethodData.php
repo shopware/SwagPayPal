@@ -9,21 +9,19 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Checkout\Cart\Rule\CartAmountRule;
 use Shopware\Core\Checkout\Customer\Rule\BillingCountryRule;
-use Shopware\Core\Checkout\Customer\Rule\IsCompanyRule;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Rule\Container\AndRule;
 use Shopware\Core\System\Country\CountryDefinition;
-use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Country\Exception\CountryNotFoundException;
-use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
+use Shopware\Core\System\Currency\CurrencyDefinition;
+use Shopware\Core\System\Currency\Rule\CurrencyRule;
+use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
+use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 
-/**
- * @internal will be removed in a future release
- */
-class PayPalPuiMethodData extends AbstractMethodData
+class PUIMethodData extends AbstractMethodData
 {
     private const PAYPAL_PUI_AVAILABILITY_RULE_NAME = 'PayPalPuiAvailabilityRule';
 
@@ -51,12 +49,13 @@ class PayPalPuiMethodData extends AbstractMethodData
      */
     public function getHandler(): string
     {
-        return PayPalPuiPaymentHandler::class;
+        return PUIHandler::class;
     }
 
     public function getRuleData(Context $context): ?array
     {
         $germanCountryId = $this->getGermanCountryId($context);
+        $euroCurrencyId = $this->getEuroCurrencyId($context);
 
         return [
             'name' => self::PAYPAL_PUI_AVAILABILITY_RULE_NAME,
@@ -76,23 +75,26 @@ class PayPalPuiMethodData extends AbstractMethodData
                             ],
                         ],
                         [
-                            'type' => (new IsCompanyRule())->getName(),
+                            'type' => (new CurrencyRule())->getName(),
                             'value' => [
-                                'isCompany' => false,
+                                'operator' => CurrencyRule::OPERATOR_EQ,
+                                'currencyIds' => [
+                                    $euroCurrencyId,
+                                ],
                             ],
                         ],
                         [
                             'type' => (new CartAmountRule())->getName(),
                             'value' => [
                                 'operator' => CartAmountRule::OPERATOR_GTE,
-                                'amount' => 2.0,
+                                'amount' => 5.0,
                             ],
                         ],
                         [
                             'type' => (new CartAmountRule())->getName(),
                             'value' => [
                                 'operator' => CartAmountRule::OPERATOR_LTE,
-                                'amount' => 1470.0,
+                                'amount' => 2500.0,
                             ],
                         ],
                     ],
@@ -119,14 +121,34 @@ class PayPalPuiMethodData extends AbstractMethodData
 
         /** @var EntityRepositoryInterface $countryRepository */
         $countryRepository = $this->container->get(\sprintf('%s.repository', CountryDefinition::ENTITY_NAME));
+        $germanCountryId = $countryRepository->searchIds($criteria, $context)->firstId();
 
-        /** @var CountryEntity|null $germanCountry */
-        $germanCountry = $countryRepository->search($criteria, $context)->first();
-
-        if ($germanCountry === null) {
+        if ($germanCountryId === null) {
             throw new CountryNotFoundException($germanIso3);
         }
 
-        return $germanCountry->getId();
+        return $germanCountryId;
+    }
+
+    /**
+     * @throws CountryNotFoundException
+     */
+    private function getEuroCurrencyId(Context $context): string
+    {
+        $isoCode = 'EUR';
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new EqualsFilter('isoCode', $isoCode)
+        );
+
+        /** @var EntityRepositoryInterface $currencyRepository */
+        $currencyRepository = $this->container->get(\sprintf('%s.repository', CurrencyDefinition::ENTITY_NAME));
+        $euroCurrencyId = $currencyRepository->searchIds($criteria, $context)->firstId();
+
+        if ($euroCurrencyId === null) {
+            throw new CurrencyNotFoundException($isoCode);
+        }
+
+        return $euroCurrencyId;
     }
 }

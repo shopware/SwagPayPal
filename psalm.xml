@@ -59,6 +59,10 @@
                 <referencedMethod name="Shopware\Core\Framework\Struct\Collection::getIterator"/>
                 <referencedMethod name="Shopware\Core\System\SalesChannel\SalesChannelContext::getFallbackCustomerGroup"/>
                 <referencedMethod name="Doctrine\DBAL\Connection::executeUpdate"/>
+
+                <!-- <deprecated> tag:v5.0.0 - remove -->
+                <file name="src/Checkout/Payment/PayPalPuiPaymentHandler.php"/>
+                <file name="tests/Checkout/CheckoutSubscriberTest.php"/>
             </errorLevel>
         </DeprecatedMethod>
 
@@ -71,8 +75,6 @@
                 <file name="tests/Checkout/Payment/ScheduledTask/CancelTransactionsTaskHandlerTest.php"/>
                 <file name="tests/Checkout/Payment/PayPalPaymentHandlerTest.php"/>
                 <file name="tests/Util/PaymentStatusUtilV2Test.php"/>
-
-
             </errorLevel>
         </DeprecatedConstant>
 
@@ -86,6 +88,9 @@
                 <referencedClass name="Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler"/>
                 <file name="tests/Checkout/SPBCheckout/SalesChannel/SPBCreateOrderRouteTest.php"/>
                 <file name="src/Checkout/SPBCheckout/SalesChannel/SPBCreateOrderRoute.php"/>
+                <file name="src/Checkout/PayUponInvoice/PayUponInvoiceSubscriber.php"/>
+                <file name="tests/Checkout/PayUponInvoice/PayUponInvoiceSubscriberTest.php"/>
+                <file name="tests/Checkout/Payment/PayPalPuiPaymentHandlerTest.php"/>
             </errorLevel>
         </DeprecatedClass>
 

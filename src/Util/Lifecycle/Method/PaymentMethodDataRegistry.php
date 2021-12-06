@@ -24,7 +24,7 @@ class PaymentMethodDataRegistry
      */
     private const PAYMENT_METHODS = [
         PayPalMethodData::class,
-        PayPalPuiMethodData::class,
+        PUIMethodData::class,
         ACDCMethodData::class,
     ];
 
@@ -61,11 +61,15 @@ class PaymentMethodDataRegistry
     }
 
     /**
-     * @return iterable<AbstractMethodData>
+     * @return AbstractMethodData[]
      */
-    public function getPaymentMethods(): iterable
+    public function getPaymentMethods(): array
     {
         if ($this->paymentMethods !== null) {
+            if (!\is_array($this->paymentMethods)) {
+                $this->paymentMethods = [...$this->paymentMethods];
+            }
+
             return $this->paymentMethods;
         }
 
@@ -75,6 +79,8 @@ class PaymentMethodDataRegistry
             $method = new $methodDataClass($this->container);
             $methods[] = $method;
         }
+
+        $this->paymentMethods = $methods;
 
         return $methods;
     }
@@ -99,5 +105,16 @@ class PaymentMethodDataRegistry
         }
 
         throw new UnknownPaymentMethodException($methodDataClass);
+    }
+
+    public function isPayPalPaymentMethod(PaymentMethodEntity $paymentMethod): bool
+    {
+        foreach ($this->getPaymentMethods() as $methodData) {
+            if ($paymentMethod->getHandlerIdentifier() === $methodData->getHandler()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

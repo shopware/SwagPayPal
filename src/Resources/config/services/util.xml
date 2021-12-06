@@ -62,6 +62,7 @@
         <service id="Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller" public="true">
             <argument type="service" id="payment_method.repository"/>
             <argument type="service" id="rule.repository"/>
+            <argument type="service" id="rule_condition.repository"/>
             <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
         </service>
@@ -80,7 +81,7 @@
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
             <tag name="swag.paypal.payment.method.data"/>
         </service>
-        <service id="Swag\PayPal\Util\Lifecycle\Method\PayPalPuiMethodData"
+        <service id="Swag\PayPal\Util\Lifecycle\Method\PUIMethodData"
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
             <tag name="swag.paypal.payment.method.data"/>
         </service>

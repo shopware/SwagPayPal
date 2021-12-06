@@ -18,7 +18,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
 
 class PaymentMethodUtil
 {
@@ -48,7 +47,7 @@ class PaymentMethodUtil
     public function getPayPalPuiPaymentMethodId(Context $context): ?string
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('handlerIdentifier', PayPalPuiPaymentHandler::class));
+        $criteria->addFilter(new EqualsFilter('handlerIdentifier', 'Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler'));
 
         return $this->paymentRepository->searchIds($criteria, $context)->firstId();
     }
