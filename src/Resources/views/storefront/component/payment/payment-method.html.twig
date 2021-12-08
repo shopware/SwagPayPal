@@ -67,13 +67,13 @@
             <div class="row">
                 <div class="col-sm-12">
                     <label class="d-none" for="swag-paypal-acdc-form-cardholder">{{ "paypal.acdc.cardholderName"|trans }}</label>
-                    <input type="text" required form="confirmOrderForm" class="form-control" id="swag-paypal-acdc-form-cardholder" placeholder="{{ "paypal.acdc.cardholderName"|trans }}"/>
+                    <input type="text" required form="confirmOrderForm" class="form-control" id="swag-paypal-acdc-form-cardholder" placeholder="{{ "paypal.acdc.cardholderName"|trans }}" value="{{ acdcFieldData.cardholderData.cardholderName }}"/>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm-12">
                     <label class="d-none" for="swag-paypal-acdc-form-zip">{{ "paypal.acdc.zip"|trans }}</label>
-                    <input type="text" required form="confirmOrderForm" class="form-control" id="swag-paypal-acdc-form-zip" placeholder="{{ "paypal.acdc.zip"|trans }}"/>
+                    <input type="text" required form="confirmOrderForm" class="form-control" id="swag-paypal-acdc-form-zip" placeholder="{{ "paypal.acdc.zip"|trans }}" value="{{ acdcFieldData.cardholderData.billingAddress.postalCode }}"/>
                 </div>
             </div>
         </div>
