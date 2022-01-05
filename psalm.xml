@@ -63,6 +63,9 @@
                 <!-- <deprecated> tag:v5.0.0 - remove -->
                 <file name="src/Checkout/Payment/PayPalPuiPaymentHandler.php"/>
                 <file name="tests/Checkout/CheckoutSubscriberTest.php"/>
+                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::createAddress"/>
+                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::__construct"/>
+                <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber::addNecessaryRequestParameter"/>
             </errorLevel>
         </DeprecatedMethod>
 

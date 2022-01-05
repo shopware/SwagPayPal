@@ -12,6 +12,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\Link;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 
 /**
@@ -56,9 +57,19 @@ class Order extends PayPalApiStruct
     protected ApplicationContext $applicationContext;
 
     /**
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source")
+     */
+    protected ?PaymentSource $paymentSource;
+
+    /**
      * @OA\Property(type="string")
      */
     protected string $status;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    protected string $processingInstruction;
 
     /**
      * @var Link[]
@@ -142,6 +153,16 @@ class Order extends PayPalApiStruct
         $this->applicationContext = $applicationContext;
     }
 
+    public function getPaymentSource(): ?PaymentSource
+    {
+        return $this->paymentSource;
+    }
+
+    public function setPaymentSource(?PaymentSource $paymentSource): void
+    {
+        $this->paymentSource = $paymentSource;
+    }
+
     public function getStatus(): string
     {
         return $this->status;
@@ -150,6 +171,16 @@ class Order extends PayPalApiStruct
     public function setStatus(string $status): void
     {
         $this->status = $status;
+    }
+
+    public function getProcessingInstruction(): string
+    {
+        return $this->processingInstruction;
+    }
+
+    public function setProcessingInstruction(string $processingInstruction): void
+    {
+        $this->processingInstruction = $processingInstruction;
     }
 
     /**

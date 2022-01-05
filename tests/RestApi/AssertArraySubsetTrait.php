@@ -11,13 +11,13 @@ use PHPUnit\Framework\TestCase;
 
 trait AssertArraySubsetTrait
 {
-    public function assertArraySubset(array $subset, array $fullArray): void
+    public static function assertArraySubset(array $subset, array $fullArray): void
     {
         foreach ($subset as $key => $value) {
             TestCase::assertArrayHasKey($key, $fullArray);
 
             if (\is_array($subset[$key])) {
-                $this->assertArraySubset($fullArray[$key], $subset[$key]);
+                static::assertArraySubset($fullArray[$key], $subset[$key]);
             } else {
                 TestCase::assertSame($value, $fullArray[$key]);
             }

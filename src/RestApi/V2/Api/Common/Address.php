@@ -114,4 +114,9 @@ abstract class Address extends PayPalApiStruct
     {
         $this->countryCode = $countryCode;
     }
+
+    public function jsonSerialize(): array
+    {
+        return \array_filter(parent::jsonSerialize());
+    }
 }

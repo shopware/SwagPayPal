@@ -20,6 +20,7 @@ class DeprecatedTagTest extends TestCase
         'tests/DeprecatedTagTest.php',
         'coverage/',
         'Resources/public/',
+        'node_modules/',
     ];
 
     public function testAllFilesForDeprecated(): void

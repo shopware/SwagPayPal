@@ -34,6 +34,7 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
@@ -680,7 +681,7 @@ An error occurred during the communication with PayPal');
                 $this->orderTransactionRepo,
                 $systemConfig,
                 $currencyRepository,
-                new PurchaseUnitPatchBuilder(new PurchaseUnitProvider(new AmountProvider($priceFormatter), $systemConfig)),
+                new PurchaseUnitPatchBuilder(new PurchaseUnitProvider(new AmountProvider($priceFormatter), new AddressProvider(), $systemConfig)),
                 $orderResource,
                 new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock()),
                 new TransactionDataService($this->orderTransactionRepo),

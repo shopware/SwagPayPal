@@ -17,6 +17,7 @@ use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromCartEvent;
+use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
@@ -38,10 +39,11 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         PriceFormatter $priceFormatter,
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,
+        AddressProvider $addressProvider,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger
     ) {
-        parent::__construct($systemConfigService, $purchaseUnitProvider);
+        parent::__construct($systemConfigService, $purchaseUnitProvider, $addressProvider);
         $this->priceFormatter = $priceFormatter;
         $this->eventDispatcher = $eventDispatcher;
         $this->logger = $logger;

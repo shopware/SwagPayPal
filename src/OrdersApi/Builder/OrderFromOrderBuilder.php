@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
@@ -28,9 +29,10 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
     public function __construct(
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,
+        AddressProvider $addressProvider,
         ItemListProvider $itemListProvider
     ) {
-        parent::__construct($systemConfigService, $purchaseUnitProvider);
+        parent::__construct($systemConfigService, $purchaseUnitProvider, $addressProvider);
         $this->itemListProvider = $itemListProvider;
     }
 

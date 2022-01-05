@@ -11,6 +11,7 @@ final class PaymentStatusV2
 {
     public const ORDER_CREATED = 'CREATED';
     public const ORDER_SAVED = 'SAVED';
+    public const ORDER_PENDING_APPROVAL = 'PENDING_APPROVAL';
     public const ORDER_APPROVED = 'APPROVED';
     public const ORDER_VOIDED = 'VOIDED';
     public const ORDER_COMPLETED = 'COMPLETED';

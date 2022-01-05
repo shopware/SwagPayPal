@@ -7,41 +7,8 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\Payer;
 
-use OpenApi\Annotations as OA;
-use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Common\Name as CommonName;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_name")
- */
-class Name extends PayPalApiStruct
+class Name extends CommonName
 {
-    /**
-     * @OA\Property(type="string")
-     */
-    protected string $givenName;
-
-    /**
-     * @OA\Property(type="string")
-     */
-    protected string $surname;
-
-    public function getGivenName(): string
-    {
-        return $this->givenName;
-    }
-
-    public function setGivenName(string $givenName): void
-    {
-        $this->givenName = $givenName;
-    }
-
-    public function getSurname(): string
-    {
-        return $this->surname;
-    }
-
-    public function setSurname(string $surname): void
-    {
-        $this->surname = $surname;
-    }
 }

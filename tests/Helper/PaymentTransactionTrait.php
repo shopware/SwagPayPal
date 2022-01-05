@@ -15,6 +15,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -146,7 +147,16 @@ trait PaymentTransactionTrait
         $address->setStreet('Street 1');
         $address->setZipcode('12345');
         $address->setCity('City');
+        $address->setPhoneNumber('+41 (0123) 49567-89'); // extra weird for filter testing
+        $address->setId(Uuid::randomHex());
         $order->setBillingAddress($address);
+        $order->setBillingAddressId($address->getId());
+
+        $orderCustomer = new OrderCustomerEntity();
+        $orderCustomer->setFirstName('Test');
+        $orderCustomer->setLastName('Customer');
+        $orderCustomer->setEmail('test@test.com');
+        $order->setOrderCustomer($orderCustomer);
 
         return $order;
     }

@@ -8,11 +8,13 @@
 namespace Swag\PayPal\OrdersApi\Builder\Util;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromOrderEvent;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\Tax;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -42,6 +44,7 @@ class ItemListProvider
     {
         $items = [];
         $currencyCode = $currency->getIsoCode();
+        $isNet = $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS;
         $lineItems = $order->getNestedLineItems();
         if ($lineItems === null) {
             return [];
@@ -58,6 +61,21 @@ class ItemListProvider
 
             $item->setUnitAmount($unitAmount);
             $item->setQuantity($lineItem->getQuantity());
+            $item->setCategory(Item::CATEGORY_PHYSICAL_GOODS);
+
+            $tax = new Tax();
+            $tax->setCurrencyCode($currencyCode);
+            $item->setTax($tax);
+            $price = $lineItem->getPrice();
+            if ($isNet && $price !== null) {
+                $tax->setValue($this->priceFormatter->formatPrice($price->getCalculatedTaxes()->getAmount()));
+
+                $calculatedTax = $price->getCalculatedTaxes()->first();
+                $item->setTaxRate($calculatedTax !== null ? $calculatedTax->getTaxRate() : 0.0);
+            } else {
+                $tax->setValue($this->priceFormatter->formatPrice(0));
+                $item->setTaxRate(0.0);
+            }
 
             $event = new PayPalV2ItemFromOrderEvent($item, $lineItem);
             $this->eventDispatcher->dispatch($event);

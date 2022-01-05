@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Storefront\Controller\StorefrontController;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
@@ -69,8 +70,6 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         return [
             AccountEditOrderPageLoadedEvent::class => 'onAccountOrderEditLoaded',
             CheckoutConfirmPageLoadedEvent::class => 'onCheckoutConfirmLoaded',
-
-            HandlePaymentMethodRouteRequestEvent::class => 'addNecessaryRequestParameter',
         ];
     }
 
@@ -150,6 +149,9 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
         $this->logger->debug('Added data');
     }
 
+    /**
+     * @deprecated tag:v5.0.0 - will be removed, has been moved to Swag\PayPal\Storefront\RequestSubscriber
+     */
     public function addNecessaryRequestParameter(HandlePaymentMethodRouteRequestEvent $event): void
     {
         $this->logger->debug('Adding request parameter');
@@ -199,7 +201,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     {
         $requestQuery = $request->query;
         if ($requestQuery->has(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
-            $this->session->getFlashBag()->add('success', $this->translator->trans('paypal.smartPaymentButtons.confirmPageHint'));
+            $this->session->getFlashBag()->add(StorefrontController::SUCCESS, $this->translator->trans('paypal.smartPaymentButtons.confirmPageHint'));
 
             return true;
         }

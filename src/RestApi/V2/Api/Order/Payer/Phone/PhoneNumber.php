@@ -7,26 +7,8 @@
 
 namespace Swag\PayPal\RestApi\V2\Api\Order\Payer\Phone;
 
-use OpenApi\Annotations as OA;
-use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Common\PhoneNumber as CommonPhoneNumber;
 
-/**
- * @OA\Schema(schema="swag_paypal_v2_order_phone_number")
- */
-class PhoneNumber extends PayPalApiStruct
+class PhoneNumber extends CommonPhoneNumber
 {
-    /**
-     * @OA\Property(type="string")
-     */
-    protected string $nationalNumber;
-
-    public function getNationalNumber(): string
-    {
-        return $this->nationalNumber;
-    }
-
-    public function setNationalNumber(string $nationalNumber): void
-    {
-        $this->nationalNumber = $nationalNumber;
-    }
 }

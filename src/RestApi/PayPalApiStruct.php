@@ -91,7 +91,6 @@ abstract class PayPalApiStruct implements \JsonSerializable
                 $data[$snakeCasePropertyName] = $this->$property;
                 /* @phpstan-ignore-next-line */
             } catch (\Error $error) {
-                $data[$snakeCasePropertyName] = null;
             }
         }
 

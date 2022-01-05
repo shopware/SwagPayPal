@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Checkout;
+namespace Swag\PayPal\Test\Checkout\SalesChannel;
 
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;

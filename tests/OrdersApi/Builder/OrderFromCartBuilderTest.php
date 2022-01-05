@@ -21,6 +21,7 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
+use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -207,11 +208,13 @@ class OrderFromCartBuilderTest extends TestCase
         $systemConfig = $this->createDefaultSystemConfig($settings);
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
+        $addressProvider = new AddressProvider();
 
         return new OrderFromCartBuilder(
             $priceFormatter,
             $systemConfig,
-            new PurchaseUnitProvider($amountProvider, $systemConfig),
+            new PurchaseUnitProvider($amountProvider, $addressProvider, $systemConfig),
+            $addressProvider,
             new EventDispatcherMock(),
             new LoggerMock()
         );

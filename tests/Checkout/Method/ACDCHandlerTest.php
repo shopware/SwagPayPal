@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Checkout\Payment;
+namespace Swag\PayPal\Test\Checkout\Method;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -32,6 +32,7 @@ use Swag\PayPal\RestApi\V2\Api\Patch as PatchV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;

@@ -7,13 +7,6 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: false
 
-    # should be removed with min-Version: 6.4.3.0
-    excludePaths:
-        - tests/Mock/DIContainerMock.php
-
-    # should be removed with min-Version: 6.4.4.0
-    reportUnmatchedIgnoredErrors: false
-
     symfony:
         constant_hassers: false
         # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
@@ -26,9 +19,6 @@ parameters:
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
-        -   # can be deleted after min-Version is 6.4.4.0
-            message: '#Access to undefined constant Shopware\\Core\\Checkout\\Order\\Aggregate\\OrderTransaction\\OrderTransactionStates::STATE_UNCONFIRMED#'
-            path: tests
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

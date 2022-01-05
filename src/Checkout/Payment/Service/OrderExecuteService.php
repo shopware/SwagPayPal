@@ -58,7 +58,7 @@ class OrderExecuteService
             return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
         } catch (PayPalApiException $e) {
             if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
-                || (\mb_strpos($e->getMessage(), PayPalApiException::ERROR_CODE_DUPLICATE_INVOICE_ID) === false)) {
+                || ($e->getIssue() !== PayPalApiException::ERROR_CODE_DUPLICATE_INVOICE_ID)) {
                 throw $e;
             }
 

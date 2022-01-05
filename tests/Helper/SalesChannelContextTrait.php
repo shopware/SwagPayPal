@@ -117,6 +117,7 @@ trait SalesChannelContextTrait
             'firstName' => 'Max',
             'lastName' => 'Mustermann',
             'customerNumber' => '1337',
+            'birthday' => new \DateTime('-30 years'),
             'email' => Uuid::randomHex() . '@example.com',
             'password' => 'shopware',
             'defaultPaymentMethodId' => $this->getValidPaymentMethodId(),
@@ -135,6 +136,7 @@ trait SalesChannelContextTrait
                     'street' => 'Ebbinghoff 10',
                     'zipcode' => '48624',
                     'city' => 'Schöppingen',
+                    'phoneNumber' => '+49123456789',
                 ],
             ],
         ];

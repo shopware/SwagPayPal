@@ -69,6 +69,7 @@ abstract class AbstractClient
                 'method' => \mb_strtoupper($method),
                 'code' => \sprintf('%s %s', $response->getStatusCode(), $response->getReasonPhrase()),
                 'uri' => $uri,
+                'headers' => $response->getHeaders(),
                 'response' => $body,
             ]
         );
@@ -89,12 +90,17 @@ abstract class AbstractClient
 
         $error = \json_decode($exceptionResponse->getBody()->getContents(), true);
         if (\array_key_exists('error', $error) && \array_key_exists('error_description', $error)) {
-            $this->logger->error($exceptionMessage, [$error, $data]);
+            $this->logger->error($exceptionMessage, [
+                'error' => $error,
+                'headers' => $exceptionResponse->getHeaders(),
+                'data' => $data,
+            ]);
 
             return new PayPalApiException($error['error'], $error['error_description'], (int) $requestException->getCode());
         }
 
         $message = $error['message'];
+        $issue = null;
 
         if (isset($error['details'])) {
             $message .= ' ';
@@ -103,6 +109,7 @@ abstract class AbstractClient
                     $message .= \sprintf('%s ', $detail['description']);
                 }
                 if (isset($detail['issue'])) {
+                    $issue = $detail['issue'];
                     $message .= \sprintf('%s ', $detail['issue']);
                 }
                 if (isset($detail['field'])) {
@@ -111,8 +118,12 @@ abstract class AbstractClient
             }
         }
 
-        $this->logger->error(\sprintf('%s %s', $exceptionMessage, $message), [$error, $data]);
+        $this->logger->error(\sprintf('%s %s', $exceptionMessage, $message), [
+            'error' => $error,
+            'headers' => $exceptionResponse->getHeaders(),
+            'data' => $data,
+        ]);
 
-        return new PayPalApiException($error['name'], $message, (int) $requestException->getCode());
+        return new PayPalApiException($error['name'], $message, (int) $requestException->getCode(), $issue);
     }
 }

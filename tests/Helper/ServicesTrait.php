@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
@@ -105,10 +106,12 @@ trait ServicesTrait
 
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
+        $addressProvider = new AddressProvider();
 
         return new OrderFromOrderBuilder(
             $systemConfig,
-            new PurchaseUnitProvider($amountProvider, $systemConfig),
+            new PurchaseUnitProvider($amountProvider, $addressProvider, $systemConfig),
+            $addressProvider,
             new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock())
         );
     }

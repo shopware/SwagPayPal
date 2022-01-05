@@ -22,6 +22,7 @@
         <import resource="./services/service_v1.xml"/>
         <import resource="./services/setting.xml"/>
         <import resource="./services/spb_checkout.xml"/>
+        <import resource="./services/storefront.xml"/>
         <import resource="./services/util.xml"/>
         <import resource="./services/webhook.xml"/>
 
@@ -35,11 +36,4 @@
         <import resource="./services/pos/sync.xml"/>
         <import resource="./services/pos/webhook.xml"/>
     </imports>
-
-    <services>
-        <service id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider"
-                 decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
-            <argument type="service" id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider.inner"/>
-        </service>
-    </services>
 </container>

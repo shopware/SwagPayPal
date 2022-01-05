@@ -17,7 +17,8 @@ Mixin.register('swag-paypal-credentials-loader', {
 
             requestParams: {
                 channelId: 'partner',
-                productIntentId: 'addipmt',
+                product: 'payment_methods',
+                capabilities: 'PAY_UPON_INVOICE',
                 integrationType: 'FO',
                 features: [
                     'PAYMENT',
@@ -25,8 +26,11 @@ Mixin.register('swag-paypal-credentials-loader', {
                     'READ_SELLER_DISPUTE',
                     'UPDATE_SELLER_DISPUTE',
                     'ADVANCED_TRANSACTIONS_SEARCH',
+                    'ACCESS_MERCHANT_INFORMATION',
+                    'TRACKING_SHIPMENT_READWRITE',
                 ],
                 displayMode: 'minibrowser',
+                partnerLogoUrl: 'https://assets.shopware.com/media/logos/shopware_logo_blue.svg',
             },
         };
     },
@@ -50,7 +54,7 @@ Mixin.register('swag-paypal-credentials-loader', {
                 sellerNonce: this.nonceSandbox,
             });
 
-            return `https://www.sandbox.paypal.com/US/merchantsignup/partner/onboardingentry?${params.toString()}`;
+            return `https://www.sandbox.paypal.com/bizsignup/partner/entry?${params.toString()}`;
         },
     },
 

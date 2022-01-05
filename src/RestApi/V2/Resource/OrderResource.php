@@ -34,11 +34,15 @@ class OrderResource
         Order $order,
         string $salesChannelId,
         string $partnerAttributionId,
-        bool $minimalResponse = true
+        bool $minimalResponse = true,
+        ?string $metaDataId = null
     ): Order {
         $headers = [];
         if ($minimalResponse === false) {
             $headers['Prefer'] = 'return=representation';
+        }
+        if ($metaDataId !== null) {
+            $headers['PayPal-Request-Id'] = $metaDataId;
         }
 
         $response = $this->payPalClientFactory->getPayPalClient($salesChannelId, $partnerAttributionId)->sendPostRequest(

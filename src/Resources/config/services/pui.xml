@@ -14,11 +14,43 @@
         <service id="Swag\PayPal\Checkout\Payment\Method\PUIHandler">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\PUIOrderBuilder"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService"/>
+            <argument type="service" id="session"/>
+            <argument type="service" id="translator"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <tag name="shopware.payment.method.sync"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService">
+            <argument type="service" id="order_address.repository"/>
+            <argument type="service" id="customer.repository"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\PUI\Service\PUIFraudNetDataService">
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsRoute" public="true">
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\PUI\Service\PUIPaymentInstructionDataService">
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsRoute"/>
+            <argument type="service" id="router"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\PUI\PUISubscriber">
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUIFraudNetDataService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUIPaymentInstructionDataService"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <tag name="kernel.event_subscriber"/>
         </service>
     </services>
 </container>

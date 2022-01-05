@@ -6,7 +6,8 @@
         },
         "payUponInvoice": {
             "instructions": {
-                "transferRequest": "Bitte überweisen Sie %value% bis zum %date% an PayPal.",
+                "transferRequestDate": "Bitte überweisen Sie %value% bis zum %date% an PayPal.",
+                "transferRequest": "Bitte überweisen Sie %value% an das unten angegebene Konto.",
                 "table": {
                     "bank": "Bank:",
                     "iban": "IBAN:",
@@ -22,6 +23,17 @@
                     "payPalPuiPaymentMethod": "Gewählte Zahlungsart: Rechnungskauf"
                 },
                 "paymentNote": "%companyName% hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.à r.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.à r.l. et Cie, S.C.A. geleistet werden."
+            },
+            "checkout": {
+                "confirmDisclaimer": "Mit Klicken auf den Button akzeptieren Sie die <a href=\"https://www.ratepay.com/legal-payment-terms\" target=\"_blank\">Ratepay Zahlungsbedingungen</a> und erklären sich mit der Durchführung einer <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\">Risikoprüfung durch Ratepay</a>, unseren Partner, einverstanden. Sie akzeptieren auch PayPal’s <a href=\"https://www.paypal.com/de/webapps/mpp/ua/rechnungskauf-mit-ratepay?locale.x=en_DE\" target=\"_blank\">Datenschutzerklärung</a>. Falls Ihre Transaktion erfolgreich per Kauf auf Rechnung abgewickelt werden kann, wird der Kaufpreis an Ratepay abgetreten und Sie dürfen nur an Ratepay überweisen, nicht an den Händler.",
+                "finish": {
+                    "title": "Die Zahlung wird bearbeitet",
+                    "subtitle": "Dies kann bis zu einer Minute dauern."
+                }
+            },
+            "error": {
+                "unverifiedInfo": "Die Kombination aus Ihrem Namen und Ihrer Adresse konnte nicht validiert werden. Bitte korrigieren Sie Ihre Daten und versuchen Sie es erneut. Sie können weitere Informationen in der <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\" >Ratepay Datenschutzerklärung</a> finden oder Ratepay mit diesem <a href=\"https://www.ratepay.com/kontakt\" target=\"_blank\">Kontaktformular</a> kontaktieren.",
+                "declined": "Es ist nicht möglich, diese Zahlungsmethode zu nutzen. Diese Entscheidung basiert auf automatisierter Datenverarbeitung. Sie können weitere Informationen in der <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\" >Ratepay Datenschutzerklärung</a> finden oder Ratepay mit diesem <a href=\"https://www.ratepay.com/kontakt\" target=\"_blank\">Kontaktformular</a> kontaktieren."
             }
         },
         "acdc": {

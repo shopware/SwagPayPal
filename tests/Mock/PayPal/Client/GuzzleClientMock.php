@@ -24,6 +24,7 @@ use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\RequestUriV2;
 use Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRouteTest;
+use Swag\PayPal\Test\Checkout\Method\PUIHandlerTest;
 use Swag\PayPal\Test\Checkout\Payment\PayPalPaymentHandlerTest;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CaptureAuthorizationResponseFixture;
@@ -53,11 +54,16 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderPUIApproved;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderPUICompleted;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderPUIPending;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderPUIVoided;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefund;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
@@ -232,6 +238,22 @@ class GuzzleClientMock implements ClientInterface
 
             if (\mb_substr($resourceUri, -17) === GetOrderAuthorization::ID) {
                 return GetOrderAuthorization::get();
+            }
+
+            if (\mb_substr($resourceUri, -17) === GetOrderPUIPending::ID) {
+                return GetOrderPUIPending::get();
+            }
+
+            if (\mb_substr($resourceUri, -17) === GetOrderPUIApproved::ID) {
+                return GetOrderPUIApproved::get();
+            }
+
+            if (\mb_substr($resourceUri, -17) === GetOrderPUIVoided::ID) {
+                return GetOrderPUIVoided::get();
+            }
+
+            if (\mb_substr($resourceUri, -17) === GetOrderPUICompleted::ID) {
+                return GetOrderPUICompleted::get();
             }
 
             $orderCapture = GetOrderCapture::get();
@@ -443,6 +465,22 @@ class GuzzleClientMock implements ClientInterface
                 return AuthorizeOrderAuthorization::get();
             }
 
+            try {
+                if ($data && $data instanceof Order && ($paymentSource = $data->getPaymentSource()) && ($payUponInvoice = $paymentSource->getPayUponInvoice())) {
+                    if ($payUponInvoice->getEmail() === PUIHandlerTest::PAYMENT_SOURCE_DECLINED_BY_PROCESSOR) {
+                        throw $this->createClientExceptionPaymentSourceDeclinedByProcessor();
+                    }
+
+                    if ($payUponInvoice->getEmail() === PUIHandlerTest::PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED) {
+                        throw $this->createClientExceptionPaymentSourceInfoCannotBeVerified();
+                    }
+
+                    return CreateOrderPUI::get();
+                }
+            } catch (\Error $e) {
+                // has not been instantiated, so no PUI
+            }
+
             $response = CreateOrderCapture::get();
             if ($data instanceof Order
                 && \mb_stripos((string) $data->getPurchaseUnits()[0]->getInvoiceId(), ConstantsForTesting::PAYPAL_RESPONSE_HAS_NO_APPROVAL_URL) !== false
@@ -605,7 +643,14 @@ class GuzzleClientMock implements ClientInterface
     {
         $jsonString = $this->ensureValidJson([
             'name' => 'UNPROCESSABLE_ENTITY',
-            'message' => 'The requested action could not be performed, semantically incorrect, or failed business validation.: Duplicate Invoice ID detected. To avoid a potential duplicate transaction your account setting requires that Invoice Id be unique for each transaction. DUPLICATE_INVOICE_ID',
+            'details' => [
+                [
+                    'location' => 'body',
+                    'issue' => 'DUPLICATE_INVOICE_ID',
+                    'description' => 'Duplicate Invoice ID detected. To avoid a potential duplicate transaction your account setting requires that Invoice Id be unique for each transaction.',
+                ],
+            ],
+            'message' => 'The requested action could not be performed, semantically incorrect, or failed business validation.',
         ]);
 
         return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_UNPROCESSABLE_ENTITY);
@@ -615,7 +660,48 @@ class GuzzleClientMock implements ClientInterface
     {
         $jsonString = $this->ensureValidJson([
             'name' => 'UNPROCESSABLE_ENTITY',
-            'message' => 'The requested action could not be completed, was semantically incorrect, or failed business validation. The instrument presented  was either declined by the processor or bank, or it can\'t be used for this payment. INSTRUMENT_DECLINED ',
+            'details' => [
+                [
+                    'location' => 'body',
+                    'issue' => 'INSTRUMENT_DECLINED',
+                    'description' => 'The instrument presented  was either declined by the processor or bank, or it can\'t be used for this payment.',
+                ],
+            ],
+            'message' => 'The requested action could not be completed, was semantically incorrect, or failed business validation.',
+        ]);
+
+        return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    private function createClientExceptionPaymentSourceInfoCannotBeVerified(): ClientException
+    {
+        $jsonString = $this->ensureValidJson([
+            'name' => 'UNPROCESSABLE_ENTITY',
+            'details' => [
+                [
+                    'location' => 'body',
+                    'issue' => 'PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED',
+                    'description' => 'The combination of the payment_source name, billing address, shipping name and shipping address could not be verified. Please correct this information and try again by creating a new order.',
+                ],
+            ],
+            'message' => 'The requested action could not be performed, semantically incorrect, or failed business validation.',
+        ]);
+
+        return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    private function createClientExceptionPaymentSourceDeclinedByProcessor(): ClientException
+    {
+        $jsonString = $this->ensureValidJson([
+            'name' => 'UNPROCESSABLE_ENTITY',
+            'details' => [
+                [
+                    'location' => 'body',
+                    'issue' => 'PAYMENT_SOURCE_DECLINED_BY_PROCESSOR',
+                    'description' => 'The provided payment source is declined by the processor. Please try again with a different payment source by creating a new order.',
+                ],
+            ],
+            'message' => 'The requested action could not be performed, semantically incorrect, or failed business validation.',
         ]);
 
         return $this->createClientExceptionFromResponseString($jsonString, SymfonyResponse::HTTP_UNPROCESSABLE_ENTITY);

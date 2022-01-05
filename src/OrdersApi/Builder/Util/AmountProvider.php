@@ -14,6 +14,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Discount;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Handling;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\ItemTotal;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Shipping as BreakdownShipping;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\TaxTotal;
@@ -56,10 +57,6 @@ class AmountProvider
                     (float) $amount->getValue()
                 )
             );
-
-            if ($amount->getBreakdown() === null) {
-                $purchaseUnit->setItems(null);
-            }
         }
 
         return $amount;
@@ -76,17 +73,13 @@ class AmountProvider
         CalculatedTaxCollection $taxes,
         bool $isNet,
         float $amountValue
-    ): ?Breakdown {
+    ): Breakdown {
         $accumulatedAmountValue = 0.0;
-        $itemTotalValue = 0.0;
-        $discountValue = 0.0;
         $newItems = [];
         foreach ($items as $item) {
             $itemUnitAmount = (float) $item->getUnitAmount()->getValue();
-            if ($itemUnitAmount < 0.0) {
-                $discountValue += ($itemUnitAmount * -1);
-            } else {
-                $itemTotalValue += $item->getQuantity() * $itemUnitAmount;
+            if ($itemUnitAmount >= 0.0) {
+                $accumulatedAmountValue += $item->getQuantity() * $itemUnitAmount;
                 $newItems[] = $item;
             }
         }
@@ -94,36 +87,41 @@ class AmountProvider
 
         $itemTotal = new ItemTotal();
         $itemTotal->setCurrencyCode($currencyCode);
-        $itemTotal->setValue($this->priceFormatter->formatPrice($itemTotalValue));
-        $accumulatedAmountValue += (float) $itemTotal->getValue();
+        $itemTotal->setValue($this->priceFormatter->formatPrice($accumulatedAmountValue));
 
         $shipping = new BreakdownShipping();
         $shipping->setCurrencyCode($currencyCode);
         $shipping->setValue($this->priceFormatter->formatPrice($shippingCosts->getTotalPrice()));
         $accumulatedAmountValue += (float) $shipping->getValue();
 
-        $taxTotal = null;
+        $taxTotal = new TaxTotal();
+        $taxTotal->setCurrencyCode($currencyCode);
         if ($isNet) {
-            $taxTotal = new TaxTotal();
-            $taxTotal->setCurrencyCode($currencyCode);
             $taxTotal->setValue($this->priceFormatter->formatPrice($taxes->getAmount()));
-            $accumulatedAmountValue += (float) $taxTotal->getValue();
+        } else {
+            $taxTotal->setValue($this->priceFormatter->formatPrice(0.0));
         }
+        $accumulatedAmountValue += (float) $taxTotal->getValue();
 
         $discount = new Discount();
         $discount->setCurrencyCode($currencyCode);
-        $discount->setValue($this->priceFormatter->formatPrice($discountValue));
-        $accumulatedAmountValue -= (float) $discount->getValue();
-
-        if ($accumulatedAmountValue !== $amountValue) {
-            return null;
-        }
+        $discount->setValue($this->priceFormatter->formatPrice($amountValue - $accumulatedAmountValue));
 
         $breakdown = new Breakdown();
         $breakdown->setItemTotal($itemTotal);
         $breakdown->setShipping($shipping);
         $breakdown->setTaxTotal($taxTotal);
         $breakdown->setDiscount($discount);
+
+        // if due to rounding the order is more than the items, we add a fake handling fee
+        if ((float) $discount->getValue() < 0.0) {
+            $discount->setValue($this->priceFormatter->formatPrice(0.0));
+
+            $handling = new Handling();
+            $handling->setCurrencyCode($currencyCode);
+            $handling->setValue($this->priceFormatter->formatPrice($amountValue - $accumulatedAmountValue));
+            $breakdown->setHandling($handling);
+        }
 
         return $breakdown;
     }

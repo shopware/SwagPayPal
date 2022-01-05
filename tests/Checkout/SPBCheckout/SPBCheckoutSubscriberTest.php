@@ -76,10 +76,9 @@ class SPBCheckoutSubscriberTest extends TestCase
     {
         $events = SPBCheckoutSubscriber::getSubscribedEvents();
 
-        static::assertCount(3, $events);
+        static::assertCount(2, $events);
         static::assertSame('onAccountOrderEditLoaded', $events[AccountEditOrderPageLoadedEvent::class]);
         static::assertSame('onCheckoutConfirmLoaded', $events[CheckoutConfirmPageLoadedEvent::class]);
-        static::assertSame('addNecessaryRequestParameter', $events[HandlePaymentMethodRouteRequestEvent::class]);
     }
 
     public function testOnAccountOrderEditLoadedNoSettings(): void
@@ -221,6 +220,9 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertContains('sofort', $spbExtension->getDisabledAlternativePaymentMethods());
     }
 
+    /**
+     * @deprecated tag:v5.0.0 - will be removed
+     */
     public function testAddNecessaryRequestParameter(): void
     {
         $subscriber = $this->createSubscriber();
@@ -246,6 +248,9 @@ class SPBCheckoutSubscriberTest extends TestCase
         static::assertSame($testOrderId, $requestParameters->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME));
     }
 
+    /**
+     * @deprecated tag:v5.0.0 - will be removed
+     */
     public function testAddNecessaryRequestParameterWrongRoute(): void
     {
         $subscriber = $this->createSubscriber();
