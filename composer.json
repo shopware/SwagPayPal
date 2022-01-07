@@ -49,5 +49,10 @@
     "conflict": {
         "shopware/storefront": "<6,>=7",
         "shopware/administration": "<6,>=7"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
     }
 }

@@ -83,7 +83,7 @@ class ErrorRoute extends AbstractErrorRoute
             $this->logger->notice('Storefront checkout cancellation');
         } else {
             $this->session->getFlashBag()->add('danger', $this->translator->trans('paypal.general.paymentError'));
-            $this->logger->notice('Storefront checkout error', ['error' => $request->get('error')]);
+            $this->logger->notice('Storefront checkout error', ['error' => $request->request->get('error')]);
         }
 
         return new NoContentResponse();
