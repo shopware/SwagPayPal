@@ -1,3 +1,6 @@
+# 4.1.1
+- PPI-395 - Texte für veraltete PayPal-Produkte entfernt
+
 # 4.1.0
 - PPI-344 - Behebt ein Problem mit ungültigen Telefonnummern mit API v1 Zahlungen
 - PPI-346 - Behebt Rundungsfehler im Zahlungseinzugsfenster in der Administration

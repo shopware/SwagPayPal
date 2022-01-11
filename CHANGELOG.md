@@ -1,3 +1,6 @@
+# 4.1.1
+- PPI-395 - Removed snippets for deprecated PayPal products
+
 # 4.1.0
 - PPI-344 - Fix issue with invalid phone numbers with API v1 payments
 - PPI-346 - Fix rounding issues in payment capture modal in Administration
