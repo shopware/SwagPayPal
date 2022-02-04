@@ -127,6 +127,7 @@
         <UnsafeInstantiation>
             <errorLevel type="info">
                 <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
+                <file name="tests/OrdersApi/Builder/APMOrderBuilderTest.php"/>
                 <!-- constructor is final, error of psalm -->
                 <file name="src/Util/Lifecycle/Method/PaymentMethodDataRegistry.php"/>
             </errorLevel>

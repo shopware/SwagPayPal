@@ -11,7 +11,6 @@ use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Cart\Exception\OrderTransactionNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
@@ -122,18 +121,14 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
             throw new PaymentInstructionsNotReadyException($transactionId);
         }
 
-        try {
-            $paymentSource = $order->getPaymentSource();
-            if (!$paymentSource) {
-                throw new MissingPaymentInstructionsException($transactionId);
-            }
+        $paymentSource = $order->getPaymentSource();
+        if (!$paymentSource) {
+            throw new MissingPaymentInstructionsException($transactionId);
+        }
 
-            $instructions = $paymentSource->getPayUponInvoice();
-            if (!$instructions) {
-                throw new MissingPaymentInstructionsException($transactionId);
-            }
-        } catch (\Error $e) {
-            throw new InvalidTransactionException($transactionId);
+        $instructions = $paymentSource->getPayUponInvoice();
+        if (!$instructions) {
+            throw new MissingPaymentInstructionsException($transactionId);
         }
 
         $this->orderTransactionRepository->update([[

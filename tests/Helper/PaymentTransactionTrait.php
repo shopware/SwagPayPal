@@ -28,6 +28,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -141,6 +142,8 @@ trait PaymentTransactionTrait
                 $order->setId(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);
         }
 
+        $country = new CountryEntity();
+        $country->setIso('DE');
         $address = new OrderAddressEntity();
         $address->setFirstName('Some');
         $address->setLastName('One');
@@ -149,6 +152,7 @@ trait PaymentTransactionTrait
         $address->setCity('City');
         $address->setPhoneNumber('+41 (0123) 49567-89'); // extra weird for filter testing
         $address->setId(Uuid::randomHex());
+        $address->setCountry($country);
         $order->setBillingAddress($address);
         $order->setBillingAddressId($address->getId());
 

@@ -482,20 +482,16 @@ class GuzzleClientMock implements ClientInterface
                 return AuthorizeOrderAuthorization::get();
             }
 
-            try {
-                if ($data && $data instanceof Order && ($paymentSource = $data->getPaymentSource()) && ($payUponInvoice = $paymentSource->getPayUponInvoice())) {
-                    if ($payUponInvoice->getEmail() === PUIHandlerTest::PAYMENT_SOURCE_DECLINED_BY_PROCESSOR) {
-                        throw $this->createClientExceptionPaymentSourceDeclinedByProcessor();
-                    }
-
-                    if ($payUponInvoice->getEmail() === PUIHandlerTest::PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED) {
-                        throw $this->createClientExceptionPaymentSourceInfoCannotBeVerified();
-                    }
-
-                    return CreateOrderPUI::get();
+            if ($data && $data instanceof Order && ($paymentSource = $data->getPaymentSource()) && ($payUponInvoice = $paymentSource->getPayUponInvoice())) {
+                if ($payUponInvoice->getEmail() === PUIHandlerTest::PAYMENT_SOURCE_DECLINED_BY_PROCESSOR) {
+                    throw $this->createClientExceptionPaymentSourceDeclinedByProcessor();
                 }
-            } catch (\Error $e) {
-                // has not been instantiated, so no PUI
+
+                if ($payUponInvoice->getEmail() === PUIHandlerTest::PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED) {
+                    throw $this->createClientExceptionPaymentSourceInfoCannotBeVerified();
+                }
+
+                return CreateOrderPUI::get();
             }
 
             $response = CreateOrderCapture::get();

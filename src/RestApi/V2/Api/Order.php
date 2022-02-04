@@ -59,7 +59,7 @@ class Order extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source")
      */
-    protected ?PaymentSource $paymentSource;
+    protected ?PaymentSource $paymentSource = null;
 
     /**
      * @OA\Property(type="string")
@@ -197,5 +197,10 @@ class Order extends PayPalApiStruct
     public function setLinks(array $links): void
     {
         $this->links = $links;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return \array_filter(parent::jsonSerialize());
     }
 }

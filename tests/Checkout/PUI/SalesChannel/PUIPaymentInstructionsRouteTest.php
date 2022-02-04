@@ -16,7 +16,6 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderStates;
-use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -28,6 +27,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterfac
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Swag\PayPal\Checkout\PUI\Exception\MissingPaymentInstructionsException;
 use Swag\PayPal\Checkout\PUI\Exception\PaymentInstructionsNotReadyException;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
 use Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsRoute;
@@ -126,7 +126,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
 
         try {
             $route->getPaymentInstructions($transactionId, $this->getSalesChannelContext());
-        } catch (InvalidTransactionException $e) {
+        } catch (MissingPaymentInstructionsException $e) {
             $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, Context::createDefaultContext());
         }
     }
