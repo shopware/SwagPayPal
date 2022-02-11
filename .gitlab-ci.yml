@@ -229,4 +229,5 @@ Administration Jest:
         - php bin/console plugin:install --activate $PLUGINNAME -c
         - npm --prefix $(pwd)/custom/plugins/$PLUGINNAME/src/Resources/app/administration/ clean-install
         - npm --prefix $(pwd)/vendor/shopware/platform/src/Administration/Resources/app/administration clean-install
+        - php bin/console framework:schema -s 'entity-schema' $(pwd)/vendor/shopware/platform/src/Administration/Resources/app/administration/test/_mocks_/entity-schema.json
         - ADMIN_PATH=$(pwd)/vendor/shopware/platform/src/Administration/Resources/app/administration/ npm --prefix $(pwd)/custom/plugins/$PLUGINNAME/src/Resources/app/administration/ run unit

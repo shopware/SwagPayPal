@@ -23,9 +23,7 @@ Component.register('swag-paypal-pos-wizard-customization', {
         isLoading: {
             type: Boolean,
             required: false,
-            default() {
-                return false;
-            },
+            default: false,
         },
     },
 
