@@ -15,6 +15,8 @@ interface PayPalClientInterface
 
     public function sendGetRequest(string $resourceUri, array $headers = []): array;
 
+    public function sendGetRequestForHeaders(string $resourceUri, array $headers = []): array;
+
     /**
      * @param PayPalApiStruct[] $data
      */

@@ -1,0 +1,27 @@
+{% block sw_settings_payment_list_column_active_editor %}
+<sw-icon
+    v-if="needsOnboarding(item)"
+    v-tooltip.left="{
+        message: $tc('sw-settings-payment-list.needOnboardingTooltip'),
+    }"
+    name="default-lock-closed"
+    small
+/>
+<template v-else>
+    {% parent %}
+</template>
+{% endblock %}
+
+{% block sw_settings_payment_list_column_active_label %}
+<sw-icon
+    v-if="needsOnboarding(item)"
+    v-tooltip.left="{
+        message: $tc('sw-settings-payment-list.needOnboardingTooltip'),
+    }"
+    name="default-lock-closed"
+    small
+/>
+<template v-else>
+    {% parent %}
+</template>
+{% endblock %}

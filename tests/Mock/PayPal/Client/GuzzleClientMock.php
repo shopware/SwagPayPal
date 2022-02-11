@@ -20,6 +20,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Api\Payment\Payer\ExecutePayerInfo;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
+use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\RequestUriV2;
@@ -44,6 +45,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentOrderResponseFixt
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetPaymentSaleWithRefundResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceAuthorizeResponseFixture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceIdentityUserInfo;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceMerchantIntegrations;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\RefundCaptureResponseFixture;
@@ -112,7 +115,13 @@ class GuzzleClientMock implements ClientInterface
     {
         switch (\mb_strtolower($method)) {
             case 'get':
-                return new Response(200, [], $this->handleGetRequests((string) $uri));
+                $responseHeader = [];
+
+                if (\mb_strpos((string) $uri, RequestUriV1::CLIENT_USERINFO_RESOURCE) !== false) {
+                    $responseHeader[MerchantIntegrationsResource::IdentityHeaderMerchantIDField] = GetResourceMerchantIntegrations::MERCHANT_ID;
+                }
+
+                return new Response(200, $responseHeader, $this->handleGetRequests((string) $uri));
             case 'post':
                 return new Response(200, [], $this->handlePostRequests((string) $uri, $options['json'] ?? null));
             case 'patch':
@@ -201,10 +210,14 @@ class GuzzleClientMock implements ClientInterface
         }
 
         if (\mb_strpos($resourceUri, 'customer/partners/') !== false) {
-            return [
-                'client_id' => ConstantsForTesting::VALID_CLIENT_ID,
-                'client_secret' => ConstantsForTesting::VALID_CLIENT_SECRET,
-            ];
+            if (\mb_strpos($resourceUri, '/merchant-integrations/credentials')) {
+                return [
+                    'client_id' => ConstantsForTesting::VALID_CLIENT_ID,
+                    'client_secret' => ConstantsForTesting::VALID_CLIENT_SECRET,
+                ];
+            }
+
+            return GetResourceMerchantIntegrations::get();
         }
 
         if (\mb_strpos($resourceUri, RequestUriV1::DISPUTES_RESOURCE) !== false) {
@@ -213,6 +226,10 @@ class GuzzleClientMock implements ClientInterface
             }
 
             return GetDisputesList::get();
+        }
+
+        if (\mb_strpos($resourceUri, RequestUriV1::CLIENT_USERINFO_RESOURCE) !== false) {
+            return GetResourceIdentityUserInfo::get();
         }
 
         throw new \RuntimeException('No fixture defined for ' . $resourceUri);

@@ -35,6 +35,11 @@ abstract class AbstractClient
         return $this->request(Request::METHOD_GET, $uri, $options);
     }
 
+    protected function getHeaders(string $uri, array $options = []): array
+    {
+        return $this->requestHeaders(Request::METHOD_GET, $uri, $options);
+    }
+
     protected function patch(string $uri, array $options): array
     {
         return $this->request(Request::METHOD_PATCH, $uri, $options);
@@ -75,6 +80,36 @@ abstract class AbstractClient
         );
 
         return \json_decode($body, true) ?? [];
+    }
+
+    private function requestHeaders(string $method, string $uri, array $options = []): array
+    {
+        $this->logger->debug(
+            'Sending {method} request to {uri} with the following content: {content}',
+            [
+                'method' => \mb_strtoupper($method),
+                'uri' => $uri,
+                'content' => $options,
+            ]
+        );
+
+        try {
+            $response = $this->client->request($method, $uri, $options);
+        } catch (RequestException $requestException) {
+            throw $this->handleRequestException($requestException, $options);
+        }
+
+        $this->logger->debug(
+            'Received {code} from {method} {uri} with following response: {response}',
+            [
+                'method' => \mb_strtoupper($method),
+                'code' => \sprintf('%s %s', $response->getStatusCode(), $response->getReasonPhrase()),
+                'uri' => $uri,
+                'headers' => $response->getHeaders(),
+            ]
+        );
+
+        return $response->getHeaders();
     }
 
     private function handleRequestException(RequestException $requestException, array $data): PayPalApiException

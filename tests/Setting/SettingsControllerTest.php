@@ -8,12 +8,16 @@
 namespace Swag\PayPal\Test\Setting;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
+use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
+use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Setting\SettingsController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
+use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
@@ -22,6 +26,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SettingsControllerTest extends TestCase
 {
+    use ServicesTrait;
+
     public function testValidateApiWithValidData(): void
     {
         $controller = $this->createApiValidationController();
@@ -62,6 +68,9 @@ class SettingsControllerTest extends TestCase
     {
         $logger = new LoggerMock();
 
+        /** @var EntityRepositoryInterface $paymentRepository */
+        $paymentRepository = $this->getContainer()->get('payment_method.repository');
+
         return new SettingsController(
             new ApiCredentialService(
                 new CredentialsResource(
@@ -69,6 +78,11 @@ class SettingsControllerTest extends TestCase
                     new CredentialsClientFactoryMock($logger),
                     new TokenValidator()
                 )
+            ),
+            new MerchantIntegrationsService(
+                new MerchantIntegrationsResource($this->createPayPalClientFactory()),
+                $this->createDefaultSystemConfig(),
+                $paymentRepository
             )
         );
     }

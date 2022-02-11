@@ -1,0 +1,9 @@
+{% block sw_settings_payment_detail_content_field_active %}
+<sw-field
+    v-model="paymentMethod.active"
+    class="sw-settings-payment-detail__field-active"
+    type="switch"
+    :disabled="disableActiveSwitch"
+    :label="$tc('sw-settings-payment.detail.labelActive')"
+/>
+{% endblock %}

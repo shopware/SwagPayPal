@@ -117,6 +117,10 @@ abstract class PayPalApiStruct implements \JsonSerializable
 
     private function getClassNameOfOneToManyAssociation(string $camelCaseKey): string
     {
+        if (\mb_substr($camelCaseKey, -3) === 'ies') {
+            return \sprintf('%sy', \rtrim($camelCaseKey, 'ies'));
+        }
+
         return \rtrim($camelCaseKey, 's');
     }
 

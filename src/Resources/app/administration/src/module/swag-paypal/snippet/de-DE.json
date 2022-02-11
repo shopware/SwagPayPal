@@ -12,6 +12,9 @@
             }
         }
     },
+    "sw-settings-payment-list": {
+        "needOnboardingTooltip": "Schließen Sie das Onboarding ab, um diese Zahlungsmethode zu aktivieren"
+    },
     "swag-paypal": {
         "header": "PayPal",
         "saleschannelCard": {
