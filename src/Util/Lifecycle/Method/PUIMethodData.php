@@ -20,6 +20,8 @@ use Shopware\Core\System\Currency\CurrencyDefinition;
 use Shopware\Core\System\Currency\Rule\CurrencyRule;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
+use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
+use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
 
 class PUIMethodData extends AbstractMethodData
 {
@@ -106,6 +108,16 @@ class PUIMethodData extends AbstractMethodData
     public function getInitialState(): bool
     {
         return false;
+    }
+
+    public function validateCapability(MerchantIntegrations $merchantIntegrations): string
+    {
+        $capability = $merchantIntegrations->getSpecificCapability('PAY_UPON_INVOICE');
+        if ($capability !== null && $capability->getStatus() === Capability::STATUS_ACTIVE) {
+            return self::CAPABILITY_ACTIVE;
+        }
+
+        return self::CAPABILITY_INACTIVE;
     }
 
     /**

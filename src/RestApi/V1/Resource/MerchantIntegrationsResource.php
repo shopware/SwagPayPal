@@ -14,8 +14,6 @@ use Swag\PayPal\RestApi\V1\RequestUriV1;
 
 class MerchantIntegrationsResource
 {
-    public const IdentityHeaderMerchantIDField = 'Caller_acct_num';
-
     private PayPalClientFactoryInterface $payPalClientFactory;
 
     public function __construct(
@@ -24,10 +22,8 @@ class MerchantIntegrationsResource
         $this->payPalClientFactory = $payPalClientFactory;
     }
 
-    public function get(?string $salesChannelId = null, bool $sandboxActive = true): MerchantIntegrations
+    public function get(string $merchantId, ?string $salesChannelId = null, bool $sandboxActive = true): MerchantIntegrations
     {
-        $merchantId = $this->getMerchantId($salesChannelId);
-
         $partnerId = $sandboxActive ? PartnerId::SANDBOX : PartnerId::LIVE;
 
         $response = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequest(
@@ -35,14 +31,5 @@ class MerchantIntegrationsResource
         );
 
         return (new MerchantIntegrations())->assign($response);
-    }
-
-    private function getMerchantId(?string $salesChannelId = null): string
-    {
-        $headers = $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendGetRequestForHeaders(
-            RequestUriV1::CLIENT_USERINFO_RESOURCE,
-        );
-
-        return $headers[self::IdentityHeaderMerchantIDField][0];
     }
 }

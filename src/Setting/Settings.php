@@ -19,6 +19,8 @@ final class Settings
     public const CLIENT_SECRET = self::SYSTEM_CONFIG_DOMAIN . 'clientSecret';
     public const CLIENT_ID_SANDBOX = self::SYSTEM_CONFIG_DOMAIN . 'clientIdSandbox';
     public const CLIENT_SECRET_SANDBOX = self::SYSTEM_CONFIG_DOMAIN . 'clientSecretSandbox';
+    public const MERCHANT_PAYER_ID = self::SYSTEM_CONFIG_DOMAIN . 'merchantPayerId';
+    public const MERCHANT_PAYER_ID_SANDBOX = self::SYSTEM_CONFIG_DOMAIN . 'merchantPayerIdSandbox';
     public const SANDBOX = self::SYSTEM_CONFIG_DOMAIN . 'sandbox';
     public const INTENT = self::SYSTEM_CONFIG_DOMAIN . 'intent';
     public const SUBMIT_CART = self::SYSTEM_CONFIG_DOMAIN . 'submitCart';
@@ -48,7 +50,6 @@ final class Settings
     public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
     public const PUI_CUSTOMER_SERVICE_INSTRUCTIONS = 'puiCustomerServiceInstructions';
     public const INSTALLMENT_BANNER_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled';
-    public const MERCHANT_PAYER_ID = self::SYSTEM_CONFIG_DOMAIN . 'merchantPayerId';
     public const LOGGING_LEVEL = self::SYSTEM_CONFIG_DOMAIN . 'loggingLevel';
 
     public const DEFAULT_VALUES = [

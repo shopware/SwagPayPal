@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Setting;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
@@ -22,6 +21,7 @@ use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
+use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\HttpFoundation\Request;
 
 class SettingsControllerTest extends TestCase
@@ -68,8 +68,8 @@ class SettingsControllerTest extends TestCase
     {
         $logger = new LoggerMock();
 
-        /** @var EntityRepositoryInterface $paymentRepository */
-        $paymentRepository = $this->getContainer()->get('payment_method.repository');
+        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
+        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
 
         return new SettingsController(
             new ApiCredentialService(
@@ -82,7 +82,7 @@ class SettingsControllerTest extends TestCase
             new MerchantIntegrationsService(
                 new MerchantIntegrationsResource($this->createPayPalClientFactory()),
                 $this->createDefaultSystemConfig(),
-                $paymentRepository
+                $paymentMethodDataRegistry
             )
         );
     }

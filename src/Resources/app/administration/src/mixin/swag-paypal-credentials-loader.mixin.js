@@ -8,6 +8,7 @@ Mixin.register('swag-paypal-credentials-loader', {
     data() {
         return {
             isGetCredentialsSuccessful: false,
+            lastOnboardingSandbox: false,
             nonceLive: `${Shopware.Utils.createId()}${Shopware.Utils.createId()}`,
             nonceSandbox: `${Shopware.Utils.createId()}${Shopware.Utils.createId()}`,
             payPalPartnerIdLive: 'DYKPBPEAW5JNA',
@@ -55,6 +56,19 @@ Mixin.register('swag-paypal-credentials-loader', {
             });
 
             return `https://www.sandbox.paypal.com/bizsignup/partner/entry?${params.toString()}`;
+        },
+    },
+
+    watch: {
+        '$route.query.merchantIdInPayPal': {
+            handler(newVal, oldVal) {
+                if (newVal === oldVal || !newVal || this.isGetCredentialsSuccessful !== true) {
+                    return;
+                }
+
+                this.onNewMerchantIdReceived(newVal, this.lastOnboardingSandbox);
+            },
+            deep: true,
         },
     },
 
@@ -151,6 +165,7 @@ Mixin.register('swag-paypal-credentials-loader', {
                 sandbox,
             ).then((response) => {
                 this.isGetCredentialsSuccessful = true;
+                this.lastOnboardingSandbox = sandbox;
                 this.onPayPalCredentialsLoadSuccess(response.client_id, response.client_secret, sandbox);
             }).catch(() => {
                 this.isGetCredentialsSuccessful = false;
@@ -185,6 +200,20 @@ Mixin.register('swag-paypal-credentials-loader', {
                 'swag-paypal-credentials-loader Mixin',
                 'When using the paypal-credentials-loader mixin ' +
                 'you have to implement your custom "onPayPalCredentialsLoadFailed()" method.',
+            );
+        },
+
+        /**
+         *
+         * @param merchantId string
+         * @param sandbox bool
+         */
+        onNewMerchantIdReceived() {
+            // needs to be implemented by using component
+            debug.warn(
+                'swag-paypal-credentials-loader Mixin',
+                'When using the paypal-credentials-loader mixin ' +
+                'you have to implement your custom "onNewMerchantIdReceived()" method.',
             );
         },
 

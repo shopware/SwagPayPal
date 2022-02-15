@@ -41,6 +41,10 @@
                     "label": "Client-Secret",
                     "tooltipText": "Das Client-Secret der REST-API, das das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren."
                 },
+                "merchantPayerId": {
+                    "label": "PayPal-Händler-ID",
+                    "tooltipText": "Die PayPal-Händler-ID, die dem PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal Kontoeinstellungen)."
+                },
                 "clientIdSandbox": {
                     "label": "Sandbox-Client-ID",
                     "tooltipText": "Die Client-ID der REST-API, die das Plugin im Testfall dazu verwendet, sich mit der PayPal-API zu authentifizieren."
@@ -48,6 +52,10 @@
                 "clientSecretSandbox": {
                     "label": "Sandbox-Client-Secret",
                     "tooltipText": "Das Client-Secret der REST-API, das das Plugin im Testfall dazu verwendet, sich mit der PayPal-API zu authentifizieren."
+                },
+                "merchantPayerIdSandbox": {
+                    "label": "Sandbox-PayPal-Händler-ID",
+                    "tooltipText": "Die PayPal-Händler-ID, die dem Sandbox-PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal Kontoeinstellungen)."
                 },
                 "sandbox": {
                     "label": "Sandbox aktivieren",

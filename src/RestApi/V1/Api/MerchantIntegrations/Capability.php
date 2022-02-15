@@ -15,6 +15,8 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  */
 class Capability extends PayPalApiStruct
 {
+    public const STATUS_ACTIVE = 'ACTIVE';
+
     /**
      * @OA\Property(type="string")
      */

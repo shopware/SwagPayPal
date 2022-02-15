@@ -129,4 +129,15 @@ class MerchantIntegrations extends PayPalApiStruct
     {
         $this->primaryEmailConfirmed = $primaryEmailConfirmed;
     }
+
+    public function getSpecificCapability(string $name): ?Capability
+    {
+        foreach ($this->capabilities as $capability) {
+            if ($capability->getName() === $name) {
+                return $capability;
+            }
+        }
+
+        return null;
+    }
 }

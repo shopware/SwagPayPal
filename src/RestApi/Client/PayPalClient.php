@@ -67,15 +67,6 @@ class PayPalClient extends AbstractClient implements PayPalClientInterface
         return $this->get($resourceUri, $options);
     }
 
-    public function sendGetRequestForHeaders(string $resourceUri, array $headers = []): array
-    {
-        $options = [
-            'headers' => $headers,
-        ];
-
-        return $this->getHeaders($resourceUri, $options);
-    }
-
     /**
      * @param PayPalApiStruct[] $data
      */

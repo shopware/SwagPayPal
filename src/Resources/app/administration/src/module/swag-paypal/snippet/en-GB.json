@@ -41,6 +41,10 @@
                     "label": "Client secret",
                     "tooltipText": "The REST API client secret is used to authenticate this plugin with the PayPal API."
                 },
+                "merchantPayerId": {
+                    "label": "PayPal Merchant ID",
+                    "tooltipText": "The PayPal Merchant ID assigned to your PayPal account (see Business Information in PayPal account settings)."
+                },
                 "clientIdSandbox": {
                     "label": "Sandbox client ID",
                     "tooltipText": "The REST API client ID is used while testing to authenticate this plugin with the PayPal API."
@@ -48,6 +52,10 @@
                 "clientSecretSandbox": {
                     "label": "Sandbox client secret",
                     "tooltipText": "The REST API client secret is used while testing to authenticate this plugin with the PayPal API."
+                },
+                "merchantPayerIdSandbox": {
+                    "label": "Sandbox PayPal Merchant ID",
+                    "tooltipText": "The PayPal Merchant ID assigned to your PayPal sandbox account (see Business Information in PayPal account settings)."
                 },
                 "sandbox": {
                     "label": "Enable sandbox",

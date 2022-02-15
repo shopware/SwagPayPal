@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Context;
+use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -15,6 +16,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class AbstractMethodData
 {
+    public const CAPABILITY_ACTIVE = 'active';
+    public const CAPABILITY_INACTIVE = 'inactive';
+    public const CAPABILITY_LIMITED = 'limited';
+
     protected ContainerInterface $container;
 
     final public function __construct(ContainerInterface $container)
@@ -34,4 +39,6 @@ abstract class AbstractMethodData
     abstract public function getRuleData(Context $context): ?array;
 
     abstract public function getInitialState(): bool;
+
+    abstract public function validateCapability(MerchantIntegrations $merchantIntegrations): string;
 }

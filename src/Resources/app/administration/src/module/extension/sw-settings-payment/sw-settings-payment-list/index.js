@@ -32,7 +32,7 @@ Component.override('sw-settings-payment-list', {
                 return false;
             }
 
-            return this.merchantIntegrations[item.id] !== 'ACTIVE';
+            return this.merchantIntegrations[item.id].toUpperCase() === 'INACTIVE';
         },
 
         fetchMerchantIntegrations() {

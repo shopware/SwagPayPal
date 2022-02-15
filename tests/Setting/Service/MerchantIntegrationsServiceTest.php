@@ -17,6 +17,8 @@ use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
 class MerchantIntegrationsServiceTest extends TestCase
 {
@@ -39,8 +41,10 @@ class MerchantIntegrationsServiceTest extends TestCase
         $merchantIntegrationService = $this->createMerchantIntegrationService();
         $integrations = $merchantIntegrationService->fetchMerchantIntegrations(null, $this->context);
 
-        $integrationsCount = \count($integrations);
-        static::assertSame(2, $integrationsCount);
+        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
+        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
+
+        static::assertCount(\count($paymentMethodDataRegistry->getPaymentMethods()), $integrations);
     }
 
     public function testACDCShouldBeActive(): void
@@ -51,10 +55,10 @@ class MerchantIntegrationsServiceTest extends TestCase
         $integrations = $merchantIntegrationService->fetchMerchantIntegrations(null, $this->context);
 
         $integrationStatus = $integrations[$paymentMethodId];
-        static::assertSame(self::STATUS_ACTIVE, $integrationStatus);
+        static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $integrationStatus);
     }
 
-    public function testPUIShouldBeUnkown(): void
+    public function testPUIShouldBeUnknown(): void
     {
         $paymentMethodId = $this->getPaymentIdByHandler(PUIHandler::class);
 
@@ -62,18 +66,18 @@ class MerchantIntegrationsServiceTest extends TestCase
         $integrations = $merchantIntegrationService->fetchMerchantIntegrations(null, $this->context);
 
         $integrationStatus = $integrations[$paymentMethodId];
-        static::assertSame(MerchantIntegrationsService::UNKNOWN_STATUS, $integrationStatus);
+        static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $integrationStatus);
     }
 
     private function createMerchantIntegrationService(): MerchantIntegrationsService
     {
-        /** @var EntityRepositoryInterface $paymentRepository */
-        $paymentRepository = $this->getContainer()->get('payment_method.repository');
+        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
+        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
 
         return new MerchantIntegrationsService(
             new MerchantIntegrationsResource($this->createPayPalClientFactory()),
             $this->createDefaultSystemConfig(),
-            $paymentRepository
+            $paymentMethodDataRegistry
         );
     }
 
@@ -85,9 +89,7 @@ class MerchantIntegrationsServiceTest extends TestCase
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('handlerIdentifier', $handlerIdentifier));
 
-        $context = Context::createDefaultContext();
-
-        $firstId = $paymentRepository->searchIds($criteria, $context)->firstId();
+        $firstId = $paymentRepository->searchIds($criteria, Context::createDefaultContext())->firstId();
 
         if ($firstId === null) {
             throw new \RuntimeException('No handlerIdentifier found.');

@@ -9,6 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 
 class PayPalMethodData extends AbstractMethodData
 {
@@ -47,5 +48,10 @@ class PayPalMethodData extends AbstractMethodData
     public function getInitialState(): bool
     {
         return true;
+    }
+
+    public function validateCapability(MerchantIntegrations $merchantIntegrations): string
+    {
+        return self::CAPABILITY_ACTIVE;
     }
 }
