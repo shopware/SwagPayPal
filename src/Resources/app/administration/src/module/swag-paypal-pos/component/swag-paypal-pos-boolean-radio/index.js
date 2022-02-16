@@ -16,8 +16,7 @@ Component.register('swag-paypal-pos-boolean-radio', {
         value: {
             type: Boolean,
             required: false,
-            // eslint-disable-next-line vue/no-boolean-default
-            default: true,
+            default: false,
         },
 
         optionTrue: {
