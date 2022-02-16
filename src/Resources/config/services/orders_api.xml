@@ -55,7 +55,7 @@
 
         <service id="Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
-        <service id="Swag\PayPal\OrdersApi\Builder\APM\BoletobancarioOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
+        <service id="Swag\PayPal\OrdersApi\Builder\APM\BoletoBancarioOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\EpsOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\GiropayOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />
         <service id="Swag\PayPal\OrdersApi\Builder\APM\IdealOrderBuilder" parent="Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder" />

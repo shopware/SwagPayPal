@@ -31,7 +31,18 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\BancontactMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\BlikMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\EpsMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\GiropayMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\IdealMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\MultibancoMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\MyBankMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\P24MethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\SofortMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookService;
@@ -302,6 +313,17 @@ class Update
 
     private function updateToREPLACE_GLOBALLY_WITH_NEXT_VERSION(Context $context): void
     {
+        $this->paymentMethodInstaller->install(BancontactMethodData::class, $context);
+        $this->paymentMethodInstaller->install(BlikMethodData::class, $context);
+        $this->paymentMethodInstaller->install(EpsMethodData::class, $context);
+        $this->paymentMethodInstaller->install(GiropayMethodData::class, $context);
+        $this->paymentMethodInstaller->install(IdealMethodData::class, $context);
+        $this->paymentMethodInstaller->install(MultibancoMethodData::class, $context);
+        $this->paymentMethodInstaller->install(MyBankMethodData::class, $context);
+        $this->paymentMethodInstaller->install(OxxoMethodData::class, $context);
+        $this->paymentMethodInstaller->install(P24MethodData::class, $context);
+        $this->paymentMethodInstaller->install(SofortMethodData::class, $context);
+        $this->paymentMethodInstaller->install(TrustlyMethodData::class, $context);
         $this->paymentMethodInstaller->install(ACDCMethodData::class, $context);
         $this->changePaymentHandlerIdentifier('Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler', PUIHandler::class, $context);
         $this->paymentMethodInstaller->install(PUIMethodData::class, $context);

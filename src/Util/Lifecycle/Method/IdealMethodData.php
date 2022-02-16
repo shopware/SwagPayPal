@@ -7,44 +7,39 @@
 
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
-use Shopware\Core\Checkout\Cart\Rule\CartAmountRule;
 use Shopware\Core\Checkout\Customer\Rule\BillingCountryRule;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Rule\Container\AndRule;
 use Shopware\Core\System\Currency\Rule\CurrencyRule;
-use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
 
-class PUIMethodData extends AbstractMethodData
+class IdealMethodData extends AbstractMethodData
 {
-    private const AVAILABILITY_RULE_NAME = 'PayPalPuiAvailabilityRule';
+    private const AVAILABILITY_RULE_NAME = 'PayPalIdealAPMAvailabilityRule';
 
     public function getTranslations(): array
     {
         return [
             'de-DE' => [
-                'name' => 'Rechnungskauf',
-                'description' => 'Kaufen Sie ganz bequem auf Rechnung und bezahlen Sie später.',
+                'description' => '',
+                'name' => 'iDEAL',
             ],
             'en-GB' => [
-                'name' => 'Pay upon invoice',
-                'description' => 'Buy comfortably on invoice and pay later.',
+                'description' => '',
+                'name' => 'iDEAL',
             ],
         ];
     }
 
     public function getPosition(): int
     {
-        return -99;
+        return -92;
     }
 
-    /**
-     * @return class-string
-     */
     public function getHandler(): string
     {
-        return PUIHandler::class;
+        return 'Swag\PayPal\Checkout\Payment\Method\IdealAPMHandler';
     }
 
     public function getRuleData(Context $context): ?array
@@ -52,7 +47,7 @@ class PUIMethodData extends AbstractMethodData
         return [
             'name' => self::AVAILABILITY_RULE_NAME,
             'priority' => 1,
-            'description' => 'Determines whether or not the PayPal - Pay upon invoice payment method is available for the given rule context.',
+            'description' => 'Determines whether or not the PayPal - Ideal payment method is available for the given rule context.',
             'conditions' => [
                 [
                     'type' => (new AndRule())->getName(),
@@ -61,7 +56,7 @@ class PUIMethodData extends AbstractMethodData
                             'type' => (new BillingCountryRule())->getName(),
                             'value' => [
                                 'operator' => BillingCountryRule::OPERATOR_EQ,
-                                'countryIds' => $this->getCountryIds(['DE'], $context),
+                                'countryIds' => $this->getCountryIds(['NL'], $context),
                             ],
                         ],
                         [
@@ -69,20 +64,6 @@ class PUIMethodData extends AbstractMethodData
                             'value' => [
                                 'operator' => CurrencyRule::OPERATOR_EQ,
                                 'currencyIds' => $this->getCurrencyIds(['EUR'], $context),
-                            ],
-                        ],
-                        [
-                            'type' => (new CartAmountRule())->getName(),
-                            'value' => [
-                                'operator' => CartAmountRule::OPERATOR_GTE,
-                                'amount' => 5.0,
-                            ],
-                        ],
-                        [
-                            'type' => (new CartAmountRule())->getName(),
-                            'value' => [
-                                'operator' => CartAmountRule::OPERATOR_LTE,
-                                'amount' => 2500.0,
                             ],
                         ],
                     ],
@@ -93,12 +74,13 @@ class PUIMethodData extends AbstractMethodData
 
     public function getInitialState(): bool
     {
+        // will be set to true upon official release (update procedure has to be added)
         return false;
     }
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-        $capability = $merchantIntegrations->getSpecificCapability('PAY_UPON_INVOICE');
+        $capability = $merchantIntegrations->getSpecificCapability('ALT_PAY_PROCESSING');
         if ($capability !== null && $capability->getStatus() === Capability::STATUS_ACTIVE) {
             return self::CAPABILITY_ACTIVE;
         }

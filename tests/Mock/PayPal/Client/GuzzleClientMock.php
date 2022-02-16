@@ -53,12 +53,15 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidAuthorizationResponseFi
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureAuthorization;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderAPM;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderAPM;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAPM;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderPUIApproved;
@@ -259,6 +262,10 @@ class GuzzleClientMock implements ClientInterface
 
             if (\mb_substr($resourceUri, -17) === GetOrderPUICompleted::ID) {
                 return GetOrderPUICompleted::get();
+            }
+
+            if (\mb_substr($resourceUri, -17) === GetOrderAPM::ID) {
+                return GetOrderAPM::get();
             }
 
             $orderCapture = GetOrderCapture::get();
@@ -462,6 +469,10 @@ class GuzzleClientMock implements ClientInterface
                 throw $this->createClientExceptionInstrumentDeclined();
             }
 
+            if (\mb_substr($resourceUri, -8) === '/capture' && \mb_strpos($resourceUri, CaptureOrderAPM::ID)) {
+                return CaptureOrderAPM::get();
+            }
+
             if (\mb_substr($resourceUri, -8) === '/capture') {
                 return CaptureOrderCapture::get();
             }
@@ -470,16 +481,20 @@ class GuzzleClientMock implements ClientInterface
                 return AuthorizeOrderAuthorization::get();
             }
 
-            if ($data && $data instanceof Order && ($paymentSource = $data->getPaymentSource()) && ($payUponInvoice = $paymentSource->getPayUponInvoice())) {
-                if ($payUponInvoice->getEmail() === PUIHandlerTest::PAYMENT_SOURCE_DECLINED_BY_PROCESSOR) {
-                    throw $this->createClientExceptionPaymentSourceDeclinedByProcessor();
+            if ($data && $data instanceof Order && ($paymentSource = $data->getPaymentSource())) {
+                if ($payUponInvoice = $paymentSource->getPayUponInvoice()) {
+                    if ($payUponInvoice->getEmail() === PUIHandlerTest::PAYMENT_SOURCE_DECLINED_BY_PROCESSOR) {
+                        throw $this->createClientExceptionPaymentSourceDeclinedByProcessor();
+                    }
+
+                    if ($payUponInvoice->getEmail() === PUIHandlerTest::PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED) {
+                        throw $this->createClientExceptionPaymentSourceInfoCannotBeVerified();
+                    }
+
+                    return CreateOrderPUI::get();
                 }
 
-                if ($payUponInvoice->getEmail() === PUIHandlerTest::PAYMENT_SOURCE_INFO_CANNOT_BE_VERIFIED) {
-                    throw $this->createClientExceptionPaymentSourceInfoCannotBeVerified();
-                }
-
-                return CreateOrderPUI::get();
+                return CreateOrderAPM::get((string) \array_key_first($paymentSource->jsonSerialize()));
             }
 
             $response = CreateOrderCapture::get();

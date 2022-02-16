@@ -13,5 +13,100 @@
             <argument type="tagged_iterator" tag="swag.paypal.payment.method.apm"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\APMHandler" abstract="true">
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\BancontactAPMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\BlikAPMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <!--
+        <service id="Swag\PayPal\Checkout\Payment\Method\BoletoBancarioAPMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\BoletoBancarioOrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+        -->
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\EpsAPMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\EpsOrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\GiropayAPMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\GiropayOrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\IdealAPMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\IdealOrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\MultibancoAPMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\MultibancoOrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\MyBankAPMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\MyBankOrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\OxxoAPMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\OxxoOrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\P24APMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\P24OrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\SofortAPMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\SofortOrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\TrustlyAPMHandler"
+                 class="Swag\PayPal\Checkout\Payment\Method\APMHandler"
+                 parent="Swag\PayPal\Checkout\Payment\Method\APMHandler">
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\APM\TrustlyOrderBuilder"/>
+            <tag name="shopware.payment.method.async"/>
+        </service>
     </services>
 </container>

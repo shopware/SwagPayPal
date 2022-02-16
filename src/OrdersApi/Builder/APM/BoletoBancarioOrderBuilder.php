@@ -13,8 +13,13 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario;
 
-class BoletobancarioOrderBuilder extends AbstractAPMOrderBuilder
+class BoletoBancarioOrderBuilder extends AbstractAPMOrderBuilder
 {
+    public function isCompleteOnApproval(): bool
+    {
+        return true;
+    }
+
     protected function buildPaymentSource(
         AsyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,

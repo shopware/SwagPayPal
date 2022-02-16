@@ -79,7 +79,7 @@ class PaymentMethodInstaller
 
         $data = $this->getPaymentMethodData($method, $pluginId, $context);
 
-        if (\array_key_exists('availabilityRule', $data) && \is_array($data['availabilityRule']) && \is_string($data['availabilityRule']['id'])) {
+        if (\array_key_exists('availabilityRule', $data) && \is_array($data['availabilityRule']) && \array_key_exists('id', $data['availabilityRule']) && \is_string($data['availabilityRule']['id'])) {
             $this->removeExistingRuleConditions($data['availabilityRule']['id'], $context);
         }
 

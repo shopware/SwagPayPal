@@ -27,6 +27,18 @@ class PaymentMethodDataRegistry
         PUIMethodData::class,
         ACDCMethodData::class,
         SEPAMethodData::class,
+        BancontactMethodData::class,
+        BlikMethodData::class,
+        //BoletoBancarioMethodData::class,
+        EpsMethodData::class,
+        GiropayMethodData::class,
+        IdealMethodData::class,
+        MultibancoMethodData::class,
+        MyBankMethodData::class,
+        OxxoMethodData::class,
+        P24MethodData::class,
+        SofortMethodData::class,
+        TrustlyMethodData::class,
     ];
 
     private EntityRepositoryInterface $paymentMethodRepository;

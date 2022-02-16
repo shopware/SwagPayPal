@@ -36,8 +36,6 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 class PUIOrderBuilder extends AbstractOrderBuilder
 {
-    private const PUI_DEFAULT_PROCESSING_INSTRUCTION = 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL';
-
     private ItemListProvider $itemListProvider;
 
     private LocaleCodeProvider $localeCodeProvider;
@@ -81,7 +79,7 @@ class PUIOrderBuilder extends AbstractOrderBuilder
         $order = new Order();
         $order->setIntent(PaymentIntentV2::CAPTURE);
         $order->setPurchaseUnits([$purchaseUnit]);
-        $order->setProcessingInstruction(self::PUI_DEFAULT_PROCESSING_INSTRUCTION);
+        $order->setProcessingInstruction(Order::PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL);
         $order->setPaymentSource($paymentSource);
 
         return $order;

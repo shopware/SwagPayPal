@@ -14,12 +14,15 @@ use Swag\PayPal\RestApi\V2\Api\Order\Link;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
+use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order")
  */
 class Order extends PayPalApiStruct
 {
+    public const PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL = 'ORDER_COMPLETE_ON_PAYMENT_APPROVAL';
+
     /**
      * @OA\Property(type="string")
      */
@@ -38,7 +41,7 @@ class Order extends PayPalApiStruct
     /**
      * @OA\Property(type="string")
      */
-    protected string $intent;
+    protected string $intent = PaymentIntentV2::CAPTURE;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payer")
@@ -197,6 +200,17 @@ class Order extends PayPalApiStruct
     public function setLinks(array $links): void
     {
         $this->links = $links;
+    }
+
+    public function getRelLink(string $rel): ?Link
+    {
+        foreach ($this->links as $link) {
+            if ($link->getRel() === $rel) {
+                return $link;
+            }
+        }
+
+        return null;
     }
 
     public function jsonSerialize(): array

@@ -178,6 +178,8 @@ class CheckoutSubscriberTest extends TestCase
     {
         /** @var EntityRepositoryInterface $paymentMethodRepository */
         $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
+        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
+        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
 
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->getContainer()->get(PluginIdProvider::class);
@@ -188,8 +190,7 @@ class CheckoutSubscriberTest extends TestCase
 
         /** @var PaymentMethodCollection $paymentMethods */
         $paymentMethods = $paymentMethodRepository->search($criteria, $context)->getEntities();
-
-        static::assertCount(4, $paymentMethods);
+        static::assertCount(\count($paymentMethodDataRegistry->getPaymentMethods()), $paymentMethods);
 
         return $paymentMethods;
     }

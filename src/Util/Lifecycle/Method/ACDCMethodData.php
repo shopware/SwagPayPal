@@ -38,9 +38,6 @@ class ACDCMethodData extends AbstractMethodData implements APMCheckoutMethodInte
         return -98;
     }
 
-    /**
-     * @return class-string
-     */
     public function getHandler(): string
     {
         return ACDCHandler::class;

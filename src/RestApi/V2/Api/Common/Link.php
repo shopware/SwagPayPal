@@ -16,6 +16,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 abstract class Link extends PayPalApiStruct
 {
     public const RELATION_APPROVE = 'approve';
+    public const RELATION_PAYER_ACTION = 'payer-action';
     public const RELATION_UP = 'up';
 
     /**

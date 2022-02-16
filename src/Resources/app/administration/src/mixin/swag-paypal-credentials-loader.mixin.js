@@ -69,6 +69,7 @@ Mixin.register('swag-paypal-credentials-loader', {
                 this.onNewMerchantIdReceived(newVal, this.lastOnboardingSandbox);
             },
             deep: true,
+            immediate: true,
         },
     },
 

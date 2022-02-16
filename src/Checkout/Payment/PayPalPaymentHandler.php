@@ -113,11 +113,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             throw new AsyncPaymentProcessException($transactionId, $exception->getMessage());
         }
 
-        if (\method_exists($this->orderTransactionStateHandler, 'processUnconfirmed')) {
-            $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
-        } else {
-            $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
-        }
+        $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
 
         if ($dataBag->get(self::PAYPAL_EXPRESS_CHECKOUT_ID)) {
             try {
@@ -151,15 +147,12 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             throw new AsyncPaymentProcessException($transactionId, $e->getMessage());
         }
 
-        foreach ($response->getLinks() as $link) {
-            if ($link->getRel() !== Link::RELATION_APPROVE) {
-                continue;
-            }
-
-            return new RedirectResponse($link->getHref());
+        $link = $response->getRelLink(Link::RELATION_APPROVE);
+        if ($link === null) {
+            throw new AsyncPaymentProcessException($transactionId, 'No approve link provided by PayPal');
         }
 
-        throw new AsyncPaymentProcessException($transactionId, 'No approve link provided by PayPal');
+        return new RedirectResponse($link->getHref());
     }
 
     /**

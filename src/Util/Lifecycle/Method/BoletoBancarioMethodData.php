@@ -12,39 +12,38 @@ use Shopware\Core\Checkout\Customer\Rule\BillingCountryRule;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Rule\Container\AndRule;
 use Shopware\Core\System\Currency\Rule\CurrencyRule;
-use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
 
-class PUIMethodData extends AbstractMethodData
+/**
+ * @internal not used yet, missing Storefront fields
+ */
+class BoletoBancarioMethodData extends AbstractMethodData
 {
-    private const AVAILABILITY_RULE_NAME = 'PayPalPuiAvailabilityRule';
+    private const AVAILABILITY_RULE_NAME = 'PayPalBlikBoletoBancarioAvailabilityRule';
 
     public function getTranslations(): array
     {
         return [
             'de-DE' => [
-                'name' => 'Rechnungskauf',
-                'description' => 'Kaufen Sie ganz bequem auf Rechnung und bezahlen Sie später.',
+                'description' => '',
+                'name' => 'Boleto Bancário',
             ],
             'en-GB' => [
-                'name' => 'Pay upon invoice',
-                'description' => 'Buy comfortably on invoice and pay later.',
+                'description' => '',
+                'name' => 'Boleto Bancário',
             ],
         ];
     }
 
     public function getPosition(): int
     {
-        return -99;
+        return -95;
     }
 
-    /**
-     * @return class-string
-     */
     public function getHandler(): string
     {
-        return PUIHandler::class;
+        return 'Swag\PayPal\Checkout\Payment\Method\BoletoBancarioAPMHandler';
     }
 
     public function getRuleData(Context $context): ?array
@@ -52,7 +51,7 @@ class PUIMethodData extends AbstractMethodData
         return [
             'name' => self::AVAILABILITY_RULE_NAME,
             'priority' => 1,
-            'description' => 'Determines whether or not the PayPal - Pay upon invoice payment method is available for the given rule context.',
+            'description' => 'Determines whether or not the PayPal - Boleto Bancário payment method is available for the given rule context.',
             'conditions' => [
                 [
                     'type' => (new AndRule())->getName(),
@@ -61,28 +60,21 @@ class PUIMethodData extends AbstractMethodData
                             'type' => (new BillingCountryRule())->getName(),
                             'value' => [
                                 'operator' => BillingCountryRule::OPERATOR_EQ,
-                                'countryIds' => $this->getCountryIds(['DE'], $context),
+                                'countryIds' => $this->getCountryIds(['BR'], $context),
                             ],
                         ],
                         [
                             'type' => (new CurrencyRule())->getName(),
                             'value' => [
                                 'operator' => CurrencyRule::OPERATOR_EQ,
-                                'currencyIds' => $this->getCurrencyIds(['EUR'], $context),
-                            ],
-                        ],
-                        [
-                            'type' => (new CartAmountRule())->getName(),
-                            'value' => [
-                                'operator' => CartAmountRule::OPERATOR_GTE,
-                                'amount' => 5.0,
+                                'currencyIds' => $this->getCurrencyIds(['BRL'], $context),
                             ],
                         ],
                         [
                             'type' => (new CartAmountRule())->getName(),
                             'value' => [
                                 'operator' => CartAmountRule::OPERATOR_LTE,
-                                'amount' => 2500.0,
+                                'amount' => 35000.0,
                             ],
                         ],
                     ],
@@ -93,12 +85,13 @@ class PUIMethodData extends AbstractMethodData
 
     public function getInitialState(): bool
     {
+        // will be set to true upon official release (update procedure has to be added)
         return false;
     }
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-        $capability = $merchantIntegrations->getSpecificCapability('PAY_UPON_INVOICE');
+        $capability = $merchantIntegrations->getSpecificCapability('ALT_PAY_PROCESSING');
         if ($capability !== null && $capability->getStatus() === Capability::STATUS_ACTIVE) {
             return self::CAPABILITY_ACTIVE;
         }

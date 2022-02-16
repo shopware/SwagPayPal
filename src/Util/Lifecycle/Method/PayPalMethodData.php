@@ -32,9 +32,6 @@ class PayPalMethodData extends AbstractMethodData
         return -100;
     }
 
-    /**
-     * @return class-string
-     */
     public function getHandler(): string
     {
         return PayPalPaymentHandler::class;
