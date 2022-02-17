@@ -5,7 +5,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Swag\PayPal\Checkout\ACDC\Service\ACDCCheckoutDataService" public="true">
+        <service id="Swag\PayPal\Checkout\SEPA\Service\SEPACheckoutDataService" public="true">
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
             <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\IdentityResource"/>
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>

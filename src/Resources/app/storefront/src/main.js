@@ -6,6 +6,7 @@ import SwagPayPalPlusPaymentWall from './plus/payment-wall';
 import SwagPayPalInstallmentBanner from './installment/swag-paypal.installment-banner';
 import SwagPaypalAcdcFields from './smart-payment-buttons/swag-paypal.acdc-fields';
 import SwagPaypalPuiPolling from './swag-paypal.pui-polling';
+import SwagPaypalSepa from './smart-payment-buttons/swag-paypal.sepa';
 
 // Register them via the existing PluginManager
 const PluginManager = window.PluginManager;
@@ -43,4 +44,9 @@ PluginManager.register(
     'SwagPaypalPuiPolling',
     SwagPaypalPuiPolling,
     '[data-swag-paypal-pui-polling]',
+);
+PluginManager.register(
+    'SwagPaypalSepa',
+    SwagPaypalSepa,
+    '[data-swag-paypal-sepa]',
 );

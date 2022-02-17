@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Checkout\ACDC;
+namespace Swag\PayPal\Test\Checkout\APM;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -20,8 +20,11 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Checkout\ACDC\ACDCCheckoutFieldData;
-use Swag\PayPal\Checkout\ACDC\ACDCCheckoutSubscriber;
 use Swag\PayPal\Checkout\ACDC\Service\ACDCCheckoutDataService;
+use Swag\PayPal\Checkout\APM\APMCheckoutSubscriber;
+use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
+use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
+use Swag\PayPal\Checkout\SEPA\Service\SEPACheckoutDataService;
 use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
@@ -35,11 +38,15 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ClientTokenResponseFixture;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Lifecycle\Method\SEPAMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ACDCCheckoutSubscriberTest extends TestCase
+class APMCheckoutSubscriberTest extends TestCase
 {
     use CartTrait;
     use PaymentMethodTrait;
@@ -71,7 +78,7 @@ class ACDCCheckoutSubscriberTest extends TestCase
 
     public function testGetSubscribedEvents(): void
     {
-        $events = ACDCCheckoutSubscriber::getSubscribedEvents();
+        $events = APMCheckoutSubscriber::getSubscribedEvents();
 
         static::assertCount(2, $events);
         static::assertSame('onAccountOrderEditLoaded', $events[AccountEditOrderPageLoadedEvent::class]);
@@ -84,7 +91,7 @@ class ACDCCheckoutSubscriberTest extends TestCase
         $event = $this->createEditOrderPageLoadedEvent();
         $subscriber->onAccountOrderEditLoaded($event);
 
-        static::assertFalse($event->getPage()->hasExtension(ACDCCheckoutSubscriber::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID));
+        static::assertFalse($event->getPage()->hasExtension(ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID));
     }
 
     public function testOnAccountOrderEditLoaded(): void
@@ -103,7 +110,7 @@ class ACDCCheckoutSubscriberTest extends TestCase
         $this->addPaymentMethodToDefaultsSalesChannel($this->paymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        static::assertFalse($event->getPage()->hasExtension(ACDCCheckoutSubscriber::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID));
+        static::assertFalse($event->getPage()->hasExtension(ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID));
     }
 
     public function testOnCheckoutConfirmPaymentMethodNotInActiveSalesChannel(): void
@@ -115,7 +122,7 @@ class ACDCCheckoutSubscriberTest extends TestCase
         );
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        static::assertFalse($event->getPage()->hasExtension(ACDCCheckoutSubscriber::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID));
+        static::assertFalse($event->getPage()->hasExtension(ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID));
     }
 
     public function testOnCheckoutConfirmLoaded(): void
@@ -136,7 +143,7 @@ class ACDCCheckoutSubscriberTest extends TestCase
         $this->addPaymentMethodToDefaultsSalesChannel($this->paymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        static::assertFalse($event->getPage()->hasExtension(ACDCCheckoutSubscriber::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID));
+        static::assertFalse($event->getPage()->hasExtension(ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID));
     }
 
     public function testOnCheckoutConfirmLoadedWithCustomLanguage(): void
@@ -147,7 +154,7 @@ class ACDCCheckoutSubscriberTest extends TestCase
         $subscriber->onCheckoutConfirmLoaded($event);
 
         /** @var ACDCCheckoutFieldData|null $acdcExtension */
-        $acdcExtension = $event->getPage()->getExtension(ACDCCheckoutSubscriber::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID);
+        $acdcExtension = $event->getPage()->getExtension(ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID);
 
         static::assertNotNull($acdcExtension);
         static::assertSame(self::TEST_CLIENT_ID, $acdcExtension->getClientId());
@@ -161,7 +168,7 @@ class ACDCCheckoutSubscriberTest extends TestCase
     private function createSubscriber(
         bool $withSettings = true,
         ?string $languageIso = null
-    ): ACDCCheckoutSubscriber {
+    ): APMCheckoutSubscriber {
         $settings = $this->createSystemConfigServiceMock($withSettings ? [
             Settings::CLIENT_ID => self::TEST_CLIENT_ID,
             Settings::CLIENT_SECRET => 'testClientSecret',
@@ -172,6 +179,14 @@ class ACDCCheckoutSubscriberTest extends TestCase
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
         /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
+        $sepaDataService = new SEPACheckoutDataService(
+            $this->paymentMethodDataRegistry,
+            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
+            $localeCodeProvider,
+            $router,
+            $settings
+        );
+
         $acdcDataService = new ACDCCheckoutDataService(
             $this->paymentMethodDataRegistry,
             new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
@@ -180,10 +195,31 @@ class ACDCCheckoutSubscriberTest extends TestCase
             $settings
         );
 
-        return new ACDCCheckoutSubscriber(
+        $sessionMock = $this->createMock(Session::class);
+        $sessionMock->method('getFlashbag')->willReturn(new FlashBag());
+
+        $sepaMethodDataMock = $this->createMock(SEPAMethodData::class);
+        $sepaMethodDataMock->method('getCheckoutDataService')->willReturn($sepaDataService);
+        $sepaMethodDataMock->method('getCheckoutTemplateExtensionId')->willReturn(SEPAMethodData::PAYPAL_SEPA_FIELD_DATA_EXTENSION_ID);
+        $sepaMethodDataMock->method('getHandler')->willReturn(SEPAHandler::class);
+
+        $acdcMethodDataMock = $this->createMock(ACDCMethodData::class);
+        $acdcMethodDataMock->method('getCheckoutDataService')->willReturn($acdcDataService);
+        $acdcMethodDataMock->method('getCheckoutTemplateExtensionId')->willReturn(ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID);
+        $acdcMethodDataMock->method('getHandler')->willReturn(ACDCHandler::class);
+
+        /** @var TranslatorInterface $translator */
+        $translator = $this->getContainer()->get('translator');
+
+        return new APMCheckoutSubscriber(
+            new NullLogger(),
             new SettingsValidationService($settings, new NullLogger()),
-            $acdcDataService,
-            new NullLogger()
+            $sessionMock,
+            $translator,
+            [
+                $acdcMethodDataMock,
+                $sepaMethodDataMock,
+            ]
         );
     }
 
@@ -245,7 +281,7 @@ class ACDCCheckoutSubscriberTest extends TestCase
     private function assertAcdcCheckoutButtonData(PageLoadedEvent $event): void
     {
         /** @var ACDCCheckoutFieldData|null $acdcExtension */
-        $acdcExtension = $event->getPage()->getExtension(ACDCCheckoutSubscriber::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID);
+        $acdcExtension = $event->getPage()->getExtension(ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID);
 
         static::assertNotNull($acdcExtension);
         static::assertSame(self::TEST_CLIENT_ID, $acdcExtension->getClientId());

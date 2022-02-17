@@ -26,6 +26,7 @@ class PaymentMethodDataRegistry
         PayPalMethodData::class,
         PUIMethodData::class,
         ACDCMethodData::class,
+        SEPAMethodData::class,
     ];
 
     private EntityRepositoryInterface $paymentMethodRepository;

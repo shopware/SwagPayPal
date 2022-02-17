@@ -5,8 +5,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\Payment\Method;
+namespace Swag\PayPal\Checkout\SEPA;
 
-class ACDCHandler extends AbstractSyncAPMHandler
+use Swag\PayPal\Checkout\APM\APMCheckoutData;
+
+class SEPACheckoutData extends APMCheckoutData
 {
 }

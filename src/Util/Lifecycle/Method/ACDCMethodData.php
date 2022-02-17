@@ -8,12 +8,17 @@
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Context;
+use Swag\PayPal\Checkout\ACDC\Service\ACDCCheckoutDataService;
+use Swag\PayPal\Checkout\APM\APMCheckoutMethodInterface;
+use Swag\PayPal\Checkout\APM\Service\AbstractAPMCheckoutDataService;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
 
-class ACDCMethodData extends AbstractMethodData
+class ACDCMethodData extends AbstractMethodData implements APMCheckoutMethodInterface
 {
+    public const PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID = 'payPalACDCFieldData';
+
     public function getTranslations(): array
     {
         return [
@@ -65,5 +70,18 @@ class ACDCMethodData extends AbstractMethodData
         }
 
         return self::CAPABILITY_INACTIVE;
+    }
+
+    public function getCheckoutDataService(): AbstractAPMCheckoutDataService
+    {
+        /** @var ACDCCheckoutDataService $service */
+        $service = $this->container->get(ACDCCheckoutDataService::class);
+
+        return $service;
+    }
+
+    public function getCheckoutTemplateExtensionId(): string
+    {
+        return self::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID;
     }
 }

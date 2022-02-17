@@ -192,9 +192,25 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
                 countryCodeAlpha2: '',
             },
         },
+
+        /**
+         * If set to true, the payment method caused an error and already reloaded the page.
+         * This could for example happen if the funding type is not eligible.
+         *
+         * @type boolean
+         */
+        preventErrorReload: false,
     };
 
     init() {
+        this.confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
+
+        if (this.options.preventErrorReload) {
+            DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).disabled = 'disabled';
+
+            return;
+        }
+
         this._client = new StoreApiClient();
 
         this.createScript((paypal) => {
@@ -203,7 +219,6 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
     }
 
     render(paypal) {
-        this.confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
         this.cardFieldForm = DomAccess.querySelector(document, this.options.cardFieldFormSelector);
 
         if (paypal.HostedFields.isEligible()) {

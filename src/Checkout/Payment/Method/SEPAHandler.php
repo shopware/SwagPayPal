@@ -7,6 +7,6 @@
 
 namespace Swag\PayPal\Checkout\Payment\Method;
 
-class ACDCHandler extends AbstractSyncAPMHandler
+class SEPAHandler extends AbstractSyncAPMHandler
 {
 }

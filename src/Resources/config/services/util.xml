@@ -88,6 +88,12 @@
         <service id="Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData"
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
             <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.method.apm"/>
+        </service>
+        <service id="Swag\PayPal\Util\Lifecycle\Method\SEPAMethodData"
+                 parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
+            <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.method.apm"/>
         </service>
     </services>
 </container>

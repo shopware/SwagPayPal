@@ -189,7 +189,7 @@ class CheckoutSubscriberTest extends TestCase
         /** @var PaymentMethodCollection $paymentMethods */
         $paymentMethods = $paymentMethodRepository->search($criteria, $context)->getEntities();
 
-        static::assertCount(3, $paymentMethods);
+        static::assertCount(4, $paymentMethods);
 
         return $paymentMethods;
     }

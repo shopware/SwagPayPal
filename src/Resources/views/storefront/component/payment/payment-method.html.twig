@@ -43,7 +43,7 @@
     {{ parent() }}
 
     {# @var \Swag\PayPal\Checkout\ACDC\ACDCCheckoutFieldData acdcFieldData #}
-    {% set acdcFieldData = page.extensions[constant('Swag\\PayPal\\Checkout\\ACDC\\ACDCCheckoutSubscriber::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
+    {% set acdcFieldData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Checkout\PUI\PUIFraudNetData acdcFieldData #}
     {% set puiFraudnetData = page.extensions[constant('Swag\\PayPal\\Checkout\\PUI\\PUISubscriber::PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID')] %}
 
