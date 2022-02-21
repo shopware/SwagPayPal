@@ -66,6 +66,9 @@
                 <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::createAddress"/>
                 <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::__construct"/>
                 <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber::addNecessaryRequestParameter"/>
+
+                <!-- <deprecated> tag:v6.0.0 - remove -->
+                <referencedMethod name="Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler::handlePlusPayment"/>
             </errorLevel>
         </DeprecatedMethod>
 
@@ -78,6 +81,17 @@
                 <file name="tests/Checkout/Payment/ScheduledTask/CancelTransactionsTaskHandlerTest.php"/>
                 <file name="tests/Checkout/Payment/PayPalPaymentHandlerTest.php"/>
                 <file name="tests/Util/PaymentStatusUtilV2Test.php"/>
+
+                <!-- <deprecated> tag:v6.0.0 - remove -->
+                <file name="src/Util/Lifecycle/Installer/SettingsInstaller.php"/>
+                <file name="src/Setting/Settings.php"/>
+                <file name="src/Checkout/SPBCheckout/Service/SPBMarksDataService.php"/>
+                <file name="src/Checkout/SPBCheckout/Service/SPBCheckoutDataService.php"/>
+                <file name="src/Checkout/SPBCheckout/SPBCheckoutSubscriber.php"/>
+                <file name="src/Checkout/Plus/Service/PlusDataService.php"/>
+                <file name="src/Checkout/Plus/PlusSubscriber.php"/>
+                <file name="src/Checkout/Plus/PlusPaymentFinalizeController.php"/>
+                <file name="src/Checkout/PayUponInvoice/PayUponInvoiceSubscriber.php"/>
             </errorLevel>
         </DeprecatedConstant>
 
@@ -94,6 +108,12 @@
                 <file name="src/Checkout/PayUponInvoice/PayUponInvoiceSubscriber.php"/>
                 <file name="tests/Checkout/PayUponInvoice/PayUponInvoiceSubscriberTest.php"/>
                 <file name="tests/Checkout/Payment/PayPalPuiPaymentHandlerTest.php"/>
+
+                <!-- <deprecated> tag:v6.0.0 - remove -->
+                <file name="src/Checkout/Plus/Service/PlusDataService.php"/>
+                <file name="src/Checkout/Plus/PlusSubscriber.php"/>
+                <file name="tests/Checkout/Plus/PlusSubscriberTest.php"/>
+                <file name="tests/Checkout/Plus/PlusPaymentFinalizeControllerTest.php"/>
             </errorLevel>
         </DeprecatedClass>
 

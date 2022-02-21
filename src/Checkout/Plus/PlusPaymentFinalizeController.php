@@ -32,6 +32,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * @deprecated tag:v6.0.0 - Will be removed without replacement.
+ */
 class PlusPaymentFinalizeController extends AbstractController
 {
     private RouterInterface $router;

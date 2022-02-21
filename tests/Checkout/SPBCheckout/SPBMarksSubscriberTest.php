@@ -104,7 +104,7 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertNotNull($spbMarksExtension);
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
-        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertFalse($spbMarksExtension->getUseAlternativePaymentMethods());
         static::assertSame('EUR', $spbMarksExtension->getCurrency());
         static::assertSame('en_GB', $spbMarksExtension->getLanguageIso());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());
@@ -135,7 +135,7 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertNotNull($spbMarksExtension);
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
-        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertFalse($spbMarksExtension->getUseAlternativePaymentMethods());
         static::assertSame('EUR', $spbMarksExtension->getCurrency());
         static::assertSame('en_GB', $spbMarksExtension->getLanguageIso());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());
@@ -155,7 +155,7 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertNotNull($spbMarksExtension);
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
-        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertFalse($spbMarksExtension->getUseAlternativePaymentMethods());
         static::assertSame('EUR', $spbMarksExtension->getCurrency());
         static::assertSame('en_GB', $spbMarksExtension->getLanguageIso());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());
@@ -175,7 +175,7 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertNotNull($spbMarksExtension);
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
-        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertFalse($spbMarksExtension->getUseAlternativePaymentMethods());
         static::assertSame('EUR', $spbMarksExtension->getCurrency());
         static::assertSame('de_DE', $spbMarksExtension->getLanguageIso());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());

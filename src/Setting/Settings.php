@@ -31,7 +31,6 @@ final class Settings
     public const SEND_ORDER_NUMBER = self::SYSTEM_CONFIG_DOMAIN . 'sendOrderNumber';
     public const ORDER_NUMBER_PREFIX = self::SYSTEM_CONFIG_DOMAIN . 'orderNumberPrefix';
     public const ORDER_NUMBER_SUFFIX = self::SYSTEM_CONFIG_DOMAIN . 'orderNumberSuffix';
-    public const MERCHANT_LOCATION = self::SYSTEM_CONFIG_DOMAIN . 'merchantLocation';
     public const ECS_DETAIL_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'ecsDetailEnabled';
     public const ECS_CART_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'ecsCartEnabled';
     public const ECS_OFF_CANVAS_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'ecsOffCanvasEnabled';
@@ -41,17 +40,37 @@ final class Settings
     public const ECS_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonShape';
     public const ECS_SUBMIT_CART = self::SYSTEM_CONFIG_DOMAIN . 'ecsSubmitCart';
     public const ECS_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonLanguageIso';
-    public const SPB_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbCheckoutEnabled';
-    public const SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbAlternativePaymentMethodsEnabled';
     public const SPB_BUTTON_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonColor';
     public const SPB_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonShape';
     public const SPB_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonLanguageIso';
     public const SPB_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'spbShowPayLater';
-    public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
     public const PUI_CUSTOMER_SERVICE_INSTRUCTIONS = 'puiCustomerServiceInstructions';
     public const INSTALLMENT_BANNER_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled';
     public const LOGGING_LEVEL = self::SYSTEM_CONFIG_DOMAIN . 'loggingLevel';
 
+    /**
+     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     */
+    public const SPB_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbCheckoutEnabled';
+
+    /**
+     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     */
+    public const SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbAlternativePaymentMethodsEnabled';
+
+    /**
+     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     */
+    public const MERCHANT_LOCATION = self::SYSTEM_CONFIG_DOMAIN . 'merchantLocation';
+
+    /**
+     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     */
+    public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
+
+    /**
+     * @deprecated tag:v6.0.0 - Deprecated properties MERCHANT_LOCATION, SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, SPB_CHECKOUT_ENABLED and PLUS_CHECKOUT_ENABLED will be removed.
+     */
     public const DEFAULT_VALUES = [
         self::SANDBOX => false,
         self::INTENT => PaymentIntentV2::CAPTURE,
@@ -67,8 +86,8 @@ final class Settings
         self::ECS_BUTTON_COLOR => 'gold',
         self::ECS_BUTTON_SHAPE => 'rect',
         self::ECS_SUBMIT_CART => true,
-        self::SPB_CHECKOUT_ENABLED => true,
-        self::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED => true,
+        self::SPB_CHECKOUT_ENABLED => false,
+        self::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED => false,
         self::SPB_BUTTON_COLOR => 'gold',
         self::SPB_BUTTON_SHAPE => 'rect',
         self::SPB_SHOW_PAY_LATER => true,

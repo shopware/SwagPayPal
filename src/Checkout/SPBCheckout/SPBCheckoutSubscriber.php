@@ -188,8 +188,9 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             return false;
         }
 
-        if (!$this->systemConfigService->getBool(Settings::SPB_CHECKOUT_ENABLED, $salesChannelId)
-            || $this->systemConfigService->getString(Settings::MERCHANT_LOCATION, $salesChannelId) === Settings::MERCHANT_LOCATION_GERMANY
+        if ($this->systemConfigService->getString(Settings::MERCHANT_LOCATION, $salesChannelId) === Settings::MERCHANT_LOCATION_GERMANY
+            || (!$this->systemConfigService->getBool(Settings::SPB_CHECKOUT_ENABLED, $salesChannelId)
+                || !$this->systemConfigService->getBool(Settings::SPB_SHOW_PAY_LATER, $salesChannelId))
         ) {
             return false;
         }

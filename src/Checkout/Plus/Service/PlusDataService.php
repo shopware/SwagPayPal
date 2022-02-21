@@ -29,6 +29,9 @@ use Swag\PayPal\Util\PaymentTokenExtractor;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * @deprecated tag:v6.0.0 - Will be removed without replacement.
+ */
 class PlusDataService
 {
     private RouterInterface $router;

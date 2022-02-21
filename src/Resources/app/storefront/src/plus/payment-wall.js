@@ -6,6 +6,9 @@ import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import StoreApiClient from 'src/service/store-api-client.service';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
+/**
+ * @deprecated tag:v6.0.0 - Will be removed without replacement.
+ */
 export default class SwagPayPalPlusPaymentWall extends Plugin {
     static options = {
         /**

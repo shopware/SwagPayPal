@@ -40,13 +40,18 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     public const PAYPAL_REQUEST_PARAMETER_TOKEN = 'token';
     public const PAYPAL_EXPRESS_CHECKOUT_ID = 'isPayPalExpressCheckout';
     public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
-    public const PAYPAL_PLUS_CHECKOUT_ID = 'isPayPalPlusCheckout';
     public const PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
 
     /**
      * @deprecated tag:v5.0.0 - will be removed, use OrderTransactionStates::STATE_AUTHORIZED instead
      */
     public const ORDER_TRANSACTION_STATE_AUTHORIZED = 'authorized';
+
+    /**
+     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     */
+    public const PAYPAL_PLUS_CHECKOUT_ID = 'isPayPalPlusCheckout';
+
     public const FINALIZED_ORDER_TRANSACTION_STATES = [
         OrderTransactionStates::STATE_PAID,
         OrderTransactionStates::STATE_AUTHORIZED,
