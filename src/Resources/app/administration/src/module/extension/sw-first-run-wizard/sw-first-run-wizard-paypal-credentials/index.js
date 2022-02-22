@@ -204,5 +204,19 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
         onCredentialsChanged() {
             this.isGetCredentialsSuccessful = null;
         },
+
+        optimisticSave() {
+            const cfg = this.config;
+            const suffix = cfg['SwagPayPal.settings.sandbox'] ? 'Sandbox' : '';
+
+            const allowSave = !!cfg[`SwagPayPal.settings.clientId${suffix}`]
+                && !!cfg[`SwagPayPal.settings.clientSecret${suffix}`]
+                && !!cfg[`SwagPayPal.settings.merchantPayerId${suffix}`];
+
+
+            if (allowSave) {
+                this.$emit('on-save-settings');
+            }
+        },
     },
 });

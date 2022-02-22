@@ -37,7 +37,6 @@ use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
@@ -46,6 +45,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ACDCHandlerTest extends TestCase
 {
@@ -63,7 +63,7 @@ class ACDCHandlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
+        $definitionRegistry = new DefinitionInstanceRegistryMock([], $this->createMock(ContainerInterface::class));
         $this->orderTransactionRepo = $definitionRegistry->getRepository(
             (new OrderTransactionDefinition())->getEntityName()
         );

@@ -14,13 +14,13 @@ use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Swag\PayPal\Test\Helper\ServicesTrait;
-use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Webhook\WebhookServiceMock;
 use Swag\PayPal\Test\Webhook\_fixtures\WebhookDataFixture;
 use Swag\PayPal\Webhook\WebhookController;
 use Swag\PayPal\Webhook\WebhookService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -135,7 +135,7 @@ class WebhookControllerTest extends TestCase
 
     private function createWebhookController(): WebhookController
     {
-        $definitionRegistry = new DefinitionInstanceRegistryMock([], new DIContainerMock());
+        $definitionRegistry = new DefinitionInstanceRegistryMock([], $this->createMock(ContainerInterface::class));
         $systemConfigRepo = $definitionRegistry->getRepository(
             (new SystemConfigDefinition())->getEntityName()
         );

@@ -7,11 +7,11 @@ Component.register('swag-paypal-credentials', {
 
     inject: [
         'acl',
+        'SwagPayPalApiCredentialsService',
     ],
 
     mixins: [
         'notification',
-        'swag-paypal-credentials-loader',
     ],
 
     props: {
@@ -153,6 +153,9 @@ Component.register('swag-paypal-credentials', {
             });
         },
 
+        /**
+         * @deprecated tag:v6.0.0 Will be removed without replacement.
+         */
         onPayPalCredentialsLoadSuccess(clientId, clientSecret, sandbox) {
             if (sandbox) {
                 this.$set(this.actualConfigData, 'SwagPayPal.settings.clientIdSandbox', clientId);
@@ -163,6 +166,9 @@ Component.register('swag-paypal-credentials', {
             }
         },
 
+        /**
+         * @deprecated tag:v6.0.0 Will be removed without replacement.
+         */
         onPayPalCredentialsLoadFailed(sandbox) {
             if (sandbox) {
                 this.$set(this.actualConfigData, 'SwagPayPal.settings.clientIdSandbox', '');
@@ -177,14 +183,6 @@ Component.register('swag-paypal-credentials', {
                 message: this.$tc('swag-paypal.settingForm.credentials.button.messageFetchedError'),
                 duration: 10000,
             });
-        },
-
-        onNewMerchantIdReceived(merchantId, sandbox) {
-            if (sandbox) {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantPayerIdSandbox', merchantId);
-            } else {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantPayerId', merchantId);
-            }
         },
     },
 });

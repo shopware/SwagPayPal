@@ -29,6 +29,7 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Util\PaymentStatusUtilV2Mock;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -237,7 +238,7 @@ Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund::$invoiceId must n
             new CaptureResource($clientFactory),
             new RefundResource($clientFactory),
             $orderTransactionRepo,
-            new PaymentStatusUtilV2Mock(),
+            new PaymentStatusUtilV2Mock($this->createMock(ContainerInterface::class)),
             new CaptureRefundCreator(
                 new PriceFormatter()
             )

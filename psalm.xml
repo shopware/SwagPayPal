@@ -155,6 +155,13 @@
             </errorLevel>
         </NonInvariantDocblockPropertyType>
 
+        <UndefinedDocblockClass>
+            <errorLevel type="info">
+                <file name="tests/OpenApi/OpenApiTest.php"/>
+                <file name="tests/Util/LoggerTest.php"/>
+            </errorLevel>
+        </UndefinedDocblockClass>
+
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>
         <MissingConstructor errorLevel="info"/>

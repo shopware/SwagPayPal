@@ -1,0 +1,89 @@
+@import "~scss/variables";
+
+.swag-paypal-checkout {
+    padding: 30px;
+
+    &__image {
+        height: 30px;
+    }
+
+    &__description {
+        margin-top: 32px;
+    }
+
+    &__banner {
+        margin-top: 32px;
+    }
+
+    &-container-onboarding {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &-button__onboarding {
+        margin: 26px 0;
+    }
+
+    .swag-paypal-checkout-payment-method__headline {
+        font-size: 18px;
+        line-height: 42px;
+    }
+
+    .swag-paypal-checkout-payment-method__item {
+        border: 1px solid #d9dfe5;
+        border-radius: 4px;
+        height: 66px;
+        margin-bottom: 16px;
+
+        &-name-icon {
+            margin: 20px;
+        }
+
+        &-icon {
+            margin-right: 4px;
+        }
+
+        &-dynamic {
+            margin-top: 20px;
+            margin-right: 20px;
+            text-align: right;
+        }
+
+        &-show-detail-link {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 16px;
+            color: $color-shopware-brand-500;
+        }
+
+        & .sw-field--switch {
+            margin: 8px 0;
+        }
+
+        .sw-help-text {
+            top: -3px;
+            margin-right: 10px;
+            position: relative;
+        }
+    }
+
+    .swag-plugin-box-with-onboarding__status-label {
+        &.sw-label:not(.sw-label--appearance-badged) {
+            padding-left: 6px;
+            border-color: transparent;
+        }
+    }
+
+    .swag-plugin-box-with-onboarding__status-badge {
+        margin: 0;
+    }
+
+    .swag-plugin-box-with-onboarding__status-text {
+        padding-left: 4px;
+        font-weight: 600;
+    }
+}
+
+.swag-paypal-checkout-modal__text {
+    margin-bottom: 16px;
+}

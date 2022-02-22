@@ -15,6 +15,9 @@
     "sw-settings-payment-list": {
         "needOnboardingTooltip": "Schließen Sie das Onboarding ab, um diese Zahlungsmethode zu aktivieren"
     },
+    "sw-settings-payment-detail": {
+        "tooltip": "Gehen Sie zu den <a class=\"swag-paypal-go-to-settings-link\" href=\"#/swag/paypal/index\">Einstellungen der PayPal-Erweiterung →</a> und aktivieren Sie PayPal Commerce Platform, um diese Zahlungsmethode zu aktivieren."
+    },
     "swag-paypal": {
         "header": "PayPal",
         "saleschannelCard": {
@@ -31,6 +34,46 @@
         "settingForm": {
             "testLive": "API-Zugangsdaten testen",
             "testSandbox": "Sandbox-API-Zugangsdaten testen",
+            "checkout": {
+                "cardTitle": "PayPal Checkout",
+                "description": "PayPal Checkout ist die neue All-in-One-Lösung, mit der Sie leistungsstarke und flexible Funktionen zur Zahlungsabwicklung auf Marktplätzen und anderen Handelsplattformen anbieten können.",
+                "banner": "Mit der PayPal-Kaufabwicklung können Sie Ihren Kunden die Bezahlung per Rechnung, Kreditkarte und vielen anderen Zahlungsmethoden anbieten. PayPal Checkout unterstützt Sie mit der neuesten Technologie und bringt Ihnen höchste Flexibilität. Sie behalten Ihre bestehenden Zahlungsarten und die Gebühren bleiben gleich! Aktivieren Sie PayPal Checkout und deaktivieren Sie PayPal PLUS, um doppelte Zahlungsmethoden in Ihrem Shop zu vermeiden. (Link placeholder)",
+                "warningMerchantIdMustBeEnteredManually": "Die Sandbox-PayPal-Händler-ID wurde nicht übertragen. Bitte geben Sie sie unten in den API-Zugangsdaten manuell ein.",
+                "button": {
+                    "title": "Start des Onboarding"
+                },
+                "sandbox": {
+                    "label": "Sandbox-Zugangsdaten verwenden",
+                    "tooltipText": "Aktiviere diese Option, um die Integration zu testen."
+                },
+                "switch": {
+                    "label": "Aktiv"
+                },
+                "paymentMethodText": "Zahlungsmöglichkeiten",
+                "showCredentials": "Zeige API-Zugangsdaten",
+                "appImageAlt": "PayPal",
+                "editDetail": "Bearbeiten",
+                "startOnboardingButtonLabel": "Onboarding starten",
+                "puiToolTip": "Rechnungskauf ist für die folgenden Länder verfügbar: Deutschland",
+                "onboardingStatusText": {
+                    "active": "Autorisiert",
+                    "pending": "Authorisierung ausstehend",
+                    "inactive": "Onboarding benötigt"
+                },
+                "paymentMethodStatusChangedSuccess": {
+                    "active": "Zahlungsart \"{name}\" ist jetzt aktiv.",
+                    "inactive": "Zahlungsart \"{name}\" ist jetzt inaktiv."
+                },
+                "deactivatePayPalPlusModal": {
+                    "title": "PayPal PLUS deaktivieren",
+                    "text": "Herzlichen Glückwunsch! Durch den Wechsel zur PayPal-Kaufabwicklung nutzen Sie weiterhin alle relevanten Zahlungsmethoden - jetzt auf Basis der neuesten Technologie.",
+                    "warning": "Deaktivieren Sie PayPal PLUS, um die Anzeige von doppelten Zahlungsmethoden zu vermeiden",
+                    "button": {
+                        "deactivate": "Deaktivieren Sie PayPal PLUS",
+                        "cancel": "Abbrechen"
+                    }
+                }
+            },
             "credentials": {
                 "cardTitle": "API-Zugangsdaten",
                 "clientId": {
@@ -198,7 +241,11 @@
                 "plusCheckoutEnabled": {
                     "label": "PayPal PLUS aktivieren"
                 },
-                "hint": "Hinweis: PayPal PLUS funktioniert nur mit dem Zahlungsabschluss \"Sale\". Dieser wird automatisch gesetzt."
+                "hint": "Hinweis: PayPal PLUS funktioniert nur mit dem Zahlungsabschluss \"Sale\". Dieser wird automatisch gesetzt.",
+                "warning": {
+                    "active": "PayPal Checkout bietet die gleichen Zahlungsmethoden wie PayPal PLUS - basierend auf der neuesten Technologie. Vermeiden Sie die Anzeige von doppelten Zahlungsarten und deaktivieren Sie PayPal PLUS. Mehr Informationen (Link placeholder)",
+                    "inactive": "PayPal Checkout wird PayPal PLUS ab {date} ersetzen. Von diesem Zeitpunkt an wird PayPal PayPal PLUS nicht mehr unterstützen."
+                }
             },
             "locale-field": {
                 "infobox": {

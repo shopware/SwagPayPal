@@ -1,4 +1,5 @@
 import template from './swag-paypal-plus.html.twig';
+import './swag-paypal-plus.scss';
 
 const { Component } = Shopware;
 
@@ -28,6 +29,16 @@ Component.register('swag-paypal-plus', {
         },
     },
 
+    computed: {
+        isPayPalPLUSActive() {
+            return this.actualConfigData['SwagPayPal.settings.plusCheckoutEnabled'];
+        },
+
+        isPayPalPLUSInActive() {
+            return !this.isPayPalPLUSActive;
+        },
+    },
+
     methods: {
         checkTextFieldInheritance(value) {
             if (typeof value !== 'string') {
@@ -39,6 +50,10 @@ Component.register('swag-paypal-plus', {
 
         checkBoolFieldInheritance(value) {
             return typeof value !== 'boolean';
+        },
+
+        ifItWasNotActive() {
+            return !this.actualConfigData['SwagPayPal.settings.plusCheckoutEnabled'];
         },
     },
 });

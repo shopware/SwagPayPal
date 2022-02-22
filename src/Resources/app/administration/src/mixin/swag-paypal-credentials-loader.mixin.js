@@ -18,7 +18,8 @@ Mixin.register('swag-paypal-credentials-loader', {
 
             requestParams: {
                 channelId: 'partner',
-                product: 'payment_methods',
+                product: 'ppcp',
+                secondaryProducts: 'payment_methods',
                 capabilities: 'PAY_UPON_INVOICE',
                 integrationType: 'FO',
                 features: [
@@ -33,6 +34,7 @@ Mixin.register('swag-paypal-credentials-loader', {
                 displayMode: 'minibrowser',
                 partnerLogoUrl: 'https://assets.shopware.com/media/logos/shopware_logo_blue.svg',
             },
+            showHintMerchantIdMustBeEnteredManually: false,
         };
     },
 
@@ -67,6 +69,10 @@ Mixin.register('swag-paypal-credentials-loader', {
                 }
 
                 this.onNewMerchantIdReceived(newVal, this.lastOnboardingSandbox);
+                this.removeMerchantIdInPayPalFromRoute();
+                this.showHintMerchantIdMustBeEnteredManually = false;
+
+                this.optimisticSave();
             },
             deep: true,
             immediate: true,
@@ -157,7 +163,7 @@ Mixin.register('swag-paypal-credentials-loader', {
 
             this.isGetCredentialsSuccessful = null;
 
-            this.isLoading = true;
+            this.$emit('on-change-loading', true);
 
             return this.SwagPayPalApiCredentialsService.getApiCredentials(
                 authCode,
@@ -172,8 +178,13 @@ Mixin.register('swag-paypal-credentials-loader', {
                 this.isGetCredentialsSuccessful = false;
                 this.onPayPalCredentialsLoadFailed(sandbox);
             }).finally(() => {
-                this.isLoading = false;
+                this.$emit('on-change-loading', false);
+                this.optimisticSave();
             });
+        },
+
+        removeMerchantIdInPayPalFromRoute() {
+            this.$router.replace({ path: this.$route.path });
         },
 
         /**
@@ -218,5 +229,16 @@ Mixin.register('swag-paypal-credentials-loader', {
             );
         },
 
+        optimisticSave() {
+            // since the merchantId and the credentials come from different sources
+            // we have to make sure that all values are present before saving them.
+
+            // needs to be implemented by using component
+            debug.warn(
+                'swag-paypal-credentials-loader Mixin',
+                'When using the paypal-credentials-loader mixin ' +
+                'you have to implement your custom "optimisticSave()" method.',
+            );
+        },
     },
 });

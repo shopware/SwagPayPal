@@ -7,8 +7,28 @@
             <div v-if="actualConfigData" class="swag-paypal-settings-plus-fields">
 
                 {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
+                {% block swag_paypal_content_card_channel_config_plus_settings_warning %}
+                <template v-if="isPayPalPLUSActive">
+                    <sw-alert
+                        variant="warning"
+                    >
+                        {{ $tc('swag-paypal.settingForm.plus.warning.active') }}
+                    </sw-alert>
+                </template>
+
+                <template v-if="isPayPalPLUSInActive">
+                    <sw-alert
+                        variant="info"
+                    >
+                        {{ $tc('swag-paypal.settingForm.plus.warning.inactive') }}
+                    </sw-alert>
+                </template>
+                {% endblock %}
+
+                {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
                 {% block swag_paypal_content_card_channel_config_plus_settings_onboarding %}
-                    <p v-html="$tc('swag-paypal.settingForm.plus.introduction')"></p>
+                    <p v-bind:class="{ 'swag-paypal-payal-plus-disabled': isPayPalPLUSInActive}"
+                       v-html="$tc('swag-paypal.settingForm.plus.introduction')"></p>
                 {% endblock %}
 
                 {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
@@ -22,7 +42,7 @@
                                              bordered
                                              :mapInheritance="props"
                                              :label="$tc('swag-paypal.settingForm.plus.plusCheckoutEnabled.label')"
-                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                                             :disabled="ifItWasNotActive() || props.isInherited || !acl.can('swag_paypal.editor')"
                                              :value="props.currentValue"
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>

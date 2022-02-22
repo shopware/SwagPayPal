@@ -1,4 +1,5 @@
 import template from './sw-settings-payment-detail.html.twig';
+import './sw-settings-payment-detail.scss';
 
 const { Component } = Shopware;
 
