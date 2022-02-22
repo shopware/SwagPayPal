@@ -221,7 +221,7 @@ class SPBCheckoutSubscriberTest extends TestCase
     }
 
     /**
-     * @deprecated tag:v5.0.0 - will be removed
+     * @deprecated tag:v6.0.0 - will be removed
      */
     public function testAddNecessaryRequestParameter(): void
     {
@@ -249,7 +249,7 @@ class SPBCheckoutSubscriberTest extends TestCase
     }
 
     /**
-     * @deprecated tag:v5.0.0 - will be removed
+     * @deprecated tag:v6.0.0 - will be removed
      */
     public function testAddNecessaryRequestParameterWrongRoute(): void
     {

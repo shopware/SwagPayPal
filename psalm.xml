@@ -55,26 +55,24 @@
 
         <DeprecatedMethod>
             <errorLevel type="info">
-                <!-- <deprecated> tag:v5.0.0 - remove with Shopware 6.5 compatibility -->
+                <!-- <deprecated> tag:v6.0.0 - remove with Shopware 6.5 compatibility -->
                 <referencedMethod name="Shopware\Core\Framework\Struct\Collection::getIterator"/>
                 <referencedMethod name="Shopware\Core\System\SalesChannel\SalesChannelContext::getFallbackCustomerGroup"/>
                 <referencedMethod name="Doctrine\DBAL\Connection::executeUpdate"/>
 
-                <!-- <deprecated> tag:v5.0.0 - remove -->
+                <!-- <deprecated> tag:v6.0.0 - remove -->
                 <file name="src/Checkout/Payment/PayPalPuiPaymentHandler.php"/>
                 <file name="tests/Checkout/CheckoutSubscriberTest.php"/>
                 <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::createAddress"/>
                 <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::__construct"/>
                 <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber::addNecessaryRequestParameter"/>
-
-                <!-- <deprecated> tag:v6.0.0 - remove -->
                 <referencedMethod name="Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler::handlePlusPayment"/>
             </errorLevel>
         </DeprecatedMethod>
 
         <DeprecatedConstant>
             <errorLevel type="info">
-                <!-- <deprecated> tag:v5.0.0 - remove with Shopware 6.5 compatibility due to usage of Defaults::SALES_CHANNEL -->
+                <!-- <deprecated> tag:v6.0.0 - remove with Shopware 6.5 compatibility due to usage of Defaults::SALES_CHANNEL -->
                 <directory name="tests"/>
                 <file name="src/Checkout/Payment/PayPalPaymentHandler.php"/>
                 <file name="src/Util/PaymentStatusUtilV2.php"/>
@@ -101,15 +99,13 @@
                 <referencedClass name="Shopware\Core\Framework\MessageQueue\MessageQueueStatsDefinition"/>
                 <referencedClass name="Shopware\Core\Framework\MessageQueue\MessageQueueStatsEntity"/>
 
-                <!-- <deprecated> tag:v5.0.0 - remove -->
+                <!-- <deprecated> tag:v6.0.0 - remove -->
                 <referencedClass name="Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler"/>
                 <file name="tests/Checkout/SPBCheckout/SalesChannel/SPBCreateOrderRouteTest.php"/>
                 <file name="src/Checkout/SPBCheckout/SalesChannel/SPBCreateOrderRoute.php"/>
                 <file name="src/Checkout/PayUponInvoice/PayUponInvoiceSubscriber.php"/>
                 <file name="tests/Checkout/PayUponInvoice/PayUponInvoiceSubscriberTest.php"/>
                 <file name="tests/Checkout/Payment/PayPalPuiPaymentHandlerTest.php"/>
-
-                <!-- <deprecated> tag:v6.0.0 - remove -->
                 <file name="src/Checkout/Plus/Service/PlusDataService.php"/>
                 <file name="src/Checkout/Plus/PlusSubscriber.php"/>
                 <file name="tests/Checkout/Plus/PlusSubscriberTest.php"/>

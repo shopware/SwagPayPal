@@ -42,7 +42,7 @@ class PaymentMethodUtil
     }
 
     /**
-     * @deprecated tag:v5.0.0 - will be removed without replacement
+     * @deprecated tag:v6.0.0 - will be removed without replacement
      */
     public function getPayPalPuiPaymentMethodId(Context $context): ?string
     {

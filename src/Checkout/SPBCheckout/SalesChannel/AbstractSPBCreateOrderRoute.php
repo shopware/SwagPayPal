@@ -13,14 +13,14 @@ use Swag\PayPal\Checkout\TokenResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @deprecated tag:v5.0.0 - will be removed, use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute instead
+ * @deprecated tag:v6.0.0 - will be removed, use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute instead
  */
 abstract class AbstractSPBCreateOrderRoute
 {
     abstract public function getDecorated(): AbstractSPBCreateOrderRoute;
 
     /**
-     * @deprecated tag:v5.0.0 - will be removed, use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute instead
+     * @deprecated tag:v6.0.0 - will be removed, use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute instead
      *
      * @throws CustomerNotLoggedInException
      */

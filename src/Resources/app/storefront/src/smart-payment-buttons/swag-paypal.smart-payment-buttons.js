@@ -116,7 +116,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         /**
          * Selector of the selected payment method
          *
-         * @deprecated tag:v5.0.0 - will be removed without replacement
+         * @deprecated tag:v6.0.0 - will be removed without replacement
          *
          * @type string
          */

@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @deprecated tag:v5.0.0 - will be removed, use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute instead
+ * @deprecated tag:v6.0.0 - will be removed, use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute instead
  *
  * @RouteScope(scopes={"store-api"})
  */

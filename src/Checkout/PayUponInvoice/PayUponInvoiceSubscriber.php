@@ -18,7 +18,7 @@ use Swag\PayPal\Setting\Settings;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * @deprecated tag:v5.0.0 - will be removed
+ * @deprecated tag:v6.0.0 - will be removed
  */
 class PayUponInvoiceSubscriber implements EventSubscriberInterface
 {

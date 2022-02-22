@@ -32,7 +32,7 @@ abstract class AbstractOrderBuilder
     protected ?AddressProvider $addressProvider;
 
     /**
-     * @deprecated tag:v5.0.0 - parameter $addressProvider will be required
+     * @deprecated tag:v6.0.0 - parameter $addressProvider will be required
      */
     public function __construct(
         SystemConfigService $systemConfigService,
@@ -118,7 +118,7 @@ abstract class AbstractOrderBuilder
     }
 
     /**
-     * @deprecated tag:v5.0.0 - will be removed, use AddressProvider instead
+     * @deprecated tag:v6.0.0 - will be removed, use AddressProvider instead
      */
     private function createAddress(CustomerAddressEntity $customerAddress, Address $address): Address
     {

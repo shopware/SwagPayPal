@@ -12,12 +12,12 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\SwagPayPal;
 
 /**
- * @deprecated tag:v5.0.0 - abstract class will be removed, child classes will still exist
+ * @deprecated tag:v6.0.0 - abstract class will be removed, child classes will still exist
  */
 abstract class AbstractPaymentHandler
 {
     /**
-     * @deprecated tag:v5.0.0 - use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME instead
+     * @deprecated tag:v6.0.0 - use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME instead
      */
     public const PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME = 'paypalOrderId';
 
@@ -29,7 +29,7 @@ abstract class AbstractPaymentHandler
     }
 
     /**
-     * @deprecated tag:v5.0.0 - use Swag\PayPal\Checkout\Payment\Service\TransactionDataService::setOrderId instead
+     * @deprecated tag:v6.0.0 - use Swag\PayPal\Checkout\Payment\Service\TransactionDataService::setOrderId instead
      */
     protected function addPayPalOrderId(
         string $orderTransactionId,

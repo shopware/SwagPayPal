@@ -150,7 +150,7 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @deprecated tag:v5.0.0 - will be removed, has been moved to Swag\PayPal\Storefront\RequestSubscriber
+     * @deprecated tag:v6.0.0 - will be removed, has been moved to Swag\PayPal\Storefront\RequestSubscriber
      */
     public function addNecessaryRequestParameter(HandlePaymentMethodRouteRequestEvent $event): void
     {

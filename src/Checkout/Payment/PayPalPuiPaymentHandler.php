@@ -32,7 +32,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @deprecated tag:v5.0.0 - will be removed, old PUI has been deprecated
+ * @deprecated tag:v6.0.0 - will be removed, old PUI has been deprecated
  */
 class PayPalPuiPaymentHandler implements AsynchronousPaymentHandlerInterface
 {

@@ -57,7 +57,7 @@ Component.override('sw-order-detail', {
 
     methods: {
         /**
-         * @deprecated tag:v5.0.0 - Will be removed without replacement
+         * @deprecated tag:v6.0.0 - Will be removed without replacement
          */
         setIsPayPalPayment(paymentMethodId) {
             this.isPayPalPayment = !!paymentMethodId;
