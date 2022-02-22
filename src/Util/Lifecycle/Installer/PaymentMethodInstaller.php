@@ -29,18 +29,22 @@ class PaymentMethodInstaller
 
     private PaymentMethodDataRegistry $methodDataRegistry;
 
+    private MediaInstaller $mediaInstaller;
+
     public function __construct(
         EntityRepositoryInterface $paymentMethodRepository,
         EntityRepositoryInterface $ruleRepository,
         EntityRepositoryInterface $ruleConditionRepository,
         PluginIdProvider $pluginIdProvider,
-        PaymentMethodDataRegistry $methodDataRegistry
+        PaymentMethodDataRegistry $methodDataRegistry,
+        MediaInstaller $mediaInstaller
     ) {
         $this->paymentMethodRepository = $paymentMethodRepository;
         $this->ruleRepository = $ruleRepository;
         $this->ruleConditionRepository = $ruleConditionRepository;
         $this->pluginIdProvider = $pluginIdProvider;
         $this->methodDataRegistry = $methodDataRegistry;
+        $this->mediaInstaller = $mediaInstaller;
     }
 
     public function installAll(Context $context): void
@@ -49,6 +53,7 @@ class PaymentMethodInstaller
 
         $upsertData = [];
         $translationData = [];
+        $paymentMethods = [];
         foreach ($this->methodDataRegistry->getPaymentMethods() as $method) {
             $data = $this->getPaymentMethodData($method, $pluginId, $context);
             $upsertData[] = $data;
@@ -58,10 +63,17 @@ class PaymentMethodInstaller
                 'id' => $data['id'],
                 'translations' => $method->getTranslations(),
             ];
+
+            $paymentMethods[$data['id']] = $method;
         }
 
         $this->paymentMethodRepository->upsert($upsertData, $context);
         $this->paymentMethodRepository->upsert($translationData, $context);
+
+        /** @var string $paymentMethodId */
+        foreach ($paymentMethods as $paymentMethodId => $method) {
+            $this->mediaInstaller->installPaymentMethodMedia($method, $paymentMethodId, $context);
+        }
     }
 
     /**
@@ -91,6 +103,7 @@ class PaymentMethodInstaller
 
         $this->paymentMethodRepository->upsert([$data], $context);
         $this->paymentMethodRepository->upsert([$translationData], $context);
+        $this->mediaInstaller->installPaymentMethodMedia($method, $data['id'], $context);
     }
 
     public function removeRules(Context $context): void
@@ -148,8 +161,9 @@ class PaymentMethodInstaller
             $paymentMethodData['availabilityRule'] = $rule;
         }
 
-        if ($existingId = $this->methodDataRegistry->getEntityIdFromData($method, $context)) {
-            $paymentMethodData['id'] = $existingId;
+        $existingMethodId = $this->methodDataRegistry->getEntityIdFromData($method, $context);
+        if ($existingMethodId) {
+            $paymentMethodData['id'] = $existingMethodId;
         }
 
         return $paymentMethodData;

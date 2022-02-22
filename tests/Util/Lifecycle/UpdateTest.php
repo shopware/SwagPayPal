@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\DataAbstractionLayer\PaymentMethodRepositoryDecorator;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
+use Shopware\Core\Content\Media\File\FileSaver;
+use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Content\Rule\Aggregate\RuleCondition\RuleConditionDefinition;
 use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Defaults;
@@ -52,6 +55,7 @@ use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
 use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
+use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
@@ -374,12 +378,18 @@ class UpdateTest extends TestCase
         $ruleConditionRepository = $this->getContainer()->get(RuleConditionDefinition::ENTITY_NAME . '.repository');
         /** @var EntityRepositoryInterface $salesChannelTypeRepository */
         $salesChannelTypeRepository = $this->getContainer()->get(SalesChannelTypeDefinition::ENTITY_NAME . '.repository');
+        /** @var EntityRepositoryInterface $mediaRepository */
+        $mediaRepository = $this->getContainer()->get(MediaDefinition::ENTITY_NAME . '.repository');
+        /** @var EntityRepositoryInterface $mediaFolderRepository */
+        $mediaFolderRepository = $this->getContainer()->get(MediaFolderDefinition::ENTITY_NAME . '.repository');
         /** @var InformationDefaultService|null $informationDefaultService */
         $informationDefaultService = $this->getContainer()->get(InformationDefaultService::class);
         /** @var EntityRepositoryInterface $shippingRepository */
         $shippingRepository = $this->getContainer()->get('shipping_method.repository');
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->getContainer()->get(PluginIdProvider::class);
+        /** @var FileSaver $fileSaver */
+        $fileSaver = $this->getContainer()->get(FileSaver::class);
         $paymentMethodDataRegistry = new PaymentMethodDataRegistry($this->paymentMethodRepository, $this->getContainer());
 
         return new Update(
@@ -397,7 +407,13 @@ class UpdateTest extends TestCase
                 $ruleRepository,
                 $ruleConditionRepository,
                 $pluginIdProvider,
-                $paymentMethodDataRegistry
+                $paymentMethodDataRegistry,
+                new MediaInstaller(
+                    $mediaRepository,
+                    $mediaFolderRepository,
+                    $this->paymentMethodRepository,
+                    $fileSaver,
+                ),
             ),
             new PaymentMethodStateService(
                 $paymentMethodDataRegistry,

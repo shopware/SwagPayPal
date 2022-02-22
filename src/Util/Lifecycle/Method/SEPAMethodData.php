@@ -13,6 +13,7 @@ use Swag\PayPal\Checkout\APM\Service\AbstractAPMCheckoutDataService;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\Checkout\SEPA\Service\SEPACheckoutDataService;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
+use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
 
 class SEPAMethodData extends AbstractMethodData implements APMCheckoutMethodInterface
 {
@@ -23,11 +24,11 @@ class SEPAMethodData extends AbstractMethodData implements APMCheckoutMethodInte
         return [
             'de-DE' => [
                 'description' => '',
-                'name' => 'SEPA',
+                'name' => 'SEPA Lastschrift',
             ],
             'en-GB' => [
                 'description' => '',
-                'name' => 'SEPA',
+                'name' => 'SEPA direct debit',
             ],
         ];
     }
@@ -52,8 +53,12 @@ class SEPAMethodData extends AbstractMethodData implements APMCheckoutMethodInte
 
     public function getInitialState(): bool
     {
-        // will be set to true upon official release (update procedure has to be added)
         return false;
+    }
+
+    public function getMediaFileName(): ?string
+    {
+        return 'sepa';
     }
 
     public function getCheckoutDataService(): AbstractAPMCheckoutDataService
@@ -71,6 +76,11 @@ class SEPAMethodData extends AbstractMethodData implements APMCheckoutMethodInte
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-        return self::CAPABILITY_ACTIVE;
+        $capability = $merchantIntegrations->getSpecificCapability('ALT_PAY_PROCESSING');
+        if ($capability !== null && $capability->getStatus() === Capability::STATUS_ACTIVE) {
+            return self::CAPABILITY_ACTIVE;
+        }
+
+        return self::CAPABILITY_INACTIVE;
     }
 }

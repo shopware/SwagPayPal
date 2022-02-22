@@ -47,6 +47,11 @@ class PayPalMethodData extends AbstractMethodData
         return true;
     }
 
+    public function getMediaFileName(): ?string
+    {
+        return 'paypal';
+    }
+
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
         return self::CAPABILITY_ACTIVE;

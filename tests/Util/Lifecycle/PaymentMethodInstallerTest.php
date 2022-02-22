@@ -12,6 +12,9 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandle
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerRegistry;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\SynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
+use Shopware\Core\Content\Media\File\FileSaver;
+use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -19,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
@@ -125,6 +129,12 @@ class PaymentMethodInstallerTest extends TestCase
 
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->getContainer()->get(PluginIdProvider::class);
+        /** @var EntityRepositoryInterface $mediaRepository */
+        $mediaRepository = $this->getContainer()->get(MediaDefinition::ENTITY_NAME . '.repository');
+        /** @var EntityRepositoryInterface $mediaFolderRepository */
+        $mediaFolderRepository = $this->getContainer()->get(MediaFolderDefinition::ENTITY_NAME . '.repository');
+        /** @var FileSaver $fileSaver */
+        $fileSaver = $this->getContainer()->get(FileSaver::class);
 
         return new PaymentMethodInstaller(
             $this->paymentMethodRepository,
@@ -134,7 +144,13 @@ class PaymentMethodInstallerTest extends TestCase
             new PaymentMethodDataRegistry(
                 $this->paymentMethodRepository,
                 $this->getContainer(),
-            )
+            ),
+            new MediaInstaller(
+                $mediaRepository,
+                $mediaFolderRepository,
+                $this->paymentMethodRepository,
+                $fileSaver,
+            ),
         );
     }
 }

@@ -85,8 +85,12 @@ class BoletoBancarioMethodData extends AbstractMethodData
 
     public function getInitialState(): bool
     {
-        // will be set to true upon official release (update procedure has to be added)
         return false;
+    }
+
+    public function getMediaFileName(): ?string
+    {
+        return 'apm_boletobancario';
     }
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string

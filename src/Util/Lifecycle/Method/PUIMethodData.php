@@ -96,6 +96,11 @@ class PUIMethodData extends AbstractMethodData
         return false;
     }
 
+    public function getMediaFileName(): ?string
+    {
+        return 'pui';
+    }
+
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
         $capability = $merchantIntegrations->getSpecificCapability('PAY_UPON_INVOICE');

@@ -8,6 +8,8 @@
 namespace Swag\PayPal;
 
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Content\Media\File\FileSaver;
+use Shopware\Core\Content\Media\MediaService;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
@@ -21,6 +23,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
 use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
+use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
@@ -106,12 +109,20 @@ class SwagPayPal extends Plugin
         $ruleRepository = $this->container->get('rule.repository');
         /** @var EntityRepositoryInterface $ruleConditionRepository */
         $ruleConditionRepository = $this->container->get('rule_condition.repository');
+        /** @var EntityRepositoryInterface $mediaRepository */
+        $mediaRepository = $this->container->get('media.repository');
+        /** @var EntityRepositoryInterface $mediaFolderRepository */
+        $mediaFolderRepository = $this->container->get('media_folder.repository');
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         /** @var PaymentMethodInstaller|null $paymentMethodInstaller */
         $paymentMethodInstaller = $this->container->get(PaymentMethodInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         /** @var PaymentMethodStateService|null $paymentMethodStateService */
         $paymentMethodStateService = $this->container->get(PaymentMethodStateService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        /** @var MediaInstaller|null $mediaInstaller */
+        $mediaInstaller = $this->container->get(MediaService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        /** @var FileSaver $fileSaver */
+        $fileSaver = $this->container->get(FileSaver::class);
         $paymentMethodDataRegistry = new PaymentMethodDataRegistry($paymentMethodRepository, $this->container);
 
         (new Update(
@@ -130,6 +141,12 @@ class SwagPayPal extends Plugin
                 $ruleConditionRepository,
                 $pluginIdProvider,
                 $paymentMethodDataRegistry,
+                $mediaInstaller ?? new MediaInstaller(
+                    $mediaRepository,
+                    $mediaFolderRepository,
+                    $paymentMethodRepository,
+                    $fileSaver,
+                ),
             ),
             $paymentMethodStateService ?? new PaymentMethodStateService(
                 $paymentMethodDataRegistry,
@@ -192,10 +209,16 @@ class SwagPayPal extends Plugin
         $ruleRepository = $this->container->get('rule.repository');
         /** @var EntityRepositoryInterface $ruleConditionRepository */
         $ruleConditionRepository = $this->container->get('rule_condition.repository');
+        /** @var EntityRepositoryInterface $mediaRepository */
+        $mediaRepository = $this->container->get('media.repository');
+        /** @var EntityRepositoryInterface $mediaFolderRepository */
+        $mediaFolderRepository = $this->container->get('media_folder.repository');
         /** @var PluginIdProvider $pluginIdProvider */
         $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->container->get(SystemConfigService::class);
+        /** @var FileSaver $fileSaver */
+        $fileSaver = $this->container->get(FileSaver::class);
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
 
@@ -208,6 +231,12 @@ class SwagPayPal extends Plugin
                 new PaymentMethodDataRegistry(
                     $paymentMethodRepository,
                     $this->container,
+                ),
+                new MediaInstaller(
+                    $mediaRepository,
+                    $mediaFolderRepository,
+                    $paymentMethodRepository,
+                    $fileSaver
                 ),
             ),
             new SettingsInstaller($systemConfigRepository, $systemConfigService),

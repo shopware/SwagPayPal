@@ -65,6 +65,14 @@
             <argument type="service" id="rule_condition.repository"/>
             <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller"/>
+        </service>
+
+        <service id="Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller">
+            <argument type="service" id="media.repository"/>
+            <argument type="service" id="media_folder.repository"/>
+            <argument type="service" id="payment_method.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Media\File\FileSaver"/>
         </service>
 
         <service id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry">

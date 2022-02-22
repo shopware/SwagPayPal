@@ -45,6 +45,8 @@ abstract class AbstractMethodData
 
     abstract public function validateCapability(MerchantIntegrations $merchantIntegrations): string;
 
+    abstract public function getMediaFileName(): ?string;
+
     protected function getCountryIds(array $countryIsos, Context $context): array
     {
         $criteria = new Criteria();
