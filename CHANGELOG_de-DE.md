@@ -1,3 +1,8 @@
+# 4.9.0
+- PPI-317 - Separate Kreditkarten-Zahlungsmethode hinzugefügt
+- PPI-385 - Neuer Rechnungskauf hinzugefügt
+- PPI-410 - Separate alternative Zahlungsmethoden hinzugefügt
+
 # 4.1.1
 - PPI-395 - Texte für veraltete PayPal-Produkte entfernt
 

@@ -37,7 +37,7 @@
             "checkout": {
                 "cardTitle": "PayPal Checkout",
                 "description": "PayPal Checkout is the new all-in-one solution that lets you offer powerful flexibile payment processing features on the marketplaces and other commerce platforms.",
-                "banner": "With PayPal Checkout, you can offer your customers payment by invoice, credit card and many other payment methods. PayPal Checkout supports you with the latest technology and brings you the highest flexibility. You keep your existing payment methods and the fees remain the same! Activate PayPal Checkout and deactivate PayPal PLUS to avoid duplicate payment methods in your shop. (Link placeholder)",
+                "banner": "With PayPal Checkout, you can offer your customers payment by invoice, credit card and many other payment methods. PayPal Checkout supports you with the latest technology and brings you the highest flexibility. You keep your existing payment methods and the fees remain the same! Activate PayPal Checkout and deactivate PayPal PLUS to avoid duplicate payment methods in your shop.",
                 "warningMerchantIdMustBeEnteredManually": "The Merchant ID was not transferred. Please enter it manually below in the credentials.",
                 "button": {
                     "title": "Start onboarding"
@@ -244,7 +244,7 @@
                 "hint": "Note: PayPal PLUS only works with the payment acquisition \"Sale\". It will be set automatically.",
                 "warning": {
                     "active": "PayPal Checkout provides the same payment methods as PayPal PLUS – based on the latest technology. Avoid displaying duplicate payment methods and deactivate PayPal PLUS.\u2028More information (Link placeholder)",
-                    "inactive": "PayPal Checkout will replace PayPal PLUS from {date}. From then on PayPal will no longer support PayPal PLUS."
+                    "inactive": "PayPal Checkout will replace PayPal PLUS."
                 }
             },
             "locale-field": {
