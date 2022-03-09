@@ -12,7 +12,7 @@ use Swag\PayPal\RestApi\PartnerId;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 
-class MerchantIntegrationsResource
+class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterface
 {
     private PayPalClientFactoryInterface $payPalClientFactory;
 

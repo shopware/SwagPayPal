@@ -31,13 +31,13 @@ class MerchantIntegrations extends PayPalApiStruct
      * @var Product[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_product"})
      */
-    protected array $products;
+    protected array $products = [];
 
     /**
      * @var Capability[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_capability"})
      */
-    protected array $capabilities;
+    protected array $capabilities = [];
 
     /**
      * @OA\Property(type="boolean")

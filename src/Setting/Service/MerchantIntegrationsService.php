@@ -10,21 +10,21 @@ namespace Swag\PayPal\Setting\Service;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
-use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
+use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResourceInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
 class MerchantIntegrationsService implements MerchantIntegrationsServiceInterface
 {
-    private MerchantIntegrationsResource $merchantIntegrationsResource;
+    private MerchantIntegrationsResourceInterface $merchantIntegrationsResource;
 
     private SystemConfigService $systemConfigService;
 
     private PaymentMethodDataRegistry $paymentMethodDataRegistry;
 
     public function __construct(
-        MerchantIntegrationsResource $merchantIntegrationsResource,
+        MerchantIntegrationsResourceInterface $merchantIntegrationsResource,
         SystemConfigService $systemConfigService,
         PaymentMethodDataRegistry $paymentMethodDataRegistry
     ) {

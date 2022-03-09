@@ -20,8 +20,14 @@ use Swag\PayPal\RestApi\V2\Api\Referral\PartnerConfigOverride;
  */
 class Referral extends PayPalApiStruct
 {
+    /**
+     * @deprecated tag:v6.0.0 - will be removed
+     */
     public const PRODUCT_TYPE_EXPRESS_CHECKOUT = 'EXPRESS_CHECKOUT';
+
     public const PRODUCT_TYPE_PPCP = 'PPCP';
+    public const PRODUCT_TYPE_PAYMENT_METHODS = 'PAYMENT_METHODS';
+    public const CAPABILITY_PAY_UPON_INVOICE = 'PAY_UPON_INVOICE';
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_referral_business_entity")
@@ -53,7 +59,13 @@ class Referral extends PayPalApiStruct
      * @var string[]
      * @OA\Property(type="array", items={"type": "string"})
      */
-    protected array $products = [self::PRODUCT_TYPE_PPCP];
+    protected array $products = [self::PRODUCT_TYPE_PPCP, self::PRODUCT_TYPE_PAYMENT_METHODS];
+
+    /**
+     * @var string[]
+     * @OA\Property(type="array", items={"type": "string"})
+     */
+    protected array $capabilities = [self::CAPABILITY_PAY_UPON_INVOICE];
 
     /**
      * @var LegalConsent[]
@@ -137,6 +149,22 @@ class Referral extends PayPalApiStruct
     public function setProducts(array $products): void
     {
         $this->products = $products;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getCapabilities(): array
+    {
+        return $this->capabilities;
+    }
+
+    /**
+     * @param string[] $capabilities
+     */
+    public function setCapabilities(array $capabilities): void
+    {
+        $this->capabilities = $capabilities;
     }
 
     /**
