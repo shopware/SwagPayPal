@@ -88,6 +88,7 @@
         <service id="Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData"
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
             <tag name="swag.paypal.payment.method.data"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
         </service>
         <service id="Swag\PayPal\Util\Lifecycle\Method\PUIMethodData"
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
@@ -96,12 +97,12 @@
         <service id="Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData"
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
             <tag name="swag.paypal.payment.method.data"/>
-            <tag name="swag.paypal.payment.method.apm"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
         </service>
         <service id="Swag\PayPal\Util\Lifecycle\Method\SEPAMethodData"
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">
             <tag name="swag.paypal.payment.method.data"/>
-            <tag name="swag.paypal.payment.method.apm"/>
+            <tag name="swag.paypal.payment.storefront.checkout.data"/>
         </service>
         <service id="Swag\PayPal\Util\Lifecycle\Method\BancontactMethodData"
                  parent="Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData">

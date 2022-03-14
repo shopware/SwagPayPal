@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Helper;
 
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\DefaultPayment;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
@@ -67,6 +68,7 @@ trait SalesChannelContextTrait
         if ($withOtherDefaultPayment) {
             $paymentMethod = new PaymentMethodEntity();
             $paymentMethod->setId('test-id');
+            $paymentMethod->setHandlerIdentifier(DefaultPayment::class);
             $salesChannelContext = new SalesChannelContext(
                 $salesChannelContext->getContext(),
                 $salesChannelContext->getToken(),

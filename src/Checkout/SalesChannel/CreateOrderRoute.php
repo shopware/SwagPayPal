@@ -73,7 +73,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
     }
 
     /**
-     * @Since("REPLACE_GLOBALLY_WITH_NEXT_VERSION")
+     * @Since("5.0.0")
      * @OA\Post(
      *     path="/store-api/paypal/create-order",
      *     description="Creates a PayPal order from the existing cart or an order",

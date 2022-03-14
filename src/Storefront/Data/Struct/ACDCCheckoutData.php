@@ -5,12 +5,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\ACDC;
+namespace Swag\PayPal\Storefront\Data\Struct;
 
-use Swag\PayPal\Checkout\ACDC\Struct\CardholderData;
-use Swag\PayPal\Checkout\APM\APMCheckoutData;
+use Swag\PayPal\Storefront\Data\Struct\ACDC\CardholderData;
 
-class ACDCCheckoutFieldData extends APMCheckoutData
+class ACDCCheckoutData extends AbstractCheckoutData
 {
     protected CardholderData $cardholderData;
 

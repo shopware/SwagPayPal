@@ -44,6 +44,13 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         clientId: '',
 
         /**
+         * This option holds the merchant id specified in the settings
+         *
+         * @type string
+         */
+        merchantPayerId: '',
+
+        /**
          * This options specifies the currency of the PayPal button
          *
          * @type string

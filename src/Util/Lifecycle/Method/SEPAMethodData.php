@@ -8,14 +8,14 @@
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
 use Shopware\Core\Framework\Context;
-use Swag\PayPal\Checkout\APM\APMCheckoutMethodInterface;
-use Swag\PayPal\Checkout\APM\Service\AbstractAPMCheckoutDataService;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
-use Swag\PayPal\Checkout\SEPA\Service\SEPACheckoutDataService;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
+use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
+use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
+use Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService;
 
-class SEPAMethodData extends AbstractMethodData implements APMCheckoutMethodInterface
+class SEPAMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
     public const PAYPAL_SEPA_FIELD_DATA_EXTENSION_ID = 'payPalSEPAFieldData';
 
@@ -61,7 +61,7 @@ class SEPAMethodData extends AbstractMethodData implements APMCheckoutMethodInte
         return 'sepa';
     }
 
-    public function getCheckoutDataService(): AbstractAPMCheckoutDataService
+    public function getCheckoutDataService(): AbstractCheckoutDataService
     {
         /** @var SEPACheckoutDataService $service */
         $service = $this->container->get(SEPACheckoutDataService::class);

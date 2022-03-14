@@ -5,15 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Swag\PayPal\Checkout\APM\APMCheckoutSubscriber">
-            <argument type="service" id="logger"/>
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
-            <argument type="service" id="session"/>
-            <argument type="service" id="translator"/>
-            <argument type="tagged_iterator" tag="swag.paypal.payment.method.apm"/>
-            <tag name="kernel.event_subscriber"/>
-        </service>
-
         <service id="Swag\PayPal\Checkout\Payment\Method\APMHandler" abstract="true">
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>

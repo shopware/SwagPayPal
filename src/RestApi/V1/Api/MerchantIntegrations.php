@@ -50,6 +50,11 @@ class MerchantIntegrations extends PayPalApiStruct
     protected string $legalName;
 
     /**
+     * @OA\Property(type="string")
+     */
+    protected string $primaryEmail;
+
+    /**
      * @OA\Property(type="boolean")
      */
     protected bool $primaryEmailConfirmed;
@@ -118,6 +123,16 @@ class MerchantIntegrations extends PayPalApiStruct
     public function setLegalName(string $legalName): void
     {
         $this->legalName = $legalName;
+    }
+
+    public function getPrimaryEmail(): string
+    {
+        return $this->primaryEmail;
+    }
+
+    public function setPrimaryEmail(string $primaryEmail): void
+    {
+        $this->primaryEmail = $primaryEmail;
     }
 
     public function getPrimaryEmailConfirmed(): bool

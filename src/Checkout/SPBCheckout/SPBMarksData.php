@@ -13,6 +13,8 @@ class SPBMarksData extends Struct
 {
     protected string $clientId;
 
+    protected string $merchantPayerId;
+
     protected string $paymentMethodId;
 
     protected bool $useAlternativePaymentMethods;
@@ -38,6 +40,16 @@ class SPBMarksData extends Struct
     public function setClientId(string $clientId): void
     {
         $this->clientId = $clientId;
+    }
+
+    public function getMerchantPayerId(): string
+    {
+        return $this->merchantPayerId;
+    }
+
+    public function setMerchantPayerId(string $merchantPayerId): void
+    {
+        $this->merchantPayerId = $merchantPayerId;
     }
 
     public function getPaymentMethodId(): string

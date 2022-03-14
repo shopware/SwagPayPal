@@ -5,8 +5,11 @@ import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import StoreApiClient from 'src/service/store-api-client.service';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
+import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
 export default class SwagPaypalSepa extends SwagPaypalAbstractButtons {
+    static scriptLoading = new SwagPayPalScriptLoading();
+
     static options = {
         /**
          * This option holds the client id specified in the settings
@@ -14,6 +17,13 @@ export default class SwagPaypalSepa extends SwagPaypalAbstractButtons {
          * @type string
          */
         clientId: '',
+
+        /**
+         * This option holds the merchant id specified in the settings
+         *
+         * @type string
+         */
+        merchantPayerId: '',
 
         /**
          * This option holds the client token required for field rendering

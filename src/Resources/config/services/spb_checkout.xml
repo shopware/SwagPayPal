@@ -5,25 +5,12 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService">
-            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
-            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
-            <argument type="service" id="router"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-        </service>
-
         <service id="Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute" public="true">
-            <deprecated>tag:v5.0.0 - %service_id% will be removed, use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute instead</deprecated>
+            <deprecated>tag:v6.0.0 - %service_id% will be removed, use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute instead</deprecated>
             <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber">
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="Swag\PayPal\Checkout\SPBCheckout\Service\SPBCheckoutDataService"/>
-            <argument type="service" id="Swag\PayPal\Util\PaymentMethodUtil"/>
-            <argument type="service" id="session"/>
-            <argument type="service" id="translator"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <tag name="kernel.event_subscriber"/>
         </service>

@@ -5,21 +5,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\APM\Service;
+namespace Swag\PayPal\Storefront\Data\Service;
 
+use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Checkout\APM\APMCheckoutData;
 use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\Routing\RouterInterface;
 
-abstract class AbstractAPMCheckoutDataService
+abstract class AbstractCheckoutDataService
 {
     private PaymentMethodDataRegistry $paymentMethodDataRegistry;
 
@@ -45,7 +46,7 @@ abstract class AbstractAPMCheckoutDataService
         $this->systemConfigService = $systemConfigService;
     }
 
-    abstract public function buildCheckoutData(SalesChannelContext $context, ?OrderEntity $order = null): APMCheckoutData;
+    abstract public function buildCheckoutData(SalesChannelContext $context, ?Cart $cart = null, ?OrderEntity $order = null): ?AbstractCheckoutData;
 
     /**
      * @return class-string<AbstractMethodData>
@@ -63,6 +64,9 @@ abstract class AbstractAPMCheckoutDataService
         $clientId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
             ? $this->systemConfigService->getString(Settings::CLIENT_ID_SANDBOX, $salesChannelId)
             : $this->systemConfigService->getString(Settings::CLIENT_ID, $salesChannelId);
+        $merchantPayerId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
+            ? $this->systemConfigService->getString(Settings::MERCHANT_PAYER_ID_SANDBOX, $salesChannelId)
+            : $this->systemConfigService->getString(Settings::MERCHANT_PAYER_ID, $salesChannelId);
         $customer = $context->getCustomer();
 
         if ($customer === null) {
@@ -71,6 +75,7 @@ abstract class AbstractAPMCheckoutDataService
 
         $data = [
             'clientId' => $clientId,
+            'merchantPayerId' => $merchantPayerId,
             'clientToken' => $this->identityResource->getClientToken($salesChannelId)->getClientToken(),
             'languageIso' => $this->getButtonLanguage($context),
             'currency' => $context->getCurrency()->getIsoCode(),

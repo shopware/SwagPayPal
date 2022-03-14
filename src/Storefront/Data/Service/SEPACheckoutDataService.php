@@ -5,18 +5,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\SEPA\Service;
+namespace Swag\PayPal\Storefront\Data\Service;
 
+use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Checkout\APM\APMCheckoutData;
-use Swag\PayPal\Checkout\APM\Service\AbstractAPMCheckoutDataService;
-use Swag\PayPal\Checkout\SEPA\SEPACheckoutData;
+use Swag\PayPal\Storefront\Data\Struct\SEPACheckoutData;
 use Swag\PayPal\Util\Lifecycle\Method\SEPAMethodData;
 
-class SEPACheckoutDataService extends AbstractAPMCheckoutDataService
+class SEPACheckoutDataService extends AbstractCheckoutDataService
 {
-    public function buildCheckoutData(SalesChannelContext $context, ?OrderEntity $order = null): APMCheckoutData
+    public function buildCheckoutData(SalesChannelContext $context, ?Cart $cart = null, ?OrderEntity $order = null): ?SEPACheckoutData
     {
         return (new SEPACheckoutData())->assign($this->getBaseData($context, $order));
     }

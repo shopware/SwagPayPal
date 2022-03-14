@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\ACDC\Struct;
+namespace Swag\PayPal\Storefront\Data\Struct\ACDC;
 
 use Shopware\Core\Framework\Struct\Struct;
 

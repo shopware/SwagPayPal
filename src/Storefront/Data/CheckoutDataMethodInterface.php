@@ -5,13 +5,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\APM;
+namespace Swag\PayPal\Storefront\Data;
 
-use Swag\PayPal\Checkout\APM\Service\AbstractAPMCheckoutDataService;
+use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 
-interface APMCheckoutMethodInterface
+interface CheckoutDataMethodInterface
 {
-    public function getCheckoutDataService(): AbstractAPMCheckoutDataService;
+    public function getCheckoutDataService(): AbstractCheckoutDataService;
 
     public function getCheckoutTemplateExtensionId(): string;
 

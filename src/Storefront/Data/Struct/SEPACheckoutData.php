@@ -5,10 +5,8 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\SEPA;
+namespace Swag\PayPal\Storefront\Data\Struct;
 
-use Swag\PayPal\Checkout\APM\APMCheckoutData;
-
-class SEPACheckoutData extends APMCheckoutData
+class SEPACheckoutData extends AbstractCheckoutData
 {
 }

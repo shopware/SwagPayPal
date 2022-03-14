@@ -5,13 +5,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\APM;
+namespace Swag\PayPal\Storefront\Data\Struct;
 
 use Shopware\Core\Framework\Struct\Struct;
 
-class APMCheckoutData extends Struct
+class AbstractCheckoutData extends Struct
 {
     protected string $clientId;
+
+    protected string $merchantPayerId;
 
     protected string $languageIso;
 
@@ -45,6 +47,16 @@ class APMCheckoutData extends Struct
     public function setClientId(string $clientId): void
     {
         $this->clientId = $clientId;
+    }
+
+    public function getMerchantPayerId(): string
+    {
+        return $this->merchantPayerId;
+    }
+
+    public function setMerchantPayerId(string $merchantPayerId): void
+    {
+        $this->merchantPayerId = $merchantPayerId;
     }
 
     public function getLanguageIso(): string

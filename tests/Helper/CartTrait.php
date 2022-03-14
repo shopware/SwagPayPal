@@ -19,7 +19,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 trait CartTrait
 {
-    protected function createCart(string $paypalPaymentMethodId, bool $withTransaction = true, float $netPrice = 9.0, float $totalPrice = 10.9): Cart
+    protected function createCart(string $paymentMethodId, bool $withTransaction = true, float $netPrice = 9.0, float $totalPrice = 10.9): Cart
     {
         $cart = new Cart('test-cart', Uuid::randomHex());
         if ($withTransaction) {
@@ -30,7 +30,7 @@ trait CartTrait
                     new CalculatedTaxCollection(),
                     new TaxRuleCollection()
                 ),
-                $paypalPaymentMethodId
+                $paymentMethodId
             );
             $cart->setTransactions(new TransactionCollection([$transaction]));
         }

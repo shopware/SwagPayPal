@@ -42,7 +42,7 @@ class CheckoutSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @deprecated tag:v5.0.0 - will be removed, functionality has been moved to Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute
+     * @deprecated tag:v6.0.0 - will be removed, functionality has been moved to Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute
      */
     public function onConfirmPageLoaded(CheckoutConfirmPageLoadedEvent $event): void
     {

@@ -5,8 +5,9 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\ACDC\Service;
+namespace Swag\PayPal\Storefront\Data\Service;
 
+use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
@@ -14,19 +15,19 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Checkout\ACDC\ACDCCheckoutFieldData;
-use Swag\PayPal\Checkout\ACDC\Struct\BillingAddress;
-use Swag\PayPal\Checkout\ACDC\Struct\CardholderData;
-use Swag\PayPal\Checkout\APM\Service\AbstractAPMCheckoutDataService;
+use Swag\PayPal\Storefront\Data\Struct\ACDC\BillingAddress;
+use Swag\PayPal\Storefront\Data\Struct\ACDC\CardholderData;
+use Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutData;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 
-class ACDCCheckoutDataService extends AbstractAPMCheckoutDataService
+class ACDCCheckoutDataService extends AbstractCheckoutDataService
 {
     public function buildCheckoutData(
         SalesChannelContext $context,
+        ?Cart $cart = null,
         ?OrderEntity $order = null
-    ): ACDCCheckoutFieldData {
-        $checkoutData = (new ACDCCheckoutFieldData())->assign($this->getBaseData($context, $order));
+    ): ?ACDCCheckoutData {
+        $checkoutData = (new ACDCCheckoutData())->assign($this->getBaseData($context, $order));
 
         $customer = $context->getCustomer();
         if ($customer === null) {

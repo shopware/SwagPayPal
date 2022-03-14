@@ -1,8 +1,6 @@
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
-    static loadingScript = false;
-
     static options = {
         /**
          * This option holds the client id specified in the settings
@@ -10,6 +8,13 @@ export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
          * @type string
          */
         clientId: '',
+
+        /**
+         * This option holds the merchant id specified in the settings
+         *
+         * @type string
+         */
+        merchantPayerId: '',
 
         /**
          * This option specifies the language of the PayPal button

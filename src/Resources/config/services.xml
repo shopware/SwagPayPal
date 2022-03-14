@@ -5,7 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <imports>
-        <import resource="./services/acdc.xml"/>
         <import resource="./services/administration.xml"/>
         <import resource="./services/apm.xml"/>
         <import resource="./services/checkout.xml"/>
@@ -20,7 +19,6 @@
         <import resource="./services/pui.xml"/>
         <import resource="./services/resource_v1.xml"/>
         <import resource="./services/resource_v2.xml"/>
-        <import resource="./services/sepa.xml"/>
         <import resource="./services/service_v1.xml"/>
         <import resource="./services/setting.xml"/>
         <import resource="./services/spb_checkout.xml"/>

@@ -13,6 +13,13 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
         clientId: '',
 
         /**
+         * This option holds the merchant id specified in the settings
+         *
+         * @type string
+         */
+        merchantPayerId: '',
+
+        /**
          * Amount of money, which will be used to calculate the examples
          *
          * @type number

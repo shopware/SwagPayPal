@@ -74,6 +74,10 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             config['enable-funding'] = 'paylater';
         }
 
+        if (this.options.merchantPayerId) {
+            config['merchant-id'] = this.options.merchantPayerId;
+        }
+
         if (this.options.clientToken) {
             config['data-client-token'] = this.options.clientToken;
         }

@@ -5,9 +5,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Checkout\APM;
+namespace Swag\PayPal\Storefront\Data;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
@@ -15,11 +16,14 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Storefront\Data\Event\PayPalPageExtensionAddedEvent;
+use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class APMCheckoutSubscriber implements EventSubscriberInterface
+class CheckoutDataSubscriber implements EventSubscriberInterface
 {
     private LoggerInterface $logger;
 
@@ -29,6 +33,8 @@ class APMCheckoutSubscriber implements EventSubscriberInterface
 
     private TranslatorInterface $translator;
 
+    private EventDispatcherInterface $eventDispatcher;
+
     private ?iterable $apmCheckoutMethods;
 
     public function __construct(
@@ -36,12 +42,14 @@ class APMCheckoutSubscriber implements EventSubscriberInterface
         SettingsValidationServiceInterface $settingsValidationService,
         Session $session,
         TranslatorInterface $translator,
+        EventDispatcherInterface $eventDispatcher,
         ?iterable $apmCheckoutMethods = null
     ) {
         $this->logger = $logger;
         $this->settingsValidationService = $settingsValidationService;
         $this->session = $session;
         $this->translator = $translator;
+        $this->eventDispatcher = $eventDispatcher;
         $this->apmCheckoutMethods = $apmCheckoutMethods;
 
         if ($this->apmCheckoutMethods !== null) {
@@ -70,7 +78,7 @@ class APMCheckoutSubscriber implements EventSubscriberInterface
                 continue;
             }
 
-            $this->addExtension($checkoutMethod, $event, $event->getPage()->getOrder());
+            $this->addExtension($checkoutMethod, $event, null, $event->getPage()->getOrder());
         }
     }
 
@@ -85,7 +93,7 @@ class APMCheckoutSubscriber implements EventSubscriberInterface
                 continue;
             }
 
-            $this->addExtension($checkoutMethod, $event);
+            $this->addExtension($checkoutMethod, $event, $event->getPage()->getCart());
         }
     }
 
@@ -110,14 +118,21 @@ class APMCheckoutSubscriber implements EventSubscriberInterface
     /**
      * @param CheckoutConfirmPageLoadedEvent|AccountEditOrderPageLoadedEvent $event
      */
-    private function addExtension(APMCheckoutMethodInterface $checkoutMethod, PageLoadedEvent $event, ?OrderEntity $order = null): void
+    private function addExtension(CheckoutDataMethodInterface $methodData, PageLoadedEvent $event, ?Cart $cart = null, ?OrderEntity $order = null): void
     {
         $this->logger->debug('Adding data');
-        $checkoutData = $checkoutMethod->getCheckoutDataService()->buildCheckoutData($event->getSalesChannelContext(), $order);
+        $checkoutData = $methodData->getCheckoutDataService()->buildCheckoutData($event->getSalesChannelContext(), $cart, $order);
+
+        if (!$checkoutData) {
+            return;
+        }
 
         $this->setPreventErrorReload($checkoutData);
 
-        $event->getPage()->addExtension($checkoutMethod->getCheckoutTemplateExtensionId(), $checkoutData);
+        $page = $event->getPage();
+        $page->addExtension($methodData->getCheckoutTemplateExtensionId(), $checkoutData);
+        $this->eventDispatcher->dispatch(new PayPalPageExtensionAddedEvent($page, $methodData, $checkoutData));
+
         $this->logger->debug('Added data');
     }
 
@@ -125,7 +140,7 @@ class APMCheckoutSubscriber implements EventSubscriberInterface
      * Checks if a PayPal error was added via Swag\PayPal\Checkout\SalesChannel\ErrorRoute::addErrorMessage
      * and sets the preventErrorReload property of the $checkoutData accordingly.
      */
-    private function setPreventErrorReload(APMCheckoutData $checkoutData): void
+    private function setPreventErrorReload(AbstractCheckoutData $checkoutData): void
     {
         $flashes = $this->session->getFlashBag()->peekAll();
 

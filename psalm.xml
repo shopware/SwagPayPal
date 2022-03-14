@@ -65,7 +65,6 @@
                 <file name="tests/Checkout/CheckoutSubscriberTest.php"/>
                 <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::createAddress"/>
                 <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::__construct"/>
-                <referencedMethod name="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber::addNecessaryRequestParameter"/>
                 <referencedMethod name="Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler::handlePlusPayment"/>
             </errorLevel>
         </DeprecatedMethod>
@@ -84,12 +83,12 @@
                 <file name="src/Util/Lifecycle/Installer/SettingsInstaller.php"/>
                 <file name="src/Setting/Settings.php"/>
                 <file name="src/Checkout/SPBCheckout/Service/SPBMarksDataService.php"/>
-                <file name="src/Checkout/SPBCheckout/Service/SPBCheckoutDataService.php"/>
                 <file name="src/Checkout/SPBCheckout/SPBCheckoutSubscriber.php"/>
                 <file name="src/Checkout/Plus/Service/PlusDataService.php"/>
                 <file name="src/Checkout/Plus/PlusSubscriber.php"/>
                 <file name="src/Checkout/Plus/PlusPaymentFinalizeController.php"/>
                 <file name="src/Checkout/PayUponInvoice/PayUponInvoiceSubscriber.php"/>
+                <file name="src/Storefront/Data/Service/SPBCheckoutDataService.php"/>
             </errorLevel>
         </DeprecatedConstant>
 
@@ -101,6 +100,7 @@
 
                 <!-- <deprecated> tag:v6.0.0 - remove -->
                 <referencedClass name="Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler"/>
+                <file name="tests/Checkout/SPBCheckout/SPBCheckoutSubscriberTest.php"/>
                 <file name="tests/Checkout/SPBCheckout/SalesChannel/SPBCreateOrderRouteTest.php"/>
                 <file name="src/Checkout/SPBCheckout/SalesChannel/SPBCreateOrderRoute.php"/>
                 <file name="src/Checkout/PayUponInvoice/PayUponInvoiceSubscriber.php"/>

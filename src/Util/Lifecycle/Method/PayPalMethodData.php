@@ -10,9 +10,14 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
+use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
+use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
+use Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService;
 
-class PayPalMethodData extends AbstractMethodData
+class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
+    public const PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID = 'payPalSpbButtonData';
+
     public function getTranslations(): array
     {
         return [
@@ -55,5 +60,18 @@ class PayPalMethodData extends AbstractMethodData
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
         return self::CAPABILITY_ACTIVE;
+    }
+
+    public function getCheckoutDataService(): AbstractCheckoutDataService
+    {
+        /** @var SPBCheckoutDataService $service */
+        $service = $this->container->get(SPBCheckoutDataService::class);
+
+        return $service;
+    }
+
+    public function getCheckoutTemplateExtensionId(): string
+    {
+        return self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID;
     }
 }

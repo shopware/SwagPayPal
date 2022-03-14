@@ -61,10 +61,14 @@ class SPBMarksDataService implements SPBMarksDataServiceInterface
         $clientId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
             ? $this->systemConfigService->getString(Settings::CLIENT_ID_SANDBOX, $salesChannelId)
             : $this->systemConfigService->getString(Settings::CLIENT_ID, $salesChannelId);
+        $merchantPayerId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
+            ? $this->systemConfigService->getString(Settings::MERCHANT_PAYER_ID_SANDBOX, $salesChannelId)
+            : $this->systemConfigService->getString(Settings::MERCHANT_PAYER_ID, $salesChannelId);
 
         $data = new SPBMarksData();
         $data->assign([
             'clientId' => $clientId,
+            'merchantPayerId' => $merchantPayerId,
             'paymentMethodId' => (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
             'useAlternativePaymentMethods' => $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId),
             'showPayLater' => $this->systemConfigService->getBool(Settings::SPB_SHOW_PAY_LATER, $salesChannelId),

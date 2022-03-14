@@ -17,6 +17,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
@@ -25,6 +26,7 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\CheckoutSubscriber;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Pos\Payment\PosPayment;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -187,6 +189,7 @@ class CheckoutSubscriberTest extends TestCase
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('pluginId', $pluginId));
+        $criteria->addFilter(new NotFilter(NotFilter::CONNECTION_OR, [new EqualsFilter('handlerIdentifier', PosPayment::class)]));
 
         /** @var PaymentMethodCollection $paymentMethods */
         $paymentMethods = $paymentMethodRepository->search($criteria, $context)->getEntities();
