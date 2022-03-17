@@ -37,7 +37,7 @@
             "checkout": {
                 "cardTitle": "PayPal Checkout",
                 "description": "PayPal Checkout ist die neue All-in-One-Lösung, mit der Sie leistungsstarke und flexible Funktionen zur Zahlungsabwicklung auf Marktplätzen und anderen Handelsplattformen anbieten können.",
-                "banner": "Mit der PayPal-Kaufabwicklung können Sie Ihren Kunden die Bezahlung per Rechnung, Kreditkarte und vielen anderen Zahlungsmethoden anbieten. PayPal Checkout unterstützt Sie mit der neuesten Technologie und bringt Ihnen höchste Flexibilität. Sie behalten Ihre bestehenden Zahlungsarten und die Gebühren bleiben gleich! Aktivieren Sie PayPal Checkout und deaktivieren Sie PayPal PLUS, um doppelte Zahlungsmethoden in Ihrem Shop zu vermeiden.",
+                "banner": "Mit PayPal Checkout Kannst Du Deinen Kunden die Bezahlung per Rechnung, Kreditkarte und viele andere lokale Zahlungsmethoden anbieten. PayPal Checkout unterstützt Dich mit der neuesten Technologie und bringt Dir höchste Flexibilität. Du behältst Deine bisherigen Zahlungsarten und die Gebühren bleiben gleich! Aktiviere PayPal Checkout und deaktiviere PayPal PLUS, um doppelte Zahlungsmethoden in Deinem Shop zu vermeiden. <a href=\"https://www.shopware.com/de/news/paypal-launcht-neues-produkt/\" target=\"_blank\">Mehr Informationen</a>",
                 "warningMerchantIdMustBeEnteredManually": "Die Sandbox-PayPal-Händler-ID wurde nicht übertragen. Bitte geben Sie sie unten in den API-Zugangsdaten manuell ein.",
                 "button": {
                     "title": "Start des Onboarding"
@@ -67,7 +67,7 @@
                 "deactivatePayPalPlusModal": {
                     "title": "PayPal PLUS deaktivieren",
                     "text": "Herzlichen Glückwunsch! Durch den Wechsel zur PayPal-Kaufabwicklung nutzen Sie weiterhin alle relevanten Zahlungsmethoden - jetzt auf Basis der neuesten Technologie.",
-                    "warning": "Deaktivieren Sie PayPal PLUS, um die Anzeige von doppelten Zahlungsmethoden zu vermeiden.",
+                    "warning": "Vermeide die Anzeige von doppelten Zahlungsarten und deaktiviere PayPal PLUS.",
                     "button": {
                         "deactivate": "Deaktivieren Sie PayPal PLUS",
                         "cancel": "Abbrechen"
@@ -243,8 +243,8 @@
                 },
                 "hint": "Hinweis: PayPal PLUS funktioniert nur mit dem Zahlungsabschluss \"Sale\". Dieser wird automatisch gesetzt.",
                 "warning": {
-                    "active": "PayPal Checkout bietet die gleichen Zahlungsmethoden wie PayPal PLUS - basierend auf der neuesten Technologie. Vermeiden Sie die Anzeige von doppelten Zahlungsarten und deaktivieren Sie PayPal PLUS.",
-                    "inactive": "PayPal Checkout wird PayPal PLUS ersetzen."
+                    "active": "PayPal Checkout bietet Deinen Kunden die gleichen Zahlungsmethoden - basierend auf der neuesten Technologie. Aktiviere jetzt PayPal Checkout und deaktiviere PayPal PLUS, um die Anzeige von doppelten Zahlungsmethoden zu vermeiden. <a href=\"https://www.shopware.com/de/news/paypal-launcht-neues-produkt/\" target=\"_blank\">Mehr Informationen</a>",
+                    "inactive": "Vermeide die Anzeige von doppelten Zahlungsarten und deaktiviere PayPal PLUS. <a href=\"https://www.shopware.com/de/news/paypal-launcht-neues-produkt/\" target=\"_blank\">Mehr Informationen</a>"
                 }
             },
             "locale-field": {

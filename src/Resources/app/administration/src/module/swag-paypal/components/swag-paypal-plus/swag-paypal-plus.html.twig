@@ -12,7 +12,7 @@
                     <sw-alert
                         variant="warning"
                     >
-                        {{ $tc('swag-paypal.settingForm.plus.warning.active') }}
+                        <span v-html="$tc('swag-paypal.settingForm.plus.warning.active')"></span>
                     </sw-alert>
                 </template>
 
@@ -20,7 +20,7 @@
                     <sw-alert
                         variant="info"
                     >
-                        {{ $tc('swag-paypal.settingForm.plus.warning.inactive') }}
+                        <span v-html="$tc('swag-paypal.settingForm.plus.warning.inactive')"></span>
                     </sw-alert>
                 </template>
                 {% endblock %}

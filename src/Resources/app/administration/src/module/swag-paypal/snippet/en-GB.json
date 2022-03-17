@@ -37,7 +37,7 @@
             "checkout": {
                 "cardTitle": "PayPal Checkout",
                 "description": "PayPal Checkout is the new all-in-one solution that lets you offer powerful flexibile payment processing features on the marketplaces and other commerce platforms.",
-                "banner": "With PayPal Checkout, you can offer your customers payment by invoice, credit card and many other payment methods. PayPal Checkout supports you with the latest technology and brings you the highest flexibility. You keep your existing payment methods and the fees remain the same! Activate PayPal Checkout and deactivate PayPal PLUS to avoid duplicate payment methods in your shop.",
+                "banner": "With PayPal Checkout, you can offer your customers payment by invoice, credit card and other local payment methods. PayPal Checkout supports you with the latest technology and brings you the highest flexibility. You keep your existing payment methods, and the fees remain the same! Activate PayPal Checkout and deactivate PayPal PLUS to avoid duplicate payment methods in your shop. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/\" target=\"_blank\">More information</a>",
                 "warningMerchantIdMustBeEnteredManually": "The Merchant ID was not transferred. Please enter it manually below in the credentials.",
                 "button": {
                     "title": "Start onboarding"
@@ -67,7 +67,7 @@
                 "deactivatePayPalPlusModal": {
                     "title": "Deactivate PayPal PLUS",
                     "text": "Congratulations! By switching to PayPal Checkout, you keep on using all relevant payment methods – now based on the latest technology.",
-                    "warning": "Deactivate PayPal PLUS to avoid displaying duplicate payment methods.",
+                    "warning": "Avoid displaying duplicate payment methods and deactivate PayPal PLUS.",
                     "button": {
                         "deactivate": "Deactivate PayPal PLUS",
                         "cancel": "Cancel"
@@ -243,8 +243,8 @@
                 },
                 "hint": "Note: PayPal PLUS only works with the payment acquisition \"Sale\". It will be set automatically.",
                 "warning": {
-                    "active": "PayPal Checkout provides the same payment methods as PayPal PLUS – based on the latest technology. Avoid displaying duplicate payment methods and deactivate PayPal PLUS.\u2028More information (Link placeholder)",
-                    "inactive": "PayPal Checkout will replace PayPal PLUS."
+                    "active": "PayPal Checkout provides the same payment methods to your customers – based on the latest technology. Activate PayPal Checkout now and deactivate PayPal PLUS to avoid displaying duplicate payment methods. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/\" target=\"_blank\">More information</a>",
+                    "inactive": "Avoid displaying duplicate payment methods and deactivate PayPal PLUS. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/\" target=\"_blank\">More information</a>"
                 }
             },
             "locale-field": {

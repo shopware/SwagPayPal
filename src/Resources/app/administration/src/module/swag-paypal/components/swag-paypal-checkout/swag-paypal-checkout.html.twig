@@ -30,7 +30,7 @@
             variant="info"
             class="swag-paypal-checkout__banner"
         >
-            {{ $tc('swag-paypal.settingForm.checkout.banner') }}
+            <span v-html="$tc('swag-paypal.settingForm.checkout.banner')"></span>
         </sw-alert>
         {% endblock %}
 
@@ -174,7 +174,7 @@
                     {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_active_switch %}
                     <sw-switch-field
                         :label="$tc('swag-paypal.settingForm.checkout.switch.label')"
-                        :disabled="needsOnboarding(paymentMethod) || !acl.can('swag_paypal.editor')"
+                        :disabled="paymentMethodToggleDisabled(paymentMethod) || !acl.can('swag_paypal.editor')"
                         :value="paymentMethod.active"
                         @change="onChangePaymentMethodActive(paymentMethod)"
                     />

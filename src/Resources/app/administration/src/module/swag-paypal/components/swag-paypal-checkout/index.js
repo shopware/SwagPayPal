@@ -234,6 +234,15 @@ Component.register('swag-paypal-checkout', {
             return this.onboardingStatus(paymentMethod)?.toUpperCase() !== 'ACTIVE';
         },
 
+        paymentMethodToggleDisabled(paymentMethod) {
+            // should be able to deactivate active payment method
+            if (paymentMethod.active) {
+                return false;
+            }
+
+            return this.needsOnboarding(paymentMethod);
+        },
+
         onboardingStatus(paymentMethod) {
             return this.merchantIntegrations[paymentMethod.id];
         },
