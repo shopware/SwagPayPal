@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -137,14 +138,17 @@ class GuzzleClientMock implements ClientInterface
 
     public function send(RequestInterface $request, array $options = []): ResponseInterface
     {
+        return new Response();
     }
 
     public function sendAsync(RequestInterface $request, array $options = []): PromiseInterface
     {
+        return new Promise();
     }
 
     public function requestAsync(string $method, $uri, array $options = []): PromiseInterface
     {
+        return new Promise();
     }
 
     public function getConfig(?string $option = null)

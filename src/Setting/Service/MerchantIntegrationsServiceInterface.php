@@ -11,5 +11,5 @@ use Shopware\Core\Framework\Context;
 
 interface MerchantIntegrationsServiceInterface
 {
-    public function fetchMerchantIntegrations(?string $salesChannelId = null, Context $context): array;
+    public function fetchMerchantIntegrations(Context $context, ?string $salesChannelId = null): array;
 }

@@ -57,9 +57,7 @@ trait SalesChannelContextTrait
             $options[SalesChannelContextService::CUSTOMER_ID] = $this->createCustomer();
         }
 
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
-        $salesChannelContext = $salesChannelContextFactory->create(
+        $salesChannelContext = $container->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL,
             $options
@@ -90,14 +88,12 @@ trait SalesChannelContextTrait
         }
 
         if ($withCartLineItems) {
-            /** @var CartService $cartService */
-            $cartService = $this->getContainer()->get(CartService::class);
-
             $productId = Uuid::randomHex();
             $this->createProduct($productId, $salesChannelContext->getContext());
 
             $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
 
+            $cartService = $this->getContainer()->get(CartService::class);
             $cart = $cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
             $cartService->add($cart, $lineItem, $salesChannelContext);
         }

@@ -114,9 +114,7 @@ class ExpressCustomerServiceTest extends TestCase
     {
         $contextToken = $this->createCustomerService()->loginCustomer($order, $this->getSalesChannelContext());
 
-        /** @var SalesChannelContextService $salesChannelContextService */
-        $salesChannelContextService = $this->getContainer()->get(SalesChannelContextService::class);
-        $context = $salesChannelContextService->get(
+        $context = $this->getContainer()->get(SalesChannelContextService::class)->get(
             new SalesChannelContextServiceParameters(
                 Defaults::SALES_CHANNEL,
                 $contextToken,
@@ -146,8 +144,6 @@ class ExpressCustomerServiceTest extends TestCase
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
         ]);
-        /** @var RegisterRoute $registerRoute */
-        $registerRoute = $this->getContainer()->get(RegisterRoute::class);
         /** @var EntityRepositoryInterface $countryRepo */
         $countryRepo = $this->getContainer()->get('country.repository');
         /** @var EntityRepositoryInterface $countryStateRepo */
@@ -156,16 +152,14 @@ class ExpressCustomerServiceTest extends TestCase
         $salutationRepo = $this->getContainer()->get('salutation.repository');
         /** @var EntityRepositoryInterface $customerRepo */
         $customerRepo = $this->getContainer()->get('customer.repository');
-        /** @var AccountService $accountService */
-        $accountService = $this->getContainer()->get(AccountService::class);
 
         return new ExpressCustomerService(
-            $registerRoute,
+            $this->getContainer()->get(RegisterRoute::class),
             $countryRepo,
             $countryStateRepo,
             $salutationRepo,
             $customerRepo,
-            $accountService,
+            $this->getContainer()->get(AccountService::class),
             $settings,
             new NullLogger()
         );

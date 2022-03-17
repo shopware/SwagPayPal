@@ -22,7 +22,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
-use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,13 +64,10 @@ trait FullCheckoutTrait
 
     private function registerUser(?string $email = null): SalesChannelContext
     {
-        /** @var RegisterRoute $registerRoute */
-        $registerRoute = $this->getContainer()->get(RegisterRoute::class);
-        /** @var SalesChannelContextServiceInterface $contextService */
         $contextService = $this->getContainer()->get(SalesChannelContextService::class);
         $context = $contextService->get(new SalesChannelContextServiceParameters(Defaults::SALES_CHANNEL, Uuid::randomHex()));
 
-        $response = $registerRoute->register(new RequestDataBag([
+        $response = $this->getContainer()->get(RegisterRoute::class)->register(new RequestDataBag([
             'salutationId' => $this->getValidSalutationId(),
             'firstName' => 'Alice',
             'lastName' => 'Apple',
@@ -94,22 +90,14 @@ trait FullCheckoutTrait
 
     private function addToCart(string $productId, SalesChannelContext $context): Cart
     {
-        /** @var CartItemAddRoute $addItemRoute */
-        $addItemRoute = $this->getContainer()->get(CartItemAddRoute::class);
-        /** @var CartService $cartService */
-        $cartService = $this->getContainer()->get(CartService::class);
-
-        return $addItemRoute->add(new Request([], ['items' => [[
+        return $this->getContainer()->get(CartItemAddRoute::class)->add(new Request([], ['items' => [[
             'type' => LineItem::PRODUCT_LINE_ITEM_TYPE,
             'referencedId' => $productId,
-        ]]]), $cartService->getCart($context->getToken(), $context), $context, null)->getCart();
+        ]]]), $this->getContainer()->get(CartService::class)->getCart($context->getToken(), $context), $context, null)->getCart();
     }
 
     private function placeOrder(Cart $cart, SalesChannelContext $context): OrderEntity
     {
-        /** @var CartOrderRoute $cartOrderRoute */
-        $cartOrderRoute = $this->getContainer()->get(CartOrderRoute::class);
-
-        return $cartOrderRoute->order($cart, $context, new RequestDataBag())->getOrder();
+        return $this->getContainer()->get(CartOrderRoute::class)->order($cart, $context, new RequestDataBag())->getOrder();
     }
 }

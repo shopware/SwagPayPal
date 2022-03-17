@@ -13,17 +13,12 @@ use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 
-class OrderRepositoryMock implements EntityRepositoryInterface
+class OrderRepositoryMock extends AbstractRepoMock
 {
     use PaymentTransactionTrait;
 
@@ -34,14 +29,6 @@ class OrderRepositoryMock implements EntityRepositoryInterface
     public function getDefinition(): EntityDefinition
     {
         return new OrderDefinition();
-    }
-
-    public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
-    {
-    }
-
-    public function searchIds(Criteria $criteria, Context $context): IdSearchResult
-    {
     }
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
@@ -68,34 +55,6 @@ class OrderRepositoryMock implements EntityRepositoryInterface
             $criteria,
             $context
         );
-    }
-
-    public function update(array $data, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function upsert(array $data, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function create(array $data, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
-    {
-    }
-
-    public function merge(string $versionId, Context $context): void
-    {
-    }
-
-    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
-    {
     }
 
     private function getOrderEntity(): OrderEntity

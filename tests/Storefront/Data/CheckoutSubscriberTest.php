@@ -69,9 +69,7 @@ class CheckoutSubscriberTest extends TestCase
 
     protected function setUp(): void
     {
-        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
-        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
-        $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
+        $this->paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
         $this->eventDispatcher = new EventDispatcherMock();
     }
 
@@ -247,7 +245,6 @@ class CheckoutSubscriberTest extends TestCase
 
     public function dataProviderPaymentMethods(): iterable
     {
-        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
         $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
 
         return [
@@ -280,7 +277,6 @@ class CheckoutSubscriberTest extends TestCase
             Settings::SPB_SHOW_PAY_LATER => true,
         ], $settingsOverride));
 
-        /** @var LocaleCodeProvider $localeCodeProvider */
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
         /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');

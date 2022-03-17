@@ -36,9 +36,7 @@ trait OrderTransactionTrait
             throw new StateMachineStateNotFoundException(OrderTransactionStates::STATE_MACHINE, $transactionStateTechnicalName);
         }
 
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $container->get(PaymentMethodUtil::class);
-        $paymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId($context);
+        $paymentMethodId = $container->get(PaymentMethodUtil::class)->getPayPalPaymentMethodId($context);
         static::assertNotNull($paymentMethodId);
 
         return $this->getValidTransactionId(

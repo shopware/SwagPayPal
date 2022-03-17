@@ -25,8 +25,8 @@ use Swag\PayPal\Test\Mock\DummyCollection;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\Repositories\AbstractRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
-use Swag\PayPal\Test\Mock\Repositories\EntityRepositoryMock;
 use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
@@ -91,7 +91,7 @@ trait ServicesTrait
         $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
 
         return new OrderPaymentBuilder(
-            new LocaleCodeProviderMock(new EntityRepositoryMock()),
+            new LocaleCodeProviderMock(new AbstractRepoMock()),
             new PriceFormatter(),
             new EventDispatcherMock(),
             new LoggerMock(),

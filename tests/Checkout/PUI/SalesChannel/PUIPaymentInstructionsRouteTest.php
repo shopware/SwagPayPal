@@ -147,14 +147,12 @@ class PUIPaymentInstructionsRouteTest extends TestCase
     {
         /** @var EntityRepositoryInterface $orderTransactionRepository */
         $orderTransactionRepository = $this->getContainer()->get('order_transaction.repository');
-        /** @var OrderTransactionStateHandler $orderTransactionStateHandler */
-        $orderTransactionStateHandler = $this->getContainer()->get(OrderTransactionStateHandler::class);
         $orderResource = new OrderResource($this->createPayPalClientFactory());
 
         return new PUIPaymentInstructionsRoute(
             $orderTransactionRepository,
             $orderResource,
-            $orderTransactionStateHandler
+            $this->getContainer()->get(OrderTransactionStateHandler::class)
         );
     }
 
@@ -163,12 +161,10 @@ class PUIPaymentInstructionsRouteTest extends TestCase
         $transactionId = Uuid::randomHex();
         $addressId = Uuid::randomHex();
 
-        /** @var StateMachineRegistry $stateMachineRegistry */
         $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
         $orderStateId = $stateMachineRegistry->getInitialState(OrderStates::STATE_MACHINE, Context::createDefaultContext())->getId();
         $transactionStateId = $stateMachineRegistry->getInitialState(OrderTransactionStates::STATE_MACHINE, Context::createDefaultContext())->getId();
 
-        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
         $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
         $paymentMethodId = $paymentMethodDataRegistry->getEntityIdFromData($paymentMethodDataRegistry->getPaymentMethod(PUIMethodData::class), Context::createDefaultContext());
 
@@ -224,9 +220,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
         $orderRepository = $this->getContainer()->get('order.repository');
         $orderRepository->upsert([$order], Context::createDefaultContext());
 
-        /** @var OrderTransactionStateHandler $orderTransactionStateHandler */
-        $orderTransactionStateHandler = $this->getContainer()->get(OrderTransactionStateHandler::class);
-        $orderTransactionStateHandler->process($transactionId, Context::createDefaultContext());
+        $this->getContainer()->get(OrderTransactionStateHandler::class)->process($transactionId, Context::createDefaultContext());
 
         return $transactionId;
     }

@@ -20,7 +20,7 @@ class PaymentMethodDataRegistry
     /**
      * Required, because container can't deliver tagged services during plugin install
      *
-     * @var class-string<AbstractMethodData>
+     * @var array<class-string<AbstractMethodData>>
      */
     private const PAYMENT_METHODS = [
         PayPalMethodData::class,
@@ -47,6 +47,9 @@ class PaymentMethodDataRegistry
 
     private ?iterable $paymentMethods;
 
+    /**
+     * @psalm-suppress ContainerDependency
+     */
     public function __construct(
         EntityRepositoryInterface $paymentMethodRepository,
         ContainerInterface $container,

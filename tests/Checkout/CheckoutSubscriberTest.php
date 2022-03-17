@@ -44,12 +44,10 @@ class CheckoutSubscriberTest extends TestCase
 
     public function setUp(): void
     {
-        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
-        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
-        $this->methodDataRegistry = $paymentMethodDataRegistry;
+        $this->methodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
 
         $this->checkoutSubscriber = new CheckoutSubscriber(
-            $paymentMethodDataRegistry,
+            $this->methodDataRegistry,
             new NullLogger(),
             new CartPriceService()
         );
@@ -180,12 +178,8 @@ class CheckoutSubscriberTest extends TestCase
     {
         /** @var EntityRepositoryInterface $paymentMethodRepository */
         $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
-        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
-        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
 
-        /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->getContainer()->get(PluginIdProvider::class);
-        $pluginId = $pluginIdProvider->getPluginIdByBaseClass(SwagPayPal::class, Context::createDefaultContext());
+        $pluginId = $this->getContainer()->get(PluginIdProvider::class)->getPluginIdByBaseClass(SwagPayPal::class, Context::createDefaultContext());
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('pluginId', $pluginId));
@@ -193,7 +187,7 @@ class CheckoutSubscriberTest extends TestCase
 
         /** @var PaymentMethodCollection $paymentMethods */
         $paymentMethods = $paymentMethodRepository->search($criteria, $context)->getEntities();
-        static::assertCount(\count($paymentMethodDataRegistry->getPaymentMethods()), $paymentMethods);
+        static::assertCount(\count($this->getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods()), $paymentMethods);
 
         return $paymentMethods;
     }

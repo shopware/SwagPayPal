@@ -48,12 +48,9 @@ class SyncManagerTest extends TestCase
     {
         $this->messageBus = new MessageBusMock();
         $this->context = Context::createDefaultContext();
+        $this->runService = $this->getContainer()->get(RunService::class);
 
-        /** @var RunService $runService */
-        $runService = $this->getContainer()->get(RunService::class);
-        $this->runService = $runService;
-
-        $this->task = new CompleteTask($this->messageBus, $runService);
+        $this->task = new CompleteTask($this->messageBus, $this->runService);
 
         $this->context = Context::createDefaultContext();
         $this->salesChannel = $this->getSalesChannel($this->context);
@@ -101,12 +98,12 @@ class SyncManagerTest extends TestCase
         $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_IN_PROGRESS, 0, $runId);
 
         $this->messageBus->execute([$this->syncManagerHandler], false);
-        static::assertSame(1, $this->messageBus->getMessageQueueStatsRepository()->getTotalWaitingMessages());
+        static::assertSame(1, $this->messageBus->getTotalWaitingMessages());
         $this->assertMessageStep(1);
         $this->runService->decrementMessageCount($runId);
 
         $this->messageBus->execute([$this->syncManagerHandler]);
-        static::assertSame(0, $this->messageBus->getMessageQueueStatsRepository()->getTotalWaitingMessages());
+        static::assertSame(0, $this->messageBus->getTotalWaitingMessages());
         $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_FINISHED, 0, $runId);
     }
 
@@ -120,7 +117,7 @@ class SyncManagerTest extends TestCase
         $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_IN_PROGRESS, 1, $runId);
 
         $this->messageBus->execute([$this->syncManagerHandler]);
-        static::assertSame(0, $this->messageBus->getMessageQueueStatsRepository()->getTotalWaitingMessages());
+        static::assertSame(0, $this->messageBus->getTotalWaitingMessages());
         $this->assertRunStatus(PosSalesChannelRunDefinition::STATUS_FAILED, 0, $runId);
     }
 

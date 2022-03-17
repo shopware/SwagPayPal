@@ -37,17 +37,13 @@ class CancelTransactionsTaskHandlerTest extends TestCase
 
         $twoDaysAgo = new \DateTime('now -2 days');
         $twoDaysAgo = $twoDaysAgo->setTimezone(new \DateTimeZone('UTC'));
-        /** @var Connection $connection */
-        $connection = $container->get(Connection::class);
-        $connection->update(
+        $container->get(Connection::class)->update(
             'order_transaction',
             ['created_at' => $twoDaysAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT)],
             ['id' => Uuid::fromHexToBytes($transactionId)]
         );
 
-        /** @var CancelTransactionsTaskHandler $handler */
-        $handler = $container->get(CancelTransactionsTaskHandler::class);
-        $handler->run();
+        $container->get(CancelTransactionsTaskHandler::class)->run();
 
         $transaction = $this->getTransaction($transactionId, $container, $context);
         static::assertNotNull($transaction);
@@ -70,17 +66,13 @@ class CancelTransactionsTaskHandlerTest extends TestCase
 
         $tenDaysAgo = new \DateTime('now -10 days');
         $tenDaysAgo = $tenDaysAgo->setTimezone(new \DateTimeZone('UTC'));
-        /** @var Connection $connection */
-        $connection = $container->get(Connection::class);
-        $connection->update(
+        $container->get(Connection::class)->update(
             'order_transaction',
             ['created_at' => $tenDaysAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT)],
             ['id' => Uuid::fromHexToBytes($transactionId)]
         );
 
-        /** @var CancelTransactionsTaskHandler $handler */
-        $handler = $container->get(CancelTransactionsTaskHandler::class);
-        $handler->run();
+        $container->get(CancelTransactionsTaskHandler::class)->run();
 
         $transaction = $this->getTransaction($transactionId, $container, $context);
         static::assertNotNull($transaction);
@@ -103,17 +95,13 @@ class CancelTransactionsTaskHandlerTest extends TestCase
 
         $twoDaysAgo = new \DateTime('now -2 days');
         $twoDaysAgo = $twoDaysAgo->setTimezone(new \DateTimeZone('UTC'));
-        /** @var Connection $connection */
-        $connection = $container->get(Connection::class);
-        $connection->update(
+        $container->get(Connection::class)->update(
             'order_transaction',
             ['created_at' => $twoDaysAgo->format(Defaults::STORAGE_DATE_TIME_FORMAT)],
             ['id' => Uuid::fromHexToBytes($transactionId)]
         );
 
-        /** @var CancelTransactionsTaskHandler $handler */
-        $handler = $container->get(CancelTransactionsTaskHandler::class);
-        $handler->run();
+        $container->get(CancelTransactionsTaskHandler::class)->run();
 
         $transaction = $this->getTransaction($transactionId, $container, $context);
         static::assertNotNull($transaction);

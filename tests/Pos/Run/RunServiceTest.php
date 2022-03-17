@@ -49,12 +49,10 @@ class RunServiceTest extends TestCase
         /** @var EntityRepositoryInterface $logRepository */
         $logRepository = $this->getContainer()->get('swag_paypal_pos_sales_channel_run_log.repository');
         $this->logRepository = $logRepository;
-        /** @var Connection $connection */
-        $connection = $this->getContainer()->get(Connection::class);
         $this->context = Context::createDefaultContext();
 
         $this->logger = (new LoggerFactory())->createLogger();
-        $this->runService = new RunService($this->runRepository, $this->logRepository, $connection, $this->logger);
+        $this->runService = new RunService($this->runRepository, $this->logRepository, $this->getContainer()->get(Connection::class), $this->logger);
     }
 
     public function testLogProcessAddLogWithoutProduct(): void

@@ -54,13 +54,10 @@ class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
 
     protected function createWebhookHandler()
     {
-        /** @var PaymentStatusUtilV2 $paymentStatusUtil */
-        $paymentStatusUtil = $this->getContainer()->get(PaymentStatusUtilV2::class);
-
         return new CaptureCompleted(
             $this->orderTransactionRepository,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
-            $paymentStatusUtil
+            $this->getContainer()->get(PaymentStatusUtilV2::class)
         );
     }
 }

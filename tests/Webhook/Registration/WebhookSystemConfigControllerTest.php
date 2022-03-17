@@ -40,17 +40,13 @@ class WebhookSystemConfigControllerTest extends TestCase
 
     protected function setUp(): void
     {
-        /** @var ConfigurationService $configurationService */
-        $configurationService = $this->getContainer()->get(ConfigurationService::class);
-        $this->configurationService = $configurationService;
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-        $this->systemConfigService = $systemConfigService;
+        $this->configurationService = $this->getContainer()->get(ConfigurationService::class);
+        $this->systemConfigService = $this->getContainer()->get(SystemConfigService::class);
 
         // creating new instance without decoration
-        $this->undecoratedController = new SystemConfigController($configurationService, $systemConfigService);
+        $this->undecoratedController = new SystemConfigController($this->configurationService, $this->systemConfigService);
 
-        $this->webhookService = new WebhookServiceMock($systemConfigService);
+        $this->webhookService = new WebhookServiceMock($this->systemConfigService);
     }
 
     public function testBatchSaveWithChangedSandboxMode(): void

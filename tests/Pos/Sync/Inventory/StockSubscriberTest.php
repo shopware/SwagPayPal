@@ -151,9 +151,6 @@ class StockSubscriberTest extends TestCase
             $inventoryRepository
         );
 
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-
         $messageBus = new MessageBusMock();
 
         $inventorySyncManager = new InventorySyncManager(
@@ -161,7 +158,7 @@ class StockSubscriberTest extends TestCase
             new ProductSelection(
                 $salesChannelProductRepository,
                 $this->createMock(ProductStreamBuilder::class),
-                $salesChannelContextFactory
+                $this->getContainer()->get(SalesChannelContextFactory::class),
             ),
             $salesChannelProductRepository,
             $inventoryContextFactory
@@ -318,15 +315,12 @@ class StockSubscriberTest extends TestCase
 
     private function createOrder(Context $context): OrderEntity
     {
-        /** @var StateMachineRegistry $stateMachineRegistry */
-        $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
-
         $order = new OrderEntity();
         $order->assign([
             'id' => Uuid::randomHex(),
             'price' => new CartPrice(10, 10, 10, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_NET),
             'shippingCosts' => new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()),
-            'stateId' => $stateMachineRegistry->getInitialState(OrderStates::STATE_MACHINE, $context)->getId(),
+            'stateId' => $this->getContainer()->get(StateMachineRegistry::class)->getInitialState(OrderStates::STATE_MACHINE, $context)->getId(),
             'paymentMethodId' => $this->getValidPaymentMethodId(),
             'currencyId' => Defaults::CURRENCY,
             'currencyFactor' => 1,

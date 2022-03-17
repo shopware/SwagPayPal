@@ -8,30 +8,20 @@
 namespace Swag\PayPal\Test\Pos\Mock;
 
 use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
-use Swag\PayPal\Test\Pos\Mock\Repositories\MessageQueueStatsRepoMock;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class MessageBusMock implements MessageBusInterface
 {
-    private MessageQueueStatsRepoMock $messageQueueStatsRepository;
-
     /**
      * @var Envelope[]
      */
     private array $envelopes = [];
 
-    public function __construct()
-    {
-        $this->messageQueueStatsRepository = new MessageQueueStatsRepoMock();
-    }
-
     public function dispatch($message, array $stamps = []): Envelope
     {
         $envelope = $message instanceof Envelope ? $message : new Envelope($message);
         $this->envelopes[] = $envelope;
-
-        $this->messageQueueStatsRepository->modifyMessageStat(\get_class($envelope->getMessage()), 1);
 
         return $envelope;
     }
@@ -56,7 +46,6 @@ class MessageBusMock implements MessageBusInterface
                     foreach ($handler::getHandledMessages() as $messageType) {
                         if (\get_class($envelope->getMessage()) === $messageType) {
                             $handler->handle($envelope->getMessage());
-                            $this->messageQueueStatsRepository->modifyMessageStat(\get_class($envelope->getMessage()), -1);
                             $processed[] = $envelopeKey;
                         }
                     }
@@ -68,8 +57,8 @@ class MessageBusMock implements MessageBusInterface
         } while ($loop && \count($processed) > 0);
     }
 
-    public function getMessageQueueStatsRepository(): MessageQueueStatsRepoMock
+    public function getTotalWaitingMessages(): int
     {
-        return $this->messageQueueStatsRepository;
+        return \count($this->envelopes);
     }
 }

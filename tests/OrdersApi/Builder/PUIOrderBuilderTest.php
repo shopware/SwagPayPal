@@ -192,15 +192,13 @@ class PUIOrderBuilderTest extends TestCase
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
         $addressProvider = new AddressProvider();
-        /** @var LocaleCodeProvider $localeCodeProvider */
-        $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
 
         return new PUIOrderBuilder(
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $systemConfig),
             $addressProvider,
             new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock()),
-            $localeCodeProvider,
+            $this->getContainer()->get(LocaleCodeProvider::class),
         );
     }
 }

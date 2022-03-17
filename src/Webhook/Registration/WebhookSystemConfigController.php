@@ -48,7 +48,7 @@ class WebhookSystemConfigController extends SystemConfigController
 
         $response = parent::saveConfiguration($request);
 
-        \array_push($errors, ...$this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
+        $errors = \array_merge($errors, $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
 
         if (empty($errors)) {
             return $response;
@@ -70,7 +70,7 @@ class WebhookSystemConfigController extends SystemConfigController
 
         $response = parent::batchSaveConfiguration($request);
 
-        \array_push($errors, ...$this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
+        $errors = \array_merge($errors, $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
 
         if (empty($errors)) {
             return $response;

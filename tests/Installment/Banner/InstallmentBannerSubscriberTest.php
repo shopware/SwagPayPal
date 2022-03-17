@@ -64,9 +64,7 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     protected function setUp(): void
     {
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
-        $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
         $this->context = Context::createDefaultContext();
         $this->payPalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($this->context);
     }
@@ -357,10 +355,7 @@ class InstallmentBannerSubscriberTest extends TestCase
             ],
         ], Context::createDefaultContext());
 
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-
-        return $salesChannelContextFactory->create(
+        return $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL
         );

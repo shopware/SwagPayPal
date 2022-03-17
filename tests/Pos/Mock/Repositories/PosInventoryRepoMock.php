@@ -8,70 +8,16 @@
 namespace Swag\PayPal\Test\Pos\Mock\Repositories;
 
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
 
-class PosInventoryRepoMock extends AbstractRepoMock implements EntityRepositoryInterface
+class PosInventoryRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition
     {
         return new PosSalesChannelInventoryDefinition();
-    }
-
-    public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
-    {
-    }
-
-    public function searchIds(Criteria $criteria, Context $context): IdSearchResult
-    {
-        return $this->searchCollectionIds($this->entityCollection, $criteria, $context);
-    }
-
-    public function search(Criteria $criteria, Context $context): EntitySearchResult
-    {
-        return $this->searchCollection($this->entityCollection, $criteria, $context);
-    }
-
-    public function update(array $data, Context $context): EntityWrittenContainerEvent
-    {
-        return $this->updateCollection($data, $context);
-    }
-
-    public function upsert(array $data, Context $context): EntityWrittenContainerEvent
-    {
-        return $this->updateCollection($data, $context);
-    }
-
-    public function create(array $data, Context $context): EntityWrittenContainerEvent
-    {
-        return $this->updateCollection($data, $context);
-    }
-
-    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
-    {
-        return $this->removeFromCollection($ids, $context);
-    }
-
-    public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
-    {
-    }
-
-    public function merge(string $versionId, Context $context): void
-    {
-    }
-
-    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
-    {
     }
 
     public function createMockEntity(ProductEntity $productEntity, string $salesChannelId, int $stock): PosSalesChannelInventoryEntity

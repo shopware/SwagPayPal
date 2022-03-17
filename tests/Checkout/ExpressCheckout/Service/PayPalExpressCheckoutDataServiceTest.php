@@ -61,17 +61,9 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         parent::setUp();
         $container = $this->getContainer();
 
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $container->get(PaymentMethodUtil::class);
-        $this->paymentMethodUtil = $paymentMethodUtil;
-
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
-        $this->salesChannelContextFactory = $salesChannelContextFactory;
-
-        /** @var CartService $cartService */
-        $cartService = $container->get(CartService::class);
-        $this->cartService = $cartService;
+        $this->paymentMethodUtil = $container->get(PaymentMethodUtil::class);
+        $this->salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
+        $this->cartService = $container->get(CartService::class);
 
         /** @var RouterInterface $router */
         $router = $container->get('router');
@@ -82,7 +74,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $this->cartService,
             $this->createLocaleCodeProvider(),
             $router,
-            $paymentMethodUtil,
+            $this->paymentMethodUtil,
             $this->systemConfigService,
             new CartPriceService()
         );

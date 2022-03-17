@@ -1,6 +1,6 @@
 const { join, resolve } = require('path');
 
-const { ADMIN_PATH } = process.env;
+const ADMIN_PATH = process.env.ADMIN_PATH || resolve('../../../../../../../src/Administration/Resources/app/administration');
 
 module.exports = {
     preset: '@shopware-ag/jest-preset-sw6-admin',

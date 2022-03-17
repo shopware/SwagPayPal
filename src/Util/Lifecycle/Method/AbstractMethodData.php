@@ -28,6 +28,9 @@ abstract class AbstractMethodData
 
     protected ContainerInterface $container;
 
+    /**
+     * @psalm-suppress ContainerDependency
+     */
     final public function __construct(ContainerInterface $container)
     {
         $this->container = $container;

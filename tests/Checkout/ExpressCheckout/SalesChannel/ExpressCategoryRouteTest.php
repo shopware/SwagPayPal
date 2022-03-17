@@ -33,9 +33,7 @@ class ExpressCategoryRouteTest extends TestCase
 
     public function tearDown(): void
     {
-        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
-        static::assertNotNull($paymentMethodUtil);
-        $paymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
+        $paymentMethodId = $this->getContainer()->get(PaymentMethodUtil::class)->getPayPalPaymentMethodId(Context::createDefaultContext());
 
         if ($paymentMethodId) {
             $this->removePaymentMethodFromDefaultsSalesChannel($paymentMethodId);
@@ -45,7 +43,6 @@ class ExpressCategoryRouteTest extends TestCase
     public function testDecoration(): void
     {
         $route = $this->getContainer()->get(CategoryRoute::class);
-        static::assertNotNull($route);
         $foundCachedRoute = false;
         $foundExpressRoute = false;
 
@@ -70,12 +67,11 @@ class ExpressCategoryRouteTest extends TestCase
 
     public function testLoadAnyRoute(): void
     {
-        $route = $this->getContainer()->get(CategoryRoute::class);
-        static::assertNotNull($route);
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        static::assertNotNull($salesChannelContextFactory);
-
-        $response = $route->load($this->getValidCategoryId(), new Request(), $salesChannelContextFactory->create(Uuid::randomHex(), Defaults::SALES_CHANNEL));
+        $response = $this->getContainer()->get(CategoryRoute::class)->load(
+            $this->getValidCategoryId(),
+            new Request(),
+            $this->getContainer()->get(SalesChannelContextFactory::class)->create(Uuid::randomHex(), Defaults::SALES_CHANNEL)
+        );
 
         $cmsPage = $response->getCategory()->getCmsPage();
         static::assertNotNull($cmsPage);
@@ -121,15 +117,7 @@ class ExpressCategoryRouteTest extends TestCase
 
     private function loadCmsNavigationRoute(bool $withCredentials, bool $listingEnabled, bool $inSalesChannel): CategoryRouteResponse
     {
-        $route = $this->getContainer()->get(CategoryRoute::class);
-        static::assertNotNull($route);
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        static::assertNotNull($salesChannelContextFactory);
         $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-        static::assertNotNull($systemConfigService);
-        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
-        static::assertNotNull($paymentMethodUtil);
-
         $systemConfigService->set(Settings::SANDBOX, false);
         if ($withCredentials) {
             $systemConfigService->set(Settings::CLIENT_ID, 'someClientId');
@@ -141,7 +129,7 @@ class ExpressCategoryRouteTest extends TestCase
 
         $systemConfigService->set(Settings::ECS_LISTING_ENABLED, $listingEnabled);
 
-        $paymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
+        $paymentMethodId = $this->getContainer()->get(PaymentMethodUtil::class)->getPayPalPaymentMethodId(Context::createDefaultContext());
         static::assertNotNull($paymentMethodId);
 
         if ($inSalesChannel) {
@@ -150,12 +138,12 @@ class ExpressCategoryRouteTest extends TestCase
             $this->removePaymentMethodFromDefaultsSalesChannel($paymentMethodId);
         }
 
-        $salesChannelContext = $salesChannelContextFactory->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);
         $request = new Request([], [], [
             '_route' => 'frontend.cms.navigation.page',
         ]);
 
-        return $route->load($this->getValidCategoryId(), $request, $salesChannelContext);
+        return $this->getContainer()->get(CategoryRoute::class)->load($this->getValidCategoryId(), $request, $salesChannelContext);
     }
 
     private function assertExpressCheckoutButtonData(

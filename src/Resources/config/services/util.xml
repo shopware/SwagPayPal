@@ -47,7 +47,7 @@
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\State\PosStateService"/>
         </service>
 
-        <service id="Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService">
+        <service id="Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService" public="true">
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
             <argument type="service" id="payment_method.repository"/>
         </service>
@@ -68,7 +68,7 @@
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller"/>
         </service>
 
-        <service id="Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller">
+        <service id="Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller" public="true">
             <argument type="service" id="media.repository"/>
             <argument type="service" id="media_folder.repository"/>
             <argument type="service" id="payment_method.repository"/>

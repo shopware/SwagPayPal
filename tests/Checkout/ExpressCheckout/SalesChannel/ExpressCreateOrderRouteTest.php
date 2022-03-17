@@ -58,13 +58,11 @@ class ExpressCreateOrderRouteTest extends TestCase
             new EventDispatcherMock(),
             new LoggerMock()
         );
-        /** @var CartService $cartService */
-        $cartService = $this->getContainer()->get(CartService::class);
 
         $orderResource = $this->createOrderResource($systemConfig);
 
         return new ExpressCreateOrderRoute(
-            $cartService,
+            $this->getContainer()->get(CartService::class),
             $orderFromCartBuilder,
             $orderResource,
             new NullLogger()

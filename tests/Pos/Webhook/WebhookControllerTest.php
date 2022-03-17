@@ -61,8 +61,6 @@ class WebhookControllerTest extends TestCase
         $salesChannelRepository = new SalesChannelRepoMock();
         $salesChannelRepository->addMockEntity($this->salesChannel);
 
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
         /** @var Router $router */
         $router = $this->getContainer()->get('router');
 
@@ -70,7 +68,7 @@ class WebhookControllerTest extends TestCase
             new SubscriptionResource(new PosClientFactoryMock()),
             $webhookRegistry,
             $salesChannelRepository,
-            $systemConfigService,
+            $this->getContainer()->get(SystemConfigService::class),
             new UuidConverter(),
             $router
         );

@@ -63,10 +63,7 @@ class SEPAMethodData extends AbstractMethodData implements CheckoutDataMethodInt
 
     public function getCheckoutDataService(): AbstractCheckoutDataService
     {
-        /** @var SEPACheckoutDataService $service */
-        $service = $this->container->get(SEPACheckoutDataService::class);
-
-        return $service;
+        return $this->container->get(SEPACheckoutDataService::class);
     }
 
     public function getCheckoutTemplateExtensionId(): string

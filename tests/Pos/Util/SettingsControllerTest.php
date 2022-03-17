@@ -241,8 +241,6 @@ class SettingsControllerTest extends TestCase
         $deliveryTimeRepository = $this->getContainer()->get('delivery_time.repository');
         /** @var EntityRepositoryInterface $ruleRepository */
         $ruleRepository = $this->getContainer()->get('rule.repository');
-        /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->getContainer()->get(PluginIdProvider::class);
 
         $this->productVisibilityRepository = new ProductVisibilityRepoMock();
         $this->messageBus = new MessageBusMock();
@@ -260,9 +258,6 @@ class SettingsControllerTest extends TestCase
         if (!$withSalesChannels) {
             $this->salesChannelRepository->getCollection()->clear();
         }
-
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
 
         return new SettingsController(
             new ApiCredentialService(
@@ -282,7 +277,7 @@ class SettingsControllerTest extends TestCase
             new InformationDefaultService(
                 $customerGroupRepository,
                 $categoryRepository,
-                $pluginIdProvider,
+                $this->getContainer()->get(PluginIdProvider::class),
                 $paymentMethodRepository,
                 $ruleRepository,
                 $deliveryTimeRepository,
@@ -299,7 +294,7 @@ class SettingsControllerTest extends TestCase
                 new ProductSelection(
                     $this->salesChannelProductRepository,
                     $this->createMock(ProductStreamBuilder::class),
-                    $salesChannelContextFactory
+                    $this->getContainer()->get(SalesChannelContextFactory::class)
                 ),
                 $this->salesChannelProductRepository,
                 $this->salesChannelRepository

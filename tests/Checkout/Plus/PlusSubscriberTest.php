@@ -76,9 +76,7 @@ class PlusSubscriberTest extends TestCase
 
     protected function setUp(): void
     {
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
-        $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
         $this->paypalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
     }
 
@@ -434,8 +432,6 @@ class PlusSubscriberTest extends TestCase
             Settings::PLUS_CHECKOUT_ENABLED => $plusEnabled,
         ] : []);
 
-        /** @var LocaleCodeProvider $localeCodeProvider */
-        $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
         /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
         /** @var TranslatorInterface $translator */
@@ -448,14 +444,14 @@ class PlusSubscriberTest extends TestCase
 
         $plusDataService = new PlusDataService(
             new CartPaymentBuilder(
-                $localeCodeProvider,
+                $this->getContainer()->get(LocaleCodeProvider::class),
                 $priceFormatter,
                 $eventDispatcher,
                 $logger,
                 $settings
             ),
             new OrderPaymentBuilder(
-                $localeCodeProvider,
+                $this->getContainer()->get(LocaleCodeProvider::class),
                 $priceFormatter,
                 $eventDispatcher,
                 $logger,
@@ -465,7 +461,7 @@ class PlusSubscriberTest extends TestCase
             $this->createPaymentResource($settings),
             $router,
             $this->paymentMethodUtil,
-            $localeCodeProvider,
+            $this->getContainer()->get(LocaleCodeProvider::class),
             $settings
         );
 
@@ -485,9 +481,7 @@ class PlusSubscriberTest extends TestCase
         bool $withPaymentMethod = true,
         bool $withDefaultPaymentMethod = false
     ): CheckoutFinishPageLoadedEvent {
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        $salesChannelContext = $salesChannelContextFactory->create(
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL,
             [

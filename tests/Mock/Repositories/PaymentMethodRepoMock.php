@@ -10,17 +10,12 @@ namespace Swag\PayPal\Test\Mock\Repositories;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 
-class PaymentMethodRepoMock implements EntityRepositoryInterface
+class PaymentMethodRepoMock extends AbstractRepoMock
 {
     public const PAYPAL_PAYMENT_METHOD_ID = '0afca95b4937428a884830cd516fb826';
     public const VERSION_ID_WITHOUT_PAYMENT_METHOD = 'WITHOUT_PAYMENT_METHOD';
@@ -28,10 +23,6 @@ class PaymentMethodRepoMock implements EntityRepositoryInterface
     public function getDefinition(): EntityDefinition
     {
         return new PaymentMethodDefinition();
-    }
-
-    public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
-    {
     }
 
     public function searchIds(Criteria $criteria, Context $context): IdSearchResult
@@ -47,38 +38,6 @@ class PaymentMethodRepoMock implements EntityRepositoryInterface
         }
 
         return $this->getIdSearchResult(false, $criteria, $context);
-    }
-
-    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
-    {
-    }
-
-    public function search(Criteria $criteria, Context $context): EntitySearchResult
-    {
-    }
-
-    public function update(array $data, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function upsert(array $data, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function create(array $data, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
-    {
-    }
-
-    public function merge(string $versionId, Context $context): void
-    {
     }
 
     private function getIdSearchResult(bool $handlerFound, Criteria $criteria, Context $context): IdSearchResult

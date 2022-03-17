@@ -33,7 +33,7 @@ class MerchantIntegrationsService implements MerchantIntegrationsServiceInterfac
         $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
     }
 
-    public function fetchMerchantIntegrations(?string $salesChannelId = null, Context $context): array
+    public function fetchMerchantIntegrations(Context $context, ?string $salesChannelId = null): array
     {
         $sandboxActive = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId);
         $merchantId = $this->systemConfigService->getString($sandboxActive ? Settings::MERCHANT_PAYER_ID_SANDBOX : Settings::MERCHANT_PAYER_ID, $salesChannelId);

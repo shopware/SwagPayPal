@@ -9,7 +9,6 @@ namespace Swag\PayPal;
 
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Content\Media\File\FileSaver;
-use Shopware\Core\Content\Media\MediaService;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
@@ -87,8 +86,6 @@ class SwagPayPal extends Plugin
 
     public function update(UpdateContext $updateContext): void
     {
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->container->get(SystemConfigService::class);
         /** @var EntityRepositoryInterface $customFieldRepository */
         $customFieldRepository = $this->container->get(\sprintf('%s.repository', (new CustomFieldDefinition())->getEntityName()));
         /** @var EntityRepositoryInterface $paymentMethodRepository */
@@ -113,20 +110,16 @@ class SwagPayPal extends Plugin
         $mediaRepository = $this->container->get('media.repository');
         /** @var EntityRepositoryInterface $mediaFolderRepository */
         $mediaFolderRepository = $this->container->get('media_folder.repository');
-        /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->container->get(PluginIdProvider::class);
         /** @var PaymentMethodInstaller|null $paymentMethodInstaller */
         $paymentMethodInstaller = $this->container->get(PaymentMethodInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         /** @var PaymentMethodStateService|null $paymentMethodStateService */
         $paymentMethodStateService = $this->container->get(PaymentMethodStateService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         /** @var MediaInstaller|null $mediaInstaller */
-        $mediaInstaller = $this->container->get(MediaService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var FileSaver $fileSaver */
-        $fileSaver = $this->container->get(FileSaver::class);
+        $mediaInstaller = $this->container->get(MediaInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         $paymentMethodDataRegistry = new PaymentMethodDataRegistry($paymentMethodRepository, $this->container);
 
         (new Update(
-            $systemConfigService,
+            $this->container->get(SystemConfigService::class),
             $paymentMethodRepository,
             $customFieldRepository,
             $webhookService,
@@ -139,13 +132,13 @@ class SwagPayPal extends Plugin
                 $paymentMethodRepository,
                 $ruleRepository,
                 $ruleConditionRepository,
-                $pluginIdProvider,
+                $this->container->get(PluginIdProvider::class),
                 $paymentMethodDataRegistry,
                 $mediaInstaller ?? new MediaInstaller(
                     $mediaRepository,
                     $mediaFolderRepository,
                     $paymentMethodRepository,
-                    $fileSaver,
+                    $this->container->get(FileSaver::class),
                 ),
             ),
             $paymentMethodStateService ?? new PaymentMethodStateService(
@@ -213,21 +206,13 @@ class SwagPayPal extends Plugin
         $mediaRepository = $this->container->get('media.repository');
         /** @var EntityRepositoryInterface $mediaFolderRepository */
         $mediaFolderRepository = $this->container->get('media_folder.repository');
-        /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->container->get(PluginIdProvider::class);
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->container->get(SystemConfigService::class);
-        /** @var FileSaver $fileSaver */
-        $fileSaver = $this->container->get(FileSaver::class);
-        /** @var Connection $connection */
-        $connection = $this->container->get(Connection::class);
 
         return new InstallUninstall(
             new PaymentMethodInstaller(
                 $paymentMethodRepository,
                 $ruleRepository,
                 $ruleConditionRepository,
-                $pluginIdProvider,
+                $this->container->get(PluginIdProvider::class),
                 new PaymentMethodDataRegistry(
                     $paymentMethodRepository,
                     $this->container,
@@ -236,11 +221,11 @@ class SwagPayPal extends Plugin
                     $mediaRepository,
                     $mediaFolderRepository,
                     $paymentMethodRepository,
-                    $fileSaver
+                    $this->container->get(FileSaver::class)
                 ),
             ),
-            new SettingsInstaller($systemConfigRepository, $systemConfigService),
-            new PosInstaller($connection)
+            new SettingsInstaller($systemConfigRepository, $this->container->get(SystemConfigService::class)),
+            new PosInstaller($this->container->get(Connection::class))
         );
     }
 }

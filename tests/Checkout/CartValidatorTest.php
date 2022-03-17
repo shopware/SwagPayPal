@@ -39,24 +39,13 @@ class CartValidatorTest extends TestCase
 
     public function setUp(): void
     {
-        /** @var CartValidator $validator */
-        $validator = $this->getContainer()->get(CartValidator::class);
-        $this->validator = $validator;
-
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
-        $this->paymentMethodUtil = $paymentMethodUtil;
-
-        /** @var AbstractSalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        $this->salesChannelContextFactory = $salesChannelContextFactory;
-
-        /** @var SystemConfigService $systemConfig */
-        $systemConfig = $this->getContainer()->get(SystemConfigService::class);
-        $this->systemConfig = $systemConfig;
+        $this->validator = $this->getContainer()->get(CartValidator::class);
+        $this->paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
+        $this->salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
+        $this->systemConfig = $this->getContainer()->get(SystemConfigService::class);
 
         foreach ($this->getDefaultConfigData() as $key => $value) {
-            $systemConfig->set($key, $value);
+            $this->systemConfig->set($key, $value);
         }
     }
 

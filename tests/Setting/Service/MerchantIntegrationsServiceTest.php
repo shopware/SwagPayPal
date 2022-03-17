@@ -39,12 +39,9 @@ class MerchantIntegrationsServiceTest extends TestCase
     public function testFetchMerchantIntegrations(): void
     {
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(null, $this->context);
+        $integrations = $merchantIntegrationService->fetchMerchantIntegrations($this->context);
 
-        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
-        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
-
-        static::assertCount(\count($paymentMethodDataRegistry->getPaymentMethods()), $integrations);
+        static::assertCount(\count($this->getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods()), $integrations);
     }
 
     public function testACDCShouldBeActive(): void
@@ -52,7 +49,7 @@ class MerchantIntegrationsServiceTest extends TestCase
         $paymentMethodId = $this->getPaymentIdByHandler(ACDCHandler::class);
 
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(null, $this->context);
+        $integrations = $merchantIntegrationService->fetchMerchantIntegrations($this->context);
 
         $integrationStatus = $integrations[$paymentMethodId];
         static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $integrationStatus);
@@ -63,7 +60,7 @@ class MerchantIntegrationsServiceTest extends TestCase
         $paymentMethodId = $this->getPaymentIdByHandler(PUIHandler::class);
 
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(null, $this->context);
+        $integrations = $merchantIntegrationService->fetchMerchantIntegrations($this->context);
 
         $integrationStatus = $integrations[$paymentMethodId];
         static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $integrationStatus);
@@ -71,13 +68,10 @@ class MerchantIntegrationsServiceTest extends TestCase
 
     private function createMerchantIntegrationService(): MerchantIntegrationsService
     {
-        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
-        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
-
         return new MerchantIntegrationsService(
             new MerchantIntegrationsResource($this->createPayPalClientFactory()),
             $this->createDefaultSystemConfig(),
-            $paymentMethodDataRegistry
+            $this->getContainer()->get(PaymentMethodDataRegistry::class)
         );
     }
 

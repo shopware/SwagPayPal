@@ -36,9 +36,7 @@ class LoggerTest extends TestCase
 
     public function tearDown(): void
     {
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-        $systemConfigService->delete(Settings::LOGGING_LEVEL);
+        $this->getContainer()->get(SystemConfigService::class)->delete(Settings::LOGGING_LEVEL);
     }
 
     public function dataProviderLevel(): array
@@ -122,11 +120,9 @@ class LoggerTest extends TestCase
      */
     private function createLogger($level): LoggerInterface
     {
-        /** @var SystemConfigService $systemConfigService */
         $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
         $systemConfigService->set(Settings::LOGGING_LEVEL, $level);
 
-        /** @var LoggerFactory $loggerFactory */
         $loggerFactory = $this->getContainer()->get(LoggerFactory::class);
         $loggerFactory->setLogLevel($systemConfigService);
 

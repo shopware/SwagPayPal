@@ -35,10 +35,7 @@ class PayUponInvoiceSubscriberTest extends TestCase
 
     protected function setUp(): void
     {
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-
-        $this->salesChannelContext = $salesChannelContextFactory->create(
+        $this->salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL
         );

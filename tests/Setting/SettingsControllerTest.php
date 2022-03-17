@@ -68,9 +68,6 @@ class SettingsControllerTest extends TestCase
     {
         $logger = new LoggerMock();
 
-        /** @var PaymentMethodDataRegistry $paymentMethodDataRegistry */
-        $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
-
         return new SettingsController(
             new ApiCredentialService(
                 new CredentialsResource(
@@ -82,7 +79,7 @@ class SettingsControllerTest extends TestCase
             new MerchantIntegrationsService(
                 new MerchantIntegrationsResource($this->createPayPalClientFactory()),
                 $this->createDefaultSystemConfig(),
-                $paymentMethodDataRegistry
+                $this->getContainer()->get(PaymentMethodDataRegistry::class)
             )
         );
     }

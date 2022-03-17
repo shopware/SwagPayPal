@@ -42,7 +42,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
     public function testPrepare(): void
     {
         $salesChannelContext = $this->getSalesChannelContext();
-        $this->getSystemConfigService()->set(
+        $this->getContainer()->get(SystemConfigService::class)->set(
             'core.loginRegistration.requireDataProtectionCheckbox',
             true,
             Defaults::SALES_CHANNEL
@@ -52,9 +52,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => GetOrderCapture::ID,
         ]);
 
-        /** @var CartService $cartService */
-        $cartService = $this->getContainer()->get(CartService::class);
-        $response = $this->createRoute($cartService)->prepareCheckout($salesChannelContext, $request);
+        $response = $this->createRoute($this->getContainer()->get(CartService::class))->prepareCheckout($salesChannelContext, $request);
         $content = $response->getContent();
         static::assertNotFalse($content);
 
@@ -82,7 +80,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
 
         $cartToken = $response->getToken();
         /** @var ExpressCheckoutData|null $ecsCartExtension */
-        $ecsCartExtension = $cartService->getCart($cartToken, $salesChannelContext)
+        $ecsCartExtension = $this->getContainer()->get(CartService::class)->getCart($cartToken, $salesChannelContext)
             ->getExtension(ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID);
 
         static::assertInstanceOf(ExpressCheckoutData::class, $ecsCartExtension);
@@ -111,11 +109,8 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
             Settings::CLIENT_SECRET => 'testClientSecret',
         ]);
         if ($cartService === null) {
-            /** @var CartService $cartService */
             $cartService = $this->getContainer()->get(CartService::class);
         }
-        /** @var RegisterRoute $registerRoute */
-        $registerRoute = $this->getContainer()->get(RegisterRoute::class);
         /** @var EntityRepositoryInterface $countryRepo */
         $countryRepo = $this->getContainer()->get('country.repository');
         /** @var EntityRepositoryInterface $countryStateRepo */
@@ -124,25 +119,21 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         $salutationRepo = $this->getContainer()->get('salutation.repository');
         /** @var EntityRepositoryInterface $customerRepo */
         $customerRepo = $this->getContainer()->get('customer.repository');
-        /** @var AccountService $accountService */
-        $accountService = $this->getContainer()->get(AccountService::class);
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
 
         $orderResource = $this->createOrderResource($settings);
 
         return new ExpressPrepareCheckoutRoute(
             new ExpressCustomerService(
-                $registerRoute,
+                $this->getContainer()->get(RegisterRoute::class),
                 $countryRepo,
                 $countryStateRepo,
                 $salutationRepo,
                 $customerRepo,
-                $accountService,
+                $this->getContainer()->get(AccountService::class),
                 $settings,
                 new NullLogger()
             ),
-            $salesChannelContextFactory,
+            $this->getContainer()->get(SalesChannelContextFactory::class),
             $orderResource,
             $cartService,
             new NullLogger()
@@ -188,13 +179,5 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
 
         $countryState = $address->getCountryState();
         static::assertNull($countryState);
-    }
-
-    private function getSystemConfigService(): SystemConfigService
-    {
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-
-        return $systemConfigService;
     }
 }

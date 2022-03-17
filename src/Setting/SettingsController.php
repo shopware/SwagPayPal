@@ -87,7 +87,7 @@ class SettingsController extends AbstractController
     {
         $salesChannelId = $request->request->getAlnum('salesChannelId');
 
-        $response = $this->merchantIntegrationsService->fetchMerchantIntegrations($salesChannelId, $context);
+        $response = $this->merchantIntegrationsService->fetchMerchantIntegrations($context, $salesChannelId);
 
         return new JsonResponse($response);
     }

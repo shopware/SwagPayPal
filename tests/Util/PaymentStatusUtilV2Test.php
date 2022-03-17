@@ -53,12 +53,9 @@ class PaymentStatusUtilV2Test extends TestCase
         $orderTransactionRepository = $container->get('order_transaction.repository');
         $this->orderTransactionRepository = $orderTransactionRepository;
 
-        /** @var OrderTransactionStateHandler $orderTransactionStateHandler */
-        $orderTransactionStateHandler = $container->get(OrderTransactionStateHandler::class);
-
         $this->paymentStatusUtil = new PaymentStatusUtilV2(
             $this->orderTransactionRepository,
-            $orderTransactionStateHandler,
+            $container->get(OrderTransactionStateHandler::class),
             new PriceFormatter()
         );
 

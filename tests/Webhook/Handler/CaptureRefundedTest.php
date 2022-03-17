@@ -52,13 +52,10 @@ class CaptureRefundedTest extends AbstractWebhookHandlerTestCase
 
     protected function createWebhookHandler(): CaptureRefunded
     {
-        /** @var PaymentStatusUtilV2 $paymentStatusUtil */
-        $paymentStatusUtil = $this->getContainer()->get(PaymentStatusUtilV2::class);
-
         return new CaptureRefunded(
             $this->orderTransactionRepository,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
-            $paymentStatusUtil,
+            $this->getContainer()->get(PaymentStatusUtilV2::class),
             $this->createOrderResource($this->createDefaultSystemConfig())
         );
     }

@@ -87,7 +87,6 @@ class PaymentMethodInstallerTest extends TestCase
             return $paymentMethod->getHandlerIdentifier();
         }, $paymentMethods->getElements());
 
-        /** @var PaymentHandlerRegistry $registry */
         $registry = $this->getContainer()->get(PaymentHandlerRegistry::class);
 
         $reflectionRegistry = new \ReflectionObject($registry);
@@ -121,26 +120,19 @@ class PaymentMethodInstallerTest extends TestCase
     private function createInstaller(bool $useContainer): PaymentMethodInstaller
     {
         if ($useContainer) {
-            /** @var PaymentMethodInstaller $installer */
-            $installer = $this->getContainer()->get(PaymentMethodInstaller::class);
-
-            return $installer;
+            return $this->getContainer()->get(PaymentMethodInstaller::class);
         }
 
-        /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->getContainer()->get(PluginIdProvider::class);
         /** @var EntityRepositoryInterface $mediaRepository */
         $mediaRepository = $this->getContainer()->get(MediaDefinition::ENTITY_NAME . '.repository');
         /** @var EntityRepositoryInterface $mediaFolderRepository */
         $mediaFolderRepository = $this->getContainer()->get(MediaFolderDefinition::ENTITY_NAME . '.repository');
-        /** @var FileSaver $fileSaver */
-        $fileSaver = $this->getContainer()->get(FileSaver::class);
 
         return new PaymentMethodInstaller(
             $this->paymentMethodRepository,
             $this->ruleRepository,
             $this->ruleConditionRepository,
-            $pluginIdProvider,
+            $this->getContainer()->get(PluginIdProvider::class),
             new PaymentMethodDataRegistry(
                 $this->paymentMethodRepository,
                 $this->getContainer(),
@@ -149,7 +141,7 @@ class PaymentMethodInstallerTest extends TestCase
                 $mediaRepository,
                 $mediaFolderRepository,
                 $this->paymentMethodRepository,
-                $fileSaver,
+                $this->getContainer()->get(FileSaver::class),
             ),
         );
     }

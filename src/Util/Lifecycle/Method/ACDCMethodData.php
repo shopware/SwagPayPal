@@ -75,10 +75,7 @@ class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInt
 
     public function getCheckoutDataService(): AbstractCheckoutDataService
     {
-        /** @var ACDCCheckoutDataService $service */
-        $service = $this->container->get(ACDCCheckoutDataService::class);
-
-        return $service;
+        return $this->container->get(ACDCCheckoutDataService::class);
     }
 
     public function getCheckoutTemplateExtensionId(): string

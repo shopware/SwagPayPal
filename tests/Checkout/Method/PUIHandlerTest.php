@@ -193,12 +193,6 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
         $clientFactory = $this->createPayPalClientFactoryWithService($systemConfig);
         $orderResource = new OrderResource($clientFactory);
         $logger = new NullLogger();
-        /** @var PUIOrderBuilder $orderBuilder */
-        $orderBuilder = $this->getContainer()->get(PUIOrderBuilder::class);
-        /** @var PUICustomerDataService $customerDataService */
-        $customerDataService = $this->getContainer()->get(PUICustomerDataService::class);
-        /** @var TransactionDataService $transactionDataService */
-        $transactionDataService = $this->getContainer()->get(TransactionDataService::class);
 
         $criteria = new Criteria([$order->getId()]);
         $criteria->addAssociation('transactions.stateMachineState');
@@ -218,9 +212,6 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
         $order = $orderRepository->search($criteria, $context->getContext())->first();
         static::assertNotNull($order);
 
-        /** @var OrderTransactionStateHandler $orderTransactionStateHandler */
-        $orderTransactionStateHandler = $this->getContainer()->get(OrderTransactionStateHandler::class);
-
         $this->session = new Session(new MockArraySessionStorage());
 
         /** @var TranslatorInterface $translator */
@@ -228,11 +219,11 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
 
         $handler = new PUIHandler(
             new SettingsValidationService($systemConfig, new NullLogger()),
-            $orderTransactionStateHandler,
-            $orderBuilder,
+            $this->getContainer()->get(OrderTransactionStateHandler::class),
+            $this->getContainer()->get(PUIOrderBuilder::class),
             $orderResource,
-            $transactionDataService,
-            $customerDataService,
+            $this->getContainer()->get(TransactionDataService::class),
+            $this->getContainer()->get(PUICustomerDataService::class),
             $this->session,
             $translator,
             $logger,

@@ -124,9 +124,6 @@ class SPBCreateOrderRouteTest extends TestCase
 
     private function createRoute(): SPBCreateOrderRoute
     {
-        /** @var CartService $cartService */
-        $cartService = $this->getContainer()->get(CartService::class);
-
         $systemConfig = $this->createSystemConfigServiceMock([
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
@@ -147,7 +144,7 @@ class SPBCreateOrderRouteTest extends TestCase
 
         return new SPBCreateOrderRoute(
             new CreateOrderRoute(
-                $cartService,
+                $this->getContainer()->get(CartService::class),
                 new OrderRepositoryMock(),
                 $this->createOrderBuilder($systemConfig),
                 $orderFromCartBuilder,

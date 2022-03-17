@@ -206,15 +206,12 @@ class SPBMarksSubscriberTest extends TestCase
             Settings::SPB_BUTTON_LANGUAGE_ISO => $languageIso,
         ] : []);
 
-        /** @var LocaleCodeProvider $localeCodeProvider */
-        $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
-
         return new SPBMarksSubscriber(
             new SPBMarksDataService(
                 new SettingsValidationService($settings, new NullLogger()),
                 $settings,
                 new PaymentMethodUtilMock(),
-                $localeCodeProvider
+                $this->getContainer()->get(LocaleCodeProvider::class)
             ),
             new NullLogger()
         );
@@ -253,9 +250,7 @@ class SPBMarksSubscriberTest extends TestCase
 
     private function createSalesChannelContext(): SalesChannelContext
     {
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        $salesChannelContext = $salesChannelContextFactory->create(
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL
         );

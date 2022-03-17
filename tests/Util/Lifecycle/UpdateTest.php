@@ -352,15 +352,12 @@ class UpdateTest extends TestCase
 
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext
     {
-        /** @var MigrationCollectionLoader $migrationLoader */
-        $migrationLoader = $this->getContainer()->get(MigrationCollectionLoader::class);
-
         return new UpdateContext(
             new SwagPayPal(true, ''),
             Context::createDefaultContext(),
             '',
             $currentPluginVersion,
-            $migrationLoader->collect('core'),
+            $this->getContainer()->get(MigrationCollectionLoader::class)->collect('core'),
             $nextPluginVersion
         );
     }
@@ -386,10 +383,6 @@ class UpdateTest extends TestCase
         $informationDefaultService = $this->getContainer()->get(InformationDefaultService::class);
         /** @var EntityRepositoryInterface $shippingRepository */
         $shippingRepository = $this->getContainer()->get('shipping_method.repository');
-        /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->getContainer()->get(PluginIdProvider::class);
-        /** @var FileSaver $fileSaver */
-        $fileSaver = $this->getContainer()->get(FileSaver::class);
         $paymentMethodDataRegistry = new PaymentMethodDataRegistry($this->paymentMethodRepository, $this->getContainer());
 
         return new Update(
@@ -406,13 +399,13 @@ class UpdateTest extends TestCase
                 $this->paymentMethodRepository,
                 $ruleRepository,
                 $ruleConditionRepository,
-                $pluginIdProvider,
+                $this->getContainer()->get(PluginIdProvider::class),
                 $paymentMethodDataRegistry,
                 new MediaInstaller(
                     $mediaRepository,
                     $mediaFolderRepository,
                     $this->paymentMethodRepository,
-                    $fileSaver,
+                    $this->getContainer()->get(FileSaver::class),
                 ),
             ),
             new PaymentMethodStateService(

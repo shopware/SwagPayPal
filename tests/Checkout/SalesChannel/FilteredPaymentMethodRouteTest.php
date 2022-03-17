@@ -47,18 +47,12 @@ class FilteredPaymentMethodRouteTest extends TestCase
 
     public function setUp(): void
     {
-        /** @var PaymentMethodRoute $paymentMethodRoute */
-        $paymentMethodRoute = $this->getContainer()->get(PaymentMethodRoute::class);
-        $this->paymentMethodRoute = $paymentMethodRoute;
-        /** @var SystemConfigService $systemConfig */
-        $systemConfig = $this->getContainer()->get(SystemConfigService::class);
-        $this->systemConfig = $systemConfig;
-        /** @var PluginIdProvider $pluginIdProvider */
-        $pluginIdProvider = $this->getContainer()->get(PluginIdProvider::class);
-        $this->pluginId = $pluginIdProvider->getPluginIdByBaseClass(SwagPayPal::class, Context::createDefaultContext());
+        $this->paymentMethodRoute = $this->getContainer()->get(PaymentMethodRoute::class);
+        $this->systemConfig = $this->getContainer()->get(SystemConfigService::class);
+        $this->pluginId = $this->getContainer()->get(PluginIdProvider::class)->getPluginIdByBaseClass(SwagPayPal::class, Context::createDefaultContext());
 
         foreach ($this->getDefaultConfigData() as $key => $value) {
-            $systemConfig->set($key, $value);
+            $this->systemConfig->set($key, $value);
         }
     }
 
@@ -90,9 +84,7 @@ class FilteredPaymentMethodRouteTest extends TestCase
 
     private function loadPaymentMethods(Request $request, float $price = 25.0): PaymentMethodCollection
     {
-        /** @var SalesChannelContextService $salesChannelContextService */
-        $salesChannelContextService = $this->getContainer()->get(SalesChannelContextService::class);
-        $salesChannelContext = $salesChannelContextService->get(new SalesChannelContextServiceParameters(Defaults::SALES_CHANNEL, Uuid::randomHex()));
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextService::class)->get(new SalesChannelContextServiceParameters(Defaults::SALES_CHANNEL, Uuid::randomHex()));
 
         /** @var EntityRepositoryInterface $paymentMethodRepository */
         $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
@@ -146,9 +138,7 @@ class FilteredPaymentMethodRouteTest extends TestCase
 
         $productRepository->create([$productData], $salesChannelContext->getContext());
 
-        /** @var CartService $cartService */
         $cartService = $this->getContainer()->get(CartService::class);
-
         $cart = $cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
         $lineItem = (new LineItem($productId, LineItem::PRODUCT_LINE_ITEM_TYPE, $productId, 1))

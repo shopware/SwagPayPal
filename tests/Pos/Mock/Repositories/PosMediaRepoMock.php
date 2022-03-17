@@ -11,20 +11,17 @@ use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaEntity;
 
-class PosMediaRepoMock extends AbstractRepoMock implements EntityRepositoryInterface
+class PosMediaRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition
     {
@@ -51,38 +48,6 @@ class PosMediaRepoMock extends AbstractRepoMock implements EntityRepositoryInter
     public function search(Criteria $criteria, Context $context): EntitySearchResult
     {
         return $this->searchCollection($this->getFilteredCollection($criteria), $criteria, $context);
-    }
-
-    public function update(array $data, Context $context): EntityWrittenContainerEvent
-    {
-        return $this->updateCollection($data, $context);
-    }
-
-    public function upsert(array $data, Context $context): EntityWrittenContainerEvent
-    {
-        return $this->updateCollection($data, $context);
-    }
-
-    public function create(array $data, Context $context): EntityWrittenContainerEvent
-    {
-        return $this->updateCollection($data, $context);
-    }
-
-    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
-    {
-        return $this->removeFromCollection($ids, $context);
-    }
-
-    public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
-    {
-    }
-
-    public function merge(string $versionId, Context $context): void
-    {
-    }
-
-    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
-    {
     }
 
     public function createMockEntity(MediaEntity $mediaEntity, string $salesChannelId, ?string $lookupKey = null, ?string $url = null): PosSalesChannelMediaEntity

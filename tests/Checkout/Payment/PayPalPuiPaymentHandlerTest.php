@@ -60,9 +60,7 @@ class PayPalPuiPaymentHandlerTest extends TestCase
             (new OrderTransactionDefinition())->getEntityName()
         );
 
-        /** @var StateMachineRegistry $stateMachineRegistry */
-        $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
-        $this->stateMachineRegistry = $stateMachineRegistry;
+        $this->stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
     }
 
     public function testPay(): void

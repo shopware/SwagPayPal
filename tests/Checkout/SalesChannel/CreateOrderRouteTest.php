@@ -123,9 +123,6 @@ class CreateOrderRouteTest extends TestCase
 
     private function createRoute(): CreateOrderRoute
     {
-        /** @var CartService $cartService */
-        $cartService = $this->getContainer()->get(CartService::class);
-
         $systemConfig = $this->createSystemConfigServiceMock([
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
@@ -145,7 +142,7 @@ class CreateOrderRouteTest extends TestCase
         );
 
         return new CreateOrderRoute(
-            $cartService,
+            $this->getContainer()->get(CartService::class),
             new OrderRepositoryMock(),
             $this->createOrderBuilder($systemConfig),
             $orderFromCartBuilder,

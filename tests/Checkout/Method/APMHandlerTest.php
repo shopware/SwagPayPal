@@ -167,17 +167,18 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         $clientFactory = $this->createPayPalClientFactoryWithService($systemConfig);
         $orderResource = new OrderResource($clientFactory);
         $logger = new NullLogger();
-        /** @var TransactionDataService $transactionDataService */
-        $transactionDataService = $this->getContainer()->get(TransactionDataService::class);
 
-        /** @var OrderTransactionStateHandler $orderTransactionStateHandler */
-        $orderTransactionStateHandler = $this->getContainer()->get(OrderTransactionStateHandler::class);
-        $orderExecuteService = new OrderExecuteService($orderResource, $orderTransactionStateHandler, new OrderNumberPatchBuilder(), $logger);
+        $orderExecuteService = new OrderExecuteService(
+            $orderResource,
+            $this->getContainer()->get(OrderTransactionStateHandler::class),
+            new OrderNumberPatchBuilder(),
+            $logger
+        );
 
         return new APMHandler(
             $orderExecuteService,
-            $transactionDataService,
-            $orderTransactionStateHandler,
+            $this->getContainer()->get(TransactionDataService::class),
+            $this->getContainer()->get(OrderTransactionStateHandler::class),
             new SettingsValidationService($systemConfig, $logger),
             $orderResource,
             $logger,

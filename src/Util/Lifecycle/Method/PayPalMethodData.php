@@ -64,10 +64,7 @@ class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodI
 
     public function getCheckoutDataService(): AbstractCheckoutDataService
     {
-        /** @var SPBCheckoutDataService $service */
-        $service = $this->container->get(SPBCheckoutDataService::class);
-
-        return $service;
+        return $this->container->get(SPBCheckoutDataService::class);
     }
 
     public function getCheckoutTemplateExtensionId(): string

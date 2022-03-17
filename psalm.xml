@@ -11,10 +11,17 @@
         <directory name="src"/>
         <directory name="tests"/>
         <ignoreFiles>
-            <directory name="../../../platform"/> <!-- would otherwise inspect Shopware -->
+            <directory name="../../../src"/> <!-- would otherwise inspect Shopware -->
             <directory name="../../../vendor"/> <!-- would otherwise inspect vendor -->
+            <directory name="vendor"/> <!-- would otherwise inspect vendor -->
+            <file name="tests/TestBootstrapper.php"/>
         </ignoreFiles>
     </projectFiles>
+
+    <plugins>
+        <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin"/>
+        <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
+    </plugins>
 
     <forbiddenFunctions>
         <function name="dump"/>
@@ -35,13 +42,6 @@
             </errorLevel>
         </MoreSpecificImplementedParamType>
 
-        <InvalidReturnType>
-            <errorLevel type="info">
-                <directory name="tests/Mock"/>
-                <directory name="tests/Pos/Mock"/>
-            </errorLevel>
-        </InvalidReturnType>
-
         <InternalMethod>
             <errorLevel type="info">
                 <file name="src/Pos/Command/*Command.php"/>
@@ -57,7 +57,8 @@
             <errorLevel type="info">
                 <!-- <deprecated> tag:v6.0.0 - remove with Shopware 6.5 compatibility -->
                 <referencedMethod name="Shopware\Core\Framework\Struct\Collection::getIterator"/>
-                <referencedMethod name="Shopware\Core\System\SalesChannel\SalesChannelContext::getFallbackCustomerGroup"/>
+                <referencedMethod
+                    name="Shopware\Core\System\SalesChannel\SalesChannelContext::getFallbackCustomerGroup"/>
                 <referencedMethod name="Doctrine\DBAL\Connection::executeUpdate"/>
 
                 <!-- <deprecated> tag:v6.0.0 - remove -->
@@ -94,10 +95,6 @@
 
         <DeprecatedClass>
             <errorLevel type="info">
-                <!-- will be removed with PPI-388-->
-                <referencedClass name="Shopware\Core\Framework\MessageQueue\MessageQueueStatsDefinition"/>
-                <referencedClass name="Shopware\Core\Framework\MessageQueue\MessageQueueStatsEntity"/>
-
                 <!-- <deprecated> tag:v6.0.0 - remove -->
                 <referencedClass name="Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler"/>
                 <file name="tests/Checkout/SPBCheckout/SPBCheckoutSubscriberTest.php"/>
@@ -115,23 +112,15 @@
 
         <PossiblyInvalidArgument>
             <errorLevel type="info">
-                <file name="tests/Pos/Sync/Product/*Test.php"/>
                 <file name="tests/Pos/Sync/Inventory/StockSubscriberTest.php"/>
             </errorLevel>
         </PossiblyInvalidArgument>
 
         <PossiblyUndefinedMethod>
             <errorLevel type="info">
-                <file name="tests/Pos/Sync/Product/*Test.php"/>
                 <file name="tests/Pos/Sync/Inventory/StockSubscriberTest.php"/>
             </errorLevel>
         </PossiblyUndefinedMethod>
-
-        <UnresolvableInclude>
-            <errorLevel type="info">
-                <file name="tests/TestBootstrap.php"/>
-            </errorLevel>
-        </UnresolvableInclude>
 
         <UndefinedConstant>
             <errorLevel type="info">
@@ -142,10 +131,8 @@
 
         <UnsafeInstantiation>
             <errorLevel type="info">
-                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
+                <file name="tests/Pos/Mock/Repositories/RepoTrait.php"/>
                 <file name="tests/OrdersApi/Builder/APMOrderBuilderTest.php"/>
-                <!-- constructor is final, error of psalm -->
-                <file name="src/Util/Lifecycle/Method/PaymentMethodDataRegistry.php"/>
             </errorLevel>
         </UnsafeInstantiation>
 
@@ -157,13 +144,33 @@
 
         <UndefinedDocblockClass>
             <errorLevel type="info">
-                <file name="tests/OpenApi/OpenApiTest.php"/>
-                <file name="tests/Util/LoggerTest.php"/>
+                <referencedClass name="UnitEnum"/>
             </errorLevel>
         </UndefinedDocblockClass>
+
+        <DocblockTypeContradiction>
+            <errorLevel type="info">
+                <!-- remove with Symfony 5.4 base -->
+                <file name="src/Administration/PayPalPaymentMethodController.php"/>
+            </errorLevel>
+        </DocblockTypeContradiction>
+
+        <RedundantCastGivenDocblockType>
+            <errorLevel type="info">
+                <!-- remove with Symfony 5.4 base -->
+                <file name="src/PaymentsApi/Administration/PayPalPaymentController.php"/>
+                <file name="src/OrdersApi/Administration/Service/CaptureRefundCreator.php"/>
+                <file name="src/OrdersApi/Administration/PayPalOrdersController.php"/>
+            </errorLevel>
+        </RedundantCastGivenDocblockType>
 
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>
         <MissingConstructor errorLevel="info"/>
+        <MissingFile>
+            <errorLevel type="info">
+                <file name="tests/TestBootstrap.php"/>
+            </errorLevel>
+        </MissingFile>
     </issueHandlers>
 </psalm>
