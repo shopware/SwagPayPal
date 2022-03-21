@@ -7,7 +7,6 @@ import SwagPayPalScriptLoading from './swag-paypal.script-loading';
 
 const availableAPMs = [
     'card',
-    'credit',
     'bancontact',
     'blik',
     'eps',

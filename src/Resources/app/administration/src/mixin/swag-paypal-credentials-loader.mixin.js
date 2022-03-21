@@ -34,7 +34,6 @@ Mixin.register('swag-paypal-credentials-loader', {
                 displayMode: 'minibrowser',
                 partnerLogoUrl: 'https://assets.shopware.com/media/logos/shopware_logo_blue.svg',
             },
-            showHintMerchantIdMustBeEnteredManually: false,
         };
     },
 
@@ -47,7 +46,7 @@ Mixin.register('swag-paypal-credentials-loader', {
                 sellerNonce: this.nonceLive,
             });
 
-            return `https://www.paypal.com/US/merchantsignup/partner/onboardingentry?${params.toString()}`;
+            return `https://www.paypal.com/bizsignup/partner/entry?${params.toString()}`;
         },
         onboardingUrlSandbox() {
             const params = this.createRequestParameter({
@@ -58,24 +57,6 @@ Mixin.register('swag-paypal-credentials-loader', {
             });
 
             return `https://www.sandbox.paypal.com/bizsignup/partner/entry?${params.toString()}`;
-        },
-    },
-
-    watch: {
-        '$route.query.merchantIdInPayPal': {
-            handler(newVal, oldVal) {
-                if (newVal === oldVal || !newVal || this.isGetCredentialsSuccessful !== true) {
-                    return;
-                }
-
-                this.onNewMerchantIdReceived(newVal, this.lastOnboardingSandbox);
-                this.removeMerchantIdInPayPalFromRoute();
-                this.showHintMerchantIdMustBeEnteredManually = false;
-
-                this.optimisticSave();
-            },
-            deep: true,
-            immediate: true,
         },
     },
 
@@ -162,6 +143,7 @@ Mixin.register('swag-paypal-credentials-loader', {
             }
 
             this.isGetCredentialsSuccessful = null;
+            this.lastOnboardingSandbox = sandbox;
 
             this.$emit('on-change-loading', true);
 
@@ -172,25 +154,20 @@ Mixin.register('swag-paypal-credentials-loader', {
                 sandbox,
             ).then((response) => {
                 this.isGetCredentialsSuccessful = true;
-                this.lastOnboardingSandbox = sandbox;
-                this.onPayPalCredentialsLoadSuccess(response.client_id, response.client_secret, sandbox);
+                this.onPayPalCredentialsLoadSuccess(response.client_id, response.client_secret, response.payer_id, sandbox);
             }).catch(() => {
                 this.isGetCredentialsSuccessful = false;
                 this.onPayPalCredentialsLoadFailed(sandbox);
             }).finally(() => {
                 this.$emit('on-change-loading', false);
-                this.optimisticSave();
             });
-        },
-
-        removeMerchantIdInPayPalFromRoute() {
-            this.$router.replace({ path: this.$route.path });
         },
 
         /**
          *
          * @param clientId string
          * @param clientSecret string
+         * @param merchantPayerId string
          * @param sandbox bool
          */
         onPayPalCredentialsLoadSuccess() {
@@ -212,32 +189,6 @@ Mixin.register('swag-paypal-credentials-loader', {
                 'swag-paypal-credentials-loader Mixin',
                 'When using the paypal-credentials-loader mixin ' +
                 'you have to implement your custom "onPayPalCredentialsLoadFailed()" method.',
-            );
-        },
-
-        /**
-         *
-         * @param merchantId string
-         * @param sandbox bool
-         */
-        onNewMerchantIdReceived() {
-            // needs to be implemented by using component
-            debug.warn(
-                'swag-paypal-credentials-loader Mixin',
-                'When using the paypal-credentials-loader mixin ' +
-                'you have to implement your custom "onNewMerchantIdReceived()" method.',
-            );
-        },
-
-        optimisticSave() {
-            // since the merchantId and the credentials come from different sources
-            // we have to make sure that all values are present before saving them.
-
-            // needs to be implemented by using component
-            debug.warn(
-                'swag-paypal-credentials-loader Mixin',
-                'When using the paypal-credentials-loader mixin ' +
-                'you have to implement your custom "optimisticSave()" method.',
             );
         },
     },

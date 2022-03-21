@@ -430,6 +430,7 @@ class PlusSubscriberTest extends TestCase
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
             Settings::PLUS_CHECKOUT_ENABLED => $plusEnabled,
+            Settings::MERCHANT_LOCATION => Settings::MERCHANT_LOCATION_GERMANY,
         ] : []);
 
         /** @var RouterInterface $router */

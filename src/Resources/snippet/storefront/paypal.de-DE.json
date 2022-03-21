@@ -28,7 +28,7 @@
                 "confirmDisclaimer": "Mit Klicken auf den Button akzeptieren Sie die <a href=\"https://www.ratepay.com/legal-payment-terms\" target=\"_blank\">Ratepay Zahlungsbedingungen</a> und erklären sich mit der Durchführung einer <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\">Risikoprüfung durch Ratepay</a>, unseren Partner, einverstanden. Sie akzeptieren auch PayPal’s <a href=\"https://www.paypal.com/de/webapps/mpp/ua/rechnungskauf-mit-ratepay?locale.x=en_DE\" target=\"_blank\">Datenschutzerklärung</a>. Falls Ihre Transaktion erfolgreich per Kauf auf Rechnung abgewickelt werden kann, wird der Kaufpreis an Ratepay abgetreten und Sie dürfen nur an Ratepay überweisen, nicht an den Händler.",
                 "finish": {
                     "title": "Die Zahlung wird bearbeitet",
-                    "subtitle": "Dies kann bis zu einer Minute dauern."
+                    "subtitle": "Die Verarbeitung kann evtl. einige Minuten dauern. Bitte schließen sie dieses Fenster nicht, sie werden weitergeleitet."
                 }
             },
             "error": {

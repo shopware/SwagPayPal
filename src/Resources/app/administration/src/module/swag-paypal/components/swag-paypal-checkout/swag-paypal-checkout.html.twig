@@ -34,17 +34,7 @@
         </sw-alert>
         {% endblock %}
 
-        {% block swag_paypal_content_card_channel_config_checkout_container_merchantId_must_be_entered_manually %}
-            <sw-alert
-                v-if="showHintMerchantIdMustBeEnteredManually"
-                variant="warning"
-                class="swag-paypal-checkout__banner"
-            >
-                {{ $tc('swag-paypal.settingForm.checkout.warningMerchantIdMustBeEnteredManually') }}
-            </sw-alert>
-        {% endblock %}
-
-        {% block swag_paypal_content_card_channel_config_checkout_container_onboarding%}
+        {% block swag_paypal_content_card_channel_config_checkout_container_onboarding %}
         <div class="swag-paypal-checkout-container-onboarding">
             {% block swag_paypal_content_card_channel_config_checkout_container_onboarding_button %}
             <template v-if="isLive">
@@ -127,8 +117,8 @@
                     <div class="swag-paypal-checkout-payment-method__item-dynamic">
                         {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_pui_help_text %}
                         <sw-help-text
-                            v-if="showPUIToolTip(paymentMethod)"
-                            :text="$tc('swag-paypal.settingForm.checkout.puiToolTip')"
+                            v-if="availabilityToolTip(paymentMethod)"
+                            :text="availabilityToolTip(paymentMethod)"
                         />
                         {% endblock %}
 

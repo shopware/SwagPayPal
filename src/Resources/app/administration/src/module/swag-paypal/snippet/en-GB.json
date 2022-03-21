@@ -38,7 +38,6 @@
                 "cardTitle": "PayPal Checkout",
                 "description": "PayPal Checkout is the new all-in-one solution that lets you offer powerful flexibile payment processing features on the marketplaces and other commerce platforms.",
                 "banner": "With PayPal Checkout, you can offer your customers payment by invoice, credit card and other local payment methods. PayPal Checkout supports you with the latest technology and brings you the highest flexibility. You keep your existing payment methods, and the fees remain the same! Activate PayPal Checkout and deactivate PayPal PLUS to avoid duplicate payment methods in your shop. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/\" target=\"_blank\">More information</a>",
-                "warningMerchantIdMustBeEnteredManually": "The Merchant ID was not transferred. Please enter it manually below in the credentials.",
                 "button": {
                     "title": "Start onboarding"
                 },
@@ -54,9 +53,25 @@
                 "appImageAlt": "PayPal",
                 "editDetail": "Edit Detail",
                 "startOnboardingButtonLabel": "Start onboarding",
-                "puiToolTip": "Pay Upon Invoice is available for the following countries: Germany",
+                "availabilityToolTip": {
+                    "BancontactAPMHandler": "Bancontact is available for the following countries: Belgium",
+                    "BlikAPMHandler": "BLIK is available for the following countries: Poland",
+                    "BoletoBancarioAPMHandler": "Boleto Bancário is available for the following countries: Brazil",
+                    "EpsAPMHandler": "eps is available for the following countries: Austria",
+                    "GiropayAPMHandler": "Giropay is available for the following countries: Germany",
+                    "IdealAPMHandler": "iDEAL is available for the following countries: Netherlands",
+                    "MultibancoAPMHandler": "Multibanco is available for the following countries: Portugal",
+                    "MyBankAPMHandler": "MyBank is available for the following countries: Italy",
+                    "OxxoAPMHandler": "OXXO is available for the following countries: Mexico",
+                    "P24APMHandler": "Przelewy24 is available for the following countries: Poland",
+                    "PUIHandler": "Pay upon invoice is available for the following countries: Germany",
+                    "SEPAHandler": "SEPA Lastschrift is available for the following countries: Germany",
+                    "SofortAPMHandler": "Sofort is available for the following countries: Austria, Belgium, Germany, Italy, Netherlands, Spain, United Kingdom",
+                    "TrustlyAPMHandler": "Trustly is available for the following countries: Estonia, Finland, Netherlands, Sweden"
+                },
                 "onboardingStatusText": {
                     "active": "Authorized",
+                    "limited": "Limited",
                     "pending": "Authorization pending",
                     "inactive": "Onboarding needed"
                 },

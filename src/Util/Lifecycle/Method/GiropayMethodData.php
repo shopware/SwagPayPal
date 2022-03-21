@@ -48,7 +48,7 @@ class GiropayMethodData extends AbstractMethodData
         return [
             'name' => self::AVAILABILITY_RULE_NAME,
             'priority' => 1,
-            'description' => 'Determines whether or not the PayPal - eps payment method is available for the given rule context.',
+            'description' => 'Determines whether or not the PayPal - Giropay payment method is available for the given rule context.',
             'conditions' => [
                 [
                     'type' => (new AndRule())->getName(),

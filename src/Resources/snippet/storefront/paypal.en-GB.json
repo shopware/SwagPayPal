@@ -28,7 +28,7 @@
                 "confirmDisclaimer": "By clicking on the button, you agree to the <a href=\"https://www.ratepay.com/legal-payment-terms\" target=\"_blank\">terms of payment</a> and <a href=\"https://www.ratepay.com/legal-payment-dataprivacy\" target=\"_blank\">performance of a risk check</a> from the payment partner, Ratepay. You also agree to PayPal’s <a href=\"https://www.paypal.com/us/webapps/mpp/ua/privacy-full\" target=\"_blank\">privacy statement</a>. If your request to purchase Upon invoice is accepted, the purchase price claim will be assigned to Ratepay, and you may only pay Ratepay, not the merchant.",
                 "finish": {
                     "title": "The payment is being processed",
-                    "subtitle": "This may take up to one minute."
+                    "subtitle": "Processing may take up to several minutes. Please do not close this window, you will be redirected."
                 }
             },
             "error": {

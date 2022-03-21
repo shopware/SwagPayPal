@@ -83,9 +83,9 @@ Static validation:
         - php bin/console dal:validate
     parallel:
         matrix:
-            -   PLATFORM_BRANCH: [ "trunk", "6.4.9.0" ]
+            -   PLATFORM_BRANCH: [ "trunk", "v6.4.9.0" ]
                 DEV_IMAGE: ["shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2", "shopware/development:8.1-composer-2"]
-            -   PLATFORM_BRANCH: "6.4.4.0"
+            -   PLATFORM_BRANCH: "v6.4.4.0"
                 REQUIRED_SYMFONY: "5.3.13"
                 DEV_IMAGE: ["shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2"]
 
@@ -132,10 +132,10 @@ PHPUnit:
         matrix:
             -   MYSQL_IMAGE: mariadb:10.4
                 DEV_IMAGE: shopware/development:7.4-composer-2
-                PLATFORM_BRANCH: ["trunk", "6.4.9.0"]
+                PLATFORM_BRANCH: ["trunk", "v6.4.9.0"]
             -   MYSQL_IMAGE: mariadb:10.4
                 DEV_IMAGE: shopware/development:7.4-composer-2
-                PLATFORM_BRANCH: "6.4.4.0"
+                PLATFORM_BRANCH: "v6.4.4.0"
                 DEVELOPMENT_BRANCH: "v6.4.4.0"
                 REQUIRED_SYMFONY: "5.3.13"
                 CMS_EXTENSION_BRANCH: "2.2-sw6.4.2.0"
@@ -150,13 +150,13 @@ PHPUnit:
                   - mysql:5.7
                   - mariadb:10.3
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                PLATFORM_BRANCH: "6.4.9.0"
+                PLATFORM_BRANCH: "v6.4.9.0"
                 RUN_IN_MR: "false"
             -   MYSQL_IMAGE:
                     - mysql:5.7
                     - mariadb:10.3
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                PLATFORM_BRANCH: "6.4.4.0"
+                PLATFORM_BRANCH: "v6.4.4.0"
                 DEVELOPMENT_BRANCH: "v6.4.4.0"
                 CMS_EXTENSION_BRANCH: "2.2-sw6.4.2.0"
                 REQUIRED_SYMFONY: "5.3.13"
@@ -171,13 +171,13 @@ PHPUnit:
                 MYSQL_IMAGE:
                   - mysql:8.0.19
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                PLATFORM_BRANCH: "6.4.9.0"
+                PLATFORM_BRANCH: "v6.4.9.0"
                 MYSQL_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
                 RUN_IN_MR: "false"
             -   MYSQL_IMAGE:
                     - mysql:8.0.19
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2" ]
-                PLATFORM_BRANCH: "6.4.4.0"
+                PLATFORM_BRANCH: "v6.4.4.0"
                 DEVELOPMENT_BRANCH: "v6.4.4.0"
                 CMS_EXTENSION_BRANCH: "2.2-sw6.4.2.0"
                 REQUIRED_SYMFONY: "5.3.13"

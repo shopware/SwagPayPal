@@ -118,7 +118,7 @@ class Update
             $this->updateTo410();
         }
 
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '4.9.0', '<')) {
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '4.9.1', '<')) {
             $this->updateTo500($updateContext->getContext());
         }
     }

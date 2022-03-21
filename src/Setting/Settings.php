@@ -77,7 +77,7 @@ final class Settings
         self::SUBMIT_CART => true,
         self::LANDING_PAGE => ApplicationContext::LANDING_PAGE_TYPE_NO_PREFERENCE,
         self::SEND_ORDER_NUMBER => true,
-        self::MERCHANT_LOCATION => self::MERCHANT_LOCATION_GERMANY,
+        self::MERCHANT_LOCATION => self::MERCHANT_LOCATION_OTHER,
         self::ECS_DETAIL_ENABLED => true,
         self::ECS_CART_ENABLED => true,
         self::ECS_OFF_CANVAS_ENABLED => true,
@@ -91,7 +91,7 @@ final class Settings
         self::SPB_BUTTON_COLOR => 'gold',
         self::SPB_BUTTON_SHAPE => 'rect',
         self::SPB_SHOW_PAY_LATER => true,
-        self::PLUS_CHECKOUT_ENABLED => true,
+        self::PLUS_CHECKOUT_ENABLED => false,
         self::INSTALLMENT_BANNER_ENABLED => true,
         self::LOGGING_LEVEL => Logger::WARNING,
     ];

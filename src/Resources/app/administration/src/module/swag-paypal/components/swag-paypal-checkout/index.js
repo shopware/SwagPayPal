@@ -175,7 +175,9 @@ Component.register('swag-paypal-checkout', {
 
         deactivatePayPalPlus() {
             this.$set(this.actualConfigData, 'SwagPayPal.settings.plusCheckoutEnabled', false);
-            this.$emit('on-deactivate-payal-plus');
+            this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantLocation', 'other');
+            this.$set(this.actualConfigData, 'SwagPayPal.settings.spbAlternativePaymentMethodsEnabled', false);
+            this.$emit('on-deactivate-paypal-plus');
 
             this.plusDeprecationModalOpen = false;
         },
@@ -269,6 +271,7 @@ Component.register('swag-paypal-checkout', {
 
             switch (this.onboardingStatus(paymentMethod)) {
                 case 'active': variant = 'success'; break;
+                case 'limited': variant = 'danger'; break;
                 case 'inactive': variant = 'neutral'; break;
                 case 'pending': variant = 'info'; break;
                 default: variant = 'neutral';
@@ -283,6 +286,9 @@ Component.register('swag-paypal-checkout', {
             switch (this.onboardingStatus(paymentMethod)) {
                 case 'active':
                     variant = '#37D046';
+                    break;
+                case 'limited':
+                    variant = '#ff9800';
                     break;
                 case 'inactive':
                     variant = '#52667A';
@@ -307,73 +313,40 @@ Component.register('swag-paypal-checkout', {
             return this.onboardingStatus(paymentMethod) === 'active';
         },
 
-        showPUIToolTip(paymentMethod) {
-            if (paymentMethod.handlerIdentifier !== 'Swag\\PayPal\\Checkout\\Payment\\Method\\PUIHandler') {
-                return false;
+        availabilityToolTip(paymentMethod) {
+            const handlerElements = paymentMethod.handlerIdentifier.split('\\');
+            const handlerName = handlerElements[handlerElements.length - 1];
+            const snippetKey = `swag-paypal.settingForm.checkout.availabilityToolTip.${handlerName}`;
+
+            if (!this.$te(snippetKey)) {
+                return null;
             }
 
-            return this.onboardingStatus(paymentMethod) === 'inactive';
+            return this.$tc(snippetKey);
         },
 
         closeModal() {
             this.plusDeprecationModalOpen = false;
         },
 
-        onPayPalCredentialsLoadSuccess(clientId, clientSecret, sandbox) {
-            if (sandbox) {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientIdSandbox', clientId);
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecretSandbox', clientSecret);
-            } else {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientId', clientId);
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecret', clientSecret);
-            }
+        onPayPalCredentialsLoadSuccess(clientId, clientSecret, merchantPayerId, sandbox) {
+            this.setConfig(clientId, clientSecret, merchantPayerId, sandbox);
+            this.$emit('on-save-settings');
         },
 
         onPayPalCredentialsLoadFailed(sandbox) {
-            if (sandbox) {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientIdSandbox', '');
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecretSandbox', '');
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantPayerIdSandbox', '');
-            } else {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientId', '');
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecret', '');
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantPayerId', '');
-            }
+            this.setConfig('', '', '', sandbox);
             this.createNotificationError({
                 message: this.$tc('swag-paypal.settingForm.credentials.button.messageFetchedError'),
                 duration: 10000,
             });
         },
 
-        onNewMerchantIdReceived(merchantId, sandbox) {
-            if (sandbox) {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantPayerIdSandbox', merchantId);
-            } else {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantPayerId', merchantId);
-            }
-        },
-
-        optimisticSave() {
-            const cfg = this.actualConfigData;
-            const suffix = cfg['SwagPayPal.settings.sandbox'] ? 'Sandbox' : '';
-
-            const clientIdExists = !!cfg[`SwagPayPal.settings.clientId${suffix}`];
-            const clientSecretExists = !!cfg[`SwagPayPal.settings.clientSecret${suffix}`];
-            const merchantIdExists = !!cfg[`SwagPayPal.settings.merchantPayerId${suffix}`];
-
-            const allowSave = clientIdExists
-                            && clientSecretExists
-                            && merchantIdExists;
-
-            if (allowSave) {
-                this.$emit('on-save-settings');
-
-                return;
-            }
-
-            if (!merchantIdExists) {
-                this.showHintMerchantIdMustBeEnteredManually = true;
-            }
+        setConfig(clientId, clientSecret, merchantPayerId, sandbox) {
+            const suffix = sandbox ? 'Sandbox' : '';
+            this.$set(this.actualConfigData, `SwagPayPal.settings.clientId${suffix}`, clientId);
+            this.$set(this.actualConfigData, `SwagPayPal.settings.clientSecret${suffix}`, clientSecret);
+            this.$set(this.actualConfigData, `SwagPayPal.settings.merchantPayerId${suffix}`, merchantPayerId);
         },
 
         checkBoolFieldInheritance(value) {

@@ -38,7 +38,6 @@
                 "cardTitle": "PayPal Checkout",
                 "description": "PayPal Checkout ist die neue All-in-One-Lösung, mit der Sie leistungsstarke und flexible Funktionen zur Zahlungsabwicklung auf Marktplätzen und anderen Handelsplattformen anbieten können.",
                 "banner": "Mit PayPal Checkout Kannst Du Deinen Kunden die Bezahlung per Rechnung, Kreditkarte und viele andere lokale Zahlungsmethoden anbieten. PayPal Checkout unterstützt Dich mit der neuesten Technologie und bringt Dir höchste Flexibilität. Du behältst Deine bisherigen Zahlungsarten und die Gebühren bleiben gleich! Aktiviere PayPal Checkout und deaktiviere PayPal PLUS, um doppelte Zahlungsmethoden in Deinem Shop zu vermeiden. <a href=\"https://www.shopware.com/de/news/paypal-launcht-neues-produkt/\" target=\"_blank\">Mehr Informationen</a>",
-                "warningMerchantIdMustBeEnteredManually": "Die Sandbox-PayPal-Händler-ID wurde nicht übertragen. Bitte geben Sie sie unten in den API-Zugangsdaten manuell ein.",
                 "button": {
                     "title": "Start des Onboarding"
                 },
@@ -54,9 +53,25 @@
                 "appImageAlt": "PayPal",
                 "editDetail": "Bearbeiten",
                 "startOnboardingButtonLabel": "Onboarding starten",
-                "puiToolTip": "Rechnungskauf ist für die folgenden Länder verfügbar: Deutschland",
+                "availabilityToolTip": {
+                    "BancontactAPMHandler": "Bancontact ist für die folgenden Länder verfügbar: Belgien",
+                    "BlikAPMHandler": "BLIK ist für die folgenden Länder verfügbar: Polen",
+                    "BoletoBancarioAPMHandler": "Boleto Bancário ist für die folgenden Länder verfügbar: Brasilien",
+                    "EpsAPMHandler": "eps ist für die folgenden Länder verfügbar: Österreich",
+                    "GiropayAPMHandler": "Giropay ist für die folgenden Länder verfügbar: Deutschland",
+                    "IdealAPMHandler": "iDEAL ist für die folgenden Länder verfügbar: Niederlande",
+                    "MultibancoAPMHandler": "Multibanco ist für die folgenden Länder verfügbar: Portugal",
+                    "MyBankAPMHandler": "MyBank ist für die folgenden Länder verfügbar: Italien",
+                    "OxxoAPMHandler": "OXXO ist für die folgenden Länder verfügbar: Mexiko",
+                    "P24APMHandler": "Przelewy24 ist für die folgenden Länder verfügbar: Polen",
+                    "PUIHandler": "Rechnungskauf ist für die folgenden Länder verfügbar: Deutschland",
+                    "SEPAHandler": "SEPA Lastschrift ist für die folgenden Länder verfügbar: Deutschland",
+                    "SofortAPMHandler": "Sofort ist für die folgenden Länder verfügbar: Belgien, Deutschland, Italien, Niederlande, Österreich, Spanien, Vereinigtes Königreich",
+                    "TrustlyAPMHandler": "Trustly ist für die folgenden Länder verfügbar: Estland, Finnland, Niederlande, Schweden",
+                },
                 "onboardingStatusText": {
                     "active": "Autorisiert",
+                    "limited": "Limitiert",
                     "pending": "Authorisierung ausstehend",
                     "inactive": "Onboarding benötigt"
                 },
