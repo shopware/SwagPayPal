@@ -3,6 +3,7 @@ import './page/swag-paypal';
 import './components/swag-paypal-settings-hint';
 import './components/swag-paypal-behavior';
 import './components/swag-paypal-checkout';
+import './components/swag-paypal-created-component-helper';
 import './components/swag-paypal-credentials';
 import './components/swag-paypal-express';
 import './components/swag-paypal-installment';

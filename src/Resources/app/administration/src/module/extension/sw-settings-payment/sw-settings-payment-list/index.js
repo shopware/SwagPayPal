@@ -16,15 +16,7 @@ Component.override('sw-settings-payment-list', {
         };
     },
 
-    created() {
-        this.createdComponent();
-    },
-
     methods: {
-        createdComponent() {
-            this.fetchMerchantIntegrations();
-        },
-
         needsOnboarding(item) {
             const integrationIds = Object.keys(this.merchantIntegrations);
 
