@@ -8,10 +8,8 @@
 namespace Swag\PayPal\Setting\Service;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResourceInterface;
-use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
@@ -19,27 +17,28 @@ class MerchantIntegrationsService implements MerchantIntegrationsServiceInterfac
 {
     private MerchantIntegrationsResourceInterface $merchantIntegrationsResource;
 
-    private SystemConfigService $systemConfigService;
+    private CredentialsUtilInterface $credentialsUtil;
 
     private PaymentMethodDataRegistry $paymentMethodDataRegistry;
 
     public function __construct(
         MerchantIntegrationsResourceInterface $merchantIntegrationsResource,
-        SystemConfigService $systemConfigService,
+        CredentialsUtilInterface $credentialsUtil,
         PaymentMethodDataRegistry $paymentMethodDataRegistry
     ) {
         $this->merchantIntegrationsResource = $merchantIntegrationsResource;
-        $this->systemConfigService = $systemConfigService;
+        $this->credentialsUtil = $credentialsUtil;
         $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
     }
 
     public function fetchMerchantIntegrations(Context $context, ?string $salesChannelId = null): array
     {
-        $sandboxActive = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId);
-        $merchantId = $this->systemConfigService->getString($sandboxActive ? Settings::MERCHANT_PAYER_ID_SANDBOX : Settings::MERCHANT_PAYER_ID, $salesChannelId);
-
         try {
-            $integrations = $this->merchantIntegrationsResource->get($merchantId, $salesChannelId, $sandboxActive);
+            $integrations = $this->merchantIntegrationsResource->get(
+                $this->credentialsUtil->getMerchantPayerId($salesChannelId),
+                $salesChannelId,
+                $this->credentialsUtil->isSandbox($salesChannelId)
+            );
         } catch (\Throwable $e) {
             // just catch exceptions thrown in case of invalid credentials
             $integrations = null;

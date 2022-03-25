@@ -45,7 +45,8 @@
             <script type="application/json" fncls="fnparams-dede7cc5-15fd-4c75-a9f4-36c430ee3a99">
                 {
                     "f": "{{ puiFraudnetData.sessionIdentifier }}",
-                    "s": "{{ puiFraudnetData.websiteIdentifier }}"
+                    "s": "{{ puiFraudnetData.websiteIdentifier }}",
+                    "sandbox": {{ puiFraudnetData.sandbox ? "true" : "false" }}
                 }
             </script>
             <script type="text/javascript" src="https://c.paypal.com/da/r/fb.js"></script>

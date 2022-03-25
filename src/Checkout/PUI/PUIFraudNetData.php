@@ -17,6 +17,8 @@ class PUIFraudNetData extends Struct
 
     protected string $paymentMethodId;
 
+    protected bool $sandbox;
+
     public function getSessionIdentifier(): string
     {
         return $this->sessionIdentifier;
@@ -45,5 +47,15 @@ class PUIFraudNetData extends Struct
     public function setPaymentMethodId(string $paymentMethodId): void
     {
         $this->paymentMethodId = $paymentMethodId;
+    }
+
+    public function isSandbox(): bool
+    {
+        return $this->sandbox;
+    }
+
+    public function setSandbox(bool $sandbox): void
+    {
+        $this->sandbox = $sandbox;
     }
 }

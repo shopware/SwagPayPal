@@ -21,6 +21,7 @@
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="router"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
         </service>
 
         <service id="Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService" public="true">
@@ -29,6 +30,7 @@
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="router"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
         </service>
 
         <service id="Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService" public="true">
@@ -37,6 +39,7 @@
             <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="router"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
         </service>
 
         <service id="Swag\PayPal\Storefront\Data\CheckoutDataSubscriber">

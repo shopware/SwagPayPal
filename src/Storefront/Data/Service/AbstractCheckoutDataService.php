@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
+use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
@@ -32,18 +33,22 @@ abstract class AbstractCheckoutDataService
 
     private SystemConfigService $systemConfigService;
 
+    private CredentialsUtilInterface $credentialsUtil;
+
     public function __construct(
         PaymentMethodDataRegistry $paymentMethodDataRegistry,
         IdentityResource $identityResource,
         LocaleCodeProvider $localeCodeProvider,
         RouterInterface $router,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
+        CredentialsUtilInterface $credentialsUtil
     ) {
         $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
         $this->identityResource = $identityResource;
         $this->localeCodeProvider = $localeCodeProvider;
         $this->router = $router;
         $this->systemConfigService = $systemConfigService;
+        $this->credentialsUtil = $credentialsUtil;
     }
 
     abstract public function buildCheckoutData(SalesChannelContext $context, ?Cart $cart = null, ?OrderEntity $order = null): ?AbstractCheckoutData;
@@ -61,12 +66,6 @@ abstract class AbstractCheckoutDataService
         );
 
         $salesChannelId = $context->getSalesChannelId();
-        $clientId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
-            ? $this->systemConfigService->getString(Settings::CLIENT_ID_SANDBOX, $salesChannelId)
-            : $this->systemConfigService->getString(Settings::CLIENT_ID, $salesChannelId);
-        $merchantPayerId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
-            ? $this->systemConfigService->getString(Settings::MERCHANT_PAYER_ID_SANDBOX, $salesChannelId)
-            : $this->systemConfigService->getString(Settings::MERCHANT_PAYER_ID, $salesChannelId);
         $customer = $context->getCustomer();
 
         if ($customer === null) {
@@ -74,8 +73,8 @@ abstract class AbstractCheckoutDataService
         }
 
         $data = [
-            'clientId' => $clientId,
-            'merchantPayerId' => $merchantPayerId,
+            'clientId' => $this->credentialsUtil->getClientId($salesChannelId),
+            'merchantPayerId' => $this->credentialsUtil->getMerchantPayerId($salesChannelId),
             'clientToken' => $this->identityResource->getClientToken($salesChannelId)->getClientToken(),
             'languageIso' => $this->getButtonLanguage($context),
             'currency' => $context->getCurrency()->getIsoCode(),

@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\PUI\Service;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\PUI\PUIFraudNetData;
+use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 
@@ -17,9 +18,14 @@ class PUIFraudNetDataService
 {
     private PaymentMethodDataRegistry $paymentMethodDataRegistry;
 
-    public function __construct(PaymentMethodDataRegistry $paymentMethodDataRegistry)
-    {
+    private CredentialsUtilInterface $credentialsUtil;
+
+    public function __construct(
+        PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        CredentialsUtilInterface $credentialsUtil
+    ) {
         $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
+        $this->credentialsUtil = $credentialsUtil;
     }
 
     public function buildCheckoutData(SalesChannelContext $context): PUIFraudNetData
@@ -32,6 +38,7 @@ class PUIFraudNetDataService
         return (new PUIFraudNetData())->assign([
             'sessionIdentifier' => Uuid::randomHex(),
             'websiteIdentifier' => 'shopware6_checkout-page',
+            'sandbox' => $this->credentialsUtil->isSandbox($context->getSalesChannelId()),
             'paymentMethodId' => $paymentMethodId,
         ]);
     }

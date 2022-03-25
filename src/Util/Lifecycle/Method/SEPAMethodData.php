@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
-use Shopware\Core\Checkout\Cart\Rule\CartAmountRule;
 use Shopware\Core\Checkout\Customer\Rule\BillingCountryRule;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Rule\Container\AndRule;

@@ -59,6 +59,7 @@
                 <referencedMethod name="Shopware\Core\Framework\Struct\Collection::getIterator"/>
                 <referencedMethod
                     name="Shopware\Core\System\SalesChannel\SalesChannelContext::getFallbackCustomerGroup"/>
+                <referencedMethod name="Shopware\Core\System\StateMachine\StateMachineRegistry::getInitialState"/>
                 <referencedMethod name="Doctrine\DBAL\Connection::executeUpdate"/>
 
                 <!-- <deprecated> tag:v6.0.0 - remove -->

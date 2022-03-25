@@ -15,6 +15,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -32,6 +33,8 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
 
     private SystemConfigService $systemConfigService;
 
+    private CredentialsUtilInterface $credentialsUtil;
+
     private CartPriceService $cartPriceService;
 
     public function __construct(
@@ -40,6 +43,7 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
         RouterInterface $router,
         PaymentMethodUtil $paymentMethodUtil,
         SystemConfigService $systemConfigService,
+        CredentialsUtilInterface $credentialsUtil,
         CartPriceService $cartPriceService
     ) {
         $this->cartService = $cartService;
@@ -47,6 +51,7 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
         $this->router = $router;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->systemConfigService = $systemConfigService;
+        $this->credentialsUtil = $credentialsUtil;
         $this->cartPriceService = $cartPriceService;
     }
 
@@ -71,9 +76,6 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
 
         $context = $salesChannelContext->getContext();
         $salesChannelId = $salesChannelContext->getSalesChannelId();
-        $clientId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
-            ? $this->systemConfigService->getString(Settings::CLIENT_ID_SANDBOX, $salesChannelId)
-            : $this->systemConfigService->getString(Settings::CLIENT_ID, $salesChannelId);
 
         return (new ExpressCheckoutButtonData())->assign([
             'productDetailEnabled' => $this->systemConfigService->getBool(Settings::ECS_DETAIL_ENABLED, $salesChannelId),
@@ -83,7 +85,7 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
             'listingEnabled' => $this->systemConfigService->getBool(Settings::ECS_LISTING_ENABLED, $salesChannelId),
             'buttonColor' => $this->systemConfigService->getString(Settings::ECS_BUTTON_COLOR, $salesChannelId),
             'buttonShape' => $this->systemConfigService->getString(Settings::ECS_BUTTON_SHAPE, $salesChannelId),
-            'clientId' => $clientId,
+            'clientId' => $this->credentialsUtil->getClientId($salesChannelId),
             'languageIso' => $this->getInContextButtonLanguage($salesChannelId, $context),
             'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
             'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $salesChannelId)),

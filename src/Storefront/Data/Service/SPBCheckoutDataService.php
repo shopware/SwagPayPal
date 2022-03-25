@@ -14,6 +14,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
+use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
@@ -35,9 +36,10 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
         IdentityResource $identityResource,
         LocaleCodeProvider $localeCodeProvider,
         RouterInterface $router,
-        SystemConfigService $systemConfigService
+        SystemConfigService $systemConfigService,
+        CredentialsUtilInterface $credentialsUtil
     ) {
-        parent::__construct($paymentMethodDataRegistry, $identityResource, $localeCodeProvider, $router, $systemConfigService);
+        parent::__construct($paymentMethodDataRegistry, $identityResource, $localeCodeProvider, $router, $systemConfigService, $credentialsUtil);
 
         $this->systemConfigService = $systemConfigService;
     }

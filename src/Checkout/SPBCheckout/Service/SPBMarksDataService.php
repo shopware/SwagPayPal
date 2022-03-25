@@ -11,6 +11,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksData;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
+use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -22,6 +23,8 @@ class SPBMarksDataService implements SPBMarksDataServiceInterface
 
     private SystemConfigService $systemConfigService;
 
+    private CredentialsUtilInterface $credentialsUtil;
+
     private PaymentMethodUtil $paymentMethodUtil;
 
     private LocaleCodeProvider $localeCodeProvider;
@@ -29,11 +32,13 @@ class SPBMarksDataService implements SPBMarksDataServiceInterface
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
         SystemConfigService $systemConfigService,
+        CredentialsUtilInterface $credentialsUtil,
         PaymentMethodUtil $paymentMethodUtil,
         LocaleCodeProvider $localeCodeProvider
     ) {
         $this->settingsValidationService = $settingsValidationService;
         $this->systemConfigService = $systemConfigService;
+        $this->credentialsUtil = $credentialsUtil;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->localeCodeProvider = $localeCodeProvider;
     }
@@ -58,17 +63,10 @@ class SPBMarksDataService implements SPBMarksDataServiceInterface
             return null;
         }
 
-        $clientId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
-            ? $this->systemConfigService->getString(Settings::CLIENT_ID_SANDBOX, $salesChannelId)
-            : $this->systemConfigService->getString(Settings::CLIENT_ID, $salesChannelId);
-        $merchantPayerId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId)
-            ? $this->systemConfigService->getString(Settings::MERCHANT_PAYER_ID_SANDBOX, $salesChannelId)
-            : $this->systemConfigService->getString(Settings::MERCHANT_PAYER_ID, $salesChannelId);
-
         $data = new SPBMarksData();
         $data->assign([
-            'clientId' => $clientId,
-            'merchantPayerId' => $merchantPayerId,
+            'clientId' => $this->credentialsUtil->getClientId($salesChannelId),
+            'merchantPayerId' => $this->credentialsUtil->getMerchantPayerId($salesChannelId),
             'paymentMethodId' => (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
             'useAlternativePaymentMethods' => $this->systemConfigService->getBool(Settings::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, $salesChannelId),
             'showPayLater' => $this->systemConfigService->getBool(Settings::SPB_SHOW_PAY_LATER, $salesChannelId),

@@ -30,6 +30,7 @@ use Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksSubscriber;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -210,6 +211,7 @@ class SPBMarksSubscriberTest extends TestCase
             new SPBMarksDataService(
                 new SettingsValidationService($settings, new NullLogger()),
                 $settings,
+                new CredentialsUtil($settings),
                 new PaymentMethodUtilMock(),
                 $this->getContainer()->get(LocaleCodeProvider::class)
             ),

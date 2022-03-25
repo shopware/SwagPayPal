@@ -40,6 +40,7 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
@@ -242,7 +243,7 @@ class InstallmentBannerSubscriberTest extends TestCase
             new SettingsValidationService($settings, new NullLogger()),
             $settings,
             $this->paymentMethodUtil,
-            new BannerDataService($this->paymentMethodUtil, $settings),
+            new BannerDataService($this->paymentMethodUtil, new CredentialsUtil($settings)),
             new NullLogger()
         );
     }

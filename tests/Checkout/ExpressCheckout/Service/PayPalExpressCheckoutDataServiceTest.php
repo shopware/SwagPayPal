@@ -29,6 +29,7 @@ use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -76,6 +77,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $router,
             $this->paymentMethodUtil,
             $this->systemConfigService,
+            new CredentialsUtil($this->systemConfigService),
             new CartPriceService()
         );
 

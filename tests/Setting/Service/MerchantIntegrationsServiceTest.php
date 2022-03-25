@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
@@ -70,7 +71,7 @@ class MerchantIntegrationsServiceTest extends TestCase
     {
         return new MerchantIntegrationsService(
             new MerchantIntegrationsResource($this->createPayPalClientFactory()),
-            $this->createDefaultSystemConfig(),
+            new CredentialsUtil($this->createDefaultSystemConfig()),
             $this->getContainer()->get(PaymentMethodDataRegistry::class)
         );
     }

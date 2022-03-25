@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\SynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Controller\StorefrontController;
@@ -106,6 +107,7 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
                     $salesChannelContext->getSalesChannelId(),
                     PartnerAttributionId::PAYPAL_PPCP,
                     true,
+                    Uuid::randomHex(),
                     $fraudnetSessionId
                 );
             } catch (PayPalApiException $exception) {

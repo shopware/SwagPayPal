@@ -48,6 +48,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -508,6 +509,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
                 $router,
                 $this->getContainer()->get(PaymentMethodUtil::class),
                 $settings,
+                new CredentialsUtil($settings),
                 new CartPriceService()
             ),
             new SettingsValidationService($settings, new NullLogger()),

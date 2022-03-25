@@ -31,6 +31,7 @@
 
         <service id="Swag\PayPal\Checkout\PUI\Service\PUIFraudNetDataService">
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\PUI\SalesChannel\PUIPaymentInstructionsRoute" public="true">

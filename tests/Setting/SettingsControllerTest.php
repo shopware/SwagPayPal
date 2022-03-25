@@ -13,6 +13,7 @@ use Swag\PayPal\RestApi\V1\Resource\CredentialsResource;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
 use Swag\PayPal\RestApi\V1\Service\TokenValidator;
 use Swag\PayPal\Setting\Service\ApiCredentialService;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Setting\SettingsController;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
@@ -78,7 +79,7 @@ class SettingsControllerTest extends TestCase
             ),
             new MerchantIntegrationsService(
                 new MerchantIntegrationsResource($this->createPayPalClientFactory()),
-                $this->createDefaultSystemConfig(),
+                new CredentialsUtil($this->createDefaultSystemConfig()),
                 $this->getContainer()->get(PaymentMethodDataRegistry::class)
             )
         );

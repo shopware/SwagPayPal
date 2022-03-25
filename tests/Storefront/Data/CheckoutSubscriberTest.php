@@ -26,6 +26,7 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\CheckoutDataSubscriber;
@@ -276,6 +277,7 @@ class CheckoutSubscriberTest extends TestCase
             Settings::MERCHANT_LOCATION => Settings::MERCHANT_LOCATION_OTHER,
             Settings::SPB_SHOW_PAY_LATER => true,
         ], $settingsOverride));
+        $credentialsUtil = new CredentialsUtil($settings);
 
         $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
         /** @var RouterInterface $router */
@@ -285,7 +287,8 @@ class CheckoutSubscriberTest extends TestCase
             new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
             $localeCodeProvider,
             $router,
-            $settings
+            $settings,
+            $credentialsUtil
         );
 
         $acdcDataService = new ACDCCheckoutDataService(
@@ -293,7 +296,8 @@ class CheckoutSubscriberTest extends TestCase
             new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
             $localeCodeProvider,
             $router,
-            $settings
+            $settings,
+            $credentialsUtil
         );
 
         $spbDataService = new SPBCheckoutDataService(
@@ -301,7 +305,8 @@ class CheckoutSubscriberTest extends TestCase
             new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
             $localeCodeProvider,
             $router,
-            $settings
+            $settings,
+            $credentialsUtil
         );
 
         $sessionMock = $this->createMock(Session::class);
