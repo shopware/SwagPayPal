@@ -1,4 +1,4 @@
-# 4.9.0
+# 4.9.2
 - PPI-317 - Add separate credit card payment method
 - PPI-385 - Add new Pay Upon Invoice payment method
 - PPI-410 - Add separate APM payment methods

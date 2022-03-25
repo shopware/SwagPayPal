@@ -163,6 +163,13 @@
                                                 </swag-paypal-installment>
                                             {% endblock %}
 
+                                            {% block swag_paypal_content_card_channel_config_pui %}
+                                                <swag-paypal-pui :actualConfigData="actualConfigData"
+                                                                 :allConfigs="allConfigs"
+                                                                 :selectedSalesChannelId="selectedSalesChannelId">
+                                                </swag-paypal-pui>
+                                            {% endblock %}
+
                                             {% block swag_paypal_content_card_channel_config_spb %}
                                                 <swag-paypal-spb v-if="showSPBCard"
                                                                :actualConfigData="actualConfigData"

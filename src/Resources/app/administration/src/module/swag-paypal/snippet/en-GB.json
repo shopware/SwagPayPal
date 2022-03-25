@@ -233,6 +233,13 @@
                     "label": "Enable installment banner"
                 }
             },
+            "pui": {
+                "cardTitle": "Pay upon invoice",
+                "customerServiceInstructions": {
+                    "label": "Customer service instructions for Pay upon invoice",
+                    "helpText": "These instructions will be submitted to PayPal & RatePay and shown in emails for the customer."
+                }
+            },
             "spb": {
                 "cardTitle": "PayPal Checkout with Smart Payment Buttons",
                 "spbCheckoutEnabled": {

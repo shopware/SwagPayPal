@@ -8,6 +8,7 @@ import './components/swag-paypal-credentials';
 import './components/swag-paypal-express';
 import './components/swag-paypal-installment';
 import './components/swag-paypal-plus';
+import './components/swag-paypal-pui';
 import './components/swag-paypal-settings-icon';
 import './components/swag-paypal-spb';
 import './components/swag-paypal-plugin-box-with-onboarding';

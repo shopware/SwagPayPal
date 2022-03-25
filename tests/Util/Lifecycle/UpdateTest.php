@@ -304,7 +304,7 @@ class UpdateTest extends TestCase
 
     public function testUpdateToREPLACEGLOBALLYWITHNEXTVERSIONChangePaymentHandlerIdentifier(): void
     {
-        $updateContext = $this->createUpdateContext('1.0.0', '4.9.0');
+        $updateContext = $this->createUpdateContext('1.0.0', '4.9.2');
         $context = $updateContext->getContext();
 
         $paypalPuiId = Uuid::randomHex();
@@ -328,7 +328,7 @@ class UpdateTest extends TestCase
 
     public function testUpdateToREPLACEGLOBALLYWITHNEXTVERSIONCreatesNewPaymentMethod(): void
     {
-        $updateContext = $this->createUpdateContext('4.1.0', '4.9.0');
+        $updateContext = $this->createUpdateContext('4.1.0', '4.9.2');
         $context = $updateContext->getContext();
 
         $criteria = (new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', ACDCHandler::class));

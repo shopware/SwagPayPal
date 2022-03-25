@@ -44,7 +44,7 @@ final class Settings
     public const SPB_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonShape';
     public const SPB_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonLanguageIso';
     public const SPB_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'spbShowPayLater';
-    public const PUI_CUSTOMER_SERVICE_INSTRUCTIONS = 'puiCustomerServiceInstructions';
+    public const PUI_CUSTOMER_SERVICE_INSTRUCTIONS = self::SYSTEM_CONFIG_DOMAIN . 'puiCustomerServiceInstructions';
     public const INSTALLMENT_BANNER_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled';
     public const LOGGING_LEVEL = self::SYSTEM_CONFIG_DOMAIN . 'loggingLevel';
 
@@ -69,7 +69,7 @@ final class Settings
     public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
 
     /**
-     * @deprecated tag:v6.0.0 - Deprecated properties MERCHANT_LOCATION, SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED, SPB_CHECKOUT_ENABLED and PLUS_CHECKOUT_ENABLED will be removed.
+     * @internal these may change at any time
      */
     public const DEFAULT_VALUES = [
         self::SANDBOX => false,
@@ -94,6 +94,7 @@ final class Settings
         self::PLUS_CHECKOUT_ENABLED => false,
         self::INSTALLMENT_BANNER_ENABLED => true,
         self::LOGGING_LEVEL => Logger::WARNING,
+        self::PUI_CUSTOMER_SERVICE_INSTRUCTIONS => 'Details zum Kundenservice finden Sie auf unserer Webseite',
     ];
 
     public const MERCHANT_LOCATION_GERMANY = 'germany';

@@ -118,14 +118,14 @@ class Update
             $this->updateTo410();
         }
 
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '4.9.1', '<')) {
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.0.0', '<')) {
             $this->updateTo500($updateContext->getContext());
         }
     }
 
     private function updateTo110(): void
     {
-        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_ENABLED, true);
+        $this->setSettingToDefaultValue(Settings::INSTALLMENT_BANNER_ENABLED);
     }
 
     private function updateTo130(): void
@@ -296,7 +296,7 @@ class Update
 
     private function updateTo410(): void
     {
-        $this->systemConfig->set(Settings::SPB_SHOW_PAY_LATER, true);
+        $this->setSettingToDefaultValue(Settings::SPB_SHOW_PAY_LATER);
     }
 
     private function updateTo500(Context $context): void
@@ -304,6 +304,7 @@ class Update
         $this->changePaymentHandlerIdentifier('Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler', PUIHandler::class, $context);
         $this->paymentMethodStateService->setPaymentMethodState(PUIMethodData::class, false, $context);
         $this->paymentMethodInstaller->installAll($context);
+        $this->setSettingToDefaultValue(Settings::PUI_CUSTOMER_SERVICE_INSTRUCTIONS);
     }
 
     private function changePaymentHandlerIdentifier(string $previousHandler, string $newHandler, Context $context): void
@@ -394,5 +395,11 @@ class Update
         $salesChannelIds[] = null; // Global config for all sales channels
 
         return $salesChannelIds;
+    }
+
+    private function setSettingToDefaultValue(string $setting, ?string $overrideValue = null, ?string $salesChannelId = null): void
+    {
+        $value = Settings::DEFAULT_VALUES[$setting] ?? null;
+        $this->systemConfig->set($setting, $overrideValue ?? $value, $salesChannelId);
     }
 }

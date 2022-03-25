@@ -233,6 +233,13 @@
                     "label": "Ratenzahlung Banner aktivieren"
                 }
             },
+            "pui": {
+                "cardTitle": "Rechnungskauf",
+                "customerServiceInstructions": {
+                    "label": "Kundenservice-Anweisungen für Rechnungskauf",
+                    "helpText": "Diese Anweisungen werden an PayPal & RatePay übermittelt und in Kunden-E-Mails verwendet."
+                }
+            },
             "spb": {
                 "cardTitle": "PayPal Checkout mit Smart Payment Buttons",
                 "spbCheckoutEnabled": {
