@@ -302,9 +302,9 @@ class UpdateTest extends TestCase
         static::assertTrue(WebhookUpdateFixture::$sent);
     }
 
-    public function testUpdateToREPLACEGLOBALLYWITHNEXTVERSIONChangePaymentHandlerIdentifier(): void
+    public function testUpdateTo500ChangePaymentHandlerIdentifier(): void
     {
-        $updateContext = $this->createUpdateContext('1.0.0', '4.9.2');
+        $updateContext = $this->createUpdateContext('1.0.0', '5.0.0');
         $context = $updateContext->getContext();
 
         $paypalPuiId = Uuid::randomHex();
@@ -326,9 +326,9 @@ class UpdateTest extends TestCase
         static::assertSame(PUIHandler::class, $updatedPaymentMethod->getHandlerIdentifier());
     }
 
-    public function testUpdateToREPLACEGLOBALLYWITHNEXTVERSIONCreatesNewPaymentMethod(): void
+    public function testUpdateTo500CreatesNewPaymentMethod(): void
     {
-        $updateContext = $this->createUpdateContext('4.1.0', '4.9.2');
+        $updateContext = $this->createUpdateContext('4.1.0', '5.0.0');
         $context = $updateContext->getContext();
 
         $criteria = (new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', ACDCHandler::class));
