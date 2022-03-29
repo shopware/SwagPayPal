@@ -21,6 +21,7 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\HttpFoundation\Request;
@@ -80,7 +81,8 @@ class SettingsControllerTest extends TestCase
             new MerchantIntegrationsService(
                 new MerchantIntegrationsResource($this->createPayPalClientFactory()),
                 new CredentialsUtil($this->createDefaultSystemConfig()),
-                $this->getContainer()->get(PaymentMethodDataRegistry::class)
+                $this->getContainer()->get(PaymentMethodDataRegistry::class),
+                new PayPalClientFactoryMock($this->createDefaultSystemConfig(), $logger)
             )
         );
     }

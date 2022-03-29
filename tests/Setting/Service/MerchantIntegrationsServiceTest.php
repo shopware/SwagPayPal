@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Setting\Service;
 
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -18,6 +19,7 @@ use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
@@ -72,7 +74,8 @@ class MerchantIntegrationsServiceTest extends TestCase
         return new MerchantIntegrationsService(
             new MerchantIntegrationsResource($this->createPayPalClientFactory()),
             new CredentialsUtil($this->createDefaultSystemConfig()),
-            $this->getContainer()->get(PaymentMethodDataRegistry::class)
+            $this->getContainer()->get(PaymentMethodDataRegistry::class),
+            new PayPalClientFactoryMock($this->createDefaultSystemConfig(), new NullLogger())
         );
     }
 

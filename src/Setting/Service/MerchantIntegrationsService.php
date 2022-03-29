@@ -8,10 +8,12 @@
 namespace Swag\PayPal\Setting\Service;
 
 use Shopware\Core\Framework\Context;
+use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResourceInterface;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 
 class MerchantIntegrationsService implements MerchantIntegrationsServiceInterface
 {
@@ -21,14 +23,18 @@ class MerchantIntegrationsService implements MerchantIntegrationsServiceInterfac
 
     private PaymentMethodDataRegistry $paymentMethodDataRegistry;
 
+    private PayPalClientFactoryInterface $payPalClientFactory;
+
     public function __construct(
         MerchantIntegrationsResourceInterface $merchantIntegrationsResource,
         CredentialsUtilInterface $credentialsUtil,
-        PaymentMethodDataRegistry $paymentMethodDataRegistry
+        PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        PayPalClientFactoryInterface $payPalClientFactory
     ) {
         $this->merchantIntegrationsResource = $merchantIntegrationsResource;
         $this->credentialsUtil = $credentialsUtil;
         $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
+        $this->payPalClientFactory = $payPalClientFactory;
     }
 
     public function fetchMerchantIntegrations(Context $context, ?string $salesChannelId = null): array
@@ -44,7 +50,29 @@ class MerchantIntegrationsService implements MerchantIntegrationsServiceInterfac
             $integrations = null;
         }
 
-        return $this->handleIntegrations($integrations, $context);
+        $capabilities = $this->handleIntegrations($integrations, $context);
+
+        if ($integrations !== null) {
+            return $capabilities;
+        }
+
+        try {
+            $this->payPalClientFactory->getPayPalClient($salesChannelId);
+
+            $payPalPaymentMethodId = $this->paymentMethodDataRegistry->getEntityIdFromData(
+                $this->paymentMethodDataRegistry->getPaymentMethod(PayPalMethodData::class),
+                $context
+            );
+
+            if ($payPalPaymentMethodId === null) {
+                return $capabilities;
+            }
+
+            $capabilities[$payPalPaymentMethodId] = AbstractMethodData::CAPABILITY_ACTIVE;
+        } catch (\Throwable $e) {
+        }
+
+        return $capabilities;
     }
 
     private function handleIntegrations(?MerchantIntegrations $integrations, Context $context): array

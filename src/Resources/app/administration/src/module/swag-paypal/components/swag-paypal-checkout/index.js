@@ -107,20 +107,20 @@ Component.register('swag-paypal-checkout', {
     },
 
     computed: {
-        pluginRepository() {
-            return this.repositoryFactory.create('plugin');
-        },
-
         paymentMethodRepository() {
             return this.repositoryFactory.create('payment_method');
         },
 
-        pluginCriteria() {
+        paymentMethodCriteria() {
             const criteria = new Criteria();
 
-            return criteria.addFilter(
-                Criteria.equals('name', 'SwagPayPal'),
-            );
+            criteria.addFilter(Criteria.equals('plugin.name', 'SwagPayPal'));
+            criteria.addFilter(Criteria.not('or', [
+                Criteria.equals('handlerIdentifier', 'Swag\\PayPal\\Pos\\Payment\\PosPayment'),
+            ]));
+            criteria.addSorting(Criteria.sort('position', 'ASC'), true);
+
+            return criteria;
         },
 
         isLive() {
@@ -187,25 +187,8 @@ Component.register('swag-paypal-checkout', {
             await this.getPaymentMethods();
         },
 
-        async getPluginData() {
-            const pluginData = await this.pluginRepository.search(this.pluginCriteria, Context.api)
-                .then((response) => {
-                    return response;
-                });
-
-            return pluginData.first();
-        },
-
         async getPaymentMethods() {
-            const pluginData = await this.getPluginData();
-            const criteria = new Criteria();
-
-            criteria.addFilter(
-                Criteria.equals('pluginId', pluginData.id),
-            );
-            criteria.addSorting(Criteria.sort('position', 'ASC'), true);
-
-            this.paymentMethods = await this.paymentMethodRepository.search(criteria, Context.api)
+            this.paymentMethods = await this.paymentMethodRepository.search(this.paymentMethodCriteria, Context.api)
                 .then((response) => {
                     return response;
                 });
