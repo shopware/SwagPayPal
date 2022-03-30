@@ -37,7 +37,7 @@
             "checkout": {
                 "cardTitle": "PayPal Checkout",
                 "description": "PayPal Checkout is the new all-in-one solution that lets you offer powerful flexibile payment processing features on the marketplaces and other commerce platforms.",
-                "banner": "With PayPal Checkout, you can offer your customers payment by invoice, credit card and other local payment methods. PayPal Checkout supports you with the latest technology and brings you the highest flexibility. You keep your existing payment methods, and the fees remain the same! Activate PayPal Checkout and deactivate PayPal PLUS to avoid duplicate payment methods in your shop. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/\" target=\"_blank\">More information</a>",
+                "banner": "With PayPal Checkout, you can offer your customers payment by invoice, credit card and other local payment methods. PayPal Checkout supports you with the latest technology and brings you the highest flexibility. You keep your existing payment methods, and the fees remain the same! Activate PayPal Checkout and deactivate PayPal PLUS to avoid duplicate payment methods in your shop. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/?utm_source=product&utm_medium=sw6-onprem&utm_campaign=paypal-checkout&utm_content=link-en-blog\" target=\"_blank\">More information</a>",
                 "button": {
                     "title": "Start onboarding"
                 },
@@ -265,8 +265,8 @@
                 },
                 "hint": "Note: PayPal PLUS only works with the payment acquisition \"Sale\". It will be set automatically.",
                 "warning": {
-                    "active": "PayPal Checkout provides the same payment methods to your customers – based on the latest technology. Activate PayPal Checkout now and deactivate PayPal PLUS to avoid displaying duplicate payment methods. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/\" target=\"_blank\">More information</a>",
-                    "inactive": "Avoid displaying duplicate payment methods and deactivate PayPal PLUS. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/\" target=\"_blank\">More information</a>"
+                    "active": "PayPal Checkout provides the same payment methods to your customers – based on the latest technology. Activate PayPal Checkout now and deactivate PayPal PLUS to avoid displaying duplicate payment methods. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/?utm_source=product&utm_medium=sw6-onprem&utm_campaign=paypal-checkout&utm_content=link-en-blog\" target=\"_blank\">More information</a>",
+                    "inactive": "Avoid displaying duplicate payment methods and deactivate PayPal PLUS. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/?utm_source=product&utm_medium=sw6-onprem&utm_campaign=paypal-checkout&utm_content=link-en-blog\" target=\"_blank\">More information</a>"
                 }
             },
             "locale-field": {
