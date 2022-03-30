@@ -67,7 +67,7 @@
                     "PUIHandler": "Rechnungskauf ist für die folgenden Länder verfügbar: Deutschland",
                     "SEPAHandler": "SEPA Lastschrift ist für die folgenden Länder verfügbar: Deutschland",
                     "SofortAPMHandler": "Sofort ist für die folgenden Länder verfügbar: Belgien, Deutschland, Italien, Niederlande, Österreich, Spanien, Vereinigtes Königreich",
-                    "TrustlyAPMHandler": "Trustly ist für die folgenden Länder verfügbar: Estland, Finnland, Niederlande, Schweden",
+                    "TrustlyAPMHandler": "Trustly ist für die folgenden Länder verfügbar: Estland, Finnland, Niederlande, Schweden"
                 },
                 "onboardingStatusText": {
                     "active": "Autorisiert",

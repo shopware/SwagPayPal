@@ -1,3 +1,6 @@
+# 5.0.1
+- PPI-615 - Fix issue with missing German translations in the administration
+
 # 5.0.0
 - PPI-317 - Add separate credit card payment method
 - PPI-385 - Add new Pay Upon Invoice payment method
