@@ -36,6 +36,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
+use Shopware\Core\Framework\Event\NestedEventCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
@@ -43,8 +44,10 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Tax\TaxEntity;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
-class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChannelRepositoryInterface
+class SalesChannelProductRepoMock implements SalesChannelRepositoryInterface
 {
+    use RepoTrait;
+
     public function getDefinition(): EntityDefinition
     {
         return new ProductDefinition();
@@ -187,6 +190,7 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
 
     public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
     {
+        return Uuid::randomHex();
     }
 
     public function merge(string $versionId, Context $context): void
@@ -195,6 +199,7 @@ class SalesChannelProductRepoMock extends AbstractRepoMock implements SalesChann
 
     public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
     {
+        return new EntityWrittenContainerEvent($context, new NestedEventCollection([]), []);
     }
 
     public function createMockEntity(

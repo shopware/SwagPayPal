@@ -33,6 +33,22 @@ class SwagPayPalApiCredentialsService extends ApiService {
                 return ApiService.handleResponse(response);
             });
     }
+
+    getMerchantIntegrations() {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .get(
+                `_action/${this.getApiBasePath()}/get-merchant-integrations`,
+                {
+                    params: { },
+                    headers: headers,
+                },
+            )
+            .then((response) => {
+                return ApiService.handleResponse(response);
+            });
+    }
 }
 
 export default SwagPayPalApiCredentialsService;

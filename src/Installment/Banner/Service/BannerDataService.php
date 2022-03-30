@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Installment\Banner\Service;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPage;
@@ -17,19 +16,21 @@ use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\PayPal\Installment\Banner\BannerData;
-use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
 class BannerDataService implements BannerDataServiceInterface
 {
     private PaymentMethodUtil $paymentMethodUtil;
 
-    private SystemConfigService $systemConfigService;
+    private CredentialsUtilInterface $credentialsUtil;
 
-    public function __construct(PaymentMethodUtil $paymentMethodUtil, SystemConfigService $systemConfigService)
-    {
+    public function __construct(
+        PaymentMethodUtil $paymentMethodUtil,
+        CredentialsUtilInterface $credentialsUtil
+    ) {
         $this->paymentMethodUtil = $paymentMethodUtil;
-        $this->systemConfigService = $systemConfigService;
+        $this->credentialsUtil = $credentialsUtil;
     }
 
     /**
@@ -61,11 +62,12 @@ class BannerDataService implements BannerDataServiceInterface
         }
 
         $paymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext());
-        $clientId = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelContext->getSalesChannelId())
-            ? $this->systemConfigService->getString(Settings::CLIENT_ID_SANDBOX, $salesChannelContext->getSalesChannelId())
-            : $this->systemConfigService->getString(Settings::CLIENT_ID, $salesChannelContext->getSalesChannelId());
-        $currency = $salesChannelContext->getCurrency()->getIsoCode();
 
-        return new BannerData($paymentMethodId, $clientId, $amount, $currency);
+        return new BannerData(
+            $paymentMethodId,
+            $this->credentialsUtil->getClientId($salesChannelContext->getSalesChannelId()),
+            $amount,
+            $salesChannelContext->getCurrency()->getIsoCode()
+        );
     }
 }

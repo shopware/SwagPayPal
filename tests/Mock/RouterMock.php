@@ -26,6 +26,7 @@ class RouterMock implements RouterInterface
 
     public function getRouteCollection(): RouteCollection
     {
+        return new RouteCollection();
     }
 
     public function generate(string $name, array $parameters = [], int $referenceType = self::ABSOLUTE_PATH): string
@@ -44,5 +45,6 @@ class RouterMock implements RouterInterface
 
     public function match($pathinfo): array
     {
+        return [];
     }
 }

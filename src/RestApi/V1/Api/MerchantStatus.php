@@ -11,6 +11,8 @@ use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
+ * @deprecated tag:v6.0.0 - use MerchantIntegrations instead
+ *
  * @OA\Schema(schema="swag_paypal_v1_merchant_status")
  */
 class MerchantStatus extends PayPalApiStruct

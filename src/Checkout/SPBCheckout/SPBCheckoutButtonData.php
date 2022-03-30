@@ -7,23 +7,11 @@
 
 namespace Swag\PayPal\Checkout\SPBCheckout;
 
-use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 
-class SPBCheckoutButtonData extends Struct
+class SPBCheckoutButtonData extends AbstractCheckoutData
 {
-    protected string $clientId;
-
-    protected string $languageIso;
-
-    protected string $currency;
-
-    protected string $intent;
-
     protected string $buttonColor;
-
-    protected string $buttonShape;
-
-    protected string $paymentMethodId;
 
     protected bool $useAlternativePaymentMethods;
 
@@ -34,54 +22,9 @@ class SPBCheckoutButtonData extends Struct
 
     protected bool $showPayLater;
 
-    protected string $createOrderUrl;
-
-    protected string $checkoutConfirmUrl;
-
-    protected string $addErrorUrl;
-
-    protected ?string $orderId = null;
-
-    protected ?string $accountOrderEditUrl = null;
-
-    public function getClientId(): string
-    {
-        return $this->clientId;
-    }
-
-    public function setClientId(string $clientId): void
-    {
-        $this->clientId = $clientId;
-    }
-
-    public function getLanguageIso(): string
-    {
-        return $this->languageIso;
-    }
-
-    public function getCurrency(): string
-    {
-        return $this->currency;
-    }
-
-    public function getIntent(): string
-    {
-        return $this->intent;
-    }
-
     public function getButtonColor(): string
     {
         return $this->buttonColor;
-    }
-
-    public function getButtonShape(): string
-    {
-        return $this->buttonShape;
-    }
-
-    public function getPaymentMethodId(): string
-    {
-        return $this->paymentMethodId;
     }
 
     public function getUseAlternativePaymentMethods(): bool
@@ -108,40 +51,5 @@ class SPBCheckoutButtonData extends Struct
     public function getShowPayLater(): bool
     {
         return $this->showPayLater;
-    }
-
-    public function getCreateOrderUrl(): string
-    {
-        return $this->createOrderUrl;
-    }
-
-    public function getCheckoutConfirmUrl(): string
-    {
-        return $this->checkoutConfirmUrl;
-    }
-
-    public function getAddErrorUrl(): string
-    {
-        return $this->addErrorUrl;
-    }
-
-    public function getOrderId(): ?string
-    {
-        return $this->orderId;
-    }
-
-    public function setOrderId(?string $orderId): void
-    {
-        $this->orderId = $orderId;
-    }
-
-    public function getAccountOrderEditUrl(): ?string
-    {
-        return $this->accountOrderEditUrl;
-    }
-
-    public function setAccountOrderEditUrl(?string $accountOrderEditUrl): void
-    {
-        $this->accountOrderEditUrl = $accountOrderEditUrl;
     }
 }

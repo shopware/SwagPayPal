@@ -103,8 +103,6 @@ class InventoryChangedTest extends TestCase
         $salesChannelRepository = new SalesChannelRepoMock();
         $salesChannelRepository->addMockEntity($salesChannel);
 
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
         /** @var Router $router */
         $router = $this->getContainer()->get('router');
 
@@ -112,7 +110,7 @@ class InventoryChangedTest extends TestCase
             new SubscriptionResource(new PosClientFactoryMock()),
             $webhookRegistry,
             $salesChannelRepository,
-            $systemConfigService,
+            $this->getContainer()->get(SystemConfigService::class),
             new UuidConverter(),
             $router
         );

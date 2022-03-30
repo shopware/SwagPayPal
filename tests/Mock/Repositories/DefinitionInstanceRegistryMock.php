@@ -21,6 +21,9 @@ class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
 
     private SystemConfigRepoMock $systemConfigRepo;
 
+    /**
+     * @psalm-suppress ContainerDependency
+     */
     public function __construct(array $elements, ContainerInterface $container)
     {
         parent::__construct($container, $elements, []);

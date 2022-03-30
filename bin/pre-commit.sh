@@ -31,7 +31,8 @@ then
         php -l -d display_errors=0 "$FILE" 1> /dev/null
     done
 
-    ./bin/static-analyze.sh
+    make phpstan
+    make psalm
 fi
 
 UNSTAGED_FILES="$(git diff --name-only -- ${PHP_FILES} ${JS_ADMIN_FILES} ${JS_STOREFRONT_FILES})"
@@ -50,7 +51,7 @@ fi
 if [[ -n "$PHP_FILES" ]]
 then
     # fix code style and update the commit
-    ./bin/fix-cs.sh
+    make ecs-fix
 fi
 
 if [[ -n "$JS_ADMIN_FILES" && -x ../../../vendor/shopware/platform/src/Administration/Resources/app/administration/node_modules/.bin/eslint ]]

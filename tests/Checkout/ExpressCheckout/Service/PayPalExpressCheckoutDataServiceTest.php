@@ -29,6 +29,7 @@ use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -61,17 +62,9 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         parent::setUp();
         $container = $this->getContainer();
 
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $container->get(PaymentMethodUtil::class);
-        $this->paymentMethodUtil = $paymentMethodUtil;
-
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
-        $this->salesChannelContextFactory = $salesChannelContextFactory;
-
-        /** @var CartService $cartService */
-        $cartService = $container->get(CartService::class);
-        $this->cartService = $cartService;
+        $this->paymentMethodUtil = $container->get(PaymentMethodUtil::class);
+        $this->salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
+        $this->cartService = $container->get(CartService::class);
 
         /** @var RouterInterface $router */
         $router = $container->get('router');
@@ -82,8 +75,9 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             $this->cartService,
             $this->createLocaleCodeProvider(),
             $router,
-            $paymentMethodUtil,
+            $this->paymentMethodUtil,
             $this->systemConfigService,
+            new CredentialsUtil($this->systemConfigService),
             new CartPriceService()
         );
 

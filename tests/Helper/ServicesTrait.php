@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
+use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
@@ -24,8 +25,8 @@ use Swag\PayPal\Test\Mock\DummyCollection;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
+use Swag\PayPal\Test\Mock\Repositories\AbstractRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\CurrencyRepoMock;
-use Swag\PayPal\Test\Mock\Repositories\EntityRepositoryMock;
 use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
@@ -90,7 +91,7 @@ trait ServicesTrait
         $systemConfig = $systemConfig ?? $this->createDefaultSystemConfig();
 
         return new OrderPaymentBuilder(
-            new LocaleCodeProviderMock(new EntityRepositoryMock()),
+            new LocaleCodeProviderMock(new AbstractRepoMock()),
             new PriceFormatter(),
             new EventDispatcherMock(),
             new LoggerMock(),
@@ -105,10 +106,12 @@ trait ServicesTrait
 
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
+        $addressProvider = new AddressProvider();
 
         return new OrderFromOrderBuilder(
             $systemConfig,
-            new PurchaseUnitProvider($amountProvider, $systemConfig),
+            new PurchaseUnitProvider($amountProvider, $addressProvider, $systemConfig),
+            $addressProvider,
             new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock())
         );
     }

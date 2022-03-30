@@ -1,0 +1,28 @@
+{% block sw_settings_payment_detail_content_field_plugin %}
+<template v-if="needsOnboarding(paymentMethod.id)">
+    <swag-paypal-plugin-box-with-onboarding
+        v-if="!!paymentMethod.pluginId"
+        :plugin-id="paymentMethod.pluginId"
+        :payment-method="paymentMethod"
+    />
+</template>
+<template v-else>
+    {% parent %}
+</template>
+{% endblock %}
+
+{% block sw_settings_payment_detail_content_field_active %}
+<template v-if="disableActiveSwitch">
+    <sw-field
+        v-model="paymentMethod.active"
+        v-tooltip.left="{ message: $tc('sw-settings-payment-detail.tooltip') }"
+        class="sw-settings-payment-detail__field-active"
+        type="switch"
+        :disabled="disableActiveSwitch"
+        :label="$tc('sw-settings-payment.detail.labelActive')"
+    />
+</template>
+<template v-else>
+    {% parent %}
+</template>
+{% endblock %}

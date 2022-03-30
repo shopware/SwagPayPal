@@ -95,11 +95,9 @@ class CartPaymentBuilderTest extends TestCase
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
         ]);
-        /** @var LocaleCodeProvider $localeCodeProvider */
-        $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
 
         return new CartPaymentBuilder(
-            $localeCodeProvider,
+            $this->getContainer()->get(LocaleCodeProvider::class),
             new PriceFormatter(),
             new EventDispatcherMock(),
             new LoggerMock(),

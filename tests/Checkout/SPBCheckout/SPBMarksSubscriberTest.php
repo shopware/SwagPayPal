@@ -30,6 +30,7 @@ use Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataService;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksData;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksSubscriber;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -104,7 +105,7 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertNotNull($spbMarksExtension);
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
-        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertFalse($spbMarksExtension->getUseAlternativePaymentMethods());
         static::assertSame('EUR', $spbMarksExtension->getCurrency());
         static::assertSame('en_GB', $spbMarksExtension->getLanguageIso());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());
@@ -135,7 +136,7 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertNotNull($spbMarksExtension);
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
-        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertFalse($spbMarksExtension->getUseAlternativePaymentMethods());
         static::assertSame('EUR', $spbMarksExtension->getCurrency());
         static::assertSame('en_GB', $spbMarksExtension->getLanguageIso());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());
@@ -155,7 +156,7 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertNotNull($spbMarksExtension);
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
-        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertFalse($spbMarksExtension->getUseAlternativePaymentMethods());
         static::assertSame('EUR', $spbMarksExtension->getCurrency());
         static::assertSame('en_GB', $spbMarksExtension->getLanguageIso());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());
@@ -175,7 +176,7 @@ class SPBMarksSubscriberTest extends TestCase
         static::assertNotNull($spbMarksExtension);
         static::assertSame(self::TEST_CLIENT_ID, $spbMarksExtension->getClientId());
         static::assertSame(PaymentMethodUtilMock::PAYMENT_METHOD_ID, $spbMarksExtension->getPaymentMethodId());
-        static::assertTrue($spbMarksExtension->getUseAlternativePaymentMethods());
+        static::assertFalse($spbMarksExtension->getUseAlternativePaymentMethods());
         static::assertSame('EUR', $spbMarksExtension->getCurrency());
         static::assertSame('de_DE', $spbMarksExtension->getLanguageIso());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbMarksExtension->getIntent());
@@ -206,15 +207,13 @@ class SPBMarksSubscriberTest extends TestCase
             Settings::SPB_BUTTON_LANGUAGE_ISO => $languageIso,
         ] : []);
 
-        /** @var LocaleCodeProvider $localeCodeProvider */
-        $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
-
         return new SPBMarksSubscriber(
             new SPBMarksDataService(
                 new SettingsValidationService($settings, new NullLogger()),
                 $settings,
+                new CredentialsUtil($settings),
                 new PaymentMethodUtilMock(),
-                $localeCodeProvider
+                $this->getContainer()->get(LocaleCodeProvider::class)
             ),
             new NullLogger()
         );
@@ -253,9 +252,7 @@ class SPBMarksSubscriberTest extends TestCase
 
     private function createSalesChannelContext(): SalesChannelContext
     {
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        $salesChannelContext = $salesChannelContextFactory->create(
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL
         );

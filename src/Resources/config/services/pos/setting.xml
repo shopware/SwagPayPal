@@ -37,7 +37,7 @@
             <argument type="service" id="sales_channel.repository"/>
         </service>
 
-        <service id="Swag\PayPal\Pos\Setting\Service\InformationDefaultService">
+        <service id="Swag\PayPal\Pos\Setting\Service\InformationDefaultService" public="true">
             <argument type="service" id="customer_group.repository"/>
             <argument type="service" id="category.repository"/>
             <argument type="service" id="Shopware\Core\Framework\Plugin\Util\PluginIdProvider"/>

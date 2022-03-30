@@ -1,0 +1,243 @@
+{% block swag_paypal_content_card_channel_config_checkout %}
+<sw-card
+    class="sw-card--grid"
+    position-identifier="swag-paypal-checkout"
+    :title="$tc('swag-paypal.settingForm.checkout.cardTitle')"
+>
+    {% block swag_paypal_content_card_channel_config_checkout_container %}
+    <div
+        v-if="actualConfigData"
+        class="swag-paypal-checkout"
+    >
+
+        {% block swag_paypal_content_card_channel_config_checkout_container_image %}
+        <img
+            class="swag-paypal-checkout__image"
+            :src="'swagpaypal/static/img/paypal-logo.svg' | asset"
+            :alt="$tc('swag-paypal.settingForm.checkout.appImageAlt')"
+        >
+        {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_checkout_container_description %}
+        <p class="swag-paypal-checkout__description">
+            {{ $tc('swag-paypal.settingForm.checkout.description') }}
+        </p>
+        {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_checkout_container_banner %}
+        <sw-alert
+            v-if="!isOnboardingPPCPFinished"
+            variant="info"
+            class="swag-paypal-checkout__banner"
+        >
+            <span v-html="$tc('swag-paypal.settingForm.checkout.banner')"></span>
+        </sw-alert>
+        {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_checkout_container_onboarding %}
+        <div class="swag-paypal-checkout-container-onboarding">
+            {% block swag_paypal_content_card_channel_config_checkout_container_onboarding_button %}
+            <template v-if="isLive">
+                <a
+                    class="sw-button swag-paypal-checkout-button__onboarding sw-button--primary"
+                    variant="primary"
+                    target="_blank"
+                    :href="onboardingUrlLive"
+                    :disabled="!acl.can('swag_paypal.editor')"
+                    data-paypal-onboard-complete="onboardingCallbackLive"
+                    data-paypal-button="true"
+                >
+                    {{ $tc('swag-paypal.settingForm.checkout.button.title') }}
+                </a>
+            </template>
+            <template v-if="isSandbox">
+                <a
+                    class="sw-button swag-paypal-checkout-button__onboarding sw-button--primary"
+                    variant="primary"
+                    target="_blank"
+                    :href="onboardingUrlSandbox"
+                    :disabled="!acl.can('swag_paypal.editor')"
+                    data-paypal-onboard-complete="onboardingCallbackSandbox"
+                    data-paypal-button="true"
+                >
+                    {{ $tc('swag-paypal.settingForm.checkout.button.title') }}
+                </a>
+            </template>
+            {% endblock %}
+
+            {% block swag_paypal_content_card_channel_config_checkout_container_sandbox_switch %}
+            <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.sandbox']"
+                                :inheritedValue="selectedSalesChannelId === null ? null : allConfigs['null']['SwagPayPal.settings.sandbox']"
+                                :customInheritationCheckFunction="checkBoolFieldInheritance">
+                <template #content="props">
+                    <sw-switch-field name="SwagPayPal.settings.sandbox"
+                                     :mapInheritance="props"
+                                     :label="$tc('swag-paypal.settingForm.checkout.sandbox.label')"
+                                     :helpText="$tc('swag-paypal.settingForm.checkout.sandbox.tooltipText')"
+                                     :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                                     :value="props.currentValue"
+                                     @change="props.updateCurrentValue">
+                    </sw-switch-field>
+                </template>
+            </sw-inherit-wrapper>
+            {% endblock %}
+        </div>
+        {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods %}
+        <p class="swag-paypal-checkout-payment-method__headline">
+            {{ $tc('swag-paypal.settingForm.checkout.paymentMethodText') }}
+        </p>
+        {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items %}
+        <div class="swag-paypal-checkout-payment-method_container">
+
+            {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item %}
+            <div
+                v-for="paymentMethod in paymentMethods"
+                :key="paymentMethod.id"
+                class="swag-paypal-checkout-payment-method__item"
+            >
+                <sw-container
+                    columns="250px 1fr 90px"
+                >
+                    {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_name_icon %}
+                    <div class="swag-paypal-checkout-payment-method__item-name-icon">
+                        <sw-icon
+                            class="swag-paypal-checkout-payment-method__item-icon"
+                            :name="icon(paymentMethod)"
+                            multicolor
+                        />
+                        {{ paymentMethod.name }}
+                    </div>
+                    {% endblock %}
+
+                    {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_dynamic %}
+                    <div class="swag-paypal-checkout-payment-method__item-dynamic">
+                        {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_pui_help_text %}
+                        <sw-help-text
+                            v-if="availabilityToolTip(paymentMethod)"
+                            :text="availabilityToolTip(paymentMethod)"
+                        />
+                        {% endblock %}
+
+                        {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_onboarding_status %}
+                        <sw-label
+                            class="swag-plugin-box-with-onboarding__status-label"
+                            size="medium"
+                            appearance="pill"
+                            :variant="statusBadgeVariant(paymentMethod)"
+                            :ghost="false"
+                            :caps="false"
+                        >
+
+                            {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_onboarding_status_badge %}
+                            <sw-color-badge
+                                class="swag-plugin-box-with-onboarding__status-badge"
+                                rounded
+                                :color="statusBadgeColor(paymentMethod)"
+                            />
+                            {% endblock %}
+
+                            {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_onboarding_status_text %}
+                            <span class="swag-plugin-box-with-onboarding__status-text">
+                                {{ onboardingStatusText(paymentMethod) }}
+                            </span>
+                            {% endblock %}
+
+                        </sw-label>
+                        {% endblock %}
+
+                        {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_edit_detail_link %}
+                        <router-link
+                            v-if="showEditLink(paymentMethod)"
+                            class="swag-paypal-checkout-payment-method__item-show-detail-link"
+                            :to="editLink(paymentMethod)"
+                        >
+                            {{ $tc('swag-paypal.settingForm.checkout.editDetail') }}
+                        </router-link>
+                        {% endblock %}
+                    </div>
+                    {% endblock %}
+
+                    {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_active_switch %}
+                    <sw-switch-field
+                        :label="$tc('swag-paypal.settingForm.checkout.switch.label')"
+                        :disabled="paymentMethodToggleDisabled(paymentMethod) || !acl.can('swag_paypal.editor')"
+                        :value="paymentMethod.active"
+                        @change="onChangePaymentMethodActive(paymentMethod)"
+                    />
+                    {% endblock %}
+
+                </sw-container>
+            </div>
+            {% endblock %}
+
+        </div>
+        {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_checkout_container_switch_show_credentials %}
+        <sw-switch-field
+            v-if="allowShowCredentials"
+            v-model="showCredentials"
+            :label="$tc('swag-paypal.settingForm.checkout.showCredentials')"
+            :disabled="!acl.can('swag_paypal.editor')"
+            @change="updateShowCredentials"
+        />
+        {% endblock %}
+
+        {% block swag_paypal_content_card_channel_config_checkout_container_credentials_slot %}
+        <slot name="credentials"></slot>
+        {% endblock %}
+
+    </div>
+    {% endblock %}
+
+    {% block sw_deactivate_paypal_plus_modal %}
+    <sw-modal
+        v-if="plusDeprecationModalOpen"
+        class="swag-paypal-checkout-modal"
+        :title="$tc('swag-paypal.settingForm.checkout.deactivatePayPalPlusModal.title')"
+        variant="default"
+        @modal-close="closeModal"
+    >
+        {% block sw_deactivate_paypal_plus_modal_text %}
+        <p class="swag-paypal-checkout-modal__text">
+            {{ $tc('swag-paypal.settingForm.checkout.deactivatePayPalPlusModal.text') }}
+        </p>
+        {% endblock %}
+
+        {% block sw_deactivate_paypal_plus_modal_warning %}
+        <sw-alert
+            class="swag-paypal-checkout-modal__warning"
+            variant="warning"
+        >
+            {{ $tc('swag-paypal.settingForm.checkout.deactivatePayPalPlusModal.warning') }}
+        </sw-alert>
+        {% endblock %}
+
+        {% block sw_deactivate_paypal_plus_modal_footer %}
+        <template #modal-footer>
+            {% block sw_deactivate_paypal_plus_modal_cancel_button %}
+            <sw-button @click="closeModal">
+                {{ $tc('swag-paypal.settingForm.checkout.deactivatePayPalPlusModal.button.cancel') }}
+            </sw-button>
+            {% endblock %}
+
+            {% block ssw_deactivate_paypal_plus_modal_confirm_button %}
+            <sw-button
+                variant="primary"
+                @click="deactivatePayPalPlus"
+            >
+                {{ $tc('swag-paypal.settingForm.checkout.deactivatePayPalPlusModal.button.deactivate') }}
+            </sw-button>
+            {% endblock %}
+
+        </template>
+        {% endblock %}
+    </sw-modal>
+    {% endblock %}
+
+</sw-card>
+{% endblock %}

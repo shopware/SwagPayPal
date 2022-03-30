@@ -20,6 +20,10 @@ class Item extends PayPalApiStruct
     public const MAX_LENGTH_NAME = 127;
     public const MAX_LENGTH_SKU = 127;
 
+    public const CATEGORY_PHYSICAL_GOODS = 'PHYSICAL_GOODS';
+    public const CATEGORY_DIGITAL_GOODS = 'DIGITAL_GOODS';
+    public const CATEGORY_DONATION = 'DONATION';
+
     /**
      * @OA\Property(type="string")
      */
@@ -34,6 +38,18 @@ class Item extends PayPalApiStruct
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
     protected Tax $tax;
+
+    /**
+     * @OA\Property(oneOf={"integer", "float", "string"})
+     *
+     * @var float|int|string
+     */
+    protected $taxRate;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    protected string $category;
 
     /**
      * @OA\Property(type="integer")
@@ -82,6 +98,32 @@ class Item extends PayPalApiStruct
     public function setTax(Tax $tax): void
     {
         $this->tax = $tax;
+    }
+
+    /**
+     * @return string|int|float
+     */
+    public function getTaxRate()
+    {
+        return $this->taxRate;
+    }
+
+    /**
+     * @param string|int|float $taxRate
+     */
+    public function setTaxRate($taxRate): void
+    {
+        $this->taxRate = $taxRate;
+    }
+
+    public function getCategory(): string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(string $category): void
+    {
+        $this->category = $category;
     }
 
     public function getQuantity(): int

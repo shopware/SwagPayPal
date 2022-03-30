@@ -29,6 +29,17 @@ final class PartnerAttributionId
      */
     public const PAYPAL_EXPRESS_CHECKOUT = 'Shopware_Cart_ECS_6native';
 
+    /**
+     * Shopware Partner Id for PPCP products
+     */
+    public const PAYPAL_PPCP = 'shopwareAG_Cart_Shopware6_PPCP';
+
+    public const PRODUCT_ATTRIBUTION = [
+        'acdc' => self::PAYPAL_PPCP,
+        'ppcp' => self::PAYPAL_PPCP,
+        'spb' => self::SMART_PAYMENT_BUTTONS,
+    ];
+
     private function __construct()
     {
     }

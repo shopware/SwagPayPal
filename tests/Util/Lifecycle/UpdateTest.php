@@ -8,23 +8,32 @@
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Payment\DataAbstractionLayer\PaymentMethodRepositoryDecorator;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
+use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
+use Shopware\Core\Content\Media\File\FileSaver;
+use Shopware\Core\Content\Media\MediaDefinition;
+use Shopware\Core\Content\Rule\Aggregate\RuleCondition\RuleConditionDefinition;
+use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\Validation\RestrictDeleteViolationException;
 use Shopware\Core\Framework\Migration\MigrationCollectionLoader;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
+use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
+use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Resource\SubscriptionResource;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
@@ -46,6 +55,10 @@ use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
 use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
+use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
+use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\Routing\Router;
@@ -62,13 +75,13 @@ class UpdateTest extends TestCase
     private const OTHER_CLIENT_ID = 'someOtherTestClientId';
     private const OTHER_CLIENT_SECRET = 'someOtherTestClientSecret';
 
-    private EntityRepositoryInterface $paymentMethodRepository;
+    private PaymentMethodRepositoryDecorator $paymentMethodRepository;
 
     private EntityRepositoryInterface $salesChannelRepository;
 
     protected function setUp(): void
     {
-        /** @var EntityRepositoryInterface $paymentMethodRepository */
+        /** @var PaymentMethodRepositoryDecorator $paymentMethodRepository */
         $paymentMethodRepository = $this->getContainer()->get(\sprintf('%s.repository', PaymentMethodDefinition::ENTITY_NAME));
         $this->paymentMethodRepository = $paymentMethodRepository;
         /** @var EntityRepositoryInterface $salesChannelRepository */
@@ -197,7 +210,6 @@ class UpdateTest extends TestCase
         $context = $updateContext->getContext();
 
         $paypalId = Uuid::randomHex();
-        $paypalPuiId = Uuid::randomHex();
 
         $this->paymentMethodRepository->create([
             [
@@ -205,26 +217,15 @@ class UpdateTest extends TestCase
                 'handlerIdentifier' => 'Swag\PayPal\Payment\PayPalPaymentHandler',
                 'name' => 'Test old PayPal payment handler',
             ],
-            [
-                'id' => $paypalPuiId,
-                'handlerIdentifier' => 'Swag\PayPal\Payment\PayPalPuiPaymentHandler',
-                'name' => 'Test old PayPal PUI payment handler',
-            ],
         ], $context);
 
         $updater = $this->createUpdateService($this->createSystemConfigServiceMock());
         $updater->update($updateContext);
 
-        /** @var PaymentMethodCollection $updatedPaymentMethods */
-        $updatedPaymentMethods = $this->paymentMethodRepository->search(new Criteria([$paypalId, $paypalPuiId]), $context)->getEntities();
-        foreach ($updatedPaymentMethods as $updatedPaymentMethod) {
-            if ($updatedPaymentMethod->getId() === $paypalId) {
-                static::assertSame(PayPalPaymentHandler::class, $updatedPaymentMethod->getHandlerIdentifier());
-
-                continue;
-            }
-            static::assertSame(PayPalPuiPaymentHandler::class, $updatedPaymentMethod->getHandlerIdentifier());
-        }
+        /** @var PaymentMethodEntity|null $updatedPaymentMethod */
+        $updatedPaymentMethod = $this->paymentMethodRepository->search(new Criteria([$paypalId]), $context)->first();
+        static::assertNotNull($updatedPaymentMethod);
+        static::assertSame(PayPalPaymentHandler::class, $updatedPaymentMethod->getHandlerIdentifier());
     }
 
     public function testUpdateTo200MigrateSettings(): void
@@ -301,17 +302,62 @@ class UpdateTest extends TestCase
         static::assertTrue(WebhookUpdateFixture::$sent);
     }
 
+    public function testUpdateTo500ChangePaymentHandlerIdentifier(): void
+    {
+        $updateContext = $this->createUpdateContext('1.0.0', '5.0.0');
+        $context = $updateContext->getContext();
+
+        $paypalPuiId = Uuid::randomHex();
+
+        $this->paymentMethodRepository->create([
+            [
+                'id' => $paypalPuiId,
+                'handlerIdentifier' => 'Swag\PayPal\Payment\PayPalPuiPaymentHandler',
+                'name' => 'Test old PayPal PUI payment handler',
+            ],
+        ], $context);
+
+        $updater = $this->createUpdateService($this->createSystemConfigServiceMock());
+        $updater->update($updateContext);
+
+        /** @var PaymentMethodEntity|null $updatedPaymentMethod */
+        $updatedPaymentMethod = $this->paymentMethodRepository->search(new Criteria([$paypalPuiId]), $context)->first();
+        static::assertNotNull($updatedPaymentMethod);
+        static::assertSame(PUIHandler::class, $updatedPaymentMethod->getHandlerIdentifier());
+    }
+
+    public function testUpdateTo500CreatesNewPaymentMethod(): void
+    {
+        $updateContext = $this->createUpdateContext('4.1.0', '5.0.0');
+        $context = $updateContext->getContext();
+
+        $criteria = (new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', ACDCHandler::class));
+        $acdcPaymentMethodId = $this->paymentMethodRepository->searchIds($criteria, $context)->firstId();
+        static::assertNotNull($acdcPaymentMethodId);
+
+        try {
+            $this->paymentMethodRepository->internalDelete([[
+                'id' => $acdcPaymentMethodId,
+            ]], $context);
+        } catch (RestrictDeleteViolationException $e) {
+            static::markTestSkipped('Could not delete payment method, probably orders exist');
+        }
+
+        $updater = $this->createUpdateService($this->createSystemConfigServiceMock());
+        $updater->update($updateContext);
+
+        $acdcPaymentMethodId = $this->paymentMethodRepository->searchIds($criteria, $context)->firstId();
+        static::assertNotNull($acdcPaymentMethodId);
+    }
+
     private function createUpdateContext(string $currentPluginVersion, string $nextPluginVersion): UpdateContext
     {
-        /** @var MigrationCollectionLoader $migrationLoader */
-        $migrationLoader = $this->getContainer()->get(MigrationCollectionLoader::class);
-
         return new UpdateContext(
             new SwagPayPal(true, ''),
             Context::createDefaultContext(),
             '',
             $currentPluginVersion,
-            $migrationLoader->collect('core'),
+            $this->getContainer()->get(MigrationCollectionLoader::class)->collect('core'),
             $nextPluginVersion
         );
     }
@@ -323,12 +369,21 @@ class UpdateTest extends TestCase
     ): Update {
         /** @var EntityRepositoryInterface $customFieldRepository */
         $customFieldRepository = $this->getContainer()->get(CustomFieldDefinition::ENTITY_NAME . '.repository');
+        /** @var EntityRepositoryInterface $ruleRepository */
+        $ruleRepository = $this->getContainer()->get(RuleDefinition::ENTITY_NAME . '.repository');
+        /** @var EntityRepositoryInterface $ruleConditionRepository */
+        $ruleConditionRepository = $this->getContainer()->get(RuleConditionDefinition::ENTITY_NAME . '.repository');
         /** @var EntityRepositoryInterface $salesChannelTypeRepository */
         $salesChannelTypeRepository = $this->getContainer()->get(SalesChannelTypeDefinition::ENTITY_NAME . '.repository');
+        /** @var EntityRepositoryInterface $mediaRepository */
+        $mediaRepository = $this->getContainer()->get(MediaDefinition::ENTITY_NAME . '.repository');
+        /** @var EntityRepositoryInterface $mediaFolderRepository */
+        $mediaFolderRepository = $this->getContainer()->get(MediaFolderDefinition::ENTITY_NAME . '.repository');
         /** @var InformationDefaultService|null $informationDefaultService */
         $informationDefaultService = $this->getContainer()->get(InformationDefaultService::class);
         /** @var EntityRepositoryInterface $shippingRepository */
         $shippingRepository = $this->getContainer()->get('shipping_method.repository');
+        $paymentMethodDataRegistry = new PaymentMethodDataRegistry($this->paymentMethodRepository, $this->getContainer());
 
         return new Update(
             $systemConfigService,
@@ -339,7 +394,24 @@ class UpdateTest extends TestCase
             $salesChannelTypeRepository,
             $informationDefaultService,
             $shippingRepository,
-            $posWebhookService
+            $posWebhookService,
+            new PaymentMethodInstaller(
+                $this->paymentMethodRepository,
+                $ruleRepository,
+                $ruleConditionRepository,
+                $this->getContainer()->get(PluginIdProvider::class),
+                $paymentMethodDataRegistry,
+                new MediaInstaller(
+                    $mediaRepository,
+                    $mediaFolderRepository,
+                    $this->paymentMethodRepository,
+                    $this->getContainer()->get(FileSaver::class),
+                ),
+            ),
+            new PaymentMethodStateService(
+                $paymentMethodDataRegistry,
+                $this->paymentMethodRepository,
+            )
         );
     }
 

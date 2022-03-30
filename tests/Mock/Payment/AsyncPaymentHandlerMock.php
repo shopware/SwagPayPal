@@ -26,6 +26,7 @@ class AsyncPaymentHandlerMock implements AsynchronousPaymentHandlerInterface
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
+        return new RedirectResponse('');
     }
 
     public function finalize(

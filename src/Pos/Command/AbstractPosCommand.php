@@ -48,12 +48,8 @@ abstract class AbstractPosCommand extends Command
         }
         $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
         $criteria->addAssociation('currency');
-        if ($salesChannelId !== null) {
-            if (\is_array($salesChannelId)) {
-                $criteria->setIds($salesChannelId);
-            } else {
-                $criteria->setIds([$salesChannelId]);
-            }
+        if ($salesChannelId) {
+            $criteria->setIds([$salesChannelId]);
         }
 
         /** @var SalesChannelCollection $salesChannels */

@@ -13,24 +13,27 @@ use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Refund;
-use Swag\PayPal\Test\Mock\DIContainerMock;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
+use Swag\PayPal\Test\Mock\Repositories\AbstractRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
-use Swag\PayPal\Test\Mock\Repositories\EntityRepositoryMock;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class PaymentStatusUtilMock extends PaymentStatusUtil
 {
-    public function __construct()
+    /**
+     * @psalm-suppress ContainerDependency
+     */
+    public function __construct(ContainerInterface $container)
     {
-        $entityRepository = new EntityRepositoryMock();
+        $entityRepository = new AbstractRepoMock();
         $stateMachineRegistry = new StateMachineRegistry(
             $entityRepository,
             $entityRepository,
             $entityRepository,
             new EventDispatcherMock(),
-            new DefinitionInstanceRegistryMock([], new DIContainerMock())
+            new DefinitionInstanceRegistryMock([], $container)
         );
 
         parent::__construct(

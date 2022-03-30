@@ -15,7 +15,6 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping;
@@ -29,9 +28,15 @@ class PurchaseUnitProvider
 
     private SystemConfigService $systemConfigService;
 
-    public function __construct(AmountProvider $amountProvider, SystemConfigService $systemConfigService)
-    {
+    private AddressProvider $addressProvider;
+
+    public function __construct(
+        AmountProvider $amountProvider,
+        AddressProvider $addressProvider,
+        SystemConfigService $systemConfigService
+    ) {
         $this->amountProvider = $amountProvider;
+        $this->addressProvider = $addressProvider;
         $this->systemConfigService = $systemConfigService;
     }
 
@@ -93,40 +98,12 @@ class PurchaseUnitProvider
 
         $shipping = new Shipping();
 
-        /** @var ShippingAddress $address */
-        $address = $this->createAddress($shippingAddress, new ShippingAddress());
+        $address = new ShippingAddress();
+        $this->addressProvider->createAddress($shippingAddress, $address);
         $shipping->setAddress($address);
         $shipping->setName($this->createShippingName($shippingAddress));
 
         return $shipping;
-    }
-
-    private function createAddress(CustomerAddressEntity $customerAddress, Address $address): Address
-    {
-        $address->setAddressLine1($customerAddress->getStreet());
-
-        $additionalAddressLine1 = $customerAddress->getAdditionalAddressLine1();
-        if ($additionalAddressLine1 !== null) {
-            $address->setAddressLine2($additionalAddressLine1);
-        }
-
-        $state = $customerAddress->getCountryState();
-        if ($state !== null) {
-            $address->setAdminArea1($state->getShortCode());
-        }
-
-        $address->setAdminArea2($customerAddress->getCity());
-        $address->setPostalCode($customerAddress->getZipcode());
-
-        $country = $customerAddress->getCountry();
-        if ($country !== null) {
-            $countryIso = $country->getIso();
-            if ($countryIso !== null) {
-                $address->setCountryCode($countryIso);
-            }
-        }
-
-        return $address;
     }
 
     private function createShippingName(CustomerAddressEntity $shippingAddress): ShippingName

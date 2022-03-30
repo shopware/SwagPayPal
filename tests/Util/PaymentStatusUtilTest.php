@@ -51,9 +51,7 @@ class PaymentStatusUtilTest extends TestCase
     protected function setUp(): void
     {
         $container = $this->getContainer();
-        /** @var StateMachineRegistry $stateMachineRegistry */
-        $stateMachineRegistry = $container->get(StateMachineRegistry::class);
-        $this->stateMachineRegistry = $stateMachineRegistry;
+        $this->stateMachineRegistry = $container->get(StateMachineRegistry::class);
 
         /** @var EntityRepositoryInterface $orderRepository */
         $orderRepository = $container->get('order.repository');
@@ -63,12 +61,9 @@ class PaymentStatusUtilTest extends TestCase
         $orderTransactionRepository = $container->get('order_transaction.repository');
         $this->orderTransactionRepository = $orderTransactionRepository;
 
-        /** @var OrderTransactionStateHandler $orderTransactionStateHandler */
-        $orderTransactionStateHandler = $container->get(OrderTransactionStateHandler::class);
-
         $this->paymentStatusUtil = new PaymentStatusUtil(
             $this->orderRepository,
-            $orderTransactionStateHandler,
+            $container->get(OrderTransactionStateHandler::class),
             new PriceFormatter()
         );
     }

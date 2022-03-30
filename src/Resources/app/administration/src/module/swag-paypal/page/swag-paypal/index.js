@@ -37,6 +37,8 @@ Component.register('swag-paypal', {
             isSettingDefaultPaymentMethods: false,
             savingDisabled: false,
             messageBlankErrorState: null,
+            showCredentials: false,
+            allowShowCredentials: true,
             ...constants,
         };
     },
@@ -60,6 +62,9 @@ Component.register('swag-paypal', {
             return defaultConfig['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
         },
 
+        /**
+         * @deprecated tag:v6.0.0 - Will be removed without replacement.
+         */
         showPlusCard() {
             if (hasOwnProperty(this.config, 'SwagPayPal.settings.merchantLocation') &&
                     this.config['SwagPayPal.settings.merchantLocation'] !== null
@@ -184,6 +189,10 @@ Component.register('swag-paypal', {
             this.save();
         },
 
+        onChangeLoading(state) {
+            this.isLoading = state;
+        },
+
         save() {
             this.isLoading = true;
 
@@ -198,6 +207,9 @@ Component.register('swag-paypal', {
                         });
                     });
                 }
+
+                // reload payment methods and merchant integrations after saving configuration
+                this.$refs.swagPayPalCheckoutComponent.getPaymentMethodsAndMerchantIntegrations();
             }).finally(() => {
                 this.isLoading = false;
             });
@@ -221,6 +233,10 @@ Component.register('swag-paypal', {
             }
 
             this.savingDisabled = true;
+        },
+
+        onChangeCredentialsVisibility(visibility) {
+            this.showCredentials = visibility;
         },
     },
 });

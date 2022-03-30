@@ -76,15 +76,13 @@ class PlusSubscriberTest extends TestCase
 
     protected function setUp(): void
     {
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
-        $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
         $this->paypalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
     }
 
     protected function tearDown(): void
     {
-        $this->removePayPalFromDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->removePaymentMethodFromDefaultsSalesChannel($this->paypalPaymentMethodId);
     }
 
     public function testGetSubscribedEvents(): void
@@ -101,7 +99,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createAccountEditOrderEvent();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onAccountEditOrderLoaded($event);
         $plusExtension = $this->assertPlusExtension($event);
 
@@ -122,7 +120,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createAccountEditOrderEvent(false);
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onAccountEditOrderLoaded($event);
 
         static::assertNull($event->getPage()->getExtension(PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID));
@@ -132,7 +130,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createAccountEditOrderEvent();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $event->getPage()->getOrder()->assign(['transactions' => null]);
 
         $this->expectException(InvalidOrderException::class);
@@ -146,7 +144,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createAccountEditOrderEvent();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $event->getPage()->getOrder()->setTransactions(new OrderTransactionCollection());
 
         $this->expectException(InvalidOrderException::class);
@@ -160,7 +158,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createAccountEditOrderEvent(true, ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION_WITH_PREFIX);
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onAccountEditOrderLoaded($event);
 
         static::assertNull($event->getPage()->getExtension(PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID));
@@ -170,7 +168,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createConfirmEvent();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $event->getRequest()->query->set(PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID, 'true');
 
         $subscriber->onCheckoutConfirmLoaded($event);
@@ -209,7 +207,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createConfirmEvent();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
         $this->assertPlusExtension($event);
@@ -219,7 +217,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createConfirmEvent();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
         $this->assertPlusExtension($event);
@@ -244,7 +242,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createConfirmEvent(true, true);
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
         /** @var PlusData|null $plusExtension */
@@ -265,7 +263,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createFinishEvent();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $event->getRequest()->query->set(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, 'false');
 
         $subscriber->onCheckoutFinishLoaded($event);
@@ -278,7 +276,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(false);
         $event = $this->createFinishEvent();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutFinishLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -309,7 +307,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(true, false);
         $event = $this->createFinishEvent();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutFinishLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -320,7 +318,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createFinishEvent(false);
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutFinishLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -331,7 +329,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createFinishEvent(true, false);
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutFinishLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -342,7 +340,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createFinishEvent(true, true, false);
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutFinishLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -363,7 +361,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(false);
         $event = $this->createConfirmEvent();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -374,7 +372,7 @@ class PlusSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber(true, false);
         $event = $this->createConfirmEvent();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -388,7 +386,7 @@ class PlusSubscriberTest extends TestCase
         $event->getSalesChannelContext()->assign([
             'customer' => null,
         ]);
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
         $paymentMethod = $event->getSalesChannelContext()->getPaymentMethod();
@@ -432,10 +430,9 @@ class PlusSubscriberTest extends TestCase
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
             Settings::PLUS_CHECKOUT_ENABLED => $plusEnabled,
+            Settings::MERCHANT_LOCATION => Settings::MERCHANT_LOCATION_GERMANY,
         ] : []);
 
-        /** @var LocaleCodeProvider $localeCodeProvider */
-        $localeCodeProvider = $this->getContainer()->get(LocaleCodeProvider::class);
         /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
         /** @var TranslatorInterface $translator */
@@ -448,14 +445,14 @@ class PlusSubscriberTest extends TestCase
 
         $plusDataService = new PlusDataService(
             new CartPaymentBuilder(
-                $localeCodeProvider,
+                $this->getContainer()->get(LocaleCodeProvider::class),
                 $priceFormatter,
                 $eventDispatcher,
                 $logger,
                 $settings
             ),
             new OrderPaymentBuilder(
-                $localeCodeProvider,
+                $this->getContainer()->get(LocaleCodeProvider::class),
                 $priceFormatter,
                 $eventDispatcher,
                 $logger,
@@ -465,7 +462,7 @@ class PlusSubscriberTest extends TestCase
             $this->createPaymentResource($settings),
             $router,
             $this->paymentMethodUtil,
-            $localeCodeProvider,
+            $this->getContainer()->get(LocaleCodeProvider::class),
             $settings
         );
 
@@ -485,9 +482,7 @@ class PlusSubscriberTest extends TestCase
         bool $withPaymentMethod = true,
         bool $withDefaultPaymentMethod = false
     ): CheckoutFinishPageLoadedEvent {
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-        $salesChannelContext = $salesChannelContextFactory->create(
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL,
             [
@@ -611,7 +606,7 @@ class PlusSubscriberTest extends TestCase
     private function assertFinishPage(CheckoutFinishPageLoadedEvent $event): PaymentMethodEntity
     {
         $subscriber = $this->createSubscriber();
-        $this->addPayPalToDefaultsSalesChannel($this->paypalPaymentMethodId);
+        $this->addPaymentMethodToDefaultsSalesChannel($this->paypalPaymentMethodId);
         $subscriber->onCheckoutFinishLoaded($event);
 
         $transactions = $event->getPage()->getOrder()->getTransactions();

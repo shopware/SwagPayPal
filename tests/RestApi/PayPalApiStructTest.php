@@ -60,11 +60,6 @@ class PayPalApiStructTest extends TestCase
         static::assertNotFalse($testJsonString);
 
         $paypalStructArray = \json_decode($testJsonString, true);
-
-        static::assertNull($paypalStructArray['id']);
-        static::assertNull($paypalStructArray['bar']);
-        static::assertNull($paypalStructArray['foo']);
-        static::assertNull($paypalStructArray['not_existing_class']);
-        static::assertEmpty($paypalStructArray['not_existing_collection_class']);
+        static::assertEmpty($paypalStructArray);
     }
 }

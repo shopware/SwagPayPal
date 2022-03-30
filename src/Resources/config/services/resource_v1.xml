@@ -19,7 +19,19 @@
             <argument type="service" id="Swag\PayPal\RestApi\V1\Service\TokenValidator"/>
         </service>
 
+        <service id="Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource">
+            <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\V1\Resource\IdentityResource">
+            <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
+        </service>
+        
         <service id="Swag\PayPal\RestApi\V1\Resource\DisputeResource">
+            <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
+        </service>
+
+        <service id="Swag\PayPal\RestApi\V1\Resource\IdentityResource">
             <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
         </service>
 

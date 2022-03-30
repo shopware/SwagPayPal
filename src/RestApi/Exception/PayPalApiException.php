@@ -17,12 +17,16 @@ class PayPalApiException extends ShopwareHttpException
 
     private int $payPalApiStatusCode;
 
+    private ?string $issue;
+
     public function __construct(
         string $name,
         string $message,
-        int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR
+        int $payPalApiStatusCode = Response::HTTP_INTERNAL_SERVER_ERROR,
+        ?string $issue = null
     ) {
         $this->payPalApiStatusCode = $payPalApiStatusCode;
+        $this->issue = $issue;
         parent::__construct(
             'The error "{{ name }}" occurred with the following message: {{ message }}',
             ['name' => $name, 'message' => $message]
@@ -32,6 +36,11 @@ class PayPalApiException extends ShopwareHttpException
     public function getStatusCode(): int
     {
         return $this->payPalApiStatusCode;
+    }
+
+    public function getIssue(): ?string
+    {
+        return $this->issue;
     }
 
     public function getErrorCode(): string

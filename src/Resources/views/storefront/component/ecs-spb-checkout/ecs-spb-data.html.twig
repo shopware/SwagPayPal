@@ -3,12 +3,18 @@
     {% set expressCheckoutData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\SalesChannel\\ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData spbCheckoutButtonData #}
     {% set spbCheckoutButtonData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
+    {# @var \Swag\PayPal\Checkout\ACDC\ACDCCheckoutFieldData acdcFieldData #}
+    {% set acdcFieldData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
+    {# @var \Swag\PayPal\Checkout\PUI\PUIFraudNetData acdcFieldData #}
+    {% set puiFraudnetData = page.extensions[constant('Swag\\PayPal\\Checkout\\PUI\\PUISubscriber::PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID')] %}
+    {# @var \Swag\PayPal\Checkout\SEPA\SEPACheckoutData sepaData #}
+    {% set sepaData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\SEPAMethodData::PAYPAL_SEPA_FIELD_DATA_EXTENSION_ID')] %}
 
     {% if expressCheckoutData %}
 
         {% block swag_paypal_ecs_spb_data_express_checkout_input %}
-            <input hidden name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}" value="1">
-            <input hidden name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.paypalOrderId }}">
+            <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}" value="1">
+            <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.paypalOrderId }}">
         {% endblock %}
 
     {% elseif spbCheckoutButtonData and spbCheckoutButtonData.paymentMethodId is same as(context.paymentMethod.id) %}
@@ -21,8 +27,41 @@
         {% endblock %}
 
         {% block swag_paypal_ecs_spb_data_input %}
-            <input hidden name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID') }}" value="1">
+            <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID') }}" value="1">
         {% endblock %}
 
+    {% elseif acdcFieldData and acdcFieldData.paymentMethodId is same as(context.paymentMethod.id) %}
+
+        {% block swag_paypal_ecs_spb_data_acdc_fields %}
+            <div data-swag-paypal-acdc-fields="true"
+                 data-swag-paypal-acdc-fields-options="{{ acdcFieldData|json_encode }}"
+                 data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
+            </div>
+        {% endblock %}
+
+    {% elseif puiFraudnetData and puiFraudnetData.paymentMethodId is same as(context.paymentMethod.id) %}
+
+        {% block swag_paypal_ecs_spb_data_pui_fraudnet %}
+            <script type="application/json" fncls="fnparams-dede7cc5-15fd-4c75-a9f4-36c430ee3a99">
+                {
+                    "f": "{{ puiFraudnetData.sessionIdentifier }}",
+                    "s": "{{ puiFraudnetData.websiteIdentifier }}",
+                    "sandbox": {{ puiFraudnetData.sandbox ? "true" : "false" }}
+                }
+            </script>
+            <script type="text/javascript" src="https://c.paypal.com/da/r/fb.js"></script>
+
+            <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Method\\PUIHandler::PUI_FRAUD_NET_SESSION_ID') }}" value="{{ puiFraudnetData.sessionIdentifier }}">
+        {% endblock %}
+
+        <div class="text-muted mb-3">{{ "paypal.payUponInvoice.checkout.confirmDisclaimer"|trans|raw }}</div>
+    {% elseif sepaData and sepaData.paymentMethodId is same as(context.paymentMethod.id) %}
+
+        {% block swag_paypal_ecs_spb_data_sepa_fields %}
+            <div data-swag-paypal-sepa="true"
+                 data-swag-paypal-sepa-options="{{ sepaData|json_encode }}"
+                 data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
+            </div>
+        {% endblock %}
     {% endif %}
 {% endblock %}

@@ -2,10 +2,8 @@ import template from './sw-order-detail.html.twig';
 import './sw-order-detail.scss';
 
 const { Component, Context } = Shopware;
+const { hasOwnProperty } = Shopware.Utils.object;
 const Criteria = Shopware.Data.Criteria;
-
-const paypalFormattedHandlerIdentifier = 'handler_swag_paypalpaymenthandler';
-const paypalPuiFormattedHandlerIdentifier = 'handler_swag_paypalpuipaymenthandler';
 
 Component.override('sw-order-detail', {
     template,
@@ -32,30 +30,25 @@ Component.override('sw-order-detail', {
             deep: true,
             handler() {
                 if (!this.orderId) {
-                    this.setIsPayPalPayment(null);
                     return;
                 }
 
                 const orderRepository = this.repositoryFactory.create('order');
                 const orderCriteria = new Criteria(1, 1);
                 orderCriteria.addAssociation('transactions');
-                orderCriteria.getAssociation('transactions').addSorting(Criteria.sort('createdAt'));
+                orderCriteria
+                    .getAssociation('transactions')
+                    .addSorting(Criteria.sort('createdAt', 'DESC'))
+                    .setLimit(1);
 
                 orderRepository.get(this.orderId, Context.api, orderCriteria).then((order) => {
-                    const transactionsQuantity = order.transactions.length;
-                    const lastTransactionIndex = transactionsQuantity - 1;
-                    if (transactionsQuantity <= 0 ||
-                        !order.transactions[lastTransactionIndex].paymentMethodId
-                    ) {
-                        this.setIsPayPalPayment(null);
+                    const transaction = order.transactions.last();
+                    if (!transaction) {
                         return;
                     }
 
-                    const paymentMethodId = order.transactions[lastTransactionIndex].paymentMethodId;
-
-                    if (paymentMethodId !== undefined && paymentMethodId !== null) {
-                        this.setIsPayPalPayment(paymentMethodId);
-                    }
+                    this.isPayPalPayment = hasOwnProperty(transaction, 'customFields') &&
+                        hasOwnProperty(transaction.customFields, 'swag_paypal_order_id');
                 });
             },
             immediate: true,
@@ -63,17 +56,11 @@ Component.override('sw-order-detail', {
     },
 
     methods: {
+        /**
+         * @deprecated tag:v6.0.0 - Will be removed without replacement
+         */
         setIsPayPalPayment(paymentMethodId) {
-            if (!paymentMethodId) {
-                return;
-            }
-            const paymentMethodRepository = this.repositoryFactory.create('payment_method');
-            paymentMethodRepository.get(paymentMethodId, Context.api).then(
-                (paymentMethod) => {
-                    this.isPayPalPayment = paymentMethod.formattedHandlerIdentifier === paypalFormattedHandlerIdentifier ||
-                        paymentMethod.formattedHandlerIdentifier === paypalPuiFormattedHandlerIdentifier;
-                },
-            );
+            this.isPayPalPayment = !!paymentMethodId;
         },
     },
 });

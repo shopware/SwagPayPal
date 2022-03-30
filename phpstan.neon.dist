@@ -1,37 +1,25 @@
 includes:
-    - ../../../dev-ops/analyze/vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - %ShopwareRoot%/vendor/phpstan/phpstan/conf/bleedingEdge.neon
 
 parameters:
     level: 8
     tmpDir: var/cache/phpstan
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: false
-
-    # should be removed with min-Version: 6.4.3.0
-    excludePaths:
-        - tests/Mock/DIContainerMock.php
-
-    # should be removed with min-Version: 6.4.2.0
     reportUnmatchedIgnoredErrors: false
 
     symfony:
         constant_hassers: false
         # the placeholder "%ShopwareHashedCacheDir%" will be replaced on execution by bin/phpstan-config-generator.php script
-        container_xml_path: '../../..%ShopwareHashedCacheDir%/Shopware_Development_KernelDevDebugContainer.xml'
+        container_xml_path: '../../..%ShopwareHashedCacheDir%/%ShopwareKernelClass%DevDebugContainer.xml'
 
     ignoreErrors:
-        -   # the mock classes do not implement all methods correctly
-            message: '#Method .*Mock::.* but return statement is missing\.#'
-            path: tests
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
-        -   # can be deleted after min-Version is 6.4.2.0
-            message: '#Shopware\\Storefront\\Event\\SwitchBuyBoxVariantEvent#'
-            path: .
-        -   # can be deleted after min-Version is 6.4.4.0
-            message: '#Access to undefined constant Shopware\\Core\\Checkout\\Order\\Aggregate\\OrderTransaction\\OrderTransactionStates::STATE_UNCONFIRMED#'
-            path: tests
+        -
+            message: '#Service ".*" is private#'
+            path: tests/**/*.php
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

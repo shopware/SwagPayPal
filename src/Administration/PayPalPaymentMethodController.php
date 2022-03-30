@@ -43,7 +43,8 @@ class PayPalPaymentMethodController extends AbstractController
      *             @OA\Property(
      *                 property="salesChannelId",
      *                 description="The id of the Saleschannel where PayPal should be set as the default payment method. Set to null to set PayPal as default for every Saleschannel.",
-     *                 type="string"
+     *                 type="string",
+     *                 nullable=true
      *             )
      *         )
      *     ),

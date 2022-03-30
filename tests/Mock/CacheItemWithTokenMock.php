@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Mock;
 
 use Psr\Cache\CacheItemInterface;
 use Shopware\Core\Defaults;
+use Shopware\Core\Framework\Uuid\Uuid;
 
 class CacheItemWithTokenMock implements CacheItemInterface
 {
@@ -16,6 +17,7 @@ class CacheItemWithTokenMock implements CacheItemInterface
 
     public function getKey(): string
     {
+        return Uuid::randomHex();
     }
 
     public function get()
@@ -36,6 +38,7 @@ class CacheItemWithTokenMock implements CacheItemInterface
 
     public function isHit(): bool
     {
+        return true;
     }
 
     /**

@@ -7,6 +7,7 @@
     <services>
         <service id="Swag\PayPal\Setting\SettingsController" public="true">
             <argument type="service" id="Swag\PayPal\Setting\Service\ApiCredentialService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\MerchantIntegrationsService"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -14,6 +15,17 @@
 
         <service id="Swag\PayPal\Setting\Service\ApiCredentialService">
             <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\CredentialsResource"/>
+        </service>
+
+        <service id="Swag\PayPal\Setting\Service\CredentialsUtil">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
+
+        <service id="Swag\PayPal\Setting\Service\MerchantIntegrationsService">
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\RestApi\Client\PayPalClientFactory"/>
         </service>
 
         <service id="Swag\PayPal\Setting\Service\SettingsValidationService">

@@ -44,6 +44,13 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         clientId: '',
 
         /**
+         * This option holds the merchant id specified in the settings
+         *
+         * @type string
+         */
+        merchantPayerId: '',
+
+        /**
          * This options specifies the currency of the PayPal button
          *
          * @type string
@@ -115,6 +122,8 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
 
         /**
          * Selector of the selected payment method
+         *
+         * @deprecated tag:v6.0.0 - will be removed without replacement
          *
          * @type string
          */
@@ -207,7 +216,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         }
 
         const formData = FormSerializeUtil.serialize(this.confirmOrderForm);
-
+        formData.set('product', 'spb');
         const orderId = this.options.orderId;
         if (orderId !== null) {
             formData.set('orderId', orderId);

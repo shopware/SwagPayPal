@@ -47,9 +47,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         /** @var EntityRepositoryInterface $orderTransactionRepository */
         $orderTransactionRepository = $this->getContainer()->get('order_transaction.repository');
         $this->orderTransactionRepository = $orderTransactionRepository;
-        /** @var StateMachineRegistry $stateMachineRegistry */
-        $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
-        $this->stateMachineRegistry = $stateMachineRegistry;
+        $this->stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
         $this->webhookHandler = $this->createWebhookHandler();
     }
 

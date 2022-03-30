@@ -19,22 +19,27 @@ class CacheWithTokenMock implements CacheItemPoolInterface
 
     public function getItems(array $keys = []): array
     {
+        return [];
     }
 
     public function hasItem($key): bool
     {
+        return true;
     }
 
     public function clear(): bool
     {
+        return true;
     }
 
     public function deleteItem($key): bool
     {
+        return true;
     }
 
     public function deleteItems(array $keys): bool
     {
+        return true;
     }
 
     public function save(CacheItemInterface $item): bool
@@ -44,9 +49,11 @@ class CacheWithTokenMock implements CacheItemPoolInterface
 
     public function saveDeferred(CacheItemInterface $item): bool
     {
+        return true;
     }
 
     public function commit(): bool
     {
+        return true;
     }
 }

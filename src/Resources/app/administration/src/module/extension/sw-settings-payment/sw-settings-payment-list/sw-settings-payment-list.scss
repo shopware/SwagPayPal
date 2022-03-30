@@ -1,0 +1,6 @@
+@import "~scss/variables";
+$sw-icon-color-lock-closed: $color-gray-900;
+
+.icon--default-lock-closed {
+    color: $sw-icon-color-lock-closed;
+}

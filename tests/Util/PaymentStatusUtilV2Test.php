@@ -19,7 +19,6 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
@@ -54,12 +53,9 @@ class PaymentStatusUtilV2Test extends TestCase
         $orderTransactionRepository = $container->get('order_transaction.repository');
         $this->orderTransactionRepository = $orderTransactionRepository;
 
-        /** @var OrderTransactionStateHandler $orderTransactionStateHandler */
-        $orderTransactionStateHandler = $container->get(OrderTransactionStateHandler::class);
-
         $this->paymentStatusUtil = new PaymentStatusUtilV2(
             $this->orderTransactionRepository,
-            $orderTransactionStateHandler,
+            $container->get(OrderTransactionStateHandler::class),
             new PriceFormatter()
         );
 
@@ -245,7 +241,7 @@ class PaymentStatusUtilV2Test extends TestCase
                         'taxRules' => [],
                     ],
                     'stateId' => $this->getOrderTransactionStateIdByTechnicalName(
-                        PayPalPaymentHandler::ORDER_TRANSACTION_STATE_AUTHORIZED,
+                        OrderTransactionStates::STATE_AUTHORIZED,
                         $this->getContainer(),
                         $this->context
                     ),

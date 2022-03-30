@@ -5,50 +5,23 @@
  * file that was distributed with this source code.
  */
 
-use Shopware\Core\Framework\Test\TestCaseBase\KernelLifecycleManager;
-use Symfony\Component\Dotenv\Dotenv;
+use Shopware\Core\TestBootstrapper;
 
-function getProjectDir(): string
-{
-    if (isset($_SERVER['PROJECT_ROOT']) && file_exists($_SERVER['PROJECT_ROOT'])) {
-        return $_SERVER['PROJECT_ROOT'];
-    }
-    if (isset($_ENV['PROJECT_ROOT']) && file_exists($_ENV['PROJECT_ROOT'])) {
-        return $_ENV['PROJECT_ROOT'];
-    }
-
-    $rootDir = __DIR__;
-    $dir = $rootDir;
-    while (!file_exists($dir . '/.env')) {
-        if ($dir === dirname($dir)) {
-            return $rootDir;
-        }
-        $dir = dirname($dir);
-    }
-
-    return $dir;
-}
-
-$testProjectDir = getProjectDir();
-
-$loader = require $testProjectDir . '/vendor/autoload.php';
-KernelLifecycleManager::prepare($loader);
-$pluginVendorDir = __DIR__ . '/../vendor';
-if (is_dir($pluginVendorDir)) {
-    require_once $pluginVendorDir . '/autoload.php';
+if (is_readable(__DIR__ . '/../vendor/shopware/platform/src/Core/TestBootstrapper.php')) {
+    require __DIR__ . '/../vendor/shopware/platform/src/Core/TestBootstrapper.php';
+} elseif (is_readable(__DIR__ . '/../vendor/shopware/core/TestBootstrapper.php')) {
+    require __DIR__ . '/../vendor/shopware/core/TestBootstrapper.php';
 } else {
-    echo 'vendor directory not found. Please execute "composer dump-autoload --dev"';
-    exit(1);
+    // vendored from platform, only use local TestBootstrapper if not already defined in platform
+    require __DIR__ . '/TestBootstrapper.php';
 }
 
-if (!class_exists(Dotenv::class)) {
-    throw new RuntimeException('APP_ENV environment variable is not defined. You need to define environment variables for configuration or add "symfony/dotenv" as a Composer dependency to load variables from a .env file.');
-}
-(new Dotenv())->usePutenv()->load($testProjectDir . '/.env');
-
-$dbUrl = getenv('DATABASE_URL');
-if ($dbUrl !== false) {
-    $testDbUrl = $dbUrl . '_test';
-    putenv('DATABASE_URL=' . $testDbUrl);
-    $_ENV['DATABASE_URL'] = $testDbUrl;
-}
+return (new TestBootstrapper())
+    ->setProjectDir($_SERVER['PROJECT_ROOT'] ?? dirname(__DIR__, 4))
+    ->setLoadEnvFile(true)
+    ->setForceInstallPlugins(true)
+    ->addActivePlugins('SwagCmsExtensions')
+    ->addCallingPlugin()
+    ->bootstrap()
+    ->setClassLoader(require dirname(__DIR__) . '/vendor/autoload.php')
+    ->getClassLoader();

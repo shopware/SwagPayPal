@@ -20,7 +20,9 @@ use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
+use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
@@ -40,6 +42,8 @@ class EcsSpbHandler extends AbstractPaymentHandler
 
     private ItemListProvider $itemListProvider;
 
+    private TransactionDataService $transactionDataService;
+
     private LoggerInterface $logger;
 
     public function __construct(
@@ -49,6 +53,7 @@ class EcsSpbHandler extends AbstractPaymentHandler
         PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder,
         OrderResource $orderResource,
         ItemListProvider $itemListProvider,
+        TransactionDataService $transactionDataService,
         LoggerInterface $logger
     ) {
         parent::__construct($orderTransactionRepo);
@@ -57,6 +62,7 @@ class EcsSpbHandler extends AbstractPaymentHandler
         $this->purchaseUnitPatchBuilder = $purchaseUnitPatchBuilder;
         $this->orderResource = $orderResource;
         $this->itemListProvider = $itemListProvider;
+        $this->transactionDataService = $transactionDataService;
         $this->logger = $logger;
     }
 
@@ -67,11 +73,11 @@ class EcsSpbHandler extends AbstractPaymentHandler
         CustomerEntity $customer
     ): RedirectResponse {
         $this->logger->debug('Started');
-        $paypalOrderId = $dataBag->get(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        $paypalOrderId = $dataBag->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
         $orderTransaction = $transaction->getOrderTransaction();
         $orderTransactionId = $orderTransaction->getId();
 
-        $this->addPayPalOrderId(
+        $this->transactionDataService->setOrderId(
             $orderTransactionId,
             $paypalOrderId,
             PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT,
@@ -119,8 +125,8 @@ class EcsSpbHandler extends AbstractPaymentHandler
         SalesChannelContext $salesChannelContext
     ): RedirectResponse {
         $this->logger->debug('Started');
-        $paypalOrderId = $dataBag->get(self::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
-        $this->addPayPalOrderId(
+        $paypalOrderId = $dataBag->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME);
+        $this->transactionDataService->setOrderId(
             $transaction->getOrderTransaction()->getId(),
             $paypalOrderId,
             PartnerAttributionId::SMART_PAYMENT_BUTTONS,

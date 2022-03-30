@@ -12,6 +12,12 @@
             }
         }
     },
+    "sw-settings-payment-list": {
+        "needOnboardingTooltip": "Complete the onboarding to activate this payment method"
+    },
+    "sw-settings-payment-detail": {
+        "tooltip": "Go to the <a class=\"swag-paypal-go-to-settings-link\" href=\"#/swag/paypal/index\">PayPal extension settings →</a> and activate PayPal Commerce Platform to activate this payment method."
+    },
     "swag-paypal": {
         "header": "PayPal",
         "saleschannelCard": {
@@ -28,6 +34,61 @@
         "settingForm": {
             "testLive": "Test API credentials",
             "testSandbox": "Test sandbox API credentials",
+            "checkout": {
+                "cardTitle": "PayPal Checkout",
+                "description": "PayPal Checkout is the new all-in-one solution that lets you offer powerful flexibile payment processing features on the marketplaces and other commerce platforms.",
+                "banner": "With PayPal Checkout, you can offer your customers payment by invoice, credit card and other local payment methods. PayPal Checkout supports you with the latest technology and brings you the highest flexibility. You keep your existing payment methods, and the fees remain the same! Activate PayPal Checkout and deactivate PayPal PLUS to avoid duplicate payment methods in your shop. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/\" target=\"_blank\">More information</a>",
+                "button": {
+                    "title": "Start onboarding"
+                },
+                "sandbox": {
+                    "label": "Use sandbox credentials",
+                    "tooltipText": "Enable if you want to test the PayPal integration."
+                },
+                "switch": {
+                    "label": "Active"
+                },
+                "paymentMethodText": "Payment methods",
+                "showCredentials": "Show credentials",
+                "appImageAlt": "PayPal",
+                "editDetail": "Edit Detail",
+                "startOnboardingButtonLabel": "Start onboarding",
+                "availabilityToolTip": {
+                    "BancontactAPMHandler": "Bancontact is available for the following countries: Belgium",
+                    "BlikAPMHandler": "BLIK is available for the following countries: Poland",
+                    "BoletoBancarioAPMHandler": "Boleto Bancário is available for the following countries: Brazil",
+                    "EpsAPMHandler": "eps is available for the following countries: Austria",
+                    "GiropayAPMHandler": "Giropay is available for the following countries: Germany",
+                    "IdealAPMHandler": "iDEAL is available for the following countries: Netherlands",
+                    "MultibancoAPMHandler": "Multibanco is available for the following countries: Portugal",
+                    "MyBankAPMHandler": "MyBank is available for the following countries: Italy",
+                    "OxxoAPMHandler": "OXXO is available for the following countries: Mexico",
+                    "P24APMHandler": "Przelewy24 is available for the following countries: Poland",
+                    "PUIHandler": "Pay upon invoice is available for the following countries: Germany",
+                    "SEPAHandler": "SEPA Lastschrift is available for the following countries: Germany",
+                    "SofortAPMHandler": "Sofort is available for the following countries: Austria, Belgium, Germany, Italy, Netherlands, Spain, United Kingdom",
+                    "TrustlyAPMHandler": "Trustly is available for the following countries: Estonia, Finland, Netherlands, Sweden"
+                },
+                "onboardingStatusText": {
+                    "active": "Authorized",
+                    "limited": "Limited",
+                    "pending": "Authorization pending",
+                    "inactive": "Onboarding needed"
+                },
+                "paymentMethodStatusChangedSuccess": {
+                    "active": "Payment method \"{name}\" is now active.",
+                    "inactive": "Payment method \"{name}\" is now inactive."
+                },
+                "deactivatePayPalPlusModal": {
+                    "title": "Deactivate PayPal PLUS",
+                    "text": "Congratulations! By switching to PayPal Checkout, you keep on using all relevant payment methods – now based on the latest technology.",
+                    "warning": "Avoid displaying duplicate payment methods and deactivate PayPal PLUS.",
+                    "button": {
+                        "deactivate": "Deactivate PayPal PLUS",
+                        "cancel": "Cancel"
+                    }
+                }
+            },
             "credentials": {
                 "cardTitle": "API credentials",
                 "clientId": {
@@ -38,6 +99,10 @@
                     "label": "Client secret",
                     "tooltipText": "The REST API client secret is used to authenticate this plugin with the PayPal API."
                 },
+                "merchantPayerId": {
+                    "label": "PayPal Merchant ID",
+                    "tooltipText": "The PayPal Merchant ID assigned to your PayPal account (see Business Information in PayPal account settings)."
+                },
                 "clientIdSandbox": {
                     "label": "Sandbox client ID",
                     "tooltipText": "The REST API client ID is used while testing to authenticate this plugin with the PayPal API."
@@ -45,6 +110,10 @@
                 "clientSecretSandbox": {
                     "label": "Sandbox client secret",
                     "tooltipText": "The REST API client secret is used while testing to authenticate this plugin with the PayPal API."
+                },
+                "merchantPayerIdSandbox": {
+                    "label": "Sandbox PayPal Merchant ID",
+                    "tooltipText": "The PayPal Merchant ID assigned to your PayPal sandbox account (see Business Information in PayPal account settings)."
                 },
                 "sandbox": {
                     "label": "Enable sandbox",
@@ -164,6 +233,13 @@
                     "label": "Enable installment banner"
                 }
             },
+            "pui": {
+                "cardTitle": "Pay upon invoice",
+                "customerServiceInstructions": {
+                    "label": "Customer service instructions for Pay upon invoice",
+                    "helpText": "These instructions will be submitted to PayPal & RatePay and shown in emails for the customer."
+                }
+            },
             "spb": {
                 "cardTitle": "PayPal Checkout with Smart Payment Buttons",
                 "spbCheckoutEnabled": {
@@ -187,7 +263,11 @@
                 "plusCheckoutEnabled": {
                     "label": "Enable PayPal PLUS"
                 },
-                "hint": "Note: PayPal PLUS only works with the payment acquisition \"Sale\". It will be set automatically."
+                "hint": "Note: PayPal PLUS only works with the payment acquisition \"Sale\". It will be set automatically.",
+                "warning": {
+                    "active": "PayPal Checkout provides the same payment methods to your customers – based on the latest technology. Activate PayPal Checkout now and deactivate PayPal PLUS to avoid displaying duplicate payment methods. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/\" target=\"_blank\">More information</a>",
+                    "inactive": "Avoid displaying duplicate payment methods and deactivate PayPal PLUS. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/\" target=\"_blank\">More information</a>"
+                }
             },
             "locale-field": {
                 "infobox": {

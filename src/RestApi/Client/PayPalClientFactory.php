@@ -9,10 +9,10 @@ namespace Swag\PayPal\RestApi\Client;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\RestApi\BaseURL;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\TokenResourceInterface;
+use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Setting\Settings;
 
@@ -23,6 +23,8 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
     private SettingsValidationServiceInterface $settingsValidationService;
 
     private SystemConfigService $systemConfigService;
+
+    private CredentialsUtilInterface $credentialsUtil;
 
     private LoggerInterface $logger;
 
@@ -35,11 +37,13 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
         TokenResourceInterface $tokenResource,
         SettingsValidationServiceInterface $settingsValidationService,
         SystemConfigService $systemConfigService,
+        CredentialsUtilInterface $credentialsUtil,
         LoggerInterface $logger
     ) {
         $this->tokenResource = $tokenResource;
         $this->settingsValidationService = $settingsValidationService;
         $this->systemConfigService = $systemConfigService;
+        $this->credentialsUtil = $credentialsUtil;
         $this->logger = $logger;
     }
 
@@ -65,17 +69,16 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
     {
         $this->settingsValidationService->validate($salesChannelId);
 
-        $isSandbox = $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelId);
-        $url = $isSandbox ? BaseURL::SANDBOX : BaseURL::LIVE;
+        $isSandbox = $this->credentialsUtil->isSandbox($salesChannelId);
         $suffix = $isSandbox ? 'Sandbox' : '';
 
-        $clientId = $this->systemConfigService->getString(Settings::CLIENT_ID . $suffix, $salesChannelId);
+        $clientId = $this->credentialsUtil->getClientId($salesChannelId);
         $clientSecret = $this->systemConfigService->getString(Settings::CLIENT_SECRET . $suffix, $salesChannelId);
 
         $credentials = new OAuthCredentials();
         $credentials->setRestId($clientId);
         $credentials->setRestSecret($clientSecret);
-        $credentials->setUrl($url);
+        $credentials->setUrl($this->credentialsUtil->getBaseUrl($salesChannelId));
 
         return $credentials;
     }

@@ -1,3 +1,9 @@
+# 5.0.0
+- PPI-317 - Add separate credit card payment method
+- PPI-385 - Add new Pay Upon Invoice payment method
+- PPI-410 - Add separate APM payment methods
+- PPI-418 - Add compatibility for PHP 8.1
+
 # 4.1.1
 - PPI-395 - Removed snippets for deprecated PayPal products
 

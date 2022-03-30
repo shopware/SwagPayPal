@@ -18,8 +18,10 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
+use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -122,9 +124,6 @@ class SPBCreateOrderRouteTest extends TestCase
 
     private function createRoute(): SPBCreateOrderRoute
     {
-        /** @var CartService $cartService */
-        $cartService = $this->getContainer()->get(CartService::class);
-
         $systemConfig = $this->createSystemConfigServiceMock([
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
@@ -132,22 +131,26 @@ class SPBCreateOrderRouteTest extends TestCase
 
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
+        $addressProvider = new AddressProvider();
 
         $orderFromCartBuilder = new OrderFromCartBuilder(
             $priceFormatter,
             $systemConfig,
-            new PurchaseUnitProvider($amountProvider, $systemConfig),
+            new PurchaseUnitProvider($amountProvider, $addressProvider, $systemConfig),
+            $addressProvider,
             new EventDispatcherMock(),
             new LoggerMock()
         );
 
         return new SPBCreateOrderRoute(
-            $cartService,
-            new OrderRepositoryMock(),
-            $this->createOrderBuilder($systemConfig),
-            $orderFromCartBuilder,
-            new OrderResource($this->createPayPalClientFactory()),
-            new NullLogger()
+            new CreateOrderRoute(
+                $this->getContainer()->get(CartService::class),
+                new OrderRepositoryMock(),
+                $this->createOrderBuilder($systemConfig),
+                $orderFromCartBuilder,
+                new OrderResource($this->createPayPalClientFactory()),
+                new NullLogger()
+            )
         );
     }
 }

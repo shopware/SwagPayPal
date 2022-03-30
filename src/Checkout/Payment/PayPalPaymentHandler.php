@@ -40,16 +40,16 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     public const PAYPAL_REQUEST_PARAMETER_TOKEN = 'token';
     public const PAYPAL_EXPRESS_CHECKOUT_ID = 'isPayPalExpressCheckout';
     public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
-    public const PAYPAL_PLUS_CHECKOUT_ID = 'isPayPalPlusCheckout';
     public const PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
 
     /**
-     * @deprecated tag:v5.0.0 Will be removed with min 6.4.1.0 without replacement. Check for other usages on removal.
+     * @deprecated tag:v6.0.0 - Will be removed without replacement.
      */
-    public const ORDER_TRANSACTION_STATE_AUTHORIZED = 'authorized';
+    public const PAYPAL_PLUS_CHECKOUT_ID = 'isPayPalPlusCheckout';
+
     public const FINALIZED_ORDER_TRANSACTION_STATES = [
         OrderTransactionStates::STATE_PAID,
-        self::ORDER_TRANSACTION_STATE_AUTHORIZED,
+        OrderTransactionStates::STATE_AUTHORIZED,
     ];
 
     private OrderTransactionStateHandler $orderTransactionStateHandler;
@@ -108,11 +108,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             throw new AsyncPaymentProcessException($transactionId, $exception->getMessage());
         }
 
-        if (\method_exists($this->orderTransactionStateHandler, 'processUnconfirmed')) {
-            $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
-        } else {
-            $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
-        }
+        $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
 
         if ($dataBag->get(self::PAYPAL_EXPRESS_CHECKOUT_ID)) {
             try {
@@ -146,15 +142,12 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             throw new AsyncPaymentProcessException($transactionId, $e->getMessage());
         }
 
-        foreach ($response->getLinks() as $link) {
-            if ($link->getRel() !== Link::RELATION_APPROVE) {
-                continue;
-            }
-
-            return new RedirectResponse($link->getHref());
+        $link = $response->getRelLink(Link::RELATION_APPROVE);
+        if ($link === null) {
+            throw new AsyncPaymentProcessException($transactionId, 'No approve link provided by PayPal');
         }
 
-        throw new AsyncPaymentProcessException($transactionId, 'No approve link provided by PayPal');
+        return new RedirectResponse($link->getHref());
     }
 
     /**

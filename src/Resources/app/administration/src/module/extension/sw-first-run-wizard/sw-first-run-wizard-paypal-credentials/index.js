@@ -75,26 +75,23 @@ Component.override('sw-first-run-wizard-paypal-credentials', {
             this.fetchPayPalConfig();
         },
 
-        onPayPalCredentialsLoadSuccess(clientId, clientSecret, sandbox) {
-            this.setConfig(clientId, clientSecret, sandbox);
+        onPayPalCredentialsLoadSuccess(clientId, clientSecret, merchantPayerId, sandbox) {
+            this.setConfig(clientId, clientSecret, merchantPayerId, sandbox);
         },
 
         onPayPalCredentialsLoadFailed(sandbox) {
-            this.setConfig('', '', sandbox);
+            this.setConfig('', '', sandbox, '');
             this.createNotificationError({
                 message: this.$tc('swag-paypal-frw-credentials.messageFetchedError'),
                 duration: 10000,
             });
         },
 
-        setConfig(clientId, clientSecret, sandbox) {
-            if (sandbox) {
-                this.$set(this.config, 'SwagPayPal.settings.clientIdSandbox', clientId);
-                this.$set(this.config, 'SwagPayPal.settings.clientSecretSandbox', clientSecret);
-            } else {
-                this.$set(this.config, 'SwagPayPal.settings.clientId', clientId);
-                this.$set(this.config, 'SwagPayPal.settings.clientSecret', clientSecret);
-            }
+        setConfig(clientId, clientSecret, merchantPayerId, sandbox) {
+            const suffix = sandbox ? 'Sandbox' : '';
+            this.$set(this.config, `SwagPayPal.settings.clientId${suffix}`, clientId);
+            this.$set(this.config, `SwagPayPal.settings.clientSecret${suffix}`, clientSecret);
+            this.$set(this.config, `SwagPayPal.settings.merchantPayerId${suffix}`, merchantPayerId);
         },
 
         onClickNext() {

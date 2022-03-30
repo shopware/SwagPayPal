@@ -7,12 +7,14 @@
 
 namespace Swag\PayPal\Setting;
 
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\Acl;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Swag\PayPal\Setting\Service\ApiCredentialServiceInterface;
+use Swag\PayPal\Setting\Service\MerchantIntegrationsServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,9 +27,14 @@ class SettingsController extends AbstractController
 {
     private ApiCredentialServiceInterface $apiCredentialService;
 
-    public function __construct(ApiCredentialServiceInterface $apiService)
-    {
+    private MerchantIntegrationsServiceInterface $merchantIntegrationsService;
+
+    public function __construct(
+        ApiCredentialServiceInterface $apiService,
+        MerchantIntegrationsServiceInterface $merchantIntegrationsService
+    ) {
         $this->apiCredentialService = $apiService;
+        $this->merchantIntegrationsService = $merchantIntegrationsService;
     }
 
     /**
@@ -69,5 +76,19 @@ class SettingsController extends AbstractController
         $credentials = $this->apiCredentialService->getApiCredentials($authCode, $sharedId, $nonce, $sandboxActive);
 
         return new JsonResponse($credentials);
+    }
+
+    /**
+     * @Since("4.2.0")
+     * @Route("/api/_action/paypal/get-merchant-integrations", name="api.action.paypal.get.merchant.integrations", methods={"GET"})
+     * @Acl({"swag_paypal.editor"})
+     */
+    public function getMerchantIntegrations(Request $request, Context $context): JsonResponse
+    {
+        $salesChannelId = $request->request->getAlnum('salesChannelId');
+
+        $response = $this->merchantIntegrationsService->fetchMerchantIntegrations($context, $salesChannelId);
+
+        return new JsonResponse($response);
     }
 }

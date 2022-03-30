@@ -8,6 +8,7 @@ Mixin.register('swag-paypal-credentials-loader', {
     data() {
         return {
             isGetCredentialsSuccessful: false,
+            lastOnboardingSandbox: false,
             nonceLive: `${Shopware.Utils.createId()}${Shopware.Utils.createId()}`,
             nonceSandbox: `${Shopware.Utils.createId()}${Shopware.Utils.createId()}`,
             payPalPartnerIdLive: 'DYKPBPEAW5JNA',
@@ -17,7 +18,9 @@ Mixin.register('swag-paypal-credentials-loader', {
 
             requestParams: {
                 channelId: 'partner',
-                productIntentId: 'addipmt',
+                product: 'ppcp',
+                secondaryProducts: 'payment_methods',
+                capabilities: 'PAY_UPON_INVOICE',
                 integrationType: 'FO',
                 features: [
                     'PAYMENT',
@@ -25,8 +28,11 @@ Mixin.register('swag-paypal-credentials-loader', {
                     'READ_SELLER_DISPUTE',
                     'UPDATE_SELLER_DISPUTE',
                     'ADVANCED_TRANSACTIONS_SEARCH',
+                    'ACCESS_MERCHANT_INFORMATION',
+                    'TRACKING_SHIPMENT_READWRITE',
                 ],
                 displayMode: 'minibrowser',
+                partnerLogoUrl: 'https://assets.shopware.com/media/logos/shopware_logo_blue.svg',
             },
         };
     },
@@ -40,7 +46,7 @@ Mixin.register('swag-paypal-credentials-loader', {
                 sellerNonce: this.nonceLive,
             });
 
-            return `https://www.paypal.com/US/merchantsignup/partner/onboardingentry?${params.toString()}`;
+            return `https://www.paypal.com/bizsignup/partner/entry?${params.toString()}`;
         },
         onboardingUrlSandbox() {
             const params = this.createRequestParameter({
@@ -50,7 +56,7 @@ Mixin.register('swag-paypal-credentials-loader', {
                 sellerNonce: this.nonceSandbox,
             });
 
-            return `https://www.sandbox.paypal.com/US/merchantsignup/partner/onboardingentry?${params.toString()}`;
+            return `https://www.sandbox.paypal.com/bizsignup/partner/entry?${params.toString()}`;
         },
     },
 
@@ -137,8 +143,9 @@ Mixin.register('swag-paypal-credentials-loader', {
             }
 
             this.isGetCredentialsSuccessful = null;
+            this.lastOnboardingSandbox = sandbox;
 
-            this.isLoading = true;
+            this.$emit('on-change-loading', true);
 
             return this.SwagPayPalApiCredentialsService.getApiCredentials(
                 authCode,
@@ -147,12 +154,12 @@ Mixin.register('swag-paypal-credentials-loader', {
                 sandbox,
             ).then((response) => {
                 this.isGetCredentialsSuccessful = true;
-                this.onPayPalCredentialsLoadSuccess(response.client_id, response.client_secret, sandbox);
+                this.onPayPalCredentialsLoadSuccess(response.client_id, response.client_secret, response.payer_id, sandbox);
             }).catch(() => {
                 this.isGetCredentialsSuccessful = false;
                 this.onPayPalCredentialsLoadFailed(sandbox);
             }).finally(() => {
-                this.isLoading = false;
+                this.$emit('on-change-loading', false);
             });
         },
 
@@ -160,6 +167,7 @@ Mixin.register('swag-paypal-credentials-loader', {
          *
          * @param clientId string
          * @param clientSecret string
+         * @param merchantPayerId string
          * @param sandbox bool
          */
         onPayPalCredentialsLoadSuccess() {
@@ -183,6 +191,5 @@ Mixin.register('swag-paypal-credentials-loader', {
                 'you have to implement your custom "onPayPalCredentialsLoadFailed()" method.',
             );
         },
-
     },
 });

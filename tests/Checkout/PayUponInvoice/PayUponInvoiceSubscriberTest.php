@@ -35,10 +35,7 @@ class PayUponInvoiceSubscriberTest extends TestCase
 
     protected function setUp(): void
     {
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-
-        $this->salesChannelContext = $salesChannelContextFactory->create(
+        $this->salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL
         );
@@ -49,7 +46,7 @@ class PayUponInvoiceSubscriberTest extends TestCase
         $payUponInvoiceSubscriber = $this->getSubscriber();
 
         $expectedResult = [
-            'sales_channel.payment_method.search.result.loaded' => ['onSearchResultLoaded', -1],
+            //'sales_channel.payment_method.search.result.loaded' => ['onSearchResultLoaded', -1],
         ];
 
         static::assertSame($expectedResult, $payUponInvoiceSubscriber::getSubscribedEvents());

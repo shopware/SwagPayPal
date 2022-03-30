@@ -11,8 +11,17 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class EventDispatcherMock implements EventDispatcherInterface
 {
+    private ?object $lastEvent = null;
+
     public function dispatch(object $event, ?string $eventName = null): object
     {
+        $this->lastEvent = $event;
+
         return $event;
+    }
+
+    public function getLastEvent(): ?object
+    {
+        return $this->lastEvent;
     }
 }

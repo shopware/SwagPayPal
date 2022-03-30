@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
@@ -28,12 +29,19 @@ abstract class AbstractOrderBuilder
 
     protected PurchaseUnitProvider $purchaseUnitProvider;
 
+    protected ?AddressProvider $addressProvider;
+
+    /**
+     * @deprecated tag:v6.0.0 - parameter $addressProvider will be required
+     */
     public function __construct(
         SystemConfigService $systemConfigService,
-        PurchaseUnitProvider $purchaseUnitProvider
+        PurchaseUnitProvider $purchaseUnitProvider,
+        ?AddressProvider $addressProvider = null
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->purchaseUnitProvider = $purchaseUnitProvider;
+        $this->addressProvider = $addressProvider;
     }
 
     /**
@@ -63,8 +71,12 @@ abstract class AbstractOrderBuilder
         if ($billingAddress === null) {
             throw new AddressNotFoundException($customer->getDefaultBillingAddressId());
         }
-        /** @var PayerAddress $address */
-        $address = $this->createAddress($billingAddress, new PayerAddress());
+        $address = new PayerAddress();
+        if ($this->addressProvider !== null) {
+            $this->addressProvider->createAddress($billingAddress, $address);
+        } else {
+            $this->createAddress($billingAddress, $address);
+        }
         $payer->setAddress($address);
 
         return $payer;
@@ -74,18 +86,18 @@ abstract class AbstractOrderBuilder
         SalesChannelContext $salesChannelContext
     ): ApplicationContext {
         $applicationContext = new ApplicationContext();
-        $applicationContext->setBrandName($this->getBrandName($salesChannelContext, $salesChannelContext->getSalesChannelId()));
+        $applicationContext->setBrandName($this->getBrandName($salesChannelContext));
         $applicationContext->setLandingPage($this->getLandingPageType($salesChannelContext->getSalesChannelId()));
 
         return $applicationContext;
     }
 
-    private function getBrandName(SalesChannelContext $salesChannelContext, string $salesChannelId): string
+    protected function getBrandName(SalesChannelContext $salesChannelContext): string
     {
-        $brandName = $this->systemConfigService->getString(Settings::BRAND_NAME, $salesChannelId);
+        $brandName = $this->systemConfigService->getString(Settings::BRAND_NAME, $salesChannelContext->getSalesChannelId());
 
         if ($brandName === '') {
-            $brandName = $salesChannelContext->getSalesChannel()->getName() ?? '';
+            $brandName = $salesChannelContext->getSalesChannel()->getTranslation('name') ?? '';
         }
 
         return $brandName;
@@ -105,6 +117,9 @@ abstract class AbstractOrderBuilder
         return $landingPageType;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed, use AddressProvider instead
+     */
     private function createAddress(CustomerAddressEntity $customerAddress, Address $address): Address
     {
         $address->setAddressLine1($customerAddress->getStreet());

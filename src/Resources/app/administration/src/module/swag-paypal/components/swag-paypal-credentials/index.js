@@ -7,11 +7,11 @@ Component.register('swag-paypal-credentials', {
 
     inject: [
         'acl',
+        'SwagPayPalApiCredentialsService',
     ],
 
     mixins: [
         'notification',
-        'swag-paypal-credentials-loader',
     ],
 
     props: {
@@ -103,26 +103,17 @@ Component.register('swag-paypal-credentials', {
         },
 
         onTest(sandbox) {
-            let clientId;
-            let clientSecret;
-
             if (sandbox) {
                 this.isTestingSandbox = true;
             } else {
                 this.isTestingLive = true;
             }
 
-            if (sandbox) {
-                clientId = this.actualConfigData['SwagPayPal.settings.clientIdSandbox'] ||
-                    this.allConfigs.null['SwagPayPal.settings.clientIdSandbox'];
-                clientSecret = this.actualConfigData['SwagPayPal.settings.clientSecretSandbox'] ||
-                    this.allConfigs.null['SwagPayPal.settings.clientSecretSandbox'];
-            } else {
-                clientId = this.actualConfigData['SwagPayPal.settings.clientId'] ||
-                    this.allConfigs.null['SwagPayPal.settings.clientId'];
-                clientSecret = this.actualConfigData['SwagPayPal.settings.clientSecret'] ||
-                    this.allConfigs.null['SwagPayPal.settings.clientSecret'];
-            }
+            const sandboxSetting = sandbox ? 'Sandbox' : '';
+            const clientId = this.actualConfigData[`SwagPayPal.settings.clientId${sandboxSetting}`] ||
+                    this.allConfigs.null[`SwagPayPal.settings.clientId${sandboxSetting}`];
+            const clientSecret = this.actualConfigData[`SwagPayPal.settings.clientSecret${sandboxSetting}`] ||
+                    this.allConfigs.null[`SwagPayPal.settings.clientSecret${sandboxSetting}`];
 
             this.SwagPayPalApiCredentialsService.validateApiCredentials(
                 clientId,
@@ -162,6 +153,9 @@ Component.register('swag-paypal-credentials', {
             });
         },
 
+        /**
+         * @deprecated tag:v6.0.0 Will be removed without replacement.
+         */
         onPayPalCredentialsLoadSuccess(clientId, clientSecret, sandbox) {
             if (sandbox) {
                 this.$set(this.actualConfigData, 'SwagPayPal.settings.clientIdSandbox', clientId);
@@ -172,13 +166,18 @@ Component.register('swag-paypal-credentials', {
             }
         },
 
+        /**
+         * @deprecated tag:v6.0.0 Will be removed without replacement.
+         */
         onPayPalCredentialsLoadFailed(sandbox) {
             if (sandbox) {
                 this.$set(this.actualConfigData, 'SwagPayPal.settings.clientIdSandbox', '');
                 this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecretSandbox', '');
+                this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantPayerIdSandbox', '');
             } else {
                 this.$set(this.actualConfigData, 'SwagPayPal.settings.clientId', '');
                 this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecret', '');
+                this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantPayerId', '');
             }
             this.createNotificationError({
                 message: this.$tc('swag-paypal.settingForm.credentials.button.messageFetchedError'),

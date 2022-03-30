@@ -48,6 +48,7 @@ use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -64,9 +65,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     public function setUp(): void
     {
-        /** @var CartService $cartService */
-        $cartService = $this->getContainer()->get(CartService::class);
-        $this->cartService = $cartService;
+        $this->cartService = $this->getContainer()->get(CartService::class);
     }
 
     public function testGetSubscribedEvents(): void
@@ -502,31 +501,27 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
 
         return new ExpressCheckoutSubscriber(
             new PayPalExpressCheckoutDataService(
                 $this->cartService,
                 $this->createLocaleCodeProvider(),
                 $router,
-                $paymentMethodUtil,
+                $this->getContainer()->get(PaymentMethodUtil::class),
                 $settings,
+                new CredentialsUtil($settings),
                 new CartPriceService()
             ),
             new SettingsValidationService($settings, new NullLogger()),
             $settings,
-            $paymentMethodUtil,
+            $this->getContainer()->get(PaymentMethodUtil::class),
             new NullLogger()
         );
     }
 
     private function createSalesChannelContext(bool $withItemList = false, bool $paymentMethodActive = true): SalesChannelContext
     {
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-
-        $salesChannelContext = $salesChannelContextFactory->create(
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL
         );
@@ -573,9 +568,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         /** @var EntityRepositoryInterface $paymentMethodRepo */
         $paymentMethodRepo = $this->getContainer()->get('payment_method.repository');
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
-        $paymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext());
+        $paymentMethodId = $this->getContainer()->get(PaymentMethodUtil::class)->getPayPalPaymentMethodId($salesChannelContext->getContext());
         static::assertNotNull($paymentMethodId);
 
         $paymentMethodRepo->update([[

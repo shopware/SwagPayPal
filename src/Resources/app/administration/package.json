@@ -13,14 +13,16 @@
         "unit-watch": "jest --config jest.config.js --watch"
     },
     "devDependencies": {
-        "@babel/plugin-proposal-class-properties": "^7.10.4",
-        "@babel/preset-env": "^7.11.0",
-        "@shopware-ag/jest-preset-sw6-admin": "^2.0.0-beta.3",
-        "@vue/test-utils": "^1.0.3",
-        "jest": "^26.2.2",
-        "vue": "^2.6.11"
+        "@babel/plugin-proposal-class-properties": "^7.16.7",
+        "@babel/preset-env": "^7.16.11",
+        "@shopware-ag/jest-preset-sw6-admin": "^2.0.1",
+        "@vue/test-utils": "^1.1.0",
+        "jest": "^26.4.2",
+        "vue": "2.6.10",
+        "vuex": "^3.6.2"
     },
     "dependencies": {
-        "vue-template-compiler": "^2.6.11"
+        "core-js": "^3.21.1",
+        "vue-template-compiler": "2.6.10"
     }
 }

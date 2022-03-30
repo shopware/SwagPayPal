@@ -40,6 +40,7 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber;
 use Swag\PayPal\Installment\Banner\Service\BannerDataService;
+use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
@@ -64,16 +65,14 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     protected function setUp(): void
     {
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
-        $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
         $this->context = Context::createDefaultContext();
         $this->payPalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($this->context);
     }
 
     protected function tearDown(): void
     {
-        $this->removePayPalFromDefaultsSalesChannel($this->payPalPaymentMethodId);
+        $this->removePaymentMethodFromDefaultsSalesChannel($this->payPalPaymentMethodId);
     }
 
     public function testGetSubscribedEvents(): void
@@ -244,7 +243,7 @@ class InstallmentBannerSubscriberTest extends TestCase
             new SettingsValidationService($settings, new NullLogger()),
             $settings,
             $this->paymentMethodUtil,
-            new BannerDataService($this->paymentMethodUtil, $settings),
+            new BannerDataService($this->paymentMethodUtil, new CredentialsUtil($settings)),
             new NullLogger()
         );
     }
@@ -326,7 +325,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     private function createSalesChannelContext(bool $withPayPalInContext = true): SalesChannelContext
     {
         if (!$withPayPalInContext) {
-            $this->removePayPalFromDefaultsSalesChannel($this->payPalPaymentMethodId);
+            $this->removePaymentMethodFromDefaultsSalesChannel($this->payPalPaymentMethodId);
         }
 
         /** @var EntityRepositoryInterface $repository */
@@ -357,10 +356,7 @@ class InstallmentBannerSubscriberTest extends TestCase
             ],
         ], Context::createDefaultContext());
 
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-
-        return $salesChannelContextFactory->create(
+        return $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL
         );

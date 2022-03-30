@@ -52,13 +52,10 @@ class CaptureReversedTest extends AbstractWebhookHandlerTestCase
 
     protected function createWebhookHandler(): CaptureReversed
     {
-        /** @var PaymentStatusUtilV2 $paymentStatusUtil */
-        $paymentStatusUtil = $this->getContainer()->get(PaymentStatusUtilV2::class);
-
         return new CaptureReversed(
             $this->orderTransactionRepository,
             new OrderTransactionStateHandler($this->stateMachineRegistry),
-            $paymentStatusUtil,
+            $this->getContainer()->get(PaymentStatusUtilV2::class),
             $this->createOrderResource($this->createDefaultSystemConfig())
         );
     }

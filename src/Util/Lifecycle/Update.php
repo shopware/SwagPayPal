@@ -13,8 +13,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;
@@ -29,6 +29,9 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
+use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
@@ -55,6 +58,10 @@ class Update
 
     private ?PosWebhookService $posWebhookService;
 
+    private PaymentMethodInstaller $paymentMethodInstaller;
+
+    private PaymentMethodStateService $paymentMethodStateService;
+
     public function __construct(
         SystemConfigService $systemConfig,
         EntityRepositoryInterface $paymentRepository,
@@ -64,7 +71,9 @@ class Update
         EntityRepositoryInterface $salesChannelTypeRepository,
         ?InformationDefaultService $informationDefaultService,
         EntityRepositoryInterface $shippingRepository,
-        ?PosWebhookService $posWebhookService
+        ?PosWebhookService $posWebhookService,
+        PaymentMethodInstaller $paymentMethodInstaller,
+        PaymentMethodStateService $paymentMethodStateService
     ) {
         $this->systemConfig = $systemConfig;
         $this->customFieldRepository = $customFieldRepository;
@@ -75,6 +84,8 @@ class Update
         $this->informationDefaultService = $informationDefaultService;
         $this->shippingRepository = $shippingRepository;
         $this->posWebhookService = $posWebhookService;
+        $this->paymentMethodInstaller = $paymentMethodInstaller;
+        $this->paymentMethodStateService = $paymentMethodStateService;
     }
 
     public function update(UpdateContext $updateContext): void
@@ -106,11 +117,15 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '4.1.0', '<')) {
             $this->updateTo410();
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.0.0', '<')) {
+            $this->updateTo500($updateContext->getContext());
+        }
     }
 
     private function updateTo110(): void
     {
-        $this->systemConfig->set(Settings::INSTALLMENT_BANNER_ENABLED, true);
+        $this->setSettingToDefaultValue(Settings::INSTALLMENT_BANNER_ENABLED);
     }
 
     private function updateTo130(): void
@@ -166,7 +181,16 @@ class Update
 
     private function updateTo200(Context $context): void
     {
-        $this->changePaymentHandlerIdentifier($context);
+        $this->changePaymentHandlerIdentifier(
+            'Swag\PayPal\Payment\PayPalPaymentHandler',
+            PayPalPaymentHandler::class,
+            $context
+        );
+        $this->changePaymentHandlerIdentifier(
+            'Swag\PayPal\Payment\PayPalPuiPaymentHandler',
+            'Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler',
+            $context
+        );
         $this->migrateIntentSetting($context);
         $this->migrateLandingPageSetting($context);
     }
@@ -272,49 +296,31 @@ class Update
 
     private function updateTo410(): void
     {
-        $this->systemConfig->set(Settings::SPB_SHOW_PAY_LATER, true);
+        $this->setSettingToDefaultValue(Settings::SPB_SHOW_PAY_LATER);
     }
 
-    private function changePaymentHandlerIdentifier(Context $context): void
+    private function updateTo500(Context $context): void
+    {
+        $this->changePaymentHandlerIdentifier('Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler', PUIHandler::class, $context);
+        $this->paymentMethodStateService->setPaymentMethodState(PUIMethodData::class, false, $context);
+        $this->paymentMethodInstaller->installAll($context);
+        $this->setSettingToDefaultValue(Settings::PUI_CUSTOMER_SERVICE_INSTRUCTIONS);
+    }
+
+    private function changePaymentHandlerIdentifier(string $previousHandler, string $newHandler, Context $context): void
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('handlerIdentifier', 'Swag\PayPal\Payment\PayPalPaymentHandler'));
+        $criteria->addFilter(new EqualsFilter('handlerIdentifier', $previousHandler));
 
-        $payPalPaymentMethodId = $this->paymentRepository->searchIds($criteria, $context)->firstId();
-        $payPalData = null;
-        if ($payPalPaymentMethodId !== null) {
-            $payPalData = [
-                'id' => $payPalPaymentMethodId,
-                'handlerIdentifier' => PayPalPaymentHandler::class,
-            ];
-        }
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('handlerIdentifier', 'Swag\PayPal\Payment\PayPalPuiPaymentHandler'));
-
-        $payPalPuiPaymentMethodId = $this->paymentRepository->searchIds($criteria, $context)->firstId();
-        $payPalPuiData = null;
-        if ($payPalPuiPaymentMethodId !== null) {
-            $payPalPuiData = [
-                'id' => $payPalPuiPaymentMethodId,
-                'handlerIdentifier' => PayPalPuiPaymentHandler::class,
-            ];
-        }
-
-        $data = [];
-        if ($payPalData !== null) {
-            $data[] = $payPalData;
-        }
-
-        if ($payPalPuiData !== null) {
-            $data[] = $payPalPuiData;
-        }
-
-        if ($data === []) {
+        $paymentMethodId = $this->paymentRepository->searchIds($criteria, $context)->firstId();
+        if ($paymentMethodId === null) {
             return;
         }
 
-        $this->paymentRepository->upsert($data, $context);
+        $this->paymentRepository->update([[
+            'id' => $paymentMethodId,
+            'handlerIdentifier' => $newHandler,
+        ]], $context);
     }
 
     private function migrateIntentSetting(Context $context): void
@@ -389,5 +395,11 @@ class Update
         $salesChannelIds[] = null; // Global config for all sales channels
 
         return $salesChannelIds;
+    }
+
+    private function setSettingToDefaultValue(string $setting, ?string $overrideValue = null, ?string $salesChannelId = null): void
+    {
+        $value = Settings::DEFAULT_VALUES[$setting] ?? null;
+        $this->systemConfig->set($setting, $overrideValue ?? $value, $salesChannelId);
     }
 }

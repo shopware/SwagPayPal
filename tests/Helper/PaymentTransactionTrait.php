@@ -14,6 +14,8 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRule;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
+use Shopware\Core\Checkout\Order\Aggregate\OrderCustomer\OrderCustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -26,6 +28,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -138,6 +141,26 @@ trait PaymentTransactionTrait
             default:
                 $order->setId(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);
         }
+
+        $country = new CountryEntity();
+        $country->setIso('DE');
+        $address = new OrderAddressEntity();
+        $address->setFirstName('Some');
+        $address->setLastName('One');
+        $address->setStreet('Street 1');
+        $address->setZipcode('12345');
+        $address->setCity('City');
+        $address->setPhoneNumber('+41 (0123) 49567-89'); // extra weird for filter testing
+        $address->setId(Uuid::randomHex());
+        $address->setCountry($country);
+        $order->setBillingAddress($address);
+        $order->setBillingAddressId($address->getId());
+
+        $orderCustomer = new OrderCustomerEntity();
+        $orderCustomer->setFirstName('Test');
+        $orderCustomer->setLastName('Customer');
+        $orderCustomer->setEmail('test@test.com');
+        $order->setOrderCustomer($orderCustomer);
 
         return $order;
     }

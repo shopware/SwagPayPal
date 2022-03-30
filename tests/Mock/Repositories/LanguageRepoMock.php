@@ -11,18 +11,13 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\System\Language\LanguageDefinition;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\Locale\LocaleEntity;
 
-class LanguageRepoMock implements EntityRepositoryInterface
+class LanguageRepoMock extends AbstractRepoMock
 {
     public const LOCALE_CODE = 'en-GB';
     public const LANGUAGE_ID_WITHOUT_LOCALE = '3e5780c194c342d1b63d170400199f03';
@@ -30,14 +25,6 @@ class LanguageRepoMock implements EntityRepositoryInterface
     public function getDefinition(): EntityDefinition
     {
         return new LanguageDefinition();
-    }
-
-    public function aggregate(Criteria $criteria, Context $context): AggregationResultCollection
-    {
-    }
-
-    public function searchIds(Criteria $criteria, Context $context): IdSearchResult
-    {
     }
 
     public function search(Criteria $criteria, Context $context): EntitySearchResult
@@ -52,34 +39,6 @@ class LanguageRepoMock implements EntityRepositoryInterface
             $criteria,
             $context
         );
-    }
-
-    public function update(array $data, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function upsert(array $data, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function create(array $data, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function delete(array $ids, Context $context): EntityWrittenContainerEvent
-    {
-    }
-
-    public function createVersion(string $id, Context $context, ?string $name = null, ?string $versionId = null): string
-    {
-    }
-
-    public function merge(string $versionId, Context $context): void
-    {
-    }
-
-    public function clone(string $id, Context $context, ?string $newId = null, ?CloneBehavior $behavior = null): EntityWrittenContainerEvent
-    {
     }
 
     private function createLanguageEntity(bool $withLocale): LanguageEntity

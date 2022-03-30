@@ -34,22 +34,24 @@ class WebhookSubscriberTest extends TestCase
 
     private const WEBHOOK_ID = 'someWebhookId';
 
+    /**
+     * @var SystemConfigService
+     */
+    private $systemConfigService;
+
     public function setUp(): void
     {
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-        $systemConfigService->set(Settings::CLIENT_ID, 'defaultClientId');
-        $systemConfigService->set(Settings::CLIENT_SECRET, 'defaultClientSecret');
-        $systemConfigService->set(Settings::SANDBOX, false);
+        $this->systemConfigService = $this->getContainer()->get(SystemConfigService::class);
+        $this->systemConfigService->set(Settings::CLIENT_ID, 'defaultClientId');
+        $this->systemConfigService->set(Settings::CLIENT_SECRET, 'defaultClientSecret');
+        $this->systemConfigService->set(Settings::SANDBOX, false);
     }
 
     public function tearDown(): void
     {
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-        $systemConfigService->delete(Settings::CLIENT_ID);
-        $systemConfigService->delete(Settings::CLIENT_SECRET);
-        $systemConfigService->delete(Settings::SANDBOX);
+        $this->systemConfigService->delete(Settings::CLIENT_ID);
+        $this->systemConfigService->delete(Settings::CLIENT_SECRET);
+        $this->systemConfigService->delete(Settings::SANDBOX);
     }
 
     public function testRemoveWebhookWithInheritedConfiguration(): void
@@ -57,9 +59,7 @@ class WebhookSubscriberTest extends TestCase
         $this->createWebhookSubscriber(['' => self::WEBHOOK_ID, Defaults::SALES_CHANNEL => null])
              ->removeSalesChannelWebhookConfiguration($this->createEvent());
 
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-        static::assertSame(self::WEBHOOK_ID, $systemConfigService->getString(Settings::WEBHOOK_ID, Defaults::SALES_CHANNEL));
+        static::assertSame(self::WEBHOOK_ID, $this->systemConfigService->getString(Settings::WEBHOOK_ID, Defaults::SALES_CHANNEL));
     }
 
     public function testRemoveWebhookWithOwnConfiguration(): void
@@ -67,9 +67,7 @@ class WebhookSubscriberTest extends TestCase
         $this->createWebhookSubscriber(['' => null, Defaults::SALES_CHANNEL => self::WEBHOOK_ID])
              ->removeSalesChannelWebhookConfiguration($this->createEvent());
 
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-        static::assertEmpty($systemConfigService->getString(Settings::WEBHOOK_ID, Defaults::SALES_CHANNEL));
+        static::assertEmpty($this->systemConfigService->getString(Settings::WEBHOOK_ID, Defaults::SALES_CHANNEL));
     }
 
     public function testRemoveWebhookWithNoConfiguration(): void
@@ -77,9 +75,7 @@ class WebhookSubscriberTest extends TestCase
         $this->createWebhookSubscriber(['' => null, Defaults::SALES_CHANNEL => null])
              ->removeSalesChannelWebhookConfiguration($this->createEvent());
 
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-        static::assertEmpty($systemConfigService->getString(Settings::WEBHOOK_ID, Defaults::SALES_CHANNEL));
+        static::assertEmpty($this->systemConfigService->getString(Settings::WEBHOOK_ID, Defaults::SALES_CHANNEL));
     }
 
     public function testSubscribedEvents(): void
@@ -94,13 +90,10 @@ class WebhookSubscriberTest extends TestCase
      */
     private function createWebhookSubscriber(array $configuration): WebhookSubscriber
     {
-        /** @var SystemConfigService $systemConfigService */
-        $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-
         $webhookService = new WebhookService(
-            new WebhookResource($this->createPayPalClientFactoryWithService($systemConfigService)),
+            new WebhookResource($this->createPayPalClientFactoryWithService($this->systemConfigService)),
             new WebhookRegistry(new DummyCollection([])),
-            $systemConfigService,
+            $this->systemConfigService,
             new RouterMock()
         );
 
@@ -108,12 +101,12 @@ class WebhookSubscriberTest extends TestCase
             if ($salesChannelId === '') {
                 $salesChannelId = null;
             }
-            $systemConfigService->set(Settings::WEBHOOK_ID, $webhookId, $salesChannelId);
+            $this->systemConfigService->set(Settings::WEBHOOK_ID, $webhookId, $salesChannelId);
         }
 
         return new WebhookSubscriber(
             new NullLogger(),
-            $systemConfigService,
+            $this->systemConfigService,
             $webhookService
         );
     }

@@ -35,6 +35,11 @@ abstract class AbstractClient
         return $this->request(Request::METHOD_GET, $uri, $options);
     }
 
+    protected function getHeaders(string $uri, array $options = []): array
+    {
+        return $this->requestHeaders(Request::METHOD_GET, $uri, $options);
+    }
+
     protected function patch(string $uri, array $options): array
     {
         return $this->request(Request::METHOD_PATCH, $uri, $options);
@@ -69,11 +74,42 @@ abstract class AbstractClient
                 'method' => \mb_strtoupper($method),
                 'code' => \sprintf('%s %s', $response->getStatusCode(), $response->getReasonPhrase()),
                 'uri' => $uri,
+                'headers' => $response->getHeaders(),
                 'response' => $body,
             ]
         );
 
         return \json_decode($body, true) ?? [];
+    }
+
+    private function requestHeaders(string $method, string $uri, array $options = []): array
+    {
+        $this->logger->debug(
+            'Sending {method} request to {uri} with the following content: {content}',
+            [
+                'method' => \mb_strtoupper($method),
+                'uri' => $uri,
+                'content' => $options,
+            ]
+        );
+
+        try {
+            $response = $this->client->request($method, $uri, $options);
+        } catch (RequestException $requestException) {
+            throw $this->handleRequestException($requestException, $options);
+        }
+
+        $this->logger->debug(
+            'Received {code} from {method} {uri} with following response: {response}',
+            [
+                'method' => \mb_strtoupper($method),
+                'code' => \sprintf('%s %s', $response->getStatusCode(), $response->getReasonPhrase()),
+                'uri' => $uri,
+                'headers' => $response->getHeaders(),
+            ]
+        );
+
+        return $response->getHeaders();
     }
 
     private function handleRequestException(RequestException $requestException, array $data): PayPalApiException
@@ -89,12 +125,17 @@ abstract class AbstractClient
 
         $error = \json_decode($exceptionResponse->getBody()->getContents(), true);
         if (\array_key_exists('error', $error) && \array_key_exists('error_description', $error)) {
-            $this->logger->error($exceptionMessage, [$error, $data]);
+            $this->logger->error($exceptionMessage, [
+                'error' => $error,
+                'headers' => $exceptionResponse->getHeaders(),
+                'data' => $data,
+            ]);
 
             return new PayPalApiException($error['error'], $error['error_description'], (int) $requestException->getCode());
         }
 
         $message = $error['message'];
+        $issue = null;
 
         if (isset($error['details'])) {
             $message .= ' ';
@@ -103,6 +144,7 @@ abstract class AbstractClient
                     $message .= \sprintf('%s ', $detail['description']);
                 }
                 if (isset($detail['issue'])) {
+                    $issue = $detail['issue'];
                     $message .= \sprintf('%s ', $detail['issue']);
                 }
                 if (isset($detail['field'])) {
@@ -111,8 +153,12 @@ abstract class AbstractClient
             }
         }
 
-        $this->logger->error(\sprintf('%s %s', $exceptionMessage, $message), [$error, $data]);
+        $this->logger->error(\sprintf('%s %s', $exceptionMessage, $message), [
+            'error' => $error,
+            'headers' => $exceptionResponse->getHeaders(),
+            'data' => $data,
+        ]);
 
-        return new PayPalApiException($error['name'], $message, (int) $requestException->getCode());
+        return new PayPalApiException($error['name'], $message, (int) $requestException->getCode(), $issue);
     }
 }

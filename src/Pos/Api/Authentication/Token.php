@@ -32,9 +32,9 @@ final class Token extends PosStruct
     /**
      * @return static
      */
-    public function assign(array $arrayDataWithSnakeCaseKeys)
+    public function assign(array $arrayData)
     {
-        $newToken = parent::assign($arrayDataWithSnakeCaseKeys);
+        $newToken = parent::assign($arrayData);
 
         //Calculate the expiration date manually
         $expirationDateTime = new \DateTime();

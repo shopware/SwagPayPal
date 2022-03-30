@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider"
+                 decorates="Shopware\Storefront\Framework\Cookie\CookieProviderInterface">
+            <argument type="service" id="Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider.inner"/>
+        </service>
+
+        <service id="Swag\PayPal\Storefront\RequestSubscriber">
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService" public="true">
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\IdentityResource"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
+        </service>
+
+        <service id="Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService" public="true">
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\IdentityResource"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
+        </service>
+
+        <service id="Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService" public="true">
+            <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\IdentityResource"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\CredentialsUtil"/>
+        </service>
+
+        <service id="Swag\PayPal\Storefront\Data\CheckoutDataSubscriber">
+            <argument type="service" id="logger"/>
+            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
+            <argument type="service" id="session"/>
+            <argument type="service" id="translator"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="tagged_iterator" tag="swag.paypal.payment.storefront.checkout.data"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    </services>
+</container>

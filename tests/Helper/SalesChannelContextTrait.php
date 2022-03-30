@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Helper;
 
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\DefaultPayment;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
@@ -56,9 +57,7 @@ trait SalesChannelContextTrait
             $options[SalesChannelContextService::CUSTOMER_ID] = $this->createCustomer();
         }
 
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $container->get(SalesChannelContextFactory::class);
-        $salesChannelContext = $salesChannelContextFactory->create(
+        $salesChannelContext = $container->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL,
             $options
@@ -67,6 +66,7 @@ trait SalesChannelContextTrait
         if ($withOtherDefaultPayment) {
             $paymentMethod = new PaymentMethodEntity();
             $paymentMethod->setId('test-id');
+            $paymentMethod->setHandlerIdentifier(DefaultPayment::class);
             $salesChannelContext = new SalesChannelContext(
                 $salesChannelContext->getContext(),
                 $salesChannelContext->getToken(),
@@ -88,14 +88,12 @@ trait SalesChannelContextTrait
         }
 
         if ($withCartLineItems) {
-            /** @var CartService $cartService */
-            $cartService = $this->getContainer()->get(CartService::class);
-
             $productId = Uuid::randomHex();
             $this->createProduct($productId, $salesChannelContext->getContext());
 
             $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
 
+            $cartService = $this->getContainer()->get(CartService::class);
             $cart = $cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
             $cartService->add($cart, $lineItem, $salesChannelContext);
         }
@@ -117,6 +115,7 @@ trait SalesChannelContextTrait
             'firstName' => 'Max',
             'lastName' => 'Mustermann',
             'customerNumber' => '1337',
+            'birthday' => new \DateTime('-30 years'),
             'email' => Uuid::randomHex() . '@example.com',
             'password' => 'shopware',
             'defaultPaymentMethodId' => $this->getValidPaymentMethodId(),
@@ -135,6 +134,7 @@ trait SalesChannelContextTrait
                     'street' => 'Ebbinghoff 10',
                     'zipcode' => '48624',
                     'city' => 'Schöppingen',
+                    'phoneNumber' => '+49123456789',
                 ],
             ],
         ];

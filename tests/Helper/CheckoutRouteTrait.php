@@ -30,12 +30,10 @@ trait CheckoutRouteTrait
 
     protected function tearDown(): void
     {
-        /** @var PaymentMethodUtil $paymentMethodUtil */
-        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
         $context = Context::createDefaultContext();
-        $paymentMethodId = $paymentMethodUtil->getPayPalPaymentMethodId($context);
+        $paymentMethodId = $this->getContainer()->get(PaymentMethodUtil::class)->getPayPalPaymentMethodId($context);
         if ($paymentMethodId !== null) {
-            $this->removePayPalFromDefaultsSalesChannel($paymentMethodId, $context);
+            $this->removePaymentMethodFromDefaultsSalesChannel($paymentMethodId, $context);
         }
     }
 

@@ -1,3 +1,9 @@
+# 5.0.0
+- PPI-317 - Separate Kreditkarten-Zahlungsmethode hinzugefügt
+- PPI-385 - Neuer Rechnungskauf hinzugefügt
+- PPI-410 - Separate alternative Zahlungsmethoden hinzugefügt
+- PPI-418 - Kompatiblität für PHP 8.1 hinzugefügt
+
 # 4.1.1
 - PPI-395 - Texte für veraltete PayPal-Produkte entfernt
 

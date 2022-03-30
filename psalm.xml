@@ -11,10 +11,17 @@
         <directory name="src"/>
         <directory name="tests"/>
         <ignoreFiles>
-            <directory name="../../../platform"/> <!-- would otherwise inspect Shopware -->
+            <directory name="../../../src"/> <!-- would otherwise inspect Shopware -->
             <directory name="../../../vendor"/> <!-- would otherwise inspect vendor -->
+            <directory name="vendor"/> <!-- would otherwise inspect vendor -->
+            <file name="tests/TestBootstrapper.php"/>
         </ignoreFiles>
     </projectFiles>
+
+    <plugins>
+        <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin"/>
+        <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
+    </plugins>
 
     <forbiddenFunctions>
         <function name="dump"/>
@@ -35,13 +42,6 @@
             </errorLevel>
         </MoreSpecificImplementedParamType>
 
-        <InvalidReturnType>
-            <errorLevel type="info">
-                <directory name="tests/Mock"/>
-                <directory name="tests/Pos/Mock"/>
-            </errorLevel>
-        </InvalidReturnType>
-
         <InternalMethod>
             <errorLevel type="info">
                 <file name="src/Pos/Command/*Command.php"/>
@@ -55,16 +55,25 @@
 
         <DeprecatedMethod>
             <errorLevel type="info">
-                <!-- <deprecated> tag:v5.0.0 - remove with Shopware 6.5 compatibility -->
+                <!-- <deprecated> tag:v6.0.0 - remove with Shopware 6.5 compatibility -->
                 <referencedMethod name="Shopware\Core\Framework\Struct\Collection::getIterator"/>
-                <referencedMethod name="Shopware\Core\System\SalesChannel\SalesChannelContext::getFallbackCustomerGroup"/>
+                <referencedMethod
+                    name="Shopware\Core\System\SalesChannel\SalesChannelContext::getFallbackCustomerGroup"/>
+                <referencedMethod name="Shopware\Core\System\StateMachine\StateMachineRegistry::getInitialState"/>
                 <referencedMethod name="Doctrine\DBAL\Connection::executeUpdate"/>
+
+                <!-- <deprecated> tag:v6.0.0 - remove -->
+                <file name="src/Checkout/Payment/PayPalPuiPaymentHandler.php"/>
+                <file name="tests/Checkout/CheckoutSubscriberTest.php"/>
+                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::createAddress"/>
+                <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::__construct"/>
+                <referencedMethod name="Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler::handlePlusPayment"/>
             </errorLevel>
         </DeprecatedMethod>
 
         <DeprecatedConstant>
             <errorLevel type="info">
-                <!-- <deprecated> tag:v5.0.0 - remove with Shopware 6.5 compatibility due to usage of Defaults::SALES_CHANNEL -->
+                <!-- <deprecated> tag:v6.0.0 - remove with Shopware 6.5 compatibility due to usage of Defaults::SALES_CHANNEL -->
                 <directory name="tests"/>
                 <file name="src/Checkout/Payment/PayPalPaymentHandler.php"/>
                 <file name="src/Util/PaymentStatusUtilV2.php"/>
@@ -72,44 +81,47 @@
                 <file name="tests/Checkout/Payment/PayPalPaymentHandlerTest.php"/>
                 <file name="tests/Util/PaymentStatusUtilV2Test.php"/>
 
-
+                <!-- <deprecated> tag:v6.0.0 - remove -->
+                <file name="src/Util/Lifecycle/Installer/SettingsInstaller.php"/>
+                <file name="src/Setting/Settings.php"/>
+                <file name="src/Checkout/SPBCheckout/Service/SPBMarksDataService.php"/>
+                <file name="src/Checkout/SPBCheckout/SPBCheckoutSubscriber.php"/>
+                <file name="src/Checkout/Plus/Service/PlusDataService.php"/>
+                <file name="src/Checkout/Plus/PlusSubscriber.php"/>
+                <file name="src/Checkout/Plus/PlusPaymentFinalizeController.php"/>
+                <file name="src/Checkout/PayUponInvoice/PayUponInvoiceSubscriber.php"/>
+                <file name="src/Storefront/Data/Service/SPBCheckoutDataService.php"/>
             </errorLevel>
         </DeprecatedConstant>
 
         <DeprecatedClass>
             <errorLevel type="info">
-                <!-- will be removed with PPI-388-->
-                <referencedClass name="Shopware\Core\Framework\MessageQueue\MessageQueueStatsDefinition"/>
-                <referencedClass name="Shopware\Core\Framework\MessageQueue\MessageQueueStatsEntity"/>
+                <!-- <deprecated> tag:v6.0.0 - remove -->
+                <referencedClass name="Swag\PayPal\Checkout\Payment\Handler\AbstractPaymentHandler"/>
+                <file name="tests/Checkout/SPBCheckout/SPBCheckoutSubscriberTest.php"/>
+                <file name="tests/Checkout/SPBCheckout/SalesChannel/SPBCreateOrderRouteTest.php"/>
+                <file name="src/Checkout/SPBCheckout/SalesChannel/SPBCreateOrderRoute.php"/>
+                <file name="src/Checkout/PayUponInvoice/PayUponInvoiceSubscriber.php"/>
+                <file name="tests/Checkout/PayUponInvoice/PayUponInvoiceSubscriberTest.php"/>
+                <file name="tests/Checkout/Payment/PayPalPuiPaymentHandlerTest.php"/>
+                <file name="src/Checkout/Plus/Service/PlusDataService.php"/>
+                <file name="src/Checkout/Plus/PlusSubscriber.php"/>
+                <file name="tests/Checkout/Plus/PlusSubscriberTest.php"/>
+                <file name="tests/Checkout/Plus/PlusPaymentFinalizeControllerTest.php"/>
             </errorLevel>
         </DeprecatedClass>
 
         <PossiblyInvalidArgument>
             <errorLevel type="info">
-                <file name="tests/Pos/Sync/Product/*Test.php"/>
                 <file name="tests/Pos/Sync/Inventory/StockSubscriberTest.php"/>
             </errorLevel>
         </PossiblyInvalidArgument>
 
         <PossiblyUndefinedMethod>
             <errorLevel type="info">
-                <file name="tests/Pos/Sync/Product/*Test.php"/>
                 <file name="tests/Pos/Sync/Inventory/StockSubscriberTest.php"/>
             </errorLevel>
         </PossiblyUndefinedMethod>
-
-        <UnresolvableInclude>
-            <errorLevel type="info">
-                <file name="tests/TestBootstrap.php"/>
-            </errorLevel>
-        </UnresolvableInclude>
-
-        <UndefinedClass>
-            <errorLevel type="info">
-                <!-- Can be removed when min-Version is 6.4.2.0 -->
-                <referencedClass name="Shopware\Storefront\Event\SwitchBuyBoxVariantEvent"/>
-            </errorLevel>
-        </UndefinedClass>
 
         <UndefinedConstant>
             <errorLevel type="info">
@@ -120,7 +132,8 @@
 
         <UnsafeInstantiation>
             <errorLevel type="info">
-                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
+                <file name="tests/Pos/Mock/Repositories/RepoTrait.php"/>
+                <file name="tests/OrdersApi/Builder/APMOrderBuilderTest.php"/>
             </errorLevel>
         </UnsafeInstantiation>
 
@@ -130,37 +143,35 @@
             </errorLevel>
         </NonInvariantDocblockPropertyType>
 
-        <InvalidStringClass>
+        <UndefinedDocblockClass>
             <errorLevel type="info">
-                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
-                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
+                <referencedClass name="UnitEnum"/>
             </errorLevel>
-        </InvalidStringClass>
+        </UndefinedDocblockClass>
 
-        <ArgumentTypeCoercion>
+        <DocblockTypeContradiction>
             <errorLevel type="info">
-                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
-                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
+                <!-- remove with Symfony 5.4 base -->
+                <file name="src/Administration/PayPalPaymentMethodController.php"/>
             </errorLevel>
-        </ArgumentTypeCoercion>
+        </DocblockTypeContradiction>
 
-        <PropertyTypeCoercion>
+        <RedundantCastGivenDocblockType>
             <errorLevel type="info">
-                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
-                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
+                <!-- remove with Symfony 5.4 base -->
+                <file name="src/PaymentsApi/Administration/PayPalPaymentController.php"/>
+                <file name="src/OrdersApi/Administration/Service/CaptureRefundCreator.php"/>
+                <file name="src/OrdersApi/Administration/PayPalOrdersController.php"/>
             </errorLevel>
-        </PropertyTypeCoercion>
-
-        <UnnecessaryVarAnnotation>
-            <errorLevel type="info">
-                <!-- Could be removed once the min version is at least Shopware 6.4.2.0 -->
-                <!-- And with it the annotations Psalm complains about in this file -->
-                <file name="tests/Pos/Mock/Repositories/AbstractRepoMock.php"/>
-            </errorLevel>
-        </UnnecessaryVarAnnotation>
+        </RedundantCastGivenDocblockType>
 
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>
         <MissingConstructor errorLevel="info"/>
+        <MissingFile>
+            <errorLevel type="info">
+                <file name="tests/TestBootstrap.php"/>
+            </errorLevel>
+        </MissingFile>
     </issueHandlers>
 </psalm>

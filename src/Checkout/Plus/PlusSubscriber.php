@@ -27,6 +27,9 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @deprecated tag:v6.0.0 - Will be removed without replacement.
+ */
 class PlusSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_PLUS_DATA_EXTENSION_ID = 'payPalPlusData';

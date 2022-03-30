@@ -12,6 +12,12 @@
             }
         }
     },
+    "sw-settings-payment-list": {
+        "needOnboardingTooltip": "Schließen Sie das Onboarding ab, um diese Zahlungsmethode zu aktivieren"
+    },
+    "sw-settings-payment-detail": {
+        "tooltip": "Gehen Sie zu den <a class=\"swag-paypal-go-to-settings-link\" href=\"#/swag/paypal/index\">Einstellungen der PayPal-Erweiterung →</a> und aktivieren Sie PayPal Commerce Platform, um diese Zahlungsmethode zu aktivieren."
+    },
     "swag-paypal": {
         "header": "PayPal",
         "saleschannelCard": {
@@ -28,6 +34,61 @@
         "settingForm": {
             "testLive": "API-Zugangsdaten testen",
             "testSandbox": "Sandbox-API-Zugangsdaten testen",
+            "checkout": {
+                "cardTitle": "PayPal Checkout",
+                "description": "PayPal Checkout ist die neue All-in-One-Lösung, mit der Sie leistungsstarke und flexible Funktionen zur Zahlungsabwicklung auf Marktplätzen und anderen Handelsplattformen anbieten können.",
+                "banner": "Mit PayPal Checkout Kannst Du Deinen Kunden die Bezahlung per Rechnung, Kreditkarte und viele andere lokale Zahlungsmethoden anbieten. PayPal Checkout unterstützt Dich mit der neuesten Technologie und bringt Dir höchste Flexibilität. Du behältst Deine bisherigen Zahlungsarten und die Gebühren bleiben gleich! Aktiviere PayPal Checkout und deaktiviere PayPal PLUS, um doppelte Zahlungsmethoden in Deinem Shop zu vermeiden. <a href=\"https://www.shopware.com/de/news/paypal-launcht-neues-produkt/\" target=\"_blank\">Mehr Informationen</a>",
+                "button": {
+                    "title": "Start des Onboarding"
+                },
+                "sandbox": {
+                    "label": "Sandbox-Zugangsdaten verwenden",
+                    "tooltipText": "Aktiviere diese Option, um die Integration zu testen."
+                },
+                "switch": {
+                    "label": "Aktiv"
+                },
+                "paymentMethodText": "Zahlungsmöglichkeiten",
+                "showCredentials": "Zeige API-Zugangsdaten",
+                "appImageAlt": "PayPal",
+                "editDetail": "Bearbeiten",
+                "startOnboardingButtonLabel": "Onboarding starten",
+                "availabilityToolTip": {
+                    "BancontactAPMHandler": "Bancontact ist für die folgenden Länder verfügbar: Belgien",
+                    "BlikAPMHandler": "BLIK ist für die folgenden Länder verfügbar: Polen",
+                    "BoletoBancarioAPMHandler": "Boleto Bancário ist für die folgenden Länder verfügbar: Brasilien",
+                    "EpsAPMHandler": "eps ist für die folgenden Länder verfügbar: Österreich",
+                    "GiropayAPMHandler": "Giropay ist für die folgenden Länder verfügbar: Deutschland",
+                    "IdealAPMHandler": "iDEAL ist für die folgenden Länder verfügbar: Niederlande",
+                    "MultibancoAPMHandler": "Multibanco ist für die folgenden Länder verfügbar: Portugal",
+                    "MyBankAPMHandler": "MyBank ist für die folgenden Länder verfügbar: Italien",
+                    "OxxoAPMHandler": "OXXO ist für die folgenden Länder verfügbar: Mexiko",
+                    "P24APMHandler": "Przelewy24 ist für die folgenden Länder verfügbar: Polen",
+                    "PUIHandler": "Rechnungskauf ist für die folgenden Länder verfügbar: Deutschland",
+                    "SEPAHandler": "SEPA Lastschrift ist für die folgenden Länder verfügbar: Deutschland",
+                    "SofortAPMHandler": "Sofort ist für die folgenden Länder verfügbar: Belgien, Deutschland, Italien, Niederlande, Österreich, Spanien, Vereinigtes Königreich",
+                    "TrustlyAPMHandler": "Trustly ist für die folgenden Länder verfügbar: Estland, Finnland, Niederlande, Schweden",
+                },
+                "onboardingStatusText": {
+                    "active": "Autorisiert",
+                    "limited": "Limitiert",
+                    "pending": "Authorisierung ausstehend",
+                    "inactive": "Onboarding benötigt"
+                },
+                "paymentMethodStatusChangedSuccess": {
+                    "active": "Zahlungsart \"{name}\" ist jetzt aktiv.",
+                    "inactive": "Zahlungsart \"{name}\" ist jetzt inaktiv."
+                },
+                "deactivatePayPalPlusModal": {
+                    "title": "PayPal PLUS deaktivieren",
+                    "text": "Herzlichen Glückwunsch! Durch den Wechsel zur PayPal-Kaufabwicklung nutzen Sie weiterhin alle relevanten Zahlungsmethoden - jetzt auf Basis der neuesten Technologie.",
+                    "warning": "Vermeide die Anzeige von doppelten Zahlungsarten und deaktiviere PayPal PLUS.",
+                    "button": {
+                        "deactivate": "Deaktivieren Sie PayPal PLUS",
+                        "cancel": "Abbrechen"
+                    }
+                }
+            },
             "credentials": {
                 "cardTitle": "API-Zugangsdaten",
                 "clientId": {
@@ -38,6 +99,10 @@
                     "label": "Client-Secret",
                     "tooltipText": "Das Client-Secret der REST-API, das das Plugin dazu verwendet, sich mit der PayPal-API zu authentifizieren."
                 },
+                "merchantPayerId": {
+                    "label": "PayPal-Händler-ID",
+                    "tooltipText": "Die PayPal-Händler-ID, die dem PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal Kontoeinstellungen)."
+                },
                 "clientIdSandbox": {
                     "label": "Sandbox-Client-ID",
                     "tooltipText": "Die Client-ID der REST-API, die das Plugin im Testfall dazu verwendet, sich mit der PayPal-API zu authentifizieren."
@@ -45,6 +110,10 @@
                 "clientSecretSandbox": {
                     "label": "Sandbox-Client-Secret",
                     "tooltipText": "Das Client-Secret der REST-API, das das Plugin im Testfall dazu verwendet, sich mit der PayPal-API zu authentifizieren."
+                },
+                "merchantPayerIdSandbox": {
+                    "label": "Sandbox-PayPal-Händler-ID",
+                    "tooltipText": "Die PayPal-Händler-ID, die dem Sandbox-PayPal-Konto zugeordnet ist (siehe Geschäftsangaben in den PayPal Kontoeinstellungen)."
                 },
                 "sandbox": {
                     "label": "Sandbox aktivieren",
@@ -164,6 +233,13 @@
                     "label": "Ratenzahlung Banner aktivieren"
                 }
             },
+            "pui": {
+                "cardTitle": "Rechnungskauf",
+                "customerServiceInstructions": {
+                    "label": "Kundenservice-Anweisungen für Rechnungskauf",
+                    "helpText": "Diese Anweisungen werden an PayPal & RatePay übermittelt und in Kunden-E-Mails verwendet."
+                }
+            },
             "spb": {
                 "cardTitle": "PayPal Checkout mit Smart Payment Buttons",
                 "spbCheckoutEnabled": {
@@ -187,7 +263,11 @@
                 "plusCheckoutEnabled": {
                     "label": "PayPal PLUS aktivieren"
                 },
-                "hint": "Hinweis: PayPal PLUS funktioniert nur mit dem Zahlungsabschluss \"Sale\". Dieser wird automatisch gesetzt."
+                "hint": "Hinweis: PayPal PLUS funktioniert nur mit dem Zahlungsabschluss \"Sale\". Dieser wird automatisch gesetzt.",
+                "warning": {
+                    "active": "PayPal Checkout bietet Deinen Kunden die gleichen Zahlungsmethoden - basierend auf der neuesten Technologie. Aktiviere jetzt PayPal Checkout und deaktiviere PayPal PLUS, um die Anzeige von doppelten Zahlungsmethoden zu vermeiden. <a href=\"https://www.shopware.com/de/news/paypal-launcht-neues-produkt/\" target=\"_blank\">Mehr Informationen</a>",
+                    "inactive": "Vermeide die Anzeige von doppelten Zahlungsarten und deaktiviere PayPal PLUS. <a href=\"https://www.shopware.com/de/news/paypal-launcht-neues-produkt/\" target=\"_blank\">Mehr Informationen</a>"
+                }
             },
             "locale-field": {
                 "infobox": {

@@ -84,6 +84,9 @@ class PlusPuiHandler
         $this->logger = $logger;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     */
     public function handlePlusPayment(
         AsyncPaymentTransactionStruct $transaction,
         RequestDataBag $dataBag,
@@ -112,6 +115,8 @@ class PlusPuiHandler
     }
 
     /**
+     * @deprecated tag:v6.0.0 - will be removed, old PUI has been deprecated
+     *
      * @throws AsyncPaymentProcessException
      */
     public function handlePuiPayment(

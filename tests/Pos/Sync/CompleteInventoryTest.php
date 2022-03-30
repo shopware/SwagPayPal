@@ -59,9 +59,6 @@ class CompleteInventoryTest extends TestCase
             $inventoryRepository
         );
 
-        /** @var SalesChannelContextFactory $salesChannelContextFactory */
-        $salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
-
         $messageBus = new MessageBusMock();
 
         $inventorySyncManager = new InventorySyncManager(
@@ -69,7 +66,7 @@ class CompleteInventoryTest extends TestCase
             new ProductSelection(
                 $salesChannelProductRepository,
                 $this->createMock(ProductStreamBuilder::class),
-                $salesChannelContextFactory
+                $this->getContainer()->get(SalesChannelContextFactory::class)
             ),
             $salesChannelProductRepository,
             $inventoryContextFactory
