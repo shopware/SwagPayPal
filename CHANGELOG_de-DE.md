@@ -1,3 +1,6 @@
+# 5.0.1
+- PPI-615 - Behebt ein Problem mit fehlenden deutschen Übersetzungen in der Administration
+
 # 5.0.0
 - PPI-317 - Separate Kreditkarten-Zahlungsmethode hinzugefügt
 - PPI-385 - Neuer Rechnungskauf hinzugefügt
