@@ -105,23 +105,24 @@ class AmountProvider
 
         $discount = new Discount();
         $discount->setCurrencyCode($currencyCode);
-        $discount->setValue($this->priceFormatter->formatPrice($amountValue - $accumulatedAmountValue));
+        $discount->setValue($this->priceFormatter->formatPrice($accumulatedAmountValue - $amountValue));
+
+        $handling = new Handling();
+        $handling->setCurrencyCode($currencyCode);
+        // if due to rounding the order is more than the items, we add a fake handling fee
+        if ((float) $discount->getValue() < 0.0) {
+            $discount->setValue($this->priceFormatter->formatPrice(0.0));
+            $handling->setValue($this->priceFormatter->formatPrice($amountValue - $accumulatedAmountValue));
+        } else {
+            $handling->setValue($this->priceFormatter->formatPrice(0.0));
+        }
 
         $breakdown = new Breakdown();
         $breakdown->setItemTotal($itemTotal);
         $breakdown->setShipping($shipping);
         $breakdown->setTaxTotal($taxTotal);
         $breakdown->setDiscount($discount);
-
-        // if due to rounding the order is more than the items, we add a fake handling fee
-        if ((float) $discount->getValue() < 0.0) {
-            $discount->setValue($this->priceFormatter->formatPrice(0.0));
-
-            $handling = new Handling();
-            $handling->setCurrencyCode($currencyCode);
-            $handling->setValue($this->priceFormatter->formatPrice($amountValue - $accumulatedAmountValue));
-            $breakdown->setHandling($handling);
-        }
+        $breakdown->setHandling($handling);
 
         return $breakdown;
     }
