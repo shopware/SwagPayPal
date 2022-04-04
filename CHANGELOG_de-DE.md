@@ -1,3 +1,6 @@
+# 5.0.2
+- PPI-623 - Behebt ein Problem, bei dem eine PayPal-Bestellung mit Rabatt nicht erstellt werden kann
+
 # 5.0.1
 - PPI-615 - Behebt ein Problem mit fehlenden deutschen Übersetzungen in der Administration
 

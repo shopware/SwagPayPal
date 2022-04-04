@@ -1,3 +1,6 @@
+# 5.0.2
+- PPI-623 - Fix an issue where a PayPal order cannot be created with discounts
+
 # 5.0.1
 - PPI-615 - Fix issue with missing German translations in the administration
 
