@@ -84,21 +84,21 @@ Component.register('swag-paypal-checkout', {
             showCredentials: false,
             paymentMethods: [],
             iconMap: {
-                'Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler': 'paypal-payment-method-paypal',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\ACDCHandler': 'paypal-payment-method-credit-and-debit-card',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\PUIHandler': 'paypal-payment-method-pay-upon-invoice',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\BancontactAPMHandler': 'paypal-payment-method-bancontact',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\BlikAPMHandler': 'paypal-payment-method-blik',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\EpsAPMHandler': 'paypal-payment-method-eps',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\GiropayAPMHandler': 'paypal-payment-method-giropay',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\IdealAPMHandler': 'paypal-payment-method-iDEAL',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\MultibancoAPMHandler': 'paypal-payment-method-multibanco',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\MyBankAPMHandler': 'paypal-payment-method-mybank',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\OxxoAPMHandler': 'paypal-payment-method-oxxo',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\P24APMHandler': 'paypal-payment-method-p24',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\SofortAPMHandler': 'paypal-payment-method-sofort',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\TrustlyAPMHandler': 'paypal-payment-method-trustly',
-                'Swag\\PayPal\\Checkout\\Payment\\Method\\SEPAHandler': 'paypal-payment-method-sepa',
+                handler_swag_paypalpaymenthandler: 'paypal-payment-method-paypal',
+                handler_swag_acdchandler: 'paypal-payment-method-credit-and-debit-card',
+                handler_swag_puihandler: 'paypal-payment-method-pay-upon-invoice',
+                handler_swag_bancontactapmhandler: 'paypal-payment-method-bancontact',
+                handler_swag_blikapmhandler: 'paypal-payment-method-blik',
+                handler_swag_epsapmhandler: 'paypal-payment-method-eps',
+                handler_swag_giropayapmhandler: 'paypal-payment-method-giropay',
+                handler_swag_idealapmhandler: 'paypal-payment-method-iDEAL',
+                handler_swag_multibancoapmhandler: 'paypal-payment-method-multibanco',
+                handler_swag_mybankapmhandler: 'paypal-payment-method-mybank',
+                handler_swag_oxxoapmhandler: 'paypal-payment-method-oxxo',
+                handler_swag_p24apmhandler: 'paypal-payment-method-p24',
+                handler_swag_sofortapmhandler: 'paypal-payment-method-sofort',
+                handler_swag_trustlyapmhandler: 'paypal-payment-method-trustly',
+                handler_swag_sepahandler: 'paypal-payment-method-sepa',
             },
             merchantIntegrations: {},
             plusDeprecationModalOpen: false,
@@ -115,9 +115,6 @@ Component.register('swag-paypal-checkout', {
             const criteria = new Criteria();
 
             criteria.addFilter(Criteria.equals('plugin.name', 'SwagPayPal'));
-            criteria.addFilter(Criteria.not('or', [
-                Criteria.equals('handlerIdentifier', 'Swag\\PayPal\\Pos\\Payment\\PosPayment'),
-            ]));
             criteria.addSorting(Criteria.sort('position', 'ASC'), true);
 
             return criteria;
@@ -133,7 +130,7 @@ Component.register('swag-paypal-checkout', {
 
         isOnboardingPPCPFinished() {
             const sepaPaymentMethod = this.paymentMethods
-                .find((pm) => pm.handlerIdentifier === 'Swag\\PayPal\\Checkout\\Payment\\Method\\SEPAHandler');
+                .find((pm) => pm.formattedHandlerIdentifier === 'handler_swag_sepahandler');
 
             if (!sepaPaymentMethod) {
                 return false;
@@ -190,7 +187,9 @@ Component.register('swag-paypal-checkout', {
         async getPaymentMethods() {
             this.paymentMethods = await this.paymentMethodRepository.search(this.paymentMethodCriteria, Context.api)
                 .then((response) => {
-                    return response;
+                    return response.filter((paymentMethod) => {
+                        return paymentMethod.formattedHandlerIdentifier !== 'handler_swag_pospayment';
+                    });
                 });
         },
 
@@ -203,7 +202,7 @@ Component.register('swag-paypal-checkout', {
         },
 
         icon(paymentMethod) {
-            return this.iconMap[paymentMethod.handlerIdentifier];
+            return this.iconMap[paymentMethod.formattedHandlerIdentifier];
         },
 
         editLink(paymentMethod) {
@@ -297,7 +296,7 @@ Component.register('swag-paypal-checkout', {
         },
 
         availabilityToolTip(paymentMethod) {
-            const handlerElements = paymentMethod.handlerIdentifier.split('\\');
+            const handlerElements = paymentMethod.formattedHandlerIdentifier.split('_');
             const handlerName = handlerElements[handlerElements.length - 1];
             const snippetKey = `swag-paypal.settingForm.checkout.availabilityToolTip.${handlerName}`;
 

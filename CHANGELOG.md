@@ -1,4 +1,5 @@
 # 5.0.2
+- PPI-621 - Fix issue with the payment method overview missing in Shopware 6.4.7.0 or lower
 - PPI-623 - Fix an issue where a PayPal order cannot be created with discounts
 
 # 5.0.1
