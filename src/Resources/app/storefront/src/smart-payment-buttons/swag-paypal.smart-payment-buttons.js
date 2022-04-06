@@ -102,6 +102,8 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         /**
          * URL to the checkout confirm page
          *
+         * @deprecated tag:v6.0.0 - will be removed
+         *
          * @type string
          */
         checkoutConfirmUrl: '',
@@ -116,9 +118,25 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         /**
          * URL to the checkout confirm page
          *
+         * @deprecated tag:v6.0.0 - will be removed
+         *
          * @type string|null
          */
         accountOrderEditUrl: '',
+
+        /**
+         * URL to the after order edit page, as the payment has failed
+         *
+         * @type string|null
+         */
+        accountOrderEditFailedUrl: '',
+
+        /**
+         * URL to the after order edit page, as the user has cancelled
+         *
+         * @type string|null
+         */
+        accountOrderEditCancelledUrl: '',
 
         /**
          * Selector of the selected payment method

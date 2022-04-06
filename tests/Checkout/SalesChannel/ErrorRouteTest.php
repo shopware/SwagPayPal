@@ -37,7 +37,6 @@ class ErrorRouteTest extends TestCase
 
         static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
         static::assertCount(1, $session->getFlashBag()->get('danger'));
-        static::assertCount(0, $session->getFlashBag()->get('warning'));
 
         static::assertCount(1, $logger->getLogs());
         static::assertSame(Logger::NOTICE, \current($logger->getLogs())['level']);
@@ -59,8 +58,7 @@ class ErrorRouteTest extends TestCase
         $response = (new ErrorRoute($session, $translator, $logger))->addErrorMessage(new Request([], ['cancel' => 'true']));
 
         static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
-        static::assertCount(0, $session->getFlashBag()->get('danger'));
-        static::assertCount(1, $session->getFlashBag()->get('warning'));
+        static::assertCount(1, $session->getFlashBag()->get('danger'));
 
         static::assertCount(1, $logger->getLogs());
         static::assertSame(Logger::NOTICE, \current($logger->getLogs())['level']);

@@ -1,8 +1,8 @@
 {
     "paypal": {
         "general": {
-            "paymentCancel": "Der PayPal-Zahlungsvorgang wurde abgebrochen. Bitte versuchen Sie es noch einmal oder wählen Sie eine andere Zahlungsmethode aus.",
-            "paymentError": "Während des PayPal-Zahlungsvorgangs ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal oder wählen Sie eine andere Zahlungsmethode aus."
+            "paymentCancel": "Der Zahlungsvorgang wurde abgebrochen. Bitte versuchen Sie es noch einmal oder wählen Sie eine andere Zahlungsmethode aus.",
+            "paymentError": "Während des Zahlungsvorgangs ist ein Fehler aufgetreten. Bitte versuchen Sie es später noch einmal oder wählen Sie eine andere Zahlungsmethode aus."
         },
         "payUponInvoice": {
             "instructions": {

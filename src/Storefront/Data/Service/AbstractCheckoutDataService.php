@@ -10,6 +10,8 @@ namespace Swag\PayPal\Storefront\Data\Service;
 use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
@@ -23,6 +25,8 @@ use Symfony\Component\Routing\RouterInterface;
 
 abstract class AbstractCheckoutDataService
 {
+    public const PAYPAL_ERROR = 'isPayPalError';
+
     private PaymentMethodDataRegistry $paymentMethodDataRegistry;
 
     private IdentityResource $identityResource;
@@ -58,7 +62,7 @@ abstract class AbstractCheckoutDataService
      */
     abstract public function getMethodDataClass(): string;
 
-    protected function getBaseData(SalesChannelContext $context, ?OrderEntity $order = null): array
+    protected function getBaseData(SalesChannelContext $context, ?OrderEntity $order = null, bool $generateToken = false): array
     {
         $paymentMethodId = $this->paymentMethodDataRegistry->getEntityIdFromData(
             $this->paymentMethodDataRegistry->getPaymentMethod($this->getMethodDataClass()),
@@ -75,22 +79,36 @@ abstract class AbstractCheckoutDataService
         $data = [
             'clientId' => $this->credentialsUtil->getClientId($salesChannelId),
             'merchantPayerId' => $this->credentialsUtil->getMerchantPayerId($salesChannelId),
-            'clientToken' => $this->identityResource->getClientToken($salesChannelId)->getClientToken(),
             'languageIso' => $this->getButtonLanguage($context),
             'currency' => $context->getCurrency()->getIsoCode(),
             'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $salesChannelId)),
             'buttonShape' => $this->systemConfigService->getString(Settings::SPB_BUTTON_SHAPE, $salesChannelId),
             'paymentMethodId' => $paymentMethodId,
             'createOrderUrl' => $this->router->generate('store-api.paypal.create_order'),
-            'checkoutConfirmUrl' => $this->router->generate('frontend.checkout.confirm.page', [], RouterInterface::ABSOLUTE_URL),
             'addErrorUrl' => $this->router->generate('store-api.paypal.error'),
         ];
 
+        if ($generateToken) {
+            $data['clientToken'] = $this->identityResource->getClientToken($salesChannelId)->getClientToken();
+        }
+
         if ($order !== null) {
             $data['orderId'] = $order->getId();
-            $data['accountOrderEditUrl'] = $this->router->generate(
+            $data['accountOrderEditFailedUrl'] = $this->router->generate(
                 'frontend.account.edit-order.page',
-                ['orderId' => $order->getId()],
+                [
+                    'orderId' => $order->getId(),
+                    'error-code' => (new AsyncPaymentProcessException($order->getId(), ''))->getErrorCode(),
+                    self::PAYPAL_ERROR => 1,
+                ],
+                RouterInterface::ABSOLUTE_URL
+            );
+            $data['accountOrderEditCancelledUrl'] = $this->router->generate(
+                'frontend.account.edit-order.page',
+                [
+                    'orderId' => $order->getId(),
+                    'error-code' => (new CustomerCanceledAsyncPaymentException($order->getId()))->getErrorCode(),
+                ],
                 RouterInterface::ABSOLUTE_URL
             );
         }

@@ -79,7 +79,7 @@ class ErrorRoute extends AbstractErrorRoute
     public function addErrorMessage(Request $request): Response
     {
         if ($request->request->getBoolean('cancel')) {
-            $this->session->getFlashBag()->add('warning', $this->translator->trans('paypal.general.paymentCancel'));
+            $this->session->getFlashBag()->add('danger', $this->translator->trans('paypal.general.paymentCancel'));
             $this->logger->notice('Storefront checkout cancellation');
         } else {
             $this->session->getFlashBag()->add('danger', $this->translator->trans('paypal.general.paymentError'));

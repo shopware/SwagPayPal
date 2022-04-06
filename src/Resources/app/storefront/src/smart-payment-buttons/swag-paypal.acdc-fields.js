@@ -91,6 +91,27 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
         createOrderUrl: '',
 
         /**
+         * Is set, if the plugin is used on the order edit page
+         *
+         * @type string|null
+         */
+        orderId: null,
+
+        /**
+         * URL to the after order edit page, as the payment has failed
+         *
+         * @type string|null
+         */
+        accountOrderEditFailedUrl: '',
+
+        /**
+         * URL to the after order edit page, as the user has cancelled
+         *
+         * @type string|null
+         */
+        accountOrderEditCancelledUrl: '',
+
+        /**
          * Selector of the order confirm form
          *
          * @type string

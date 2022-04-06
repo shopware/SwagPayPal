@@ -27,7 +27,7 @@ class ACDCCheckoutDataService extends AbstractCheckoutDataService
         ?Cart $cart = null,
         ?OrderEntity $order = null
     ): ?ACDCCheckoutData {
-        $checkoutData = (new ACDCCheckoutData())->assign($this->getBaseData($context, $order));
+        $checkoutData = (new ACDCCheckoutData())->assign($this->getBaseData($context, $order, true));
 
         $customer = $context->getCustomer();
         if ($customer === null) {
