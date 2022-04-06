@@ -16,6 +16,7 @@
                     "amount": "Betrag:",
                     "reference": "Verwendungszweck:"
                 },
+                "legalMessageRatepay": "Rechnungskauf ist ein Service, den wir in Zusammenarbeit Ratepay anbieten. Der fällige Betrag wurde soeben von Ratepay direkt an uns übersandt. Nachdem Sie ihre Ware erhalten und geprüft haben, zahlen Sie den Rechnungsbetrag gemäß den Zahlungshinweisen an Ratepay.",
                 "legalMessage": "Warum PayPal? Rechnungskauf ist ein Service für den wir mit PayPal zusammenarbeiten. Der Betrag wurde von PayPal soeben direkt an uns gezahlt. Sie bezahlen den Rechnungsbetrag gemäß den Zahlungshinweisen an PayPal, nachdem Sie die Ware erhalten und geprüft haben."
             },
             "document": {
