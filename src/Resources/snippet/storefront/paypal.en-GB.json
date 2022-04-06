@@ -16,6 +16,7 @@
                     "amount": "Amount:",
                     "reference": "Reference:"
                 },
+                "legalMessageRatepay": "Pay upon invoice payments are processed in collaboration with our partner Ratepay. Ratepay has just transferred the payable amount to us. You may wait for the order to arrive and check your purchase, before transferring the invoice amount in accord with the payment instructions to Ratepay.",
                 "legalMessage": "Why PayPal? PayPal is our partner for processing invoice payments. PayPal has just transferred the amount to us directly. You pay the amount to PayPal according to the payment instructions after you have received and checked your purchase."
             },
             "document": {

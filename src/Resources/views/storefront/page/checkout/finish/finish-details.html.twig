@@ -161,7 +161,7 @@
 
                     {% block page_checkout_finish_data_paypal_pui_instructions_legal %}
                         <div class="row">
-                            <div class="col my-3">{{ "paypal.payUponInvoice.instructions.legalMessage"|trans }}</div>
+                            <div class="col my-3">{{ (paymentDueDate is defined ? "paypal.payUponInvoice.instructions.legalMessage" : "paypal.payUponInvoice.instructions.legalMessageRatepay")|trans }}</div>
                         </div>
                     {% endblock %}
                 </div>
