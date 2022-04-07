@@ -105,6 +105,12 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             cancel,
         };
 
+        if (this.options.accountOrderEditCancelledUrl && this.options.accountOrderEditFailedUrl) {
+            window.location = cancel ? this.options.accountOrderEditCancelledUrl : this.options.accountOrderEditFailedUrl;
+
+            return;
+        }
+
         this._client.post(addErrorUrl, JSON.stringify(requestPayload), () => {
             if (!redirect) {
                 window.onbeforeunload = () => {

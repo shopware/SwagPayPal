@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-624 - Verbesserte Fehlerbehandlung im Zahlungsprozess nach einer Bestellung
+
 # 5.0.2
 - PPI-621 - Behebt ein Problem, bei dem die Zahlungsmethodenübersicht in Shopware 6.4.7.0 oder niedriger fehlte
 - PPI-623 - Behebt ein Problem, bei dem eine PayPal-Bestellung mit Rabatt nicht erstellt werden kann

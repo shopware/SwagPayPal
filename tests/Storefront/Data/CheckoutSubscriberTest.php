@@ -49,6 +49,7 @@ use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\SEPAMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
@@ -334,6 +335,7 @@ class CheckoutSubscriberTest extends TestCase
             new NullLogger(),
             new SettingsValidationService($settings, new NullLogger()),
             $sessionMock,
+            new RequestStack(),
             $translator,
             $this->eventDispatcher,
             [
@@ -404,18 +406,21 @@ class CheckoutSubscriberTest extends TestCase
         static::assertSame($paymentMethodId, $acdcExtension->getPaymentMethodId());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $acdcExtension->getIntent());
         static::assertSame('/store-api/paypal/create-order', $acdcExtension->getCreateOrderUrl());
-        static::assertStringContainsString('/checkout/confirm', $acdcExtension->getCheckoutConfirmUrl());
         static::assertSame('/store-api/paypal/error', $acdcExtension->getAddErrorUrl());
 
         if ($event instanceof AccountEditOrderPageLoadedEvent) {
-            $accountOrderEditUrl = $acdcExtension->getAccountOrderEditUrl();
+            $accountOrderEditUrl = $acdcExtension->getAccountOrderEditCancelledUrl();
+            static::assertNotNull($accountOrderEditUrl);
+            static::assertStringContainsString('/account/order/edit', $accountOrderEditUrl);
+            $accountOrderEditUrl = $acdcExtension->getAccountOrderEditFailedUrl();
             static::assertNotNull($accountOrderEditUrl);
             static::assertStringContainsString('/account/order/edit', $accountOrderEditUrl);
             $orderId = $acdcExtension->getOrderId();
             static::assertNotNull($orderId);
             static::assertSame(ConstantsForTesting::VALID_ORDER_ID, $orderId);
         } else {
-            static::assertNull($acdcExtension->getAccountOrderEditUrl());
+            static::assertNull($acdcExtension->getAccountOrderEditCancelledUrl());
+            static::assertNull($acdcExtension->getAccountOrderEditFailedUrl());
             static::assertNull($acdcExtension->getOrderId());
         }
     }
@@ -436,18 +441,21 @@ class CheckoutSubscriberTest extends TestCase
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbExtension->getIntent());
         static::assertFalse($spbExtension->getUseAlternativePaymentMethods());
         static::assertSame('/store-api/paypal/create-order', $spbExtension->getCreateOrderUrl());
-        static::assertStringContainsString('/checkout/confirm', $spbExtension->getCheckoutConfirmUrl());
         static::assertSame('/store-api/paypal/error', $spbExtension->getAddErrorUrl());
 
         if ($event instanceof AccountEditOrderPageLoadedEvent) {
-            $accountOrderEditUrl = $spbExtension->getAccountOrderEditUrl();
+            $accountOrderEditUrl = $spbExtension->getAccountOrderEditCancelledUrl();
+            static::assertNotNull($accountOrderEditUrl);
+            static::assertStringContainsString('/account/order/edit', $accountOrderEditUrl);
+            $accountOrderEditUrl = $spbExtension->getAccountOrderEditFailedUrl();
             static::assertNotNull($accountOrderEditUrl);
             static::assertStringContainsString('/account/order/edit', $accountOrderEditUrl);
             $orderId = $spbExtension->getOrderId();
             static::assertNotNull($orderId);
             static::assertSame(ConstantsForTesting::VALID_ORDER_ID, $orderId);
         } else {
-            static::assertNull($spbExtension->getAccountOrderEditUrl());
+            static::assertNull($spbExtension->getAccountOrderEditCancelledUrl());
+            static::assertNull($spbExtension->getAccountOrderEditFailedUrl());
             static::assertNull($spbExtension->getOrderId());
         }
     }

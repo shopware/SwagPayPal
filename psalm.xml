@@ -68,6 +68,7 @@
                 <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::createAddress"/>
                 <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::__construct"/>
                 <referencedMethod name="Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler::handlePlusPayment"/>
+                <referencedMethod name="Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData::getClientToken"/>
             </errorLevel>
         </DeprecatedMethod>
 
@@ -110,6 +111,13 @@
                 <file name="tests/Checkout/Plus/PlusPaymentFinalizeControllerTest.php"/>
             </errorLevel>
         </DeprecatedClass>
+
+        <DeprecatedProperty>
+            <errorLevel type="info">
+                <!-- <deprecated> tag:v6.0.0 - remove -->
+                <file name="src/Storefront/Data/Struct/AbstractCheckoutData.php"/>
+            </errorLevel>
+        </DeprecatedProperty>
 
         <PossiblyInvalidArgument>
             <errorLevel type="info">

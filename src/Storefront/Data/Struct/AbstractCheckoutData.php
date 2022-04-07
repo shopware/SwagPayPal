@@ -23,12 +23,18 @@ class AbstractCheckoutData extends Struct
 
     protected string $buttonShape;
 
+    /**
+     * @deprecated tag:v6.0.0 - will be nullable
+     */
     protected string $clientToken;
 
     protected string $paymentMethodId;
 
     protected string $createOrderUrl;
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed
+     */
     protected string $checkoutConfirmUrl;
 
     protected string $addErrorUrl;
@@ -37,7 +43,14 @@ class AbstractCheckoutData extends Struct
 
     protected ?string $orderId = null;
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed
+     */
     protected ?string $accountOrderEditUrl = null;
+
+    protected ?string $accountOrderEditCancelledUrl = null;
+
+    protected ?string $accountOrderEditFailedUrl = null;
 
     public function getClientId(): string
     {
@@ -89,11 +102,17 @@ class AbstractCheckoutData extends Struct
         $this->intent = $intent;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - return type will be nullable
+     */
     public function getClientToken(): string
     {
         return $this->clientToken;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - param $clientToken will be nullable
+     */
     public function setClientToken(string $clientToken): void
     {
         $this->clientToken = $clientToken;
@@ -119,11 +138,17 @@ class AbstractCheckoutData extends Struct
         $this->createOrderUrl = $createOrderUrl;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed
+     */
     public function getCheckoutConfirmUrl(): string
     {
         return $this->checkoutConfirmUrl;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed
+     */
     public function setCheckoutConfirmUrl(string $checkoutConfirmUrl): void
     {
         $this->checkoutConfirmUrl = $checkoutConfirmUrl;
@@ -159,14 +184,40 @@ class AbstractCheckoutData extends Struct
         $this->orderId = $orderId;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed
+     */
     public function getAccountOrderEditUrl(): ?string
     {
         return $this->accountOrderEditUrl;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed
+     */
     public function setAccountOrderEditUrl(?string $accountOrderEditUrl): void
     {
         $this->accountOrderEditUrl = $accountOrderEditUrl;
+    }
+
+    public function getAccountOrderEditCancelledUrl(): ?string
+    {
+        return $this->accountOrderEditCancelledUrl;
+    }
+
+    public function setAccountOrderEditCancelledUrl(?string $accountOrderEditCancelledUrl): void
+    {
+        $this->accountOrderEditCancelledUrl = $accountOrderEditCancelledUrl;
+    }
+
+    public function getAccountOrderEditFailedUrl(): ?string
+    {
+        return $this->accountOrderEditFailedUrl;
+    }
+
+    public function setAccountOrderEditFailedUrl(?string $accountOrderEditFailedUrl): void
+    {
+        $this->accountOrderEditFailedUrl = $accountOrderEditFailedUrl;
     }
 
     public function getButtonShape(): string

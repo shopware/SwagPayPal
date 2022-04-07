@@ -17,8 +17,9 @@ use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Storefront\Data\Event\PayPalPageExtensionAddedEvent;
-use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
+use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -31,6 +32,8 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
 
     private Session $session;
 
+    private RequestStack $requestStack;
+
     private TranslatorInterface $translator;
 
     private EventDispatcherInterface $eventDispatcher;
@@ -41,6 +44,7 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
         LoggerInterface $logger,
         SettingsValidationServiceInterface $settingsValidationService,
         Session $session,
+        RequestStack $requestStack,
         TranslatorInterface $translator,
         EventDispatcherInterface $eventDispatcher,
         ?iterable $apmCheckoutMethods = null
@@ -48,6 +52,7 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
         $this->logger = $logger;
         $this->settingsValidationService = $settingsValidationService;
         $this->session = $session;
+        $this->requestStack = $requestStack;
         $this->translator = $translator;
         $this->eventDispatcher = $eventDispatcher;
         $this->apmCheckoutMethods = $apmCheckoutMethods;
@@ -127,7 +132,7 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->setPreventErrorReload($checkoutData);
+        $checkoutData->setPreventErrorReload($this->isErrorReload());
 
         $page = $event->getPage();
         $page->addExtension($methodData->getCheckoutTemplateExtensionId(), $checkoutData);
@@ -140,31 +145,29 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
      * Checks if a PayPal error was added via Swag\PayPal\Checkout\SalesChannel\ErrorRoute::addErrorMessage
      * and sets the preventErrorReload property of the $checkoutData accordingly.
      */
-    private function setPreventErrorReload(AbstractCheckoutData $checkoutData): void
+    private function isErrorReload(): bool
     {
+        $request = $this->requestStack->getCurrentRequest();
+        if ($request !== null && $request->query->has(AbstractCheckoutDataService::PAYPAL_ERROR)) {
+            return true;
+        }
+
         $flashes = $this->session->getFlashBag()->peekAll();
 
-        $paymentCancelErrorMessage = $this->translator->trans('paypal.general.paymentCancel');
-        $paymentErrorMessage = $this->translator->trans('paypal.general.paymentError');
+        $possibleMessages = [
+            $this->translator->trans('paypal.general.paymentError'),
+        ];
 
-        $flashesContainPayPalError = false;
         foreach ($flashes as $val) {
-            if ($flashesContainPayPalError) {
-                continue;
+            if (\is_array($val) && \array_intersect($val, $possibleMessages)) {
+                return true;
             }
 
-            if (\is_array($val)) {
-                $flashesContainPayPalError = \in_array($paymentCancelErrorMessage, $val, true)
-                    || \in_array($paymentErrorMessage, $val, true);
-
-                continue;
-            }
-
-            if (\is_string($val)) {
-                $flashesContainPayPalError = $val === $paymentCancelErrorMessage || $val === $paymentErrorMessage;
+            if (\is_string($val) && \in_array($val, $possibleMessages, true)) {
+                return true;
             }
         }
 
-        $checkoutData->setPreventErrorReload($flashesContainPayPalError);
+        return false;
     }
 }
