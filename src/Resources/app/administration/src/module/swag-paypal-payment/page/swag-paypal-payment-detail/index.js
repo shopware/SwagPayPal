@@ -76,6 +76,10 @@ Component.register('swag-paypal-payment-detail', {
         'order.orderNumber'() {
             this.emitIdentifier();
         },
+
+        isLoading(value) {
+            this.$emit('loading-change', value);
+        },
     },
 
     created() {
@@ -84,15 +88,20 @@ Component.register('swag-paypal-payment-detail', {
 
     methods: {
         createdComponent() {
+            this.$emit('loading-change', true);
             const orderId = this.$route.params.id;
             const orderRepository = this.repositoryFactory.create('order');
             const orderCriteria = new Criteria(1, 1);
             orderCriteria.addAssociation('transactions.stateMachineState');
             orderCriteria.getAssociation('transactions').addSorting(Criteria.sort('createdAt'));
+            orderCriteria
+                .getAssociation('transactions')
+                .addSorting(Criteria.sort('createdAt', 'DESC'))
+                .setLimit(1);
 
             orderRepository.get(orderId, Context.api, orderCriteria).then((order) => {
                 this.order = order;
-                this.orderTransaction = order.transactions[order.transactions.length - 1];
+                this.orderTransaction = order.transactions.last();
                 this.orderTransactionState = this.orderTransaction.stateMachineState.technicalName;
 
                 if (this.orderTransaction.customFields === null) {
@@ -106,13 +115,9 @@ Component.register('swag-paypal-payment-detail', {
                     this.handlePayPalPayment(paypalPaymentId);
                 }
                 const paypalOrderId = this.orderTransaction.customFields.swag_paypal_order_id;
-                if (!paypalOrderId) {
-                    this.isLoading = false;
-
-                    return;
+                if (paypalOrderId) {
+                    this.handlePayPalOrder(paypalOrderId);
                 }
-
-                this.handlePayPalOrder(paypalOrderId);
             });
         },
 

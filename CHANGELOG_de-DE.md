@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-624 - Verbesserte Fehlerbehandlung im Zahlungsprozess nach einer Bestellung
+- PPI-629 - Behebt ein Problem, bei dem die Zahlungsdetails zu API v1 Zahlungen nicht angezeigt wurden
 
 # 5.0.2
 - PPI-621 - Behebt ein Problem, bei dem die Zahlungsmethodenübersicht in Shopware 6.4.7.0 oder niedriger fehlte

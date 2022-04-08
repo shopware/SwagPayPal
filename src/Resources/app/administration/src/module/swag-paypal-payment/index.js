@@ -24,7 +24,7 @@ Module.register('swag-paypal-payment', {
                 component: 'swag-paypal-payment-detail',
                 name: 'swag.paypal.payment.detail',
                 isChildren: true,
-                path: '/sw/order/paypal/detail/:id',
+                path: '/sw/order/detail/:id/paypal',
                 meta: {
                     parentPath: 'sw.order.index',
                     privilege: 'order.viewer',

@@ -1,5 +1,4 @@
 import template from './sw-order-detail.html.twig';
-import './sw-order-detail.scss';
 
 const { Component, Context } = Shopware;
 const { hasOwnProperty } = Shopware.Utils.object;
@@ -17,11 +16,6 @@ Component.override('sw-order-detail', {
     computed: {
         isEditable() {
             return !this.isPayPalPayment || this.$route.name !== 'swag.paypal.payment.detail';
-        },
-
-        // TODO PPI-74 - Remove
-        showTabs() {
-            return true;
         },
     },
 
@@ -48,7 +42,8 @@ Component.override('sw-order-detail', {
                     }
 
                     this.isPayPalPayment = hasOwnProperty(transaction, 'customFields') &&
-                        hasOwnProperty(transaction.customFields, 'swag_paypal_order_id');
+                        (hasOwnProperty(transaction.customFields, 'swag_paypal_order_id') ||
+                         hasOwnProperty(transaction.customFields, 'swag_paypal_transaction_id'));
                 });
             },
             immediate: true,

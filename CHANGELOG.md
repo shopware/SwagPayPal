@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-624 - Improved error handling in after order process
+- PPI-629 - Fix issue with payment details not showing for APIv1 payments such as PayPal Plus
 
 # 5.0.2
 - PPI-621 - Fix issue with the payment method overview missing in Shopware 6.4.7.0 or lower
