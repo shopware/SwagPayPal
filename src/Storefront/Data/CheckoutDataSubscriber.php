@@ -20,7 +20,6 @@ use Swag\PayPal\Storefront\Data\Event\PayPalPageExtensionAddedEvent;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -29,8 +28,6 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
     private LoggerInterface $logger;
 
     private SettingsValidationServiceInterface $settingsValidationService;
-
-    private Session $session;
 
     private RequestStack $requestStack;
 
@@ -43,7 +40,6 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
     public function __construct(
         LoggerInterface $logger,
         SettingsValidationServiceInterface $settingsValidationService,
-        Session $session,
         RequestStack $requestStack,
         TranslatorInterface $translator,
         EventDispatcherInterface $eventDispatcher,
@@ -51,7 +47,6 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
     ) {
         $this->logger = $logger;
         $this->settingsValidationService = $settingsValidationService;
-        $this->session = $session;
         $this->requestStack = $requestStack;
         $this->translator = $translator;
         $this->eventDispatcher = $eventDispatcher;
@@ -152,7 +147,12 @@ class CheckoutDataSubscriber implements EventSubscriberInterface
             return true;
         }
 
-        $flashes = $this->session->getFlashBag()->peekAll();
+        $session = $this->requestStack->getSession();
+        if (!\method_exists($session, 'getFlashBag')) {
+            return false;
+        }
+
+        $flashes = $session->getFlashBag()->peekAll();
 
         $possibleMessages = [
             $this->translator->trans('paypal.general.paymentError'),

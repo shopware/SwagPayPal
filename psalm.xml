@@ -109,6 +109,7 @@
                 <file name="src/Checkout/Plus/PlusSubscriber.php"/>
                 <file name="tests/Checkout/Plus/PlusSubscriberTest.php"/>
                 <file name="tests/Checkout/Plus/PlusPaymentFinalizeControllerTest.php"/>
+                <file name="tests/Checkout/SPBCheckout/SPBMarksSubscriberTest.php"/>
             </errorLevel>
         </DeprecatedClass>
 

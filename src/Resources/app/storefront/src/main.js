@@ -1,12 +1,13 @@
 // Import all necessary Storefront plugins
-import SwagPayPalExpressCheckoutButton from './express-checkout-button/swag-paypal.express-checkout';
-import SwagPayPalSmartPaymentButtons from './smart-payment-buttons/swag-paypal.smart-payment-buttons';
-import SwagPayPalMarks from './smart-payment-buttons/swag-paypal.marks';
-import SwagPayPalPlusPaymentWall from './plus/payment-wall';
-import SwagPayPalInstallmentBanner from './installment/swag-paypal.installment-banner';
-import SwagPaypalAcdcFields from './smart-payment-buttons/swag-paypal.acdc-fields';
+import SwagPayPalExpressCheckoutButton from './page/swag-paypal.express-checkout';
+import SwagPayPalSmartPaymentButtons from './checkout/swag-paypal.smart-payment-buttons';
+import SwagPayPalMarks from './checkout/swag-paypal.marks';
+import SwagPayPalPlusPaymentWall from './checkout/swag-paypal.plus-payment-wall';
+import SwagPayPalInstallmentBanner from './page/swag-paypal.installment-banner';
+import SwagPaypalAcdcFields from './checkout/swag-paypal.acdc-fields';
 import SwagPaypalPuiPolling from './swag-paypal.pui-polling';
-import SwagPaypalSepa from './smart-payment-buttons/swag-paypal.sepa';
+import SwagPaypalSepa from './checkout/swag-paypal.sepa';
+import SwagPaypalFundingEligibility from './page/swag-paypal.funding-eligibility';
 
 // Register them via the existing PluginManager
 const PluginManager = window.PluginManager;
@@ -49,4 +50,9 @@ PluginManager.register(
     'SwagPaypalSepa',
     SwagPaypalSepa,
     '[data-swag-paypal-sepa]',
+);
+PluginManager.register(
+    'SwagPaypalFundingEligibility',
+    SwagPaypalFundingEligibility,
+    '[data-swag-paypal-funding-eligibility]',
 );

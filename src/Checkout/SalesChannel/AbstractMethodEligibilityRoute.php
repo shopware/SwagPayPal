@@ -7,12 +7,13 @@
 
 namespace Swag\PayPal\Checkout\SalesChannel;
 
+use Shopware\Core\Framework\Context;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class AbstractErrorRoute
+abstract class AbstractMethodEligibilityRoute
 {
     abstract public function getDecorated(): AbstractErrorRoute;
 
-    abstract public function addErrorMessage(Request $request): Response;
+    abstract public function setPaymentMethodEligibility(Request $request, Context $context): Response;
 }

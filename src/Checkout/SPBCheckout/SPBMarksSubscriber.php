@@ -16,6 +16,9 @@ use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRout
 use Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @deprecated tag:v6.0.0 - will be removed without replacement
+ */
 class SPBMarksSubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID = 'payPalSpbMarksData';
@@ -35,10 +38,10 @@ class SPBMarksSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            AccountEditOrderPageLoadedEvent::class => 'addMarksExtension',
-            AccountPaymentMethodPageLoadedEvent::class => 'addMarksExtension',
-            FooterPageletLoadedEvent::class => 'addMarksExtension',
-            CheckoutConfirmPageLoadedEvent::class => 'addMarksExtension',
+            //AccountEditOrderPageLoadedEvent::class => 'addMarksExtension',
+            //AccountPaymentMethodPageLoadedEvent::class => 'addMarksExtension',
+            //FooterPageletLoadedEvent::class => 'addMarksExtension',
+            //CheckoutConfirmPageLoadedEvent::class => 'addMarksExtension',
         ];
     }
 

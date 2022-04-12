@@ -55,7 +55,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
      */
     getScriptOptions() {
         const config = {
-            components: 'buttons,marks,messages,hosted-fields',
+            components: 'buttons,messages,hosted-fields,funding-eligibility',
             'client-id': this.options.clientId,
             commit: !!this.options.commit,
             locale: this.options.languageIso,
