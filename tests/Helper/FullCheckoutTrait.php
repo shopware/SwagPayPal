@@ -30,14 +30,14 @@ trait FullCheckoutTrait
 {
     use BasicTestDataBehaviour;
 
-    private function createProduct(): string
+    private function createProduct(array $additionalData = []): string
     {
         /** @var EntityRepositoryInterface $productRepository */
         $productRepository = $this->getContainer()->get('product.repository');
         $productId = Uuid::randomHex();
         $taxId = $this->getValidTaxId();
 
-        $productRepository->upsert([[
+        $productRepository->upsert([\array_merge([
             'id' => $productId,
             'name' => 'my product',
             'taxId' => $taxId,
@@ -57,7 +57,7 @@ trait FullCheckoutTrait
             ],
             'productNumber' => $productId,
             'stock' => 100,
-        ]], Context::createDefaultContext());
+        ], $additionalData)], Context::createDefaultContext());
 
         return $productId;
     }

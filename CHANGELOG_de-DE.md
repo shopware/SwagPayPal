@@ -1,3 +1,6 @@
+# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+- PPI-611 - Möglichkeit hinzugefügt, Produkte & dynamischen Produktgruppen von PayPal- und Express Checkout-Käufen auszuschließen
+
 # 5.0.4
 - PPI-642 - Behebt ein Problem, bei dem der Zahlungsstatus von Kreditkartenzahlungen manchmal nicht korrekt gesetzt wurde
 

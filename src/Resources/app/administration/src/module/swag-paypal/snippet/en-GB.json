@@ -177,6 +177,14 @@
                         "basic": "Basic",
                         "advanced": "Advanced"
                     }
+                },
+                "excludedProductIds": {
+                    "label": "Excluded products",
+                    "tooltipText": "Products selected here cannot be purchased with PayPal."
+                },
+                "excludedProductStreamIds": {
+                    "label": "Excluded dynamic product groups",
+                    "tooltipText": "Products included in the dynamic product groups selected here cannot be purchased with PayPal."
                 }
             },
             "express": {

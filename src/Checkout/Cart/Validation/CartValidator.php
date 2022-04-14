@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
 use Shopware\Core\Checkout\Payment\Cart\Error\PaymentMethodBlockedError;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
+use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -30,16 +31,20 @@ class CartValidator implements CartValidatorInterface
 
     private RequestStack $requestStack;
 
+    private ExcludedProductValidator $excludedProductValidator;
+
     public function __construct(
         CartPriceService $cartPriceService,
         PaymentMethodDataRegistry $methodDataRegistry,
         SettingsValidationServiceInterface $settingsValidationService,
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        ExcludedProductValidator $excludedProductValidator
     ) {
         $this->cartPriceService = $cartPriceService;
         $this->methodDataRegistry = $methodDataRegistry;
         $this->settingsValidationService = $settingsValidationService;
         $this->requestStack = $requestStack;
+        $this->excludedProductValidator = $excludedProductValidator;
     }
 
     public function validate(Cart $cart, ErrorCollection $errors, SalesChannelContext $context): void
@@ -66,8 +71,15 @@ class CartValidator implements CartValidatorInterface
             $ineligiblePaymentMethods = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY);
             if (\is_array($ineligiblePaymentMethods) && \in_array($context->getPaymentMethod()->getHandlerIdentifier(), $ineligiblePaymentMethods, true)) {
                 $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
+
+                return;
             }
         } catch (SessionNotFoundException $e) {
+            return;
+        }
+
+        if ($this->excludedProductValidator->cartContainsExcludedProduct($cart, $context)) {
+            $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
         }
     }
 }

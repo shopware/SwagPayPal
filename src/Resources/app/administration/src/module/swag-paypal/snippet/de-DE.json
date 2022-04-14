@@ -177,6 +177,14 @@
                         "basic": "Einfach",
                         "advanced": "Erweitert"
                     }
+                },
+                "excludedProductIds": {
+                    "label": "Ausgeschlossene Produkte",
+                    "tooltipText": "Hier ausgewählte Produkte können nicht mit PayPal gekauft werden."
+                },
+                "excludedProductStreamIds": {
+                    "label": "Ausgeschlossene dynamische Produktgruppen",
+                    "tooltipText": "Hier ausgewählte dynamische Produktgruppen können nicht mit PayPal gekauft werden."
                 }
             },
             "express": {

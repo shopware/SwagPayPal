@@ -18,6 +18,7 @@ use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
+use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -43,12 +44,15 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 
     private RequestStack $requestStack;
 
+    private ExcludedProductValidator $excludedProductValidator;
+
     public function __construct(
         AbstractPaymentMethodRoute $decorated,
         PaymentMethodDataRegistry $methodDataRegistry,
         SettingsValidationServiceInterface $settingsValidationService,
         CartService $cartService,
         CartPriceService $cartPriceService,
+        ExcludedProductValidator $excludedProductValidator,
         RequestStack $requestStack
     ) {
         $this->decorated = $decorated;
@@ -56,6 +60,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         $this->settingsValidationService = $settingsValidationService;
         $this->cartService = $cartService;
         $this->cartPriceService = $cartPriceService;
+        $this->excludedProductValidator = $excludedProductValidator;
         $this->requestStack = $requestStack;
     }
 
@@ -119,7 +124,14 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
             return $response;
         }
 
-        if ($this->cartPriceService->isZeroValueCart($this->cartService->getCart($context->getToken(), $context))) {
+        $cart = $this->cartService->getCart($context->getToken(), $context);
+        if ($this->cartPriceService->isZeroValueCart($cart)) {
+            $this->removeAllPaymentMethods($response->getPaymentMethods());
+
+            return $response;
+        }
+
+        if ($this->excludedProductValidator->cartContainsExcludedProduct($cart, $context)) {
             $this->removeAllPaymentMethods($response->getPaymentMethods());
 
             return $response;
