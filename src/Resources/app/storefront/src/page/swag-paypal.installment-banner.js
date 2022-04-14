@@ -20,6 +20,13 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
         merchantPayerId: '',
 
         /**
+         * This option toggles the PayNow/Login text at PayPal
+         *
+         * @type boolean
+         */
+        commit: true,
+
+        /**
          * Amount of money, which will be used to calculate the examples
          *
          * @type number

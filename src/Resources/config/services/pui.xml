@@ -18,7 +18,7 @@
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
             <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService"/>
-            <argument type="service" id="session"/>
+            <argument type="service" id="request_stack"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <tag name="shopware.payment.method.sync"/>

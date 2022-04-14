@@ -13,9 +13,12 @@ use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
 use Shopware\Core\Checkout\Payment\Cart\Error\PaymentMethodBlockedError;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
+use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class CartValidator implements CartValidatorInterface
 {
@@ -25,14 +28,18 @@ class CartValidator implements CartValidatorInterface
 
     private SettingsValidationServiceInterface $settingsValidationService;
 
+    private RequestStack $requestStack;
+
     public function __construct(
         CartPriceService $cartPriceService,
         PaymentMethodDataRegistry $methodDataRegistry,
-        SettingsValidationServiceInterface $settingsValidationService
+        SettingsValidationServiceInterface $settingsValidationService,
+        RequestStack $requestStack
     ) {
         $this->cartPriceService = $cartPriceService;
         $this->methodDataRegistry = $methodDataRegistry;
         $this->settingsValidationService = $settingsValidationService;
+        $this->requestStack = $requestStack;
     }
 
     public function validate(Cart $cart, ErrorCollection $errors, SalesChannelContext $context): void
@@ -51,6 +58,16 @@ class CartValidator implements CartValidatorInterface
 
         if ($this->cartPriceService->isZeroValueCart($cart)) {
             $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
+
+            return;
+        }
+
+        try {
+            $ineligiblePaymentMethods = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY);
+            if (\is_array($ineligiblePaymentMethods) && \in_array($context->getPaymentMethod()->getHandlerIdentifier(), $ineligiblePaymentMethods, true)) {
+                $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
+            }
+        } catch (SessionNotFoundException $e) {
         }
     }
 }

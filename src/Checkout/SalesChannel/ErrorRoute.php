@@ -13,9 +13,10 @@ use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
+use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -24,15 +25,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class ErrorRoute extends AbstractErrorRoute
 {
-    private Session $session;
+    private RequestStack $requestStack;
 
     private TranslatorInterface $translator;
 
     private LoggerInterface $logger;
 
-    public function __construct(Session $session, TranslatorInterface $translator, LoggerInterface $logger)
+    public function __construct(RequestStack $requestStack, TranslatorInterface $translator, LoggerInterface $logger)
     {
-        $this->session = $session;
+        $this->requestStack = $requestStack;
         $this->translator = $translator;
         $this->logger = $logger;
     }
@@ -78,11 +79,16 @@ class ErrorRoute extends AbstractErrorRoute
      */
     public function addErrorMessage(Request $request): Response
     {
+        $session = $this->requestStack->getSession();
+        if (!\method_exists($session, 'getFlashBag')) {
+            throw new SessionNotFoundException();
+        }
+
         if ($request->request->getBoolean('cancel')) {
-            $this->session->getFlashBag()->add('danger', $this->translator->trans('paypal.general.paymentCancel'));
+            $session->getFlashBag()->add('danger', $this->translator->trans('paypal.general.paymentCancel'));
             $this->logger->notice('Storefront checkout cancellation');
         } else {
-            $this->session->getFlashBag()->add('danger', $this->translator->trans('paypal.general.paymentError'));
+            $session->getFlashBag()->add('danger', $this->translator->trans('paypal.general.paymentError'));
             $this->logger->notice('Storefront checkout error', ['error' => $request->request->get('error')]);
         }
 

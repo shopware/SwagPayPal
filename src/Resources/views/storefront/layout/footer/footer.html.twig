@@ -2,14 +2,8 @@
 
 {% block layout_footer_payment_logos %}
     {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBMarksData spbCheckoutMarksData #}
+    {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
     {% set spbCheckoutMarksData = page.footer.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID')] %}
-
-    {% if spbCheckoutMarksData %}
-        <div class="footer-logo is-payment"
-             data-swag-paypal-marks="true"
-             data-swag-pay-pal-marks-options="{{ spbCheckoutMarksData|json_encode }}">
-        </div>
-    {% endif %}
 
     {# @var \Swag\PayPal\Installment\Banner\BannerData installmentBanner #}
     {% set installmentBanner = page.footer.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
@@ -22,4 +16,17 @@
     {% endif %}
 
     {{ parent() }}
+{% endblock %}
+
+{% block layout_footer_bottom %}
+    {{ parent() }}
+
+    {# @var \Swag\PayPal\Storefront\Data\Struct\FundingEligibilityData fundingEligibilityData #}
+    {% set fundingEligibilityData = page.footer.extensions[constant('Swag\\PayPal\\Storefront\\Data\\FundingSubscriber::FUNDING_ELIGIBILITY_EXTENSION')] %}
+
+    {% if fundingEligibilityData %}
+        <div data-swag-paypal-funding-eligibility="true"
+             data-swag-paypal-funding-eligibility-options="{{ fundingEligibilityData|json_encode }}">
+        </div>
+    {% endif %}
 {% endblock %}

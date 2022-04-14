@@ -24,8 +24,9 @@ use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaymentHandlerInterface
@@ -48,7 +49,7 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
 
     private SettingsValidationServiceInterface $settingsValidationService;
 
-    private Session $session;
+    private RequestStack $requestStack;
 
     private TranslatorInterface $translator;
 
@@ -61,7 +62,7 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
         OrderResource $orderResource,
         TransactionDataService $transactionDataService,
         PUICustomerDataService $puiCustomerDataService,
-        Session $session,
+        RequestStack $requestStack,
         TranslatorInterface $translator,
         LoggerInterface $logger
     ) {
@@ -71,7 +72,7 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
         $this->puiOrderBuilder = $puiOrderBuilder;
         $this->transactionDataService = $transactionDataService;
         $this->puiCustomerDataService = $puiCustomerDataService;
-        $this->session = $session;
+        $this->requestStack = $requestStack;
         $this->translator = $translator;
         $this->logger = $logger;
     }
@@ -144,9 +145,17 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
             return;
         }
 
-        $this->session->getFlashBag()->add(
-            StorefrontController::DANGER,
-            $this->translator->trans(\sprintf('paypal.payUponInvoice.error.%s', self::ERROR_KEYS[$issue]))
-        );
+        try {
+            $session = $this->requestStack->getSession();
+            if (!\method_exists($session, 'getFlashBag')) {
+                throw new SessionNotFoundException();
+            }
+
+            $session->getFlashBag()->add(
+                StorefrontController::DANGER,
+                $this->translator->trans(\sprintf('paypal.payUponInvoice.error.%s', self::ERROR_KEYS[$issue]))
+            );
+        } catch (SessionNotFoundException $e) {
+        }
     }
 }

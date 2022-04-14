@@ -312,6 +312,10 @@ class CheckoutSubscriberTest extends TestCase
 
         $sessionMock = $this->createMock(Session::class);
         $sessionMock->method('getFlashbag')->willReturn(new FlashBag());
+        $request = new Request();
+        $request->setSession($sessionMock);
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
 
         $sepaMethodDataMock = $this->createMock(SEPAMethodData::class);
         $sepaMethodDataMock->method('getCheckoutDataService')->willReturn($sepaDataService);
@@ -334,8 +338,7 @@ class CheckoutSubscriberTest extends TestCase
         return new CheckoutDataSubscriber(
             new NullLogger(),
             new SettingsValidationService($settings, new NullLogger()),
-            $sessionMock,
-            new RequestStack(),
+            $requestStack,
             $translator,
             $this->eventDispatcher,
             [

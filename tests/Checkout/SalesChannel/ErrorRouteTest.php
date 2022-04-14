@@ -9,10 +9,12 @@ namespace Swag\PayPal\Test\Checkout\SalesChannel;
 
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Checkout\SalesChannel\ErrorRoute;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
@@ -24,16 +26,15 @@ class ErrorRouteTest extends TestCase
 
     public function testAddErrorMessage(): void
     {
-        $container = $this->getContainer();
         $session = new Session(new MockArraySessionStorage());
-        /** @var TranslatorInterface $translator */
-        $translator = $container->get('translator');
+        $request = new Request([], ['error' => 'test']);
+        $request->setSession($session);
         $logger = new LoggerMock();
 
         $flashes = $session->getFlashBag()->all();
         static::assertCount(0, $flashes);
 
-        $response = (new ErrorRoute($session, $translator, $logger))->addErrorMessage(new Request([], ['error' => 'test']));
+        $response = $this->callErrorRoute($request, $logger);
 
         static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
         static::assertCount(1, $session->getFlashBag()->get('danger'));
@@ -46,21 +47,31 @@ class ErrorRouteTest extends TestCase
 
     public function testAddCancelMessage(): void
     {
-        $container = $this->getContainer();
         $session = new Session(new MockArraySessionStorage());
-        /** @var TranslatorInterface $translator */
-        $translator = $container->get('translator');
+        $request = new Request([], ['cancel' => 'true']);
+        $request->setSession($session);
         $logger = new LoggerMock();
 
         $flashes = $session->getFlashBag()->all();
         static::assertCount(0, $flashes);
 
-        $response = (new ErrorRoute($session, $translator, $logger))->addErrorMessage(new Request([], ['cancel' => 'true']));
+        $response = $this->callErrorRoute($request, $logger);
 
         static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
         static::assertCount(1, $session->getFlashBag()->get('danger'));
 
         static::assertCount(1, $logger->getLogs());
         static::assertSame(Logger::NOTICE, \current($logger->getLogs())['level']);
+    }
+
+    private function callErrorRoute(Request $request, LoggerInterface $logger): Response
+    {
+        /** @var TranslatorInterface $translator */
+        $translator = $this->getContainer()->get('translator');
+
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
+
+        return (new ErrorRoute($requestStack, $translator, $logger))->addErrorMessage($request);
     }
 }

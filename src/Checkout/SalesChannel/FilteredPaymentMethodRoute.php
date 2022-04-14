@@ -21,7 +21,9 @@ use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -39,18 +41,22 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 
     private CartPriceService $cartPriceService;
 
+    private RequestStack $requestStack;
+
     public function __construct(
         AbstractPaymentMethodRoute $decorated,
         PaymentMethodDataRegistry $methodDataRegistry,
         SettingsValidationServiceInterface $settingsValidationService,
         CartService $cartService,
-        CartPriceService $cartPriceService
+        CartPriceService $cartPriceService,
+        RequestStack $requestStack
     ) {
         $this->decorated = $decorated;
         $this->methodDataRegistry = $methodDataRegistry;
         $this->settingsValidationService = $settingsValidationService;
         $this->cartService = $cartService;
         $this->cartPriceService = $cartPriceService;
+        $this->requestStack = $requestStack;
     }
 
     public function getDecorated(): AbstractPaymentMethodRoute
@@ -108,19 +114,38 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         try {
             $this->settingsValidationService->validate($context->getSalesChannelId());
         } catch (PayPalSettingsInvalidException $e) {
-            $this->removePaymentMethods($response->getPaymentMethods());
+            $this->removeAllPaymentMethods($response->getPaymentMethods());
 
             return $response;
         }
 
         if ($this->cartPriceService->isZeroValueCart($this->cartService->getCart($context->getToken(), $context))) {
-            $this->removePaymentMethods($response->getPaymentMethods());
+            $this->removeAllPaymentMethods($response->getPaymentMethods());
+
+            return $response;
+        }
+
+        try {
+            $ineligiblePaymentMethods = $this->requestStack->getSession()->get(MethodEligibilityRoute::SESSION_KEY);
+            if (\is_array($ineligiblePaymentMethods)) {
+                $this->removePaymentMethods($response->getPaymentMethods(), $ineligiblePaymentMethods);
+            }
+        } catch (SessionNotFoundException $e) {
         }
 
         return $response;
     }
 
-    private function removePaymentMethods(PaymentMethodCollection $paymentMethods): void
+    private function removePaymentMethods(PaymentMethodCollection $paymentMethods, array $ids): void
+    {
+        foreach ($paymentMethods as $paymentMethod) {
+            if (\in_array($paymentMethod->getHandlerIdentifier(), $ids, true)) {
+                $paymentMethods->remove($paymentMethod->getId());
+            }
+        }
+    }
+
+    private function removeAllPaymentMethods(PaymentMethodCollection $paymentMethods): void
     {
         foreach ($paymentMethods as $paymentMethod) {
             if ($this->methodDataRegistry->isPayPalPaymentMethod($paymentMethod)) {

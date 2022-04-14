@@ -18,7 +18,6 @@ use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPage;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -48,11 +47,7 @@ class SPBMarksSubscriberTest extends TestCase
     {
         $events = SPBMarksSubscriber::getSubscribedEvents();
 
-        static::assertCount(4, $events);
-        static::assertSame('addMarksExtension', $events[AccountEditOrderPageLoadedEvent::class]);
-        static::assertSame('addMarksExtension', $events[AccountPaymentMethodPageLoadedEvent::class]);
-        static::assertSame('addMarksExtension', $events[FooterPageletLoadedEvent::class]);
-        static::assertSame('addMarksExtension', $events[CheckoutConfirmPageLoadedEvent::class]);
+        static::assertEmpty($events);
     }
 
     public function testOnAccountPaymentMethodPageLoadedPayPalNotInActiveSalesChannel(): void

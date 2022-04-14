@@ -1,5 +1,6 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 5.0.3
 - PPI-624 - Verbesserte Fehlerbehandlung im Zahlungsprozess nach einer Bestellung
+- PPI-628 - Verbessert die Zahlungsmethodenauswahl, wenn PayPal einen Käufer als nicht berechtigt erachtet
 - PPI-629 - Behebt ein Problem, bei dem die Zahlungsdetails zu API v1 Zahlungen nicht angezeigt wurden
 
 # 5.0.2

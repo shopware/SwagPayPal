@@ -36,6 +36,8 @@ use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -213,6 +215,10 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
         static::assertNotNull($order);
 
         $this->session = new Session(new MockArraySessionStorage());
+        $request = new Request();
+        $request->setSession($this->session);
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
 
         /** @var TranslatorInterface $translator */
         $translator = $this->getContainer()->get('translator');
@@ -224,7 +230,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
             $orderResource,
             $this->getContainer()->get(TransactionDataService::class),
             $this->getContainer()->get(PUICustomerDataService::class),
-            $this->session,
+            $requestStack,
             $translator,
             $logger,
         );

@@ -1,5 +1,8 @@
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
+/**
+ * @deprecated tag:v6.0.0 - Will be removed without replacement
+ */
 export default class SwagPayPalMarks extends SwagPaypalAbstractButtons {
     static options = {
         /**
