@@ -274,6 +274,8 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
             // Call your server to set up the transaction
             createOrder: this.createOrder.bind(this, 'acdc'),
 
+            onError: this.onError.bind(this),
+
             styles: this.options.cardFieldStyleConfig,
 
             fields: {
@@ -413,6 +415,8 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
                 .submit(this.buildCardholderData())
                 .then(this.onApprove.bind(this))
                 .catch(this.onError.bind(this));
+
+            return;
         }
 
         const buttonLoadingIndicator = new ButtonLoadingIndicator(
