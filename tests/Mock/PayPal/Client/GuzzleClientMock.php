@@ -53,9 +53,11 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\RefundSaleResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidAuthorizationResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderAuthorization;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderDenied;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderAPM;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderDeclined;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderAPM;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderPUI;
@@ -176,7 +178,7 @@ class GuzzleClientMock implements ClientInterface
         }
 
         if (!isset($response)) {
-            throw new \RuntimeException('No fixture defined for ' . $resourceUri);
+            throw new \RuntimeException('No fixture defined for GET ' . $resourceUri);
         }
 
         return $this->ensureValidJson($response);
@@ -227,7 +229,7 @@ class GuzzleClientMock implements ClientInterface
             return GetDisputesList::get();
         }
 
-        throw new \RuntimeException('No fixture defined for ' . $resourceUri);
+        throw new \RuntimeException('No fixture defined for GET ' . $resourceUri);
     }
 
     private function handleApiV2GetRequests(string $resourceUri): array
@@ -252,6 +254,10 @@ class GuzzleClientMock implements ClientInterface
                 return GetOrderAuthorization::get();
             }
 
+            if (\mb_substr($resourceUri, -17) === AuthorizeOrderDenied::ID) {
+                return \array_merge(GetOrderAuthorization::get(), ['id' => AuthorizeOrderDenied::ID]);
+            }
+
             if (\mb_substr($resourceUri, -17) === GetOrderPUIPending::ID) {
                 return GetOrderPUIPending::get();
             }
@@ -274,6 +280,12 @@ class GuzzleClientMock implements ClientInterface
 
             $orderCapture = GetOrderCapture::get();
             if (\mb_substr($resourceUri, -17) === GetOrderCapture::ID) {
+                return $orderCapture;
+            }
+
+            if (\mb_substr($resourceUri, -17) === CaptureOrderDeclined::ID) {
+                $orderCapture['id'] = CaptureOrderDeclined::ID;
+
                 return $orderCapture;
             }
 
@@ -314,7 +326,7 @@ class GuzzleClientMock implements ClientInterface
             return GetAuthorization::get();
         }
 
-        throw new \RuntimeException('No fixture defined for ' . $resourceUri);
+        throw new \RuntimeException('No fixture defined for GET ' . $resourceUri);
     }
 
     private function handlePaymentGetRequests(string $resourceUri): array
@@ -367,7 +379,7 @@ class GuzzleClientMock implements ClientInterface
         }
 
         if (!isset($response)) {
-            throw new \RuntimeException('No fixture defined for ' . $resourceUri);
+            throw new \RuntimeException('No fixture defined for POST ' . $resourceUri);
         }
 
         return $this->ensureValidJson($response);
@@ -450,7 +462,7 @@ class GuzzleClientMock implements ClientInterface
             return ClientTokenResponseFixture::get();
         }
 
-        throw new \RuntimeException('No fixture defined for ' . $resourceUri);
+        throw new \RuntimeException('No fixture defined for POST ' . $resourceUri);
     }
 
     private function handleApiV2PostRequests(string $resourceUri, ?PayPalApiStruct $data): array
@@ -477,8 +489,16 @@ class GuzzleClientMock implements ClientInterface
                 return CaptureOrderAPM::get();
             }
 
+            if (\mb_substr($resourceUri, -8) === '/capture' && \mb_strpos($resourceUri, CaptureOrderDeclined::ID)) {
+                return CaptureOrderDeclined::get();
+            }
+
             if (\mb_substr($resourceUri, -8) === '/capture') {
                 return CaptureOrderCapture::get();
+            }
+
+            if (\mb_substr($resourceUri, -10) === '/authorize' && \mb_strpos($resourceUri, AuthorizeOrderDenied::ID)) {
+                return AuthorizeOrderDenied::get();
             }
 
             if (\mb_substr($resourceUri, -10) === '/authorize') {
@@ -546,7 +566,7 @@ class GuzzleClientMock implements ClientInterface
             }
         }
 
-        throw new \RuntimeException('No fixture defined for ' . $resourceUri);
+        throw new \RuntimeException('No fixture defined for POST ' . $resourceUri);
     }
 
     private function handlePaymentExecuteRequests(PayPalApiStruct $data): array

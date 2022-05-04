@@ -37,7 +37,9 @@ use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderDenied;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderDeclined;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
@@ -85,6 +87,20 @@ class ACDCHandlerTest extends TestCase
         $this->assertPatchData($transactionId);
     }
 
+    public function testPayCaptureDeclined(): void
+    {
+        $handler = $this->createPaymentHandler($this->getDefaultConfigData());
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+
+        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectExceptionMessage(\sprintf('The synchronous payment process was interrupted due to the following error:
+Order "%s" failed', CaptureOrderDeclined::ID));
+        $handler->pay($paymentTransaction, $this->createRequest(CaptureOrderDeclined::ID), $salesChannelContext);
+    }
+
     public function testPayAuthorize(): void
     {
         $handler = $this->createPaymentHandler($this->getDefaultConfigData());
@@ -98,6 +114,20 @@ class ACDCHandlerTest extends TestCase
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_AUTHORIZED, $transactionId, $salesChannelContext->getContext());
         $this->assertCustomFields(GetOrderAuthorization::ID, PartnerAttributionId::PAYPAL_PPCP, GetAuthorization::ID);
         $this->assertPatchData($transactionId);
+    }
+
+    public function testPayAuthorizeDenied(): void
+    {
+        $handler = $this->createPaymentHandler($this->getDefaultConfigData());
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+
+        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectExceptionMessage(\sprintf('The synchronous payment process was interrupted due to the following error:
+Order "%s" failed', AuthorizeOrderDenied::ID));
+        $handler->pay($paymentTransaction, $this->createRequest(AuthorizeOrderDenied::ID), $salesChannelContext);
     }
 
     public function testPayWithExceptionDuringPayPalCommunication(): void

@@ -10,9 +10,15 @@ namespace Swag\PayPal\Checkout\Payment\Service;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Framework\Context;
+use Swag\PayPal\Checkout\Exception\MissingPayloadException;
+use Swag\PayPal\Checkout\Exception\OrderFailedException;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -79,16 +85,54 @@ class OrderExecuteService
     {
         if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {
             $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
-            if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
+            $captures = $this->getPayment($response)->getCaptures();
+            if (empty($captures)) {
+                throw new MissingPayloadException($response->getId(), 'purchaseUnit.payments.captures');
+            }
+
+            /** @var Capture $capture */
+            $capture = \current($captures);
+            if ($capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_COMPLETED) {
                 $this->orderTransactionStateHandler->paid($transactionId, $context);
             }
-        } else {
-            $response = $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
-            if ($response->getStatus() === PaymentStatusV2::ORDER_COMPLETED) {
-                $this->orderTransactionStateHandler->authorize($transactionId, $context);
+
+            if ($capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_DECLINED
+             || $capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_FAILED) {
+                throw new OrderFailedException($paypalOrder->getId());
             }
+
+            return $response;
+        }
+
+        $response = $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
+        $authorizations = $this->getPayment($response)->getAuthorizations();
+        if (empty($authorizations)) {
+            throw new MissingPayloadException($response->getId(), 'purchaseUnit.payments.authorizations');
+        }
+
+        /** @var Authorization $authorization */
+        $authorization = \current($authorizations);
+        if ($authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_CREATED) {
+            $this->orderTransactionStateHandler->authorize($transactionId, $context);
+        }
+
+        if ($authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_DENIED
+            || $authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_PARTIALLY_CREATED
+            || $authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_VOIDED
+            || $authorization->getStatus() === PaymentStatusV2::ORDER_AUTHORIZATION_EXPIRED) {
+            throw new OrderFailedException($paypalOrder->getId());
         }
 
         return $response;
+    }
+
+    private function getPayment(Order $order): Payments
+    {
+        $purchaseUnits = $order->getPurchaseUnits();
+        if (empty($purchaseUnits)) {
+            throw new MissingPayloadException($order->getId(), 'purchaseUnit');
+        }
+
+        return \current($purchaseUnits)->getPayments();
     }
 }

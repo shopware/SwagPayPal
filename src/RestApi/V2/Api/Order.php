@@ -52,7 +52,7 @@ class Order extends PayPalApiStruct
      * @var PurchaseUnit[]
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit"})
      */
-    protected array $purchaseUnits;
+    protected array $purchaseUnits = [];
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_application_context")

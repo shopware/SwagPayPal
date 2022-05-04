@@ -1,3 +1,6 @@
+# 5.0.4
+- PPI-642 - Behebt ein Problem, bei dem der Zahlungsstatus von Kreditkartenzahlungen manchmal nicht korrekt gesetzt wurde
+
 # 5.0.3
 - PPI-624 - Verbesserte Fehlerbehandlung im Zahlungsprozess nach einer Bestellung
 - PPI-628 - Verbessert die Zahlungsmethodenauswahl, wenn PayPal einen Käufer als nicht berechtigt erachtet
