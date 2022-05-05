@@ -14,7 +14,7 @@ class CreateOrderPUI
     public static function get(): array
     {
         return [
-            'id' => '1SG34186SH474560P',
+            'id' => self::ID,
             'status' => 'PENDING_APPROVAL',
             'payment_source' => [
                 'pay_upon_invoice' => [

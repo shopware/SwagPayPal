@@ -1,3 +1,6 @@
+# 5.0.4
+- PPI-642 - Fix issue where payment status was not correctly fetched with credit card payments
+
 # 5.0.3
 - PPI-624 - Improved error handling in after order process
 - PPI-628 - Improves payment method choice if PayPal deems the buyer ineligible for certain methods
