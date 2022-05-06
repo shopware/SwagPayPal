@@ -1,6 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-611 - Added possibility to exclude products and dynamic product groups from PayPal & Express Checkout
 - PPI-634 - Fix issue with shipping tax calculation for net customer groups
+- PPI-635 - Fix issue with incorrent Pay Upon Invoice data display in invoices
 
 # 5.0.4
 - PPI-642 - Fix issue where payment status was not correctly fetched with credit card payments

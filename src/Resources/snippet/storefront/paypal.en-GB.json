@@ -23,6 +23,7 @@
                 "paymentShippingInfo": {
                     "payPalPuiPaymentMethod": "Payment method: Pay upon invoice"
                 },
+                "paymentNoteRatepay": "%companyName% has assigned the claim against you to Ratepay GmbH as part of a current factoring agreement. Payments with debt discharging effect can only be made to Ratepay GmbH. Please refer to the communication with Ratepay for further details on your payment.",
                 "paymentNote": "%companyName% has assigned the claim against you to PayPal (Europe) S.à r.l. et Cie, S.C.A. as part of a current factoring agreement. Payments with debt discharging effect can only be made to PayPal (Europe) S.à r.l. et Cie, S.C.A."
             },
             "checkout": {

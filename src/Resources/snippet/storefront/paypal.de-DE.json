@@ -23,6 +23,7 @@
                 "paymentShippingInfo": {
                     "payPalPuiPaymentMethod": "Gewählte Zahlungsart: Rechnungskauf"
                 },
+                "paymentNoteRatepay": "%companyName% hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die Ratepay GmbH abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die Ratepay GmbH geleistet werden. Bitte entnehmen Sie weitere Details zur Rechnungsbegleichung der Kommunikation mit Ratepay.",
                 "paymentNote": "%companyName% hat die Forderung gegen Sie im Rahmen eines laufenden Factoringvertrages an die PayPal (Europe) S.à r.l. et Cie, S.C.A. abgetreten. Zahlungen mit schuldbefreiender Wirkung können nur an die PayPal (Europe) S.à r.l. et Cie, S.C.A. geleistet werden."
             },
             "checkout": {
