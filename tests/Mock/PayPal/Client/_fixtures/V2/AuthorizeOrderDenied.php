@@ -38,7 +38,7 @@ class AuthorizeOrderDenied
                             0 => \array_merge(
                                 GetAuthorization::get(),
                                 ['status' => 'DENIED'],
-                            )
+                            ),
                         ],
                     ],
                 ],

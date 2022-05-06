@@ -54,14 +54,8 @@ class ItemListProvider
             $item = new Item();
             $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
-
-            $unitAmount = new UnitAmount();
-            $unitAmount->setCurrencyCode($currencyCode);
-            $unitAmount->setValue($this->priceFormatter->formatPrice($lineItem->getUnitPrice()));
-
-            $item->setUnitAmount($unitAmount);
-            $item->setQuantity($lineItem->getQuantity());
             $item->setCategory(Item::CATEGORY_PHYSICAL_GOODS);
+            $this->buildPriceData($lineItem, $item, $currencyCode);
 
             $tax = new Tax();
             $tax->setCurrencyCode($currencyCode);
@@ -113,5 +107,26 @@ class ItemListProvider
             $this->logger->warning($e->getMessage(), ['lineItem' => $lineItem]);
             $item->setSku(\mb_substr($productNumber, 0, Item::MAX_LENGTH_SKU));
         }
+    }
+
+    private function buildPriceData(OrderLineItemEntity $lineItem, Item $item, string $currencyCode): void
+    {
+        $totalPrice = $this->priceFormatter->formatPrice($lineItem->getTotalPrice());
+        $unitPrice = $this->priceFormatter->formatPrice($lineItem->getUnitPrice());
+
+        $unitAmount = new UnitAmount();
+        $item->setUnitAmount($unitAmount);
+        $unitAmount->setCurrencyCode($currencyCode);
+
+        if ($this->priceFormatter->formatPrice((float) $unitPrice * $lineItem->getQuantity()) !== $totalPrice) {
+            $unitAmount->setValue($totalPrice);
+            $item->setQuantity(1);
+            $item->setName(\sprintf('%s x %s', $lineItem->getQuantity(), $item->getName()));
+
+            return;
+        }
+
+        $unitAmount->setValue($unitPrice);
+        $item->setQuantity($lineItem->getQuantity());
     }
 }

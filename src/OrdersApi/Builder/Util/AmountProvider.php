@@ -91,13 +91,15 @@ class AmountProvider
 
         $shipping = new BreakdownShipping();
         $shipping->setCurrencyCode($currencyCode);
-        $shipping->setValue($this->priceFormatter->formatPrice($shippingCosts->getTotalPrice()));
+        $shipping->setValue($this->priceFormatter->formatPrice($shippingCosts->getTotalPrice() + ($isNet ? $shippingCosts->getCalculatedTaxes()->getAmount() : 0.0)));
         $accumulatedAmountValue += (float) $shipping->getValue();
 
         $taxTotal = new TaxTotal();
         $taxTotal->setCurrencyCode($currencyCode);
         if ($isNet) {
-            $taxTotal->setValue($this->priceFormatter->formatPrice($taxes->getAmount()));
+            $taxTotal->setValue($this->priceFormatter->formatPrice(
+                $taxes->getAmount() - $shippingCosts->getCalculatedTaxes()->getAmount()
+            ));
         } else {
             $taxTotal->setValue($this->priceFormatter->formatPrice(0.0));
         }

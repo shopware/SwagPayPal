@@ -122,6 +122,7 @@ trait PaymentTransactionTrait
         $lineItem->setQuantity(1);
         $lineItem->setLabel('test');
         $lineItem->setUnitPrice(5.0);
+        $lineItem->setTotalPrice(5.0);
         $lineItem->setPrice(new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $lineItem->setPriceDefinition(new QuantityPriceDefinition(10, new TaxRuleCollection()));
         $lineItem->setGood(true);
@@ -214,6 +215,7 @@ trait PaymentTransactionTrait
         $orderLineItem->setId('6198ff79c4144931919977829dbca3d6');
         $orderLineItem->setQuantity(OrderPaymentBuilderTest::EXPECTED_ITEM_QUANTITY);
         $orderLineItem->setUnitPrice(855.01);
+        $orderLineItem->setTotalPrice($orderLineItem->getUnitPrice() * $orderLineItem->getQuantity());
 
         $orderLineItem->setLabel(OrderPaymentBuilderTest::EXPECTED_ITEM_NAME);
         $orderLineItem->setPayload(['productNumber' => OrderPaymentBuilderTest::EXPECTED_PRODUCT_NUMBER]);

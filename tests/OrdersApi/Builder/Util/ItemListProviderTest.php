@@ -20,9 +20,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
-use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class ItemListProviderTest extends TestCase
 {
@@ -47,7 +47,7 @@ class ItemListProviderTest extends TestCase
      */
     public function testTaxes(bool $hasTaxes): void
     {
-        $lineItem = $this->createLineItem('test', 10, null, $hasTaxes);
+        $lineItem = $this->createLineItem('test', 10.00, null, $hasTaxes);
         $lineItems = new OrderLineItemCollection([$lineItem]);
 
         $order = new OrderEntity();
@@ -61,6 +61,26 @@ class ItemListProviderTest extends TestCase
         static::assertSame($hasTaxes ? '1.90' : '0.00', $item->getTax()->getValue());
     }
 
+    /**
+     * @dataProvider dataProviderQuantityConstellation
+     */
+    public function testRoundingError(int $quantity, string $title, int $expectedQuantity, string $expectedUnitPrice): void
+    {
+        $lineItem = $this->createLineItem('test', 10.002, null, false, $quantity);
+        $lineItems = new OrderLineItemCollection([$lineItem]);
+
+        $order = new OrderEntity();
+        $order->setLineItems($lineItems);
+        $order->setTaxStatus(CartPrice::TAX_STATE_GROSS);
+
+        $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
+        $item = \current($itemList);
+        static::assertInstanceOf(Item::class, $item);
+        static::assertSame($title, $item->getName());
+        static::assertSame($expectedQuantity, $item->getQuantity());
+        static::assertSame($expectedUnitPrice, $item->getUnitAmount()->getValue());
+    }
+
     public function testLineItemLabelTooLongIsTruncated(): void
     {
         $productName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam volu';
@@ -68,7 +88,7 @@ class ItemListProviderTest extends TestCase
 
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
 
-        $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliqu';
+        $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magn';
         static::assertSame($expectedItemName, $itemList[0]->getName());
     }
 
@@ -90,11 +110,21 @@ class ItemListProviderTest extends TestCase
         ];
     }
 
+    public function dataProviderQuantityConstellation(): iterable
+    {
+        return [
+            [1, 'test', 1, '10.00'],
+            [2, 'test', 2, '10.00'],
+            [4, '4 x test', 1, '40.01'],
+            [55, '55 x test', 1, '550.11'],
+        ];
+    }
+
     private function createItemListProvider(): ItemListProvider
     {
         return new ItemListProvider(
             new PriceFormatter(),
-            new EventDispatcherMock(),
+            $this->createMock(EventDispatcher::class),
             new LoggerMock()
         );
     }
@@ -124,13 +154,15 @@ class ItemListProviderTest extends TestCase
         string $productName,
         float $productPrice,
         ?string $productNumber = null,
-        ?bool $withTaxes = false
+        ?bool $withTaxes = false,
+        int $quantity = 1
     ): OrderLineItemEntity {
         $lineItem = new OrderLineItemEntity();
         $lineItem->setId(Uuid::randomHex());
         $lineItem->setLabel($productName);
-        $lineItem->setQuantity(1);
+        $lineItem->setQuantity($quantity);
         $lineItem->setUnitPrice($productPrice);
+        $lineItem->setTotalPrice($productPrice * $quantity);
 
         if ($productNumber !== null) {
             $lineItem->setPayload(['productNumber' => $productNumber]);
@@ -138,8 +170,8 @@ class ItemListProviderTest extends TestCase
 
         $price = new CalculatedPrice(
             $productPrice,
-            $productPrice,
-            new CalculatedTaxCollection([new CalculatedTax($withTaxes ? $productPrice * 0.19 : 0.0, $withTaxes ? 19.0 : 0.0, $productPrice)]),
+            $productPrice * $quantity,
+            new CalculatedTaxCollection([new CalculatedTax($withTaxes ? $productPrice * $quantity * 0.19 : 0.0, $withTaxes ? 19.0 : 0.0, $productPrice)]),
             new TaxRuleCollection()
         );
         $lineItem->setPrice($price);

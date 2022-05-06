@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\OrdersApi\Builder\Util;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
@@ -82,14 +83,33 @@ class AmountProviderTest extends TestCase
         static::assertSame('5.00', $breakdown->getDiscount()->getValue());
     }
 
-    private function createAmount(PurchaseUnit $purchaseUnit, float $total, float $shipping): Amount
+    public function testNetTaxesWithShipping(): void
+    {
+        $purchaseUnit = new PurchaseUnit();
+        $purchaseUnit->setItems([
+            $this->getItem(1, 10, 1.9, 19.0),
+            $this->getItem(1, 50, 9.5, 19.0),
+        ]);
+
+        $breakdown = $this->createAmount($purchaseUnit, 77.35, 5.0, true)->getBreakdown();
+        static::assertNotNull($breakdown);
+
+        $taxTotal = $breakdown->getTaxTotal();
+        static::assertSame('60.00', $breakdown->getItemTotal()->getValue());
+        static::assertSame('11.40', $taxTotal !== null ? $taxTotal->getValue() : '0.0');
+        static::assertSame('5.95', $breakdown->getShipping()->getValue());
+        static::assertSame('0.00', $breakdown->getHandling()->getValue());
+        static::assertSame('0.00', $breakdown->getDiscount()->getValue());
+    }
+
+    private function createAmount(PurchaseUnit $purchaseUnit, float $total, float $shipping, bool $isNet = false): Amount
     {
         return $this->amountProvider->createAmount(
-            new CalculatedPrice($total, $total, new CalculatedTaxCollection(), new TaxRuleCollection()),
-            new CalculatedPrice($shipping, $shipping, new CalculatedTaxCollection(), new TaxRuleCollection()),
+            new CalculatedPrice($total, $total, new CalculatedTaxCollection([new CalculatedTax($total - ($total / 1.19), 19.0, $total)]), new TaxRuleCollection()),
+            new CalculatedPrice($shipping, $shipping, new CalculatedTaxCollection([new CalculatedTax($shipping * 0.19, 19.0, $shipping)]), new TaxRuleCollection()),
             $this->getCurrency(),
             $purchaseUnit,
-            true
+            $isNet
         );
     }
 
