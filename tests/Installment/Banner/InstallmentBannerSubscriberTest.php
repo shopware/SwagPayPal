@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Installment\Banner;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Cart;
@@ -36,6 +37,7 @@ use Shopware\Storefront\Page\Product\ProductPageLoadedEvent;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
+use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Installment\Banner\BannerData;
 use Swag\PayPal\Installment\Banner\InstallmentBannerSubscriber;
@@ -63,11 +65,17 @@ class InstallmentBannerSubscriberTest extends TestCase
 
     private Context $context;
 
+    /**
+     * @var MockObject&ExcludedProductValidator
+     */
+    private $excludedProductValidator;
+
     protected function setUp(): void
     {
         $this->paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
         $this->context = Context::createDefaultContext();
         $this->payPalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($this->context);
+        $this->excludedProductValidator = $this->createMock(ExcludedProductValidator::class);
     }
 
     protected function tearDown(): void
@@ -145,6 +153,16 @@ class InstallmentBannerSubscriberTest extends TestCase
         $this->assertBannerData($page, self::CART_TOTAL_PRICE);
     }
 
+    public function testAddInstallmentBannerCheckoutCartExcludedProduct(): void
+    {
+        $event = $this->createCheckoutCartPageLoadedEvent();
+        $this->excludedProductValidator->method('cartContainsExcludedProduct')->willReturn(true);
+
+        $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
+
+        static::assertEmpty($event->getPage()->getExtensions());
+    }
+
     public function testAddInstallmentBannerProductPage(): void
     {
         $event = $this->createProductPageLoadedEvent();
@@ -156,6 +174,16 @@ class InstallmentBannerSubscriberTest extends TestCase
         static::assertCount(1, $extensions);
 
         $this->assertBannerData($page, self::PRODUCT_PRICE);
+    }
+
+    public function testAddInstallmentBannerProductPageExcludedProduct(): void
+    {
+        $event = $this->createProductPageLoadedEvent();
+        $this->excludedProductValidator->method('isProductExcluded')->willReturn(true);
+
+        $this->createInstallmentBannerSubscriber()->addInstallmentBanner($event);
+
+        static::assertEmpty($event->getPage()->getExtensions());
     }
 
     public function testAddInstallmentBannerProductPageWithAdvancedPrices(): void
@@ -244,7 +272,8 @@ class InstallmentBannerSubscriberTest extends TestCase
             $settings,
             $this->paymentMethodUtil,
             new BannerDataService($this->paymentMethodUtil, new CredentialsUtil($settings)),
-            new NullLogger()
+            $this->excludedProductValidator,
+            new NullLogger(),
         );
     }
 

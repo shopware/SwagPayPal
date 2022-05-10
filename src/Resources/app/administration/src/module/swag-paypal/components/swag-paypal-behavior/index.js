@@ -2,11 +2,13 @@ import template from './swag-paypal-behavior.html.twig';
 import constants from '../../page/swag-paypal/swag-paypal-consts';
 
 const { Component } = Shopware;
+const { Criteria } = Shopware.Data;
 
 Component.register('swag-paypal-behavior', {
     template,
 
     inject: [
+        'repositoryFactory',
         'acl',
     ],
 
@@ -81,7 +83,7 @@ Component.register('swag-paypal-behavior', {
 
         landingPageHint() {
             let landingPageOption = this.actualConfigData['SwagPayPal.settings.landingPage'] ||
-                this.allConfigs.null['SwagPayPal.settings.landingPage'];
+                this.allConfigs.null['SwagPayPal.settings.landingPage'] || 'NO_PREFERENCE';
             landingPageOption = landingPageOption.toLowerCase();
             const translationKey = `swag-paypal.settingForm.behavior.landingPage.helpText.${landingPageOption}`;
             return this.$tc(translationKey);
@@ -99,11 +101,34 @@ Component.register('swag-paypal-behavior', {
                 },
             ];
         },
+
+        productRepository() {
+            return this.repositoryFactory.create('product');
+        },
+
+        productStreamRepository() {
+            return this.repositoryFactory.create('product_stream');
+        },
+
+        excludedProductCriteria() {
+            const criteria = new Criteria();
+            criteria.addAssociation('options.group');
+
+            return criteria;
+        },
     },
 
     methods: {
         checkTextFieldInheritance(value) {
             if (typeof value !== 'string') {
+                return true;
+            }
+
+            return value.length <= 0;
+        },
+
+        checkArrayFieldInheritance(value) {
+            if (!Array.isArray(value)) {
                 return true;
             }
 

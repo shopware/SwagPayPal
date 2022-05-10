@@ -11,7 +11,7 @@
         {% set expressSettings = cmsPage.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID')] %}
     {% endif %}
 
-    {% if expressSettings.listingEnabled and product.calculatedCheapestPrice.totalPrice > 0 %}
+    {% if expressSettings.listingEnabled and product.calculatedCheapestPrice.totalPrice > 0 and product.extensions[constant('Swag\\PayPal\\Checkout\\Cart\\Service\\ExcludedProductValidator::PRODUCT_EXCLUDED_FOR_PAYPAL')] is null %}
         {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'pt-3'} %}
     {% endif %}
 {% endblock %}

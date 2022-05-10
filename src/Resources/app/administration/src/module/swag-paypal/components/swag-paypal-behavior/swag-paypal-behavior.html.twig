@@ -169,6 +169,71 @@
                     </sw-single-select>
                 {% endblock %}
 
+                {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids %}
+                    <sw-inherit-wrapper
+                        v-model="actualConfigData['SwagPayPal.settings.excludedProductIds']"
+                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.excludedProductIds']"
+                        :customInheritationCheckFunction="checkArrayFieldInheritance"
+                        :label="$tc('swag-paypal.settingForm.behavior.excludedProductIds.label')"
+                        :helpText="$tc('swag-paypal.settingForm.behavior.excludedProductIds.tooltipText')"
+                    >
+                        <template #content="props">
+                            <sw-entity-multi-id-select
+                                name="SwagPayPal.settings.excludedProductIds"
+                                :repository="productRepository"
+                                :criteria="excludedProductCriteria"
+                                :mapInheritance="props"
+                                :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                                :ids="props.currentValue"
+                                @change="props.updateCurrentValue"
+                            >
+
+                                {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids_label_property %}
+                                    <template #selection-label-property="{ item }">
+                                        <sw-product-variant-info
+                                            :variations="item.variation"
+                                        >
+                                            {{ item.translated.name || item.name }}
+                                        </sw-product-variant-info>
+                                    </template>
+                                {% endblock %}
+
+                                {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids_result_label_property %}
+                                    <template #result-label-property="{ item, searchTerm, highlightSearchTerm }">
+                                        <sw-product-variant-info
+                                            :variations="item.variation"
+                                        >
+                                            {{ item.translated.name || item.name }}
+                                        </sw-product-variant-info>
+                                    </template>
+                                {% endblock %}
+
+                            </sw-entity-multi-id-select>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_streams_ids %}
+                    <sw-inherit-wrapper
+                        v-model="actualConfigData['SwagPayPal.settings.excludedProductStreamIds']"
+                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.excludedProductStreamIds']"
+                        :customInheritationCheckFunction="checkArrayFieldInheritance"
+                        :label="$tc('swag-paypal.settingForm.behavior.excludedProductStreamIds.label')"
+                        :helpText="$tc('swag-paypal.settingForm.behavior.excludedProductStreamIds.tooltipText')"
+                    >
+                        <template #content="props">
+                            <sw-entity-multi-id-select
+                                name="SwagPayPal.settings.excludedProductStreamIds"
+                                :repository="productStreamRepository"
+                                :mapInheritance="props"
+                                :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                                :ids="props.currentValue"
+                                @change="props.updateCurrentValue"
+                            ></sw-entity-multi-id-select>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
+
             </div>
         {% endblock %}
 

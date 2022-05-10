@@ -45,6 +45,8 @@ class FilteredPaymentMethodRouteTest extends TestCase
 
     private string $pluginId;
 
+    private string $productId;
+
     public function setUp(): void
     {
         $this->paymentMethodRoute = $this->getContainer()->get(PaymentMethodRoute::class);
@@ -54,6 +56,8 @@ class FilteredPaymentMethodRouteTest extends TestCase
         foreach ($this->getDefaultConfigData() as $key => $value) {
             $this->systemConfig->set($key, $value);
         }
+
+        $this->productId = Uuid::randomHex();
     }
 
     public function testRouteWithInvalidCredentials(): void
@@ -72,6 +76,13 @@ class FilteredPaymentMethodRouteTest extends TestCase
     public function testRouteWithZeroValueCart(): void
     {
         static::assertCount(0, $this->loadPaymentMethods(new Request(['onlyAvailable' => true]), 0.0));
+    }
+
+    public function testRouteWithExcludedProducts(): void
+    {
+        $this->systemConfig->set(Settings::EXCLUDED_PRODUCT_IDS, [$this->productId]);
+
+        static::assertCount(0, $this->loadPaymentMethods(new Request(['onlyAvailable' => true])));
     }
 
     public function testRouteDoesNotInterfereWithUnavailable(): void
@@ -111,10 +122,8 @@ class FilteredPaymentMethodRouteTest extends TestCase
         /** @var EntityRepositoryInterface $productRepository */
         $productRepository = $this->getContainer()->get(\sprintf('%s.repository', ProductDefinition::ENTITY_NAME));
 
-        $productId = Uuid::randomHex();
-
         $productData = [
-            'id' => $productId,
+            'id' => $this->productId,
             'stock' => \random_int(1, 5),
             'taxId' => $this->getValidTaxId(),
             'price' => [
@@ -141,7 +150,7 @@ class FilteredPaymentMethodRouteTest extends TestCase
         $cartService = $this->getContainer()->get(CartService::class);
         $cart = $cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
-        $lineItem = (new LineItem($productId, LineItem::PRODUCT_LINE_ITEM_TYPE, $productId, 1))
+        $lineItem = (new LineItem($this->productId, LineItem::PRODUCT_LINE_ITEM_TYPE, $this->productId, 1))
             ->setRemovable(true)
             ->setStackable(true);
 

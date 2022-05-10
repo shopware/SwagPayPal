@@ -25,6 +25,7 @@ use Shopware\Storefront\Pagelet\Footer\FooterPageletLoadedEvent;
 use Shopware\Storefront\Pagelet\PageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
+use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Installment\Banner\Service\BannerDataServiceInterface;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -47,17 +48,21 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
 
     private LoggerInterface $logger;
 
+    private ExcludedProductValidator $excludedProductValidator;
+
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
         SystemConfigService $systemConfigService,
         PaymentMethodUtil $paymentMethodUtil,
         BannerDataServiceInterface $bannerDataService,
+        ExcludedProductValidator $excludedProductValidator,
         LoggerInterface $logger
     ) {
         $this->settingsValidationService = $settingsValidationService;
         $this->systemConfigService = $systemConfigService;
         $this->paymentMethodUtil = $paymentMethodUtil;
         $this->bannerDataService = $bannerDataService;
+        $this->excludedProductValidator = $excludedProductValidator;
         $this->logger = $logger;
     }
 
@@ -94,6 +99,16 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
 
         /** @var CheckoutCartPage|CheckoutConfirmPage|CheckoutRegisterPage|OffcanvasCartPage|ProductPage $page */
         $page = $pageLoadedEvent->getPage();
+
+        if ($page instanceof ProductPage
+            && $this->excludedProductValidator->isProductExcluded($page->getProduct(), $pageLoadedEvent->getSalesChannelContext())) {
+            return;
+        }
+
+        if (!$page instanceof ProductPage
+            && $this->excludedProductValidator->cartContainsExcludedProduct($page->getCart(), $pageLoadedEvent->getSalesChannelContext())) {
+            return;
+        }
 
         $bannerData = $this->bannerDataService->getInstallmentBannerData($page, $salesChannelContext);
 
@@ -133,6 +148,11 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         }
 
         if (!$this->systemConfigService->getBool(Settings::INSTALLMENT_BANNER_ENABLED, $salesChannelContext->getSalesChannelId())) {
+            return;
+        }
+
+        if ($pageletLoadedEvent instanceof QuickviewPageletLoadedEvent
+            && $this->excludedProductValidator->isProductExcluded($pageletLoadedEvent->getPagelet()->getProduct(), $pageletLoadedEvent->getSalesChannelContext())) {
             return;
         }
 

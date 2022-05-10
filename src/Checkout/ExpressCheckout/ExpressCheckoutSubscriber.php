@@ -11,7 +11,9 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Content\Cms\Events\CmsPageLoadedEvent;
 use Shopware\Core\Framework\Event\DataMappingEvent;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Validation\BuildValidationEvent;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelEntitySearchResultLoadedEvent;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Event\SwitchBuyBoxVariantEvent;
@@ -26,6 +28,7 @@ use Shopware\Storefront\Page\Search\SearchPageLoadedEvent;
 use Shopware\Storefront\Pagelet\PageletLoadedEvent;
 use Shopware\Storefront\Pagelet\Wishlist\GuestWishlistPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
+use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -47,6 +50,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     private PaymentMethodUtil $paymentMethodUtil;
 
+    private ExcludedProductValidator $excludedProductValidator;
+
     private LoggerInterface $logger;
 
     public function __construct(
@@ -54,12 +59,14 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         SettingsValidationServiceInterface $settingsValidationService,
         SystemConfigService $systemConfigService,
         PaymentMethodUtil $paymentMethodUtil,
+        ExcludedProductValidator $excludedProductValidator,
         LoggerInterface $logger
     ) {
         $this->expressCheckoutDataService = $service;
         $this->settingsValidationService = $settingsValidationService;
         $this->systemConfigService = $systemConfigService;
         $this->paymentMethodUtil = $paymentMethodUtil;
+        $this->excludedProductValidator = $excludedProductValidator;
         $this->logger = $logger;
     }
 
@@ -72,6 +79,8 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             SearchPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+
+            'sales_channel.product.search.result.loaded' => 'addExcludedProductsToSearchResult',
 
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
             GuestWishlistPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
@@ -87,18 +96,29 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param CheckoutCartPageLoadedEvent|CheckoutRegisterPageLoadedEvent|NavigationPageLoadedEvent|OffcanvasCartPageLoadedEvent|ProductPageLoadedEvent|SearchPageLoadedEvent $event
+     */
     public function addExpressCheckoutDataToPage(PageLoadedEvent $event): void
     {
-        $salesChannelContext = $event->getSalesChannelContext();
-        $eventName = \get_class($event);
-
         $addProductToCart = $event instanceof ProductPageLoadedEvent
             || $event instanceof NavigationPageLoadedEvent
             || $event instanceof SearchPageLoadedEvent;
 
-        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, $eventName, $addProductToCart);
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), \get_class($event), $addProductToCart);
 
         if ($expressCheckoutButtonData === null) {
+            return;
+        }
+
+        if ($event instanceof ProductPageLoadedEvent
+            && $this->excludedProductValidator->isProductExcluded($event->getPage()->getProduct(), $event->getSalesChannelContext())) {
+            return;
+        }
+
+        if (!$addProductToCart
+            && \method_exists($event->getPage(), 'getCart')
+            && $this->excludedProductValidator->cartContainsExcludedProduct($event->getPage()->getCart(), $event->getSalesChannelContext())) {
             return;
         }
 
@@ -111,10 +131,14 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
 
     public function addExpressCheckoutDataToPagelet(PageletLoadedEvent $event): void
     {
-        $salesChannelContext = $event->getSalesChannelContext();
-        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($salesChannelContext, \get_class($event), true);
+        $expressCheckoutButtonData = $this->getExpressCheckoutButtonData($event->getSalesChannelContext(), \get_class($event), true);
 
         if ($expressCheckoutButtonData === null) {
+            return;
+        }
+
+        if ($event instanceof QuickviewPageletLoadedEvent
+            && $this->excludedProductValidator->isProductExcluded($event->getPagelet()->getProduct(), $event->getSalesChannelContext())) {
             return;
         }
 
@@ -137,6 +161,27 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             self::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,
             $expressCheckoutButtonData
         );
+    }
+
+    public function addExcludedProductsToSearchResult(SalesChannelEntitySearchResultLoadedEvent $event): void
+    {
+        if (!$this->checkSettings($event->getSalesChannelContext(), \get_class($event))) {
+            return;
+        }
+
+        $productIds = [];
+        foreach ($event->getResult()->getEntities() as $product) {
+            $productIds[] = $product->getId();
+            $productIds[] = $product->getParentId();
+        }
+
+        $excluded = $this->excludedProductValidator->findExcludedProducts(\array_filter($productIds), $event->getSalesChannelContext());
+
+        foreach ($event->getResult()->getEntities() as $product) {
+            if (\in_array($product->getId(), $excluded, true) || ($product->getParentId() && \in_array($product->getParentId(), $excluded, true))) {
+                $product->addExtension(ExcludedProductValidator::PRODUCT_EXCLUDED_FOR_PAYPAL, new ArrayStruct());
+            }
+        }
     }
 
     public function disableAddressValidation(BuildValidationEvent $event): void
@@ -200,8 +245,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         string $eventName,
         bool $addProductToCart = false
     ): ?ExpressCheckoutButtonData {
-        $settings = $this->checkSettings($salesChannelContext, $eventName);
-        if ($settings === false) {
+        if (!$this->checkSettings($salesChannelContext, $eventName)) {
             return null;
         }
 
@@ -247,6 +291,7 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
             case SearchPageLoadedEvent::class:
             case GuestWishlistPageletLoadedEvent::class:
             case SwitchBuyBoxVariantEvent::class:
+            case SalesChannelEntitySearchResultLoadedEvent::class:
                 return $this->systemConfigService->getBool(Settings::ECS_LISTING_ENABLED, $salesChannelId);
             default:
                 return false;

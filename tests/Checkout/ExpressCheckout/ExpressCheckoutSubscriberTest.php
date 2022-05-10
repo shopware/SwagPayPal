@@ -14,6 +14,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEvents;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -24,8 +25,6 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Event\SwitchBuyBoxVariantEvent;
-use Shopware\Storefront\Page\Account\Login\AccountLoginPage;
-use Shopware\Storefront\Page\Account\Login\AccountLoginPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -44,6 +43,7 @@ use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoadedEvent;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPageletLoader;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
+use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
@@ -78,6 +78,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
             OffcanvasCartPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             ProductPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
             SearchPageLoadedEvent::class => 'addExpressCheckoutDataToPage',
+
+            'sales_channel.product.search.result.loaded' => 'addExcludedProductsToSearchResult',
 
             QuickviewPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
             GuestWishlistPageletLoadedEvent::class => 'addExpressCheckoutDataToPagelet',
@@ -123,6 +125,8 @@ class ExpressCheckoutSubscriberTest extends TestCase
             $salesChannelContext,
             new Request()
         );
+        $event->getPage()->setProduct(new SalesChannelProductEntity());
+        $event->getPage()->getProduct()->setId(Uuid::randomHex());
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
@@ -135,14 +139,35 @@ class ExpressCheckoutSubscriberTest extends TestCase
         );
     }
 
+    public function testAddExpressCheckoutDataToPageProductPageWithExcludedProduct(): void
+    {
+        $productId = Uuid::randomHex();
+        $salesChannelContext = $this->createSalesChannelContext();
+        $event = new ProductPageLoadedEvent(
+            new ProductPage(),
+            $salesChannelContext,
+            new Request()
+        );
+        $event->getPage()->setProduct(new SalesChannelProductEntity());
+        $event->getPage()->getProduct()->setId($productId);
+
+        $this->getExpressCheckoutSubscriber(true, false, false, $productId)->addExpressCheckoutDataToPage($event);
+
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+
+        static::assertNull($actualExpressCheckoutButtonData);
+    }
+
     public function testAddExpressCheckoutDataToPageOffCanvasCartPageLoadedEvent(): void
     {
-        $salesChannelContext = $this->createSalesChannelContext(true);
+        $salesChannelContext = $this->createSalesChannelContext(Uuid::randomHex());
         $event = new OffcanvasCartPageLoadedEvent(
             new OffcanvasCartPage(),
             $salesChannelContext,
             new Request()
         );
+        $event->getPage()->setCart($this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext));
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
@@ -157,12 +182,13 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     public function testAddExpressCheckoutDataToPageCheckoutRegisterPageLoadedEvent(): void
     {
-        $salesChannelContext = $this->createSalesChannelContext(true);
+        $salesChannelContext = $this->createSalesChannelContext(Uuid::randomHex());
         $event = new CheckoutRegisterPageLoadedEvent(
             new CheckoutRegisterPage(),
             $salesChannelContext,
             new Request()
         );
+        $event->getPage()->setCart($this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext));
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
@@ -177,12 +203,13 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     public function testAddExpressCheckoutDataToPageCheckoutCartPageLoadedEvent(): void
     {
-        $salesChannelContext = $this->createSalesChannelContext(true);
+        $salesChannelContext = $this->createSalesChannelContext(Uuid::randomHex());
         $event = new CheckoutCartPageLoadedEvent(
             new CheckoutCartPage(),
             $salesChannelContext,
             new Request()
         );
+        $event->getPage()->setCart($this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext));
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
@@ -195,9 +222,28 @@ class ExpressCheckoutSubscriberTest extends TestCase
         );
     }
 
+    public function testAddExpressCheckoutDataToPageCheckoutCartPageWithExcludedProduct(): void
+    {
+        $excludedProductId = Uuid::randomHex();
+        $salesChannelContext = $this->createSalesChannelContext($excludedProductId);
+        $event = new CheckoutCartPageLoadedEvent(
+            new CheckoutCartPage(),
+            $salesChannelContext,
+            new Request()
+        );
+        $event->getPage()->setCart($this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext));
+
+        $this->getExpressCheckoutSubscriber(true, false, false, $excludedProductId)->addExpressCheckoutDataToPage($event);
+
+        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
+        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
+
+        static::assertNull($actualExpressCheckoutButtonData);
+    }
+
     public function testAddExpressCheckoutDataToPageCartPageWithZeroValue(): void
     {
-        $salesChannelContext = $this->createSalesChannelContext(true);
+        $salesChannelContext = $this->createSalesChannelContext(Uuid::randomHex());
         $event = new CheckoutCartPageLoadedEvent(new CheckoutCartPage(), $salesChannelContext, new Request());
 
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
@@ -230,7 +276,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     public function testAddExpressCheckoutDataToPageWithInactivePaymentMethod(): void
     {
-        $salesChannelContext = $this->createSalesChannelContext(true, false);
+        $salesChannelContext = $this->createSalesChannelContext(Uuid::randomHex(), false);
         $event = new CheckoutCartPageLoadedEvent(
             new CheckoutCartPage(),
             $salesChannelContext,
@@ -270,22 +316,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
         );
 
         $this->getExpressCheckoutSubscriber(true, true)->addExpressCheckoutDataToPage($event);
-
-        /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
-        $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
-        static::assertNull($actualExpressCheckoutButtonData);
-    }
-
-    public function testAddExpressCheckoutDataToPageWithUnknownEvent(): void
-    {
-        $salesChannelContext = $this->createSalesChannelContext();
-        $event = new AccountLoginPageLoadedEvent(
-            new AccountLoginPage(),
-            $salesChannelContext,
-            new Request()
-        );
-
-        $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPage($event);
 
         /** @var ExpressCheckoutButtonData|null $actualExpressCheckoutButtonData */
         $actualExpressCheckoutButtonData = $event->getPage()->getExtension(ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID);
@@ -490,13 +520,14 @@ class ExpressCheckoutSubscriberTest extends TestCase
         ]);
     }
 
-    private function getExpressCheckoutSubscriber(bool $withSettings = true, bool $disableEcsListing = false, bool $disableEcsDetail = false): ExpressCheckoutSubscriber
+    private function getExpressCheckoutSubscriber(bool $withSettings = true, bool $disableEcsListing = false, bool $disableEcsDetail = false, ?string $excludedProductId = null): ExpressCheckoutSubscriber
     {
         $settings = $this->createSystemConfigServiceMock($withSettings ? [
             Settings::CLIENT_ID => 'someClientId',
             Settings::CLIENT_SECRET => 'someClientSecret',
             Settings::ECS_LISTING_ENABLED => !$disableEcsListing,
             Settings::ECS_DETAIL_ENABLED => !$disableEcsDetail,
+            Settings::EXCLUDED_PRODUCT_IDS => \array_filter([$excludedProductId]),
         ] : []);
 
         /** @var RouterInterface $router */
@@ -515,22 +546,24 @@ class ExpressCheckoutSubscriberTest extends TestCase
             new SettingsValidationService($settings, new NullLogger()),
             $settings,
             $this->getContainer()->get(PaymentMethodUtil::class),
+            new ExcludedProductValidator(
+                $settings,
+                $this->createMock(SalesChannelRepositoryInterface::class)
+            ),
             new NullLogger()
         );
     }
 
-    private function createSalesChannelContext(bool $withItemList = false, bool $paymentMethodActive = true): SalesChannelContext
+    private function createSalesChannelContext(?string $productId = null, bool $paymentMethodActive = true): SalesChannelContext
     {
         $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
             Defaults::SALES_CHANNEL
         );
 
-        if ($withItemList) {
+        if ($productId) {
             /** @var EntityRepositoryInterface $productRepo */
             $productRepo = $this->getContainer()->get('product.repository');
-
-            $productId = Uuid::randomHex();
             $productRepo->create([
                 [
                     'id' => $productId,
@@ -604,7 +637,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     private function createBuyBoxSwitchEvent(bool $paymentMethodActive = true): SwitchBuyBoxVariantEvent
     {
-        $salesChannelContext = $this->createSalesChannelContext(true, $paymentMethodActive);
+        $salesChannelContext = $this->createSalesChannelContext(Uuid::randomHex(), $paymentMethodActive);
 
         /** @var SalesChannelRepositoryInterface $productRepo */
         $productRepo = $this->getContainer()->get('sales_channel.product.repository');
@@ -621,7 +654,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     private function createQuickviewPageletLoadedEvent(bool $paymentMethodActive = true): QuickviewPageletLoadedEvent
     {
-        $salesChannelContext = $this->createSalesChannelContext(true, $paymentMethodActive);
+        $salesChannelContext = $this->createSalesChannelContext(Uuid::randomHex(), $paymentMethodActive);
 
         /** @var SalesChannelRepositoryInterface $productRepo */
         $productRepo = $this->getContainer()->get('sales_channel.product.repository');
@@ -656,7 +689,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         bool $isExpressCheckout = true,
         bool $paymentMethodActive = true
     ): CheckoutConfirmPageLoadedEvent {
-        $salesChannelContext = $this->createSalesChannelContext(false, $paymentMethodActive);
+        $salesChannelContext = $this->createSalesChannelContext(null, $paymentMethodActive);
 
         $paymentMethodsFormSalesChannel = $salesChannelContext->getSalesChannel()->getPaymentMethods();
         static::assertNotNull($paymentMethodsFormSalesChannel);

@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Checkout;
+namespace Swag\PayPal\Test\Checkout\Cart;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
@@ -23,6 +23,10 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 class CartValidatorTest extends TestCase
 {
@@ -43,6 +47,12 @@ class CartValidatorTest extends TestCase
         $this->paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
         $this->salesChannelContextFactory = $this->getContainer()->get(SalesChannelContextFactory::class);
         $this->systemConfig = $this->getContainer()->get(SystemConfigService::class);
+
+        $request = new Request();
+        $request->setSession(new Session(new MockArraySessionStorage()));
+        /** @var RequestStack $requestStack */
+        $requestStack = $this->getContainer()->get('request_stack');
+        $requestStack->push($request);
 
         foreach ($this->getDefaultConfigData() as $key => $value) {
             $this->systemConfig->set($key, $value);
@@ -121,6 +131,18 @@ class CartValidatorTest extends TestCase
         $this->systemConfig->delete(Settings::CLIENT_ID);
         $this->systemConfig->delete(Settings::CLIENT_SECRET);
 
+        $this->validator->validate($cart, $errors, $context);
+
+        static::assertCount(1, $errors->getElements());
+    }
+
+    public function testValidateWithExcludedProduct(): void
+    {
+        $cart = Generator::createCart();
+        $context = $this->getSalesChannelContext();
+        $errors = new ErrorCollection();
+
+        $this->systemConfig->set(Settings::EXCLUDED_PRODUCT_IDS, ['A']);
         $this->validator->validate($cart, $errors, $context);
 
         static::assertCount(1, $errors->getElements());
