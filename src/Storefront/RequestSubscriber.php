@@ -11,14 +11,12 @@ use Psr\Log\LoggerInterface;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
-use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class RequestSubscriber implements EventSubscriberInterface
 {
     public const PAYMENT_PARAMETERS = [
-        PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID,
         AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME,
         PUIHandler::PUI_FRAUD_NET_SESSION_ID,
         PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY,

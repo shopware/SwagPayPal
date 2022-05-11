@@ -12,7 +12,6 @@ use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
-use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -57,10 +56,6 @@ class SPBCheckoutSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $storeApiRequest->request->set(
-            PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID,
-            $storefrontRequest->request->get(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID)
-        );
         $storeApiRequest->request->set(
             AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME,
             $storefrontRequest->request->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)
