@@ -3,6 +3,7 @@
 - PPI-634 - Behebt ein Problem mit der Versandkostensteuerberechnung für Netto-Kundengruppen
 - PPI-635 - Behebt ein Problem, bei dem leere Zahlungsdetails zu Rechnungskäufen in Rechnungen angezeigt wurden
 - PPI-648 - Verbessert den Zahlvorgang mit Smart Payment Buttons, wenn das JS nicht schnell genug lädt
+- PPI-649 - Behebt ein Problem, bei dem teilrückerstattete PayPal Plus-Zahlungen in Shopware wg. Webhooks als zurückerstattet angezeigt wurden
 
 # 5.0.4
 - PPI-642 - Behebt ein Problem, bei dem der Zahlungsstatus von Kreditkartenzahlungen manchmal nicht korrekt gesetzt wurde
