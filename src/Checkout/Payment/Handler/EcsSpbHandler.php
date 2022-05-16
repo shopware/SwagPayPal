@@ -26,6 +26,7 @@ use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V2\Api\Patch;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -171,6 +172,9 @@ class EcsSpbHandler extends AbstractPaymentHandler
         return $currency;
     }
 
+    /**
+     * @param Patch[] $patches
+     */
     private function patchPaypalOrder(
         array $patches,
         string $paypalOrderId,

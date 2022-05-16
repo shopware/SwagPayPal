@@ -85,6 +85,9 @@
                 <referencedMethod name="Swag\PayPal\OrdersApi\Builder\AbstractOrderBuilder::__construct"/>
                 <referencedMethod name="Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler::handlePlusPayment"/>
                 <referencedMethod name="Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData::getClientToken"/>
+
+                <!-- <deprecated> tag:v6.0.0 - remove with minVersion Shopware 6.5 -->
+                <referencedMethod name="Shopware\Core\Framework\Struct\ExtendableTrait::addExtension"/>
             </errorLevel>
         </DeprecatedMethod>
 

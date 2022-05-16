@@ -30,6 +30,8 @@ final class Token extends PosStruct
     protected \DateTime $expireDateTime;
 
     /**
+     * @param array<string, mixed> $arrayData
+     *
      * @return static
      */
     public function assign(array $arrayData)

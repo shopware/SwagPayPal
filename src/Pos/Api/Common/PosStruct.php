@@ -14,6 +14,8 @@ abstract class PosStruct implements \JsonSerializable
     }
 
     /**
+     * @param array<string, mixed> $arrayData
+     *
      * @return static
      */
     public function assign(array $arrayData)
@@ -79,6 +81,9 @@ abstract class PosStruct implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         $data = [];

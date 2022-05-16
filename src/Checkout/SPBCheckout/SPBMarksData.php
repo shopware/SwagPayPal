@@ -70,6 +70,9 @@ class SPBMarksData extends Struct
         return $this->disabledAlternativePaymentMethods;
     }
 
+    /**
+     * @param string[] $disabledAlternativePaymentMethods
+     */
     public function setDisabledAlternativePaymentMethods(array $disabledAlternativePaymentMethods): void
     {
         $this->disabledAlternativePaymentMethods = $disabledAlternativePaymentMethods;

@@ -1,5 +1,6 @@
 includes:
     - %ShopwareRoot%/vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - phpstan-baseline.neon
 
 parameters:
     level: 8
@@ -7,6 +8,9 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: false
     reportUnmatchedIgnoredErrors: false
+
+    excludePaths:
+        -   tests/Mock/Cache*Mock.php
 
     symfony:
         constant_hassers: false

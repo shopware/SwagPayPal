@@ -148,6 +148,9 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         return $response;
     }
 
+    /**
+     * @param string[] $ids
+     */
     private function removePaymentMethods(PaymentMethodCollection $paymentMethods, array $ids): void
     {
         foreach ($paymentMethods as $paymentMethod) {
