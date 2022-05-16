@@ -17,7 +17,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
  */
 class Item extends PayPalApiStruct
 {
-    public const MAX_LENGTH_NAME = 127;
+    public const MAX_LENGTH_NAME = 120;
     public const MAX_LENGTH_SKU = 127;
 
     public const CATEGORY_PHYSICAL_GOODS = 'PHYSICAL_GOODS';

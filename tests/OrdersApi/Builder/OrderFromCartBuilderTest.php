@@ -142,7 +142,7 @@ class OrderFromCartBuilderTest extends TestCase
         $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
         static::assertNotNull($paypalOrderItems);
         static::assertNotEmpty($paypalOrderItems);
-        $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliqu';
+        $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magn';
         static::assertSame($expectedItemName, $paypalOrderItems[0]->getName());
     }
 

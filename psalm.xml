@@ -42,6 +42,14 @@
             </errorLevel>
         </MoreSpecificImplementedParamType>
 
+        <InternalClass>
+            <errorLevel type="info">
+                <!-- only used in tests -->
+                <referencedClass name="Shopware\Core\Checkout\Test\Cart\Common\Generator"/>
+                <referencedClass name="Shopware\Core\Framework\Test\IdsCollection"/>
+            </errorLevel>
+        </InternalClass>
+
         <InternalMethod>
             <errorLevel type="info">
                 <file name="src/Pos/Command/*Command.php"/>
@@ -50,6 +58,14 @@
                 <!-- is only used on webhook registration, no caching issues -->
                 <referencedMethod name="Shopware\Core\System\SystemConfig\SystemConfigService::getDomain"/>
                 <directory name="tests"/>
+
+                <!-- internal rule names - replace after NEXT-21510 -->
+                <referencedMethod name="Shopware\Core\Checkout\Customer\Rule\BillingCountryRule::__construct"/>
+                <referencedMethod name="Shopware\Core\Checkout\Cart\Rule\CartAmountRule::__construct"/>
+                <referencedMethod name="Shopware\Core\System\Currency\Rule\CurrencyRule::__construct"/>
+
+                <!-- ToDo PPI-646 -->
+                <referencedMethod name="Shopware\Core\System\SystemConfig\Api\SystemConfigController::__construct"/>
             </errorLevel>
         </InternalMethod>
 
@@ -110,6 +126,25 @@
                 <file name="tests/Checkout/Plus/PlusSubscriberTest.php"/>
                 <file name="tests/Checkout/Plus/PlusPaymentFinalizeControllerTest.php"/>
                 <file name="tests/Checkout/SPBCheckout/SPBMarksSubscriberTest.php"/>
+
+                <!-- <deprecated> tag:v6.0.0 - remove with minVersion Shopware 6.5 -->
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\Filter"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Aggregation"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Bucket\TermsAggregation"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\SumAggregation"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResult"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\Bucket"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\TermsResult"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult"/>
             </errorLevel>
         </DeprecatedClass>
 
