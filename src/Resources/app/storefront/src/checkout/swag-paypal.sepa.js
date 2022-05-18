@@ -141,6 +141,8 @@ export default class SwagPaypalSepa extends SwagPaypalAbstractButtons {
             return;
         }
 
+        DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
+
         this._client = new StoreApiClient();
 
         this.createScript((paypal) => {
@@ -149,8 +151,6 @@ export default class SwagPaypalSepa extends SwagPaypalAbstractButtons {
     }
 
     render(paypal) {
-        DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
-
         const button = paypal.Buttons(this.getButtonConfig(paypal.FUNDING.SEPA));
 
         if (!button.isEligible()) {

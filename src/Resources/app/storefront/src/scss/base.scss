@@ -8,8 +8,13 @@
         position: absolute;
         height: 40px;
         top: 0;
-        left: $form-grid-gutter-width / 2;
-        right: $form-grid-gutter-width / 2;
+        @if variable-exists(form-grid-gutter-width) {
+            left: $form-grid-gutter-width / 2;
+            right: $form-grid-gutter-width / 2;
+        } @else {
+            left: 5px;
+            right: 5px;
+        }
         background: rgba(0, 0, 0, .5);
         border-radius: 3px;
     }

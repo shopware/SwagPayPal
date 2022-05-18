@@ -12,7 +12,6 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
-use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber;
 use Swag\PayPal\Test\Helper\CartTrait;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
@@ -43,10 +42,8 @@ class SPBCheckoutSubscriberTest extends TestCase
     {
         $subscriber = new SPBCheckoutSubscriber(new NullLogger());
 
-        $testButtonId = 'testButtonId';
         $testOrderId = 'testOrderId';
         $storefrontRequest = new Request([], [
-            PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID => $testButtonId,
             AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $testOrderId,
         ], [
             '_route' => 'frontend.account.edit-order.update-order',
@@ -57,10 +54,8 @@ class SPBCheckoutSubscriberTest extends TestCase
         $subscriber->addNecessaryRequestParameter($event);
 
         $requestParameters = $storeApiRequest->request;
-        static::assertCount(2, $requestParameters);
-        static::assertTrue($requestParameters->has(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID));
+        static::assertCount(1, $requestParameters);
         static::assertTrue($requestParameters->has(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME));
-        static::assertSame($testButtonId, $requestParameters->get(PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID));
         static::assertSame($testOrderId, $requestParameters->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME));
     }
 

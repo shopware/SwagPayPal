@@ -119,11 +119,17 @@ class Payload extends PosStruct
         $this->renewed = $renewed;
     }
 
+    /**
+     * @return string[]
+     */
     public function getScope(): array
     {
         return $this->scope;
     }
 
+    /**
+     * @param string[] $scope
+     */
     public function setScope(array $scope): void
     {
         $this->scope = $scope;

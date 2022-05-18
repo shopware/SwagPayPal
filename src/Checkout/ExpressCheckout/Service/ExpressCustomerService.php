@@ -157,6 +157,9 @@ class ExpressCustomerService
         ]);
     }
 
+    /**
+     * @return array<string, string|null>
+     */
     private function getAddressData(Order $order, Context $context, ?string $salutationId = null): array
     {
         $payer = $order->getPayer();
@@ -300,6 +303,9 @@ class ExpressCustomerService
         $this->customerRepository->update([$customerData], $salesChannelContext->getContext());
     }
 
+    /**
+     * @param array<string, string|null> $addressData
+     */
     private function isIdenticalAddress(CustomerAddressEntity $address, array $addressData): bool
     {
         foreach (self::ADDRESS_KEYS as $key) {

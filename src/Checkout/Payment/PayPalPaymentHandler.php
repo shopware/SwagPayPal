@@ -25,6 +25,7 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 use Swag\PayPal\Checkout\Payment\Handler\EcsSpbHandler;
 use Swag\PayPal\Checkout\Payment\Handler\PayPalHandler;
 use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
+use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Common\Link;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
@@ -40,6 +41,10 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     public const PAYPAL_REQUEST_PARAMETER_TOKEN = 'token';
     public const PAYPAL_EXPRESS_CHECKOUT_ID = 'isPayPalExpressCheckout';
     public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
+
+    /**
+     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     */
     public const PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
 
     /**
@@ -120,7 +125,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             }
         }
 
-        if ($dataBag->get(self::PAYPAL_SMART_PAYMENT_BUTTONS_ID)) {
+        if ($dataBag->getAlnum(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
             return $this->ecsSpbHandler->handleSpbPayment($transaction, $dataBag, $salesChannelContext);
         }
 

@@ -242,6 +242,8 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
             return;
         }
 
+        DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
+
         this._client = new StoreApiClient();
 
         this.createScript((paypal) => {
@@ -257,8 +259,6 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
 
             paypal.HostedFields.render(this.getFieldConfig()).then(this.bindFieldActions.bind(this));
         } else {
-            DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
-
             const button = paypal.Buttons(this.getButtonConfig(paypal.FUNDING.CARD));
 
             if (!button.isEligible()) {
@@ -352,6 +352,7 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
             field.addEventListener('invalid', this.onFormFieldInvalid.bind(this, cardFields));
         });
 
+        DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.remove('d-none');
         this.confirmOrderForm.addEventListener('submit', this.onFieldSubmit.bind(this, cardFields));
     }
 

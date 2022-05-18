@@ -317,7 +317,6 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
         $paypalOrderId = GetOrderCapture::ID;
         $dataBag = new RequestDataBag([
-            PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID => true,
             AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME => $paypalOrderId,
         ]);
 

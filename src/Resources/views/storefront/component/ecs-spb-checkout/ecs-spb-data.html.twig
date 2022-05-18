@@ -26,8 +26,8 @@
             </div>
         {% endblock %}
 
+        {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
         {% block swag_paypal_ecs_spb_data_input %}
-            <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_SMART_PAYMENT_BUTTONS_ID') }}" value="1">
         {% endblock %}
 
     {% elseif acdcFieldData and acdcFieldData.paymentMethodId is same as(context.paymentMethod.id) %}

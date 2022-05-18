@@ -43,6 +43,9 @@ class CancelTransactionsTaskHandler extends ScheduledTaskHandler
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
     }
 
+    /**
+     * @return class-string[]
+     */
     public static function getHandledMessages(): iterable
     {
         return [CancelTransactionsTask::class];
