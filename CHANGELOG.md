@@ -2,6 +2,7 @@
 - PPI-611 - Added possibility to exclude products and dynamic product groups from PayPal & Express Checkout
 - PPI-634 - Fix issue with shipping tax calculation for net customer groups
 - PPI-635 - Fix issue with incorrent Pay Upon Invoice data display in invoices
+- PPI-639 - The Sales Channel selection in the PayPal settings can now display more than 25 Sales Channels
 - PPI-648 - Improved handling of Smart Payment Buttons, when the JS is not loaded fast enough
 - PPI-649 - Fix issue where a partially refunded PayPal Plus payment was set to refunded in Shopware via Webhooks
 

@@ -41,7 +41,7 @@ Component.register('swag-paypal-pos-wizard-product-selection', {
         },
 
         salesChannelCriteria() {
-            const criteria = new Criteria();
+            const criteria = new Criteria(1, 500);
             criteria.addFilter(Criteria.not('and', [
                 Criteria.equals('id', this.salesChannel.id),
             ]));

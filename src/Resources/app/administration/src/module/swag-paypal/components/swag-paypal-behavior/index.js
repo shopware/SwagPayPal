@@ -111,7 +111,7 @@ Component.register('swag-paypal-behavior', {
         },
 
         excludedProductCriteria() {
-            const criteria = new Criteria();
+            const criteria = new Criteria(1, 25);
             criteria.addAssociation('options.group');
 
             return criteria;

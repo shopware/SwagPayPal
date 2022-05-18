@@ -2,6 +2,7 @@
 - PPI-611 - Möglichkeit hinzugefügt, Produkte & dynamischen Produktgruppen von PayPal- und Express Checkout-Käufen auszuschließen
 - PPI-634 - Behebt ein Problem mit der Versandkostensteuerberechnung für Netto-Kundengruppen
 - PPI-635 - Behebt ein Problem, bei dem leere Zahlungsdetails zu Rechnungskäufen in Rechnungen angezeigt wurden
+- PPI-639 - Die Sales Channel Auswahl in den PayPal-Einstellungen kann nun mehr als 25 Sales Channel anzeigen
 - PPI-648 - Verbessert den Zahlvorgang mit Smart Payment Buttons, wenn das JS nicht schnell genug lädt
 - PPI-649 - Behebt ein Problem, bei dem teilrückerstattete PayPal Plus-Zahlungen in Shopware wg. Webhooks als zurückerstattet angezeigt wurden
 
