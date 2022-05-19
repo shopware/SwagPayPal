@@ -84,7 +84,7 @@ Component.extend('swag-paypal-pos-wizard', 'sw-first-run-wizard-modal', {
         },
 
         salesChannelCriteria() {
-            return (new Criteria())
+            return (new Criteria(1, 500))
                 .addAssociation(PAYPAL_POS_SALES_CHANNEL_EXTENSION)
                 .addAssociation('countries')
                 .addAssociation('currencies')

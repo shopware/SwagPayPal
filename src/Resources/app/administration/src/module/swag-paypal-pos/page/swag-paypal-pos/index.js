@@ -57,7 +57,7 @@ Component.register('swag-paypal-pos', {
         },
 
         salesChannelCriteria() {
-            const criteria = new Criteria();
+            const criteria = new Criteria(1, 500);
 
             criteria.addAssociation(PAYPAL_POS_SALES_CHANNEL_EXTENSION);
             criteria.addAssociation('countries');

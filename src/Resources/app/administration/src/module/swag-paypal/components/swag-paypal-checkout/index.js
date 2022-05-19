@@ -112,7 +112,7 @@ Component.register('swag-paypal-checkout', {
         },
 
         paymentMethodCriteria() {
-            const criteria = new Criteria();
+            const criteria = new Criteria(1, 500);
 
             criteria.addFilter(Criteria.equals('plugin.name', 'SwagPayPal'));
             criteria.addSorting(Criteria.sort('position', 'ASC'), true);

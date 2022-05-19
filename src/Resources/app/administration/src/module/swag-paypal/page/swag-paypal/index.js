@@ -117,6 +117,16 @@ Component.register('swag-paypal', {
             return (!this.sandboxChecked && !(this.clientIdFilled && this.clientSecretFilled)) ||
                 (this.sandboxChecked && !(this.clientIdSandboxFilled && this.clientSecretSandboxFilled));
         },
+
+        salesChannelCriteria() {
+            const criteria = new Criteria(1, 500);
+            criteria.addFilter(Criteria.equalsAny('typeId', [
+                Defaults.storefrontSalesChannelTypeId,
+                Defaults.apiSalesChannelTypeId,
+            ]));
+
+            return criteria;
+        },
     },
 
     watch: {
@@ -156,13 +166,7 @@ Component.register('swag-paypal', {
         createdComponent() {
             this.isLoading = true;
 
-            const criteria = new Criteria();
-            criteria.addFilter(Criteria.equalsAny('typeId', [
-                Defaults.storefrontSalesChannelTypeId,
-                Defaults.apiSalesChannelTypeId,
-            ]));
-
-            this.salesChannelRepository.search(criteria, Shopware.Context.api).then(res => {
+            this.salesChannelRepository.search(this.salesChannelCriteria, Shopware.Context.api).then(res => {
                 res.add({
                     id: null,
                     translated: {

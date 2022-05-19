@@ -15,6 +15,7 @@ final class PaymentStatusV1
     public const PAYMENT_CAPTURED = 'captured';
     public const PAYMENT_PENDING = 'pending';
     public const PAYMENT_PARTIALLY_REFUNDED = 'partially_refunded';
+    public const PAYMENT_REFUNDED = 'refunded';
     public const PAYMENT_DENIED = 'denied';
 
     private function __construct()
