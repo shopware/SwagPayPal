@@ -72,11 +72,21 @@ class APMHandlerTest extends TestCase
         $transactionId = $this->getTransactionFromOrder($order)->getId();
         $this->processPayment($order->getId(), new RequestDataBag(), $context, $paymentHandler);
 
-        $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $context->getContext());
+        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed') && \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED')) {
+            /** @phpstan-ignore-next-line */
+            $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $context->getContext());
+        } else {
+            $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $context->getContext());
+        }
         $this->assertCustomFields($transactionId, CreateOrderAPM::ID, PartnerAttributionId::PAYPAL_PPCP);
 
         $this->finalizePayment($transactionId, new Request(), $context, $paymentHandler);
-        $this->assertOrderTransactionState($orderBuilder->isCompleteOnApproval() ? OrderTransactionStates::STATE_UNCONFIRMED : OrderTransactionStates::STATE_PAID, $transactionId, $context->getContext());
+        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed') && \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED')) {
+            /** @phpstan-ignore-next-line */
+            $this->assertOrderTransactionState($orderBuilder->isCompleteOnApproval() ? OrderTransactionStates::STATE_UNCONFIRMED : OrderTransactionStates::STATE_PAID, $transactionId, $context->getContext());
+        } else {
+            $this->assertOrderTransactionState($orderBuilder->isCompleteOnApproval() ? OrderTransactionStates::STATE_IN_PROGRESS : OrderTransactionStates::STATE_PAID, $transactionId, $context->getContext());
+        }
     }
 
     /**

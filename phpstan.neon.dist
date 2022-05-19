@@ -24,6 +24,9 @@ parameters:
         -
             message: '#Service ".*" is private#'
             path: tests/**/*.php
+        -   # Remove with min-Version 6.4.4.0
+            message: '#Caught class .* not found#'
+            path: src/Checkout/PUI/SalesChannel/PUIPaymentInstructionsRoute.php
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

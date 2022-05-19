@@ -82,7 +82,11 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
             throw new AsyncPaymentProcessException($transactionId, $exception->getMessage());
         }
 
-        $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
+        if (\method_exists($this->orderTransactionStateHandler, 'processUnconfirmed')) {
+            $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
+        } else {
+            $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
+        }
 
         $this->logger->debug('Building order');
 

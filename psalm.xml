@@ -177,6 +177,13 @@
             </errorLevel>
         </UndefinedConstant>
 
+        <UndefinedClass>
+            <errorLevel type="info">
+                <!-- only inside a catch block, does not hurt exception. Remove with min-Version 6.4.3.0 -->
+                <referencedClass name="Shopware\Core\System\StateMachine\Exception\UnnecessaryTransitionException"/>
+            </errorLevel>
+        </UndefinedClass>
+
         <UnsafeInstantiation>
             <errorLevel type="info">
                 <file name="tests/Pos/Mock/Repositories/RepoTrait.php"/>
