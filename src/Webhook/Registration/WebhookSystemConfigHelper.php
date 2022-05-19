@@ -65,6 +65,11 @@ class WebhookSystemConfigHelper
             }
 
             $oldActualSettings = $this->fetchSettings($salesChannelId, true);
+            if ($this->settingsValidationService->checkForMissingSetting($oldActualSettings) !== null) {
+                // this sales channel has no valid setting
+                continue;
+            }
+
             if (!$this->configHasChangedSettings($newSettings, $oldActualSettings)) {
                 // No writing of new credentials in this Sales Channel
                 continue;

@@ -233,6 +233,15 @@ class WebhookSystemConfigControllerTest extends TestCase
         static::assertEqualsCanonicalizing(['null'], $this->webhookService->getRegistrations());
     }
 
+    public function testSandboxToggleWithoutSettings(): void
+    {
+        $this->createWebhookSystemConfigController()->saveConfiguration($this->createSingleRequest(['sandbox' => true], Defaults::SALES_CHANNEL));
+        $this->createWebhookSystemConfigController()->saveConfiguration($this->createSingleRequest(['sandbox' => false], Defaults::SALES_CHANNEL));
+
+        static::assertEmpty($this->webhookService->getDeregistrations());
+        static::assertEmpty($this->webhookService->getRegistrations());
+    }
+
     private function createWebhookSystemConfigController(): WebhookSystemConfigController
     {
         return new WebhookSystemConfigController(
