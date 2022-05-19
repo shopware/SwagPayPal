@@ -103,6 +103,7 @@ Component.register('swag-paypal-checkout', {
             merchantIntegrations: {},
             plusDeprecationModalOpen: false,
             showHintMerchantIdMustBeEnteredManually: false,
+            isLoadingPaymentMethods: false,
         };
     },
 
@@ -180,8 +181,10 @@ Component.register('swag-paypal-checkout', {
         },
 
         async getPaymentMethodsAndMerchantIntegrations() {
+            this.isLoadingPaymentMethods = true;
             await this.fetchMerchantIntegrations();
             await this.getPaymentMethods();
+            this.isLoadingPaymentMethods = false;
         },
 
         async getPaymentMethods() {
@@ -195,7 +198,7 @@ Component.register('swag-paypal-checkout', {
 
         async fetchMerchantIntegrations() {
             this.merchantIntegrations = await this.SwagPayPalApiCredentialsService
-                .getMerchantIntegrations()
+                .getMerchantIntegrations(this.selectedSalesChannelId)
                 .then((response) => {
                     return response;
                 });

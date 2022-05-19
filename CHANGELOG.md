@@ -1,5 +1,6 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-611 - Added possibility to exclude products and dynamic product groups from PayPal & Express Checkout
+- PPI-617 - Fix issue where payment method authorizations were not correctly shown for Sales Channel specific settings
 - PPI-634 - Fix issue with shipping tax calculation for net customer groups
 - PPI-635 - Fix issue with incorrent Pay Upon Invoice data display in invoices
 - PPI-639 - The Sales Channel selection in the PayPal settings can now display more than 25 Sales Channels

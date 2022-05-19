@@ -2,6 +2,7 @@
 <sw-card
     class="sw-card--grid"
     position-identifier="swag-paypal-checkout"
+    :is-loading="isLoading || isLoadingPaymentMethods"
     :title="$tc('swag-paypal.settingForm.checkout.cardTitle')"
 >
     {% block swag_paypal_content_card_channel_config_checkout_container %}
