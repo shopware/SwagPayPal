@@ -190,27 +190,27 @@
             "express": {
                 "cardTitle": "PayPal Express Checkout",
                 "ecsDetailEnabled": {
-                    "label": "'Pay now' on detail page:",
+                    "label": "'Pay now' on detail page",
                     "helpText": "If this option is active, the Express Checkout button will be shown on each product detail page."
                 },
                 "ecsCartEnabled": {
-                    "label": "'Pay now' on cart:",
+                    "label": "'Pay now' on cart",
                     "helpText": "If this option is active, the Express Checkout button will be shown on the cart."
                 },
                 "ecsOffCanvasEnabled": {
-                    "label": "'Pay Now' on Off-Canvas cart:",
+                    "label": "'Pay Now' on Off-Canvas cart",
                     "helpText": "If this option is active, the Express Checkout button will be shown on the Off-Canvas cart."
                 },
                 "ecsLoginEnabled": {
-                    "label": "'Pay Now' on login page:",
+                    "label": "'Pay Now' on login page",
                     "helpText": "If this option is active, the Express Checkout button will be shown on the login and register page."
                 },
                 "ecsListingEnabled": {
-                    "label": "'Pay now' on listing pages:",
+                    "label": "'Pay now' on listing pages",
                     "helpText": "If this option is active, the Express Checkout button will be shown on listing pages."
                 },
                 "ecsButtonColor": {
-                    "label": "Button color:",
+                    "label": "Button color",
                     "options": {
                         "blue": "Blue",
                         "black": "Black",
@@ -220,7 +220,7 @@
                     }
                 },
                 "ecsButtonShape": {
-                    "label": "Button shape:",
+                    "label": "Button shape",
                     "options": {
                         "pill": "Round",
                         "rect": "Rectangular"
@@ -231,7 +231,7 @@
                     "helpText": "If this option is active, the cart will be submitted to PayPal for Express orders."
                 },
                 "ecsButtonLanguageIso": {
-                    "label": "Button locale:",
+                    "label": "Button locale",
                     "helpText": "If not set, the sales channel language will be used."
                 }
             },
@@ -254,7 +254,7 @@
                     "label": "Enable Smart Payment Buttons"
                 },
                 "spbButtonLanguageIso": {
-                    "label": "Button locale:",
+                    "label": "Button locale",
                     "helpText": "If not set, the sales channel language will be used."
                 },
                 "spbAlternativePaymentMethodsEnabled": {

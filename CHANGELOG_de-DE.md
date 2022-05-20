@@ -1,5 +1,7 @@
 # REPLACE_GLOBALLY_WITH_NEXT_VERSION
 - PPI-611 - Möglichkeit hinzugefügt, Produkte & dynamischen Produktgruppen von PayPal- und Express Checkout-Käufen auszuschließen
+- PPI-617 - Behebt ein Problem, bei dem die Freigaben für Zahlungsarten nicht korrekt bei Sales-Channel-spezifischen Einstellungen dargestellt wurden
+- PPI-620 - Behebt ein Problem, bei dem fälschlicherweise eine Webhookfehlermeldung bei fehlenden Zugangsdaten angezeigt wurde
 - PPI-634 - Behebt ein Problem mit der Versandkostensteuerberechnung für Netto-Kundengruppen
 - PPI-635 - Behebt ein Problem, bei dem leere Zahlungsdetails zu Rechnungskäufen in Rechnungen angezeigt wurden
 - PPI-639 - Die Sales Channel Auswahl in den PayPal-Einstellungen kann nun mehr als 25 Sales Channel anzeigen

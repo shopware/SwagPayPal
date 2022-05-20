@@ -190,27 +190,27 @@
             "express": {
                 "cardTitle": "PayPal Express Checkout",
                 "ecsDetailEnabled": {
-                    "label": "'Direkt zu PayPal' auf Detailseite:",
+                    "label": "'Direkt zu PayPal' auf Detailseite",
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf jeder Produktdetailseite angezeigt."
                 },
                 "ecsCartEnabled": {
-                    "label": "'Direkt zu PayPal' im Warenkorb:",
+                    "label": "'Direkt zu PayPal' im Warenkorb",
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Warenkorbseite angezeigt."
                 },
                 "ecsOffCanvasEnabled": {
-                    "label": "'Direkt zu PayPal' im Off-Canvas Warenkorb:",
+                    "label": "'Direkt zu PayPal' im Off-Canvas Warenkorb",
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button in dem Off-Canvas-Warenkorb angezeigt."
                 },
                 "ecsLoginEnabled": {
-                    "label": "'Direkt zu PayPal' auf Loginseite:",
+                    "label": "'Direkt zu PayPal' auf Loginseite",
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Login- und Registrierungsseite angezeigt."
                 },
                 "ecsListingEnabled": {
-                    "label": "'Direkt zu PayPal' auf Listing Seiten:",
+                    "label": "'Direkt zu PayPal' auf Listing Seiten",
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf Listing-Seiten angezeigt."
                 },
                 "ecsButtonColor": {
-                    "label": "Buttonfarbe:",
+                    "label": "Buttonfarbe",
                     "options": {
                         "blue": "Blau",
                         "black": "Schwarz",
@@ -220,18 +220,18 @@
                     }
                 },
                 "ecsButtonShape": {
-                    "label": "Buttonform:",
+                    "label": "Buttonform",
                     "options": {
                         "pill": "Rund",
                         "rect": "Eckig"
                     }
                 },
                 "ecsSubmitCart": {
-                    "label": "Warenkorb übertragen:",
+                    "label": "Warenkorb übertragen",
                     "helpText": "Wenn diese Option aktiv ist, wird der Warenkorb bei Express-Bestellungen an PayPal übertragen."
                 },
                 "ecsButtonLanguageIso": {
-                    "label": "Buttonsprache:",
+                    "label": "Buttonsprache",
                     "helpText": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet."
                 }
             },
@@ -254,7 +254,7 @@
                     "label": "Smart Payment Buttons aktivieren"
                 },
                 "spbButtonLanguageIso": {
-                    "label": "Buttonsprache:",
+                    "label": "Buttonsprache",
                     "helpText": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet."
                 },
                 "spbAlternativePaymentMethodsEnabled": {

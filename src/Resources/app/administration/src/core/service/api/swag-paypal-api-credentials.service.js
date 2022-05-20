@@ -34,14 +34,17 @@ class SwagPayPalApiCredentialsService extends ApiService {
             });
     }
 
-    getMerchantIntegrations() {
+    /**
+     * @param {string=} salesChannelId
+     */
+    getMerchantIntegrations(salesChannelId = null) {
         const headers = this.getBasicHeaders();
 
         return this.httpClient
             .get(
                 `_action/${this.getApiBasePath()}/get-merchant-integrations`,
                 {
-                    params: { },
+                    params: { salesChannelId },
                     headers: headers,
                 },
             )
