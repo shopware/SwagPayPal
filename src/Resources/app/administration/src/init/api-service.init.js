@@ -1,17 +1,10 @@
-import SwagPayPalApiCredentialsService
-    from '../core/service/api/swag-paypal-api-credentials.service';
-import SwagPayPalPosSettingApiService
-    from '../core/service/api/swag-paypal-pos-setting.api.service';
-import SwagPayPalPosApiService
-    from '../core/service/api/swag-paypal-pos.api.service';
-import SwagPayPalPosWebhookRegisterService
-    from '../core/service/api/swag-paypal-pos-webhook-register.service';
-import SwagPayPalPaymentService
-    from '../core/service/api/swag-paypal-payment.service';
-import SwagPayPalOrderService
-    from '../core/service/api/swag-paypal-order.service';
-import SwagPaypalPaymentMethodService
-    from '../core/service/api/swag-paypal-payment-method.service';
+import SwagPayPalApiCredentialsService from '../core/service/api/swag-paypal-api-credentials.service';
+import SwagPayPalPosSettingApiService from '../core/service/api/swag-paypal-pos-setting.api.service';
+import SwagPayPalPosApiService from '../core/service/api/swag-paypal-pos.api.service';
+import SwagPayPalPosWebhookRegisterService from '../core/service/api/swag-paypal-pos-webhook-register.service';
+import SwagPayPalPaymentService from '../core/service/api/swag-paypal-payment.service';
+import SwagPayPalOrderService from '../core/service/api/swag-paypal-order.service';
+import SwagPaypalPaymentMethodService from '../core/service/api/swag-paypal-payment-method.service';
 import SwagPayPalDisputeApiService from '../core/service/api/swag-paypal-dispute.api.service';
 
 const { Application } = Shopware;

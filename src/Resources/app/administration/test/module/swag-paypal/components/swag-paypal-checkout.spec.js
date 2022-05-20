@@ -1,9 +1,11 @@
 // eslint-disable-next-line import/no-unresolved
 import { shallowMount } from '@vue/test-utils';
+/* eslint-disable import/no-extraneous-dependencies */
 import 'src/app/component/base/sw-card';
 import 'src/app/component/base/sw-container';
 import 'src/app/component/base/sw-icon';
 import 'src/app/component/base/sw-alert';
+/* eslint-enable import/no-extraneous-dependencies */
 import '../../../../src/module/swag-paypal/components/swag-paypal-checkout';
 
 const onboardingCallbackLive = 'onboardingCallbackLive';
