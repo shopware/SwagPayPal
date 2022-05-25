@@ -1,4 +1,4 @@
-# REPLACE_GLOBALLY_WITH_NEXT_VERSION
+# 5.1.0
 - PPI-611 - Möglichkeit hinzugefügt, Produkte & dynamischen Produktgruppen von PayPal- und Express Checkout-Käufen auszuschließen
 - PPI-617 - Behebt ein Problem, bei dem die Freigaben für Zahlungsarten nicht korrekt bei Sales-Channel-spezifischen Einstellungen dargestellt wurden
 - PPI-620 - Behebt ein Problem, bei dem fälschlicherweise eine Webhookfehlermeldung bei fehlenden Zugangsdaten angezeigt wurde
@@ -7,6 +7,7 @@
 - PPI-639 - Die Sales Channel Auswahl in den PayPal-Einstellungen kann nun mehr als 25 Sales Channel anzeigen
 - PPI-648 - Verbessert den Zahlvorgang mit Smart Payment Buttons, wenn das JS nicht schnell genug lädt
 - PPI-649 - Behebt ein Problem, bei dem teilrückerstattete PayPal Plus-Zahlungen in Shopware wg. Webhooks als zurückerstattet angezeigt wurden
+- PPI-650 - Kompatibilität auf Shopware 6.4.3.0 erweitert
 
 # 5.0.4
 - PPI-642 - Behebt ein Problem, bei dem der Zahlungsstatus von Kreditkartenzahlungen manchmal nicht korrekt gesetzt wurde

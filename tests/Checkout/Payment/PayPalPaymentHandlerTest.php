@@ -134,7 +134,8 @@ class PayPalPaymentHandlerTest extends TestCase
             $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID]
         );
 
-        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed')) {
+        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed') && \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED')) {
+            /** @phpstan-ignore-next-line */
             $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
         } else {
             $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
@@ -189,7 +190,8 @@ class PayPalPaymentHandlerTest extends TestCase
             }
         }
 
-        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed')) {
+        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed') && \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED')) {
+            /** @phpstan-ignore-next-line */
             $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
         } else {
             $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
@@ -273,7 +275,8 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         static::assertSame(self::TEST_SHIPPING, $patchValue['amount']['breakdown']['shipping']['value']);
         static::assertSame(1, $patchValue['items'][0]['quantity']);
 
-        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed')) {
+        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed') && \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED')) {
+            /** @phpstan-ignore-next-line */
             $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
         } else {
             $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());

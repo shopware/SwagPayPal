@@ -76,7 +76,8 @@ class PayPalPuiPaymentHandlerTest extends TestCase
 
         $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
 
-        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed')) {
+        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed') && \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED')) {
+            /** @phpstan-ignore-next-line */
             $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
         } else {
             $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());

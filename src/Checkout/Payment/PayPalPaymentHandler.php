@@ -113,7 +113,11 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             throw new AsyncPaymentProcessException($transactionId, $exception->getMessage());
         }
 
-        $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
+        if (\method_exists($this->orderTransactionStateHandler, 'processUnconfirmed')) {
+            $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
+        } else {
+            $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
+        }
 
         if ($dataBag->get(self::PAYPAL_EXPRESS_CHECKOUT_ID)) {
             try {
