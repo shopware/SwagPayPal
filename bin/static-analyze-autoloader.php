@@ -5,6 +5,12 @@
  * file that was distributed with this source code.
  */
 
+use Shopware\Core\Framework\Adapter\Database\MySQLFactory;
+use staabm\PHPStanDba\QueryReflection\PdoQueryReflector;
+use staabm\PHPStanDba\QueryReflection\QueryReflection;
+use staabm\PHPStanDba\QueryReflection\RuntimeConfiguration;
+use Symfony\Component\Dotenv\Dotenv;
+
 require_once dirname(__DIR__, 4) . '/vendor/autoload.php';
 
 $cmsExtensionsFound = false;
@@ -29,4 +35,22 @@ foreach ($files as $file) {
 
 if (!$cmsExtensionsFound) {
     echo "You need the CmsExtensions plugin for static analyze to work.\n";
+}
+
+$projectRoot = dirname(__DIR__, 4);
+$classLoader = require $projectRoot . '/vendor/autoload.php';
+if (file_exists($projectRoot . '/.env')) {
+    (new Dotenv())->usePutEnv()->load($projectRoot . '/.env');
+}
+
+if (class_exists(QueryReflection::class)) {
+    $config = new RuntimeConfiguration();
+    $config->stringifyTypes(true);
+
+    /** @var \PDO $pdo */
+    $pdo = MySQLFactory::create()->getWrappedConnection();
+    QueryReflection::setupReflector(
+        new PdoQueryReflector($pdo),
+        $config
+    );
 }

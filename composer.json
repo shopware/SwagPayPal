@@ -1,7 +1,7 @@
 {
     "name": "swag/paypal",
     "description": "PayPal integration for Shopware 6",
-    "version": "5.1.0",
+    "version": "5.1.1",
     "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [
@@ -24,6 +24,7 @@
         "phpstan/phpstan-symfony": "~1.1.8",
         "psalm/plugin-phpunit": "0.16.1",
         "psalm/plugin-symfony": "2.5.1",
+        "staabm/phpstan-dba": "~0.2.29",
         "vimeo/psalm": "4.16.1",
         "symplify/easy-coding-standard": "10.0.19"
     },

@@ -1,3 +1,6 @@
+# 5.1.1
+- PPI-657 - Template `buy-widget-form` wurde bereinigt
+
 # 5.1.0
 - PPI-611 - Möglichkeit hinzugefügt, Produkte & dynamischen Produktgruppen von PayPal- und Express Checkout-Käufen auszuschließen
 - PPI-617 - Behebt ein Problem, bei dem die Freigaben für Zahlungsarten nicht korrekt bei Sales-Channel-spezifischen Einstellungen dargestellt wurden
