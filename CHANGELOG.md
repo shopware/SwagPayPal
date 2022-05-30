@@ -1,3 +1,6 @@
+# 5.1.1
+- PPI-657 - Cleaned up template `buy-widget-form` 
+
 # 5.1.0
 - PPI-611 - Added possibility to exclude products and dynamic product groups from PayPal & Express Checkout
 - PPI-617 - Fix issue where payment method authorizations were not correctly shown for Sales Channel specific settings

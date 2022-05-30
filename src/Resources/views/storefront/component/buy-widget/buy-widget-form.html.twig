@@ -22,7 +22,6 @@
             {% endif %}
 
             {% if (isProductDetail and expressSettings.productDetailEnabled) or (not isProductDetail and expressSettings.listingEnabled) %}
-                hello
                 <div class="form-row mt-3 justify-content-end">
                     {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'col-8'} %}
                 </div>
