@@ -1,0 +1,59 @@
+@import "~scss/variables";
+
+.swag-paypal-checkout-method {
+    border: 1px solid #d9dfe5;
+    border-radius: 4px;
+    height: 66px;
+    margin-bottom: 16px;
+
+    &__name-icon {
+        margin: 20px;
+    }
+
+    &__icon {
+        margin-right: 4px;
+    }
+
+    &__dynamic {
+        display: grid;
+        grid-auto-flow: column;
+        align-items: center;
+        justify-items: end;
+        justify-content: right;
+        grid-gap: 12px;
+        margin: 20px 12px;
+
+        .sw-label {
+            margin: 0;
+        }
+    }
+
+    &__show-detail-link {
+        font-size: $font-size-small;
+        color: $color-shopware-brand-500;
+    }
+
+    & .sw-field--switch {
+        margin: 8px 0;
+    }
+
+    .sw-help-text {
+        position: relative;
+    }
+
+    .swag-plugin-box-with-onboarding__status-label {
+        &.sw-label:not(.sw-label--appearance-badged) {
+            padding-left: 6px;
+            border-color: transparent;
+        }
+    }
+
+    .swag-plugin-box-with-onboarding__status-badge {
+        margin: 0;
+    }
+
+    .swag-plugin-box-with-onboarding__status-text {
+        padding-left: 4px;
+        font-weight: 600;
+    }
+}

@@ -7,6 +7,7 @@ import './module/extension/sw-dashboard/component/swag-paypal-campaign-banner';
 import './module/extension/sw-first-run-wizard/sw-first-run-wizard-paypal-credentials';
 import './module/extension/sw-sales-channel-modal-detail';
 import './module/extension/sw-sales-channel-modal-grid';
+import './module/extension/sw-settings-payment/components/swag-paypal-overview-card';
 import './module/extension/sw-settings-payment/sw-settings-payment-list';
 import './module/extension/sw-settings-payment/sw-settings-payment-detail';
 

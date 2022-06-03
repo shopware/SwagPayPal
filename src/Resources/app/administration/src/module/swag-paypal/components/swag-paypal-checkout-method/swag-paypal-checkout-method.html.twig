@@ -1,0 +1,80 @@
+{% block swag_paypal_checkout_method %}
+<div class="swag-paypal-checkout-method">
+    <sw-container columns="250px 1fr 90px">
+
+        {% block swag_paypal_checkout_method_name_icon %}
+        <div class="swag-paypal-checkout-method__name-icon">
+            <sw-icon
+                class="swag-paypal-checkout-method__icon"
+                :name="icon"
+                multicolor
+            />
+            {{ paymentMethod.name }}
+        </div>
+        {% endblock %}
+
+        {% block swag_paypal_checkout_method_dynamic %}
+        <div class="swag-paypal-checkout-method__dynamic">
+            {% block swag_paypal_checkout_method_pui_help_text %}
+            <sw-help-text
+                v-if="availabilityToolTip"
+                :text="availabilityToolTip"
+            />
+            {% endblock %}
+
+            {% block swag_paypal_checkout_method_onboarding_status %}
+            <sw-label
+                v-tooltip="{
+                    message: onboardingStatusTooltip,
+                    position: 'top',
+                    disabled: !onboardingStatusTooltip,
+                }"
+                class="swag-plugin-box-with-onboarding__status-label"
+                size="medium"
+                appearance="pill"
+                :variant="statusBadgeVariant"
+                :ghost="false"
+                :caps="false"
+            >
+
+                {% block swag_paypal_checkout_method_onboarding_status_badge %}
+                <sw-color-badge
+                    class="swag-plugin-box-with-onboarding__status-badge"
+                    rounded
+                    :color="statusBadgeColor"
+                />
+                {% endblock %}
+
+                {% block swag_paypal_checkout_method_onboarding_status_text %}
+                <span class="swag-plugin-box-with-onboarding__status-text">
+                    {{ onboardingStatusText }}
+                </span>
+                {% endblock %}
+
+            </sw-label>
+            {% endblock %}
+
+            {% block swag_paypal_checkout_method_edit_detail_link %}
+            <router-link
+                v-if="showEditLink"
+                class="swag-paypal-checkout-method__show-detail-link"
+                :to="editLink"
+            >
+                {{ $tc('swag-paypal.settingForm.checkout.editDetail') }}
+            </router-link>
+            {% endblock %}
+        </div>
+        {% endblock %}
+
+        {% block swag_paypal_checkout_method_active_switch %}
+        <sw-switch-field
+            :label="$tc('swag-paypal.settingForm.checkout.switch.label')"
+            :disabled="paymentMethodToggleDisabled || !acl.can('swag_paypal.editor')"
+            :value="paymentMethod.active"
+            @change="onChangePaymentMethodActive"
+        />
+        {% endblock %}
+
+    </sw-container>
+</div>
+{% endblock %}

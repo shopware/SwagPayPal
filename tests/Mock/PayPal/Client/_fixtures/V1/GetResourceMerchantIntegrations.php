@@ -10,12 +10,14 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 class GetResourceMerchantIntegrations
 {
     public const MERCHANT_ID = '7GHKL78J89JKX';
+    public const TRACKING_ID = 'sb-gvyyd8675691@business.example.com';
+    public const LEGAL_NAME = 'Test Store';
 
     public static function get(): array
     {
         return [
             'merchant_id' => self::MERCHANT_ID,
-            'tracking_id' => 'sb-gvyyd8675691@business.example.com',
+            'tracking_id' => self::TRACKING_ID,
             'products' => [
                 [
                     'name' => 'PPCP_CUSTOM',
@@ -83,7 +85,7 @@ class GetResourceMerchantIntegrations
                 ],
             ],
             'payments_receivable' => true,
-            'legal_name' => 'Test Store',
+            'legal_name' => self::LEGAL_NAME,
             'primary_email_confirmed' => true,
         ];
     }

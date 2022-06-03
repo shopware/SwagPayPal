@@ -36,14 +36,25 @@
             "testSandbox": "Test sandbox API credentials",
             "checkout": {
                 "cardTitle": "PayPal Checkout",
+                "settingsLink": "Settings",
+                "header": "More payment methods with one solution from PayPal",
                 "description": "PayPal Checkout is the new all-in-one solution that lets you offer powerful flexibile payment processing features on the marketplaces and other commerce platforms.",
                 "banner": "With PayPal Checkout, you can offer your customers payment by invoice, credit card and other local payment methods. PayPal Checkout supports you with the latest technology and brings you the highest flexibility. You keep your existing payment methods, and the fees remain the same! Activate PayPal Checkout and deactivate PayPal PLUS to avoid duplicate payment methods in your shop. <a href=\"https://www.shopware.com/en/news/paypal-launches-new-product/?utm_source=product&utm_medium=sw6-onprem&utm_campaign=paypal-checkout&utm_content=link-en-blog\" target=\"_blank\">More information</a>",
                 "button": {
-                    "title": "Start onboarding"
+                  "liveTitle": "Connect PayPal account",
+                  "sandboxTitle": "Connect sandbox account",
+                  "changeLiveTitle": "Connect different account",
+                  "changeSandboxTitle": "Connect different sandbox account",
+                  "onboardingLiveTitle": "Start PayPal Checkout onboarding",
+                  "onboardingSandboxTitle": "Start PayPal Checkout sandbox onboarding",
+                  "restartOnboardingLiveTitle": "Restart PayPal Checkout onboarding",
+                  "restartOnboardingSandboxTitle": "Restart PayPal Checkout sandbox onboarding"
                 },
                 "sandbox": {
-                    "label": "Use sandbox credentials",
-                    "tooltipText": "Enable if you want to test the PayPal integration."
+                    "label": "Sandbox",
+                    "onlySandboxTooltip": "You are only connected a sandbox PayPal account so far.",
+                    "onlyLiveTooltip": "You are only connected a live PayPal account so far.",
+                    "helpText": "Enable, if you want to test the PayPal integration."
                 },
                 "switch": {
                     "label": "Active"

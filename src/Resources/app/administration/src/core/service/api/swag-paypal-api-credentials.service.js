@@ -35,6 +35,8 @@ class SwagPayPalApiCredentialsService extends ApiService {
     }
 
     /**
+     * @deprecated tag:v6.0.0 - will be removed, use getMerchantInformation instead
+     *
      * @param {string=} salesChannelId
      */
     getMerchantIntegrations(salesChannelId = null) {
@@ -43,6 +45,25 @@ class SwagPayPalApiCredentialsService extends ApiService {
         return this.httpClient
             .get(
                 `_action/${this.getApiBasePath()}/get-merchant-integrations`,
+                {
+                    params: { salesChannelId },
+                    headers: headers,
+                },
+            )
+            .then((response) => {
+                return ApiService.handleResponse(response);
+            });
+    }
+
+    /**
+     * @param {string=} salesChannelId
+     */
+    getMerchantInformation(salesChannelId = null) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .get(
+                `_action/${this.getApiBasePath()}/merchant-information`,
                 {
                     params: { salesChannelId },
                     headers: headers,
