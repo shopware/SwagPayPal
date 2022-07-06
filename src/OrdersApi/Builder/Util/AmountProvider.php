@@ -76,11 +76,15 @@ class AmountProvider
     ): Breakdown {
         $accumulatedAmountValue = 0.0;
         $newItems = [];
+        $taxesCorrection = 0.0;
+
         foreach ($items as $item) {
             $itemUnitAmount = (float) $item->getUnitAmount()->getValue();
             if ($itemUnitAmount >= 0.0) {
                 $accumulatedAmountValue += $item->getQuantity() * $itemUnitAmount;
                 $newItems[] = $item;
+            } else {
+                $taxesCorrection += (float) $item->getTax()->getValue();
             }
         }
         $purchaseUnit->setItems($newItems);
@@ -98,7 +102,7 @@ class AmountProvider
         $taxTotal->setCurrencyCode($currencyCode);
         if ($isNet) {
             $taxTotal->setValue($this->priceFormatter->formatPrice(
-                $taxes->getAmount() - $shippingCosts->getCalculatedTaxes()->getAmount()
+                $taxes->getAmount() - ($shippingCosts->getCalculatedTaxes()->getAmount() + $taxesCorrection)
             ));
         } else {
             $taxTotal->setValue($this->priceFormatter->formatPrice(0.0));
