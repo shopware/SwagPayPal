@@ -125,6 +125,11 @@
 
                         {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_onboarding_status %}
                         <sw-label
+                            v-tooltip="{
+                                message: onboardingStatusTooltip(paymentMethod),
+                                position: 'top',
+                                disabled: !onboardingStatusTooltip(paymentMethod),
+                            }"
                             class="swag-plugin-box-with-onboarding__status-label"
                             size="medium"
                             appearance="pill"

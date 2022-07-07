@@ -24,7 +24,7 @@ class OpenApiTest extends TestCase
     {
         $bundles = $this->getContainer()->getParameter('kernel.bundles_metadata');
 
-        if (!$bundles || !\is_array($bundles)) {
+        if (!\is_array($bundles)) {
             return;
         }
 

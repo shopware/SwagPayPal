@@ -218,7 +218,7 @@ Component.register('swag-paypal-checkout', {
         },
 
         needsOnboarding(paymentMethod) {
-            return this.onboardingStatus(paymentMethod)?.toUpperCase() !== 'ACTIVE';
+            return this.onboardingStatus(paymentMethod) !== 'active' && this.onboardingStatus(paymentMethod) !== 'limited';
         },
 
         paymentMethodToggleDisabled(paymentMethod) {
@@ -257,7 +257,7 @@ Component.register('swag-paypal-checkout', {
             switch (this.onboardingStatus(paymentMethod)) {
                 case 'active': variant = 'success'; break;
                 case 'limited': variant = 'danger'; break;
-                case 'inactive': variant = 'neutral'; break;
+                case 'inactive': case 'ineligible': variant = 'neutral'; break;
                 case 'pending': variant = 'info'; break;
                 default: variant = 'neutral';
             }
@@ -276,6 +276,7 @@ Component.register('swag-paypal-checkout', {
                     variant = '#ff9800';
                     break;
                 case 'inactive':
+                case 'ineligible':
                     variant = '#52667A';
                     break;
                 case 'pending':
@@ -292,6 +293,17 @@ Component.register('swag-paypal-checkout', {
             const status = this.onboardingStatus(paymentMethod);
 
             return this.$tc(`swag-paypal.settingForm.checkout.onboardingStatusText.${status}`);
+        },
+
+        onboardingStatusTooltip(paymentMethod) {
+            const status = this.onboardingStatus(paymentMethod);
+            const snippetKey = `swag-paypal.settingForm.checkout.onboardingStatusTooltip.${status}`;
+
+            if (!this.$te(snippetKey)) {
+                return null;
+            }
+
+            return this.$tc(snippetKey);
         },
 
         showEditLink(paymentMethod) {

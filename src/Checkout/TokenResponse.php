@@ -13,7 +13,7 @@ use Shopware\Core\System\SalesChannel\StoreApiResponse;
 class TokenResponse extends StoreApiResponse
 {
     /**
-     * @var ArrayStruct
+     * @var ArrayStruct<string, string>
      */
     protected $object;
 

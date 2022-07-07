@@ -73,7 +73,12 @@
                     "active": "Autorisiert",
                     "limited": "Limitiert",
                     "pending": "Authorisierung ausstehend",
+                    "ineligible": "Gesperrt",
                     "inactive": "Onboarding benötigt"
+                },
+                "onboardingStatusTooltip": {
+                  "ineligible": "PayPal hat uns informiert, dass diese Zahlungsmethode aktuell für Ihren Account nicht freigeschaltet ist.",
+                  "limited": "PayPal hat uns informiert, dass Einschränkugen dieser Zahlungsart für Ihrem Account bestehen."
                 },
                 "paymentMethodStatusChangedSuccess": {
                     "active": "Zahlungsart \"{name}\" ist jetzt aktiv.",

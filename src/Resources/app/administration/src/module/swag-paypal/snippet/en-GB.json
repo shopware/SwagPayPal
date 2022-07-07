@@ -73,7 +73,12 @@
                     "active": "Authorized",
                     "limited": "Limited",
                     "pending": "Authorization pending",
+                    "ineligible": "Ineligible",
                     "inactive": "Onboarding needed"
+                },
+                "onboardingStatusTooltip": {
+                    "ineligible": "PayPal informed us, that this payment method is currently ineligible for your account.",
+                    "limited": "PayPal informed us, that this payment method has some limitations for your account."
                 },
                 "paymentMethodStatusChangedSuccess": {
                     "active": "Payment method \"{name}\" is now active.",

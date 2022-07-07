@@ -70,7 +70,7 @@ class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInt
             return self::CAPABILITY_LIMITED;
         }
 
-        return self::CAPABILITY_INACTIVE;
+        return self::CAPABILITY_INELIGIBLE;
     }
 
     public function getCheckoutDataService(): AbstractCheckoutDataService
