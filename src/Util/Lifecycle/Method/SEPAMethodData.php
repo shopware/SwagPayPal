@@ -107,6 +107,6 @@ class SEPAMethodData extends AbstractMethodData implements CheckoutDataMethodInt
             return self::CAPABILITY_ACTIVE;
         }
 
-        return self::CAPABILITY_INACTIVE;
+        return self::CAPABILITY_INELIGIBLE;
     }
 }

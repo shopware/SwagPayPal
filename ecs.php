@@ -8,29 +8,22 @@
 use PhpCsFixer\Fixer\Alias\MbStrFunctionsFixer;
 use PhpCsFixer\Fixer\Comment\HeaderCommentFixer;
 use PhpCsFixer\Fixer\FunctionNotation\NativeFunctionInvocationFixer;
-use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+use Symplify\EasyCodingStandard\Config\ECSConfig;
+use Symplify\EasyCodingStandard\ValueObject\Option;
 
-return static function (ContainerConfigurator $containerConfigurator): void {
-    $services = $containerConfigurator->services();
-
-    $services->set(HeaderCommentFixer::class)
-        ->call('configure', [['header' => '(c) shopware AG <info@shopware.com>
+return static function (ECSConfig $ecsConfig): void {
+    $ecsConfig->ruleWithConfiguration(HeaderCommentFixer::class, ['header' => '(c) shopware AG <info@shopware.com>
 For the full copyright and license information, please view the LICENSE
-file that was distributed with this source code.', 'separate' => 'bottom', 'location' => 'after_declare_strict', 'comment_type' => 'comment']]);
+file that was distributed with this source code.', 'separate' => 'bottom', 'location' => 'after_declare_strict', 'comment_type' => 'comment']);
+    $ecsConfig->ruleWithConfiguration(NativeFunctionInvocationFixer::class, [
+        'include' => [NativeFunctionInvocationFixer::SET_ALL],
+        'scope' => 'namespaced',
+    ]);
+    $ecsConfig->rule(MbStrFunctionsFixer::class);
 
-    $services->set(NativeFunctionInvocationFixer::class)
-        ->call('configure', [[
-            'include' => [NativeFunctionInvocationFixer::SET_ALL],
-            'scope' => 'namespaced',
-        ]]);
+    $parameters = $ecsConfig->parameters();
 
-    $services->set(MbStrFunctionsFixer::class);
-
-    $parameters = $containerConfigurator->parameters();
-
-    $parameters->set('cache_directory', __DIR__ . '/var/cache/cs_fixer');
-
-    $parameters->set('cache_namespace', 'SwagPayPal');
-
-    $parameters->set('paths', [__DIR__ . '/src', __DIR__ . '/tests']);
+    $parameters->set(Option::CACHE_DIRECTORY, __DIR__ . '/var/cache/cs_fixer');
+    $parameters->set(Option::CACHE_NAMESPACE, 'SwagPayPal');
+    $parameters->set(Option::PATHS, [__DIR__ . '/src', __DIR__ . '/tests']);
 };

@@ -148,6 +148,10 @@
                 <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\TermsResult"/>
                 <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult"/>
                 <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult"/>
+
+                <!-- fix with Shopware 6.5 compatibility -->
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface"/>
+                <referencedClass name="Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface"/>
             </errorLevel>
         </DeprecatedClass>
 
@@ -157,6 +161,14 @@
                 <file name="src/Storefront/Data/Struct/AbstractCheckoutData.php"/>
             </errorLevel>
         </DeprecatedProperty>
+
+        <DeprecatedInterface>
+            <errorLevel type="info">
+                <!-- fix with Shopware 6.5 compatibility -->
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface"/>
+                <referencedClass name="Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface"/>
+            </errorLevel>
+        </DeprecatedInterface>
 
         <PossiblyInvalidArgument>
             <errorLevel type="info">
@@ -218,6 +230,13 @@
                 <file name="src/OrdersApi/Administration/PayPalOrdersController.php"/>
             </errorLevel>
         </RedundantCastGivenDocblockType>
+
+        <TooManyTemplateParams>
+            <errorLevel type="info">
+                <!-- remove with min-Version 6.4.14.0 -->
+                <file name="src/Checkout/TokenResponse.php"/>
+            </errorLevel>
+        </TooManyTemplateParams>
 
         <!-- level 3 issues - slightly lazy code writing, but provably low false-negatives -->
         <PropertyNotSetInConstructor errorLevel="info"/>

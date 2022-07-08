@@ -97,6 +97,6 @@ class P24MethodData extends AbstractMethodData
             return self::CAPABILITY_ACTIVE;
         }
 
-        return self::CAPABILITY_INACTIVE;
+        return self::CAPABILITY_INELIGIBLE;
     }
 }

@@ -1,14 +1,17 @@
 includes:
     - %ShopwareRoot%/vendor/phpstan/phpstan/conf/bleedingEdge.neon
-    - phpstan-baseline.neon
 
 parameters:
+    phpVersion: 70400
     level: 8
     tmpDir: var/cache/phpstan
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: false
     reportUnmatchedIgnoredErrors: false
 
+    paths:
+        -   src
+        -   tests
     excludePaths:
         -   tests/Mock/Cache*Mock.php
 
@@ -18,15 +21,24 @@ parameters:
         container_xml_path: '../../..%ShopwareHashedCacheDir%/%ShopwareKernelClass%DevDebugContainer.xml'
 
     ignoreErrors:
+        # We won't type all arrays/iterables for now
+        -   '#no value type specified in iterable type#'
+
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
-        -
+
+        -   # Services in tests are all public
             message: '#Service ".*" is private#'
             path: tests/**/*.php
+
         -   # Remove with min-Version 6.4.4.0
             message: '#Caught class .* not found#'
             path: src/Checkout/PUI/SalesChannel/PUIPaymentInstructionsRoute.php
+
+        -   # Remove with min-Version 6.4.14.0
+            message: '#ArrayStruct is not generic#'
+            path: src/Checkout/TokenResponse.php
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

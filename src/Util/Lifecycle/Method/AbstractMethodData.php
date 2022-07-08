@@ -24,6 +24,7 @@ abstract class AbstractMethodData
 {
     public const CAPABILITY_ACTIVE = 'active';
     public const CAPABILITY_INACTIVE = 'inactive';
+    public const CAPABILITY_INELIGIBLE = 'ineligible';
     public const CAPABILITY_LIMITED = 'limited';
 
     protected ContainerInterface $container;

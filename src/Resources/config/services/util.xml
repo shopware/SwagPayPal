@@ -56,7 +56,7 @@
             <argument type="service" id="sales_channel.repository"/>
             <argument type="service" id="sales_channel_type.repository"/>
             <argument type="service" id="shipping_method.repository"/>
-            <argument type="service" id="Shopware\Core\Checkout\Payment\DataAbstractionLayer\PaymentMethodRepositoryDecorator"/>
+            <argument type="service" id="payment_method.repository"/>
         </service>
 
         <service id="Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller" public="true">

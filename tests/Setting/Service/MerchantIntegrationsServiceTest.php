@@ -66,7 +66,7 @@ class MerchantIntegrationsServiceTest extends TestCase
         $integrations = $merchantIntegrationService->fetchMerchantIntegrations($this->context);
 
         $integrationStatus = $integrations[$paymentMethodId];
-        static::assertSame(AbstractMethodData::CAPABILITY_INACTIVE, $integrationStatus);
+        static::assertSame(AbstractMethodData::CAPABILITY_INELIGIBLE, $integrationStatus);
     }
 
     private function createMerchantIntegrationService(): MerchantIntegrationsService

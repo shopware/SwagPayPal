@@ -1,3 +1,6 @@
+# 5.1.2
+- PPI-670 - Improved display of onboarding status in Administration
+
 # 5.1.1
 - PPI-657 - Cleaned up template `buy-widget-form` 
 

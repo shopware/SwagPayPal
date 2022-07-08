@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Util\Lifecycle;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Payment\DataAbstractionLayer\PaymentMethodRepositoryDecorator;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
@@ -18,6 +17,7 @@ use Shopware\Core\Content\Rule\Aggregate\RuleCondition\RuleConditionDefinition;
 use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -75,16 +75,16 @@ class UpdateTest extends TestCase
     private const OTHER_CLIENT_ID = 'someOtherTestClientId';
     private const OTHER_CLIENT_SECRET = 'someOtherTestClientSecret';
 
-    private PaymentMethodRepositoryDecorator $paymentMethodRepository;
+    private EntityRepositoryInterface $paymentMethodRepository;
 
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
     protected function setUp(): void
     {
-        /** @var PaymentMethodRepositoryDecorator $paymentMethodRepository */
+        /** @var EntityRepositoryInterface $paymentMethodRepository */
         $paymentMethodRepository = $this->getContainer()->get(\sprintf('%s.repository', PaymentMethodDefinition::ENTITY_NAME));
         $this->paymentMethodRepository = $paymentMethodRepository;
-        /** @var EntityRepositoryInterface $salesChannelRepository */
+        /** @var EntityRepository $salesChannelRepository */
         $salesChannelRepository = $this->getContainer()->get(\sprintf('%s.repository', SalesChannelDefinition::ENTITY_NAME));
         $this->salesChannelRepository = $salesChannelRepository;
     }
@@ -336,7 +336,12 @@ class UpdateTest extends TestCase
         static::assertNotNull($acdcPaymentMethodId);
 
         try {
-            $this->paymentMethodRepository->internalDelete([[
+            $this->paymentMethodRepository->update([[
+                'id' => $acdcPaymentMethodId,
+                'pluginId' => null,
+            ]], $context);
+
+            $this->paymentMethodRepository->delete([[
                 'id' => $acdcPaymentMethodId,
             ]], $context);
         } catch (RestrictDeleteViolationException $e) {

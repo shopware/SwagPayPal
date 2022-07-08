@@ -34,11 +34,15 @@ default:
         - mkdir -p custom/plugins || true
         - unzip -q /tmp/plugin.zip -d custom/plugins/SwagPayPal
         - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git custom/plugins/SwagCmsExtensions --branch $CMS_EXTENSION_BRANCH
-        - composer install --quiet --no-interaction
+        # shopware 6.4.3.0 composer fix
+        - composer config allow-plugins.bamarni/composer-bin-plugin true
+        - composer config allow-plugins.phpstan/extension-installer true
+        - composer install --no-interaction
         - if [[ $REQUIRED_SYMFONY != "" ]]; then composer require symfony/framework-bundle:$REQUIRED_SYMFONY; fi
         - mkdir -p config/jwt || true
         - bin/console system:generate-jwt || true
         - bin/console system:install --drop-database --basic-setup --force >/dev/null
+        - npm --prefix $(pwd)/custom/plugins/SwagPayPal/src/Resources/app/administration/ clean-install
         - composer run init:js
         - composer run build:js
         - bin/console theme:compile
@@ -66,6 +70,7 @@ Static validation:
         - npm --prefix custom/plugins/SwagPayPal/src/Resources/app/storefront/ clean-install
         - composer run build:js
         - cd $CI_PROJECT_DIR/custom/plugins/SwagPayPal
+        - if [[ $PLATFORM_BRANCH != "v6.4.3.0" ]]; then composer install; fi
         - if [[ -n $CI_COMMIT_BRANCH ]]; then bin/check-todos.sh $CI_COMMIT_BRANCH; else bin/check-todos.sh $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME; fi
         - >
             if [[ $PLATFORM_BRANCH = "trunk" ]]; then
@@ -76,14 +81,14 @@ Static validation:
             fi
         - composer dump-autoload --dev
         - php bin/phpstan-config-generator.php
-        - php ../../../vendor/bin/phpstan analyze --configuration phpstan.neon src tests
+        - if [[ $PLATFORM_BRANCH != "v6.4.3.0" ]]; then php vendor/bin/phpstan analyze --configuration phpstan.neon; else php ../../../vendor/bin/phpstan analyze --configuration phpstan.neon; fi
         - cd $CI_PROJECT_DIR
         - php vendor/bin/psalm --config=custom/plugins/SwagPayPal/psalm.xml custom/plugins/SwagPayPal/src custom/plugins/SwagPayPal/tests --diff --threads=$(nproc)
         - php bin/console snippets:validate
         - php bin/console dal:validate
     parallel:
         matrix:
-            -   PLATFORM_BRANCH: [ "trunk", "v6.4.11.1" ]
+            -   PLATFORM_BRANCH: [ "trunk", "v6.4.12.0" ]
                 DEV_IMAGE: ["shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2", "shopware/development:8.1-composer-2"]
             -   PLATFORM_BRANCH: "v6.4.3.0"
                 REQUIRED_SYMFONY: "5.3.13"
@@ -132,7 +137,7 @@ PHPUnit:
         matrix:
             -   MYSQL_IMAGE: mariadb:10.4
                 DEV_IMAGE: shopware/development:7.4-composer-2
-                PLATFORM_BRANCH: ["trunk", "v6.4.11.1"]
+                PLATFORM_BRANCH: ["trunk", "v6.4.12.0"]
             -   MYSQL_IMAGE: mariadb:10.4
                 DEV_IMAGE: shopware/development:7.4-composer-2
                 PLATFORM_BRANCH: "v6.4.3.0"
@@ -143,7 +148,7 @@ PHPUnit:
                   - mysql:5.7
                   - mariadb:10.3
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2", "shopware/development:8.1-composer-2" ]
-                PLATFORM_BRANCH: ["trunk", "v6.4.11.1"]
+                PLATFORM_BRANCH: ["trunk", "v6.4.12.0"]
                 RUN_IN_MR: "false"
             -   MYSQL_IMAGE:
                     - mysql:5.7
@@ -157,7 +162,7 @@ PHPUnit:
             -   MYSQL_IMAGE:
                   - mysql:8.0.19
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2", "shopware/development:8.1-composer-2" ]
-                PLATFORM_BRANCH: ["trunk", "v6.4.11.1"]
+                PLATFORM_BRANCH: ["trunk", "v6.4.12.0"]
                 MYSQL_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
                 RUN_IN_MR: "false"
             -   MYSQL_IMAGE:
