@@ -27,22 +27,10 @@ class MerchantIntegrationsServiceTest extends TestCase
 {
     use ServicesTrait;
 
-    public const STATUS_ACTIVE = 'ACTIVE';
-
-    /**
-     * @var Context
-     */
-    private $context;
-
-    public function setUp(): void
-    {
-        $this->context = Context::createDefaultContext();
-    }
-
     public function testFetchMerchantIntegrations(): void
     {
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations($this->context);
+        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
 
         static::assertCount(\count($this->getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods()), $integrations);
     }
@@ -52,7 +40,7 @@ class MerchantIntegrationsServiceTest extends TestCase
         $paymentMethodId = $this->getPaymentIdByHandler(ACDCHandler::class);
 
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations($this->context);
+        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
 
         $integrationStatus = $integrations[$paymentMethodId];
         static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $integrationStatus);
@@ -63,7 +51,7 @@ class MerchantIntegrationsServiceTest extends TestCase
         $paymentMethodId = $this->getPaymentIdByHandler(PUIHandler::class);
 
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations($this->context);
+        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
 
         $integrationStatus = $integrations[$paymentMethodId];
         static::assertSame(AbstractMethodData::CAPABILITY_INELIGIBLE, $integrationStatus);

@@ -1,0 +1,78 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
+
+use OpenApi\Annotations as OA;
+use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult;
+
+/**
+ * @OA\Schema(schema="swag_paypal_v2_order_payment_source_card")
+ */
+class Card extends PayPalApiStruct
+{
+    /**
+     * @OA\Property(type="string")
+     */
+    protected string $lastDigits;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    protected string $brand;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    protected string $type;
+
+    /**
+     * @OA\Property(type="swag_paypal_v2_order_payment_source_card_authentication_result", nullable=true)
+     */
+    protected ?AuthenticationResult $authenticationResult = null;
+
+    public function getLastDigits(): string
+    {
+        return $this->lastDigits;
+    }
+
+    public function setLastDigits(string $lastDigits): void
+    {
+        $this->lastDigits = $lastDigits;
+    }
+
+    public function getBrand(): string
+    {
+        return $this->brand;
+    }
+
+    public function setBrand(string $brand): void
+    {
+        $this->brand = $brand;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    public function getAuthenticationResult(): ?AuthenticationResult
+    {
+        return $this->authenticationResult;
+    }
+
+    public function setAuthenticationResult(?AuthenticationResult $authenticationResult): void
+    {
+        $this->authenticationResult = $authenticationResult;
+    }
+}

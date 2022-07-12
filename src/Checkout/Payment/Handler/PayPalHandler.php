@@ -120,9 +120,9 @@ class PayPalHandler extends AbstractPaymentHandler
                 );
             }
 
-            $paypalOrder = $this->orderExecuteService->executeOrder(
+            $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
                 $transaction->getOrderTransaction()->getId(),
-                $paypalOrderId,
+                $this->orderResource->get($paypalOrderId, $salesChannelId),
                 $salesChannelId,
                 $context,
                 $partnerAttributionId

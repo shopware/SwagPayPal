@@ -12,13 +12,14 @@ use Shopware\Core\Framework\Struct\Struct;
 class CardholderData extends Struct
 {
     public const CONTINGENCY_SCA_WHEN_REQUIRED = 'SCA_WHEN_REQUIRED';
+    public const CONTINGENCY_SCA_ALWAYS = 'SCA_ALWAYS';
 
     protected string $cardholderName;
 
     protected BillingAddress $billingAddress;
 
     protected array $contingencies = [
-        self::CONTINGENCY_SCA_WHEN_REQUIRED,
+        self::CONTINGENCY_SCA_ALWAYS,
     ];
 
     public function getCardholderName(): string
@@ -39,5 +40,15 @@ class CardholderData extends Struct
     public function setBillingAddress(BillingAddress $billingAddress): void
     {
         $this->billingAddress = $billingAddress;
+    }
+
+    public function getContingencies(): array
+    {
+        return $this->contingencies;
+    }
+
+    public function setContingencies(array $contingencies): void
+    {
+        $this->contingencies = $contingencies;
     }
 }

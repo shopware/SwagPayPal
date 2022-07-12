@@ -14,7 +14,6 @@ use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\Checkout\Exception\OrderFailedException;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
@@ -49,16 +48,14 @@ class OrderExecuteService
     /**
      * @throws PayPalApiException
      */
-    public function executeOrder(
+    public function captureOrAuthorizeOrder(
         string $transactionId,
-        string $paypalOrderId,
+        PayPalOrder $paypalOrder,
         string $salesChannelId,
         Context $context,
         string $partnerAttributionId
     ): PayPalOrder {
         $this->logger->debug('Started');
-
-        $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelId);
 
         try {
             return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
@@ -72,13 +69,30 @@ class OrderExecuteService
 
             $this->orderResource->update(
                 [$this->orderNumberPatchBuilder->createRemoveOrderNumberPatch()],
-                $paypalOrderId,
+                $paypalOrder->getId(),
                 $salesChannelId,
                 $partnerAttributionId
             );
 
             return $this->doPayPalRequest($paypalOrder, $salesChannelId, $partnerAttributionId, $transactionId, $context);
         }
+    }
+
+    /**
+     * @deprecated tag:v6.0.0 - will be removed, use captureOrAuthorizeOrder() instead
+     *
+     * @throws PayPalApiException
+     */
+    public function executeOrder(
+        string $transactionId,
+        string $paypalOrderId,
+        string $salesChannelId,
+        Context $context,
+        string $partnerAttributionId
+    ): PayPalOrder {
+        $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelId);
+
+        return $this->captureOrAuthorizeOrder($transactionId, $paypalOrder, $salesChannelId, $context, $partnerAttributionId);
     }
 
     private function doPayPalRequest(PayPalOrder $paypalOrder, string $salesChannelId, string $partnerAttributionId, string $transactionId, Context $context): PayPalOrder
@@ -126,7 +140,7 @@ class OrderExecuteService
         return $response;
     }
 
-    private function getPayment(Order $order): Payments
+    private function getPayment(PayPalOrder $order): Payments
     {
         $purchaseUnits = $order->getPurchaseUnits();
         if (empty($purchaseUnits)) {
