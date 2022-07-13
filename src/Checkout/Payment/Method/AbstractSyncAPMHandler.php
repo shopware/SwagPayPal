@@ -18,6 +18,8 @@ use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\RestApi\PartnerAttributionId;
+use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 
 abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler implements SynchronousPaymentHandlerInterface
@@ -34,13 +36,19 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
 
     private LoggerInterface $logger;
 
+    private ?OrderResource $orderResource;
+
+    /**
+     * @deprecated tag:v6.0.0 - orderResource will be required
+     */
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         OrderExecuteService $orderExecuteService,
         OrderPatchService $orderPatchService,
         TransactionDataService $transactionDataService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ?OrderResource $orderResource = null
     ) {
         $this->settingsValidationService = $settingsValidationService;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
@@ -48,6 +56,7 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
         $this->orderExecuteService = $orderExecuteService;
         $this->transactionDataService = $transactionDataService;
         $this->logger = $logger;
+        $this->orderResource = $orderResource;
     }
 
     public function pay(SyncPaymentTransactionStruct $transaction, RequestDataBag $dataBag, SalesChannelContext $salesChannelContext): void
@@ -83,12 +92,14 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
                 $salesChannelContext->getSalesChannelId()
             );
 
-            $paypalOrder = $this->orderExecuteService->executeOrder(
-                $transactionId,
-                $paypalOrderId,
-                $salesChannelContext->getSalesChannelId(),
-                $salesChannelContext->getContext(),
-                PartnerAttributionId::PAYPAL_PPCP,
+            if ($this->orderResource === null) {
+                throw new \RuntimeException('orderResource is required');
+            }
+
+            $paypalOrder = $this->executeOrder(
+                $transaction,
+                $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannelId()),
+                $salesChannelContext
             );
 
             $this->transactionDataService->setResourceId($paypalOrder, $transactionId, $salesChannelContext->getContext());
@@ -97,5 +108,16 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
 
             throw new SyncPaymentProcessException($transactionId, $e->getMessage());
         }
+    }
+
+    protected function executeOrder(SyncPaymentTransactionStruct $transaction, Order $paypalOrder, SalesChannelContext $salesChannelContext): Order
+    {
+        return $this->orderExecuteService->captureOrAuthorizeOrder(
+            $transaction->getOrderTransaction()->getId(),
+            $paypalOrder,
+            $salesChannelContext->getSalesChannelId(),
+            $salesChannelContext->getContext(),
+            PartnerAttributionId::PAYPAL_PPCP,
+        );
     }
 }

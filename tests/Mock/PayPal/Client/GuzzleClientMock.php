@@ -67,6 +67,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAPM;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftNo;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftUnknown;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderPUIApproved;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderPUICompleted;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderPUIPending;
@@ -276,6 +278,14 @@ class GuzzleClientMock implements ClientInterface
 
             if (\mb_substr($resourceUri, -17) === GetOrderAPM::ID) {
                 return GetOrderAPM::get();
+            }
+
+            if (\mb_substr($resourceUri, -17) === GetOrderCaptureLiabilityShiftNo::ID) {
+                return GetOrderCaptureLiabilityShiftNo::get();
+            }
+
+            if (\mb_substr($resourceUri, -17) === GetOrderCaptureLiabilityShiftUnknown::ID) {
+                return GetOrderCaptureLiabilityShiftUnknown::get();
             }
 
             $orderCapture = GetOrderCapture::get();

@@ -145,9 +145,9 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         }
 
         try {
-            $paypalOrder = $this->orderExecuteService->executeOrder(
+            $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
                 $transactionId,
-                $paypalOrderId,
+                $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannelId()),
                 $salesChannelContext->getSalesChannelId(),
                 $salesChannelContext->getContext(),
                 PartnerAttributionId::PAYPAL_PPCP,

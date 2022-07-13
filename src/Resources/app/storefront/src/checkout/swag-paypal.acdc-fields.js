@@ -222,6 +222,9 @@ export default class SwagPaypalAcdcFields extends SwagPaypalAbstractButtons {
                 // Country Code
                 countryCodeAlpha2: '',
             },
+            contingencies: [
+                'SCA_ALWAYS',
+            ],
         },
 
         /**

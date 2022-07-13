@@ -75,6 +75,7 @@ trait ServicesTrait
         return \array_merge(Settings::DEFAULT_VALUES, [
             Settings::CLIENT_ID => 'TestClientId',
             Settings::CLIENT_SECRET => 'TestClientSecret',
+            Settings::MERCHANT_PAYER_ID => 'TestMerchantPayerId',
             Settings::ORDER_NUMBER_PREFIX => OrderPaymentBuilderTest::TEST_ORDER_NUMBER_PREFIX,
             Settings::ORDER_NUMBER_SUFFIX => OrderPaymentBuilderTest::TEST_ORDER_NUMBER_SUFFIX,
             Settings::BRAND_NAME => 'Test Brand',

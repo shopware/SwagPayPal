@@ -20,6 +20,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Swag\PayPal\Checkout\ACDC\ACDCValidator;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
@@ -43,6 +44,8 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderDeclined;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderAuthorization;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftNo;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftUnknown;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
@@ -99,6 +102,35 @@ class ACDCHandlerTest extends TestCase
         $this->expectExceptionMessage(\sprintf('The synchronous payment process was interrupted due to the following error:
 Order "%s" failed', CaptureOrderDeclined::ID));
         $handler->pay($paymentTransaction, $this->createRequest(CaptureOrderDeclined::ID), $salesChannelContext);
+    }
+
+    public function testPayCaptureLiabilityShiftUnknown(): void
+    {
+        $handler = $this->createPaymentHandler($this->getDefaultConfigData());
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+
+        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
+Credit card validation failed, 3D secure was not validated.');
+        $handler->pay($paymentTransaction, $this->createRequest(GetOrderCaptureLiabilityShiftUnknown::ID), $salesChannelContext);
+    }
+
+    public function testPayCaptureLiabilityShiftNo(): void
+    {
+        $handler = $this->createPaymentHandler($this->getDefaultConfigData());
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+
+        $handler->pay($paymentTransaction, $this->createRequest(GetOrderCaptureLiabilityShiftNo::ID), $salesChannelContext);
+
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, $salesChannelContext->getContext());
+        $this->assertCustomFields(GetOrderCaptureLiabilityShiftNo::ID, PartnerAttributionId::PAYPAL_PPCP, CaptureOrderCapture::CAPTURE_ID);
+        $this->assertPatchData($transactionId);
     }
 
     public function testPayAuthorize(): void
@@ -234,6 +266,8 @@ Missing PayPal order id');
                 $this->orderTransactionRepo,
             ),
             $logger,
+            $orderResource,
+            new ACDCValidator(),
         );
     }
 

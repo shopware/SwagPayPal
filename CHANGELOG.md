@@ -1,4 +1,5 @@
 # 5.1.2
+- PPI-664 - Improved 3D Secure handling in credit card payments
 - PPI-670 - Improved display of onboarding status in Administration
 
 # 5.1.1
