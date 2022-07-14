@@ -1,0 +1,35 @@
+@import "~scss/variables";
+
+.swag-paypal-campaign-banner {
+    margin-top: 32px;
+
+    .sw-campaign-banner__label {
+        color: $color-shopware-brand-500;
+        background: $color-shopware-brand-50;
+    }
+
+    .sw-campaign-banner__container {
+        grid-template-columns: 390px 1fr;
+    }
+
+    &__closed {
+        display: none;
+    }
+
+    &__close {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        position: absolute;
+        display: block;
+        top: 12px;
+        right: 12px;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        background: none;
+        border: 0 none;
+        outline: none;
+        cursor: pointer;
+    }
+}
