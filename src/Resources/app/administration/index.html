@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<script src="https://unpkg.com/@shopware-ag/admin-extension-sdk/cdn"></script>
+
+<script>
+    if (sw.location.is(sw.location.MAIN_HIDDEN)) {
+        sw.ui.module.payment.overviewCard.add({
+            positionId: 'swag-paypal-overview-card-before',
+            component: 'swag-paypal-overview-card',
+            paymentMethodHandlers: [
+                'handler_swag_trustlyapmhandler',
+                'handler_swag_sofortapmhandler',
+                'handler_swag_p24apmhandler',
+                'handler_swag_oxxoapmhandler',
+                'handler_swag_mybankapmhandler',
+                'handler_swag_multibancoapmhandler',
+                'handler_swag_idealapmhandler',
+                'handler_swag_giropayapmhandler',
+                'handler_swag_epsapmhandler',
+                'handler_swag_blikapmhandler',
+                'handler_swag_bancontactapmhandler',
+                'handler_swag_sepahandler',
+                'handler_swag_acdchandler',
+                'handler_swag_puihandler',
+                'handler_swag_paypalpaymenthandler',
+                'handler_swag_pospayment',
+            ],
+        });
+    }
+</script>
+</body>
+</html>

@@ -9,6 +9,9 @@ namespace Swag\PayPal\Setting\Service;
 
 use Shopware\Core\Framework\Context;
 
+/**
+ * @deprecated tag:v6.0.0 - will be removed and not extendable anymore
+ */
 interface MerchantIntegrationsServiceInterface
 {
     public function fetchMerchantIntegrations(Context $context, ?string $salesChannelId = null): array;

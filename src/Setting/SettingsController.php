@@ -14,7 +14,7 @@ use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Swag\PayPal\Setting\Service\ApiCredentialServiceInterface;
-use Swag\PayPal\Setting\Service\MerchantIntegrationsServiceInterface;
+use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,11 +27,11 @@ class SettingsController extends AbstractController
 {
     private ApiCredentialServiceInterface $apiCredentialService;
 
-    private MerchantIntegrationsServiceInterface $merchantIntegrationsService;
+    private MerchantIntegrationsService $merchantIntegrationsService;
 
     public function __construct(
         ApiCredentialServiceInterface $apiService,
-        MerchantIntegrationsServiceInterface $merchantIntegrationsService
+        MerchantIntegrationsService $merchantIntegrationsService
     ) {
         $this->apiCredentialService = $apiService;
         $this->merchantIntegrationsService = $merchantIntegrationsService;
@@ -79,15 +79,31 @@ class SettingsController extends AbstractController
     }
 
     /**
-     * @Since("4.2.0")
+     * @Since("5.0.0")
      * @Route("/api/_action/paypal/get-merchant-integrations", name="api.action.paypal.get.merchant.integrations", methods={"GET"})
      * @Acl({"swag_paypal.editor"})
+     *
+     * @deprecated tag:v6.0.0 - will be removed, use getMerchantInformation instead
      */
     public function getMerchantIntegrations(Request $request, Context $context): JsonResponse
     {
         $salesChannelId = $request->query->getAlnum('salesChannelId');
 
         $response = $this->merchantIntegrationsService->fetchMerchantIntegrations($context, $salesChannelId);
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * @Since("5.2.0")
+     * @Route("/api/_action/paypal/merchant-information", name="api.action.paypal.merchant-information", methods={"GET"})
+     * @Acl({"swag_paypal.editor"})
+     */
+    public function getMerchantInformation(Request $request, Context $context): JsonResponse
+    {
+        $salesChannelId = $request->query->getAlnum('salesChannelId') ?: null;
+
+        $response = $this->merchantIntegrationsService->getMerchantInformation($context, $salesChannelId);
 
         return new JsonResponse($response);
     }

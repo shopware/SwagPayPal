@@ -19,6 +19,7 @@ use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResource;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceMerchantIntegrations;
 use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -30,8 +31,11 @@ class MerchantIntegrationsServiceTest extends TestCase
     public function testFetchMerchantIntegrations(): void
     {
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
 
+        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
+        static::assertCount(\count($this->getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods()), $integrations);
+
+        $integrations = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext())->getCapabilities();
         static::assertCount(\count($this->getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods()), $integrations);
     }
 
@@ -40,10 +44,12 @@ class MerchantIntegrationsServiceTest extends TestCase
         $paymentMethodId = $this->getPaymentIdByHandler(ACDCHandler::class);
 
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
 
-        $integrationStatus = $integrations[$paymentMethodId];
-        static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $integrationStatus);
+        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
+        static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $integrations[$paymentMethodId]);
+
+        $integrations = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext())->getCapabilities();
+        static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $integrations[$paymentMethodId]);
     }
 
     public function testPUIShouldBeUnknown(): void
@@ -51,10 +57,22 @@ class MerchantIntegrationsServiceTest extends TestCase
         $paymentMethodId = $this->getPaymentIdByHandler(PUIHandler::class);
 
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
 
-        $integrationStatus = $integrations[$paymentMethodId];
-        static::assertSame(AbstractMethodData::CAPABILITY_INELIGIBLE, $integrationStatus);
+        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
+        static::assertSame(AbstractMethodData::CAPABILITY_INELIGIBLE, $integrations[$paymentMethodId]);
+
+        $integrations = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext())->getCapabilities();
+        static::assertSame(AbstractMethodData::CAPABILITY_INELIGIBLE, $integrations[$paymentMethodId]);
+    }
+
+    public function testMerchantInformation(): void
+    {
+        $merchantIntegrationService = $this->createMerchantIntegrationService();
+
+        $information = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext())->getMerchantIntegrations();
+        static::assertNotNull($information);
+        static::assertSame(GetResourceMerchantIntegrations::TRACKING_ID, $information->getTrackingId());
+        static::assertSame(GetResourceMerchantIntegrations::LEGAL_NAME, $information->getLegalName());
     }
 
     private function createMerchantIntegrationService(): MerchantIntegrationsService
