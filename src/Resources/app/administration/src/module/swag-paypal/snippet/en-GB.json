@@ -62,7 +62,7 @@
                 "paymentMethodText": "Payment methods",
                 "showCredentials": "Show credentials",
                 "appImageAlt": "PayPal",
-                "editDetail": "Edit Detail",
+                "editDetail": "Edit details",
                 "startOnboardingButtonLabel": "Start onboarding",
                 "availabilityToolTip": {
                     "bancontactapmhandler": "Bancontact is available for the following countries: Belgium",
