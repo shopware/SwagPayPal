@@ -1,5 +1,6 @@
 # 5.2.0
 - PPI-625 - Added compatibility for new payment method overview of Shopware 6.4.14.0
+- PPI-663 - Fix issue where taxes were not correctly calculated for net orders
 
 # 5.1.2
 - PPI-664 - Improved 3D Secure handling in credit card payments
@@ -13,7 +14,7 @@
 - PPI-617 - Fix issue where payment method authorizations were not correctly shown for Sales Channel specific settings
 - PPI-620 - Fix issue showing an incorrect webhook error message on saving settings without credentials 
 - PPI-634 - Fix issue with shipping tax calculation for net customer groups
-- PPI-635 - Fix issue with incorrent Pay Upon Invoice data display in invoices
+- PPI-635 - Fix issue with incorrect Pay Upon Invoice data display in invoices
 - PPI-639 - The Sales Channel selection in the PayPal settings can now display more than 25 Sales Channels
 - PPI-648 - Improved handling of Smart Payment Buttons, when the JS is not loaded fast enough
 - PPI-649 - Fix issue where a partially refunded PayPal Plus payment was set to refunded in Shopware via Webhooks

@@ -1,5 +1,6 @@
 # 5.2.0
 - PPI-625 - Kompatibilität für neue Zahlungsmethodenübersicht von Shopware 6.4.14.0 hinzugefügt
+- PPI-663 - Behebt ein Problem, bei dem Steuern nicht korrekt für Netto-Bestellungen berechnet wurden
 
 # 5.1.2
 - PPI-664 - Verwendung von 3D Secure für Kreditkartenzahlungen verbessert
