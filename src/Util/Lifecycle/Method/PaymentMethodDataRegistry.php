@@ -39,6 +39,8 @@ class PaymentMethodDataRegistry
         P24MethodData::class,
         SofortMethodData::class,
         TrustlyMethodData::class,
+        VenmoMethodData::class,
+        PayLaterMethodData::class,
     ];
 
     private EntityRepositoryInterface $paymentMethodRepository;

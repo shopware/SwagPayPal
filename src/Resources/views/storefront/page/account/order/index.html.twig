@@ -3,5 +3,7 @@
 {% block page_checkout_confirm_form_submit %}
     {{ parent() }}
 
-    {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %}
+    {% block page_checkout_confirm_form_submit_paypal_container %}
+        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %}
+    {% endblock %}
 {% endblock %}

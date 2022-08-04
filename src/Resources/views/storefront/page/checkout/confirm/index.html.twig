@@ -3,7 +3,9 @@
 {% block page_checkout_aside_actions_csrf %}
     {{ parent() }}
 
-    {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %}
+    {% block page_checkout_aside_actions_csrf_paypal_container %}
+        {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %}
+    {% endblock %}
 {% endblock %}
 
 {# @deprecated tag:v6.0.0 - Will be removed without replacement #}

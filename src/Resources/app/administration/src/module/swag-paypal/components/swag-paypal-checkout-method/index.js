@@ -29,6 +29,9 @@ Component.register('swag-paypal-checkout-method', {
 
     data() {
         return {
+            /**
+             * @deprecated tag:v6.0.0 - will be removed, use media instead
+             */
             iconMap: {
                 handler_swag_paypalpaymenthandler: 'paypal-payment-method-paypal',
                 handler_swag_acdchandler: 'paypal-payment-method-credit-and-debit-card',
@@ -55,6 +58,9 @@ Component.register('swag-paypal-checkout-method', {
             return this.repositoryFactory.create('payment_method');
         },
 
+        /**
+         * @deprecated tag:v6.0.0 - will be removed, use media instead
+         */
         icon() {
             return this.iconMap[this.paymentMethod.formattedHandlerIdentifier];
         },

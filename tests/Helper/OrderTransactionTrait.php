@@ -60,6 +60,21 @@ trait OrderTransactionTrait
         return $orderTransactionRepo->search(new Criteria([$transactionId]), $context)->get($transactionId);
     }
 
+    protected function assertOrderTransactionState(string $state, string $transactionId, Context $context): void
+    {
+        $container = $this->getContainer();
+        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
+            $state,
+            $container,
+            $context
+        );
+
+        $transaction = $this->getTransaction($transactionId, $container, $context);
+        static::assertNotNull($transaction);
+        static::assertNotNull($expectedStateId);
+        static::assertSame($expectedStateId, $transaction->getStateId());
+    }
+
     private function getValidTransactionId(
         array $orderData,
         string $paymentMethodId,
@@ -126,20 +141,5 @@ trait OrderTransactionTrait
         $orderTransactionRepo->create([$orderTransactionData], $context);
 
         return $orderTransactionId;
-    }
-
-    private function assertOrderTransactionState(string $state, string $transactionId, Context $context): void
-    {
-        $container = $this->getContainer();
-        $expectedStateId = $this->getOrderTransactionStateIdByTechnicalName(
-            $state,
-            $container,
-            $context
-        );
-
-        $transaction = $this->getTransaction($transactionId, $container, $context);
-        static::assertNotNull($transaction);
-        static::assertNotNull($expectedStateId);
-        static::assertSame($expectedStateId, $transaction->getStateId());
     }
 }

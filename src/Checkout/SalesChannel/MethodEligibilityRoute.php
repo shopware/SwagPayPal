@@ -16,7 +16,9 @@ use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
+use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
+use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -30,6 +32,8 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
     public const REMOVABLE_PAYMENT_HANDLERS = [
         'CARD' => ACDCHandler::class,
         'SEPA' => SEPAHandler::class,
+        'VENMO' => VenmoHandler::class,
+        'PAYLATER' => PayLaterHandler::class,
     ];
 
     public const SESSION_KEY = 'payPalIneligiblePaymentMethods';

@@ -61,7 +61,7 @@
 
         <service id="Swag\PayPal\Checkout\ACDC\ACDCValidator"/>
 
-        <service id="Swag\PayPal\Checkout\Payment\Method\ACDCHandler">
+        <service id="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler" abstract="true">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
@@ -69,18 +69,22 @@
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\ACDCHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
             <argument type="service" id="Swag\PayPal\Checkout\ACDC\ACDCValidator"/>
             <tag name="shopware.payment.method.sync"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\Payment\Method\SEPAHandler">
-            <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
-            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService"/>
-            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
-            <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
+        <service id="Swag\PayPal\Checkout\Payment\Method\PayLaterHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
+            <tag name="shopware.payment.method.sync"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\SEPAHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
+            <tag name="shopware.payment.method.sync"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Payment\Method\VenmoHandler" parent="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler">
             <tag name="shopware.payment.method.sync"/>
         </service>
 

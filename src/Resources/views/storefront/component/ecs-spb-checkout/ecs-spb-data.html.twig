@@ -3,12 +3,16 @@
     {% set expressCheckoutData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\SalesChannel\\ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData spbCheckoutButtonData #}
     {% set spbCheckoutButtonData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
-    {# @var \Swag\PayPal\Checkout\ACDC\ACDCCheckoutFieldData acdcFieldData #}
+    {# @var \Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutFieldData acdcFieldData #}
     {% set acdcFieldData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Checkout\PUI\PUIFraudNetData acdcFieldData #}
     {% set puiFraudnetData = page.extensions[constant('Swag\\PayPal\\Checkout\\PUI\\PUISubscriber::PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID')] %}
-    {# @var \Swag\PayPal\Checkout\SEPA\SEPACheckoutData sepaData #}
+    {# @var \Swag\PayPal\Storefront\Data\Struct\SEPACheckoutData sepaData #}
     {% set sepaData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\SEPAMethodData::PAYPAL_SEPA_FIELD_DATA_EXTENSION_ID')] %}
+    {# @var \Swag\PayPal\Storefront\Data\Struct\VenmoCheckoutData venmoData #}
+    {% set venmoData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\VenmoMethodData::PAYPAL_VENMO_FIELD_DATA_EXTENSION_ID')] %}
+    {# @var \Swag\PayPal\Storefront\Data\Struct\PayLaterCheckoutData payLaterData #}
+    {% set payLaterData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\PayLaterMethodData::PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID')] %}
 
     {% if expressCheckoutData %}
 
@@ -63,5 +67,24 @@
                  data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
             </div>
         {% endblock %}
+
+    {% elseif venmoData and venmoData.paymentMethodId is same as(context.paymentMethod.id) %}
+
+        {% block swag_paypal_ecs_spb_data_venmo_fields %}
+            <div data-swag-paypal-venmo="true"
+                 data-swag-paypal-venmo-options="{{ venmoData|json_encode }}"
+                 data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
+            </div>
+        {% endblock %}
+
+    {% elseif payLaterData and payLaterData.paymentMethodId is same as(context.paymentMethod.id) %}
+
+        {% block swag_paypal_ecs_spb_data_pay_later_fields %}
+            <div data-swag-paypal-pay-later="true"
+                 data-swag-paypal-pay-later-options="{{ payLaterData|json_encode }}"
+                 data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
+            </div>
+        {% endblock %}
+
     {% endif %}
 {% endblock %}

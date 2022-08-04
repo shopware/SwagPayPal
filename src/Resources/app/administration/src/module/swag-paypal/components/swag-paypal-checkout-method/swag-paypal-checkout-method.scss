@@ -1,17 +1,23 @@
 @import "~scss/variables";
 
 .swag-paypal-checkout-method {
-    border: 1px solid #d9dfe5;
-    border-radius: 4px;
-    height: 66px;
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    border: 1px solid $color-gray-300;
+    border-radius: $border-radius-default;
     margin-bottom: 16px;
+    column-gap: 16px;
+    padding: 10px 16px;
+    font-size: $font-size-small;
 
-    &__name-icon {
-        margin: 20px;
+    &__name {
+        font-weight: $font-weight-semi-bold;
     }
 
     &__icon {
-        margin-right: 4px;
+        width: 32px;
+        max-height: 24px;
     }
 
     &__dynamic {
@@ -21,7 +27,7 @@
         justify-items: end;
         justify-content: right;
         grid-gap: 12px;
-        margin: 20px 12px;
+        margin: 0 12px;
 
         .sw-label {
             margin: 0;
@@ -31,10 +37,6 @@
     &__show-detail-link {
         font-size: $font-size-small;
         color: $color-shopware-brand-500;
-    }
-
-    & .sw-field--switch {
-        margin: 8px 0;
     }
 
     .sw-help-text {

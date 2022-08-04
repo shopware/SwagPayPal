@@ -21,9 +21,10 @@ use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
+use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
+use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData;
 use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
@@ -31,8 +32,10 @@ use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\CheckoutDataSubscriber;
 use Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService;
+use Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService;
+use Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 use Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutData;
 use Swag\PayPal\Test\Helper\CartTrait;
@@ -44,9 +47,11 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ClientTokenResponseFixture;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\SEPAMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -100,7 +105,7 @@ class CheckoutSubscriberTest extends TestCase
         if ($extensionId === PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID) {
             static::assertFalse($event->getPage()->hasExtension($extensionId));
         } else {
-            $this->$assertionMethod($event, $paymentMethodId);
+            $this->$assertionMethod($event, $paymentMethodId, $extensionId);
         }
     }
 
@@ -142,7 +147,7 @@ class CheckoutSubscriberTest extends TestCase
         $subscriber = $this->createSubscriber();
         $event = $this->createEditOrderPageLoadedEvent($paymentMethodId);
         $subscriber->onAccountOrderEditLoaded($event);
-        $this->$assertionMethod($event, $paymentMethodId);
+        $this->$assertionMethod($event, $paymentMethodId, $extensionId);
     }
 
     /**
@@ -161,7 +166,7 @@ class CheckoutSubscriberTest extends TestCase
         if ($extensionId === PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID) {
             static::assertFalse($event->getPage()->hasExtension($extensionId));
         } else {
-            $this->$assertionMethod($event, $paymentMethodId);
+            $this->$assertionMethod($event, $paymentMethodId, $extensionId);
         }
     }
 
@@ -204,7 +209,7 @@ class CheckoutSubscriberTest extends TestCase
         $event = $this->createConfirmPageLoadedEvent($paymentMethodId);
         $subscriber->onCheckoutConfirmLoaded($event);
 
-        $this->$assertionMethod($event, $paymentMethodId);
+        $this->$assertionMethod($event, $paymentMethodId, $extensionId);
     }
 
     /**
@@ -250,7 +255,7 @@ class CheckoutSubscriberTest extends TestCase
         $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
 
         return [
-            [
+            'acdc' => [
                 (string) $paymentMethodDataRegistry->getEntityIdFromData(
                     $paymentMethodDataRegistry->getPaymentMethod(ACDCMethodData::class),
                     Context::createDefaultContext()
@@ -258,13 +263,37 @@ class CheckoutSubscriberTest extends TestCase
                 ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID,
                 'assertAcdcCheckoutButtonData',
             ],
-            [
+            'spb' => [
                 (string) $paymentMethodDataRegistry->getEntityIdFromData(
                     $paymentMethodDataRegistry->getPaymentMethod(PayPalMethodData::class),
                     Context::createDefaultContext()
                 ),
                 PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID,
-                'assertSpbCheckoutButtonData',
+                'assertAbstractCheckoutButtonData',
+            ],
+            'sepa' => [
+                (string) $paymentMethodDataRegistry->getEntityIdFromData(
+                    $paymentMethodDataRegistry->getPaymentMethod(SEPAMethodData::class),
+                    Context::createDefaultContext()
+                ),
+                SEPAMethodData::PAYPAL_SEPA_FIELD_DATA_EXTENSION_ID,
+                'assertAbstractCheckoutButtonData',
+            ],
+            'venmo' => [
+                (string) $paymentMethodDataRegistry->getEntityIdFromData(
+                    $paymentMethodDataRegistry->getPaymentMethod(VenmoMethodData::class),
+                    Context::createDefaultContext()
+                ),
+                VenmoMethodData::PAYPAL_VENMO_FIELD_DATA_EXTENSION_ID,
+                'assertAbstractCheckoutButtonData',
+            ],
+            'paylater' => [
+                (string) $paymentMethodDataRegistry->getEntityIdFromData(
+                    $paymentMethodDataRegistry->getPaymentMethod(PayLaterMethodData::class),
+                    Context::createDefaultContext()
+                ),
+                PayLaterMethodData::PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID,
+                'assertAbstractCheckoutButtonData',
             ],
         ];
     }
@@ -284,6 +313,24 @@ class CheckoutSubscriberTest extends TestCase
         /** @var RouterInterface $router */
         $router = $this->getContainer()->get('router');
         $sepaDataService = new SEPACheckoutDataService(
+            $this->paymentMethodDataRegistry,
+            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
+            $localeCodeProvider,
+            $router,
+            $settings,
+            $credentialsUtil
+        );
+
+        $payLaterDataService = new PayLaterCheckoutDataService(
+            $this->paymentMethodDataRegistry,
+            new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
+            $localeCodeProvider,
+            $router,
+            $settings,
+            $credentialsUtil
+        );
+
+        $venmoDataService = new VenmoCheckoutDataService(
             $this->paymentMethodDataRegistry,
             new IdentityResource($this->createPayPalClientFactoryWithService($settings)),
             $localeCodeProvider,
@@ -322,6 +369,16 @@ class CheckoutSubscriberTest extends TestCase
         $sepaMethodDataMock->method('getCheckoutTemplateExtensionId')->willReturn(SEPAMethodData::PAYPAL_SEPA_FIELD_DATA_EXTENSION_ID);
         $sepaMethodDataMock->method('getHandler')->willReturn(SEPAHandler::class);
 
+        $payLaterMethodDataMock = $this->createMock(PayLaterMethodData::class);
+        $payLaterMethodDataMock->method('getCheckoutDataService')->willReturn($payLaterDataService);
+        $payLaterMethodDataMock->method('getCheckoutTemplateExtensionId')->willReturn(PayLaterMethodData::PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID);
+        $payLaterMethodDataMock->method('getHandler')->willReturn(PayLaterHandler::class);
+
+        $venmoMethodDataMock = $this->createMock(VenmoMethodData::class);
+        $venmoMethodDataMock->method('getCheckoutDataService')->willReturn($venmoDataService);
+        $venmoMethodDataMock->method('getCheckoutTemplateExtensionId')->willReturn(VenmoMethodData::PAYPAL_VENMO_FIELD_DATA_EXTENSION_ID);
+        $venmoMethodDataMock->method('getHandler')->willReturn(VenmoHandler::class);
+
         $acdcMethodDataMock = $this->createMock(ACDCMethodData::class);
         $acdcMethodDataMock->method('getCheckoutDataService')->willReturn($acdcDataService);
         $acdcMethodDataMock->method('getCheckoutTemplateExtensionId')->willReturn(ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID);
@@ -344,6 +401,8 @@ class CheckoutSubscriberTest extends TestCase
             [
                 $acdcMethodDataMock,
                 $sepaMethodDataMock,
+                $payLaterMethodDataMock,
+                $venmoMethodDataMock,
                 $spbMethodDataMock,
             ]
         );
@@ -396,70 +455,56 @@ class CheckoutSubscriberTest extends TestCase
     /**
      * @param AccountEditOrderPageLoadedEvent|CheckoutConfirmPageLoadedEvent $event
      */
-    private function assertAcdcCheckoutButtonData(PageLoadedEvent $event, string $paymentMethodId): void
+    private function assertAcdcCheckoutButtonData(PageLoadedEvent $event, string $paymentMethodId, string $extensionName): void
     {
+        $this->assertAbstractCheckoutButtonData($event, $paymentMethodId, $extensionName);
+
         /** @var ACDCCheckoutData|null $acdcExtension */
-        $acdcExtension = $event->getPage()->getExtension(ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID);
+        $acdcExtension = $event->getPage()->getExtension($extensionName);
 
         static::assertNotNull($acdcExtension);
-        static::assertSame(self::TEST_CLIENT_ID, $acdcExtension->getClientId());
         static::assertSame(ClientTokenResponseFixture::CLIENT_TOKEN, $acdcExtension->getClientToken());
-        static::assertSame('EUR', $acdcExtension->getCurrency());
-        static::assertSame('de_DE', $acdcExtension->getLanguageIso());
-        static::assertSame($paymentMethodId, $acdcExtension->getPaymentMethodId());
-        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $acdcExtension->getIntent());
-        static::assertSame('/store-api/paypal/create-order', $acdcExtension->getCreateOrderUrl());
-        static::assertSame('/store-api/paypal/error', $acdcExtension->getAddErrorUrl());
-
-        if ($event instanceof AccountEditOrderPageLoadedEvent) {
-            $accountOrderEditUrl = $acdcExtension->getAccountOrderEditCancelledUrl();
-            static::assertNotNull($accountOrderEditUrl);
-            static::assertStringContainsString('/account/order/edit', $accountOrderEditUrl);
-            $accountOrderEditUrl = $acdcExtension->getAccountOrderEditFailedUrl();
-            static::assertNotNull($accountOrderEditUrl);
-            static::assertStringContainsString('/account/order/edit', $accountOrderEditUrl);
-            $orderId = $acdcExtension->getOrderId();
-            static::assertNotNull($orderId);
-            static::assertSame(ConstantsForTesting::VALID_ORDER_ID, $orderId);
-        } else {
-            static::assertNull($acdcExtension->getAccountOrderEditCancelledUrl());
-            static::assertNull($acdcExtension->getAccountOrderEditFailedUrl());
-            static::assertNull($acdcExtension->getOrderId());
-        }
     }
 
     /**
      * @param AccountEditOrderPageLoadedEvent|CheckoutConfirmPageLoadedEvent $event
      */
-    private function assertSpbCheckoutButtonData(PageLoadedEvent $event, string $paymentMethodId): void
+    private function assertSpbCheckoutButtonData(PageLoadedEvent $event, string $paymentMethodId, string $extensionName): void
     {
-        /** @var SPBCheckoutButtonData|null $spbExtension */
-        $spbExtension = $event->getPage()->getExtension(PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID);
+        $this->assertAbstractCheckoutButtonData($event, $paymentMethodId, $extensionName);
+    }
 
-        static::assertNotNull($spbExtension);
-        static::assertSame(self::TEST_CLIENT_ID, $spbExtension->getClientId());
-        static::assertSame('EUR', $spbExtension->getCurrency());
-        static::assertSame('de_DE', $spbExtension->getLanguageIso());
-        static::assertSame($paymentMethodId, $spbExtension->getPaymentMethodId());
-        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $spbExtension->getIntent());
-        static::assertFalse($spbExtension->getUseAlternativePaymentMethods());
-        static::assertSame('/store-api/paypal/create-order', $spbExtension->getCreateOrderUrl());
-        static::assertSame('/store-api/paypal/error', $spbExtension->getAddErrorUrl());
+    /**
+     * @param AccountEditOrderPageLoadedEvent|CheckoutConfirmPageLoadedEvent $event
+     */
+    private function assertAbstractCheckoutButtonData(PageLoadedEvent $event, string $paymentMethodId, string $extensionName): void
+    {
+        /** @var AbstractCheckoutData|null $extension */
+        $extension = $event->getPage()->getExtension($extensionName);
+
+        static::assertNotNull($extension);
+        static::assertSame(self::TEST_CLIENT_ID, $extension->getClientId());
+        static::assertSame('EUR', $extension->getCurrency());
+        static::assertSame('de_DE', $extension->getLanguageIso());
+        static::assertSame($paymentMethodId, $extension->getPaymentMethodId());
+        static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $extension->getIntent());
+        static::assertSame('/store-api/paypal/create-order', $extension->getCreateOrderUrl());
+        static::assertSame('/store-api/paypal/error', $extension->getAddErrorUrl());
 
         if ($event instanceof AccountEditOrderPageLoadedEvent) {
-            $accountOrderEditUrl = $spbExtension->getAccountOrderEditCancelledUrl();
+            $accountOrderEditUrl = $extension->getAccountOrderEditCancelledUrl();
             static::assertNotNull($accountOrderEditUrl);
             static::assertStringContainsString('/account/order/edit', $accountOrderEditUrl);
-            $accountOrderEditUrl = $spbExtension->getAccountOrderEditFailedUrl();
+            $accountOrderEditUrl = $extension->getAccountOrderEditFailedUrl();
             static::assertNotNull($accountOrderEditUrl);
             static::assertStringContainsString('/account/order/edit', $accountOrderEditUrl);
-            $orderId = $spbExtension->getOrderId();
+            $orderId = $extension->getOrderId();
             static::assertNotNull($orderId);
             static::assertSame(ConstantsForTesting::VALID_ORDER_ID, $orderId);
         } else {
-            static::assertNull($spbExtension->getAccountOrderEditCancelledUrl());
-            static::assertNull($spbExtension->getAccountOrderEditFailedUrl());
-            static::assertNull($spbExtension->getOrderId());
+            static::assertNull($extension->getAccountOrderEditCancelledUrl());
+            static::assertNull($extension->getAccountOrderEditFailedUrl());
+            static::assertNull($extension->getOrderId());
         }
     }
 }

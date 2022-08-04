@@ -5,40 +5,12 @@ import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import StoreApiClient from 'src/service/store-api-client.service';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
+import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
-/**
- * @deprecated tag:v6.0.0 - Will be removed without replacement
- */
-export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractButtons {
+export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButtons {
+    static scriptLoading = new SwagPayPalScriptLoading();
+
     static options = {
-        /**
-         * This option specifies the PayPal button color
-         *
-         * @type string
-         */
-        buttonColor: 'gold',
-
-        /**
-         * This option specifies the PayPal button shape
-         *
-         * @type string
-         */
-        buttonShape: 'rect',
-
-        /**
-         * This option specifies the PayPal button size
-         *
-         * @type string
-         */
-        buttonSize: 'small',
-
-        /**
-         * This option specifies the language of the PayPal button
-         *
-         * @type string
-         */
-        languageIso: 'en_GB',
-
         /**
          * This option holds the client id specified in the settings
          *
@@ -52,6 +24,13 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          * @type string
          */
         merchantPayerId: '',
+
+        /**
+         * This option holds the client token required for field rendering
+         *
+         * @type string
+         */
+        clientToken: '',
 
         /**
          * This options specifies the currency of the PayPal button
@@ -75,25 +54,32 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         commit: true,
 
         /**
-         * This option toggles if credit card and ELV should be shown
+         * This option specifies the language of the PayPal button
          *
-         * @type boolean
+         * @type string
          */
-        useAlternativePaymentMethods: true,
+        languageIso: 'en_GB',
 
         /**
-         * This option specifies if selected APMs should be hidden
+         * This option specifies the PayPal button color
          *
-         * @type string[]
+         * @type string
          */
-        disabledAlternativePaymentMethods: [],
+        buttonColor: 'black',
 
         /**
-         * This option toggles if the pay later button should be shown
+         * This option specifies the PayPal button shape
          *
-         * @type boolean
+         * @type string
          */
-        showPayLater: true,
+        buttonShape: 'rect',
+
+        /**
+         * This option specifies the PayPal button size
+         *
+         * @type string
+         */
+        buttonSize: 'small',
 
         /**
          * URL to create a new PayPal order
@@ -103,29 +89,11 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         createOrderUrl: '',
 
         /**
-         * URL to the checkout confirm page
-         *
-         * @deprecated tag:v6.0.0 - will be removed
-         *
-         * @type string
-         */
-        checkoutConfirmUrl: '',
-
-        /**
          * Is set, if the plugin is used on the order edit page
          *
          * @type string|null
          */
         orderId: null,
-
-        /**
-         * URL to the checkout confirm page
-         *
-         * @deprecated tag:v6.0.0 - will be removed
-         *
-         * @type string|null
-         */
-        accountOrderEditUrl: '',
 
         /**
          * URL to the after order edit page, as the payment has failed
@@ -142,15 +110,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         accountOrderEditCancelledUrl: '',
 
         /**
-         * Selector of the selected payment method
-         *
-         * @deprecated tag:v6.0.0 - will be removed without replacement
-         *
-         * @type string
-         */
-        checkedPaymentMethodSelector: 'input.payment-method-input[checked=checked]',
-
-        /**
          * Selector of the order confirm form
          *
          * @type string
@@ -165,35 +124,53 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         confirmOrderButtonSelector: 'button[type="submit"]',
 
         /**
-         * URL for adding flash error message
+         * If set to true, the payment method caused an error and already reloaded the page.
+         * This could for example happen if the funding type is not eligible.
          *
-         * @type string
+         * @type boolean
          */
-        addErrorUrl: '',
+        preventErrorReload: false,
     };
 
     init() {
-        this._client = new StoreApiClient();
-
-        this.createButton();
-    }
-
-    createButton() {
-        this.createScript((paypal) => {
-            this.renderButton(paypal);
-        });
-    }
-
-    renderButton(paypal) {
         this.confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
+
+        if (this.options.preventErrorReload) {
+            DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).disabled = 'disabled';
+
+            return;
+        }
 
         DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
 
-        return paypal.Buttons(this.getButtonConfig()).render(this.el);
+        this._client = new StoreApiClient();
+
+        this.createScript((paypal) => {
+            this.render(paypal);
+        });
     }
 
-    getButtonConfig() {
+    render(paypal) {
+        const button = paypal.Buttons(this.getButtonConfig(this.getFundingSource(paypal)));
+
+        if (!button.isEligible()) {
+            this.createError(`Funding for PayPal button is not eligible (${this.getFundingSource(paypal)})`);
+        }
+
+        button.render(this.el);
+    }
+
+    /**
+     * Adjust this to the specific payment method
+     */
+    getFundingSource(paypal) {
+        return paypal.FUNDING.PAYPAL;
+    }
+
+    getButtonConfig(fundingSource) {
         return {
+            fundingSource,
+
             style: {
                 size: this.options.buttonSize,
                 shape: this.options.buttonShape,
@@ -229,15 +206,14 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     }
 
     /**
+     * @param product String
+     *
      * @return {Promise}
      */
-    createOrder() {
-        if (!this.confirmOrderForm.checkValidity()) {
-            throw new Error('Checkout form not valid');
-        }
-
+    createOrder(product) {
         const formData = FormSerializeUtil.serialize(this.confirmOrderForm);
-        formData.set('product', 'spb');
+        formData.set('product', product);
+
         const orderId = this.options.orderId;
         if (orderId !== null) {
             formData.set('orderId', orderId);
@@ -269,7 +245,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         const input = document.createElement('input');
         input.setAttribute('type', 'hidden');
         input.setAttribute('name', 'paypalOrderId');
-        input.setAttribute('value', data.orderID);
+        input.setAttribute('value', data.hasOwnProperty('orderId') ? data.orderId : data.orderID);
 
         this.confirmOrderForm.appendChild(input);
         this.confirmOrderForm.submit();

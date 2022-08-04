@@ -9,6 +9,9 @@ namespace Swag\PayPal\Checkout\SPBCheckout;
 
 use Shopware\Core\Framework\Struct\Struct;
 
+/**
+ * @deprecated tag:v6.0.0 - will be removed without replacement, payment logos have been added natively
+ */
 class SPBMarksData extends Struct
 {
     protected string $clientId;
