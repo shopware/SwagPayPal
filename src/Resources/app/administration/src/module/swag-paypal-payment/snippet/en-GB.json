@@ -131,5 +131,11 @@
             "sandboxLiveContent": "An error occurred while retrieving payment details from PayPal. If you see this message, it was probably a payment that was created with sandbox enabled and has now been requested with live data, or vice versa. Correct your PayPal settings or delete test orders from the system.",
             "other": "An error occurred while retrieving payment details from PayPal."
         }
+    },
+    "sw-order-detail": {
+        "payPalCarrierLabel": "Default shipping carrier",
+        "payPalCarrierPlaceholder": "not set",
+        "payPalCarrierHelpText": "You can set and change the default shipping carrier for PayPal in the <a class=\"sw-internal-link sw-internal-link--inline\" href=\"#/sw/settings/shipping/index\">shipping methods<sw-icon name=\"regular-long-arrow-right\" small /></a>. However, this will have no effect on orders that have already been placed.",
+        "payPalCarrierDescription": "If you want to change the carrier for this PayPal order, <a target=\"_blank\" href=\"{orderLink}\">click here</a>"
     }
 }

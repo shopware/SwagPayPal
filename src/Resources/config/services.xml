@@ -21,6 +21,7 @@
         <import resource="./services/resource_v2.xml"/>
         <import resource="./services/service_v1.xml"/>
         <import resource="./services/setting.xml"/>
+        <import resource="./services/shipping.xml"/>
         <import resource="./services/spb_checkout.xml"/>
         <import resource="./services/storefront.xml"/>
         <import resource="./services/util.xml"/>

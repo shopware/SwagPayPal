@@ -1,5 +1,6 @@
 # 5.3.0
 - PPI-627 - Neue Zahlungsarten "Später bezahlen" und "Venmo" hinzugefügt
+- PPI-673 - Automatische Übermittlung von Sendungsverfolgungsdaten an PayPal hinzugefügt
 - PPI-677 - Verfügbarkeit von Zahlungsmethoden in der Administration verbessert
 
 # 5.2.0

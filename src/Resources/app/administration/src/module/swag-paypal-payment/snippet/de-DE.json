@@ -131,5 +131,11 @@
             "sandboxLiveContent": "Beim Abrufen der Zahlungsdaten von PayPal ist ein Fehler aufgetreten. Wenn du diese Nachricht siehst, handelt es sich vermutlich um eine Zahlung, die mit aktivierter Sandbox angelegt wurde und nun mit Live-Daten abgerufen wurde, oder umgekehrt. Korrigiere deine PayPal-Einstellungen oder lösche Test-Bestellungen aus dem System.",
             "other": "Beim Abrufen der Zahlungsdaten von PayPal ist ein Fehler aufgetreten."
         }
+    },
+    "sw-order-detail": {
+        "payPalCarrierLabel": "Standardversanddienstleister",
+        "payPalCarrierPlaceholder": "nicht festgelegt",
+        "payPalCarrierHelpText": "Du kannst den Standardversanddienstleister unter <a class=\"sw-internal-link sw-internal-link--inline\" href=\"#/sw/settings/shipping/index\">Versand<sw-icon name=\"regular-long-arrow-right\" small /></a> festlegen und ändern. Dies hat jedoch keine Auswirkungen auf bereits getätigte Bestellungen.",
+        "payPalCarrierDescription": "Wenn du den Versanddienstleister für diese Paypal Bestellung ändern willst, <a target=\"_blank\" href=\"{orderLink}\">klicke hier</a>."
     }
 }

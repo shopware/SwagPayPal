@@ -1,0 +1,23 @@
+{% block sw_order_detail_base_secondary_info_order_overview_right_column_slot %}
+    {% parent %}
+
+    {% block sw_detail_base_secondary_info_order_overview_paypal_carrier %}
+    <dt>
+        {{ $tc('sw-order-detail.payPalCarrierLabel') }}
+        <sw-help-text :text="$tc('sw-order-detail.payPalCarrierHelpText')" />
+    </dt>
+
+    <dd>
+        <div>
+            {{ payPalCarrier ? payPalCarrier : $tc('sw-order-detail.payPalCarrierPlaceholder') }}
+        </div>
+
+        <div
+            v-html="payPalCarrierDescription"
+            class="sw-user-card__paypal-carrier-description"
+        >
+        </div>
+    </dd>
+    {% endblock %}
+
+{% endblock %}

@@ -14,6 +14,7 @@ import './components/swag-paypal-settings-icon';
 import './components/swag-paypal-spb';
 import './components/swag-paypal-plugin-box-with-onboarding';
 import './components/swag-paypal-locale-field';
+import './components/swag-paypal-shipping-alert';
 
 const { Module } = Shopware;
 

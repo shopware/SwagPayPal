@@ -14,6 +14,7 @@ final class RequestUriV1
     public const AUTHORIZATION_RESOURCE = 'v1/payments/authorization';
     public const ORDERS_RESOURCE = 'v1/payments/orders';
     public const CAPTURE_RESOURCE = 'v1/payments/capture';
+    public const SHIPPING_RESOURCE = 'v1/shipping';
 
     public const TOKEN_RESOURCE = 'v1/oauth2/token';
 

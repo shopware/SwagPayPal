@@ -107,7 +107,7 @@ class GetOrderPUICompleted
                     'payments' => [
                         'captures' => [
                             [
-                                'id' => '03060900SU539840T',
+                                'id' => self::CAPTURE_ID,
                                 'status' => 'COMPLETED',
                                 'amount' => [
                                     'currency_code' => 'EUR',

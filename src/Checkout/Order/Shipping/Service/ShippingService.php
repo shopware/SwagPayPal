@@ -1,0 +1,153 @@
+<?php declare(strict_types=1);
+/*
+ * (c) shopware AG <info@shopware.com>
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Swag\PayPal\Checkout\Order\Shipping\Service;
+
+use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Cart\Exception\OrderDeliveryNotFoundException;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
+use Swag\PayPal\RestApi\V1\Api\Shipping;
+use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
+use Swag\PayPal\RestApi\V1\Resource\ShippingResource;
+use Swag\PayPal\SwagPayPal;
+
+class ShippingService
+{
+    private ShippingResource $shippingResource;
+
+    private EntityRepositoryInterface $salesChannelRepository;
+
+    private EntityRepositoryInterface $orderTransactionRepository;
+
+    private EntityRepositoryInterface $shippingMethodRepository;
+
+    private LoggerInterface $logger;
+
+    public function __construct(
+        ShippingResource $shippingResource,
+        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepositoryInterface $orderTransactionRepository,
+        EntityRepositoryInterface $shippingMethodRepository,
+        LoggerInterface $logger
+    ) {
+        $this->shippingResource = $shippingResource;
+        $this->salesChannelRepository = $salesChannelRepository;
+        $this->orderTransactionRepository = $orderTransactionRepository;
+        $this->shippingMethodRepository = $shippingMethodRepository;
+        $this->logger = $logger;
+    }
+
+    /**
+     * @param string[] $after
+     * @param string[] $before
+     */
+    public function updateTrackingCodes(string $orderDeliveryId, array $after, array $before, Context $context): void
+    {
+        $addedTrackingCodes = \array_diff($after, $before);
+        $removedTrackingCodes = \array_diff($before, $after);
+
+        if (!$addedTrackingCodes && !$removedTrackingCodes) {
+            return;
+        }
+
+        $transactionId = $this->getPayPalTransactionId($orderDeliveryId, $context);
+        if ($transactionId === null) {
+            return;
+        }
+
+        $carrier = $this->fetchCarrier($orderDeliveryId, $context);
+        if ($carrier === null) {
+            return;
+        }
+
+        $trackers = [];
+        foreach ($addedTrackingCodes as $trackingCode) {
+            $trackers[] = $this->createTracker($transactionId, $trackingCode, $carrier, Tracker::STATUS_SHIPPED);
+        }
+
+        foreach ($removedTrackingCodes as $trackingCode) {
+            $trackers[] = $this->createTracker($transactionId, $trackingCode, $carrier, Tracker::STATUS_CANCELLED);
+        }
+
+        $shipping = new Shipping();
+        $shipping->setTrackers($trackers);
+
+        $this->logger->info('Setting tracking codes for order delivery "{orderDeliveryId}"', [
+            'orderDeliveryId' => $orderDeliveryId,
+            'trackers' => $trackers,
+        ]);
+        $this->shippingResource->batch($shipping, $this->fetchOrderSalesChannelId($orderDeliveryId, $context));
+    }
+
+    private function getPayPalTransactionId(string $orderDeliveryId, Context $context): ?string
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('order.deliveries.id', $orderDeliveryId));
+        $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
+        $criteria->setLimit(1);
+
+        $transaction = $this->orderTransactionRepository->search($criteria, $context)->first();
+        if ($transaction === null) {
+            return null;
+        }
+
+        $customFields = $transaction->getCustomFields();
+        if (!$customFields) {
+            return null;
+        }
+
+        return $customFields[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID] ?? null;
+    }
+
+    private function fetchCarrier(string $orderDeliveryId, Context $context): ?string
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('orderDeliveries.id', $orderDeliveryId));
+        $criteria->setLimit(1);
+
+        $shippingMethod = $this->shippingMethodRepository->search($criteria, $context)->first();
+        if ($shippingMethod === null) {
+            return null;
+        }
+
+        $customFields = $shippingMethod->getTranslation('customFields') ?? [];
+        if (!\is_array($customFields)) {
+            return null;
+        }
+
+        return $customFields[SwagPayPal::SHIPPING_METHOD_CUSTOM_FIELDS_CARRIER] ?? null;
+    }
+
+    private function fetchOrderSalesChannelId(string $orderDeliveryId, Context $context): string
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('orders.deliveries.id', $orderDeliveryId));
+        $criteria->setLimit(1);
+
+        $id = $this->salesChannelRepository->searchIds($criteria, $context)->firstId();
+        if ($id === null) {
+            throw new OrderDeliveryNotFoundException($orderDeliveryId);
+        }
+
+        return $id;
+    }
+
+    private function createTracker(string $transactionId, string $trackingCode, string $carrier, string $status): Tracker
+    {
+        $tracking = new Tracker();
+        $tracking->setTransactionId($transactionId);
+        $tracking->setStatus($status);
+        $tracking->setCarrier($carrier);
+        $tracking->setTrackingNumber($trackingCode);
+
+        return $tracking;
+    }
+}

@@ -1,5 +1,6 @@
 # 5.3.0
 - PPI-627 - Added new payment methods "Pay Later" and "Venmo"
+- PPI-673 - Added automatic transmission of shipping tracking numbers to PayPal
 - PPI-677 - Improved availability of payment methods in Administration
 
 # 5.2.0

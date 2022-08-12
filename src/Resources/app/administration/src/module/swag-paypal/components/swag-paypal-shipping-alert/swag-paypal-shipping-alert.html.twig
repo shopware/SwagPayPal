@@ -1,0 +1,8 @@
+<sw-alert
+    :class="alertClasses"
+    :title="$tc('swag-paypal.shippingAlert.title')"
+    closable
+    show-icon
+    @close="close">
+    <p v-html="$tc('swag-paypal.shippingAlert.message')"></p>
+</sw-alert>

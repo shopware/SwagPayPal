@@ -158,6 +158,8 @@
                 <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\TermsResult"/>
                 <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult"/>
                 <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Write\WriteContext"/>
+                <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\Write\Command\WriteCommand"/>
 
                 <!-- fix with Shopware 6.5 compatibility -->
                 <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface"/>
