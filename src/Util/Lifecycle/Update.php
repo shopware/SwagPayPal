@@ -116,10 +116,6 @@ class Update
             $this->updateTo300($updateContext->getContext());
         }
 
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '4.1.0', '<')) {
-            $this->updateTo410();
-        }
-
         if (\version_compare($updateContext->getCurrentPluginVersion(), '5.0.0', '<')) {
             $this->updateTo500($updateContext->getContext());
         }
@@ -298,11 +294,6 @@ class Update
         } catch (PosApiException | WebhookNotRegisteredException $exception) {
             // do nothing, if the Sales Channel is not correctly configured
         }
-    }
-
-    private function updateTo410(): void
-    {
-        $this->setSettingToDefaultValue(Settings::SPB_SHOW_PAY_LATER);
     }
 
     private function updateTo500(Context $context): void

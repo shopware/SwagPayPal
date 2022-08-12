@@ -102,7 +102,7 @@ class VenmoMethodData extends AbstractMethodData implements CheckoutDataMethodIn
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-        $capability = $merchantIntegrations->getSpecificCapability('ALT_PAY_PROCESSING');
+        $capability = $merchantIntegrations->getSpecificCapability('VENMO_PAY_PROCESSING');
         if ($capability !== null && $capability->getStatus() === Capability::STATUS_ACTIVE) {
             return self::CAPABILITY_ACTIVE;
         }

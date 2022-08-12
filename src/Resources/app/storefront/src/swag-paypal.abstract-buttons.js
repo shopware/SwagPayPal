@@ -64,6 +64,10 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             'enable-funding': 'paylater,venmo',
         };
 
+        if (this.options.disablePayLater) {
+            config['enable-funding'] = 'venmo';
+        }
+
         if (this.options.useAlternativePaymentMethods === false) {
             config['disable-funding'] = availableAPMs.join(',');
         } else if (Array.isArray(this.options.disabledAlternativePaymentMethods)) {

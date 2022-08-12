@@ -1,5 +1,6 @@
 # 5.3.0
 - PPI-627 - Neue Zahlungsarten "Später bezahlen" und "Venmo" hinzugefügt
+- PPI-677 - Verfügbarkeit von Zahlungsmethoden in der Administration verbessert
 
 # 5.2.0
 - PPI-625 - Kompatibilität für neue Zahlungsmethodenübersicht von Shopware 6.4.14.0 hinzugefügt
