@@ -155,6 +155,13 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          * @type string
          */
         cancelRedirectUrl: '',
+
+        /**
+         * Show additional pay later button
+         *
+         * @type boolean
+         */
+        disablePayLater: true,
     };
 
     init() {

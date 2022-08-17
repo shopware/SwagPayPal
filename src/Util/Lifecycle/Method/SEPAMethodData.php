@@ -13,7 +13,7 @@ use Shopware\Core\Framework\Rule\Container\AndRule;
 use Shopware\Core\System\Currency\Rule\CurrencyRule;
 use Swag\PayPal\Checkout\Payment\Method\SEPAHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
-use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
+use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Product;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SEPACheckoutDataService;
@@ -102,8 +102,8 @@ class SEPAMethodData extends AbstractMethodData implements CheckoutDataMethodInt
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-        $capability = $merchantIntegrations->getSpecificCapability('ALT_PAY_PROCESSING');
-        if ($capability !== null && $capability->getStatus() === Capability::STATUS_ACTIVE) {
+        $product = $merchantIntegrations->getSpecificProduct('PPCP_STANDARD');
+        if ($product !== null && (\in_array($product->getVettingStatus(), [Product::VETTING_STATUS_APPROVED, Product::VETTING_STATUS_SUBSCRIBED], true))) {
             return self::CAPABILITY_ACTIVE;
         }
 

@@ -15,6 +15,7 @@ use Shopware\Core\System\Currency\Rule\CurrencyRule;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
+use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Product;
 
 class PUIMethodData extends AbstractMethodData
 {
@@ -103,6 +104,11 @@ class PUIMethodData extends AbstractMethodData
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
+        $product = $merchantIntegrations->getSpecificProduct('PAYMENT_METHODS');
+        if ($product === null || (!\in_array($product->getVettingStatus(), [Product::VETTING_STATUS_APPROVED, Product::VETTING_STATUS_SUBSCRIBED], true))) {
+            return self::CAPABILITY_INELIGIBLE;
+        }
+
         $capability = $merchantIntegrations->getSpecificCapability('PAY_UPON_INVOICE');
         if ($capability !== null && $capability->getStatus() === Capability::STATUS_ACTIVE) {
             return self::CAPABILITY_ACTIVE;

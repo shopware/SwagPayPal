@@ -43,7 +43,9 @@ default:
         - bin/console system:generate-jwt || true
         - bin/console system:install --drop-database --basic-setup --force >/dev/null
         - npm --prefix $(pwd)/custom/plugins/SwagPayPal/src/Resources/app/administration/ clean-install
-        - composer run init:js
+        - npm --prefix $(pwd)/custom/plugins/SwagPayPal/src/Resources/app/storefront/ clean-install
+        - npm --prefix $(pwd)/src/Administration/Resources/app/administration/ install
+        - npm --prefix $(pwd)/src/Storefront/Resources/app/storefront/ install
         - composer run build:js
         - bin/console theme:compile
         - bin/console theme:change --all Storefront
@@ -67,8 +69,6 @@ Static validation:
           alias: database
           entrypoint: [ "sh", "-c", "docker-entrypoint.sh $MYSQL_CMD" ]
     script:
-        - npm --prefix custom/plugins/SwagPayPal/src/Resources/app/storefront/ clean-install
-        - composer run build:js
         - cd $CI_PROJECT_DIR/custom/plugins/SwagPayPal
         - if [[ $PLATFORM_BRANCH != "v6.4.3.0" ]]; then composer install; fi
         - if [[ -n $CI_COMMIT_BRANCH ]]; then bin/check-todos.sh $CI_COMMIT_BRANCH; else bin/check-todos.sh $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME; fi

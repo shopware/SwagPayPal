@@ -30,7 +30,9 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Swag\PayPal\Webhook\WebhookService;
@@ -114,12 +116,12 @@ class Update
             $this->updateTo300($updateContext->getContext());
         }
 
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '4.1.0', '<')) {
-            $this->updateTo410();
-        }
-
         if (\version_compare($updateContext->getCurrentPluginVersion(), '5.0.0', '<')) {
             $this->updateTo500($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.3.0', '<')) {
+            $this->updateTo530($updateContext->getContext());
         }
     }
 
@@ -294,17 +296,18 @@ class Update
         }
     }
 
-    private function updateTo410(): void
-    {
-        $this->setSettingToDefaultValue(Settings::SPB_SHOW_PAY_LATER);
-    }
-
     private function updateTo500(Context $context): void
     {
         $this->changePaymentHandlerIdentifier('Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler', PUIHandler::class, $context);
         $this->paymentMethodStateService->setPaymentMethodState(PUIMethodData::class, false, $context);
         $this->paymentMethodInstaller->installAll($context);
         $this->setSettingToDefaultValue(Settings::PUI_CUSTOMER_SERVICE_INSTRUCTIONS);
+    }
+
+    private function updateTo530(Context $context): void
+    {
+        $this->paymentMethodInstaller->install(VenmoMethodData::class, $context);
+        $this->paymentMethodInstaller->install(PayLaterMethodData::class, $context);
     }
 
     private function changePaymentHandlerIdentifier(string $previousHandler, string $newHandler, Context $context): void

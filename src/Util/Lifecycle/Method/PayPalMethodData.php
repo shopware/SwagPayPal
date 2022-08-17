@@ -14,6 +14,9 @@ use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\SPBCheckoutDataService;
 
+/**
+ * @deprecated tag:v6.0.0 - will not implement CheckoutDataMethodInterface any more
+ */
 class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
     public const PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID = 'payPalSpbButtonData';
@@ -62,11 +65,17 @@ class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodI
         return self::CAPABILITY_ACTIVE;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed without replacement
+     */
     public function getCheckoutDataService(): AbstractCheckoutDataService
     {
         return $this->container->get(SPBCheckoutDataService::class);
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed without replacement
+     */
     public function getCheckoutTemplateExtensionId(): string
     {
         return self::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID;

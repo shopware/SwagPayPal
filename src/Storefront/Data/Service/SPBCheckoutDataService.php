@@ -21,6 +21,9 @@ use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * @deprecated tag:v6.0.0 - will be removed without replacement
+ */
 class SPBCheckoutDataService extends AbstractCheckoutDataService
 {
     private const APM_BLIK = 'blik';

@@ -155,4 +155,15 @@ class MerchantIntegrations extends PayPalApiStruct
 
         return null;
     }
+
+    public function getSpecificProduct(string $name): ?Product
+    {
+        foreach ($this->products as $product) {
+            if ($product->getName() === $name) {
+                return $product;
+            }
+        }
+
+        return null;
+    }
 }

@@ -6,6 +6,9 @@ import StoreApiClient from 'src/service/store-api-client.service';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
+/**
+ * @deprecated tag:v6.0.0 - Will be removed without replacement
+ */
 export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractButtons {
     static options = {
         /**

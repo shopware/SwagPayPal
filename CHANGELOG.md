@@ -1,3 +1,7 @@
+# 5.3.0
+- PPI-627 - Added new payment methods "Pay Later" and "Venmo"
+- PPI-677 - Improved availability of payment methods in Administration
+
 # 5.2.0
 - PPI-625 - Added compatibility for new payment method overview of Shopware 6.4.14.0
 - PPI-663 - Fix issue where taxes were not correctly calculated for net orders

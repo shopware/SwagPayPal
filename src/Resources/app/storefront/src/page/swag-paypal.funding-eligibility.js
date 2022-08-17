@@ -9,6 +9,8 @@ export default class SwagPayPalFundingEligibility extends SwagPaypalAbstractButt
     static fundingSources = [
         'CARD',
         'SEPA',
+        'VENMO',
+        'PAYLATER',
     ]
 
     static options = {
