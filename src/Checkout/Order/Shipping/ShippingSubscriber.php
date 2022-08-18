@@ -96,7 +96,10 @@ class ShippingSubscriber implements EventSubscriberInterface
             } catch (\Throwable $e) {
                 $this->logger->warning('Could not update tracking codes', [
                     'exception' => $e,
+                    'trace' => $e->getTraceAsString(),
                 ]);
+
+                throw $e;
             }
         }
     }

@@ -20,5 +20,7 @@ interface PayPalClientInterface
      */
     public function sendPatchRequest(string $resourceUri, array $data, array $headers = []): array;
 
+    public function sendPutRequest(string $resourceUri, PayPalApiStruct $data, array $headers = []): array;
+
     public function sendDeleteRequest(string $resourceUri, array $headers = []): array;
 }

@@ -25,6 +25,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\Order\Shipping\Service\ShippingService;
 use Swag\PayPal\RestApi\V1\Api\Shipping;
+use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
 use Swag\PayPal\RestApi\V1\Resource\ShippingResource;
 use Swag\PayPal\SwagPayPal;
 
@@ -34,6 +35,7 @@ class ShippingServiceTest extends TestCase
     private const TEST_CODE_B = 'test_code_b';
     private const TEST_CODE_C = 'test_code_c';
     private const TEST_CODE_D = 'test_code_d';
+    private const TEST_CODE_E = 'test_code_e';
     private const RESOURCE_ID = 'resource_id';
     private const CARRIER_NAME = 'carrier_name';
 
@@ -121,16 +123,23 @@ class ShippingServiceTest extends TestCase
     /**
      * @dataProvider updateDataProvider
      */
-    public function testUpdate(array $after, array $before, array $expected): void
+    public function testUpdate(array $after, array $before, array $expectedAdded, array $expectedRemoved): void
     {
         $this->orderTransactionRepository->expects(static::once())->method('search')->willReturn($this->getOrderTransactionResult());
         $this->shippingMethodRepository->expects(static::once())->method('search')->willReturn($this->getShippingMethodResult());
         $this->salesChannelRepository->expects(static::once())->method('searchIds')->willReturn($this->getSalesChannelIdResult());
-        $this->shippingResource->expects(static::once())->method('batch')->with(static::callback(
-            static function (Shipping $return) use ($expected): bool {
+        $this->shippingResource->expects($expectedAdded ? static::once() : static::never())->method('batch')->with(static::callback(
+            static function (Shipping $return) use ($expectedAdded): bool {
                 $encoded = \json_decode(\json_encode($return->getTrackers()) ?: '[]', true) ?: [];
 
-                return $expected === $encoded;
+                return $expectedAdded === $encoded;
+            }
+        ), static::isType('string'));
+        $this->shippingResource->expects(static::exactly(\count($expectedRemoved)))->method('update')->with(static::callback(
+            static function (Tracker $tracker) use (&$expectedRemoved): bool {
+                $encoded = \json_decode(\json_encode($tracker) ?: '[]', true) ?: [];
+
+                return \array_shift($expectedRemoved) === $encoded;
             }
         ), static::isType('string'));
 
@@ -151,10 +160,12 @@ class ShippingServiceTest extends TestCase
                         'carrier' => self::CARRIER_NAME,
                     ],
                 ],
+                [],
             ],
             'remove code' => [
                 [],
                 [self::TEST_CODE_A],
+                [],
                 [
                     [
                         'transaction_id' => self::RESOURCE_ID,
@@ -166,7 +177,7 @@ class ShippingServiceTest extends TestCase
             ],
             'complex' => [
                 [self::TEST_CODE_C, self::TEST_CODE_D, self::TEST_CODE_B],
-                [self::TEST_CODE_A, self::TEST_CODE_B],
+                [self::TEST_CODE_A, self::TEST_CODE_B, self::TEST_CODE_E],
                 [
                     [
                         'transaction_id' => self::RESOURCE_ID,
@@ -180,9 +191,17 @@ class ShippingServiceTest extends TestCase
                         'status' => 'SHIPPED',
                         'carrier' => self::CARRIER_NAME,
                     ],
+                ],
+                [
                     [
                         'transaction_id' => self::RESOURCE_ID,
                         'tracking_number' => self::TEST_CODE_A,
+                        'status' => 'CANCELLED',
+                        'carrier' => self::CARRIER_NAME,
+                    ],
+                    [
+                        'transaction_id' => self::RESOURCE_ID,
+                        'tracking_number' => self::TEST_CODE_E,
                         'status' => 'CANCELLED',
                         'carrier' => self::CARRIER_NAME,
                     ],

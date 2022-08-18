@@ -9,6 +9,7 @@ namespace Swag\PayPal\RestApi\V1\Resource;
 
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
 use Swag\PayPal\RestApi\V1\Api\Shipping;
+use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
 use Swag\PayPal\RestApi\V1\RequestUriV1;
 
 class ShippingResource
@@ -25,6 +26,14 @@ class ShippingResource
         $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPostRequest(
             \sprintf('%s/trackers-batch', RequestUriV1::SHIPPING_RESOURCE),
             $shippingBatch
+        );
+    }
+
+    public function update(Tracker $tracker, string $salesChannelId): void
+    {
+        $this->payPalClientFactory->getPayPalClient($salesChannelId)->sendPutRequest(
+            \sprintf('%s/trackers/%s-%s', RequestUriV1::SHIPPING_RESOURCE, $tracker->getTransactionId(), $tracker->getTrackingNumber()),
+            $tracker
         );
     }
 }

@@ -45,6 +45,11 @@ abstract class AbstractClient
         return $this->request(Request::METHOD_PATCH, $uri, $options);
     }
 
+    protected function put(string $uri, array $options): array
+    {
+        return $this->request(Request::METHOD_PUT, $uri, $options);
+    }
+
     protected function delete(string $uri, array $options = []): array
     {
         return $this->request(Request::METHOD_DELETE, $uri, $options);

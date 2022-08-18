@@ -68,23 +68,64 @@ class ShippingService
             return;
         }
 
+        $salesChannelId = $this->fetchOrderSalesChannelId($orderDeliveryId, $context);
+        $this->addTrackers($addedTrackingCodes, $transactionId, $orderDeliveryId, $carrier, $salesChannelId);
+        $this->removeTrackers($removedTrackingCodes, $transactionId, $orderDeliveryId, $carrier, $salesChannelId);
+    }
+
+    /**
+     * @param string[] $addedTrackingCodes
+     */
+    private function addTrackers(
+        array $addedTrackingCodes,
+        string $transactionId,
+        string $orderDeliveryId,
+        string $carrier,
+        string $salesChannelId
+    ): void {
+        if (!$addedTrackingCodes) {
+            return;
+        }
+
         $trackers = [];
         foreach ($addedTrackingCodes as $trackingCode) {
             $trackers[] = $this->createTracker($transactionId, $trackingCode, $carrier, Tracker::STATUS_SHIPPED);
         }
 
-        foreach ($removedTrackingCodes as $trackingCode) {
-            $trackers[] = $this->createTracker($transactionId, $trackingCode, $carrier, Tracker::STATUS_CANCELLED);
-        }
+        $this->logger->info('Adding tracking codes for order delivery "{orderDeliveryId}"', [
+            'orderDeliveryId' => $orderDeliveryId,
+            'trackers' => \array_values($addedTrackingCodes),
+        ]);
 
         $shipping = new Shipping();
         $shipping->setTrackers($trackers);
+        $this->shippingResource->batch($shipping, $salesChannelId);
+    }
 
-        $this->logger->info('Setting tracking codes for order delivery "{orderDeliveryId}"', [
+    /**
+     * @param string[] $removedTrackingCodes
+     */
+    private function removeTrackers(
+        array $removedTrackingCodes,
+        string $transactionId,
+        string $orderDeliveryId,
+        string $carrier,
+        string $salesChannelId
+    ): void {
+        if (!$removedTrackingCodes) {
+            return;
+        }
+
+        foreach ($removedTrackingCodes as $trackingCode) {
+            $tracker = $this->createTracker($transactionId, $trackingCode, $carrier, Tracker::STATUS_CANCELLED);
+
+            $this->shippingResource->update($tracker, $salesChannelId);
+        }
+
+        $this->logger->info('Removed tracking codes for order delivery "{orderDeliveryId}"', [
             'orderDeliveryId' => $orderDeliveryId,
-            'trackers' => $trackers,
+            'trackers' => \array_values($removedTrackingCodes),
         ]);
-        $this->shippingResource->batch($shipping, $this->fetchOrderSalesChannelId($orderDeliveryId, $context));
     }
 
     private function getPayPalTransactionId(string $orderDeliveryId, Context $context): ?string
