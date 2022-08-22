@@ -26,6 +26,10 @@
                 "label": "Setze PayPal als Standard"
             }
         },
+        "shippingAlert": {
+            "title": "Versandtracking jetzt verfügbar",
+            "message": "Sie können PayPal jetzt Paketverfolgungsdaten zur Verfügung stellen, wenn Sie in Ihren <a class=\"sw-internal-link sw-internal-link--inline\" href=\"#/sw/settings/shipping/index\">Versandarten →</a> ein Standard-Versandunternehmen angeben.",
+        },
         "general": {
             "mainMenuItemGeneral": "PayPal",
             "descriptionTextModule": "Einstellungen für PayPal"

@@ -5,6 +5,8 @@ import './component/swag-paypal-payment-details-v2';
 import './component/swag-paypal-text-field';
 import './component/swag-paypal-textarea-field';
 import './extension/sw-order-detail';
+import './extension/sw-order-detail-details';
+import './extension/sw-order-user-card';
 import './page/swag-paypal-payment-detail';
 
 const { Module } = Shopware;

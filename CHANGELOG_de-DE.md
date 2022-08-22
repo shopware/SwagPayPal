@@ -1,6 +1,8 @@
 # 5.3.0
 - PPI-627 - Neue Zahlungsarten "Später bezahlen" und "Venmo" hinzugefügt
+- PPI-673 - Automatische Übermittlung von Sendungsverfolgungsdaten an PayPal hinzugefügt
 - PPI-677 - Verfügbarkeit von Zahlungsmethoden in der Administration verbessert
+- PPI-678 - Behebt ein Problem, bei dem das Zettle-Medien-URL-Feld in der Administration einen Fehler anzeigte
 
 # 5.2.0
 - PPI-625 - Kompatibilität für neue Zahlungsmethodenübersicht von Shopware 6.4.14.0 hinzugefügt

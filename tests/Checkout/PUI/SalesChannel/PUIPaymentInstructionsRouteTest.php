@@ -27,6 +27,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterfac
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\PUI\Exception\MissingPaymentInstructionsException;
 use Swag\PayPal\Checkout\PUI\Exception\PaymentInstructionsNotReadyException;
 use Swag\PayPal\Checkout\PUI\SalesChannel\AbstractPUIPaymentInstructionsRoute;
@@ -108,6 +109,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
         $transaction = $orderTransactionRepository->search(new Criteria([$transactionId]), Context::createDefaultContext())->first();
         static::assertNotNull($transaction);
         static::assertSame(GetOrderPUICompleted::BANK_IBAN, ($transaction->getCustomFields() ?? [])[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_PUI_INSTRUCTION]['deposit_bank_details']['iban']);
+        static::assertSame(GetOrderPUICompleted::CAPTURE_ID, ($transaction->getCustomFields() ?? [])[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_RESOURCE_ID]);
     }
 
     public function testGetPaymentInstructionsExisting(): void
@@ -152,7 +154,8 @@ class PUIPaymentInstructionsRouteTest extends TestCase
         return new PUIPaymentInstructionsRoute(
             $orderTransactionRepository,
             $orderResource,
-            $this->getContainer()->get(OrderTransactionStateHandler::class)
+            $this->getContainer()->get(OrderTransactionStateHandler::class),
+            $this->getContainer()->get(TransactionDataService::class)
         );
     }
 

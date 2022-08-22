@@ -33,6 +33,10 @@
                 {% block swag_paypal_content_card %}
                     <sw-card-view>
 
+                        {% block swag_paypal_content_card_shipping_alert %}
+                            <swag-paypal-shipping-alert></swag-paypal-shipping-alert>
+                        {% endblock %}
+
                         {% block swag_paypal_content_card_channel_config %}
                             <sw-sales-channel-config v-model="config"
                                                      ref="configComponent"

@@ -29,9 +29,9 @@ Component.override('sw-settings-payment-list', {
 
         fetchMerchantIntegrations() {
             this.SwagPayPalApiCredentialsService
-                .getMerchantIntegrations()
+                .getMerchantInformation()
                 .then((response) => {
-                    this.merchantIntegrations = response;
+                    this.merchantIntegrations = response.merchantIntegrations ?? [];
                 });
         },
     },

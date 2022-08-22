@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Swag\PayPal\Checkout\Order\Shipping\ShippingSubscriber">
+            <argument type="service" id="Swag\PayPal\Checkout\Order\Shipping\Service\ShippingService"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Order\Shipping\Service\ShippingService">
+            <argument type="service" id="Swag\PayPal\RestApi\V1\Resource\ShippingResource"/>
+            <argument type="service" id="sales_channel.repository"/>
+            <argument type="service" id="order_transaction.repository"/>
+            <argument type="service" id="shipping_method.repository"/>
+            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+        </service>
+    </services>
+</container>
