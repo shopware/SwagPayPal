@@ -1,4 +1,5 @@
 # 5.3.1
+- PPI-672 - Fix issue where captures could not always set transactions to paid
 - PPI-681 - Fix issue where Pay Later was not available for British customers
 - PPI-682 - Fix issue with missing German translations in the administration
 - PPI-684 - Improved spelling in the Administration
