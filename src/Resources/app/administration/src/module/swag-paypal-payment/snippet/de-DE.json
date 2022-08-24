@@ -136,6 +136,6 @@
         "payPalCarrierLabel": "Standardversanddienstleister",
         "payPalCarrierPlaceholder": "nicht festgelegt",
         "payPalCarrierHelpText": "Du kannst den Standardversanddienstleister unter <a class=\"sw-internal-link sw-internal-link--inline\" href=\"#/sw/settings/shipping/index\">Versand<sw-icon name=\"regular-long-arrow-right\" small /></a> festlegen und ändern. Dies hat jedoch keine Auswirkungen auf bereits getätigte Bestellungen.",
-        "payPalCarrierDescription": "Wenn du den Versanddienstleister für diese Paypal Bestellung ändern willst, <a target=\"_blank\" href=\"{orderLink}\">klicke hier</a>."
+        "payPalCarrierDescription": "Wenn du den Versanddienstleister für diese PayPal Bestellung ändern willst, <a target=\"_blank\" href=\"{orderLink}\">klicke hier</a>."
     }
 }
