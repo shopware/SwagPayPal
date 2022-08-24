@@ -1,6 +1,7 @@
 # 5.3.1
 - PPI-681 - Fix issue where Pay Later was not available for British customers
 - PPI-682 - Fix issue with missing German translations in the administration
+- PPI-684 - Improved spelling in the Administration
 
 # 5.3.0
 - PPI-627 - Added new payment methods "Pay Later" and "Venmo"

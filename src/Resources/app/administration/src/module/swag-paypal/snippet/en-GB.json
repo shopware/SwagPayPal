@@ -212,11 +212,11 @@
             "express": {
                 "cardTitle": "PayPal Express Checkout",
                 "ecsDetailEnabled": {
-                    "label": "'Pay now' on detail page",
+                    "label": "'Pay Now' on detail page",
                     "helpText": "If this option is active, the Express Checkout button will be shown on each product detail page."
                 },
                 "ecsCartEnabled": {
-                    "label": "'Pay now' on cart",
+                    "label": "'Pay Now' on cart",
                     "helpText": "If this option is active, the Express Checkout button will be shown on the cart."
                 },
                 "ecsOffCanvasEnabled": {
@@ -228,7 +228,7 @@
                     "helpText": "If this option is active, the Express Checkout button will be shown on the login and register page."
                 },
                 "ecsListingEnabled": {
-                    "label": "'Pay now' on listing pages",
+                    "label": "'Pay Now' on listing pages",
                     "helpText": "If this option is active, the Express Checkout button will be shown on listing pages."
                 },
                 "ecsButtonColor": {
