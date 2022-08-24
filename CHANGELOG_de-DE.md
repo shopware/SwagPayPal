@@ -1,3 +1,6 @@
+# 5.3.1
+- PPI-682 - Behebt ein Problem mit fehlenden deutschen Übersetzungen in der Administration
+
 # 5.3.0
 - PPI-627 - Neue Zahlungsarten "Später bezahlen" und "Venmo" hinzugefügt
 - PPI-673 - Automatische Übermittlung von Sendungsverfolgungsdaten an PayPal hinzugefügt

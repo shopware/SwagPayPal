@@ -1,3 +1,6 @@
+# 5.3.1
+- PPI-682 - Fix issue with missing German translations in the administration
+
 # 5.3.0
 - PPI-627 - Added new payment methods "Pay Later" and "Venmo"
 - PPI-673 - Added automatic transmission of shipping tracking numbers to PayPal
