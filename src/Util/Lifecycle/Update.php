@@ -123,6 +123,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '5.3.0', '<')) {
             $this->updateTo530($updateContext->getContext());
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.3.1', '<')) {
+            $this->updateTo531($updateContext->getContext());
+        }
     }
 
     private function updateTo110(): void
@@ -307,6 +311,11 @@ class Update
     private function updateTo530(Context $context): void
     {
         $this->paymentMethodInstaller->install(VenmoMethodData::class, $context);
+        $this->paymentMethodInstaller->install(PayLaterMethodData::class, $context);
+    }
+
+    private function updateTo531(Context $context): void
+    {
         $this->paymentMethodInstaller->install(PayLaterMethodData::class, $context);
     }
 

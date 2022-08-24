@@ -1,4 +1,5 @@
 # 5.3.1
+- PPI-681 - Behebt ein Problem, bei dem Später Bezahlen nicht für britische Kunden verfügbar ist
 - PPI-682 - Behebt ein Problem mit fehlenden deutschen Übersetzungen in der Administration
 
 # 5.3.0
