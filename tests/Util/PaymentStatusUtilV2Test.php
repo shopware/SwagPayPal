@@ -99,11 +99,13 @@ class PaymentStatusUtilV2Test extends TestCase
             [
                 $this->createCapture(true),
                 OrderTransactionStates::STATE_PAID,
+                /** @phpstan-ignore-next-line */
                 defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED') ? OrderTransactionStates::STATE_UNCONFIRMED : OrderTransactionStates::STATE_IN_PROGRESS,
             ],
             [
                 $this->createCapture(false),
                 OrderTransactionStates::STATE_PARTIALLY_PAID,
+                /** @phpstan-ignore-next-line */
                 defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED') ? OrderTransactionStates::STATE_UNCONFIRMED : OrderTransactionStates::STATE_IN_PROGRESS,
             ],
         ];

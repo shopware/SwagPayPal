@@ -39,17 +39,37 @@ phpunit-coverage:
 .PHONY: phpunit
 
 administration-fix: ## Run eslint on the administration files
-	$(PLATFORM_ROOT)/src/Administration/Resources/app/administration/node_modules/.bin/eslint --ignore-path .eslintignore --config $(PLATFORM_ROOT)/src/Administration/Resources/app/administration/.eslintrc.js --ext .js,.vue --fix src/Resources/app/administration
+	$(PLATFORM_ROOT)/src/Administration/Resources/app/administration/node_modules/.bin/eslint \
+	    --ignore-path .eslintignore \
+	    --rule 'sw-deprecation-rules/private-feature-declarations: off' \
+	    --config $(PLATFORM_ROOT)/src/Administration/Resources/app/administration/.eslintrc.js \
+	    --ext .js,.vue \
+	    --fix \
+	    src/Resources/app/administration
 .PHONY: administration-fix
 
 storefront-fix: ## Run eslint on the storefront files
-	$(PLATFORM_ROOT)/src/Administration/Resources/app/administration/node_modules/.bin/eslint --ignore-path .eslintignore --config $(PLATFORM_ROOT)/src/Administration/Resources/app/administration/.eslintrc.js --ext .js,.vue --fix src/Resources/app/storefront
+	$(PLATFORM_ROOT)/src/Administration/Resources/app/administration/node_modules/.bin/eslint \
+	    --ignore-path .eslintignore \
+	    --config $(PLATFORM_ROOT)/src/Storefront/Resources/app/storefront/.eslintrc.js \
+	    --ext .js,.vue \
+	    --fix \
+	    src/Resources/app/storefront
 .PHONY: storefront-fix
 
 administration-lint: ## Run eslint on the administration files
-	$(PLATFORM_ROOT)/src/Administration/Resources/app/administration/node_modules/.bin/eslint --ignore-path .eslintignore --config $(PLATFORM_ROOT)/src/Administration/Resources/app/administration/.eslintrc.js --ext .js,.vue src/Resources/app/administration
+	$(PLATFORM_ROOT)/src/Administration/Resources/app/administration/node_modules/.bin/eslint \
+	    --ignore-path .eslintignore \
+	    --rule 'sw-deprecation-rules/private-feature-declarations: off' \
+	    --config $(PLATFORM_ROOT)/src/Administration/Resources/app/administration/.eslintrc.js \
+	    --ext .js,.vue \
+	    src/Resources/app/administration
 .PHONY: administration-lint
 
 storefront-lint: ## Run eslint on the storefront files
-	$(PLATFORM_ROOT)/src/Administration/Resources/app/administration/node_modules/.bin/eslint --ignore-path .eslintignore --config $(PLATFORM_ROOT)/src/Administration/Resources/app/administration/.eslintrc.js --ext .js,.vue src/Resources/app/storefront
+	$(PLATFORM_ROOT)/src/Administration/Resources/app/administration/node_modules/.bin/eslint \
+	    --ignore-path .eslintignore \
+	    --config $(PLATFORM_ROOT)/src/Storefront/Resources/app/storefront/.eslintrc.js \
+	    --ext .js,.vue \
+	    src/Resources/app/storefront
 .PHONY: storefront-lint

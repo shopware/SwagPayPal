@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-
 import Plugin from 'src/plugin-system/plugin.class';
 import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';

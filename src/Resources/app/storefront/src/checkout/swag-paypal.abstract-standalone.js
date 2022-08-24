@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-
 import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import StoreApiClient from 'src/service/store-api-client.service';
@@ -245,7 +243,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
         const input = document.createElement('input');
         input.setAttribute('type', 'hidden');
         input.setAttribute('name', 'paypalOrderId');
-        input.setAttribute('value', data.hasOwnProperty('orderId') ? data.orderId : data.orderID);
+        input.setAttribute('value', Object.prototype.hasOwnProperty.call(data,'orderId') ? data.orderId : data.orderID);
 
         this.confirmOrderForm.appendChild(input);
         this.confirmOrderForm.submit();
