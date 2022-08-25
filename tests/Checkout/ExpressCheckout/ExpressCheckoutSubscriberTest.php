@@ -626,8 +626,9 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $criteria = new Criteria($paymentMethodIds);
         $criteria->addFilter(new EqualsFilter('active', true));
+
+        /** @var PaymentMethodCollection $paymentMethods */
         $paymentMethods = $paymentMethodRepo->search($criteria, $salesChannelContext->getContext())->getEntities();
-        static::assertInstanceOf(PaymentMethodCollection::class, $paymentMethods);
 
         $salesChannelContext->getSalesChannel()->setPaymentMethodIds($paymentMethodIds);
         $salesChannelContext->getSalesChannel()->setPaymentMethods($paymentMethods);

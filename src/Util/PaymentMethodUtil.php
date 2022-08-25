@@ -135,6 +135,9 @@ class PaymentMethodUtil
 
         $criteria->addAssociation('paymentMethods');
 
-        return $this->salesChannelRepository->search($criteria, $context)->getEntities();
+        /** @var EntityCollection $collection */
+        $collection = $this->salesChannelRepository->search($criteria, $context)->getEntities();
+
+        return $collection;
     }
 }

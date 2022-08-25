@@ -40,6 +40,12 @@ class MerchantIntegrations extends PayPalApiStruct
     protected array $capabilities = [];
 
     /**
+     * @var string[]
+     * @OA\Property(type="array", items={"type": "string"})
+     */
+    protected array $grantedPermissions = [];
+
+    /**
      * @OA\Property(type="boolean")
      */
     protected bool $paymentsReceivable;
@@ -143,6 +149,16 @@ class MerchantIntegrations extends PayPalApiStruct
     public function setPrimaryEmailConfirmed(bool $primaryEmailConfirmed): void
     {
         $this->primaryEmailConfirmed = $primaryEmailConfirmed;
+    }
+
+    public function getGrantedPermissions(): array
+    {
+        return $this->grantedPermissions;
+    }
+
+    public function setGrantedPermissions(array $grantedPermissions): void
+    {
+        $this->grantedPermissions = $grantedPermissions;
     }
 
     public function getSpecificCapability(string $name): ?Capability
