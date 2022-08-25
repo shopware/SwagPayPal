@@ -3,6 +3,7 @@
 - PPI-681 - Behebt ein Problem, bei dem Später Bezahlen nicht für britische Kunden verfügbar ist
 - PPI-682 - Behebt ein Problem mit fehlenden deutschen Übersetzungen in der Administration
 - PPI-684 - Rechtschreibfehler in der Administration korrigiert
+- PPI-688 - Behebt ein Problem, bei dem das Eingabefeld für den Versandanbieter nicht immer angezeigt wurde
 
 # 5.3.0
 - PPI-627 - Neue Zahlungsarten "Später bezahlen" und "Venmo" hinzugefügt

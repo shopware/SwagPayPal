@@ -1,8 +1,9 @@
 # 5.3.1
-- PPI-672 - Fix issue where captures could not always set transactions to paid
-- PPI-681 - Fix issue where Pay Later was not available for British customers
-- PPI-682 - Fix issue with missing German translations in the administration
+- PPI-672 - Fixed issue where captures could not always set transactions to paid
+- PPI-681 - Fixed issue where Pay Later was not available for British customers
+- PPI-682 - Fixed issue with missing German translations in the administration
 - PPI-684 - Improved spelling in the Administration
+- PPI-688 - Fixed issue where the default carrier field in shipping methods was not always shown
 
 # 5.3.0
 - PPI-627 - Added new payment methods "Pay Later" and "Venmo"
