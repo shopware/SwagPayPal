@@ -128,7 +128,8 @@ abstract class AbstractClient
             return new PayPalApiException('General Error', $exceptionMessage);
         }
 
-        $error = \json_decode($exceptionResponse->getBody()->getContents(), true);
+        $content = $exceptionResponse->getBody()->getContents();
+        $error = \json_decode($content, true);
         if (\array_key_exists('error', $error) && \array_key_exists('error_description', $error)) {
             $this->logger->error($exceptionMessage, [
                 'error' => $error,
@@ -164,6 +165,6 @@ abstract class AbstractClient
             'data' => $data,
         ]);
 
-        return new PayPalApiException($error['name'], $message, (int) $requestException->getCode(), $issue);
+        return new PayPalApiException($error['name'] ?? '', $message ?? $content, (int) $requestException->getCode(), $issue);
     }
 }

@@ -98,8 +98,6 @@ class ShippingSubscriber implements EventSubscriberInterface
                     'exception' => $e,
                     'trace' => $e->getTraceAsString(),
                 ]);
-
-                throw $e;
             }
         }
     }
