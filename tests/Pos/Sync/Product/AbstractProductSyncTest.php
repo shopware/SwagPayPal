@@ -66,7 +66,7 @@ abstract class AbstractProductSyncTest extends TestCase
         return $tax;
     }
 
-    private function getCategory(): ?CategoryEntity
+    private function getCategory(): CategoryEntity
     {
         $criteria = new Criteria();
         $criteria->addAssociation('translation');
@@ -74,6 +74,9 @@ abstract class AbstractProductSyncTest extends TestCase
         /** @var EntityRepositoryInterface $categoryRepository */
         $categoryRepository = $this->getContainer()->get('category.repository');
 
-        return $categoryRepository->search($criteria, Context::createDefaultContext())->first();
+        $category = $categoryRepository->search($criteria, Context::createDefaultContext())->first();
+        static::assertNotNull($category);
+
+        return $category;
     }
 }

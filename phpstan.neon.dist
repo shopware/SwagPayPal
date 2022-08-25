@@ -7,6 +7,7 @@ parameters:
     tmpDir: var/cache/phpstan
     inferPrivatePropertyTypeFromConstructor: true
     checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false
     reportUnmatchedIgnoredErrors: false
 
     paths:

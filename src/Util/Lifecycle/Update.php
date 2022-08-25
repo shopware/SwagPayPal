@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -285,6 +286,8 @@ class Update
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
         $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
+
+        /** @var SalesChannelCollection $posSalesChannels */
         $posSalesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();
 
         try {

@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerRegistry;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\SynchronousPaymentHandlerInterface;
+use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
 use Shopware\Core\Content\Media\File\FileSaver;
@@ -82,6 +83,7 @@ class PaymentMethodInstallerTest extends TestCase
         $installer = $this->createInstaller($useContainer);
         $installer->installAll($context);
 
+        /** @var PaymentMethodCollection $paymentMethods */
         $paymentMethods = $this->paymentMethodRepository->search(new Criteria(), $context);
         $savedHandlers = \array_map(static function (PaymentMethodEntity $paymentMethod) {
             return $paymentMethod->getHandlerIdentifier();

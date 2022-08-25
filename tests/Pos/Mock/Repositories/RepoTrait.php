@@ -24,6 +24,7 @@ trait RepoTrait
 
     public function __construct()
     {
+        /** @var class-string<EntityCollection> $collectionClass */
         $collectionClass = $this->getDefinition()->getCollectionClass();
         $this->entityCollection = new $collectionClass([]);
     }

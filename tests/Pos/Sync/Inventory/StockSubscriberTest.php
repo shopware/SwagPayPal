@@ -27,6 +27,8 @@ use Shopware\Core\Checkout\Order\OrderStates;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Entity;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
@@ -205,7 +207,10 @@ class StockSubscriberTest extends TestCase
         $order = $this->createOrder($context);
         $lineItems = $order->getLineItems();
         static::assertNotNull($lineItems);
-        $orderLineItemRepository->getCollection()->merge($lineItems);
+
+        /** @var OrderLineItemCollection $repoCollection */
+        $repoCollection = $orderLineItemRepository->getCollection();
+        $repoCollection->merge($lineItems);
 
         $callback($stockSubscriber, $order, $context);
         $messageBus->execute([$inventoryUpdateHandler]);
