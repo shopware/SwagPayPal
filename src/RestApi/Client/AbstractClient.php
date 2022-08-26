@@ -140,7 +140,11 @@ abstract class AbstractClient
             return new PayPalApiException($error['error'], $error['error_description'], (int) $requestException->getCode());
         }
 
-        $message = $error['message'];
+        if (\is_array($error['errors'] ?? null)) {
+            $error = \current($error['errors']);
+        }
+
+        $message = $error['message'] ?? $content;
         $issue = null;
 
         if (isset($error['details'])) {
@@ -165,6 +169,6 @@ abstract class AbstractClient
             'data' => $data,
         ]);
 
-        return new PayPalApiException($error['name'] ?? '', $message ?? $content, (int) $requestException->getCode(), $issue);
+        return new PayPalApiException($error['name'] ?? 'UNCLASSIFIED_ERROR', $message, (int) $requestException->getCode(), $issue);
     }
 }
