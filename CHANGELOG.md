@@ -1,6 +1,7 @@
 # 5.3.1
 - PPI-672 - Fixed issue where captures could not always set transactions to paid
-- PPI-681 - Fixed issue where Pay Later was not available for British customers
+- PPI-681 - Fixed issue where Pay Later was not available for British and Australian customers
+- PPI-681 - Fixed issue where Oxxo was not available for Mexican customers
 - PPI-682 - Fixed issue with missing German translations in the administration
 - PPI-684 - Improved spelling in the Administration
 - PPI-688 - Fixed issue where the default carrier field in shipping methods was not always shown

@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Util\Lifecycle;
 
 use Shopware\Core\Framework\Context;
+use Swag\PayPal\Util\Lifecycle\Installer\CurrencyInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
@@ -25,19 +26,24 @@ class InstallUninstall
 
     private PosInstaller $posInstaller;
 
+    private CurrencyInstaller $currencyInstaller;
+
     public function __construct(
         PaymentMethodInstaller $paymentMethodInstaller,
         SettingsInstaller $settingsInstaller,
-        PosInstaller $posInstaller
+        PosInstaller $posInstaller,
+        CurrencyInstaller $currencyInstaller
     ) {
         $this->paymentMethodInstaller = $paymentMethodInstaller;
         $this->settingsInstaller = $settingsInstaller;
         $this->posInstaller = $posInstaller;
+        $this->currencyInstaller = $currencyInstaller;
     }
 
     public function install(Context $context): void
     {
         $this->settingsInstaller->addDefaultConfiguration();
+        $this->currencyInstaller->install($context);
         $this->paymentMethodInstaller->installAll($context);
     }
 

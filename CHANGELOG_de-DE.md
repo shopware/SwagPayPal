@@ -1,6 +1,7 @@
 # 5.3.1
 - PPI-672 - Behebt ein Problem, bei dem Einzügen der Zahlstatus Bezahlt nicht immer gesetzt werden konnte
-- PPI-681 - Behebt ein Problem, bei dem Später Bezahlen nicht für britische Kunden verfügbar ist
+- PPI-681 - Behebt ein Problem, bei dem Später Bezahlen nicht für britische und australische Kunden verfügbar ist
+- PPI-681 - Behebt ein Problem, bei dem Oxxo nicht für mexikanische Kunden verfügbar ist
 - PPI-682 - Behebt ein Problem mit fehlenden deutschen Übersetzungen in der Administration
 - PPI-684 - Rechtschreibfehler in der Administration korrigiert
 - PPI-688 - Behebt ein Problem, bei dem das Eingabefeld für den Versandanbieter nicht immer angezeigt wurde
