@@ -5,6 +5,7 @@
 - PPI-682 - Fixed issue with missing German translations in the administration
 - PPI-684 - Improved spelling in the Administration
 - PPI-688 - Fixed issue where the default carrier field in shipping methods was not always shown
+- PPI-694 - Fixed issue where the default carrier field was shown in non-PayPal orders
 
 # 5.3.0
 - PPI-627 - Added new payment methods "Pay Later" and "Venmo"
