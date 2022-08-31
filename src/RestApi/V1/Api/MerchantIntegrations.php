@@ -10,6 +10,7 @@ namespace Swag\PayPal\RestApi\V1\Api;
 use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
+use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\OauthIntegration;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Product;
 
 /**
@@ -38,6 +39,12 @@ class MerchantIntegrations extends PayPalApiStruct
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_capability"})
      */
     protected array $capabilities = [];
+
+    /**
+     * @var OauthIntegration[]
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_oauth_integration"})
+     */
+    protected array $oauthIntegrations = [];
 
     /**
      * @var string[]
@@ -159,6 +166,22 @@ class MerchantIntegrations extends PayPalApiStruct
     public function setGrantedPermissions(array $grantedPermissions): void
     {
         $this->grantedPermissions = $grantedPermissions;
+    }
+
+    /**
+     * @return OauthIntegration[]
+     */
+    public function getOauthIntegrations(): array
+    {
+        return $this->oauthIntegrations;
+    }
+
+    /**
+     * @param array $oauthIntegrations
+     */
+    public function setOauthIntegrations(array $oauthIntegrations): void
+    {
+        $this->oauthIntegrations = $oauthIntegrations;
     }
 
     public function getSpecificCapability(string $name): ?Capability

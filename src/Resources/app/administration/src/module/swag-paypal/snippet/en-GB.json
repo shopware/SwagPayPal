@@ -28,7 +28,7 @@
         },
         "shippingAlert": {
             "title": "Package tracking available",
-            "message": "You can now provide package tracking if you select a default shipping carrier in your <a class=\"sw-internal-link sw-internal-link--inline\" href=\"#/sw/settings/shipping/index\">shipping methods →</a>."
+            "message": "You can now provide package tracking if you select a default shipping carrier in your <a href=\"#/sw/settings/shipping/index\">shipping methods →</a>."
         },
         "general": {
             "mainMenuItemGeneral": "PayPal",

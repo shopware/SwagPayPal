@@ -1,3 +1,4 @@
+{% block swag_paypal_shipping_alert %}
 <sw-alert
     :class="alertClasses"
     :title="$tc('swag-paypal.shippingAlert.title')"
@@ -6,3 +7,4 @@
     @close="close">
     <p v-html="$tc('swag-paypal.shippingAlert.message')"></p>
 </sw-alert>
+{% endblock %}
