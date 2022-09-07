@@ -48,7 +48,7 @@
                   "liveTitle": "PayPal-Konto verbinden",
                   "sandboxTitle": "PayPal-Sandbox-Konto verbinden",
                   "changeLiveTitle": "Anderes Konto verbinden",
-                  "changeSandboxTitle": "Andedes Sandbox-Konto verbinden",
+                  "changeSandboxTitle": "Anderes Sandbox-Konto verbinden",
                   "onboardingLiveTitle": "PayPal Checkout-Onboarding starten",
                   "onboardingSandboxTitle": "PayPal Checkout-Sandbox-Onboarding starten",
                   "restartOnboardingLiveTitle": "PayPal Checkout-Onboarding wiederholen",
@@ -58,7 +58,7 @@
                     "label": "Sandbox-Zugangsdaten verwenden",
                     "onlySandboxTooltip": "Du bist bisher nur mit einem PayPal-Sandbox-Konto verbunden.",
                     "onlyLiveTooltip": "Du bist bisher nur mit einem PayPal-Live-Konto verbunden.",
-                    "tooltipText": "Aktiviere diese Option, um die Integration zu testen."
+                    "helpText": "Aktiviere diese Option, um die Integration zu testen."
                 },
                 "switch": {
                     "label": "Aktiv"
