@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
+use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -29,7 +30,9 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Lifecycle\Installer\CurrencyInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
+use Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
@@ -64,6 +67,8 @@ class Update
 
     private PaymentMethodStateService $paymentMethodStateService;
 
+    private CurrencyInstaller $currencyInstaller;
+
     public function __construct(
         SystemConfigService $systemConfig,
         EntityRepositoryInterface $paymentRepository,
@@ -75,7 +80,8 @@ class Update
         EntityRepositoryInterface $shippingRepository,
         ?PosWebhookService $posWebhookService,
         PaymentMethodInstaller $paymentMethodInstaller,
-        PaymentMethodStateService $paymentMethodStateService
+        PaymentMethodStateService $paymentMethodStateService,
+        CurrencyInstaller $currencyInstaller
     ) {
         $this->systemConfig = $systemConfig;
         $this->customFieldRepository = $customFieldRepository;
@@ -88,6 +94,7 @@ class Update
         $this->posWebhookService = $posWebhookService;
         $this->paymentMethodInstaller = $paymentMethodInstaller;
         $this->paymentMethodStateService = $paymentMethodStateService;
+        $this->currencyInstaller = $currencyInstaller;
     }
 
     public function update(UpdateContext $updateContext): void
@@ -122,6 +129,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '5.3.0', '<')) {
             $this->updateTo530($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.3.1', '<')) {
+            $this->updateTo531($updateContext->getContext());
         }
     }
 
@@ -281,6 +292,8 @@ class Update
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('typeId', SwagPayPal::SALES_CHANNEL_TYPE_POS));
         $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
+
+        /** @var SalesChannelCollection $posSalesChannels */
         $posSalesChannels = $this->salesChannelRepository->search($criteria, $context)->getEntities();
 
         try {
@@ -307,6 +320,13 @@ class Update
     private function updateTo530(Context $context): void
     {
         $this->paymentMethodInstaller->install(VenmoMethodData::class, $context);
+        $this->paymentMethodInstaller->install(PayLaterMethodData::class, $context);
+    }
+
+    private function updateTo531(Context $context): void
+    {
+        $this->currencyInstaller->install($context);
+        $this->paymentMethodInstaller->install(OxxoMethodData::class, $context);
         $this->paymentMethodInstaller->install(PayLaterMethodData::class, $context);
     }
 

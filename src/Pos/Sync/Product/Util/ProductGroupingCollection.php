@@ -21,9 +21,6 @@ use Shopware\Core\Framework\Struct\Collection;
  */
 class ProductGroupingCollection extends Collection
 {
-    /**
-     * @param ProductCollection $products containing SalesChannelProductEntity
-     */
     public function addProducts(ProductCollection $products): void
     {
         foreach ($products as $product) {

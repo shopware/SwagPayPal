@@ -22,6 +22,7 @@ class ThirdPartyDetails extends PayPalApiStruct
     public const FEATURE_TYPE_UPDATE_SELLER_DISPUTE = 'UPDATE_SELLER_DISPUTE';
     public const FEATURE_TYPE_READ_SELLER_DISPUTE = 'READ_SELLER_DISPUTE';
     public const FEATURE_TYPE_DELAY_FUNDS_DISBURSEMENT = 'DELAY_FUNDS_DISBURSEMENT';
+    public const FEATURE_TYPE_TRACKING_SHIPMENT_READWRITE = 'TRACKING_SHIPMENT_READWRITE';
 
     /**
      * @var string[]
@@ -35,6 +36,7 @@ class ThirdPartyDetails extends PayPalApiStruct
         self::FEATURE_TYPE_UPDATE_SELLER_DISPUTE,
         self::FEATURE_TYPE_READ_SELLER_DISPUTE,
         self::FEATURE_TYPE_DELAY_FUNDS_DISBURSEMENT,
+        self::FEATURE_TYPE_TRACKING_SHIPMENT_READWRITE,
     ];
 
     /**

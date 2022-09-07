@@ -165,6 +165,9 @@
                 <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface"/>
                 <referencedClass name="Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface"/>
                 <referencedClass name="Shopware\Core\Framework\Api\ApiDefinition\Generator\OpenApi\Event\OpenApiPathsEvent"/>
+                <referencedClass name="Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException"/>
+                <referencedClass name="Shopware\Core\Checkout\Cart\Exception\OrderDeliveryNotFoundException"/>
+                <referencedClass name="Shopware\Core\Checkout\Cart\Exception\OrderTransactionNotFoundException"/>
             </errorLevel>
         </DeprecatedClass>
 

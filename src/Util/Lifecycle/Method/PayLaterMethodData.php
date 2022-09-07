@@ -124,7 +124,7 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
                                     'type' => (new BillingCountryRule())->getName(),
                                     'value' => [
                                         'operator' => BillingCountryRule::OPERATOR_EQ,
-                                        'countryIds' => $this->getCountryIds(['UK'], $context),
+                                        'countryIds' => $this->getCountryIds(['GB'], $context),
                                     ],
                                 ],
                                 [

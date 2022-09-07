@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Checkout\Cart;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Product\DataAbstractionLayer\ProductStreamUpdater;
+use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -141,6 +142,7 @@ class ExcludedProductValidatorTest extends TestCase
 
         /** @var SalesChannelRepositoryInterface $productRepository */
         $productRepository = $this->getContainer()->get('sales_channel.product.repository');
+        /** @var ProductCollection $products */
         $products = $productRepository->search(
             new Criteria([$this->idsCollection->get('variant')]),
             $this->registerUser()

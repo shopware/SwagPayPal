@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-
 import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
 import StoreApiClient from 'src/service/store-api-client.service';

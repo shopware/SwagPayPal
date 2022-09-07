@@ -33,7 +33,7 @@ default:
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git . --branch $PLATFORM_BRANCH
         - mkdir -p custom/plugins || true
         - unzip -q /tmp/plugin.zip -d custom/plugins/SwagPayPal
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git custom/plugins/SwagCmsExtensions --branch $CMS_EXTENSION_BRANCH
+        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git custom/plugins/SwagCmsExtensions --branch $CMS_EXTENSION_BRANCH
         # shopware 6.4.3.0 composer fix
         - composer config allow-plugins.bamarni/composer-bin-plugin true
         - composer config allow-plugins.phpstan/extension-installer true
@@ -83,7 +83,7 @@ Static validation:
         - php bin/phpstan-config-generator.php
         - if [[ $PLATFORM_BRANCH != "v6.4.3.0" ]]; then php vendor/bin/phpstan analyze --configuration phpstan.neon; else php ../../../vendor/bin/phpstan analyze --configuration phpstan.neon; fi
         - cd $CI_PROJECT_DIR
-        - php vendor/bin/psalm --config=custom/plugins/SwagPayPal/psalm.xml custom/plugins/SwagPayPal/src custom/plugins/SwagPayPal/tests --diff --threads=$(nproc)
+        #- php vendor/bin/psalm --config=custom/plugins/SwagPayPal/psalm.xml custom/plugins/SwagPayPal/src custom/plugins/SwagPayPal/tests --diff --threads=$(nproc)
         - php bin/console snippets:validate
         - php bin/console dal:validate
     parallel:

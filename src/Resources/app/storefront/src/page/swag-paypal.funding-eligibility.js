@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import StoreApiClient from 'src/service/store-api-client.service';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 import SwagPayPalScriptLoading from '../swag-paypal.script-loading';

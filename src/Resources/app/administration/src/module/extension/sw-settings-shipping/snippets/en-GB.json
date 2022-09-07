@@ -1,7 +1,7 @@
 {
     "swag-paypal-settings-shipping-carrier": {
         "cardTitle": "Default shipping carrier",
-        "cardHelpText": "Tracking information will be sent to Paypal",
+        "cardHelpText": "Tracking information will be sent to PayPal",
         "description": "PayPal offers tracking for orders processed through PayPal. To use this, specify a default shipping carrier, which can be overwritten in the orders. Find a list of all shipping providers <a target=\"_blank\" href=\"https://developer.paypal.com/docs/tracking/reference/carriers/\">here</a>",
         "inputLabel": "Carrier code",
         "inputPlaceholder": "Enter a PayPal carrier code (e.g. DHL_GLOBAL_ECOMMERCE)..."

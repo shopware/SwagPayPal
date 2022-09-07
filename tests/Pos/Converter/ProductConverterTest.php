@@ -273,7 +273,7 @@ class ProductConverterTest extends TestCase
         return $tax;
     }
 
-    private function getCategory(): ?CategoryEntity
+    private function getCategory(): CategoryEntity
     {
         $criteria = new Criteria();
         $criteria->addAssociation('translation');
@@ -281,6 +281,9 @@ class ProductConverterTest extends TestCase
         /** @var EntityRepositoryInterface $categoryRepository */
         $categoryRepository = $this->getContainer()->get('category.repository');
 
-        return $categoryRepository->search($criteria, Context::createDefaultContext())->first();
+        $category = $categoryRepository->search($criteria, Context::createDefaultContext())->first();
+        static::assertNotNull($category);
+
+        return $category;
     }
 }

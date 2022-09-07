@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunCollection;
 
 class LogCleaner
 {
@@ -33,6 +34,8 @@ class LogCleaner
         $criteria->addAssociation('logs');
         $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
         $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
+
+        /** @var PosSalesChannelRunCollection $runs */
         $runs = $this->runRepository->search($criteria, $context);
 
         $now = new \DateTime();
@@ -47,7 +50,9 @@ class LogCleaner
             }
 
             $runUnnecessary = true;
-            foreach ($run->getLogs()->getElements() as $log) {
+
+            $logs = $run->getLogs() ?? [];
+            foreach ($logs as $log) {
                 $productId = $log->getProductId();
                 if ($productId === null) {
                     $runUnnecessary = false;

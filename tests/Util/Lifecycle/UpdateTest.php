@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Util\Lifecycle;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
+use Shopware\Core\Checkout\Shipping\ShippingMethodDefinition;
 use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
 use Shopware\Core\Content\Media\File\FileSaver;
 use Shopware\Core\Content\Media\MediaDefinition;
@@ -27,6 +28,7 @@ use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\Currency\CurrencyDefinition;
 use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeDefinition;
@@ -55,6 +57,7 @@ use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
 use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
+use Swag\PayPal\Util\Lifecycle\Installer\CurrencyInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -387,7 +390,9 @@ class UpdateTest extends TestCase
         /** @var InformationDefaultService|null $informationDefaultService */
         $informationDefaultService = $this->getContainer()->get(InformationDefaultService::class);
         /** @var EntityRepositoryInterface $shippingRepository */
-        $shippingRepository = $this->getContainer()->get('shipping_method.repository');
+        $shippingRepository = $this->getContainer()->get(ShippingMethodDefinition::ENTITY_NAME . '.repository');
+        /** @var EntityRepositoryInterface $currencyRepository */
+        $currencyRepository = $this->getContainer()->get(CurrencyDefinition::ENTITY_NAME . '.repository');
         $paymentMethodDataRegistry = new PaymentMethodDataRegistry($this->paymentMethodRepository, $this->getContainer());
 
         return new Update(
@@ -416,7 +421,8 @@ class UpdateTest extends TestCase
             new PaymentMethodStateService(
                 $paymentMethodDataRegistry,
                 $this->paymentMethodRepository,
-            )
+            ),
+            new CurrencyInstaller($currencyRepository),
         );
     }
 

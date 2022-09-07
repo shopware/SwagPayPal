@@ -2,9 +2,9 @@
     {% parent %}
 
     {% block sw_order_detail_details_shipping_paypal_carrier %}
-    <div class="swag-paypal-order-carrier">
+    <div class="swag-paypal-order-carrier"
+         v-if="payPalResourceId">
         <sw-text-field
-            v-if="payPalResourceId"
             v-model="payPalCarrier"
             disabled
             :label="$tc('sw-order-detail.payPalCarrierLabel')"

@@ -1,0 +1,77 @@
+[
+    {
+        "isoCode": "AUD",
+        "factor": 1.779,
+        "symbol": "AU$",
+        "decimalPrecision": 2,
+        "position": 1,
+        "shortName": {
+            "en-GB": "AUD",
+            "de-DE": "AUD"
+        },
+        "name": {
+            "en-GB": "Australian dollar",
+            "de-DE": "Australischer Dollar"
+        },
+        "itemRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        },
+        "totalRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        }
+    },
+    {
+        "isoCode": "BRL",
+        "factor": 5.7056,
+        "symbol": "R$",
+        "decimalPrecision": 2,
+        "position": 1,
+        "shortName": {
+            "en-GB": "BRL",
+            "de-DE": "BRL"
+        },
+        "name": {
+            "en-GB": "Brazilian real",
+            "de-DE": "Brasilianischer Real"
+        },
+        "itemRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        },
+        "totalRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        }
+    },
+    {
+        "isoCode": "MXN",
+        "factor": 27.0896,
+        "symbol": "Mex$",
+        "decimalPrecision": 2,
+        "position": 1,
+        "shortName": {
+            "en-GB": "MXN",
+            "de-DE": "MXN"
+        },
+        "name": {
+            "en-GB": "Mexican peso",
+            "de-DE": "Mexikanischer Peso"
+        },
+        "itemRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        },
+        "totalRounding": {
+            "decimals": 2,
+            "interval": 0.01,
+            "roundForNet": true
+        }
+    }
+]

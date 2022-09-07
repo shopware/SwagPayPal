@@ -28,7 +28,7 @@
         },
         "shippingAlert": {
             "title": "Package tracking available",
-            "message": "You can now provide package tracking if you select a default shipping carrier in your <a class=\"sw-internal-link sw-internal-link--inline\" href=\"#/sw/settings/shipping/index\">shipping methods →</a>."
+            "message": "You can now provide package tracking if you select a default shipping carrier in your <a href=\"#/sw/settings/shipping/index\">shipping methods →</a>."
         },
         "general": {
             "mainMenuItemGeneral": "PayPal",
@@ -139,7 +139,7 @@
                 },
                 "sandbox": {
                     "label": "Enable sandbox",
-                    "tooltipText": "Enable if you want to test the PayPal integration."
+                    "tooltipText": "Enable, if you want to test the PayPal integration."
                 },
                 "button": {
                     "title": "Get API credentials",
@@ -212,11 +212,11 @@
             "express": {
                 "cardTitle": "PayPal Express Checkout",
                 "ecsDetailEnabled": {
-                    "label": "'Pay now' on detail page",
+                    "label": "'Pay Now' on detail page",
                     "helpText": "If this option is active, the Express Checkout button will be shown on each product detail page."
                 },
                 "ecsCartEnabled": {
-                    "label": "'Pay now' on cart",
+                    "label": "'Pay Now' on cart",
                     "helpText": "If this option is active, the Express Checkout button will be shown on the cart."
                 },
                 "ecsOffCanvasEnabled": {
@@ -228,7 +228,7 @@
                     "helpText": "If this option is active, the Express Checkout button will be shown on the login and register page."
                 },
                 "ecsListingEnabled": {
-                    "label": "'Pay now' on listing pages",
+                    "label": "'Pay Now' on listing pages",
                     "helpText": "If this option is active, the Express Checkout button will be shown on listing pages."
                 },
                 "ecsButtonColor": {

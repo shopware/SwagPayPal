@@ -1,3 +1,12 @@
+# 5.3.1
+- PPI-672 - Behebt ein Problem, bei dem Einzügen der Zahlstatus Bezahlt nicht immer gesetzt werden konnte
+- PPI-681 - Behebt ein Problem, bei dem Später Bezahlen nicht für britische und australische Kunden verfügbar ist
+- PPI-681 - Behebt ein Problem, bei dem Oxxo nicht für mexikanische Kunden verfügbar ist
+- PPI-682 - Behebt ein Problem mit fehlenden deutschen Übersetzungen in der Administration
+- PPI-684 - Rechtschreibfehler in der Administration korrigiert
+- PPI-688 - Behebt ein Problem, bei dem das Eingabefeld für den Versandanbieter nicht immer angezeigt wurde
+- PPI-694 - Behebt ein Problem, bei dem der Versandanbieter auch für Nicht-PayPal-Bestellungen angezeigt wurde
+
 # 5.3.0
 - PPI-627 - Neue Zahlungsarten "Später bezahlen" und "Venmo" hinzugefügt
 - PPI-673 - Automatische Übermittlung von Sendungsverfolgungsdaten an PayPal hinzugefügt

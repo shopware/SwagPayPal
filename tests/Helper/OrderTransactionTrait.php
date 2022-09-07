@@ -57,7 +57,10 @@ trait OrderTransactionTrait
         /** @var EntityRepositoryInterface $orderTransactionRepo */
         $orderTransactionRepo = $container->get(OrderTransactionDefinition::ENTITY_NAME . '.repository');
 
-        return $orderTransactionRepo->search(new Criteria([$transactionId]), $context)->get($transactionId);
+        /** @var OrderTransactionEntity|null $transaction */
+        $transaction = $orderTransactionRepo->search(new Criteria([$transactionId]), $context)->get($transactionId);
+
+        return $transaction;
     }
 
     protected function assertOrderTransactionState(string $state, string $transactionId, Context $context): void

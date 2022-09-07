@@ -23,7 +23,7 @@
 
         {% block sw_settings_shipping_detail_paypal_default_carrier_input %}
         <sw-text-field
-            v-model="shippingMethod.customFields.swag_paypal_carrier"
+            v-model="payPalDefaultCarrier"
             :label="$tc('swag-paypal-settings-shipping-carrier.inputLabel')"
             :placeholder="$tc('swag-paypal-settings-shipping-carrier.inputPlaceholder')"
         ></sw-text-field>
