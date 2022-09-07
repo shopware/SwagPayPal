@@ -33,7 +33,7 @@ default:
         - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/product/platform.git . --branch $PLATFORM_BRANCH
         - mkdir -p custom/plugins || true
         - unzip -q /tmp/plugin.zip -d custom/plugins/SwagPayPal
-        - git clone http://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git custom/plugins/SwagCmsExtensions --branch $CMS_EXTENSION_BRANCH
+        - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.shopware.com/shopware/6/services/cms-extensions.git custom/plugins/SwagCmsExtensions --branch $CMS_EXTENSION_BRANCH
         # shopware 6.4.3.0 composer fix
         - composer config allow-plugins.bamarni/composer-bin-plugin true
         - composer config allow-plugins.phpstan/extension-installer true
