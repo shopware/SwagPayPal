@@ -9,8 +9,8 @@ namespace Swag\PayPal\RestApi;
 
 final class BaseURL
 {
-    public const SANDBOX = 'https://api.sandbox.paypal.com/';
-    public const LIVE = 'https://api.paypal.com/';
+    public const SANDBOX = 'https://api-m.sandbox.paypal.com/';
+    public const LIVE = 'https://api-m.paypal.com/';
 
     private function __construct()
     {
