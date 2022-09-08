@@ -97,10 +97,7 @@ Component.register('swag-paypal-payment-details-v2', {
             this.updateDateTime = this.formatDate(this.paypalOrder.update_time);
             this.amount = this.paypalOrder.purchase_units[0].amount;
             this.currency = this.amount.currency_code;
-            const payer = this.paypalOrder.payer;
-            if (payer !== null) {
-                this.payerId = payer.payer_id;
-            }
+            this.payerId = this.paypalOrder.payer?.payer_id ?? '';
 
             this.setPayments();
         },

@@ -102,13 +102,17 @@
                                         {% endblock %}
 
                                         {% block swag_paypal_payment_detail_payment_list_create_time %}
+                                        <template v-if="createDateTime">
                                             <dt>{{ $tc('swag-paypal-payment.paymentDetails.payment.createTime') }}</dt>
                                             <dd>{{ createDateTime }}</dd>
+                                        </template>
                                         {% endblock %}
 
                                         {% block swag_paypal_payment_detail_payment_list_update_time %}
+                                        <template v-if="updateDateTime">
                                             <dt>{{ $tc('swag-paypal-payment.paymentDetails.payment.updateTime') }}</dt>
                                             <dd>{{ updateDateTime }}</dd>
+                                        </template>
                                         {% endblock %}
 
                                     </sw-description-list>
@@ -116,6 +120,8 @@
                             {% endblock %}
 
                             {% block swag_paypal_payment_detail_customer %}
+                            <template v-if="payerId">
+
                                 {% block swag_paypal_payment_detail_customer_heading %}
                                     <h3 class="swag-paypal-payment-detail__heading">
                                         {{ $tc('swag-paypal-payment.paymentDetails.customer.heading') }}
@@ -128,6 +134,8 @@
                                         <dd>{{ payerId }}</dd>
                                     </sw-description-list>
                                 {% endblock %}
+
+                            </template>
                             {% endblock %}
                         {% endblock %}
 
