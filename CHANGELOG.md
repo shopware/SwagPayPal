@@ -6,6 +6,7 @@
 - PPI-684 - Improved spelling in the Administration
 - PPI-688 - Fixed issue where the default carrier field in shipping methods was not always shown
 - PPI-694 - Fixed issue where the default carrier field was shown in non-PayPal orders
+- PPI-700 - Changed API URL to PayPal from `api.paypal.com` to `api-m.paypal.com` to increase performance
 - PPI-702 - Fixed issue where payment details of non-PayPal-wallet payments were not always visible
 
 # 5.3.0

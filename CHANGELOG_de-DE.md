@@ -6,6 +6,7 @@
 - PPI-684 - Rechtschreibfehler in der Administration korrigiert
 - PPI-688 - Behebt ein Problem, bei dem das Eingabefeld für den Versandanbieter nicht immer angezeigt wurde
 - PPI-694 - Behebt ein Problem, bei dem der Versandanbieter auch für Nicht-PayPal-Bestellungen angezeigt wurde
+- PPI-700 - API-URL von PayPal von `api.paypal.com` auf `api-m.paypal.com` für Performanceverbesserungen geändert
 - PPI-702 - Behebt ein Problem, bei dem bei Nicht-PayPal-Zahlungen die Zahlungsdetails nicht immer angezeigt wurden
 
 # 5.3.0

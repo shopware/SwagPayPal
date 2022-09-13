@@ -25,7 +25,7 @@
                 "cartId": "Warenkorb-ID:",
                 "state": "Status:",
                 "createTime": "Erstellt:",
-                "updateTime": "Zul. aktualisiert:"
+                "updateTime": "Zuletzt aktualisiert:"
             },
             "customer": {
                 "heading": "Kunde",
