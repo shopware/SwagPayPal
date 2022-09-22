@@ -94,6 +94,22 @@ class ExcludedProductValidatorTest extends TestCase
     /**
      * @dataProvider dataProviderConstellations
      */
+    public function testCartContainsExcludedProductOnlyInSalesChannel(?string $settingKey, ?string $settingIdName, ?string $expectedIdName): void
+    {
+        $context = $this->registerUser();
+
+        if ($settingKey && $settingIdName) {
+            $this->systemConfig->set($settingKey, [$this->idsCollection->get($settingIdName)], $context->getSalesChannelId());
+        }
+
+        $cart = $this->addToCart($this->idsCollection->get('variant'), $context);
+
+        static::assertSame((bool) $expectedIdName, $this->validator->cartContainsExcludedProduct($cart, $context));
+    }
+
+    /**
+     * @dataProvider dataProviderConstellations
+     */
     public function testFindExcludedProducts(?string $settingKey, ?string $settingIdName, ?string $expectedIdName): void
     {
         if ($settingKey && $settingIdName) {

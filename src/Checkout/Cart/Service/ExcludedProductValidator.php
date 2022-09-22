@@ -37,7 +37,7 @@ class ExcludedProductValidator
     public function cartContainsExcludedProduct(Cart $cart, SalesChannelContext $salesChannelContext): bool
     {
         $productIds = [];
-        $excludedProductIds = $this->systemConfigService->get(Settings::EXCLUDED_PRODUCT_IDS) ?? [];
+        $excludedProductIds = $this->systemConfigService->get(Settings::EXCLUDED_PRODUCT_IDS, $salesChannelContext->getSalesChannelId()) ?? [];
         if (!\is_array($excludedProductIds)) {
             $excludedProductIds = [];
         }
@@ -73,7 +73,7 @@ class ExcludedProductValidator
             }
         }
 
-        $excludedProductStreamIds = $this->systemConfigService->get(Settings::EXCLUDED_PRODUCT_STREAM_IDS) ?? [];
+        $excludedProductStreamIds = $this->systemConfigService->get(Settings::EXCLUDED_PRODUCT_STREAM_IDS, $salesChannelContext->getSalesChannelId()) ?? [];
         if (!\is_array($excludedProductStreamIds) || empty($excludedProductStreamIds)) {
             return false;
         }
@@ -100,13 +100,13 @@ class ExcludedProductValidator
             return [];
         }
 
-        $excludedProductIds = $this->systemConfigService->get(Settings::EXCLUDED_PRODUCT_IDS) ?? [];
+        $excludedProductIds = $this->systemConfigService->get(Settings::EXCLUDED_PRODUCT_IDS, $salesChannelContext->getSalesChannelId()) ?? [];
         $excludedByProductIds = [];
         if (\is_array($excludedProductIds)) {
             $excludedByProductIds = \array_intersect($productIds, $excludedProductIds);
         }
 
-        $excludedProductStreamIds = $this->systemConfigService->get(Settings::EXCLUDED_PRODUCT_STREAM_IDS) ?? [];
+        $excludedProductStreamIds = $this->systemConfigService->get(Settings::EXCLUDED_PRODUCT_STREAM_IDS, $salesChannelContext->getSalesChannelId()) ?? [];
         if (!\is_array($excludedProductStreamIds) || empty($excludedProductStreamIds)) {
             return $excludedByProductIds;
         }
