@@ -1,3 +1,6 @@
+# 5.3.2
+- PPI-709 - Behebt ein Problem, bei dem PayPal nicht installiert werden konnte, wenn die Standardsprache nicht Deutsch oder Englisch war
+
 # 5.3.1
 - PPI-672 - Behebt ein Problem, bei dem Einzügen der Zahlstatus Bezahlt nicht immer gesetzt werden konnte
 - PPI-681 - Behebt ein Problem, bei dem Später Bezahlen nicht für britische und australische Kunden verfügbar ist

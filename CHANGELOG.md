@@ -1,3 +1,6 @@
+# 5.3.2
+- PPI-709 - Fixed issue where PayPal was not installable, if the default language was neither English nor German
+
 # 5.3.1
 - PPI-672 - Fixed issue where captures could not always set transactions to paid
 - PPI-681 - Fixed issue where Pay Later was not available for British and Australian customers
