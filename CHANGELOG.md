@@ -1,6 +1,6 @@
 # 5.3.3
 - PPI-707 - Fixed issue where checking out with "Pay Later", "SEPA" and "Venmo" result in an error
-- 
+
 # 5.3.2
 - PPI-709 - Fixed issue where PayPal was not installable, if the default language was neither English nor German
 

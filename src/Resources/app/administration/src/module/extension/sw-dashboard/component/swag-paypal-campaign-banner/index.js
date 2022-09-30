@@ -14,8 +14,9 @@ Component.register('swag-paypal-campaign-banner', {
             'de-DE': {
                 '2022-10': {
                     title: 'Spare bares Geld!',
-                    text: 'Am 01.08.2022 hat PayPal die Standardgebühren angepasst. '+
+                    text: 'Am 01.08.2022 hat PayPal die Standardgebühren angepasst. ' +
                         'Migriere bis 31.12.2022 zu PayPal Checkout* und behalte deine alten Gebühren bis 31.07.2023.<br>' +
+                        // eslint-disable-next-line max-len
                         '* Erfahre mehr in unserem <a href="https://www.shopware.com/de/news/paypal-aktualisiert-gebuehren/" target="_blank">Blog Beitrag</a>',
                     labelText: '',
                 },
@@ -24,8 +25,10 @@ Component.register('swag-paypal-campaign-banner', {
             'en-GB': {
                 '2022-10': {
                     title: 'Save money now!',
-                    text: 'On 1 August 2022, PayPal adjusted the standard fees. '+
+                    text: 'On 1 August 2022, PayPal adjusted the standard fees. ' +
+                        // eslint-disable-next-line max-len
                         'Migrate to PayPal Checkout by 31 December 2022* and maintain your old prices until 31 July 2023!<br>' +
+                        // eslint-disable-next-line max-len
                         '* Learn more about in our <a href="https://www.shopware.com/en/news/paypal-updated-fees/" target="_blank">blog</a>',
                     labelText: '',
                 },
