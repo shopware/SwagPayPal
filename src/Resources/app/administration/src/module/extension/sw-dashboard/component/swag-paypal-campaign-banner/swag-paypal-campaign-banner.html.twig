@@ -6,9 +6,12 @@
 
         <div class="sw-campaign-banner__content">
             <div class="sw-campaign-banner__text">
-                <span class="sw-campaign-banner__label">{{ labelText }}</span>
+                <span
+                    v-if="showLabel"
+                    class="sw-campaign-banner__label"
+                >{{ labelText }}</span>
                 <h3>{{ title }}</h3>
-                <p>{{ text }}</p>
+                <p v-html="text"></p>
             </div>
 
             <div class="sw-campaign-banner__action">

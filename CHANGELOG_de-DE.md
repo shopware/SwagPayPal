@@ -1,5 +1,5 @@
 # 5.3.3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
-PPI-707 - Behebt ein Problem, bei dem während des Bestellvorgangs mit "Später bezahlen", "SEPA" and "Venmo" ein Fehler auftrat
+- PPI-707 - Behebt ein Problem, bei dem während des Bestellvorgangs mit "Später bezahlen", "SEPA" and "Venmo" ein Fehler auftrat
 
 # 5.3.2
 - PPI-709 - Behebt ein Problem, bei dem PayPal nicht installiert werden konnte, wenn die Standardsprache nicht Deutsch oder Englisch war

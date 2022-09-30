@@ -27,8 +27,7 @@ Component.override('sw-dashboard-index', {
                 return false;
             }
 
-            return (this.payPalSystemConfig['SwagPayPal.settings.plusCheckoutEnabled']
-                    || new Date() < new Date('2022-07-23'))
+            return new Date() < new Date('2022-12-31')
                 && (this.payPalSystemConfig['SwagPayPal.settings.clientId']
                     || this.payPalSystemConfig['SwagPayPal.settings.clientIdSandbox']);
         },
