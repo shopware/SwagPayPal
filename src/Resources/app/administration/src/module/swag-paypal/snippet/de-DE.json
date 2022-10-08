@@ -263,6 +263,13 @@
                     "label": "Ratenzahlung Banner aktivieren"
                 }
             },
+            "acdc": {
+                "cardTitle": "Kredit- oder Debitkarte",
+                "acdcForce3DS": {
+                    "label": "Transaktionen ausschließlich mit 3D Secure durchführen",
+                    "helpText": "Transaktionen werden bei nicht verfügbarem 3D Secure nicht akzeptiert."
+                }
+            },
             "pui": {
                 "cardTitle": "Rechnungskauf",
                 "customerServiceInstructions": {

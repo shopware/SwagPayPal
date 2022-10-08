@@ -23,6 +23,7 @@ use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
+use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftNo;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftUnknown;
@@ -46,6 +47,20 @@ Credit card validation failed, 3D secure was not validated.');
     public function testPayCaptureLiabilityShiftNo(): void
     {
         $handler = $this->createPaymentHandler($this->getDefaultConfigData());
+
+        $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
+        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $paymentTransaction = $this->createPaymentTransactionStruct('some-order-id', $transactionId);
+
+        $this->expectException(SyncPaymentProcessException::class);
+        $this->expectExceptionMessage('The synchronous payment process was interrupted due to the following error:
+Credit card validation failed, 3D secure was not validated.');
+        $handler->pay($paymentTransaction, $this->createRequest(GetOrderCaptureLiabilityShiftNo::ID), $salesChannelContext);
+    }
+
+    public function testPayCaptureLiabilityShiftNoWithoutForced3DS(): void
+    {
+        $handler = $this->createPaymentHandler(\array_merge($this->getDefaultConfigData(), [Settings::ACDC_FORCE_3DS => false]));
 
         $transactionId = $this->getTransactionId(Context::createDefaultContext(), $this->getContainer());
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
@@ -86,7 +101,7 @@ Credit card validation failed, 3D secure was not validated.');
             ),
             $logger,
             $orderResource,
-            new ACDCValidator(),
+            new ACDCValidator($systemConfig),
         );
     }
 

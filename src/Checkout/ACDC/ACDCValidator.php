@@ -9,11 +9,20 @@ namespace Swag\PayPal\Checkout\ACDC;
 
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\Setting\Settings;
 
 class ACDCValidator implements ACDCValidatorInterface
 {
+    private SystemConfigService $systemConfigService;
+
+    public function __construct(SystemConfigService $systemConfigService)
+    {
+        $this->systemConfigService = $systemConfigService;
+    }
+
     /**
      * This implements the recommended actions from PayPal. Feel free to customize.
      *
@@ -41,6 +50,10 @@ class ACDCValidator implements ACDCValidatorInterface
 
         if ($authenticationResult->getLiabilityShift() === self::LIABILITY_SHIFT_POSSIBLE) {
             return true;
+        }
+
+        if ($this->systemConfigService->getBool(Settings::ACDC_FORCE_3DS, $salesChannelContext->getSalesChannelId())) {
+            return false;
         }
 
         if ($authenticationResult->getLiabilityShift() !== self::LIABILITY_SHIFT_NO) {

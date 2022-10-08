@@ -1,6 +1,7 @@
 # 5.4.0
 - PPI-707 - Fixed issue where checking out with "Pay Later", "SEPA" and "Venmo" result in an error
 - PPI-712 - Improved handling of payment method availability, removed availability rules
+- PPI-713 - Improved 3D Secure handling in credit card payments
 
 # 5.3.2
 - PPI-709 - Fixed issue where PayPal was not installable, if the default language was neither English nor German

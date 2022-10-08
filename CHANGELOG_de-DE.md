@@ -1,6 +1,7 @@
 # 5.4.0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 - PPI-707 - Behebt ein Problem, bei dem während des Bestellvorgangs mit "Später bezahlen", "SEPA" and "Venmo" ein Fehler auftrat
 - PPI-712 - Handhabung von Zahlungsmethodenverfügbarkeit verbessert, existierende Verfügbarkeitsregeln entfernt
+- PPI-713 - Verwendung von 3D Secure für Kreditkartenzahlungen verbessert
 
 # 5.3.2
 - PPI-709 - Behebt ein Problem, bei dem PayPal nicht installiert werden konnte, wenn die Standardsprache nicht Deutsch oder Englisch war

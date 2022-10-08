@@ -43,6 +43,7 @@ final class Settings
     public const SPB_BUTTON_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonColor';
     public const SPB_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonShape';
     public const SPB_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonLanguageIso';
+    public const ACDC_FORCE_3DS = self::SYSTEM_CONFIG_DOMAIN . 'acdcForce3DS';
     public const PUI_CUSTOMER_SERVICE_INSTRUCTIONS = self::SYSTEM_CONFIG_DOMAIN . 'puiCustomerServiceInstructions';
     public const INSTALLMENT_BANNER_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled';
     public const LOGGING_LEVEL = self::SYSTEM_CONFIG_DOMAIN . 'loggingLevel';
@@ -101,6 +102,7 @@ final class Settings
         self::INSTALLMENT_BANNER_ENABLED => true,
         self::LOGGING_LEVEL => Logger::WARNING,
         self::PUI_CUSTOMER_SERVICE_INSTRUCTIONS => 'Details zum Kundenservice finden Sie auf unserer Webseite',
+        self::ACDC_FORCE_3DS => true,
         self::EXCLUDED_PRODUCT_IDS => [],
         self::EXCLUDED_PRODUCT_STREAM_IDS => [],
     ];
