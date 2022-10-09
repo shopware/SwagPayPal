@@ -7,21 +7,16 @@
 
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
-use Shopware\Core\Checkout\Customer\Rule\BillingCountryRule;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Rule\Container\AndRule;
-use Shopware\Core\Framework\Rule\Container\OrRule;
-use Shopware\Core\System\Currency\Rule\CurrencyRule;
 use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\PayLaterCheckoutDataService;
+use Swag\PayPal\Util\Availability\AvailabilityContext;
 
 class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
     public const PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID = 'payPalPayLaterFieldData';
-    private const AVAILABILITY_RULE_NAME = 'PayPalPayLaterAvailabilityRule';
 
     public function getTranslations(): array
     {
@@ -50,96 +45,16 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
         return PayLaterHandler::class;
     }
 
-    public function getRuleData(Context $context): ?array
+    public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
-        return [
-            'name' => self::AVAILABILITY_RULE_NAME,
-            'priority' => 1,
-            'description' => 'Determines whether or not the PayPal - Pay Later payment method is available for the given rule context.',
-            'conditions' => [
-                [
-                    'type' => (new OrRule())->getName(),
-                    'children' => [
-                        [
-                            'type' => (new AndRule())->getName(),
-                            'children' => [
-                                [
-                                    'type' => (new BillingCountryRule())->getName(),
-                                    'value' => [
-                                        'operator' => BillingCountryRule::OPERATOR_EQ,
-                                        'countryIds' => $this->getCountryIds(['US'], $context),
-                                    ],
-                                ],
-                                [
-                                    'type' => (new CurrencyRule())->getName(),
-                                    'value' => [
-                                        'operator' => CurrencyRule::OPERATOR_EQ,
-                                        'currencyIds' => $this->getCurrencyIds(['USD'], $context),
-                                    ],
-                                ],
-                            ],
-                        ],
-                        [
-                            'type' => (new AndRule())->getName(),
-                            'children' => [
-                                [
-                                    'type' => (new BillingCountryRule())->getName(),
-                                    'value' => [
-                                        'operator' => BillingCountryRule::OPERATOR_EQ,
-                                        'countryIds' => $this->getCountryIds(['AU'], $context),
-                                    ],
-                                ],
-                                [
-                                    'type' => (new CurrencyRule())->getName(),
-                                    'value' => [
-                                        'operator' => CurrencyRule::OPERATOR_EQ,
-                                        'currencyIds' => $this->getCurrencyIds(['AUD'], $context),
-                                    ],
-                                ],
-                            ],
-                        ],
-                        [
-                            'type' => (new AndRule())->getName(),
-                            'children' => [
-                                [
-                                    'type' => (new BillingCountryRule())->getName(),
-                                    'value' => [
-                                        'operator' => BillingCountryRule::OPERATOR_EQ,
-                                        'countryIds' => $this->getCountryIds(['DE', 'ES', 'FR', 'IT'], $context),
-                                    ],
-                                ],
-                                [
-                                    'type' => (new CurrencyRule())->getName(),
-                                    'value' => [
-                                        'operator' => CurrencyRule::OPERATOR_EQ,
-                                        'currencyIds' => $this->getCurrencyIds(['EUR'], $context),
-                                    ],
-                                ],
-                            ],
-                        ],
-                        [
-                            'type' => (new AndRule())->getName(),
-                            'children' => [
-                                [
-                                    'type' => (new BillingCountryRule())->getName(),
-                                    'value' => [
-                                        'operator' => BillingCountryRule::OPERATOR_EQ,
-                                        'countryIds' => $this->getCountryIds(['GB'], $context),
-                                    ],
-                                ],
-                                [
-                                    'type' => (new CurrencyRule())->getName(),
-                                    'value' => [
-                                        'operator' => CurrencyRule::OPERATOR_EQ,
-                                        'currencyIds' => $this->getCurrencyIds(['GBP'], $context),
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ];
+        return ($availabilityContext->getCurrencyCode() === 'EUR'
+                && \in_array($availabilityContext->getBillingCountryCode(), ['DE', 'ES', 'FR', 'IT'], true))
+            || ($availabilityContext->getCurrencyCode() === 'GBP'
+                && $availabilityContext->getBillingCountryCode() === 'GB')
+            || ($availabilityContext->getCurrencyCode() === 'AUD'
+                && $availabilityContext->getBillingCountryCode() === 'AU')
+            || ($availabilityContext->getCurrencyCode() === 'USD'
+                && $availabilityContext->getBillingCountryCode() === 'US');
     }
 
     public function getInitialState(): bool

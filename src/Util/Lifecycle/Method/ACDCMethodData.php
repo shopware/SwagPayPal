@@ -7,13 +7,13 @@
 
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
-use Shopware\Core\Framework\Context;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\ACDCCheckoutDataService;
+use Swag\PayPal\Util\Availability\AvailabilityContext;
 
 class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
@@ -43,9 +43,9 @@ class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInt
         return ACDCHandler::class;
     }
 
-    public function getRuleData(Context $context): ?array
+    public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
-        return null;
+        return true;
     }
 
     public function getInitialState(): bool

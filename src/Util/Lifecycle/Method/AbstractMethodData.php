@@ -15,10 +15,13 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryDefinition;
 use Shopware\Core\System\Currency\CurrencyDefinition;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
+use Swag\PayPal\Util\Availability\AvailabilityContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @psalm-consistent-constructor
+ *
+ * @deprecated tag:v6.0.0 - isAvailable() will be abstract and needs to be implemented
  */
 abstract class AbstractMethodData
 {
@@ -43,7 +46,15 @@ abstract class AbstractMethodData
 
     abstract public function getHandler(): string;
 
-    abstract public function getRuleData(Context $context): ?array;
+    public function getRuleData(Context $context): ?array
+    {
+        return null;
+    }
+
+    public function isAvailable(AvailabilityContext $availabilityContext): bool
+    {
+        return true;
+    }
 
     abstract public function getInitialState(): bool;
 
@@ -51,6 +62,9 @@ abstract class AbstractMethodData
 
     abstract public function getMediaFileName(): ?string;
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed without replacement
+     */
     protected function getCountryIds(array $countryIsos, Context $context): array
     {
         $criteria = new Criteria();
@@ -70,6 +84,9 @@ abstract class AbstractMethodData
         return $countryIds;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed without replacement
+     */
     protected function getCurrencyIds(array $currencyCodes, Context $context): array
     {
         $criteria = new Criteria();

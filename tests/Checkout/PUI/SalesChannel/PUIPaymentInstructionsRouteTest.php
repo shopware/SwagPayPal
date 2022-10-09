@@ -206,7 +206,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
                             'countryId' => $this->getValidCountryId(),
                         ],
                     ],
-                ]
+                ],
             ],
             'stateId' => $orderStateId,
             'paymentMethodId' => $paymentMethodId,

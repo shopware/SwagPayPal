@@ -30,7 +30,6 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
-use Swag\PayPal\Util\Lifecycle\Installer\CurrencyInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
@@ -67,8 +66,6 @@ class Update
 
     private PaymentMethodStateService $paymentMethodStateService;
 
-    private CurrencyInstaller $currencyInstaller;
-
     public function __construct(
         SystemConfigService $systemConfig,
         EntityRepositoryInterface $paymentRepository,
@@ -80,8 +77,7 @@ class Update
         EntityRepositoryInterface $shippingRepository,
         ?PosWebhookService $posWebhookService,
         PaymentMethodInstaller $paymentMethodInstaller,
-        PaymentMethodStateService $paymentMethodStateService,
-        CurrencyInstaller $currencyInstaller
+        PaymentMethodStateService $paymentMethodStateService
     ) {
         $this->systemConfig = $systemConfig;
         $this->customFieldRepository = $customFieldRepository;
@@ -94,7 +90,6 @@ class Update
         $this->posWebhookService = $posWebhookService;
         $this->paymentMethodInstaller = $paymentMethodInstaller;
         $this->paymentMethodStateService = $paymentMethodStateService;
-        $this->currencyInstaller = $currencyInstaller;
     }
 
     public function update(UpdateContext $updateContext): void
@@ -133,6 +128,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '5.3.1', '<')) {
             $this->updateTo531($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.4.0', '<')) {
+            $this->updateTo540($updateContext->getContext());
         }
     }
 
@@ -325,9 +324,13 @@ class Update
 
     private function updateTo531(Context $context): void
     {
-        $this->currencyInstaller->install($context);
         $this->paymentMethodInstaller->install(OxxoMethodData::class, $context);
         $this->paymentMethodInstaller->install(PayLaterMethodData::class, $context);
+    }
+
+    private function updateTo540(Context $context): void
+    {
+        $this->paymentMethodInstaller->removeRules($context);
     }
 
     private function changePaymentHandlerIdentifier(string $previousHandler, string $newHandler, Context $context): void

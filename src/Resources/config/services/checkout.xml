@@ -23,6 +23,7 @@
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
             <argument type="service" id="request_stack"/>
             <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator"/>
+            <argument type="service" id="Swag\PayPal\Util\Availability\AvailabilityService"/>
             <tag name="shopware.cart.validator"/>
         </service>
 
@@ -57,6 +58,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\CartPriceService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator"/>
             <argument type="service" id="request_stack"/>
+            <argument type="service" id="Swag\PayPal\Util\Availability\AvailabilityService"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\ACDC\ACDCValidator"/>

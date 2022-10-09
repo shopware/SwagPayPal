@@ -21,6 +21,7 @@ use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Util\Availability\AvailabilityService;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,6 +47,8 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 
     private ExcludedProductValidator $excludedProductValidator;
 
+    private AvailabilityService $availabilityService;
+
     public function __construct(
         AbstractPaymentMethodRoute $decorated,
         PaymentMethodDataRegistry $methodDataRegistry,
@@ -53,7 +56,8 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         CartService $cartService,
         CartPriceService $cartPriceService,
         ExcludedProductValidator $excludedProductValidator,
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        AvailabilityService $availabilityService
     ) {
         $this->decorated = $decorated;
         $this->methodDataRegistry = $methodDataRegistry;
@@ -62,6 +66,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         $this->cartPriceService = $cartPriceService;
         $this->excludedProductValidator = $excludedProductValidator;
         $this->requestStack = $requestStack;
+        $this->availabilityService = $availabilityService;
     }
 
     public function getDecorated(): AbstractPaymentMethodRoute
@@ -145,16 +150,21 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         } catch (SessionNotFoundException $e) {
         }
 
+        $this->removePaymentMethods(
+            $response->getPaymentMethods(),
+            $this->availabilityService->filterPaymentMethods($response->getPaymentMethods(), $cart, $context)
+        );
+
         return $response;
     }
 
     /**
-     * @param string[] $ids
+     * @param string[] $handlers
      */
-    private function removePaymentMethods(PaymentMethodCollection $paymentMethods, array $ids): void
+    private function removePaymentMethods(PaymentMethodCollection $paymentMethods, array $handlers): void
     {
         foreach ($paymentMethods as $paymentMethod) {
-            if (\in_array($paymentMethod->getHandlerIdentifier(), $ids, true)) {
+            if (\in_array($paymentMethod->getHandlerIdentifier(), $handlers, true)) {
                 $paymentMethods->remove($paymentMethod->getId());
             }
         }

@@ -7,21 +7,17 @@
 
 namespace Swag\PayPal\Util\Lifecycle\Method;
 
-use Shopware\Core\Checkout\Customer\Rule\BillingCountryRule;
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Rule\Container\AndRule;
-use Shopware\Core\System\Currency\Rule\CurrencyRule;
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations\Capability;
 use Swag\PayPal\Storefront\Data\CheckoutDataMethodInterface;
 use Swag\PayPal\Storefront\Data\Service\AbstractCheckoutDataService;
 use Swag\PayPal\Storefront\Data\Service\VenmoCheckoutDataService;
+use Swag\PayPal\Util\Availability\AvailabilityContext;
 
 class VenmoMethodData extends AbstractMethodData implements CheckoutDataMethodInterface
 {
     public const PAYPAL_VENMO_FIELD_DATA_EXTENSION_ID = 'payPalVenmoFieldData';
-    private const AVAILABILITY_RULE_NAME = 'PayPalVenmoAvailabilityRule';
 
     public function getTranslations(): array
     {
@@ -50,34 +46,10 @@ class VenmoMethodData extends AbstractMethodData implements CheckoutDataMethodIn
         return VenmoHandler::class;
     }
 
-    public function getRuleData(Context $context): ?array
+    public function isAvailable(AvailabilityContext $availabilityContext): bool
     {
-        return [
-            'name' => self::AVAILABILITY_RULE_NAME,
-            'priority' => 1,
-            'description' => 'Determines whether or not the PayPal - Venmo payment method is available for the given rule context.',
-            'conditions' => [
-                [
-                    'type' => (new AndRule())->getName(),
-                    'children' => [
-                        [
-                            'type' => (new BillingCountryRule())->getName(),
-                            'value' => [
-                                'operator' => BillingCountryRule::OPERATOR_EQ,
-                                'countryIds' => $this->getCountryIds(['US'], $context),
-                            ],
-                        ],
-                        [
-                            'type' => (new CurrencyRule())->getName(),
-                            'value' => [
-                                'operator' => CurrencyRule::OPERATOR_EQ,
-                                'currencyIds' => $this->getCurrencyIds(['USD'], $context),
-                            ],
-                        ],
-                    ],
-                ],
-            ],
-        ];
+        return $availabilityContext->getCurrencyCode() === 'USD'
+            && $availabilityContext->getBillingCountryCode() === 'US';
     }
 
     public function getInitialState(): bool

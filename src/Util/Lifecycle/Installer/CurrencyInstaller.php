@@ -11,6 +11,9 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 
+/**
+ * @deprecated tag:v6.0.0 - will be removed
+ */
 class CurrencyInstaller
 {
     private EntityRepositoryInterface $currencyRepository;

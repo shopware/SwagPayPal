@@ -16,6 +16,9 @@ use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Util\Lifecycle\Installer\CurrencyInstaller;
 
+/**
+ * @deprecated tag:v6.0.0 - will be removed
+ */
 class CurrencyInstallerTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
@@ -41,17 +44,6 @@ class CurrencyInstallerTest extends TestCase
         }
 
         static::assertNull($this->getCurrencyId($currencyCode));
-        $installer = new CurrencyInstaller($this->currencyRepository);
-        $installer->install(Context::createDefaultContext());
-        static::assertNotNull($this->getCurrencyId($currencyCode));
-    }
-
-    /**
-     * @dataProvider providerCurrencies
-     */
-    public function testInstallExists(string $currencyCode): void
-    {
-        static::assertNotNull($this->getCurrencyId($currencyCode));
         $installer = new CurrencyInstaller($this->currencyRepository);
         $installer->install(Context::createDefaultContext());
         static::assertNotNull($this->getCurrencyId($currencyCode));
