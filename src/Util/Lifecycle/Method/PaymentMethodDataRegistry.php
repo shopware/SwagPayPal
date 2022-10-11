@@ -73,6 +73,7 @@ class PaymentMethodDataRegistry
     public function getEntityFromData(AbstractMethodData $method, Context $context): ?PaymentMethodEntity
     {
         $criteria = new Criteria();
+        $criteria->addAssociation('availabilityRule');
         $criteria->addFilter(new EqualsFilter('handlerIdentifier', $method->getHandler()));
 
         return $this->paymentMethodRepository->search($criteria, $context)->first();
@@ -123,6 +124,19 @@ class PaymentMethodDataRegistry
         }
 
         throw new UnknownPaymentMethodException($methodDataClass);
+    }
+
+    public function getPaymentMethodByHandler(string $paymentHandler): ?AbstractMethodData
+    {
+        $paymentMethods = $this->getPaymentMethods();
+
+        foreach ($paymentMethods as $paymentMethod) {
+            if ($paymentMethod->getHandler() === $paymentHandler) {
+                return $paymentMethod;
+            }
+        }
+
+        return null;
     }
 
     public function isPayPalPaymentMethod(PaymentMethodEntity $paymentMethod): bool

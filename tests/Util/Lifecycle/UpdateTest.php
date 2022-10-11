@@ -14,7 +14,6 @@ use Shopware\Core\Checkout\Shipping\ShippingMethodDefinition;
 use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
 use Shopware\Core\Content\Media\File\FileSaver;
 use Shopware\Core\Content\Media\MediaDefinition;
-use Shopware\Core\Content\Rule\Aggregate\RuleCondition\RuleConditionDefinition;
 use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -28,7 +27,6 @@ use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\Currency\CurrencyDefinition;
 use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeDefinition;
@@ -57,7 +55,6 @@ use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
 use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
-use Swag\PayPal\Util\Lifecycle\Installer\CurrencyInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -379,8 +376,6 @@ class UpdateTest extends TestCase
         $customFieldRepository = $this->getContainer()->get(CustomFieldDefinition::ENTITY_NAME . '.repository');
         /** @var EntityRepositoryInterface $ruleRepository */
         $ruleRepository = $this->getContainer()->get(RuleDefinition::ENTITY_NAME . '.repository');
-        /** @var EntityRepositoryInterface $ruleConditionRepository */
-        $ruleConditionRepository = $this->getContainer()->get(RuleConditionDefinition::ENTITY_NAME . '.repository');
         /** @var EntityRepositoryInterface $salesChannelTypeRepository */
         $salesChannelTypeRepository = $this->getContainer()->get(SalesChannelTypeDefinition::ENTITY_NAME . '.repository');
         /** @var EntityRepositoryInterface $mediaRepository */
@@ -391,8 +386,6 @@ class UpdateTest extends TestCase
         $informationDefaultService = $this->getContainer()->get(InformationDefaultService::class);
         /** @var EntityRepositoryInterface $shippingRepository */
         $shippingRepository = $this->getContainer()->get(ShippingMethodDefinition::ENTITY_NAME . '.repository');
-        /** @var EntityRepositoryInterface $currencyRepository */
-        $currencyRepository = $this->getContainer()->get(CurrencyDefinition::ENTITY_NAME . '.repository');
         $paymentMethodDataRegistry = new PaymentMethodDataRegistry($this->paymentMethodRepository, $this->getContainer());
 
         return new Update(
@@ -408,7 +401,6 @@ class UpdateTest extends TestCase
             new PaymentMethodInstaller(
                 $this->paymentMethodRepository,
                 $ruleRepository,
-                $ruleConditionRepository,
                 $this->getContainer()->get(PluginIdProvider::class),
                 $paymentMethodDataRegistry,
                 new MediaInstaller(
@@ -422,7 +414,6 @@ class UpdateTest extends TestCase
                 $paymentMethodDataRegistry,
                 $this->paymentMethodRepository,
             ),
-            new CurrencyInstaller($currencyRepository),
         );
     }
 

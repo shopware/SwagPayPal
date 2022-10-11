@@ -176,9 +176,6 @@ class MerchantIntegrations extends PayPalApiStruct
         return $this->oauthIntegrations;
     }
 
-    /**
-     * @param array $oauthIntegrations
-     */
     public function setOauthIntegrations(array $oauthIntegrations): void
     {
         $this->oauthIntegrations = $oauthIntegrations;

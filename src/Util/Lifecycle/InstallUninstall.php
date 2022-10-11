@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Util\Lifecycle;
 
 use Shopware\Core\Framework\Context;
-use Swag\PayPal\Util\Lifecycle\Installer\CurrencyInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PosInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
@@ -16,7 +15,7 @@ use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
 class InstallUninstall
 {
     /**
-     * @deprecated tag:v6.0.0 - has been moved to \Swag\PayPal\Util\Lifecycle\Method\PayPalPuiMethodData::PAYPAL_PUI_AVAILABILITY_RULE_NAME and set to private. will be removed here.
+     * @deprecated tag:v6.0.0 - will be removed
      */
     public const PAYPAL_PUI_AVAILABILITY_RULE_NAME = 'PayPalPuiAvailabilityRule';
 
@@ -26,31 +25,25 @@ class InstallUninstall
 
     private PosInstaller $posInstaller;
 
-    private CurrencyInstaller $currencyInstaller;
-
     public function __construct(
         PaymentMethodInstaller $paymentMethodInstaller,
         SettingsInstaller $settingsInstaller,
-        PosInstaller $posInstaller,
-        CurrencyInstaller $currencyInstaller
+        PosInstaller $posInstaller
     ) {
         $this->paymentMethodInstaller = $paymentMethodInstaller;
         $this->settingsInstaller = $settingsInstaller;
         $this->posInstaller = $posInstaller;
-        $this->currencyInstaller = $currencyInstaller;
     }
 
     public function install(Context $context): void
     {
         $this->settingsInstaller->addDefaultConfiguration();
-        $this->currencyInstaller->install($context);
         $this->paymentMethodInstaller->installAll($context);
     }
 
     public function uninstall(Context $context): void
     {
         $this->settingsInstaller->removeConfiguration($context);
-        $this->paymentMethodInstaller->removeRules($context);
         $this->posInstaller->removePosTables();
     }
 }

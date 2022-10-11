@@ -17,6 +17,7 @@ use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Util\Availability\AvailabilityService;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -33,18 +34,22 @@ class CartValidator implements CartValidatorInterface
 
     private ExcludedProductValidator $excludedProductValidator;
 
+    private AvailabilityService $availabilityService;
+
     public function __construct(
         CartPriceService $cartPriceService,
         PaymentMethodDataRegistry $methodDataRegistry,
         SettingsValidationServiceInterface $settingsValidationService,
         RequestStack $requestStack,
-        ExcludedProductValidator $excludedProductValidator
+        ExcludedProductValidator $excludedProductValidator,
+        availabilityService $availabilityService
     ) {
         $this->cartPriceService = $cartPriceService;
         $this->methodDataRegistry = $methodDataRegistry;
         $this->settingsValidationService = $settingsValidationService;
         $this->requestStack = $requestStack;
         $this->excludedProductValidator = $excludedProductValidator;
+        $this->availabilityService = $availabilityService;
     }
 
     public function validate(Cart $cart, ErrorCollection $errors, SalesChannelContext $context): void
@@ -79,6 +84,12 @@ class CartValidator implements CartValidatorInterface
         }
 
         if ($this->excludedProductValidator->cartContainsExcludedProduct($cart, $context)) {
+            $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
+
+            return;
+        }
+
+        if (!$this->availabilityService->isPaymentMethodAvailable($context->getPaymentMethod(), $cart, $context)) {
             $errors->add(new PaymentMethodBlockedError((string) $context->getPaymentMethod()->getTranslation('name')));
         }
     }
