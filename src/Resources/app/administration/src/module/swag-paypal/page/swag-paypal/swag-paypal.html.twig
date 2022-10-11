@@ -167,6 +167,13 @@
                                                 </swag-paypal-installment>
                                             {% endblock %}
 
+                                            {% block swag_paypal_content_card_channel_config_acdc %}
+                                                <swag-paypal-acdc :actualConfigData="actualConfigData"
+                                                                  :allConfigs="allConfigs"
+                                                                  :selectedSalesChannelId="selectedSalesChannelId">
+                                                </swag-paypal-acdc>
+                                            {% endblock %}
+
                                             {% block swag_paypal_content_card_channel_config_pui %}
                                                 <swag-paypal-pui :actualConfigData="actualConfigData"
                                                                  :allConfigs="allConfigs"

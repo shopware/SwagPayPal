@@ -263,6 +263,13 @@
                     "label": "Enable installment banner"
                 }
             },
+            "acdc": {
+                "cardTitle": "Credit- or debit card",
+                "acdcForce3DS": {
+                    "label": "Execute transactions with 3D Secure only",
+                    "helpText": "Transaction will not be accepted, if 3D Secure is unavailable."
+                }
+            },
             "pui": {
                 "cardTitle": "Pay upon invoice",
                 "customerServiceInstructions": {

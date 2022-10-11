@@ -61,7 +61,9 @@
             <argument type="service" id="Swag\PayPal\Util\Availability\AvailabilityService"/>
         </service>
 
-        <service id="Swag\PayPal\Checkout\ACDC\ACDCValidator"/>
+        <service id="Swag\PayPal\Checkout\ACDC\ACDCValidator">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler" abstract="true">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>

@@ -331,6 +331,7 @@ class Update
     private function updateTo540(Context $context): void
     {
         $this->paymentMethodInstaller->removeRules($context);
+        $this->setSettingToDefaultValue(Settings::ACDC_FORCE_3DS);
     }
 
     private function changePaymentHandlerIdentifier(string $previousHandler, string $newHandler, Context $context): void
