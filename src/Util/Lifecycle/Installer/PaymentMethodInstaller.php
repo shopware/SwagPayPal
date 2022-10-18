@@ -11,6 +11,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Framework\DataAbstractionLayer\Write\Validation\RestrictDeleteViolationException;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -132,7 +133,11 @@ class PaymentMethodInstaller
             $this->paymentMethodRepository->update($paymentMethodUpdates, $context);
         }
 
-        $this->ruleRepository->delete($ruleRemovals, $context);
+        try {
+            $this->ruleRepository->delete($ruleRemovals, $context);
+        } catch (RestrictDeleteViolationException $e) {
+
+        }
     }
 
     private function getPaymentMethodData(AbstractMethodData $method, string $pluginId, Context $context): array

@@ -1,3 +1,6 @@
+# 5.4.1
+- PPI-716 - Behebt einen Fehler beim Update, falls Verfügbarkeits-Regel noch in Benutzung sind
+
 # 5.4.0                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 - PPI-707 - Behebt ein Problem, bei dem während des Bestellvorgangs mit "Später bezahlen", "SEPA" and "Venmo" ein Fehler auftrat
 - PPI-712 - Handhabung von Zahlungsmethodenverfügbarkeit verbessert, existierende Verfügbarkeitsregeln entfernt

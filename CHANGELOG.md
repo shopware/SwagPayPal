@@ -1,3 +1,6 @@
+# 5.4.1
+- PPI-716 - Fixes an error during the update if availability rules are still in use
+
 # 5.4.0
 - PPI-707 - Fixed issue where checking out with "Pay Later", "SEPA" and "Venmo" result in an error
 - PPI-712 - Improved handling of payment method availability, removed availability rules
