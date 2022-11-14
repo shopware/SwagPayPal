@@ -15,7 +15,7 @@ class OrderNumberPatchBuilder
     {
         return (new Patch())->assign([
             'op' => Patch::OPERATION_ADD,
-            'path' => "/purchase_units/@reference_id=='default'/invoice_id",
+            'path' => '/purchase_units/@reference_id==\'default\'/invoice_id',
             'value' => $orderNumber,
         ]);
     }
@@ -24,7 +24,7 @@ class OrderNumberPatchBuilder
     {
         return (new Patch())->assign([
             'op' => Patch::OPERATION_REMOVE,
-            'path' => "/purchase_units/@reference_id=='default'/invoice_id",
+            'path' => '/purchase_units/@reference_id==\'default\'/invoice_id',
         ]);
     }
 }

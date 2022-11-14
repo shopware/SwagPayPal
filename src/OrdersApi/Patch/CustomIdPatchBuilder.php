@@ -15,7 +15,7 @@ class CustomIdPatchBuilder
     {
         return (new Patch())->assign([
             'op' => Patch::OPERATION_ADD,
-            'path' => "/purchase_units/@reference_id=='default'/custom_id",
+            'path' => '/purchase_units/@reference_id==\'default\'/custom_id',
             'value' => $customId,
         ]);
     }

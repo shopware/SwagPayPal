@@ -191,7 +191,7 @@ Missing PayPal order id');
         static::assertCount($isDuplicateTransaction ? 1 : 2, $patchData);
         foreach ($patchData as $patch) {
             static::assertInstanceOf(PatchV2::class, $patch);
-            if ($patch->getPath() === "/purchase_units/@reference_id=='default'/invoice_id") {
+            if ($patch->getPath() === '/purchase_units/@reference_id==\'default\'/invoice_id') {
                 if ($isDuplicateTransaction) {
                     static::assertSame(PatchV2::OPERATION_REMOVE, $patch->getOp());
                 } else {
@@ -200,7 +200,7 @@ Missing PayPal order id');
                 }
             }
 
-            if ($patch->getPath() === "/purchase_units/@reference_id=='default'/custom_id") {
+            if ($patch->getPath() === '/purchase_units/@reference_id==\'default\'/custom_id') {
                 static::assertSame($orderTransactionId, $patch->getValue());
                 static::assertSame(PatchV2::OPERATION_ADD, $patch->getOp());
             }

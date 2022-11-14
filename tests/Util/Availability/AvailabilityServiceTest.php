@@ -14,7 +14,6 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -58,6 +57,7 @@ class AvailabilityServiceTest extends TestCase
 
     /**
      * @dataProvider dataProviderPaymentMethod
+     *
      * @param class-string<AbstractMethodData> $methodDataClass
      */
     public function testIsPaymentMethodAvailable(string $methodDataClass, bool $shouldBeAvailable): void
@@ -74,6 +74,7 @@ class AvailabilityServiceTest extends TestCase
 
     /**
      * @dataProvider dataProviderPaymentMethod
+     *
      * @param class-string<AbstractMethodData> $methodDataClass
      */
     public function testFilterPaymentMethods(string $methodDataClass, bool $shouldBeAvailable): void
