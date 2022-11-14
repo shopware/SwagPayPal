@@ -48,14 +48,14 @@ class DeprecatedTagTest extends TestCase
             ->notPath(['/var/', '/vendor/'])
             ->files()
             ->name('*.xml')
-            ->contains('<deprecated>');
+            ->contains('<deprecated');
 
         foreach ($this->whiteList as $path) {
             $finder->notPath($path);
         }
 
         foreach ($finder->getIterator() as $xmlFile) {
-            if ($this->hasDeprecationFalseOrNoTag('\<deprecated\>', $xmlFile->getPathname())) {
+            if ($this->hasDeprecationFalseOrNoTag('\<deprecated[^\>]*\>', $xmlFile->getPathname())) {
                 $return[] = $xmlFile->getPathname();
             }
         }
@@ -85,7 +85,6 @@ class DeprecatedTagTest extends TestCase
         }
 
         $currentPluginVersion = $this->getCurrentPluginVersion();
-
         foreach ($matches as $match) {
             if (\version_compare($currentPluginVersion, $match) !== -1) {
                 return true;
