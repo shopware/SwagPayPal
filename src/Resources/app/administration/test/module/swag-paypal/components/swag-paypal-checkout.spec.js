@@ -11,7 +11,7 @@ import '../../../../src/module/swag-paypal/components/swag-paypal-checkout';
 const onboardingCallbackLive = 'onboardingCallbackLive';
 const onboardingCallbackSandbox = 'onboardingUrlSandbox';
 
-function createWrapper(customOptions = {}) {
+async function createWrapper(customOptions = {}) {
     const options = {
         mocks: {
             $tc: (key) => key
@@ -27,9 +27,9 @@ function createWrapper(customOptions = {}) {
         },
         stubs: ['sw-icon', 'sw-inherit-wrapper', 'sw-button-process'],
         components: {
-            'sw-container': Shopware.Component.build('sw-container'),
-            'sw-card': Shopware.Component.build('sw-card'),
-            'sw-alert': Shopware.Component.build('sw-alert'),
+            'sw-container': await Shopware.Component.build('sw-container'),
+            'sw-card': await Shopware.Component.build('sw-card'),
+            'sw-alert': await Shopware.Component.build('sw-alert'),
         },
         filters: {
             asset: null,
@@ -51,7 +51,7 @@ function createWrapper(customOptions = {}) {
         }
     };
 
-    return shallowMount(Shopware.Component.build('swag-paypal-checkout'), {
+    return shallowMount(await Shopware.Component.build('swag-paypal-checkout'), {
         ...options,
         ...customOptions,
     });
@@ -63,14 +63,14 @@ function createWrapper(customOptions = {}) {
 let wrapper;
 
 describe('Paypal Configuration Component', () => {
-    it('should link to the live onboarding guide', () => {
-        wrapper = createWrapper();
+    it('should link to the live onboarding guide', async () => {
+        wrapper = await createWrapper();
 
         expect(wrapper.find("[data-paypal-onboard-complete='onboardingCallbackLive']").attributes('href')).toBe(onboardingCallbackLive);
     });
 
-    it('should link to the sandbox onboarding guide', () => {
-        wrapper = createWrapper({
+    it('should link to the sandbox onboarding guide', async () => {
+        wrapper = await createWrapper({
             propsData: {
                 actualConfigData: {
                     'SwagPayPal.settings.sandbox': true,
