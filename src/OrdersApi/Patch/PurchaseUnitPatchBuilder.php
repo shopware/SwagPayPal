@@ -50,7 +50,7 @@ class PurchaseUnitPatchBuilder
         $purchaseUnitPatch = new Patch();
         $purchaseUnitPatch->assign([
             'op' => Patch::OPERATION_REPLACE,
-            'path' => "/purchase_units/@reference_id=='default'",
+            'path' => '/purchase_units/@reference_id==\'default\'',
         ]);
         $purchaseUnitPatch->setValue($purchaseUnitArray);
 

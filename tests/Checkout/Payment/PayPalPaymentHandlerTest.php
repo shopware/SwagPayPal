@@ -266,7 +266,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         static::assertCount(1, $patchData);
         $patch = \current($patchData);
         static::assertInstanceOf(PatchV2::class, $patch);
-        static::assertSame("/purchase_units/@reference_id=='default'", $patch->getPath());
+        static::assertSame('/purchase_units/@reference_id==\'default\'', $patch->getPath());
         $patchValue = $patch->getValue();
         static::assertIsArray($patchValue);
         static::assertSame(self::TEST_CUSTOMER_STREET, $patchValue['shipping']['address']['address_line_1']);
@@ -596,13 +596,13 @@ An error occurred during the communication with PayPal');
         static::assertCount(2, $patchData);
         foreach ($patchData as $patch) {
             static::assertInstanceOf(PatchV2::class, $patch);
-            if ($patch->getPath() === "/purchase_units/@reference_id=='default'/invoice_id") {
+            if ($patch->getPath() === '/purchase_units/@reference_id==\'default\'/invoice_id') {
                 $patchValue = $patch->getValue();
                 static::assertSame(OrderPaymentBuilderTest::TEST_ORDER_NUMBER, $patchValue);
                 static::assertSame(PatchV2::OPERATION_ADD, $patch->getOp());
             }
 
-            if ($patch->getPath() === "/purchase_units/@reference_id=='default'/custom_id") {
+            if ($patch->getPath() === '/purchase_units/@reference_id==\'default\'/custom_id') {
                 $patchValue = $patch->getValue();
                 static::assertSame($orderTransactionId, $patchValue);
                 static::assertSame(PatchV2::OPERATION_ADD, $patch->getOp());
@@ -624,7 +624,7 @@ An error occurred during the communication with PayPal');
         static::assertCount(1, $patchData);
         foreach ($patchData as $patch) {
             static::assertInstanceOf(PatchV2::class, $patch);
-            if ($patch->getPath() === "/purchase_units/@reference_id=='default'/invoice_id") {
+            if ($patch->getPath() === '/purchase_units/@reference_id==\'default\'/invoice_id') {
                 static::assertSame(PatchV2::OPERATION_REMOVE, $patch->getOp());
             }
         }

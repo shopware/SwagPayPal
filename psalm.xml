@@ -184,7 +184,7 @@
                 <referencedClass name="Swag\PayPal\Setting\Service\MerchantIntegrationsServiceInterface"/>
                 <referencedClass name="Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataServiceInterface"/>
 
-                <!-- fix with Shopware 6.5 compatibility -->
+                <!-- <deprecated> tag:v6.0.0 - fix with Shopware 6.5 compatibility -->
                 <referencedClass name="Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface"/>
                 <referencedClass name="Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface"/>
             </errorLevel>
