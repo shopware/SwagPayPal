@@ -22,14 +22,14 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -87,7 +87,7 @@ trait PaymentTransactionTrait
     {
         $orderNumber = $orderNumber ?? OrderPaymentBuilderTest::TEST_ORDER_NUMBER_WITHOUT_PREFIX;
         $order = new OrderEntity();
-        $order->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $order->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $order->setShippingCosts(new CalculatedPrice(4.99, 4.99, new CalculatedTaxCollection(), new TaxRuleCollection()));
         $order->setId($orderId);
         $currency = $this->createCurrencyEntity();
@@ -197,7 +197,7 @@ trait PaymentTransactionTrait
             return $currency;
         }
 
-        /** @var EntityRepositoryInterface $currencyRepo */
+        /** @var EntityRepository $currencyRepo */
         $currencyRepo = $this->getContainer()->get('currency.repository');
 
         $criteria = new Criteria();

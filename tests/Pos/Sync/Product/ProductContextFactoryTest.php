@@ -9,9 +9,9 @@ namespace Swag\PayPal\Test\Pos\Sync\Product;
 
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaEntity;
@@ -52,7 +52,7 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
             $product->setName($oldName);
 
             $entity = new PosSalesChannelProductEntity();
-            $entity->setSalesChannelId(Defaults::SALES_CHANNEL);
+            $entity->setSalesChannelId(TestDefaults::SALES_CHANNEL);
             $entity->setProductId($productEntity->getId());
             $versionId = $productEntity->getVersionId();
             if ($versionId !== null) {
@@ -105,7 +105,7 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         static::assertNull($productContext->checkForMediaUrl($newMedia));
         static::assertContains(
             [
-                'salesChannelId' => Defaults::SALES_CHANNEL,
+                'salesChannelId' => TestDefaults::SALES_CHANNEL,
                 'mediaId' => self::IMAGE_MEDIA_ID_NEW,
             ],
             $productContext->getMediaRequests()
@@ -126,7 +126,7 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         $convertedProductOriginal = new Product();
         $convertedProductOriginal->setName('test');
         $convertedProductChanged = new Product();
-        $originalState = clone $posProductRepoMock->createMockEntity($productEntity, $convertedProductOriginal, Defaults::SALES_CHANNEL);
+        $originalState = clone $posProductRepoMock->createMockEntity($productEntity, $convertedProductOriginal, TestDefaults::SALES_CHANNEL);
         $productContext->changeProduct($productEntity, $convertedProductChanged);
 
         $newMedia = new MediaEntity();
@@ -163,7 +163,7 @@ class ProductContextFactoryTest extends AbstractProductSyncTest
         $posMedia->setUrl(self::IMAGE_URL);
         $posMedia->setLookupKey(self::IMAGE_LOOKUP_KEY);
         $posMedia->setMediaId(self::IMAGE_MEDIA_ID_EXISTING);
-        $posMedia->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $posMedia->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $posMedia->setUniqueIdentifier(Uuid::randomHex());
         $posMediaCollection = new PosSalesChannelMediaCollection([$posMedia]);
         $productContext = new ProductContext($this->getSalesChannel($context), new PosSalesChannelProductCollection(), $posMediaCollection, $context);

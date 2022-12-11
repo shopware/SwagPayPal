@@ -11,7 +11,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
@@ -23,17 +23,17 @@ class CancelTransactionsTaskHandler extends ScheduledTaskHandler
 {
     private PaymentMethodUtil $paymentMethodUtil;
 
-    private EntityRepositoryInterface $orderTransactionRepo;
+    private EntityRepository $orderTransactionRepo;
 
-    private EntityRepositoryInterface $stateMachineStateRepo;
+    private EntityRepository $stateMachineStateRepo;
 
     private OrderTransactionStateHandler $orderTransactionStateHandler;
 
     public function __construct(
-        EntityRepositoryInterface $scheduledTaskRepository,
+        EntityRepository $scheduledTaskRepository,
         PaymentMethodUtil $paymentMethodUtil,
-        EntityRepositoryInterface $stateMachineStateRepository,
-        EntityRepositoryInterface $orderTransactionRepository,
+        EntityRepository $stateMachineStateRepository,
+        EntityRepository $orderTransactionRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler
     ) {
         parent::__construct($scheduledTaskRepository);

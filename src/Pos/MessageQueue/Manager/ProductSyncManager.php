@@ -18,7 +18,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
@@ -36,14 +36,14 @@ class ProductSyncManager extends AbstractSyncManager
 
     private ProductSelection $productSelection;
 
-    private SalesChannelRepositoryInterface $productRepository;
+    private SalesChannelRepository $productRepository;
 
     private ImageSyncer $imageSyncer;
 
     public function __construct(
         MessageBusInterface $messageBus,
         ProductSelection $productSelection,
-        SalesChannelRepositoryInterface $productRepository,
+        SalesChannelRepository $productRepository,
         ImageSyncer $imageSyncer
     ) {
         parent::__construct($messageBus);

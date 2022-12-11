@@ -9,7 +9,7 @@ namespace Swag\PayPal\Pos\MessageQueue\Handler;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Swag\PayPal\Pos\MessageQueue\Handler\Sync\AbstractSyncHandler;
@@ -19,12 +19,12 @@ use Swag\PayPal\Pos\Run\RunService;
 
 class CloneVisibilityHandler extends AbstractSyncHandler
 {
-    private EntityRepositoryInterface $productVisibilityRepository;
+    private EntityRepository $productVisibilityRepository;
 
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,
-        EntityRepositoryInterface $productVisibilityRepository
+        EntityRepository $productVisibilityRepository
     ) {
         parent::__construct($runService, $logger);
         $this->productVisibilityRepository = $productVisibilityRepository;

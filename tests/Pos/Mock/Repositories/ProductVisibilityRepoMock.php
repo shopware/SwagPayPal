@@ -80,7 +80,7 @@ class ProductVisibilityRepoMock extends AbstractRepoMock
         $salesChannelId = null;
         foreach ($criteria->getFilters() as $filter) {
             if ($filter instanceof EqualsFilter && $filter->getField() === 'salesChannelId') {
-                $salesChannelId = $filter->getValue();
+                $salesChannelId = (string) $filter->getValue();
             }
         }
 

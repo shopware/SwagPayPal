@@ -10,7 +10,7 @@ namespace Swag\PayPal\Webhook\Handler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
@@ -27,7 +27,7 @@ class CaptureRefunded extends AbstractWebhookHandler
     private OrderResource $orderResource;
 
     public function __construct(
-        EntityRepositoryInterface $orderTransactionRepository,
+        EntityRepository $orderTransactionRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         PaymentStatusUtilV2 $paymentStatusUtil,
         OrderResource $orderResource

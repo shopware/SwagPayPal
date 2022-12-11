@@ -17,6 +17,9 @@ class CacheItemMock implements CacheItemInterface
         return Uuid::randomHex();
     }
 
+    /**
+     * @return mixed
+     */
     public function get()
     {
         return null;

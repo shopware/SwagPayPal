@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
@@ -33,7 +33,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPaymentBuilderInterface
 {
-    private EntityRepositoryInterface $currencyRepository;
+    private EntityRepository $currencyRepository;
 
     public function __construct(
         LocaleCodeProvider $localeCodeProvider,
@@ -41,7 +41,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger,
         SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $currencyRepository
+        EntityRepository $currencyRepository
     ) {
         parent::__construct($localeCodeProvider, $priceFormatter, $eventDispatcher, $logger, $systemConfigService);
         $this->currencyRepository = $currencyRepository;

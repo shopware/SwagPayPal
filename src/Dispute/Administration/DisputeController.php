@@ -9,8 +9,6 @@ namespace Swag\PayPal\Dispute\Administration;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
-use Shopware\Core\Framework\Routing\Annotation\Acl;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -22,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class DisputeController extends AbstractController
 {
@@ -63,9 +61,9 @@ class DisputeController extends AbstractController
      * @Route(
      *     "/api/paypal/dispute",
      *      name="api.paypal.dispute_list",
-     *      methods={"GET"}
+     *      methods={"GET"},
+     *      defaults={"_acl": {"swag_paypal_disputes.viewer"}}
      * )
-     * @Acl({"swag_paypal_disputes.viewer"})
      */
     public function disputeList(Request $request): JsonResponse
     {
@@ -108,9 +106,9 @@ class DisputeController extends AbstractController
      * @Route(
      *     "/api/paypal/dispute/{disputeId}",
      *      name="api.paypal.dispute_details",
-     *      methods={"GET"}
+     *      methods={"GET"},
+     *      defaults={"_acl": {"swag_paypal_disputes.viewer"}}
      * )
-     * @Acl({"swag_paypal_disputes.viewer"})
      */
     public function disputeDetails(string $disputeId, Request $request): JsonResponse
     {

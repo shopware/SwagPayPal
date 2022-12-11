@@ -7,9 +7,9 @@
 
 namespace Swag\PayPal\Test\Helper;
 
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Test\TestDefaults;
 
 trait PaymentMethodTrait
 {
@@ -19,12 +19,12 @@ trait PaymentMethodTrait
             $context = Context::createDefaultContext();
         }
 
-        /** @var EntityRepositoryInterface $salesChannelRepo */
+        /** @var EntityRepository $salesChannelRepo */
         $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
 
         $salesChannelRepo->update([
             [
-                'id' => Defaults::SALES_CHANNEL,
+                'id' => TestDefaults::SALES_CHANNEL,
                 'paymentMethods' => [
                     $paypalPaymentMethodId => [
                         'id' => $paypalPaymentMethodId,
@@ -40,11 +40,11 @@ trait PaymentMethodTrait
             $context = Context::createDefaultContext();
         }
 
-        /** @var EntityRepositoryInterface $salesChannelPaymentRepo */
+        /** @var EntityRepository $salesChannelPaymentRepo */
         $salesChannelPaymentRepo = $this->getContainer()->get('sales_channel_payment_method.repository');
         $salesChannelPaymentRepo->delete([
             [
-                'salesChannelId' => Defaults::SALES_CHANNEL,
+                'salesChannelId' => TestDefaults::SALES_CHANNEL,
                 'paymentMethodId' => $paypalPaymentMethodId,
             ],
         ], $context);

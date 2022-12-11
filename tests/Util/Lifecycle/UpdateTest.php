@@ -15,7 +15,6 @@ use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
 use Shopware\Core\Content\Media\File\FileSaver;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Content\Rule\RuleDefinition;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -31,6 +30,7 @@ use Shopware\Core\System\CustomField\CustomFieldDefinition;
 use Shopware\Core\System\CustomField\CustomFieldTypes;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -55,12 +55,15 @@ use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
 use Swag\PayPal\Test\Pos\Mock\Client\PosClientFactoryMock;
+use Swag\PayPal\Util\Compatibility\EntityRepositoryDecorator;
 use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\Routing\Router;
 
 class UpdateTest extends TestCase
@@ -75,18 +78,14 @@ class UpdateTest extends TestCase
     private const OTHER_CLIENT_ID = 'someOtherTestClientId';
     private const OTHER_CLIENT_SECRET = 'someOtherTestClientSecret';
 
-    private EntityRepositoryInterface $paymentMethodRepository;
+    private EntityRepository $paymentMethodRepository;
 
     private EntityRepository $salesChannelRepository;
 
     protected function setUp(): void
     {
-        /** @var EntityRepositoryInterface $paymentMethodRepository */
-        $paymentMethodRepository = $this->getContainer()->get(\sprintf('%s.repository', PaymentMethodDefinition::ENTITY_NAME));
-        $this->paymentMethodRepository = $paymentMethodRepository;
-        /** @var EntityRepository $salesChannelRepository */
-        $salesChannelRepository = $this->getContainer()->get(\sprintf('%s.repository', SalesChannelDefinition::ENTITY_NAME));
-        $this->salesChannelRepository = $salesChannelRepository;
+        $this->paymentMethodRepository = $this->getRepository(PaymentMethodDefinition::ENTITY_NAME);
+        $this->salesChannelRepository = $this->getRepository(SalesChannelDefinition::ENTITY_NAME);
     }
 
     public function testUpdateTo130WithNoPreviousSettings(): void
@@ -173,7 +172,7 @@ class UpdateTest extends TestCase
     {
         $updateContext = $this->createUpdateContext('1.7.1', '1.7.2');
 
-        /** @var EntityRepositoryInterface $customFieldRepository */
+        /** @var EntityRepository $customFieldRepository */
         $customFieldRepository = $this->getContainer()->get((new CustomFieldDefinition())->getEntityName() . '.repository');
 
         $criteria = new Criteria();
@@ -234,18 +233,18 @@ class UpdateTest extends TestCase
         $systemConfig = $this->createSystemConfigServiceMock();
 
         $systemConfig->set(Settings::INTENT, PaymentIntentV1::SALE);
-        $systemConfig->set(Settings::INTENT, PaymentIntentV1::ORDER, Defaults::SALES_CHANNEL);
+        $systemConfig->set(Settings::INTENT, PaymentIntentV1::ORDER, TestDefaults::SALES_CHANNEL);
 
         $systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV1::LANDING_PAGE_TYPE_LOGIN);
-        $systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV1::LANDING_PAGE_TYPE_BILLING, Defaults::SALES_CHANNEL);
+        $systemConfig->set(Settings::LANDING_PAGE, ApplicationContextV1::LANDING_PAGE_TYPE_BILLING, TestDefaults::SALES_CHANNEL);
 
         $updater = $this->createUpdateService($systemConfig);
         $updater->update($updateContext);
 
         static::assertSame(PaymentIntentV2::CAPTURE, $systemConfig->get(Settings::INTENT, null, false));
-        static::assertSame(PaymentIntentV2::AUTHORIZE, $systemConfig->get(Settings::INTENT, Defaults::SALES_CHANNEL, false));
+        static::assertSame(PaymentIntentV2::AUTHORIZE, $systemConfig->get(Settings::INTENT, TestDefaults::SALES_CHANNEL, false));
         static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_LOGIN, $systemConfig->get(Settings::LANDING_PAGE, null, false));
-        static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, $systemConfig->get(Settings::LANDING_PAGE, Defaults::SALES_CHANNEL, false));
+        static::assertSame(ApplicationContextV2::LANDING_PAGE_TYPE_BILLING, $systemConfig->get(Settings::LANDING_PAGE, TestDefaults::SALES_CHANNEL, false));
     }
 
     public function testUpdateTo200MigrateIntentSettingWithInvalidIntent(): void
@@ -291,7 +290,7 @@ class UpdateTest extends TestCase
 
         $salesChannel = $this->getSalesChannel($updateContext->getContext());
         $this->salesChannelRepository->update([[
-            'id' => Defaults::SALES_CHANNEL,
+            'id' => TestDefaults::SALES_CHANNEL,
             'typeId' => SwagPayPal::SALES_CHANNEL_TYPE_POS,
             SwagPayPal::SALES_CHANNEL_POS_EXTENSION => \array_filter($this->getPosSalesChannel($salesChannel)->jsonSerialize()),
         ]], $updateContext->getContext());
@@ -372,40 +371,28 @@ class UpdateTest extends TestCase
         ?WebhookService $webhookService = null,
         ?PosWebhookService $posWebhookService = null
     ): Update {
-        /** @var EntityRepositoryInterface $customFieldRepository */
-        $customFieldRepository = $this->getContainer()->get(CustomFieldDefinition::ENTITY_NAME . '.repository');
-        /** @var EntityRepositoryInterface $ruleRepository */
-        $ruleRepository = $this->getContainer()->get(RuleDefinition::ENTITY_NAME . '.repository');
-        /** @var EntityRepositoryInterface $salesChannelTypeRepository */
-        $salesChannelTypeRepository = $this->getContainer()->get(SalesChannelTypeDefinition::ENTITY_NAME . '.repository');
-        /** @var EntityRepositoryInterface $mediaRepository */
-        $mediaRepository = $this->getContainer()->get(MediaDefinition::ENTITY_NAME . '.repository');
-        /** @var EntityRepositoryInterface $mediaFolderRepository */
-        $mediaFolderRepository = $this->getContainer()->get(MediaFolderDefinition::ENTITY_NAME . '.repository');
         /** @var InformationDefaultService|null $informationDefaultService */
         $informationDefaultService = $this->getContainer()->get(InformationDefaultService::class);
-        /** @var EntityRepositoryInterface $shippingRepository */
-        $shippingRepository = $this->getContainer()->get(ShippingMethodDefinition::ENTITY_NAME . '.repository');
         $paymentMethodDataRegistry = new PaymentMethodDataRegistry($this->paymentMethodRepository, $this->getContainer());
 
         return new Update(
             $systemConfigService,
             $this->paymentMethodRepository,
-            $customFieldRepository,
+            $this->getRepository(CustomFieldDefinition::ENTITY_NAME),
             $webhookService,
             $this->salesChannelRepository,
-            $salesChannelTypeRepository,
+            $this->getRepository(SalesChannelTypeDefinition::ENTITY_NAME),
             $informationDefaultService,
-            $shippingRepository,
+            $this->getRepository(ShippingMethodDefinition::ENTITY_NAME),
             $posWebhookService,
             new PaymentMethodInstaller(
                 $this->paymentMethodRepository,
-                $ruleRepository,
+                $this->getRepository(RuleDefinition::ENTITY_NAME),
                 $this->getContainer()->get(PluginIdProvider::class),
                 $paymentMethodDataRegistry,
                 new MediaInstaller(
-                    $mediaRepository,
-                    $mediaFolderRepository,
+                    $this->getRepository(MediaDefinition::ENTITY_NAME),
+                    $this->getRepository(MediaFolderDefinition::ENTITY_NAME),
                     $this->paymentMethodRepository,
                     $this->getContainer()->get(FileSaver::class),
                 ),
@@ -441,5 +428,20 @@ class UpdateTest extends TestCase
             new UuidConverter(),
             $router
         );
+    }
+
+    private function getRepository(string $entityName): EntityRepository
+    {
+        $repository = $this->getContainer()->get(\sprintf('%s.repository', $entityName), ContainerInterface::NULL_ON_INVALID_REFERENCE);
+
+        if (\interface_exists(EntityRepositoryInterface::class) && $repository instanceof EntityRepositoryInterface) {
+            return new EntityRepositoryDecorator($repository);
+        }
+
+        if (!$repository instanceof EntityRepository) {
+            throw new ServiceNotFoundException(\sprintf('%s.repository', $entityName));
+        }
+
+        return $repository;
     }
 }

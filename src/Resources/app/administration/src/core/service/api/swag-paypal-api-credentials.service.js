@@ -26,29 +26,10 @@ class SwagPayPalApiCredentialsService extends ApiService {
         const headers = this.getBasicHeaders(additionalHeaders);
 
         return this.httpClient
-            .post(`_action/${this.getApiBasePath()}/get-api-credentials`,
+            .post(
+                `_action/${this.getApiBasePath()}/get-api-credentials`,
                 { authCode, sharedId, nonce, sandboxActive },
-                { params, headers })
-            .then((response) => {
-                return ApiService.handleResponse(response);
-            });
-    }
-
-    /**
-     * @deprecated tag:v6.0.0 - will be removed, use getMerchantInformation instead
-     *
-     * @param {string=} salesChannelId
-     */
-    getMerchantIntegrations(salesChannelId = null) {
-        const headers = this.getBasicHeaders();
-
-        return this.httpClient
-            .get(
-                `_action/${this.getApiBasePath()}/get-merchant-integrations`,
-                {
-                    params: { salesChannelId },
-                    headers: headers,
-                },
+                { params, headers },
             )
             .then((response) => {
                 return ApiService.handleResponse(response);

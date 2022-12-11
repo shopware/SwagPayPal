@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Command;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\CompleteTask;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,7 +20,7 @@ class PosSyncCommand extends AbstractPosCommand
     private CompleteTask $completeTask;
 
     public function __construct(
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         CompleteTask $completeTask
     ) {
         parent::__construct($salesChannelRepository);

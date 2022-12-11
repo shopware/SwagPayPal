@@ -10,7 +10,6 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryRoute;
 use Shopware\Core\Content\Category\SalesChannel\CategoryRouteResponse;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -24,7 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class ExpressCategoryRoute extends AbstractCategoryRoute
 {
@@ -113,6 +112,9 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
         }
 
         $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($context, true);
+        if ($expressCheckoutButtonData === null) {
+            return $response;
+        }
 
         $cmsPage->addExtension(
             ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,

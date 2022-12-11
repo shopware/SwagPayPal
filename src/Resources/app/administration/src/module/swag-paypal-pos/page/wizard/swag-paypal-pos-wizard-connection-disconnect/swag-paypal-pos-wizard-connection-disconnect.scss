@@ -22,13 +22,13 @@
     }
 
     .swag-paypal-pos-wizard-connection-disconnect__headline {
-        font-size: $font-size-large;
+        font-size: $font-size-l;
         font-weight: $font-weight-bold;
         margin-bottom: 8px;
     }
 
     .swag-paypal-pos-wizard-connection-disconnect__info {
-        font-size: $font-size-small;
+        font-size: $font-size-s;
     }
 
     .swag-paypal-pos-wizard-connection-disconnect__user {
@@ -37,7 +37,7 @@
 
     .swag-paypal-pos-wizard-connection-disconnect__user-info {
         text-align: left;
-        font-size: $font-size-small;
+        font-size: $font-size-s;
     }
 
     .swag-paypal-pos-wizard-connection-disconnect__user-info-name {
@@ -46,7 +46,7 @@
 
     .swag-paypal-pos-wizard-connection-disconnect__disclaimer {
         color: $color-gray-500;
-        font-size: $font-size-small;
+        font-size: $font-size-s;
     }
 }
 

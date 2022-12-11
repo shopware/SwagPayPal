@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Command;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
@@ -21,9 +21,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractPosCommand extends Command
 {
-    protected EntityRepositoryInterface $salesChannelRepository;
+    protected EntityRepository $salesChannelRepository;
 
-    public function __construct(EntityRepositoryInterface $salesChannelRepository)
+    public function __construct(EntityRepository $salesChannelRepository)
     {
         parent::__construct();
         $this->salesChannelRepository = $salesChannelRepository;

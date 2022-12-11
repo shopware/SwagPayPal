@@ -15,7 +15,7 @@ use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -25,6 +25,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\System\Tax\TaxDefinition;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCheckoutDataServiceInterface;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\PayPalExpressCheckoutDataService;
@@ -49,9 +50,9 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
 
     private CartService $cartService;
 
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
 
-    private EntityRepositoryInterface $customerRepository;
+    private EntityRepository $customerRepository;
 
     private PaymentMethodUtil $paymentMethodUtil;
 
@@ -81,18 +82,18 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             new CartPriceService()
         );
 
-        /** @var EntityRepositoryInterface $productRepo */
+        /** @var EntityRepository $productRepo */
         $productRepo = $container->get('product.repository');
         $this->productRepository = $productRepo;
 
-        /** @var EntityRepositoryInterface $customerRepo */
+        /** @var EntityRepository $customerRepo */
         $customerRepo = $container->get('customer.repository');
         $this->customerRepository = $customerRepo;
     }
 
     public function testGetExpressCheckoutButtonDataWithoutCart(): void
     {
-        $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);
+        $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
         $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($salesChannelContext);
 
         static::assertNull($expressCheckoutButtonData);
@@ -101,7 +102,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     public function testGetExpressCheckoutButtonDataWithZeroValueCart(): void
     {
         $taxId = $this->createTaxId(Context::createDefaultContext());
-        $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);
+        $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
         $productId = $this->getProductId($salesChannelContext->getContext(), $taxId, true);
         $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
 
@@ -127,7 +128,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         $taxId = $this->createTaxId(Context::createDefaultContext());
         $salesChannelContext = $this->salesChannelContextFactory->create(
             Uuid::randomHex(),
-            Defaults::SALES_CHANNEL,
+            TestDefaults::SALES_CHANNEL,
             [
                 SalesChannelContextService::CUSTOMER_ID => $customerId,
             ]
@@ -151,7 +152,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
     public function testGetExpressCheckoutButtonDataWithCredentials(bool $withSettingsLocale, bool $addToCart): void
     {
         $taxId = $this->createTaxId(Context::createDefaultContext());
-        $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);
+        $salesChannelContext = $this->salesChannelContextFactory->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
         $productId = $this->getProductId($salesChannelContext->getContext(), $taxId);
         $lineItem = new LineItem(Uuid::randomHex(), LineItem::PRODUCT_LINE_ITEM_TYPE, $productId);
 
@@ -221,7 +222,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             'active' => true,
             'visibilities' => [
                 [
-                    'salesChannelId' => Defaults::SALES_CHANNEL,
+                    'salesChannelId' => TestDefaults::SALES_CHANNEL,
                     'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
                 ],
             ],
@@ -250,8 +251,8 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             'email' => 'wuse@dusel.de',
             'password' => 'annanas1',
             'defaultPaymentMethodId' => $this->getValidPaymentMethodId(),
-            'groupId' => Defaults::FALLBACK_CUSTOMER_GROUP,
-            'salesChannelId' => Defaults::SALES_CHANNEL,
+            'groupId' => TestDefaults::FALLBACK_CUSTOMER_GROUP,
+            'salesChannelId' => TestDefaults::SALES_CHANNEL,
             'defaultBillingAddressId' => $addressId,
             'defaultShippingAddressId' => $addressId,
             'addresses' => [
@@ -276,7 +277,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
 
     private function createTaxId(Context $context): string
     {
-        /** @var EntityRepositoryInterface $taxRepo */
+        /** @var EntityRepository $taxRepo */
         $taxRepo = $this->getContainer()->get(TaxDefinition::ENTITY_NAME . '.repository');
         $taxId = Uuid::randomHex();
         $taxData = [

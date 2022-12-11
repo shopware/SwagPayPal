@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\RestApi\V1\Api\Refund;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
@@ -24,7 +24,7 @@ class SaleResourceTest extends TestCase
     {
         $saleResponse = $this->createSaleResource()->get(
             'saleId',
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
 
         $sale = \json_encode($saleResponse);
@@ -41,7 +41,7 @@ class SaleResourceTest extends TestCase
         $refundResponse = $this->createSaleResource()->refund(
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_PAYMENT_ID,
             $refund,
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
 
         static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $refundResponse->getState());

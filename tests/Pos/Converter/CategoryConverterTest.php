@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\Pos\Converter;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Pos\Api\Service\Converter\CategoryConverter;
@@ -41,7 +41,7 @@ class CategoryConverterTest extends TestCase
         $criteria = new Criteria();
         $criteria->addAssociation('translation');
 
-        /** @var EntityRepositoryInterface $categoryRepository */
+        /** @var EntityRepository $categoryRepository */
         $categoryRepository = $this->getContainer()->get('category.repository');
 
         return $categoryRepository->search($criteria, Context::createDefaultContext())->first();

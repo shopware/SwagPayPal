@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -22,7 +22,7 @@ use Symfony\Contracts\Service\ResetInterface;
 
 class PaymentMethodUtil implements ResetInterface
 {
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
     private Connection $connection;
 
@@ -38,7 +38,7 @@ class PaymentMethodUtil implements ResetInterface
 
     public function __construct(
         Connection $connection,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepository $salesChannelRepository
     ) {
         $this->connection = $connection;
         $this->salesChannelRepository = $salesChannelRepository;
@@ -47,14 +47,6 @@ class PaymentMethodUtil implements ResetInterface
     public function getPayPalPaymentMethodId(Context $context): ?string
     {
         return $this->getPaymentMethodIdByHandler(PayPalPaymentHandler::class);
-    }
-
-    /**
-     * @deprecated tag:v6.0.0 - will be removed without replacement
-     */
-    public function getPayPalPuiPaymentMethodId(Context $context): ?string
-    {
-        return $this->getPaymentMethodIdByHandler('Swag\PayPal\Checkout\Payment\PayPalPuiPaymentHandler');
     }
 
     public function isPaypalPaymentMethodInSalesChannel(

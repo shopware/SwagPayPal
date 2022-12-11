@@ -10,10 +10,10 @@ namespace Swag\PayPal\Test\Pos\Run;
 use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogCollection;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
@@ -39,7 +39,7 @@ class ScheduledTaskTest extends TestCase
     public function testCompleteSync(): void
     {
         $salesChannelRepoMock = new SalesChannelRepoMock();
-        $scheduledTaskRepository = $this->createMock(EntityRepositoryInterface::class);
+        $scheduledTaskRepository = $this->createMock(EntityRepository::class);
 
         $messageBus = new MessageBusMock();
         $runRepository = new RunRepoMock();
@@ -65,7 +65,7 @@ class ScheduledTaskTest extends TestCase
     public function testInventorySync(): void
     {
         $salesChannelRepoMock = new SalesChannelRepoMock();
-        $scheduledTaskRepository = $this->createMock(EntityRepositoryInterface::class);
+        $scheduledTaskRepository = $this->createMock(EntityRepository::class);
 
         $messageBus = new MessageBusMock();
         $runRepository = new RunRepoMock();
@@ -91,16 +91,16 @@ class ScheduledTaskTest extends TestCase
     public function testCleanUpLog(): void
     {
         $salesChannelRepoMock = new SalesChannelRepoMock();
-        $scheduledTaskRepository = $this->createMock(EntityRepositoryInterface::class);
+        $scheduledTaskRepository = $this->createMock(EntityRepository::class);
 
         $runRepository = new RunRepoMock();
         $runA = new PosSalesChannelRunEntity();
         $runA->setId(Uuid::randomHex());
-        $runA->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $runA->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $runA->setLogs(new PosSalesChannelRunLogCollection());
         $runB = new PosSalesChannelRunEntity();
         $runB->setId(Uuid::randomHex());
-        $runB->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $runB->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $runB->setLogs(new PosSalesChannelRunLogCollection());
         $runRepository->addMockEntity($runA);
         $runRepository->addMockEntity($runB);

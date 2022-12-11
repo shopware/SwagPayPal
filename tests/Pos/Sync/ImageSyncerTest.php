@@ -14,9 +14,9 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Image\BulkImageUpload;
 use Swag\PayPal\Pos\Api\PosRequestUri;
 use Swag\PayPal\Pos\Api\Service\MediaConverter;
@@ -112,7 +112,7 @@ class ImageSyncerTest extends TestCase
         static::assertInstanceOf(PosSalesChannelEntity::class, $posSalesChannel);
         $posSalesChannel->setMediaDomain($mediaDomain);
 
-        $runId = $runService->startRun(Defaults::SALES_CHANNEL, 'image', $context);
+        $runId = $runService->startRun(TestDefaults::SALES_CHANNEL, 'image', $context);
 
         $imageSyncManager->createMessages($salesChannel, $context, $runId);
         $messageBus->execute([$imageSyncHandler]);
@@ -161,7 +161,7 @@ class ImageSyncerTest extends TestCase
         static::assertInstanceOf(PosSalesChannelEntity::class, $posSalesChannel);
         $posSalesChannel->setMediaDomain(null);
 
-        $runId = $runService->startRun(Defaults::SALES_CHANNEL, 'image', $context);
+        $runId = $runService->startRun(TestDefaults::SALES_CHANNEL, 'image', $context);
 
         $this->expectException(MediaDomainNotSetException::class);
         $imageSyncManager->createMessages($salesChannel, $context, $runId);
@@ -190,8 +190,8 @@ class ImageSyncerTest extends TestCase
         $media->setMimeType($validMime ? 'image/jpeg' : self::INVALID_MIME_TYPE);
         $posMedia->setMedia($media);
         $posMedia->setMediaId($media->getId());
-        $posMedia->setSalesChannelId(Defaults::SALES_CHANNEL);
-        $posMedia->setUniqueIdentifier(Defaults::SALES_CHANNEL . '-' . $id);
+        $posMedia->setSalesChannelId(TestDefaults::SALES_CHANNEL);
+        $posMedia->setUniqueIdentifier(TestDefaults::SALES_CHANNEL . '-' . $id);
         $posMedia->setLookupKey($lookupKey);
 
         return $posMedia;

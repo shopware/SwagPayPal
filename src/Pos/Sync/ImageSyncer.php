@@ -11,7 +11,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Media\Exception\MediaNotFoundException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
@@ -31,7 +31,7 @@ class ImageSyncer
 {
     use PosSalesChannelTrait;
 
-    private EntityRepositoryInterface $posMediaRepository;
+    private EntityRepository $posMediaRepository;
 
     private MediaConverter $mediaConverter;
 
@@ -40,7 +40,7 @@ class ImageSyncer
     private LoggerInterface $logger;
 
     public function __construct(
-        EntityRepositoryInterface $posMediaRepository,
+        EntityRepository $posMediaRepository,
         MediaConverter $mediaConverter,
         ImageResource $imageResource,
         LoggerInterface $logger
@@ -151,7 +151,7 @@ class ImageSyncer
 
                 return ['salesChannelId' => $id['sales_channel_id'], 'mediaId' => $id['media_id']];
             }, $ids);
-            $this->posMediaRepository->delete($ids, $context);
+            $this->posMediaRepository->delete(\array_filter($ids), $context);
         }
     }
 

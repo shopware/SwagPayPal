@@ -69,14 +69,6 @@ abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
         return $order;
     }
 
-    /**
-     * @deprecated tag:v6.0.0 - will be removed, is always true now
-     */
-    public function isCompleteOnApproval(): bool
-    {
-        return true;
-    }
-
     abstract protected function buildPaymentSource(
         AsyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,

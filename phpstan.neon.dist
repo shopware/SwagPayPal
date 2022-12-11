@@ -1,8 +1,9 @@
 includes:
+    - %baseline%
     - %ShopwareRoot%/vendor/phpstan/phpstan/conf/bleedingEdge.neon
 
 parameters:
-    phpVersion: 70400
+    phpVersion: %phpversion%
     level: 8
     tmpDir: var/cache/phpstan
     inferPrivatePropertyTypeFromConstructor: true
@@ -14,7 +15,8 @@ parameters:
         -   src
         -   tests
     excludePaths:
-        -   tests/Mock/Cache*Mock.php
+        -   src/Resources
+        -   tests/Mock/CacheItemMock*.php
 
     symfony:
         constant_hassers: false
@@ -25,6 +27,12 @@ parameters:
         # We won't type all arrays/iterables for now
         -   '#no value type specified in iterable type#'
 
+        -   # 6.4 compatibility
+            message: '#(unknown class|invalid type) .*EntityRepositoryInterface#'
+            paths:
+                - src/Util/Compatibility/EntityRepositoryDecorator.php
+                - src/Util/Lifecycle/Method/PaymentMethodDataRegistry.php
+
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
@@ -32,10 +40,6 @@ parameters:
         -   # Services in tests are all public
             message: '#Service ".*" is private#'
             path: tests/**/*.php
-
-        -   # Remove with min-Version 6.4.4.0
-            message: '#Caught class .* not found#'
-            path: src/Checkout/PUI/SalesChannel/PUIPaymentInstructionsRoute.php
 
         -   # Remove with min-Version 6.4.14.0
             message: '#ArrayStruct is not generic#'

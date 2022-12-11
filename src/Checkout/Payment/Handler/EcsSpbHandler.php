@@ -11,7 +11,6 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
@@ -26,7 +25,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 /**
  * @deprecated tag:v6.0.0 - will be removed, use PayPalHandler instead
  */
-class EcsSpbHandler extends AbstractPaymentHandler
+class EcsSpbHandler
 {
     private PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder;
 
@@ -37,13 +36,11 @@ class EcsSpbHandler extends AbstractPaymentHandler
     private LoggerInterface $logger;
 
     public function __construct(
-        EntityRepositoryInterface $orderTransactionRepo,
         PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder,
         OrderResource $orderResource,
         TransactionDataService $transactionDataService,
         LoggerInterface $logger
     ) {
-        parent::__construct($orderTransactionRepo);
         $this->purchaseUnitPatchBuilder = $purchaseUnitPatchBuilder;
         $this->orderResource = $orderResource;
         $this->transactionDataService = $transactionDataService;

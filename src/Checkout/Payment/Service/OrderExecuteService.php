@@ -78,23 +78,6 @@ class OrderExecuteService
         }
     }
 
-    /**
-     * @deprecated tag:v6.0.0 - will be removed, use captureOrAuthorizeOrder() instead
-     *
-     * @throws PayPalApiException
-     */
-    public function executeOrder(
-        string $transactionId,
-        string $paypalOrderId,
-        string $salesChannelId,
-        Context $context,
-        string $partnerAttributionId
-    ): PayPalOrder {
-        $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelId);
-
-        return $this->captureOrAuthorizeOrder($transactionId, $paypalOrder, $salesChannelId, $context, $partnerAttributionId);
-    }
-
     private function doPayPalRequest(PayPalOrder $paypalOrder, string $salesChannelId, string $partnerAttributionId, string $transactionId, Context $context): PayPalOrder
     {
         if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {

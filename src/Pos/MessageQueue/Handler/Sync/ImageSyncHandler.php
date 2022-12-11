@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\MessageQueue\Handler\Sync;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaEntity;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
@@ -18,14 +18,14 @@ use Swag\PayPal\Pos\Sync\ImageSyncer;
 
 class ImageSyncHandler extends AbstractSyncHandler
 {
-    private EntityRepositoryInterface $posMediaRepository;
+    private EntityRepository $posMediaRepository;
 
     private ImageSyncer $imageSyncer;
 
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,
-        EntityRepositoryInterface $posMediaRepository,
+        EntityRepository $posMediaRepository,
         ImageSyncer $imageSyncer
     ) {
         parent::__construct($runService, $logger);

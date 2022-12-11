@@ -14,24 +14,20 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilderInterface;
 use Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\TransactionPatchBuilder;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
-use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\Patch;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction;
 use Swag\PayPal\RestApi\V1\PaymentIntentV1;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
-use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -45,9 +41,7 @@ class PlusPuiHandler
 
     private PaymentResource $paymentResource;
 
-    private EntityRepositoryInterface $orderTransactionRepo;
-
-    private OrderPaymentBuilderInterface $paymentBuilder;
+    private EntityRepository $orderTransactionRepo;
 
     private OrderNumberPatchBuilder $orderNumberPatchBuilder;
 
@@ -57,39 +51,30 @@ class PlusPuiHandler
 
     private ShippingAddressPatchBuilder $shippingAddressPatchBuilder;
 
-    private SystemConfigService $systemConfigService;
-
     private OrderTransactionStateHandler $orderTransactionStateHandler;
 
     private LoggerInterface $logger;
 
     public function __construct(
         PaymentResource $paymentResource,
-        EntityRepositoryInterface $orderTransactionRepo,
-        OrderPaymentBuilderInterface $paymentBuilder,
+        EntityRepository $orderTransactionRepo,
         PayerInfoPatchBuilder $payerInfoPatchBuilder,
         OrderNumberPatchBuilder $orderNumberPatchBuilder,
         TransactionPatchBuilder $transactionPatchBuilder,
         ShippingAddressPatchBuilder $shippingAddressPatchBuilder,
-        SystemConfigService $systemConfigService,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         LoggerInterface $logger
     ) {
         $this->paymentResource = $paymentResource;
         $this->orderTransactionRepo = $orderTransactionRepo;
-        $this->paymentBuilder = $paymentBuilder;
         $this->orderNumberPatchBuilder = $orderNumberPatchBuilder;
         $this->transactionPatchBuilder = $transactionPatchBuilder;
         $this->payerInfoPatchBuilder = $payerInfoPatchBuilder;
         $this->shippingAddressPatchBuilder = $shippingAddressPatchBuilder;
-        $this->systemConfigService = $systemConfigService;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->logger = $logger;
     }
 
-    /**
-     * @deprecated tag:v7.0.0 - Will be removed without replacement.
-     */
     public function handlePlusPayment(
         AsyncPaymentTransactionStruct $transaction,
         RequestDataBag $dataBag,
@@ -120,53 +105,6 @@ class PlusPuiHandler
     }
 
     /**
-     * @deprecated tag:v6.0.0 - will be removed, old PUI has been deprecated
-     *
-     * @throws AsyncPaymentProcessException
-     */
-    public function handlePuiPayment(
-        AsyncPaymentTransactionStruct $transaction,
-        SalesChannelContext $salesChannelContext,
-        CustomerEntity $customer
-    ): Payment {
-        $this->logger->debug('Started');
-        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-        $orderTransactionId = $transaction->getOrderTransaction()->getId();
-
-        $payment = $this->paymentBuilder->getPayment($transaction, $salesChannelContext);
-        $payment->getPayer()->setExternalSelectedFundingInstrumentType(PaymentInstruction::TYPE_INVOICE);
-        $payment->getApplicationContext()->setLocale('de_DE');
-
-        try {
-            $response = $this->paymentResource->create(
-                $payment,
-                $salesChannelId,
-                PartnerAttributionId::PAYPAL_CLASSIC
-            );
-        } catch (\Exception $e) {
-            throw new AsyncPaymentProcessException(
-                $orderTransactionId,
-                \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
-            );
-        }
-
-        $paypalPaymentId = $response->getId();
-        $patches = [
-            $this->shippingAddressPatchBuilder->createShippingAddressPatch($customer),
-            $this->payerInfoPatchBuilder->createPayerInfoPatch($customer),
-        ];
-
-        $this->patchPayPalPayment($patches, $paypalPaymentId, $salesChannelId, $orderTransactionId);
-
-        $context = $salesChannelContext->getContext();
-        $this->addPayPalTransactionId($transaction, $paypalPaymentId, $context);
-
-        return $response;
-    }
-
-    /**
-     * @deprecated tag:v6.0.0 - parameter $orderNumberSendNeeded will be removed, will be false permanently
-     *
      * @throws AsyncPaymentFinalizeException
      */
     public function handleFinalizePayment(
@@ -175,33 +113,11 @@ class PlusPuiHandler
         Context $context,
         string $paymentId,
         string $payerId,
-        string $partnerAttributionId,
-        bool $orderNumberSendNeeded
+        string $partnerAttributionId
     ): void {
         $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
         $orderNumber = $transaction->getOrder()->getOrderNumber();
-
-        if ($orderNumberSendNeeded && $orderNumber !== null && $this->systemConfigService->getBool(Settings::SEND_ORDER_NUMBER, $salesChannelId)) {
-            $orderNumberPrefix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_PREFIX, $salesChannelId);
-            $orderNumberSuffix = $this->systemConfigService->getString(Settings::ORDER_NUMBER_SUFFIX, $salesChannelId);
-            $orderNumber = $orderNumberPrefix . $orderNumber . $orderNumberSuffix;
-
-            try {
-                $this->paymentResource->patch(
-                    [
-                        $this->orderNumberPatchBuilder->createOrderNumberPatch($orderNumber),
-                    ],
-                    $paymentId,
-                    $salesChannelId
-                );
-            } catch (\Exception $e) {
-                throw new AsyncPaymentFinalizeException(
-                    $transactionId,
-                    \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
-                );
-            }
-        }
 
         try {
             $response = $this->paymentResource->execute(

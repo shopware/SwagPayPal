@@ -9,7 +9,7 @@ namespace Swag\PayPal\Pos\MessageQueue\Handler\Sync;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\InventorySyncMessage;
@@ -19,7 +19,7 @@ use Swag\PayPal\Pos\Sync\InventorySyncer;
 
 class InventorySyncHandler extends AbstractSyncHandler
 {
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
 
     private InventoryContextFactory $inventoryContextFactory;
 
@@ -28,7 +28,7 @@ class InventorySyncHandler extends AbstractSyncHandler
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,
-        EntityRepositoryInterface $productRepository,
+        EntityRepository $productRepository,
         InventoryContextFactory $inventoryContextFactory,
         InventorySyncer $inventorySyncer
     ) {

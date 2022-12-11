@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Run\Administration;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -19,9 +19,9 @@ class LogCleaner
     private const LOG_RETENTION_PERIOD = 30;
     private const LOG_RETENTION_PER_PRODUCT = 3;
 
-    private EntityRepositoryInterface $runRepository;
+    private EntityRepository $runRepository;
 
-    public function __construct(EntityRepositoryInterface $runRepository)
+    public function __construct(EntityRepository $runRepository)
     {
         $this->runRepository = $runRepository;
     }
@@ -84,13 +84,13 @@ class LogCleaner
         $criteria->addFilter(new EqualsFilter('salesChannelId', $salesChannelId));
         $runIds = $this->runRepository->searchIds($criteria, $context)->getIds();
         if (!empty($runIds)) {
-            $this->runRepository->delete(\array_map(static function ($id) {
+            $this->runRepository->delete(\array_filter(\array_map(static function ($id) {
                 if (!\is_string($id)) {
                     return null;
                 }
 
                 return ['id' => $id];
-            }, $runIds), $context);
+            }, $runIds)), $context);
         }
     }
 }

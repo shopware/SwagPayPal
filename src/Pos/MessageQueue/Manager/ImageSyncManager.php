@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\MessageQueue\Manager;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InvalidAggregationQueryException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
@@ -25,13 +25,13 @@ class ImageSyncManager extends AbstractSyncManager
 
     public const CHUNK_SIZE = 250;
 
-    private EntityRepositoryInterface $posMediaRepository;
+    private EntityRepository $posMediaRepository;
 
     private ImageSyncer $imageSyncer;
 
     public function __construct(
         MessageBusInterface $messageBus,
-        EntityRepositoryInterface $posMediaRepository,
+        EntityRepository $posMediaRepository,
         ImageSyncer $imageSyncer
     ) {
         parent::__construct($messageBus);

@@ -14,10 +14,9 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\SalesChannel\AbstractPaymentMethodRoute;
 use Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRouteResponse;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Annotation\Entity;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
@@ -32,7 +31,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 {
@@ -52,7 +51,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 
     private AvailabilityService $availabilityService;
 
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $orderRepository;
 
     public function __construct(
         AbstractPaymentMethodRoute $decorated,
@@ -63,7 +62,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         ExcludedProductValidator $excludedProductValidator,
         RequestStack $requestStack,
         AvailabilityService $availabilityService,
-        EntityRepositoryInterface $orderRepository
+        EntityRepository $orderRepository
     ) {
         $this->decorated = $decorated;
         $this->methodDataRegistry = $methodDataRegistry;

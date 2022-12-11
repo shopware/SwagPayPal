@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Setting\Service;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\InvalidAggregationQueryException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\CountAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
@@ -29,17 +29,17 @@ class ProductVisibilityCloneService
 
     private MessageBusInterface $messageBus;
 
-    private EntityRepositoryInterface $productVisibilityRepository;
+    private EntityRepository $productVisibilityRepository;
 
     private RunService $runService;
 
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
     public function __construct(
         MessageBusInterface $messageBus,
-        EntityRepositoryInterface $productVisibilityRepository,
+        EntityRepository $productVisibilityRepository,
         RunService $runService,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepository $salesChannelRepository
     ) {
         $this->messageBus = $messageBus;
         $this->productVisibilityRepository = $productVisibilityRepository;

@@ -1,4 +1,4 @@
-import StoreApiClient from 'src/service/store-api-client.service';
+import HttpClient from 'src/service/http-client.service';
 import DomAccess from 'src/helper/dom-access.helper';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
@@ -163,7 +163,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
     };
 
     init() {
-        this._client = new StoreApiClient();
+        this._client = new HttpClient();
         this.createButton();
     }
 

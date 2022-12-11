@@ -15,7 +15,7 @@ use Shopware\Core\Content\Category\CategoryCollection;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -57,7 +57,7 @@ abstract class AbstractProductSyncTest extends TestCase
     {
         $criteria = new Criteria();
 
-        /** @var EntityRepositoryInterface $taxRepository */
+        /** @var EntityRepository $taxRepository */
         $taxRepository = $this->getContainer()->get('tax.repository');
         $tax = $taxRepository->search($criteria, Context::createDefaultContext())->first();
 
@@ -71,7 +71,7 @@ abstract class AbstractProductSyncTest extends TestCase
         $criteria = new Criteria();
         $criteria->addAssociation('translation');
 
-        /** @var EntityRepositoryInterface $categoryRepository */
+        /** @var EntityRepository $categoryRepository */
         $categoryRepository = $this->getContainer()->get('category.repository');
 
         $category = $categoryRepository->search($criteria, Context::createDefaultContext())->first();

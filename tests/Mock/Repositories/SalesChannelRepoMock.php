@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -18,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Test\Util\PaymentMethodUtilTest;
 
 class SalesChannelRepoMock extends AbstractRepoMock
@@ -36,8 +36,8 @@ class SalesChannelRepoMock extends AbstractRepoMock
         /** @var string[] $ids */
         $ids = $criteria->getIds();
         $id = $ids[0] ?? null;
-        $withPaymentMethods = $id === Defaults::SALES_CHANNEL;
-        $salesChannelId = $id ?? Defaults::SALES_CHANNEL;
+        $withPaymentMethods = $id === TestDefaults::SALES_CHANNEL;
+        $salesChannelId = $id ?? TestDefaults::SALES_CHANNEL;
         $arrayKey = $withPaymentMethods ? $salesChannelId : PaymentMethodUtilTest::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD;
 
         return new EntitySearchResult(

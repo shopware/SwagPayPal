@@ -8,7 +8,9 @@
 namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Swag\PayPal\Util\Compatibility\EntityRepositoryDecorator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
@@ -34,9 +36,9 @@ class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
     }
 
     /**
-     * @return EntityRepositoryInterface|OrderTransactionRepoMock
+     * @return EntityRepository|OrderTransactionRepoMock
      */
-    public function getRepository(string $entityName): EntityRepositoryInterface
+    public function getRepository(string $entityName): EntityRepository
     {
         switch ($entityName) {
             case $this->languageRepo->getDefinition()->getEntityName():
@@ -48,6 +50,11 @@ class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
             case $this->systemConfigRepo->getDefinition()->getEntityName():
                 return $this->systemConfigRepo;
             default:
+                if (\interface_exists(EntityRepositoryInterface::class)) {
+                    // @phpstan-ignore-next-line
+                    return new EntityRepositoryDecorator(parent::getRepository($entityName));
+                }
+
                 return parent::getRepository($entityName);
         }
     }

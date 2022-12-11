@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\Pos\Util;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
@@ -150,11 +150,11 @@ class InformationFetchServiceTest extends TestCase
 
     private function getInformationFetchService(UserResource $userResource): InformationFetchService
     {
-        /** @var EntityRepositoryInterface $countryRepository */
+        /** @var EntityRepository $countryRepository */
         $countryRepository = $this->getContainer()->get('country.repository');
-        /** @var EntityRepositoryInterface $currencyRepository */
+        /** @var EntityRepository $currencyRepository */
         $currencyRepository = $this->getContainer()->get('currency.repository');
-        /** @var EntityRepositoryInterface $languageRepository */
+        /** @var EntityRepository $languageRepository */
         $languageRepository = $this->getContainer()->get('language.repository');
 
         return new InformationFetchService(
@@ -169,12 +169,12 @@ class InformationFetchServiceTest extends TestCase
     {
         $countryCriteria = new Criteria();
         $countryCriteria->addFilter(new EqualsFilter('iso', $countryCode));
-        /** @var EntityRepositoryInterface $countryRepository */
+        /** @var EntityRepository $countryRepository */
         $countryRepository = $this->getContainer()->get('country.repository');
 
         $languageCriteria = new Criteria();
         $languageCriteria->addFilter(new EqualsFilter('name', 'Deutsch'));
-        /** @var EntityRepositoryInterface $languageRepository */
+        /** @var EntityRepository $languageRepository */
         $languageRepository = $this->getContainer()->get('language.repository');
 
         $expected = new AdditionalInformation();

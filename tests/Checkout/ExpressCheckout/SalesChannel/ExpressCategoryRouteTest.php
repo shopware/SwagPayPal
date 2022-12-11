@@ -11,13 +11,13 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Category\SalesChannel\CachedCategoryRoute;
 use Shopware\Core\Content\Category\SalesChannel\CategoryRoute;
 use Shopware\Core\Content\Category\SalesChannel\CategoryRouteResponse;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCategoryRoute;
@@ -70,7 +70,7 @@ class ExpressCategoryRouteTest extends TestCase
         $response = $this->getContainer()->get(CategoryRoute::class)->load(
             $this->getValidCategoryId(),
             new Request(),
-            $this->getContainer()->get(SalesChannelContextFactory::class)->create(Uuid::randomHex(), Defaults::SALES_CHANNEL)
+            $this->getContainer()->get(SalesChannelContextFactory::class)->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL)
         );
 
         $cmsPage = $response->getCategory()->getCmsPage();
@@ -139,7 +139,7 @@ class ExpressCategoryRouteTest extends TestCase
         }
         $this->getContainer()->get(PaymentMethodUtil::class)->reset();
 
-        $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(Uuid::randomHex(), Defaults::SALES_CHANNEL);
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(Uuid::randomHex(), TestDefaults::SALES_CHANNEL);
         $request = new Request([], [], [
             '_route' => 'frontend.cms.navigation.page',
         ]);

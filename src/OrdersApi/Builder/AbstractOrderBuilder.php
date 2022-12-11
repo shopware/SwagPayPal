@@ -7,14 +7,12 @@
 
 namespace Swag\PayPal\OrdersApi\Builder;
 
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
-use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer\Address as PayerAddress;
@@ -29,15 +27,12 @@ abstract class AbstractOrderBuilder
 
     protected PurchaseUnitProvider $purchaseUnitProvider;
 
-    protected ?AddressProvider $addressProvider;
+    protected AddressProvider $addressProvider;
 
-    /**
-     * @deprecated tag:v6.0.0 - parameter $addressProvider will be required
-     */
     public function __construct(
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,
-        ?AddressProvider $addressProvider = null
+        AddressProvider $addressProvider
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->purchaseUnitProvider = $purchaseUnitProvider;
@@ -72,11 +67,7 @@ abstract class AbstractOrderBuilder
             throw new AddressNotFoundException($customer->getDefaultBillingAddressId());
         }
         $address = new PayerAddress();
-        if ($this->addressProvider !== null) {
-            $this->addressProvider->createAddress($billingAddress, $address);
-        } else {
-            $this->createAddress($billingAddress, $address);
-        }
+        $this->addressProvider->createAddress($billingAddress, $address);
         $payer->setAddress($address);
 
         return $payer;
@@ -115,36 +106,5 @@ abstract class AbstractOrderBuilder
         }
 
         return $landingPageType;
-    }
-
-    /**
-     * @deprecated tag:v6.0.0 - will be removed, use AddressProvider instead
-     */
-    private function createAddress(CustomerAddressEntity $customerAddress, Address $address): Address
-    {
-        $address->setAddressLine1($customerAddress->getStreet());
-
-        $additionalAddressLine1 = $customerAddress->getAdditionalAddressLine1();
-        if ($additionalAddressLine1 !== null) {
-            $address->setAddressLine2($additionalAddressLine1);
-        }
-
-        $state = $customerAddress->getCountryState();
-        if ($state !== null) {
-            $address->setAdminArea1($state->getShortCode());
-        }
-
-        $address->setAdminArea2($customerAddress->getCity());
-        $address->setPostalCode($customerAddress->getZipcode());
-
-        $country = $customerAddress->getCountry();
-        if ($country !== null) {
-            $countryIso = $country->getIso();
-            if ($countryIso !== null) {
-                $address->setCountryCode($countryIso);
-            }
-        }
-
-        return $address;
     }
 }

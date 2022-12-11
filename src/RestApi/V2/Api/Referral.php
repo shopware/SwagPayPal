@@ -21,7 +21,7 @@ use Swag\PayPal\RestApi\V2\Api\Referral\PartnerConfigOverride;
 class Referral extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v6.0.0 - will be removed
+     * @deprecated tag:v7.0.0 - will be removed
      */
     public const PRODUCT_TYPE_EXPRESS_CHECKOUT = 'EXPRESS_CHECKOUT';
 

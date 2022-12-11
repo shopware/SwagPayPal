@@ -10,7 +10,7 @@ namespace Swag\PayPal\Pos\MessageQueue\Handler\Sync;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductSingleSyncMessage;
 use Swag\PayPal\Pos\Run\RunService;
@@ -24,7 +24,7 @@ class ProductSingleSyncHandler extends AbstractSyncHandler
 
     private ProductSelection $productSelection;
 
-    private SalesChannelRepositoryInterface $productRepository;
+    private SalesChannelRepository $productRepository;
 
     private ProductSyncer $productSyncer;
 
@@ -32,7 +32,7 @@ class ProductSingleSyncHandler extends AbstractSyncHandler
         RunService $runService,
         LoggerInterface $logger,
         ProductSelection $productSelection,
-        SalesChannelRepositoryInterface $productRepository,
+        SalesChannelRepository $productRepository,
         ProductSyncer $productSyncer
     ) {
         parent::__construct($runService, $logger);

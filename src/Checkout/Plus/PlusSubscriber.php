@@ -28,7 +28,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @deprecated tag:v6.0.0 - Will be removed without replacement.
+ * @deprecated tag:v7.0.0 - Will be removed without replacement.
  */
 class PlusSubscriber implements EventSubscriberInterface
 {

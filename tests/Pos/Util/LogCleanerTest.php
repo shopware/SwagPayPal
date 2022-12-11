@@ -8,10 +8,10 @@
 namespace Swag\PayPal\Test\Pos\Util;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogEntity;
@@ -28,7 +28,7 @@ class LogCleanerTest extends TestCase
 
         static::assertCount(7, $runRepository->getCollection());
 
-        $logCleaner->cleanUpLog(Defaults::SALES_CHANNEL, $context);
+        $logCleaner->cleanUpLog(TestDefaults::SALES_CHANNEL, $context);
 
         static::assertCount(5, $runRepository->getCollection());
         static::assertEquals(['run1', 'run2', 'run3', 'run4', 'run6'], $runRepository->searchIds(new Criteria(), $context)->getIds());
@@ -42,7 +42,7 @@ class LogCleanerTest extends TestCase
 
         static::assertCount(7, $runRepository->getCollection());
 
-        $logCleaner->clearLog(Defaults::SALES_CHANNEL, $context);
+        $logCleaner->clearLog(TestDefaults::SALES_CHANNEL, $context);
 
         static::assertEmpty($runRepository->getCollection());
     }

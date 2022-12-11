@@ -17,7 +17,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
@@ -64,7 +64,7 @@ abstract class AbstractSyncAPMHandlerTest extends TestCase
     use OrderTransactionTrait;
     use SalesChannelContextTrait;
 
-    protected EntityRepositoryInterface $orderTransactionRepo;
+    protected EntityRepository $orderTransactionRepo;
 
     protected StateMachineRegistry $stateMachineRegistry;
 

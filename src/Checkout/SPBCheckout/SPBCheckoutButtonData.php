@@ -9,9 +9,6 @@ namespace Swag\PayPal\Checkout\SPBCheckout;
 
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 
-/**
- * @deprecated tag:v6.0.0 - will be removed without replacement, alternative payment methods have all been implemented separately
- */
 class SPBCheckoutButtonData extends AbstractCheckoutData
 {
     protected string $buttonColor;

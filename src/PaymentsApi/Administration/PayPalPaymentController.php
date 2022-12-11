@@ -8,13 +8,10 @@
 namespace Swag\PayPal\PaymentsApi\Administration;
 
 use OpenApi\Annotations as OA;
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Routing\Annotation\Acl;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\RestApi\V1\Api\Capture;
@@ -27,6 +24,7 @@ use Swag\PayPal\RestApi\V1\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V1\Resource\OrdersResource;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
+use Swag\PayPal\Util\Compatibility\Exception;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +33,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class PayPalPaymentController extends AbstractController
 {
@@ -59,7 +57,7 @@ class PayPalPaymentController extends AbstractController
 
     private PaymentStatusUtil $paymentStatusUtil;
 
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $orderRepository;
 
     private PriceFormatter $priceFormatter;
 
@@ -70,7 +68,7 @@ class PayPalPaymentController extends AbstractController
         OrdersResource $ordersResource,
         CaptureResource $captureResource,
         PaymentStatusUtil $paymentStatusUtil,
-        EntityRepositoryInterface $orderRepository,
+        EntityRepository $orderRepository,
         PriceFormatter $priceFormatter
     ) {
         $this->paymentResource = $paymentResource;
@@ -110,8 +108,7 @@ class PayPalPaymentController extends AbstractController
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_payment")
      *     )
      * )
-     * @Route("/api/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"})
-     * @Acl({"order.viewer"})
+     * @Route("/api/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"}, defaults={"_acl": {"order.viewer"}})
      */
     public function paymentDetails(string $orderId, string $paymentId, Context $context): JsonResponse
     {
@@ -159,8 +156,7 @@ class PayPalPaymentController extends AbstractController
      *         })
      *     )
      * )
-     * @Route("/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}", name="api.paypal.resource_details", methods={"GET"})
-     * @Acl({"order.viewer"})
+     * @Route("/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}", name="api.paypal.resource_details", methods={"GET"}, defaults={"_acl": {"order.viewer"}})
      */
     public function resourceDetails(Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
     {
@@ -191,8 +187,7 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Since("0.9.0")
-     * @Route("/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"})
-     * @Acl({"order.editor"})
+     * @Route("/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
      *
      * @throws RequiredParameterInvalidException
      */
@@ -235,8 +230,7 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Since("0.9.0")
-     * @Route("/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"})
-     * @Acl({"order.editor"})
+     * @Route("/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
      *
      * @throws RequiredParameterInvalidException
      */
@@ -274,8 +268,7 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Since("0.9.0")
-     * @Route("/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"})
-     * @Acl({"order.editor"})
+     * @Route("/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
      *
      * @throws RequiredParameterInvalidException
      */
@@ -309,16 +302,13 @@ class PayPalPaymentController extends AbstractController
         return new JsonResponse($voidResponse);
     }
 
-    /**
-     * @throws OrderNotFoundException
-     */
     private function getSalesChannelIdByOrderId(string $orderId, Context $context): string
     {
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
 
         if ($order === null) {
-            throw new OrderNotFoundException($orderId);
+            throw Exception::orderNotFound($orderId);
         }
 
         return $order->getSalesChannelId();

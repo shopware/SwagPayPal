@@ -20,7 +20,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -93,7 +93,7 @@ class PayPalPaymentHandlerTest extends TestCase
     private const TEST_AMOUNT = '860.00';
     private const TEST_SHIPPING = '4.99';
 
-    private EntityRepositoryInterface $orderTransactionRepo;
+    private EntityRepository $orderTransactionRepo;
 
     private StateMachineRegistry $stateMachineRegistry;
 
@@ -131,12 +131,7 @@ class PayPalPaymentHandlerTest extends TestCase
             $updatedData['customFields'][SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID]
         );
 
-        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed') && \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED')) {
-            /** @phpstan-ignore-next-line */
-            $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
-        } else {
-            $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
-        }
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
     }
 
     public function testPayWithPlus(): void
@@ -193,12 +188,7 @@ class PayPalPaymentHandlerTest extends TestCase
             }
         }
 
-        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed') && \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED')) {
-            /** @phpstan-ignore-next-line */
-            $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
-        } else {
-            $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
-        }
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
     }
 
     public function testPayWithPlusThrowsException(): void
@@ -278,12 +268,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
         static::assertSame(self::TEST_SHIPPING, $patchValue['amount']['breakdown']['shipping']['value']);
         static::assertSame(1, $patchValue['items'][0]['quantity']);
 
-        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed') && \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED')) {
-            /** @phpstan-ignore-next-line */
-            $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
-        } else {
-            $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $salesChannelContext->getContext());
-        }
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $salesChannelContext->getContext());
     }
 
     public function testPayWithEcsThrowsException(): void
@@ -633,7 +618,7 @@ An error occurred during the communication with PayPal');
         $salesChannelContextMock->expects(static::never())->method('getSalesChannel')->withAnyParameters();
         $salesChannelContextMock->expects(static::once())->method('getContext')->withAnyParameters()->willReturn($context);
 
-        /** @var EntityRepositoryInterface $stateMachineStateRepository */
+        /** @var EntityRepository $stateMachineStateRepository */
         $stateMachineStateRepository = $this->getContainer()->get(\sprintf('%s.repository', StateMachineStateDefinition::ENTITY_NAME));
 
         $this->createPayPalPaymentHandler(
@@ -652,21 +637,20 @@ An error occurred during the communication with PayPal');
 
     private function createPayPalPaymentHandler(
         array $settings = [],
-        ?EntityRepositoryInterface $orderTransactionRepository = null
+        ?EntityRepository $orderTransactionRepository = null
     ): PayPalPaymentHandler {
         $systemConfig = $this->createSystemConfigServiceMock($settings);
         $this->clientFactory = $this->createPayPalClientFactoryWithService($systemConfig);
         $orderResource = new OrderResource($this->clientFactory);
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
         $logger = new NullLogger();
-        /** @var EntityRepositoryInterface $orderTransactionRepositoryMock */
-        $orderTransactionRepositoryMock = $this->createMock(EntityRepositoryInterface::class);
+        /** @var EntityRepository $orderTransactionRepositoryMock */
+        $orderTransactionRepositoryMock = $this->createMock(EntityRepository::class);
         $paymentBuilder = $this->createPaymentBuilder($systemConfig);
 
         return new PayPalPaymentHandler(
             $orderTransactionStateHandler,
             new PayPalHandler(
-                $this->orderTransactionRepo,
                 $this->createOrderBuilder($systemConfig),
                 $orderResource,
                 new OrderExecuteService(
@@ -701,12 +685,10 @@ An error occurred during the communication with PayPal');
             new PlusPuiHandler(
                 new PaymentResource($this->clientFactory),
                 $this->orderTransactionRepo,
-                $paymentBuilder,
                 new PayerInfoPatchBuilder(),
                 new OrderNumberPatchBuilder(),
                 new TransactionPatchBuilder($paymentBuilder),
                 new ShippingAddressPatchBuilder(),
-                $systemConfig,
                 $orderTransactionStateHandler,
                 $logger
             ),

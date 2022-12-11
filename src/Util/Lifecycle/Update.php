@@ -9,7 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle;
 
 use Shopware\Core\Content\Category\Exception\CategoryNotFoundException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
@@ -48,19 +48,19 @@ class Update
 
     private SystemConfigService $systemConfig;
 
-    private EntityRepositoryInterface $customFieldRepository;
+    private EntityRepository $customFieldRepository;
 
     private ?WebhookServiceInterface $webhookService;
 
-    private EntityRepositoryInterface $paymentRepository;
+    private EntityRepository $paymentRepository;
 
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
-    private EntityRepositoryInterface $salesChannelTypeRepository;
+    private EntityRepository $salesChannelTypeRepository;
 
     private ?InformationDefaultService $informationDefaultService;
 
-    private EntityRepositoryInterface $shippingRepository;
+    private EntityRepository $shippingRepository;
 
     private ?PosWebhookService $posWebhookService;
 
@@ -70,13 +70,13 @@ class Update
 
     public function __construct(
         SystemConfigService $systemConfig,
-        EntityRepositoryInterface $paymentRepository,
-        EntityRepositoryInterface $customFieldRepository,
+        EntityRepository $paymentRepository,
+        EntityRepository $customFieldRepository,
         ?WebhookServiceInterface $webhookService,
-        EntityRepositoryInterface $salesChannelRepository,
-        EntityRepositoryInterface $salesChannelTypeRepository,
+        EntityRepository $salesChannelRepository,
+        EntityRepository $salesChannelTypeRepository,
         ?InformationDefaultService $informationDefaultService,
-        EntityRepositoryInterface $shippingRepository,
+        EntityRepository $shippingRepository,
         ?PosWebhookService $posWebhookService,
         PaymentMethodInstaller $paymentMethodInstaller,
         PaymentMethodStateService $paymentMethodStateService

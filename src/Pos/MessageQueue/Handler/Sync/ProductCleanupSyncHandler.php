@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Pos\MessageQueue\Handler\Sync;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductCleanupSyncMessage;
@@ -24,19 +24,19 @@ class ProductCleanupSyncHandler extends AbstractSyncHandler
 
     private ProductSelection $productSelection;
 
-    private SalesChannelRepositoryInterface $productRepository;
+    private SalesChannelRepository $productRepository;
 
     private ProductSyncer $productSyncer;
 
-    private EntityRepositoryInterface $posSalesChannelRepository;
+    private EntityRepository $posSalesChannelRepository;
 
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,
         ProductSelection $productSelection,
-        SalesChannelRepositoryInterface $productRepository,
+        SalesChannelRepository $productRepository,
         ProductSyncer $productSyncer,
-        EntityRepositoryInterface $posSalesChannelRepository
+        EntityRepository $posSalesChannelRepository
     ) {
         parent::__construct($runService, $logger);
         $this->productSelection = $productSelection;

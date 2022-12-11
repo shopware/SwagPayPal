@@ -8,9 +8,9 @@
 namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Inventory\Status;
 use Swag\PayPal\Pos\Api\Inventory\Status\Variant;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
@@ -47,7 +47,7 @@ trait UpdaterTrait
     private function createInventoryContext(SalesChannelProductEntity $product, int $localStock, int $posStock): InventoryContext
     {
         $localInventory = new PosSalesChannelInventoryEntity();
-        $localInventory->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $localInventory->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $localInventory->setProductId($product->getId());
         $localInventory->setProductVersionId((string) $product->getVersionId());
         $localInventory->setUniqueIdentifier(Uuid::randomHex());

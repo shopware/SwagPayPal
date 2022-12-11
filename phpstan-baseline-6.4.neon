@@ -1,0 +1,86 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: src/PaymentsApi/Patch/PayerInfoPatchBuilder.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: src/PaymentsApi/Patch/ShippingAddressPatchBuilder.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 1
+			path: src/Pos/Api/Authentication/Token.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 1
+			path: src/RestApi/V1/Api/ClientToken.php
+
+		-
+			message: "#^Ternary operator condition is always true\\.$#"
+			count: 1
+			path: src/RestApi/V1/Api/Token.php
+
+		-
+			message: "#^Expression on left side of \\?\\? is not nullable\\.$#"
+			count: 1
+			path: src/Storefront/Data/Service/ACDCCheckoutDataService.php
+
+		-
+			message: "#^Parameter \\#10 \\$paymentMethod of static method Shopware\\\\Core\\\\Checkout\\\\Test\\\\Cart\\\\Common\\\\Generator\\:\\:createSalesChannelContext\\(\\) expects Shopware\\\\Core\\\\Checkout\\\\Payment\\\\PaymentMethodEntity\\|null, Shopware\\\\Core\\\\Checkout\\\\Shipping\\\\ShippingMethodEntity\\|null given\\.$#"
+			count: 1
+			path: tests/Helper/Compatibility/Generator.php
+
+		-
+			message: "#^Parameter \\#11 \\$shippingMethod of static method Shopware\\\\Core\\\\Checkout\\\\Test\\\\Cart\\\\Common\\\\Generator\\:\\:createSalesChannelContext\\(\\) expects Shopware\\\\Core\\\\Checkout\\\\Shipping\\\\ShippingMethodEntity\\|null, Shopware\\\\Core\\\\Checkout\\\\Customer\\\\CustomerEntity\\|null given\\.$#"
+			count: 1
+			path: tests/Helper/Compatibility/Generator.php
+
+		-
+			message: "#^Parameter \\#3 \\$fallbackCustomerGroup of static method Shopware\\\\Core\\\\Checkout\\\\Test\\\\Cart\\\\Common\\\\Generator\\:\\:createSalesChannelContext\\(\\) expects Shopware\\\\Core\\\\Checkout\\\\Customer\\\\Aggregate\\\\CustomerGroup\\\\CustomerGroupEntity\\|null, Shopware\\\\Core\\\\System\\\\SalesChannel\\\\SalesChannelEntity\\|null given\\.$#"
+			count: 1
+			path: tests/Helper/Compatibility/Generator.php
+
+		-
+			message: "#^Parameter \\#4 \\$salesChannel of static method Shopware\\\\Core\\\\Checkout\\\\Test\\\\Cart\\\\Common\\\\Generator\\:\\:createSalesChannelContext\\(\\) expects Shopware\\\\Core\\\\System\\\\SalesChannel\\\\SalesChannelEntity\\|null, Shopware\\\\Core\\\\System\\\\Currency\\\\CurrencyEntity\\|null given\\.$#"
+			count: 1
+			path: tests/Helper/Compatibility/Generator.php
+
+		-
+			message: "#^Parameter \\#5 \\$currency of static method Shopware\\\\Core\\\\Checkout\\\\Test\\\\Cart\\\\Common\\\\Generator\\:\\:createSalesChannelContext\\(\\) expects Shopware\\\\Core\\\\System\\\\Currency\\\\CurrencyEntity\\|null, Shopware\\\\Core\\\\System\\\\Tax\\\\TaxCollection\\|null given\\.$#"
+			count: 1
+			path: tests/Helper/Compatibility/Generator.php
+
+		-
+			message: "#^Parameter \\#6 \\$taxes of static method Shopware\\\\Core\\\\Checkout\\\\Test\\\\Cart\\\\Common\\\\Generator\\:\\:createSalesChannelContext\\(\\) expects Shopware\\\\Core\\\\System\\\\Tax\\\\TaxCollection\\|null, Shopware\\\\Core\\\\System\\\\Country\\\\CountryEntity\\|null given\\.$#"
+			count: 1
+			path: tests/Helper/Compatibility/Generator.php
+
+		-
+			message: "#^Parameter \\#7 \\$country of static method Shopware\\\\Core\\\\Checkout\\\\Test\\\\Cart\\\\Common\\\\Generator\\:\\:createSalesChannelContext\\(\\) expects Shopware\\\\Core\\\\System\\\\Country\\\\CountryEntity\\|null, Shopware\\\\Core\\\\System\\\\Country\\\\Aggregate\\\\CountryState\\\\CountryStateEntity\\|null given\\.$#"
+			count: 1
+			path: tests/Helper/Compatibility/Generator.php
+
+		-
+			message: "#^Parameter \\#8 \\$state of static method Shopware\\\\Core\\\\Checkout\\\\Test\\\\Cart\\\\Common\\\\Generator\\:\\:createSalesChannelContext\\(\\) expects Shopware\\\\Core\\\\System\\\\Country\\\\Aggregate\\\\CountryState\\\\CountryStateEntity\\|null, Shopware\\\\Core\\\\Checkout\\\\Customer\\\\Aggregate\\\\CustomerAddress\\\\CustomerAddressEntity\\|null given\\.$#"
+			count: 1
+			path: tests/Helper/Compatibility/Generator.php
+
+		-
+			message: "#^Parameter \\#9 \\$shipping of static method Shopware\\\\Core\\\\Checkout\\\\Test\\\\Cart\\\\Common\\\\Generator\\:\\:createSalesChannelContext\\(\\) expects Shopware\\\\Core\\\\Checkout\\\\Customer\\\\Aggregate\\\\CustomerAddress\\\\CustomerAddressEntity\\|null, Shopware\\\\Core\\\\Checkout\\\\Payment\\\\PaymentMethodEntity\\|null given\\.$#"
+			count: 1
+			path: tests/Helper/Compatibility/Generator.php
+
+		-
+			message: "#^Method Swag\\\\PayPal\\\\Test\\\\Mock\\\\CacheItemMockTyped\\:\\:expiresAfter\\(\\) uses native union types but they\\'re supported only on PHP 8\\.0 and later\\.$#"
+			count: 1
+			path: tests/Mock/CacheItemMockTyped.php
+
+		-
+			message: "#^Method Swag\\\\PayPal\\\\Test\\\\Mock\\\\Repositories\\\\DefinitionInstanceRegistryMock\\:\\:getRepository\\(\\) should return Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\EntityRepository but returns Shopware\\\\Core\\\\Framework\\\\DataAbstractionLayer\\\\EntityRepositoryInterface\\.$#"
+			count: 1
+			path: tests/Mock/Repositories/DefinitionInstanceRegistryMock.php

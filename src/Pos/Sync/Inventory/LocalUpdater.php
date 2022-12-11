@@ -10,13 +10,13 @@ namespace Swag\PayPal\Pos\Sync\Inventory;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\Product\ProductCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalCalculatorInterface;
 
 class LocalUpdater
 {
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
 
     private LocalCalculatorInterface $localCalculator;
 
@@ -25,7 +25,7 @@ class LocalUpdater
     private LoggerInterface $logger;
 
     public function __construct(
-        EntityRepositoryInterface $productRepository,
+        EntityRepository $productRepository,
         LocalCalculatorInterface $localCalculator,
         StockUpdater $stockUpdater,
         LoggerInterface $logger

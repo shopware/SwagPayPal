@@ -10,7 +10,6 @@ namespace Swag\PayPal\Test\Checkout\Cart;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Cart\Error\ErrorCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
@@ -18,6 +17,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Cart\Validation\CartValidator;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
@@ -158,7 +158,7 @@ class CartValidatorTest extends TestCase
 
         return $this->salesChannelContextFactory->create(
             Uuid::randomHex(),
-            Defaults::SALES_CHANNEL,
+            TestDefaults::SALES_CHANNEL,
             [SalesChannelContextService::PAYMENT_METHOD_ID => $paymentMethodId]
         );
     }

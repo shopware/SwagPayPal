@@ -10,7 +10,7 @@ namespace Swag\PayPal\Checkout\Plus;
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * @deprecated tag:v6.0.0 - Will be removed without replacement.
+ * @deprecated tag:v7.0.0 - Will be removed without replacement.
  */
 class PlusData extends Struct
 {

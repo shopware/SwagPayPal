@@ -11,7 +11,6 @@ use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
@@ -25,7 +24,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
 {
@@ -84,7 +83,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
     public function setPaymentMethodEligibility(Request $request, Context $context): Response
     {
         /** @var mixed|array $paymentMethods */
-        $paymentMethods = $request->request->get('paymentMethods');
+        $paymentMethods = $request->request->all()['paymentMethods'] ?? null;
         if (!\is_array($paymentMethods)) {
             throw new InvalidRequestParameterException('paymentMethods');
         }

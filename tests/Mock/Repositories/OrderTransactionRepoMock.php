@@ -10,7 +10,6 @@ namespace Swag\PayPal\Test\Mock\Repositories;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -18,6 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEve
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 
 class OrderTransactionRepoMock extends AbstractRepoMock
@@ -121,7 +121,7 @@ class OrderTransactionRepoMock extends AbstractRepoMock
     {
         $order = new OrderEntity();
         $order->setId('testOrderId');
-        $order->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $order->setSalesChannelId(TestDefaults::SALES_CHANNEL);
 
         return $order;
     }

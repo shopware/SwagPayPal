@@ -10,7 +10,7 @@ namespace Swag\PayPal\Pos\MessageQueue\Manager;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\RangeFilter;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
@@ -36,14 +36,14 @@ class InventorySyncManager extends AbstractSyncManager
     private $productSelection;
 
     /**
-     * @var SalesChannelRepositoryInterface
+     * @var SalesChannelRepository
      */
     private $productRepository;
 
     public function __construct(
         MessageBusInterface $messageBus,
         ProductSelection $productSelection,
-        SalesChannelRepositoryInterface $productRepository,
+        SalesChannelRepository $productRepository,
         InventoryContextFactory $inventoryContextFactory
     ) {
         parent::__construct($messageBus);

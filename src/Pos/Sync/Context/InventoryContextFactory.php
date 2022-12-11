@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Sync\Context;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityRepositoryNotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -27,12 +27,12 @@ class InventoryContextFactory
 
     private UuidConverter $uuidConverter;
 
-    private EntityRepositoryInterface $inventoryRepository;
+    private EntityRepository $inventoryRepository;
 
     public function __construct(
         InventoryResource $inventoryResource,
         UuidConverter $uuidConverter,
-        EntityRepositoryInterface $inventoryRepository
+        EntityRepository $inventoryRepository
     ) {
         $this->inventoryResource = $inventoryResource;
         $this->uuidConverter = $uuidConverter;

@@ -48,29 +48,17 @@ final class Settings
     public const LOGGING_LEVEL = self::SYSTEM_CONFIG_DOMAIN . 'loggingLevel';
     public const EXCLUDED_PRODUCT_IDS = self::SYSTEM_CONFIG_DOMAIN . 'excludedProductIds';
     public const EXCLUDED_PRODUCT_STREAM_IDS = self::SYSTEM_CONFIG_DOMAIN . 'excludedProductStreamIds';
-
-    /**
-     * @deprecated tag:v6.0.0 - Will be removed without replacement
-     */
     public const SPB_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'spbShowPayLater';
-
-    /**
-     * @deprecated tag:v6.0.0 - Will be removed without replacement.
-     */
     public const SPB_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbCheckoutEnabled';
-
-    /**
-     * @deprecated tag:v6.0.0 - Will be removed without replacement.
-     */
     public const SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbAlternativePaymentMethodsEnabled';
 
     /**
-     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     * @deprecated tag:v7.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION = self::SYSTEM_CONFIG_DOMAIN . 'merchantLocation';
 
     /**
-     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     * @deprecated tag:v7.0.0 - Will be removed without replacement.
      */
     public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
 
@@ -112,17 +100,17 @@ final class Settings
     ];
 
     /**
-     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     * @deprecated tag:v7.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION_GERMANY = 'germany';
 
     /**
-     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     * @deprecated tag:v7.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION_OTHER = 'other';
 
     /**
-     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     * @deprecated tag:v7.0.0 - Will be removed without replacement.
      */
     public const VALID_MERCHANT_LOCATIONS = [
         self::MERCHANT_LOCATION_GERMANY,

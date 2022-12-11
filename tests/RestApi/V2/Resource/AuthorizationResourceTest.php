@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\Resource\AuthorizationResource;
@@ -23,7 +23,7 @@ class AuthorizationResourceTest extends TestCase
     public function testGet(): void
     {
         $authorizationId = GetAuthorization::ID;
-        $authorization = $this->createResource()->get($authorizationId, Defaults::SALES_CHANNEL);
+        $authorization = $this->createResource()->get($authorizationId, TestDefaults::SALES_CHANNEL);
 
         static::assertSame($authorizationId, $authorization->getId());
     }
@@ -34,7 +34,7 @@ class AuthorizationResourceTest extends TestCase
         $captureResponse = $this->createResource()->capture(
             'authorizationId',
             $capture,
-            Defaults::SALES_CHANNEL,
+            TestDefaults::SALES_CHANNEL,
             PartnerAttributionId::PAYPAL_CLASSIC,
             false
         );

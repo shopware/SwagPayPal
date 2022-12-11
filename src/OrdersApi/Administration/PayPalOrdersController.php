@@ -11,10 +11,8 @@ use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Routing\Annotation\Acl;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator;
 use Swag\PayPal\RestApi\PartnerAttributionId;
@@ -30,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class PayPalOrdersController extends AbstractController
 {
@@ -47,7 +45,7 @@ class PayPalOrdersController extends AbstractController
 
     private CaptureResource $captureResource;
 
-    private EntityRepositoryInterface $orderTransactionRepository;
+    private EntityRepository $orderTransactionRepository;
 
     private RefundResource $refundResource;
 
@@ -60,7 +58,7 @@ class PayPalOrdersController extends AbstractController
         AuthorizationResource $authorizationResource,
         CaptureResource $captureResource,
         RefundResource $refundResource,
-        EntityRepositoryInterface $orderTransactionRepository,
+        EntityRepository $orderTransactionRepository,
         PaymentStatusUtilV2 $paymentStatusUtil,
         CaptureRefundCreator $captureRefundCreator
     ) {
@@ -105,9 +103,9 @@ class PayPalOrdersController extends AbstractController
      * @Route(
      *     "/api/paypal-v2/order/{orderTransactionId}/{paypalOrderId}",
      *      name="api.paypal_v2.order_details",
-     *      methods={"GET"}
+     *      methods={"GET"},
+     *      defaults={"_acl": {"order.viewer"}}
      * )
-     * @Acl({"order.viewer"})
      */
     public function orderDetails(string $orderTransactionId, string $paypalOrderId, Context $context): JsonResponse
     {
@@ -151,9 +149,9 @@ class PayPalOrdersController extends AbstractController
      * @Route(
      *     "/api/paypal-v2/authorization/{orderTransactionId}/{authorizationId}",
      *      name="api.paypal_v2.authorization_details",
-     *      methods={"GET"}
+     *      methods={"GET"},
+     *      defaults={"_acl": {"order.viewer"}}
      * )
-     * @Acl({"order.viewer"})
      */
     public function authorizationDetails(string $orderTransactionId, string $authorizationId, Context $context): JsonResponse
     {
@@ -197,9 +195,9 @@ class PayPalOrdersController extends AbstractController
      * @Route(
      *     "/api/paypal-v2/capture/{orderTransactionId}/{captureId}",
      *      name="api.paypal_v2.capture_details",
-     *      methods={"GET"}
+     *      methods={"GET"},
+     *      defaults={"_acl": {"order.viewer"}}
      * )
-     * @Acl({"order.viewer"})
      */
     public function captureDetails(string $orderTransactionId, string $captureId, Context $context): JsonResponse
     {
@@ -243,9 +241,9 @@ class PayPalOrdersController extends AbstractController
      * @Route(
      *     "/api/paypal-v2/refund/{orderTransactionId}/{refundId}",
      *      name="api.paypal_v2.refund_details",
-     *      methods={"GET"}
+     *      methods={"GET"},
+     *      defaults={"_acl": {"order.viewer"}}
      * )
-     * @Acl({"order.viewer"})
      */
     public function refundDetails(string $orderTransactionId, string $refundId, Context $context): JsonResponse
     {
@@ -306,9 +304,9 @@ class PayPalOrdersController extends AbstractController
      * @Route(
      *     "/api/_action/paypal-v2/refund-capture/{orderTransactionId}/{captureId}/{paypalOrderId}",
      *     name="api.action.paypal_v2.refund_capture",
-     *     methods={"POST"}
+     *     methods={"POST"},
+     *     defaults={"_acl": {"order.editor"}}
      * )
-     * @Acl({"order.editor"})
      */
     public function refundCapture(
         string $orderTransactionId,
@@ -377,9 +375,9 @@ class PayPalOrdersController extends AbstractController
      * @Route(
      *     "/api/_action/paypal-v2/capture-authorization/{orderTransactionId}/{authorizationId}",
      *     name="api.action.paypal_v2.capture_authorization",
-     *     methods={"POST"}
+     *     methods={"POST"},
+     *     defaults={"_acl": {"order.editor"}}
      * )
-     * @Acl({"order.editor"})
      */
     public function captureAuthorization(
         string $orderTransactionId,
@@ -438,9 +436,9 @@ class PayPalOrdersController extends AbstractController
      * @Route(
      *     "/api/_action/paypal-v2/void-authorization/{orderTransactionId}/{authorizationId}",
      *     name="api.action.paypal_v2.void_authorization",
-     *     methods={"POST"}
+     *     methods={"POST"},
+     *     defaults={"_acl": {"order.editor"}}
      * )
-     * @Acl({"order.editor"})
      */
     public function voidAuthorization(
         string $orderTransactionId,

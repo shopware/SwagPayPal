@@ -9,9 +9,9 @@ namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Inventory\Location;
 use Swag\PayPal\Pos\Api\Inventory\Status;
 use Swag\PayPal\Pos\Api\Inventory\Status\Variant;
@@ -135,9 +135,9 @@ class InventoryContextFactoryTest extends TestCase
         $context = Context::createDefaultContext();
 
         $singleProduct = $this->getSingleProduct();
-        $this->inventoryRepository->createMockEntity($singleProduct, Defaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
+        $this->inventoryRepository->createMockEntity($singleProduct, TestDefaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
         $variantProduct = $this->getVariantProduct();
-        $this->inventoryRepository->createMockEntity($variantProduct, Defaults::SALES_CHANNEL, $variantProduct->getAvailableStock() + 2);
+        $this->inventoryRepository->createMockEntity($variantProduct, TestDefaults::SALES_CHANNEL, $variantProduct->getAvailableStock() + 2);
 
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
         $this->inventoryContextFactory->updateLocal($inventoryContext);
@@ -165,7 +165,7 @@ class InventoryContextFactoryTest extends TestCase
         $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
         static::assertNull($inventoryContext->getLocalInventory($singleProduct));
 
-        $this->inventoryRepository->createMockEntity($singleProduct, Defaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
+        $this->inventoryRepository->createMockEntity($singleProduct, TestDefaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
         $this->inventoryContextFactory->updateLocal($inventoryContext);
         static::assertSame($singleProduct->getAvailableStock(), $inventoryContext->getLocalInventory($singleProduct));
     }

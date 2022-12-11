@@ -10,7 +10,7 @@ namespace Swag\PayPal\Pos\Run;
 use Doctrine\DBAL\Connection;
 use Monolog\Logger;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\SumAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -20,17 +20,17 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 
 class RunService
 {
-    private EntityRepositoryInterface $runRepository;
+    private EntityRepository $runRepository;
 
-    private EntityRepositoryInterface $logRepository;
+    private EntityRepository $logRepository;
 
     private Connection $connection;
 
     private Logger $logger;
 
     public function __construct(
-        EntityRepositoryInterface $runRepository,
-        EntityRepositoryInterface $logRepository,
+        EntityRepository $runRepository,
+        EntityRepository $logRepository,
         Connection $connection,
         Logger $logger
     ) {

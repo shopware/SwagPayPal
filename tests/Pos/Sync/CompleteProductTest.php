@@ -18,14 +18,14 @@ use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\Tax\TaxEntity;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\Api\Product\Presentation;
 use Swag\PayPal\Pos\Api\Product\Variant;
@@ -234,22 +234,22 @@ class CompleteProductTest extends TestCase
         )->first();
         static::assertNotNull($convertedGroupingA);
 
-        $productStateA = $posProductRepository->createMockEntity($productA, $convertedGroupingA->getProduct(), Defaults::SALES_CHANNEL);
-        $productStateD = $posProductRepository->createMockEntity($productD, new Product(), Defaults::SALES_CHANNEL);
-        $productStateE = $posProductRepository->createMockEntity($productE, new Product(), Defaults::SALES_CHANNEL);
+        $productStateA = $posProductRepository->createMockEntity($productA, $convertedGroupingA->getProduct(), TestDefaults::SALES_CHANNEL);
+        $productStateD = $posProductRepository->createMockEntity($productD, new Product(), TestDefaults::SALES_CHANNEL);
+        $productStateE = $posProductRepository->createMockEntity($productE, new Product(), TestDefaults::SALES_CHANNEL);
         $deletedProductF = new ProductEntity();
         $deletedProductF->setId(ConstantsForTesting::PRODUCT_F_ID);
         $deletedProductF->setVersionId(Uuid::randomHex());
-        $productStateF = $posProductRepository->createMockEntity($deletedProductF, new Product(), Defaults::SALES_CHANNEL);
+        $productStateF = $posProductRepository->createMockEntity($deletedProductF, new Product(), TestDefaults::SALES_CHANNEL);
         static::assertCount(4, $posProductRepository->getCollection());
 
-        $existingMedia = $posMediaRepository->createMockEntity($mediaA, Defaults::SALES_CHANNEL, 'lookupKey', self::MEDIA_UPLOADED_URL);
-        $removableMedia = $posMediaRepository->createMockEntity($mediaC, Defaults::SALES_CHANNEL);
+        $existingMedia = $posMediaRepository->createMockEntity($mediaA, TestDefaults::SALES_CHANNEL, 'lookupKey', self::MEDIA_UPLOADED_URL);
+        $removableMedia = $posMediaRepository->createMockEntity($mediaC, TestDefaults::SALES_CHANNEL);
 
         $productSyncManager->createMessages(
             $salesChannel,
             $context,
-            $runService->startRun(Defaults::SALES_CHANNEL, 'product', $context)
+            $runService->startRun(TestDefaults::SALES_CHANNEL, 'product', $context)
         );
 
         $messageBus->execute([
@@ -287,7 +287,7 @@ class CompleteProductTest extends TestCase
         $criteria = new Criteria();
         $criteria->setLimit(1);
 
-        /** @var EntityRepositoryInterface $taxRepository */
+        /** @var EntityRepository $taxRepository */
         $taxRepository = $this->getContainer()->get('tax.repository');
         $tax = $taxRepository->search($criteria, Context::createDefaultContext())->first();
 
@@ -315,7 +315,7 @@ class CompleteProductTest extends TestCase
         $criteria->addAssociation('translation');
         $criteria->setLimit(1);
 
-        /** @var EntityRepositoryInterface $categoryRepository */
+        /** @var EntityRepository $categoryRepository */
         $categoryRepository = $this->getContainer()->get('category.repository');
         $category = $categoryRepository->search($criteria, Context::createDefaultContext())->first();
 

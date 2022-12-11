@@ -8,8 +8,8 @@
 namespace Swag\PayPal\Test\PaymentsApi\Administration;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\PaymentsApi\Administration\PayPalPaymentController;
@@ -62,8 +62,8 @@ class PayPalPaymentControllerTest extends TestCase
         $context = Context::createDefaultContext();
         $context->addExtension(OrderRepositoryMock::NO_ORDER, new ArrayStruct());
 
-        $this->expectException(OrderNotFoundException::class);
-        $this->expectExceptionMessage('Order with id "testOrderId" not found.');
+        $this->expectException(ShopwareHttpException::class);
+        $this->expectExceptionMessageMatches('/Order with id \"?testOrderId\"? not found./');
         $this->createPaymentController()->paymentDetails('testOrderId', 'testPaymentId', $context)->getContent();
     }
 

@@ -28,7 +28,6 @@ use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\Command\ChangeSet;
@@ -38,7 +37,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\Event\StateMachineTransitionEvent;
-use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Shopware\Core\System\StateMachine\Loader\InitialStateIdLoader;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\MessageQueue\Handler\InventoryUpdateHandler;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
@@ -81,10 +81,10 @@ class StockSubscriberTest extends TestCase
     {
         $event = $this->createStateMachineTransitionEvent(Uuid::randomHex(), Context::createDefaultContext());
 
-        /** @var EntityRepositoryInterface|MockObject $orderLineItemRepo */
+        /** @var EntityRepository|MockObject $orderLineItemRepo */
         $orderLineItemRepo = $this->getMockBuilder(EntityRepository::class)->disableOriginalConstructor()->getMock();
         $orderLineItemRepo->expects(static::never())->method('search');
-        /** @var EntityRepositoryInterface $salesChannelRepository */
+        /** @var EntityRepository $salesChannelRepository */
         $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
 
         $stockSubscriber = new StockSubscriber(
@@ -198,9 +198,9 @@ class StockSubscriberTest extends TestCase
         $productC = $productRepository->createMockEntity('productC', 2, 0, ConstantsForTesting::PRODUCT_C_ID);
         $salesChannelProductRepository->addMockEntity($productC);
 
-        $inventoryRepository->createMockEntity($productA, Defaults::SALES_CHANNEL, 1);
-        $inventoryRepository->createMockEntity($productB, Defaults::SALES_CHANNEL, 1);
-        $inventoryRepository->createMockEntity($productC, Defaults::SALES_CHANNEL, 1);
+        $inventoryRepository->createMockEntity($productA, TestDefaults::SALES_CHANNEL, 1);
+        $inventoryRepository->createMockEntity($productB, TestDefaults::SALES_CHANNEL, 1);
+        $inventoryRepository->createMockEntity($productC, TestDefaults::SALES_CHANNEL, 1);
 
         $order = $this->createOrder($context);
         $lineItems = $order->getLineItems();
@@ -247,7 +247,7 @@ class StockSubscriberTest extends TestCase
         /** @var MessageBus|MockObject $messageBus */
         $messageBus = $this->getMockBuilder(MessageBus::class)->disableOriginalConstructor()->getMock();
         $messageBus->expects(static::never())->method('dispatch');
-        /** @var EntityRepositoryInterface $salesChannelRepository */
+        /** @var EntityRepository $salesChannelRepository */
         $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
 
         return new StockSubscriber(
@@ -323,11 +323,11 @@ class StockSubscriberTest extends TestCase
             'id' => Uuid::randomHex(),
             'price' => new CartPrice(10, 10, 10, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_NET),
             'shippingCosts' => new CalculatedPrice(10, 10, new CalculatedTaxCollection(), new TaxRuleCollection()),
-            'stateId' => $this->getContainer()->get(StateMachineRegistry::class)->getInitialState(OrderStates::STATE_MACHINE, $context)->getId(),
+            'stateId' => $this->getContainer()->get(InitialStateIdLoader::class)->get(OrderStates::STATE_MACHINE),
             'paymentMethodId' => $this->getValidPaymentMethodId(),
             'currencyId' => Defaults::CURRENCY,
             'currencyFactor' => 1,
-            'salesChannelId' => Defaults::SALES_CHANNEL,
+            'salesChannelId' => TestDefaults::SALES_CHANNEL,
             'orderDateTime' => '2019-04-01 08:36:43.267',
         ]);
 
@@ -376,7 +376,7 @@ class StockSubscriberTest extends TestCase
         return new CheckoutOrderPlacedEvent(
             $context,
             $order,
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
     }
 }

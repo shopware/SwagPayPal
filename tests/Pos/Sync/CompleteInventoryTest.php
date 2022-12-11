@@ -13,11 +13,11 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\MessageQueue\Handler\Sync\InventorySyncHandler;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
@@ -141,16 +141,16 @@ class CompleteInventoryTest extends TestCase
         $productG = $productRepository->createMockEntity('productG', 3, 3, ConstantsForTesting::PRODUCT_G_ID);
         $salesChannelProductRepository->addMockEntity($productG);
 
-        $inventoryRepository->createMockEntity($productA, Defaults::SALES_CHANNEL, 1);
-        $inventoryRepository->createMockEntity($productC, Defaults::SALES_CHANNEL, 1);
-        $inventoryRepository->createMockEntity($productD, Defaults::SALES_CHANNEL, 3);
-        $inventoryRepository->createMockEntity($productE, Defaults::SALES_CHANNEL, 4);
-        $inventoryRepository->createMockEntity($productG, Defaults::SALES_CHANNEL, 3);
+        $inventoryRepository->createMockEntity($productA, TestDefaults::SALES_CHANNEL, 1);
+        $inventoryRepository->createMockEntity($productC, TestDefaults::SALES_CHANNEL, 1);
+        $inventoryRepository->createMockEntity($productD, TestDefaults::SALES_CHANNEL, 3);
+        $inventoryRepository->createMockEntity($productE, TestDefaults::SALES_CHANNEL, 4);
+        $inventoryRepository->createMockEntity($productG, TestDefaults::SALES_CHANNEL, 3);
 
         $inventorySyncManager->createMessages(
             $salesChannel,
             $context,
-            $runService->startRun(Defaults::SALES_CHANNEL, 'inventory', $context)
+            $runService->startRun(TestDefaults::SALES_CHANNEL, 'inventory', $context)
         );
         $messageBus->execute([$inventorySyncHandler]);
 

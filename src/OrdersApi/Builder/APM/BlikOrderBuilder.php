@@ -7,12 +7,12 @@
 
 namespace Swag\PayPal\OrdersApi\Builder\APM;
 
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Blik;
+use Swag\PayPal\Util\Compatibility\Exception;
 
 class BlikOrderBuilder extends AbstractAPMOrderBuilder
 {
@@ -27,7 +27,7 @@ class BlikOrderBuilder extends AbstractAPMOrderBuilder
 
         $customer = $paymentTransaction->getOrder()->getOrderCustomer();
         if ($customer === null) {
-            throw new OrderNotFoundException($paymentTransaction->getOrder()->getId());
+            throw Exception::orderNotFound($paymentTransaction->getOrder()->getId());
         }
         $sourceElement->setEmail($customer->getEmail());
 

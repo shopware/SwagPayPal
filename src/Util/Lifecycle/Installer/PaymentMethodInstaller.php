@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Util\Lifecycle\Installer;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Write\Validation\RestrictDeleteViolationException;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -18,9 +18,9 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
 class PaymentMethodInstaller
 {
-    private EntityRepositoryInterface $paymentMethodRepository;
+    private EntityRepository $paymentMethodRepository;
 
-    private EntityRepositoryInterface $ruleRepository;
+    private EntityRepository $ruleRepository;
 
     private PluginIdProvider $pluginIdProvider;
 
@@ -29,8 +29,8 @@ class PaymentMethodInstaller
     private MediaInstaller $mediaInstaller;
 
     public function __construct(
-        EntityRepositoryInterface $paymentMethodRepository,
-        EntityRepositoryInterface $ruleRepository,
+        EntityRepository $paymentMethodRepository,
+        EntityRepository $ruleRepository,
         PluginIdProvider $pluginIdProvider,
         PaymentMethodDataRegistry $methodDataRegistry,
         MediaInstaller $mediaInstaller

@@ -7,7 +7,7 @@
 
 namespace Swag\PayPal\Checkout\PUI\SalesChannel;
 
-use Shopware\Core\Checkout\Cart\Exception\OrderTransactionNotFoundException;
+use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 abstract class AbstractPUIPaymentInstructionsRoute
@@ -15,7 +15,7 @@ abstract class AbstractPUIPaymentInstructionsRoute
     abstract public function getDecorated(): AbstractPUIPaymentInstructionsRoute;
 
     /**
-     * @throws OrderTransactionNotFoundException
+     * @throws ShopwareHttpException
      */
     abstract public function getPaymentInstructions(string $transactionId, SalesChannelContext $salesChannelContext): PUIPaymentInstructionsResponse;
 }

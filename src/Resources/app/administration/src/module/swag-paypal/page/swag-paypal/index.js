@@ -63,7 +63,7 @@ Component.register('swag-paypal', {
         },
 
         /**
-         * @deprecated tag:v6.0.0 - Will be removed without replacement.
+         * @deprecated tag:v7.0.0 - Will be removed without replacement.
          */
         showPlusCard() {
             if (hasOwnProperty(this.config, 'SwagPayPal.settings.merchantLocation') &&

@@ -1,12 +1,12 @@
-{# @deprecated tag:v6.0.0 - Will be removed without replacement #}
+{# @deprecated tag:v7.0.0 - Will be removed without replacement #}
 {% block swag_paypal_content_card_channel_config_plus %}
     <sw-card :title="$tc('swag-paypal.settingForm.plus.cardTitle')">
 
-        {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
+        {# @deprecated tag:v7.0.0 - Will be removed without replacement #}
         {% block swag_paypal_content_card_channel_config_plus_settings %}
             <div v-if="actualConfigData" class="swag-paypal-settings-plus-fields">
 
-                {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
+                {# @deprecated tag:v7.0.0 - Will be removed without replacement #}
                 {% block swag_paypal_content_card_channel_config_plus_settings_warning %}
                 <template v-if="isPayPalPLUSActive">
                     <sw-alert
@@ -25,13 +25,13 @@
                 </template>
                 {% endblock %}
 
-                {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
+                {# @deprecated tag:v7.0.0 - Will be removed without replacement #}
                 {% block swag_paypal_content_card_channel_config_plus_settings_onboarding %}
                     <p v-bind:class="{ 'swag-paypal-payal-plus-disabled': isPayPalPLUSInActive}"
                        v-html="$tc('swag-paypal.settingForm.plus.introduction')"></p>
                 {% endblock %}
 
-                {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
+                {# @deprecated tag:v7.0.0 - Will be removed without replacement #}
                 {% block swag_paypal_content_card_channel_config_plus_settings_checkout_enabled %}
                     <sw-inherit-wrapper
                         v-model="actualConfigData['SwagPayPal.settings.plusCheckoutEnabled']"
@@ -47,7 +47,7 @@
                                              @change="props.updateCurrentValue">
                             </sw-switch-field>
 
-                            {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
+                            {# @deprecated tag:v7.0.0 - Will be removed without replacement #}
                             {% block swag_paypal_content_card_channel_config_behaviour_settings_intent_hint %}
                                 <swag-paypal-settings-hint :hintText="$tc('swag-paypal.settingForm.plus.hint')">
                                 </swag-paypal-settings-hint>

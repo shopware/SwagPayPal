@@ -9,7 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle\Installer;
 
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -19,12 +19,12 @@ use Swag\PayPal\Setting\Settings;
 
 class SettingsInstaller
 {
-    private EntityRepositoryInterface $systemConfigRepository;
+    private EntityRepository $systemConfigRepository;
 
     private SystemConfigService $systemConfig;
 
     public function __construct(
-        EntityRepositoryInterface $systemConfigRepository,
+        EntityRepository $systemConfigRepository,
         SystemConfigService $systemConfig
     ) {
         $this->systemConfigRepository = $systemConfigRepository;

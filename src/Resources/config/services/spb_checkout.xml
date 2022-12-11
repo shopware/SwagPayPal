@@ -5,16 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="Swag\PayPal\Checkout\SPBCheckout\SalesChannel\SPBCreateOrderRoute" public="true">
-            <deprecated package="swag/paypal" version="6.0.0">tag:v6.0.0 - %service_id% will be removed, use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute instead</deprecated>
-            <argument type="service" id="Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute"/>
-        </service>
-
-        <service id="Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutSubscriber">
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
-            <tag name="kernel.event_subscriber"/>
-        </service>
-
         <service id="Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataService">
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>

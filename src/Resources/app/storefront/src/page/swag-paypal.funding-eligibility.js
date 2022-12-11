@@ -1,4 +1,4 @@
-import StoreApiClient from 'src/service/store-api-client.service';
+import HttpClient from 'src/service/http-client.service';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
@@ -71,7 +71,7 @@ export default class SwagPayPalFundingEligibility extends SwagPaypalAbstractButt
     };
 
     init() {
-        this._client = new StoreApiClient();
+        this._client = new HttpClient();
 
         this.createScript((paypal) => {
             this.checkFunding(paypal);

@@ -10,17 +10,15 @@ namespace Swag\PayPal\Checkout\SalesChannel;
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\TokenResponse;
@@ -29,11 +27,12 @@ use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
+use Swag\PayPal\Util\Compatibility\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class CreateOrderRoute extends AbstractCreateOrderRoute
 {
@@ -45,7 +44,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
 
     private CartService $cartService;
 
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $orderRepository;
 
     private OrderResource $orderResource;
 
@@ -53,7 +52,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
 
     public function __construct(
         CartService $cartService,
-        EntityRepositoryInterface $orderRepository,
+        EntityRepository $orderRepository,
         OrderFromOrderBuilder $orderFromOrderBuilder,
         OrderFromCartBuilder $orderFromCartBuilder,
         OrderResource $orderResource,
@@ -116,7 +115,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
             $this->logger->debug('Started', ['request' => $request->request->all()]);
             $customer = $salesChannelContext->getCustomer();
             if ($customer === null) {
-                throw new CustomerNotLoggedInException();
+                throw Exception::customerNotLoggedIn();
             }
 
             $orderId = $request->request->get('orderId');
@@ -157,7 +156,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         $order = $this->orderRepository->search($criteria, $salesChannelContext->getContext())->first();
 
         if ($order === null) {
-            throw new OrderNotFoundException($orderId);
+            throw Exception::orderNotFound($orderId);
         }
 
         $transactionCollection = $order->getTransactions();

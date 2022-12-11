@@ -9,8 +9,6 @@ namespace Swag\PayPal\Administration;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Routing\Annotation\Acl;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -20,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class PayPalPaymentMethodController extends AbstractController
 {
@@ -53,8 +51,7 @@ class PayPalPaymentMethodController extends AbstractController
      *     )
      * )
      *
-     * @Route("/api/_action/paypal/saleschannel-default", name="api.action.paypal.saleschannel_default", methods={"POST"})
-     * @Acl({"swag_paypal.editor"})
+     * @Route("/api/_action/paypal/saleschannel-default", name="api.action.paypal.saleschannel_default", methods={"POST"}, defaults={"_acl": {"swag_paypal.editor"}})
      */
     public function setPayPalPaymentMethodAsSalesChannelDefault(Request $request, Context $context): Response
     {

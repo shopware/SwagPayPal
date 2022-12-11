@@ -12,11 +12,14 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandle
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\PaymentHandlerRegistry;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\SynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
+use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
 use Shopware\Core\Content\Media\File\FileSaver;
 use Shopware\Core\Content\Media\MediaDefinition;
+use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
@@ -25,27 +28,26 @@ use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
+use Swag\PayPal\Util\Compatibility\EntityRepositoryDecorator;
 use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 class PaymentMethodInstallerTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
     use KernelTestBehaviour;
 
-    private EntityRepositoryInterface $ruleRepository;
+    private EntityRepository $ruleRepository;
 
-    private EntityRepositoryInterface $paymentMethodRepository;
+    private EntityRepository $paymentMethodRepository;
 
     protected function setUp(): void
     {
-        /** @var EntityRepositoryInterface $ruleRepository */
-        $ruleRepository = $this->getContainer()->get('rule.repository');
-        $this->ruleRepository = $ruleRepository;
-        /** @var EntityRepositoryInterface $paymentMethodRepository */
-        $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
-        $this->paymentMethodRepository = $paymentMethodRepository;
+        $this->ruleRepository = $this->getRepository(RuleDefinition::ENTITY_NAME);
+        $this->paymentMethodRepository = $this->getRepository(PaymentMethodDefinition::ENTITY_NAME);
     }
 
     /**
@@ -128,11 +130,6 @@ class PaymentMethodInstallerTest extends TestCase
             return $this->getContainer()->get(PaymentMethodInstaller::class);
         }
 
-        /** @var EntityRepositoryInterface $mediaRepository */
-        $mediaRepository = $this->getContainer()->get(MediaDefinition::ENTITY_NAME . '.repository');
-        /** @var EntityRepositoryInterface $mediaFolderRepository */
-        $mediaFolderRepository = $this->getContainer()->get(MediaFolderDefinition::ENTITY_NAME . '.repository');
-
         return new PaymentMethodInstaller(
             $this->paymentMethodRepository,
             $this->ruleRepository,
@@ -142,11 +139,26 @@ class PaymentMethodInstallerTest extends TestCase
                 $this->getContainer(),
             ),
             new MediaInstaller(
-                $mediaRepository,
-                $mediaFolderRepository,
+                $this->getRepository(MediaDefinition::ENTITY_NAME),
+                $this->getRepository(MediaFolderDefinition::ENTITY_NAME),
                 $this->paymentMethodRepository,
                 $this->getContainer()->get(FileSaver::class),
             ),
         );
+    }
+
+    private function getRepository(string $entityName): EntityRepository
+    {
+        $repository = $this->getContainer()->get(\sprintf('%s.repository', $entityName), ContainerInterface::NULL_ON_INVALID_REFERENCE);
+
+        if (\interface_exists(EntityRepositoryInterface::class) && $repository instanceof EntityRepositoryInterface) {
+            return new EntityRepositoryDecorator($repository);
+        }
+
+        if (!$repository instanceof EntityRepository) {
+            throw new ServiceNotFoundException(\sprintf('%s.repository', $entityName));
+        }
+
+        return $repository;
     }
 }

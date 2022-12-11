@@ -1,0 +1,7 @@
+// these are values for shopware 6.4 compatibility
+@if not variable_exists('font-size-m') {
+    $font-size-xs: 12px;
+    $font-size-s: 14px;
+    $font-size-m: 16px;
+    $font-size-l: 18px;
+}

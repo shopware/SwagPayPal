@@ -29,26 +29,6 @@ Component.register('swag-paypal-checkout-method', {
 
     data() {
         return {
-            /**
-             * @deprecated tag:v6.0.0 - will be removed, use media instead
-             */
-            iconMap: {
-                handler_swag_paypalpaymenthandler: 'paypal-payment-method-paypal',
-                handler_swag_acdchandler: 'paypal-payment-method-credit-and-debit-card',
-                handler_swag_puihandler: 'paypal-payment-method-pay-upon-invoice',
-                handler_swag_bancontactapmhandler: 'paypal-payment-method-bancontact',
-                handler_swag_blikapmhandler: 'paypal-payment-method-blik',
-                handler_swag_epsapmhandler: 'paypal-payment-method-eps',
-                handler_swag_giropayapmhandler: 'paypal-payment-method-giropay',
-                handler_swag_idealapmhandler: 'paypal-payment-method-iDEAL',
-                handler_swag_multibancoapmhandler: 'paypal-payment-method-multibanco',
-                handler_swag_mybankapmhandler: 'paypal-payment-method-mybank',
-                handler_swag_oxxoapmhandler: 'paypal-payment-method-oxxo',
-                handler_swag_p24apmhandler: 'paypal-payment-method-p24',
-                handler_swag_sofortapmhandler: 'paypal-payment-method-sofort',
-                handler_swag_trustlyapmhandler: 'paypal-payment-method-trustly',
-                handler_swag_sepahandler: 'paypal-payment-method-sepa',
-            },
             merchantIntegrations: {},
         };
     },
@@ -56,13 +36,6 @@ Component.register('swag-paypal-checkout-method', {
     computed: {
         paymentMethodRepository() {
             return this.repositoryFactory.create('payment_method');
-        },
-
-        /**
-         * @deprecated tag:v6.0.0 - will be removed, use media instead
-         */
-        icon() {
-            return this.iconMap[this.paymentMethod.formattedHandlerIdentifier];
         },
 
         editLink() {

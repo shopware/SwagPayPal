@@ -30,10 +30,6 @@
             </div>
         {% endblock %}
 
-        {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
-        {% block swag_paypal_ecs_spb_data_input %}
-        {% endblock %}
-
     {% elseif acdcFieldData and acdcFieldData.paymentMethodId is same as(context.paymentMethod.id) %}
 
         {% block swag_paypal_ecs_spb_data_acdc_fields %}

@@ -17,13 +17,14 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Defaults;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Test\TestDefaults;
 use Shopware\Storefront\Event\SwitchBuyBoxVariantEvent;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
@@ -539,7 +540,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
             $this->getContainer()->get(PaymentMethodUtil::class),
             new ExcludedProductValidator(
                 $settings,
-                $this->createMock(SalesChannelRepositoryInterface::class)
+                $this->createMock(SalesChannelRepository::class)
             ),
             new NullLogger()
         );
@@ -549,11 +550,11 @@ class ExpressCheckoutSubscriberTest extends TestCase
     {
         $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
 
         if ($productId) {
-            /** @var EntityRepositoryInterface $productRepo */
+            /** @var EntityRepository $productRepo */
             $productRepo = $this->getContainer()->get('product.repository');
             $productRepo->create([
                 [
@@ -577,7 +578,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
                     'active' => true,
                     'visibilities' => [
                         [
-                            'salesChannelId' => Defaults::SALES_CHANNEL,
+                            'salesChannelId' => TestDefaults::SALES_CHANNEL,
                             'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
                         ],
                     ],
@@ -590,7 +591,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
             $this->cartService->add($cart, $lineItem, $salesChannelContext);
         }
 
-        /** @var EntityRepositoryInterface $paymentMethodRepo */
+        /** @var EntityRepository $paymentMethodRepo */
         $paymentMethodRepo = $this->getContainer()->get('payment_method.repository');
         $paymentMethodId = $this->getContainer()->get(PaymentMethodUtil::class)->getPayPalPaymentMethodId($salesChannelContext->getContext());
         static::assertNotNull($paymentMethodId);
@@ -600,7 +601,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
             'active' => $paymentMethodActive,
         ]], $salesChannelContext->getContext());
 
-        /** @var EntityRepositoryInterface $salesChannelRepo */
+        /** @var EntityRepository $salesChannelRepo */
         $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
 
         $paymentMethodIds = \array_unique(\array_merge(
@@ -609,7 +610,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
         ));
 
         $salesChannelRepo->update([[
-            'id' => Defaults::SALES_CHANNEL,
+            'id' => TestDefaults::SALES_CHANNEL,
             'paymentMethods' => \array_map(static function (string $id) {
                 return ['id' => $id];
             }, $paymentMethodIds),
@@ -632,7 +633,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
     {
         $salesChannelContext = $this->createSalesChannelContext(Uuid::randomHex(), $paymentMethodActive);
 
-        /** @var SalesChannelRepositoryInterface $productRepo */
+        /** @var SalesChannelRepository $productRepo */
         $productRepo = $this->getContainer()->get('sales_channel.product.repository');
         $product = $productRepo->search(new Criteria(), $salesChannelContext)->first();
 
@@ -649,7 +650,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
     {
         $salesChannelContext = $this->createSalesChannelContext(Uuid::randomHex(), $paymentMethodActive);
 
-        /** @var SalesChannelRepositoryInterface $productRepo */
+        /** @var SalesChannelRepository $productRepo */
         $productRepo = $this->getContainer()->get('sales_channel.product.repository');
         $productId = $productRepo->searchIds(new Criteria(), $salesChannelContext)->firstId();
 

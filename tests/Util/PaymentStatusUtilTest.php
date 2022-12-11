@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\Util;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -16,13 +15,14 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
-use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Shopware\Core\System\StateMachine\Loader\InitialStateIdLoader;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
@@ -42,22 +42,22 @@ class PaymentStatusUtilTest extends TestCase
 
     private PaymentStatusUtil $paymentStatusUtil;
 
-    private StateMachineRegistry $stateMachineRegistry;
+    private InitialStateIdLoader $initialStateIdLoader;
 
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $orderRepository;
 
-    private EntityRepositoryInterface $orderTransactionRepository;
+    private EntityRepository $orderTransactionRepository;
 
     protected function setUp(): void
     {
         $container = $this->getContainer();
-        $this->stateMachineRegistry = $container->get(StateMachineRegistry::class);
+        $this->initialStateIdLoader = $this->getContainer()->get(InitialStateIdLoader::class);
 
-        /** @var EntityRepositoryInterface $orderRepository */
+        /** @var EntityRepository $orderRepository */
         $orderRepository = $container->get('order.repository');
         $this->orderRepository = $orderRepository;
 
-        /** @var EntityRepositoryInterface $orderTransactionRepository */
+        /** @var EntityRepository $orderTransactionRepository */
         $orderTransactionRepository = $container->get('order_transaction.repository');
         $this->orderTransactionRepository = $orderTransactionRepository;
 
@@ -272,7 +272,7 @@ class PaymentStatusUtilTest extends TestCase
 
     public function testApplyVoidStateToOrderWithNoOrder(): void
     {
-        $this->expectException(OrderNotFoundException::class);
+        $this->expectException(ShopwareHttpException::class);
         $this->paymentStatusUtil->applyVoidStateToOrder(Uuid::randomHex(), Context::createDefaultContext());
     }
 
@@ -304,10 +304,7 @@ class PaymentStatusUtilTest extends TestCase
                         'calculatedTaxes' => [],
                         'taxRules' => [],
                     ],
-                    'stateId' => $this->stateMachineRegistry->getInitialState(
-                        OrderTransactionStates::STATE_MACHINE,
-                        $context
-                    )->getId(),
+                    'stateId' => $this->initialStateIdLoader->get(OrderTransactionStates::STATE_MACHINE),
                 ],
             ];
             $secondTransactionData = [
@@ -322,10 +319,7 @@ class PaymentStatusUtilTest extends TestCase
                         'calculatedTaxes' => [],
                         'taxRules' => [],
                     ],
-                    'stateId' => $this->stateMachineRegistry->getInitialState(
-                        OrderTransactionStates::STATE_MACHINE,
-                        $context
-                    )->getId(),
+                    'stateId' => $this->initialStateIdLoader->get(OrderTransactionStates::STATE_MACHINE),
                 ],
             ];
             // Do not create simultaneously, so they have slightly different created dates

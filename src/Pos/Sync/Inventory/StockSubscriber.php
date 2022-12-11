@@ -16,7 +16,7 @@ use Shopware\Core\Checkout\Order\OrderEvents;
 use Shopware\Core\Checkout\Order\OrderStates;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -36,16 +36,16 @@ class StockSubscriber implements EventSubscriberInterface
      */
     private const DELAY = 10000;
 
-    private EntityRepositoryInterface $orderLineItemRepository;
+    private EntityRepository $orderLineItemRepository;
 
     private MessageBusInterface $messageBus;
 
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
     public function __construct(
-        EntityRepositoryInterface $orderLineItemRepository,
+        EntityRepository $orderLineItemRepository,
         MessageBusInterface $messageBus,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepository $salesChannelRepository
     ) {
         $this->orderLineItemRepository = $orderLineItemRepository;
         $this->messageBus = $messageBus;

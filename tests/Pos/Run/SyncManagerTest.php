@@ -11,7 +11,7 @@ use PHPUnit\Framework\Constraint\IsType;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -132,7 +132,7 @@ class SyncManagerTest extends TestCase
 
     private function assertRunStatus(string $status, int $count, string $runId): void
     {
-        /** @var EntityRepositoryInterface $runRepository */
+        /** @var EntityRepository $runRepository */
         $runRepository = $this->getContainer()->get('swag_paypal_pos_sales_channel_run.repository');
 
         /** @var PosSalesChannelRunEntity|null $run */

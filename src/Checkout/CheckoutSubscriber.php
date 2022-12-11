@@ -11,7 +11,6 @@ use Psr\Log\LoggerInterface;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
 use Shopware\Storefront\Page\PageLoadedEvent;
-use Swag\PayPal\Checkout\Cart\Service\CartPriceService;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -21,36 +20,19 @@ class CheckoutSubscriber implements EventSubscriberInterface
 
     private LoggerInterface $logger;
 
-    private CartPriceService $cartPriceService;
-
     public function __construct(
         PaymentMethodDataRegistry $methodDataRegistry,
-        LoggerInterface $logger,
-        CartPriceService $cartPriceService
+        LoggerInterface $logger
     ) {
         $this->methodDataRegistry = $methodDataRegistry;
         $this->logger = $logger;
-        $this->cartPriceService = $cartPriceService;
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            //CheckoutConfirmPageLoadedEvent::class => ['onConfirmPageLoaded', 1],
             AccountEditOrderPageLoadedEvent::class => ['onEditOrderPageLoaded', 1],
         ];
-    }
-
-    /**
-     * @deprecated tag:v6.0.0 - will be removed, functionality has been moved to Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute
-     */
-    public function onConfirmPageLoaded(CheckoutConfirmPageLoadedEvent $event): void
-    {
-        if (!$this->cartPriceService->isZeroValueCart($event->getPage()->getCart())) {
-            return;
-        }
-
-        $this->removePayPalPaymentMethodsFromPage($event);
     }
 
     public function onEditOrderPageLoaded(AccountEditOrderPageLoadedEvent $event): void

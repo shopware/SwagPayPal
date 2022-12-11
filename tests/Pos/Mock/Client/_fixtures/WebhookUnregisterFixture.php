@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Test\Pos\Mock\Client\_fixtures;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 
 class WebhookUnregisterFixture
@@ -17,7 +17,7 @@ class WebhookUnregisterFixture
 
     public static function delete(string $resourceUri): ?array
     {
-        $salesChannelId = (new UuidConverter())->convertUuidToV1(Defaults::SALES_CHANNEL);
+        $salesChannelId = (new UuidConverter())->convertUuidToV1(TestDefaults::SALES_CHANNEL);
 
         TestCase::assertStringContainsString($salesChannelId, $resourceUri);
 

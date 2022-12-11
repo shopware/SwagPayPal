@@ -11,17 +11,17 @@ use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\DefaultPayment;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
-use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Test\TestDefaults;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -37,7 +37,7 @@ trait SalesChannelContextTrait
         bool $withOtherDefaultPayment = false,
         bool $withCartLineItems = false
     ): SalesChannelContext {
-        /** @var EntityRepositoryInterface $languageRepo */
+        /** @var EntityRepository $languageRepo */
         $languageRepo = $container->get('language.repository');
         $criteria = new Criteria();
         $criteria->addAssociation('language.locale');
@@ -59,32 +59,15 @@ trait SalesChannelContextTrait
 
         $salesChannelContext = $container->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
-            Defaults::SALES_CHANNEL,
+            TestDefaults::SALES_CHANNEL,
             $options
         );
 
         if ($withOtherDefaultPayment) {
-            $paymentMethod = new PaymentMethodEntity();
+            $paymentMethod = $salesChannelContext->getPaymentMethod();
+            $paymentCollection->add(clone $paymentMethod);
             $paymentMethod->setId('test-id');
             $paymentMethod->setHandlerIdentifier(DefaultPayment::class);
-            $salesChannelContext = new SalesChannelContext(
-                $salesChannelContext->getContext(),
-                $salesChannelContext->getToken(),
-                null,
-                $salesChannelContext->getSalesChannel(),
-                $salesChannelContext->getCurrency(),
-                $salesChannelContext->getCurrentCustomerGroup(),
-                $salesChannelContext->getFallbackCustomerGroup(),
-                $salesChannelContext->getTaxRules(),
-                $paymentMethod,
-                $salesChannelContext->getShippingMethod(),
-                $salesChannelContext->getShippingLocation(),
-                $salesChannelContext->getCustomer(),
-                $salesChannelContext->getItemRounding(),
-                $salesChannelContext->getTotalRounding(),
-                $salesChannelContext->getRuleIds()
-            );
-            $paymentCollection->add($paymentMethod);
         }
 
         if ($withCartLineItems) {
@@ -119,8 +102,8 @@ trait SalesChannelContextTrait
             'email' => Uuid::randomHex() . '@example.com',
             'password' => 'shopware',
             'defaultPaymentMethodId' => $this->getValidPaymentMethodId(),
-            'groupId' => Defaults::FALLBACK_CUSTOMER_GROUP,
-            'salesChannelId' => Defaults::SALES_CHANNEL,
+            'groupId' => TestDefaults::FALLBACK_CUSTOMER_GROUP,
+            'salesChannelId' => TestDefaults::SALES_CHANNEL,
             'defaultBillingAddressId' => $addressId,
             'defaultShippingAddressId' => $addressId,
             'addresses' => [
@@ -139,7 +122,7 @@ trait SalesChannelContextTrait
             ],
         ];
 
-        /** @var EntityRepositoryInterface $customerRepo */
+        /** @var EntityRepository $customerRepo */
         $customerRepo = $this->getContainer()->get('customer.repository');
         $customerRepo->upsert([$customer], Context::createDefaultContext());
 
@@ -148,7 +131,7 @@ trait SalesChannelContextTrait
 
     private function createProduct(string $productId, Context $context): void
     {
-        /** @var EntityRepositoryInterface $productRepo */
+        /** @var EntityRepository $productRepo */
         $productRepo = $this->getContainer()->get('product.repository');
 
         $productRepo->create([
@@ -178,7 +161,7 @@ trait SalesChannelContextTrait
                 'active' => true,
                 'visibilities' => [
                     [
-                        'salesChannelId' => Defaults::SALES_CHANNEL,
+                        'salesChannelId' => TestDefaults::SALES_CHANNEL,
                         'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
                     ],
                 ],

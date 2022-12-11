@@ -9,7 +9,7 @@ namespace Swag\PayPal\Pos\Webhook\Handler;
 
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
@@ -39,7 +39,7 @@ class InventoryChangedHandler extends AbstractWebhookHandler
 
     private InventoryContextFactory $inventoryContextFactory;
 
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
 
     private UuidConverter $uuidConverter;
 
@@ -50,7 +50,7 @@ class InventoryChangedHandler extends AbstractWebhookHandler
         LocalUpdater $localUpdater,
         InventorySyncer $inventorySyncer,
         InventoryContextFactory $inventoryContextFactory,
-        EntityRepositoryInterface $productRepository,
+        EntityRepository $productRepository,
         UuidConverter $uuidConverter
     ) {
         $this->apiKeyDecoder = $apiKeyDecoder;

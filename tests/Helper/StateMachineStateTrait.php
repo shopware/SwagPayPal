@@ -9,7 +9,7 @@ namespace Swag\PayPal\Test\Helper;
 
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
@@ -21,7 +21,7 @@ trait StateMachineStateTrait
 {
     protected function getOrderTransactionStateIdByTechnicalName(string $technicalName, ContainerInterface $container, Context $context): ?string
     {
-        /** @var EntityRepositoryInterface $stateMachineStateRepo */
+        /** @var EntityRepository $stateMachineStateRepo */
         $stateMachineStateRepo = $container->get('state_machine_state.repository');
         $orderTransactionStateMachineId = $this->getOrderTransactionStateMachineId($container, $context);
         if (!$orderTransactionStateMachineId) {
@@ -47,7 +47,7 @@ trait StateMachineStateTrait
 
     private function getOrderTransactionStateMachineId(ContainerInterface $container, Context $context): ?string
     {
-        /** @var EntityRepositoryInterface $stateMachineRepo */
+        /** @var EntityRepository $stateMachineRepo */
         $stateMachineRepo = $container->get('state_machine.repository');
         $criteria = new Criteria();
         $criteria->addFilter(

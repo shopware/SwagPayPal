@@ -9,7 +9,6 @@ namespace Swag\PayPal\Test\Webhook\Registration;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityWriteResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityDeletedEvent;
@@ -18,6 +17,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelEvents;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
@@ -56,26 +56,26 @@ class WebhookSubscriberTest extends TestCase
 
     public function testRemoveWebhookWithInheritedConfiguration(): void
     {
-        $this->createWebhookSubscriber(['' => self::WEBHOOK_ID, Defaults::SALES_CHANNEL => null])
+        $this->createWebhookSubscriber(['' => self::WEBHOOK_ID, TestDefaults::SALES_CHANNEL => null])
              ->removeSalesChannelWebhookConfiguration($this->createEvent());
 
-        static::assertSame(self::WEBHOOK_ID, $this->systemConfigService->getString(Settings::WEBHOOK_ID, Defaults::SALES_CHANNEL));
+        static::assertSame(self::WEBHOOK_ID, $this->systemConfigService->getString(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
     }
 
     public function testRemoveWebhookWithOwnConfiguration(): void
     {
-        $this->createWebhookSubscriber(['' => null, Defaults::SALES_CHANNEL => self::WEBHOOK_ID])
+        $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => self::WEBHOOK_ID])
              ->removeSalesChannelWebhookConfiguration($this->createEvent());
 
-        static::assertEmpty($this->systemConfigService->getString(Settings::WEBHOOK_ID, Defaults::SALES_CHANNEL));
+        static::assertEmpty($this->systemConfigService->getString(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
     }
 
     public function testRemoveWebhookWithNoConfiguration(): void
     {
-        $this->createWebhookSubscriber(['' => null, Defaults::SALES_CHANNEL => null])
+        $this->createWebhookSubscriber(['' => null, TestDefaults::SALES_CHANNEL => null])
              ->removeSalesChannelWebhookConfiguration($this->createEvent());
 
-        static::assertEmpty($this->systemConfigService->getString(Settings::WEBHOOK_ID, Defaults::SALES_CHANNEL));
+        static::assertEmpty($this->systemConfigService->getString(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
     }
 
     public function testSubscribedEvents(): void
@@ -114,13 +114,13 @@ class WebhookSubscriberTest extends TestCase
     private function createEvent(): EntityDeletedEvent
     {
         $writeResult = new EntityWriteResult(
-            Defaults::SALES_CHANNEL,
-            ['id' => Defaults::SALES_CHANNEL],
+            TestDefaults::SALES_CHANNEL,
+            ['id' => TestDefaults::SALES_CHANNEL],
             SalesChannelDefinition::ENTITY_NAME,
             EntityWriteResult::OPERATION_DELETE,
             new EntityExistence(
                 SalesChannelDefinition::ENTITY_NAME,
-                ['id' => Defaults::SALES_CHANNEL],
+                ['id' => TestDefaults::SALES_CHANNEL],
                 true,
                 false,
                 false,

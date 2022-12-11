@@ -15,7 +15,7 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -23,6 +23,7 @@ use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Exception\PosTokenException;
 use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
@@ -186,7 +187,7 @@ class SettingsControllerTest extends TestCase
             $this->salesChannelProductRepository->addMockEntity($product);
         }
 
-        $this->salesChannelRepository->getMockEntityWithNoTypeId()->setId(Defaults::SALES_CHANNEL);
+        $this->salesChannelRepository->getMockEntityWithNoTypeId()->setId(TestDefaults::SALES_CHANNEL);
         $this->salesChannelRepository->addMockEntity($this->salesChannelRepository->getMockEntityWithNoTypeId());
 
         $request = new Request([
@@ -223,23 +224,23 @@ class SettingsControllerTest extends TestCase
 
     private function getSettingsController(bool $withSalesChannels = true): SettingsController
     {
-        /** @var EntityRepositoryInterface $countryRepository */
+        /** @var EntityRepository $countryRepository */
         $countryRepository = $this->getContainer()->get('country.repository');
-        /** @var EntityRepositoryInterface $currencyRepository */
+        /** @var EntityRepository $currencyRepository */
         $currencyRepository = $this->getContainer()->get('currency.repository');
-        /** @var EntityRepositoryInterface $languageRepository */
+        /** @var EntityRepository $languageRepository */
         $languageRepository = $this->getContainer()->get('language.repository');
-        /** @var EntityRepositoryInterface $customerGroupRepository */
+        /** @var EntityRepository $customerGroupRepository */
         $customerGroupRepository = $this->getContainer()->get('customer_group.repository');
-        /** @var EntityRepositoryInterface $categoryRepository */
+        /** @var EntityRepository $categoryRepository */
         $categoryRepository = $this->getContainer()->get('category.repository');
-        /** @var EntityRepositoryInterface $shippingMethodRepository */
+        /** @var EntityRepository $shippingMethodRepository */
         $shippingMethodRepository = $this->getContainer()->get('shipping_method.repository');
-        /** @var EntityRepositoryInterface $paymentMethodRepository */
+        /** @var EntityRepository $paymentMethodRepository */
         $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
-        /** @var EntityRepositoryInterface $deliveryTimeRepository */
+        /** @var EntityRepository $deliveryTimeRepository */
         $deliveryTimeRepository = $this->getContainer()->get('delivery_time.repository');
-        /** @var EntityRepositoryInterface $ruleRepository */
+        /** @var EntityRepository $ruleRepository */
         $ruleRepository = $this->getContainer()->get('rule.repository');
 
         $this->productVisibilityRepository = new ProductVisibilityRepoMock();
@@ -307,35 +308,35 @@ class SettingsControllerTest extends TestCase
         $countryCriteria = new Criteria();
         $countryCriteria->addFilter(new EqualsFilter('iso', 'DE'));
         $countryCriteria->setLimit(1);
-        /** @var EntityRepositoryInterface $countryRepository */
+        /** @var EntityRepository $countryRepository */
         $countryRepository = $this->getContainer()->get('country.repository');
 
         $languageCriteria = new Criteria();
         $languageCriteria->addFilter(new EqualsFilter('name', 'Deutsch'));
         $languageCriteria->setLimit(1);
-        /** @var EntityRepositoryInterface $languageRepository */
+        /** @var EntityRepository $languageRepository */
         $languageRepository = $this->getContainer()->get('language.repository');
 
         $customerGroupCriteria = new Criteria();
         $customerGroupCriteria->addFilter(new EqualsFilter('displayGross', true));
         $customerGroupCriteria->addSorting(new FieldSorting('createdAt'));
         $customerGroupCriteria->setLimit(1);
-        /** @var EntityRepositoryInterface $customerGroupRepository */
+        /** @var EntityRepository $customerGroupRepository */
         $customerGroupRepository = $this->getContainer()->get('customer_group.repository');
 
         $categoryCriteria = new Criteria();
         $categoryCriteria->addFilter(new EqualsFilter('parentId', null));
         $categoryCriteria->addSorting(new FieldSorting('createdAt'));
         $categoryCriteria->setLimit(1);
-        /** @var EntityRepositoryInterface $categoryRepository */
+        /** @var EntityRepository $categoryRepository */
         $categoryRepository = $this->getContainer()->get('category.repository');
 
         $shippingMethodCriteria = new Criteria([InformationDefaultService::POS_SHIPPING_METHOD_ID]);
-        /** @var EntityRepositoryInterface $shippingMethodRepository */
+        /** @var EntityRepository $shippingMethodRepository */
         $shippingMethodRepository = $this->getContainer()->get('shipping_method.repository');
 
         $paymentMethodCriteria = new Criteria([InformationDefaultService::POS_PAYMENT_METHOD_ID]);
-        /** @var EntityRepositoryInterface $paymentMethodRepository */
+        /** @var EntityRepository $paymentMethodRepository */
         $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
 
         $expected = new AdditionalInformation();

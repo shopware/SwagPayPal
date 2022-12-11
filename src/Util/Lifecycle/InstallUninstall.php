@@ -14,11 +14,6 @@ use Swag\PayPal\Util\Lifecycle\Installer\SettingsInstaller;
 
 class InstallUninstall
 {
-    /**
-     * @deprecated tag:v6.0.0 - will be removed
-     */
-    public const PAYPAL_PUI_AVAILABILITY_RULE_NAME = 'PayPalPuiAvailabilityRule';
-
     private PaymentMethodInstaller $paymentMethodInstaller;
 
     private SettingsInstaller $settingsInstaller;

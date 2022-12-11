@@ -8,10 +8,9 @@
 namespace Swag\PayPal\Pos\MessageQueue\Handler;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\Pos\MessageQueue\Message\InventoryUpdateMessage;
@@ -19,13 +18,14 @@ use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Run\Task\InventoryTask;
 use Swag\PayPal\SwagPayPal;
+use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class InventoryUpdateHandler extends AbstractMessageHandler
+class InventoryUpdateHandler implements MessageSubscriberInterface
 {
     private RunService $runService;
 
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
     private InventorySyncManager $inventorySyncManager;
 
@@ -33,7 +33,7 @@ class InventoryUpdateHandler extends AbstractMessageHandler
 
     public function __construct(
         RunService $runService,
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         InventorySyncManager $inventorySyncManager,
         MessageBusInterface $messageBus
     ) {
@@ -46,7 +46,7 @@ class InventoryUpdateHandler extends AbstractMessageHandler
     /**
      * @param InventoryUpdateMessage $message
      */
-    public function handle($message): void
+    public function __invoke($message): void
     {
         $context = $message->getContext();
 

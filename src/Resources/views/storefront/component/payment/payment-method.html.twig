@@ -1,13 +1,10 @@
 {% sw_extends '@Storefront/storefront/component/payment/payment-method.html.twig' %}
 
 {% block component_payment_method_description %}
-    {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBMarksData spbCheckoutMarksData #}
-    {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
-    {% set spbCheckoutMarksData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBMarksSubscriber::PAYPAL_SMART_PAYMENT_MARKS_DATA_EXTENSION_ID')] %}
     {{ parent() }}
 
     {# @var \Swag\PayPal\Checkout\Plus\PlusData payPalPlusData #}
-    {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
+    {# @deprecated tag:v7.0.0 - Will be removed without replacement #}
     {% set payPalPlusData = page.extensions[constant('Swag\\PayPal\\Checkout\\Plus\\PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID')] %}
 
     {% if payPalPlusData and payPalPlusData.approvalUrl and payPalPlusData.paymentMethodId is same as(context.paymentMethod.id) and payPalPlusData.paymentMethodId is same as(payment.id) %}

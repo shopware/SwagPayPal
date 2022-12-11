@@ -8,9 +8,8 @@
 namespace Swag\PayPal\Checkout\Order\Shipping\Service;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\Exception\OrderDeliveryNotFoundException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -18,24 +17,25 @@ use Swag\PayPal\RestApi\V1\Api\Shipping;
 use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
 use Swag\PayPal\RestApi\V1\Resource\ShippingResource;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Compatibility\Exception;
 
 class ShippingService
 {
     private ShippingResource $shippingResource;
 
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
-    private EntityRepositoryInterface $orderTransactionRepository;
+    private EntityRepository $orderTransactionRepository;
 
-    private EntityRepositoryInterface $shippingMethodRepository;
+    private EntityRepository $shippingMethodRepository;
 
     private LoggerInterface $logger;
 
     public function __construct(
         ShippingResource $shippingResource,
-        EntityRepositoryInterface $salesChannelRepository,
-        EntityRepositoryInterface $orderTransactionRepository,
-        EntityRepositoryInterface $shippingMethodRepository,
+        EntityRepository $salesChannelRepository,
+        EntityRepository $orderTransactionRepository,
+        EntityRepository $shippingMethodRepository,
         LoggerInterface $logger
     ) {
         $this->shippingResource = $shippingResource;
@@ -175,7 +175,7 @@ class ShippingService
 
         $id = $this->salesChannelRepository->searchIds($criteria, $context)->firstId();
         if ($id === null) {
-            throw new OrderDeliveryNotFoundException($orderDeliveryId);
+            throw Exception::orderDeliveryNotFound($orderDeliveryId);
         }
 
         return $id;

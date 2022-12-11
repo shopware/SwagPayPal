@@ -8,11 +8,11 @@
 namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
@@ -36,7 +36,7 @@ class WebhookControllerTest extends TestCase
 
     public function testRegisterWebhook(): void
     {
-        $jsonResponse = $this->createWebhookController()->registerWebhook(Defaults::SALES_CHANNEL);
+        $jsonResponse = $this->createWebhookController()->registerWebhook(TestDefaults::SALES_CHANNEL);
         $content = $jsonResponse->getContent();
         static::assertNotFalse($content);
 
@@ -47,7 +47,7 @@ class WebhookControllerTest extends TestCase
 
     public function testDeregisterWebhook(): void
     {
-        $jsonResponse = $this->createWebhookController()->deregisterWebhook(Defaults::SALES_CHANNEL);
+        $jsonResponse = $this->createWebhookController()->deregisterWebhook(TestDefaults::SALES_CHANNEL);
         $content = $jsonResponse->getContent();
         static::assertNotFalse($content);
 

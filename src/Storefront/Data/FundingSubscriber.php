@@ -44,9 +44,11 @@ class FundingSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $event->getPagelet()->addExtension(
-            self::FUNDING_ELIGIBILITY_EXTENSION,
-            $this->fundingEligibilityDataService->buildData($event->getSalesChannelContext())
-        );
+        $data = $this->fundingEligibilityDataService->buildData($event->getSalesChannelContext());
+        if ($data === null) {
+            return;
+        }
+
+        $event->getPagelet()->addExtension(self::FUNDING_ELIGIBILITY_EXTENSION, $data);
     }
 }

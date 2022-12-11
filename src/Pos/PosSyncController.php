@@ -9,11 +9,9 @@ namespace Swag\PayPal\Pos;
 
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Routing\Annotation\Acl;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Administration\LogCleaner;
@@ -32,11 +30,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class PosSyncController extends AbstractController
 {
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
     private CompleteTask $completeTask;
 
@@ -55,7 +53,7 @@ class PosSyncController extends AbstractController
     private SyncResetter $syncResetter;
 
     public function __construct(
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         CompleteTask $completeTask,
         ProductTask $productTask,
         ImageTask $imageTask,
@@ -81,9 +79,9 @@ class PosSyncController extends AbstractController
      * @Route(
      *     "/api/_action/paypal/pos/sync/{salesChannelId}/products",
      *      name="api.action.paypal.pos.sync.products",
-     *      methods={"POST"}
+     *      methods={"POST"},
+     *      defaults={"_acl": {"sales_channel.viewer"}}
      * )
-     * @Acl({"sales_channel.viewer"})
      */
     public function syncProducts(string $salesChannelId, Context $context): Response
     {
@@ -99,9 +97,9 @@ class PosSyncController extends AbstractController
      * @Route(
      *     "/api/_action/paypal/pos/sync/{salesChannelId}/images",
      *      name="api.action.paypal.pos.sync.images",
-     *      methods={"POST"}
+     *      methods={"POST"},
+     *      defaults={"_acl": {"sales_channel.viewer"}}
      * )
-     * @Acl({"sales_channel.viewer"})
      */
     public function syncImages(string $salesChannelId, Context $context): Response
     {
@@ -117,9 +115,9 @@ class PosSyncController extends AbstractController
      * @Route(
      *     "/api/_action/paypal/pos/sync/{salesChannelId}/inventory",
      *      name="api.action.paypal.pos.sync.inventory",
-     *      methods={"POST"}
+     *      methods={"POST"},
+     *      defaults={"_acl": {"sales_channel.viewer"}}
      * )
-     * @Acl({"sales_channel.viewer"})
      */
     public function syncInventory(string $salesChannelId, Context $context): Response
     {
@@ -135,9 +133,9 @@ class PosSyncController extends AbstractController
      * @Route(
      *     "/api/_action/paypal/pos/sync/{salesChannelId}",
      *      name="api.action.paypal.pos.sync",
-     *      methods={"POST"}
+     *      methods={"POST"},
+     *      defaults={"_acl": {"sales_channel.viewer"}}
      * )
-     * @Acl({"sales_channel.viewer"})
      */
     public function syncAll(string $salesChannelId, Context $context): Response
     {
@@ -153,9 +151,9 @@ class PosSyncController extends AbstractController
      * @Route(
      *     "/api/_action/paypal/pos/sync/abort/{runId}",
      *      name="api.action.paypal.pos.sync.abort",
-     *      methods={"POST"}
+     *      methods={"POST"},
+     *      defaults={"_acl": {"sales_channel.viewer"}}
      * )
-     * @Acl({"sales_channel.viewer"})
      */
     public function abortSync(string $runId, Context $context): Response
     {
@@ -169,9 +167,9 @@ class PosSyncController extends AbstractController
      * @Route(
      *     "/api/_action/paypal/pos/sync/reset/{salesChannelId}",
      *      name="api.action.paypal.pos.sync.reset",
-     *      methods={"POST"}
+     *      methods={"POST"},
+     *      defaults={"_acl": {"sales_channel.editor"}}
      * )
-     * @Acl({"sales_channel.editor"})
      */
     public function resetSync(string $salesChannelId, Context $context): Response
     {
@@ -187,9 +185,9 @@ class PosSyncController extends AbstractController
      * @Route(
      *     "/api/_action/paypal/pos/log/cleanup/{salesChannelId}",
      *      name="api.action.paypal.pos.log.cleanup",
-     *      methods={"POST"}
+     *      methods={"POST"},
+     *      defaults={"_acl": {"sales_channel.editor"}}
      * )
-     * @Acl({"sales_channel.editor"})
      */
     public function cleanUpLog(string $salesChannelId, Context $context): Response
     {
@@ -205,9 +203,9 @@ class PosSyncController extends AbstractController
      * @Route(
      *     "/api/paypal/pos/product-log/{salesChannelId}",
      *      name="api.paypal.pos.product-log",
-     *      methods={"GET"}
+     *      methods={"GET"},
+     *      defaults={"_acl": {"sales_channel.viewer"}}
      * )
-     * @Acl({"sales_channel.viewer"})
      */
     public function getProductLog(string $salesChannelId, Request $request, Context $context): Response
     {

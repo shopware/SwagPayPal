@@ -1,7 +1,7 @@
 {
     "name": "swag/paypal",
     "description": "PayPal integration for Shopware 6",
-    "version": "5.4.5",
+    "version": "6.0.0",
     "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [
@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "shopware/core": "~6.4.3 | 6.4.x-dev"
+        "shopware/core": "~6.4.11 | 6.4.x-dev | ~6.5.0 | 6.5.x-dev"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",

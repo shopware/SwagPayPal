@@ -9,7 +9,7 @@
     margin-bottom: 16px;
     column-gap: 16px;
     padding: 10px 16px;
-    font-size: $font-size-small;
+    font-size: $font-size-s;
 
     &__name {
         font-weight: $font-weight-semi-bold;
@@ -35,7 +35,7 @@
     }
 
     &__show-detail-link {
-        font-size: $font-size-small;
+        font-size: $font-size-s;
         color: $color-shopware-brand-500;
     }
 

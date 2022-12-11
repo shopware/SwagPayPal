@@ -7,8 +7,8 @@
 
 namespace Swag\PayPal\Test\Pos\Mock;
 
-use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class MessageBusMock implements MessageBusInterface
@@ -35,7 +35,7 @@ class MessageBusMock implements MessageBusInterface
     }
 
     /**
-     * @param AbstractMessageHandler[] $handlers
+     * @param array<callable&MessageSubscriberInterface> $handlers
      */
     public function execute(array $handlers, bool $loop = true): void
     {
@@ -45,7 +45,7 @@ class MessageBusMock implements MessageBusInterface
                 foreach ($handlers as $handler) {
                     foreach ($handler::getHandledMessages() as $messageType) {
                         if (\get_class($envelope->getMessage()) === $messageType) {
-                            $handler->handle($envelope->getMessage());
+                            $handler($envelope->getMessage());
                             $processed[] = $envelopeKey;
                         }
                     }

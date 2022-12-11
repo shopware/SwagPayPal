@@ -10,7 +10,6 @@ namespace Swag\PayPal\Checkout\SalesChannel;
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
@@ -21,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class ErrorRoute extends AbstractErrorRoute
 {

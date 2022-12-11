@@ -17,7 +17,7 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
@@ -26,6 +26,7 @@ use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
@@ -95,9 +96,9 @@ class FilteredPaymentMethodRouteTest extends TestCase
 
     private function loadPaymentMethods(Request $request, float $price = 25.0): PaymentMethodCollection
     {
-        $salesChannelContext = $this->getContainer()->get(SalesChannelContextService::class)->get(new SalesChannelContextServiceParameters(Defaults::SALES_CHANNEL, Uuid::randomHex()));
+        $salesChannelContext = $this->getContainer()->get(SalesChannelContextService::class)->get(new SalesChannelContextServiceParameters(TestDefaults::SALES_CHANNEL, Uuid::randomHex()));
 
-        /** @var EntityRepositoryInterface $paymentMethodRepository */
+        /** @var EntityRepository $paymentMethodRepository */
         $paymentMethodRepository = $this->getContainer()->get('payment_method.repository');
         $ids = $paymentMethodRepository->searchIds(
             (new Criteria())->addFilter(new EqualsFilter('pluginId', $this->pluginId)),
@@ -119,7 +120,7 @@ class FilteredPaymentMethodRouteTest extends TestCase
 
     private function buildCart(float $price, SalesChannelContext $salesChannelContext): void
     {
-        /** @var EntityRepositoryInterface $productRepository */
+        /** @var EntityRepository $productRepository */
         $productRepository = $this->getContainer()->get(\sprintf('%s.repository', ProductDefinition::ENTITY_NAME));
 
         $productData = [
@@ -139,7 +140,7 @@ class FilteredPaymentMethodRouteTest extends TestCase
             'active' => true,
             'visibilities' => [
                 [
-                    'salesChannelId' => Defaults::SALES_CHANNEL,
+                    'salesChannelId' => TestDefaults::SALES_CHANNEL,
                     'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
                 ],
             ],

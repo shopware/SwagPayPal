@@ -11,7 +11,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefi
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
@@ -54,7 +54,7 @@ trait OrderTransactionTrait
         ContainerInterface $container,
         Context $context
     ): ?OrderTransactionEntity {
-        /** @var EntityRepositoryInterface $orderTransactionRepo */
+        /** @var EntityRepository $orderTransactionRepo */
         $orderTransactionRepo = $container->get(OrderTransactionDefinition::ENTITY_NAME . '.repository');
 
         /** @var OrderTransactionEntity|null $transaction */
@@ -86,9 +86,9 @@ trait OrderTransactionTrait
         Context $context,
         bool $withCustomField = false
     ): string {
-        /** @var EntityRepositoryInterface $orderRepo */
+        /** @var EntityRepository $orderRepo */
         $orderRepo = $container->get('order.repository');
-        /** @var EntityRepositoryInterface $orderTransactionRepo */
+        /** @var EntityRepository $orderTransactionRepo */
         $orderTransactionRepo = $container->get('order_transaction.repository');
 
         $orderId = $orderData[0]['id'];

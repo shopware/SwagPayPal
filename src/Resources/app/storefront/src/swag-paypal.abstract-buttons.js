@@ -85,7 +85,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
 
     createError(error, cancel = false, redirect = '') {
         if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined' && typeof this._client === 'undefined') {
-            console.error('No StoreApiClient defined in child plugin class');
+            console.error('No HttpClient defined in child plugin class');
             return;
         }
 

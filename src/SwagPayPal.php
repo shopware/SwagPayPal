@@ -8,7 +8,13 @@
 namespace Swag\PayPal;
 
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
+use Shopware\Core\Checkout\Shipping\ShippingMethodDefinition;
+use Shopware\Core\Content\Media\Aggregate\MediaFolder\MediaFolderDefinition;
 use Shopware\Core\Content\Media\File\FileSaver;
+use Shopware\Core\Content\Media\MediaDefinition;
+use Shopware\Core\Content\Rule\RuleDefinition;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
@@ -18,9 +24,13 @@ use Shopware\Core\Framework\Plugin\Context\UninstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\System\CustomField\CustomFieldDefinition;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeDefinition;
+use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
+use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
+use Swag\PayPal\Util\Compatibility\EntityRepositoryDecorator;
 use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
 use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
@@ -32,6 +42,7 @@ use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Util\Lifecycle\Update;
 use Swag\PayPal\Webhook\WebhookService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 class SwagPayPal extends Plugin
 {
@@ -87,61 +98,48 @@ class SwagPayPal extends Plugin
 
     public function update(UpdateContext $updateContext): void
     {
-        /** @var EntityRepositoryInterface $customFieldRepository */
-        $customFieldRepository = $this->container->get(\sprintf('%s.repository', (new CustomFieldDefinition())->getEntityName()));
-        /** @var EntityRepositoryInterface $paymentMethodRepository */
-        $paymentMethodRepository = $this->container->get('payment_method.repository');
         /** @var WebhookService|null $webhookService */
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var EntityRepositoryInterface $salesChannelRepository */
-        $salesChannelRepository = $this->container->get('sales_channel.repository');
-        /** @var EntityRepositoryInterface $salesChannelTypeRepository */
-        $salesChannelTypeRepository = $this->container->get('sales_channel_type.repository');
         /** @var InformationDefaultService|null $informationDefaultService */
         $informationDefaultService = $this->container->get(InformationDefaultService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var EntityRepositoryInterface $shippingRepository */
-        $shippingRepository = $this->container->get('shipping_method.repository');
         /** @var PosWebhookService|null $posWebhookService */
         $posWebhookService = $this->container->get(PosWebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        /** @var EntityRepositoryInterface $ruleRepository */
-        $ruleRepository = $this->container->get('rule.repository');
-        /** @var EntityRepositoryInterface $mediaRepository */
-        $mediaRepository = $this->container->get('media.repository');
-        /** @var EntityRepositoryInterface $mediaFolderRepository */
-        $mediaFolderRepository = $this->container->get('media_folder.repository');
         /** @var PaymentMethodInstaller|null $paymentMethodInstaller */
         $paymentMethodInstaller = $this->container->get(PaymentMethodInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         /** @var PaymentMethodStateService|null $paymentMethodStateService */
         $paymentMethodStateService = $this->container->get(PaymentMethodStateService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         /** @var MediaInstaller|null $mediaInstaller */
         $mediaInstaller = $this->container->get(MediaInstaller::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        $paymentMethodDataRegistry = new PaymentMethodDataRegistry($paymentMethodRepository, $this->container);
+        $paymentMethodDataRegistry = new PaymentMethodDataRegistry(
+            $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
+            $this->container
+        );
 
         (new Update(
             $this->container->get(SystemConfigService::class),
-            $paymentMethodRepository,
-            $customFieldRepository,
+            $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
+            $this->getRepository($this->container, CustomFieldDefinition::ENTITY_NAME),
             $webhookService,
-            $salesChannelRepository,
-            $salesChannelTypeRepository,
+            $this->getRepository($this->container, SalesChannelDefinition::ENTITY_NAME),
+            $this->getRepository($this->container, SalesChannelTypeDefinition::ENTITY_NAME),
             $informationDefaultService,
-            $shippingRepository,
+            $this->getRepository($this->container, ShippingMethodDefinition::ENTITY_NAME),
             $posWebhookService,
             $paymentMethodInstaller ?? new PaymentMethodInstaller(
-                $paymentMethodRepository,
-                $ruleRepository,
+                $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
+                $this->getRepository($this->container, RuleDefinition::ENTITY_NAME),
                 $this->container->get(PluginIdProvider::class),
                 $paymentMethodDataRegistry,
                 $mediaInstaller ?? new MediaInstaller(
-                    $mediaRepository,
-                    $mediaFolderRepository,
-                    $paymentMethodRepository,
+                    $this->getRepository($this->container, MediaDefinition::ENTITY_NAME),
+                    $this->getRepository($this->container, MediaFolderDefinition::ENTITY_NAME),
+                    $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
                     $this->container->get(FileSaver::class),
                 ),
             ),
             $paymentMethodStateService ?? new PaymentMethodStateService(
                 $paymentMethodDataRegistry,
-                $paymentMethodRepository,
+                $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
             )
         ))->update($updateContext);
 
@@ -192,35 +190,42 @@ class SwagPayPal extends Plugin
 
     private function getInstaller(): InstallUninstall
     {
-        /** @var EntityRepositoryInterface $systemConfigRepository */
-        $systemConfigRepository = $this->container->get('system_config.repository');
-        /** @var EntityRepositoryInterface $paymentMethodRepository */
-        $paymentMethodRepository = $this->container->get('payment_method.repository');
-        /** @var EntityRepositoryInterface $ruleRepository */
-        $ruleRepository = $this->container->get('rule.repository');
-        /** @var EntityRepositoryInterface $mediaRepository */
-        $mediaRepository = $this->container->get('media.repository');
-        /** @var EntityRepositoryInterface $mediaFolderRepository */
-        $mediaFolderRepository = $this->container->get('media_folder.repository');
-
         return new InstallUninstall(
             new PaymentMethodInstaller(
-                $paymentMethodRepository,
-                $ruleRepository,
+                $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
+                $this->getRepository($this->container, RuleDefinition::ENTITY_NAME),
                 $this->container->get(PluginIdProvider::class),
                 new PaymentMethodDataRegistry(
-                    $paymentMethodRepository,
+                    $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
                     $this->container,
                 ),
                 new MediaInstaller(
-                    $mediaRepository,
-                    $mediaFolderRepository,
-                    $paymentMethodRepository,
+                    $this->getRepository($this->container, MediaDefinition::ENTITY_NAME),
+                    $this->getRepository($this->container, MediaFolderDefinition::ENTITY_NAME),
+                    $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),
                     $this->container->get(FileSaver::class)
                 ),
             ),
-            new SettingsInstaller($systemConfigRepository, $this->container->get(SystemConfigService::class)),
+            new SettingsInstaller(
+                $this->getRepository($this->container, SystemConfigDefinition::ENTITY_NAME),
+                $this->container->get(SystemConfigService::class)
+            ),
             new PosInstaller($this->container->get(Connection::class)),
         );
+    }
+
+    private function getRepository(ContainerInterface $container, string $entityName): EntityRepository
+    {
+        $repository = $container->get(\sprintf('%s.repository', $entityName), ContainerInterface::NULL_ON_INVALID_REFERENCE);
+
+        if (\interface_exists(EntityRepositoryInterface::class) && $repository instanceof EntityRepositoryInterface) {
+            return new EntityRepositoryDecorator($repository);
+        }
+
+        if (!$repository instanceof EntityRepository) {
+            throw new ServiceNotFoundException(\sprintf('%s.repository', $entityName));
+        }
+
+        return $repository;
     }
 }

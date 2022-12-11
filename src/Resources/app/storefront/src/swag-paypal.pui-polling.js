@@ -1,5 +1,5 @@
 import Plugin from 'src/plugin-system/plugin.class';
-import StoreApiClient from 'src/service/store-api-client.service';
+import HttpClient from 'src/service/http-client.service';
 import LoadingIndicator from 'src/utility/loading-indicator/loading-indicator.util';
 
 export default class SwagPaypalPuiPolling extends Plugin {
@@ -32,7 +32,7 @@ export default class SwagPaypalPuiPolling extends Plugin {
 
     init() {
         (new LoadingIndicator(this.el)).create();
-        this._client = new StoreApiClient();
+        this._client = new HttpClient();
 
         this.poll();
     }

@@ -10,16 +10,14 @@ namespace Swag\PayPal\Test\Installment\Banner;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
@@ -27,6 +25,7 @@ use Shopware\Core\Framework\Struct\Struct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Test\TestDefaults;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPage;
 use Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoadedEvent;
@@ -45,6 +44,7 @@ use Swag\PayPal\Installment\Banner\Service\BannerDataService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\Compatibility\Generator;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -290,7 +290,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     private function createCheckoutCartPage(): CheckoutCartPage
     {
         $page = new CheckoutCartPage();
-        $cart = new Cart('test', 'testToken');
+        $cart = Generator::createCart('testToken');
         $cart->setPrice(
             new CartPrice(
                 0,
@@ -358,7 +358,7 @@ class InstallmentBannerSubscriberTest extends TestCase
             $this->removePaymentMethodFromDefaultsSalesChannel($this->payPalPaymentMethodId);
         }
 
-        /** @var EntityRepositoryInterface $repository */
+        /** @var EntityRepository $repository */
         $repository = $this->getContainer()->get('payment_method.repository');
 
         $criteria = (new Criteria())
@@ -376,11 +376,11 @@ class InstallmentBannerSubscriberTest extends TestCase
             $paymentMethodsArray[] = ['id' => $this->payPalPaymentMethodId];
         }
 
-        /** @var EntityRepositoryInterface $salesChannelRepo */
+        /** @var EntityRepository $salesChannelRepo */
         $salesChannelRepo = $this->getContainer()->get('sales_channel.repository');
         $salesChannelRepo->update([
             [
-                'id' => Defaults::SALES_CHANNEL,
+                'id' => TestDefaults::SALES_CHANNEL,
                 'paymentMethodId' => $otherPaymentMethodId,
                 'paymentMethods' => $paymentMethodsArray,
             ],
@@ -388,7 +388,7 @@ class InstallmentBannerSubscriberTest extends TestCase
 
         return $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
     }
 

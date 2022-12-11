@@ -14,7 +14,7 @@ use Shopware\Core\Checkout\Customer\SalesChannel\AbstractRegisterRoute;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Content\Newsletter\Exception\SalesChannelDomainNotFoundException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
@@ -44,13 +44,13 @@ class ExpressCustomerService
 
     private AbstractRegisterRoute $registerRoute;
 
-    private EntityRepositoryInterface $countryRepository;
+    private EntityRepository $countryRepository;
 
-    private EntityRepositoryInterface $countryStateRepository;
+    private EntityRepository $countryStateRepository;
 
-    private EntityRepositoryInterface $salutationRepository;
+    private EntityRepository $salutationRepository;
 
-    private EntityRepositoryInterface $customerRepository;
+    private EntityRepository $customerRepository;
 
     private AccountService $accountService;
 
@@ -60,10 +60,10 @@ class ExpressCustomerService
 
     public function __construct(
         AbstractRegisterRoute $registerRoute,
-        EntityRepositoryInterface $countryRepository,
-        EntityRepositoryInterface $countryStateRepository,
-        EntityRepositoryInterface $salutationRepository,
-        EntityRepositoryInterface $customerRepository,
+        EntityRepository $countryRepository,
+        EntityRepository $countryStateRepository,
+        EntityRepository $salutationRepository,
+        EntityRepository $customerRepository,
         AccountService $accountService,
         SystemConfigService $systemConfigService,
         LoggerInterface $logger

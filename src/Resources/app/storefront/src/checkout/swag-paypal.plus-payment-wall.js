@@ -1,11 +1,11 @@
 import Plugin from 'src/plugin-system/plugin.class';
 import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
-import StoreApiClient from 'src/service/store-api-client.service';
+import HttpClient from 'src/service/http-client.service';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
 /**
- * @deprecated tag:v6.0.0 - Will be removed without replacement.
+ * @deprecated tag:v7.0.0 - Will be removed without replacement.
  */
 export default class SwagPayPalPlusPaymentWall extends Plugin {
     static options = {
@@ -208,7 +208,7 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
             return;
         }
 
-        this._client = new StoreApiClient();
+        this._client = new HttpClient();
         const formData = FormSerializeUtil.serialize(form);
 
         ElementLoadingIndicatorUtil.create(document.body);

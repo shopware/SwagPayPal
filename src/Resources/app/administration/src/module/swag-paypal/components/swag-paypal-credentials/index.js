@@ -152,37 +152,5 @@ Component.register('swag-paypal-credentials', {
                 }
             });
         },
-
-        /**
-         * @deprecated tag:v6.0.0 Will be removed without replacement.
-         */
-        onPayPalCredentialsLoadSuccess(clientId, clientSecret, sandbox) {
-            if (sandbox) {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientIdSandbox', clientId);
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecretSandbox', clientSecret);
-            } else {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientId', clientId);
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecret', clientSecret);
-            }
-        },
-
-        /**
-         * @deprecated tag:v6.0.0 Will be removed without replacement.
-         */
-        onPayPalCredentialsLoadFailed(sandbox) {
-            if (sandbox) {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientIdSandbox', '');
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecretSandbox', '');
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantPayerIdSandbox', '');
-            } else {
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientId', '');
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.clientSecret', '');
-                this.$set(this.actualConfigData, 'SwagPayPal.settings.merchantPayerId', '');
-            }
-            this.createNotificationError({
-                message: this.$tc('swag-paypal.settingForm.credentials.button.messageFetchedError'),
-                duration: 10000,
-            });
-        },
     },
 });

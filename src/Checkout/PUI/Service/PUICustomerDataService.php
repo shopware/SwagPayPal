@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Checkout\PUI\Service;
 
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Validation\DataBag\DataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
@@ -17,13 +17,13 @@ class PUICustomerDataService
     public const PUI_CUSTOMER_DATA_BIRTHDAY = 'payPalPuiCustomerBirthday';
     public const PUI_CUSTOMER_DATA_PHONE_NUMBER = 'payPalPuiCustomerPhoneNumber';
 
-    private EntityRepositoryInterface $orderAddressRepository;
+    private EntityRepository $orderAddressRepository;
 
-    private EntityRepositoryInterface $customerRepository;
+    private EntityRepository $customerRepository;
 
     public function __construct(
-        EntityRepositoryInterface $orderAddressRepository,
-        EntityRepositoryInterface $customerRepository
+        EntityRepository $orderAddressRepository,
+        EntityRepository $customerRepository
     ) {
         $this->orderAddressRepository = $orderAddressRepository;
         $this->customerRepository = $customerRepository;

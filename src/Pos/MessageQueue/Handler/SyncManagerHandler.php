@@ -9,7 +9,6 @@ namespace Swag\PayPal\Pos\MessageQueue\Handler;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\Exception\MessageQueueTimeoutException;
@@ -20,10 +19,11 @@ use Swag\PayPal\Pos\MessageQueue\Manager\ProductSyncManager;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
 use Swag\PayPal\Pos\Run\RunService;
 use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 
-class SyncManagerHandler extends AbstractMessageHandler
+class SyncManagerHandler implements MessageSubscriberInterface
 {
     public const SYNC_PRODUCT = 'product';
     public const SYNC_IMAGE = 'image';
@@ -63,7 +63,7 @@ class SyncManagerHandler extends AbstractMessageHandler
     /**
      * @param SyncManagerMessage $message
      */
-    public function handle($message): void
+    public function __invoke($message): void
     {
         $runId = $message->getRunId();
         $context = $message->getContext();

@@ -39,13 +39,7 @@ phpunit-coverage:
 .PHONY: phpunit
 
 administration-fix: ## Run eslint on the administration files
-	$(PLATFORM_ROOT)/src/Administration/Resources/app/administration/node_modules/.bin/eslint \
-	    --ignore-path .eslintignore \
-	    --rule 'sw-deprecation-rules/private-feature-declarations: off' \
-	    --config $(PLATFORM_ROOT)/src/Administration/Resources/app/administration/.eslintrc.js \
-	    --ext .js,.vue \
-	    --fix \
-	    src/Resources/app/administration
+	@npm run lint-fix --prefix $(PLUGIN_ROOT)/src/Resources/app/administration
 .PHONY: administration-fix
 
 storefront-fix: ## Run eslint on the storefront files
@@ -58,12 +52,7 @@ storefront-fix: ## Run eslint on the storefront files
 .PHONY: storefront-fix
 
 administration-lint: ## Run eslint on the administration files
-	$(PLATFORM_ROOT)/src/Administration/Resources/app/administration/node_modules/.bin/eslint \
-	    --ignore-path .eslintignore \
-	    --rule 'sw-deprecation-rules/private-feature-declarations: off' \
-	    --config $(PLATFORM_ROOT)/src/Administration/Resources/app/administration/.eslintrc.js \
-	    --ext .js,.vue \
-	    src/Resources/app/administration
+	@npm run lint --prefix $(PLUGIN_ROOT)/src/Resources/app/administration
 .PHONY: administration-lint
 
 storefront-lint: ## Run eslint on the storefront files
@@ -73,3 +62,7 @@ storefront-lint: ## Run eslint on the storefront files
 	    --ext .js,.vue \
 	    src/Resources/app/storefront
 .PHONY: storefront-lint
+
+administration-ci: ## Run eslint on the administration files
+	@npm run lint-ci --prefix $(PLUGIN_ROOT)/src/Resources/app/administration
+.PHONY: administration-ci

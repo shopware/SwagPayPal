@@ -28,21 +28,21 @@
     }
 
     .swag-paypal-pos-status__status {
-        margin-top: $font-size-large;
+        margin-top: $font-size-l;
         font-weight: bold;
     }
 
     .swag-paypal-pos-status__detail {
-        margin-top: $font-size-default;
-        padding-bottom: $font-size-default;
-        font-size: $font-size-small;
+        margin-top: $font-size-m;
+        padding-bottom: $font-size-m;
+        font-size: $font-size-s;
         border-bottom: $color-gray-200 solid 1px;
     }
 
     .swag-paypal-pos-status__substatus {
-        margin-top: $font-size-default;
-        font-size: $font-size-small;
-        padding-bottom: $font-size-default;
+        margin-top: $font-size-m;
+        font-size: $font-size-s;
+        padding-bottom: $font-size-m;
         border-bottom: $color-gray-200 solid 1px;
 
         span {
@@ -58,11 +58,11 @@
         height: 100%;
         background-color: rgba(255, 255, 255, 0.9);
         border-radius: $border-radius-default;
-        padding-top: 9*$font-size-default;
+        padding-top: 9*$font-size-m;
     }
 
     .swag-paypal-pos-status__actions {
-        margin-top: $font-size-default;
+        margin-top: $font-size-m;
     }
 
     &.swag-paypal-pos-status--warning {

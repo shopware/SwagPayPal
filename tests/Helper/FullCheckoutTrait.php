@@ -16,7 +16,7 @@ use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -24,6 +24,7 @@ use Shopware\Core\PlatformRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Test\TestDefaults;
 use Symfony\Component\HttpFoundation\Request;
 
 trait FullCheckoutTrait
@@ -32,7 +33,7 @@ trait FullCheckoutTrait
 
     private function createProduct(array $additionalData = []): string
     {
-        /** @var EntityRepositoryInterface $productRepository */
+        /** @var EntityRepository $productRepository */
         $productRepository = $this->getContainer()->get('product.repository');
         $productId = Uuid::randomHex();
         $taxId = $this->getValidTaxId();
@@ -51,7 +52,7 @@ trait FullCheckoutTrait
             ],
             'visibilities' => [
                 [
-                    'salesChannelId' => Defaults::SALES_CHANNEL,
+                    'salesChannelId' => TestDefaults::SALES_CHANNEL,
                     'visibility' => 30,
                 ],
             ],
@@ -65,7 +66,7 @@ trait FullCheckoutTrait
     private function registerUser(?string $email = null): SalesChannelContext
     {
         $contextService = $this->getContainer()->get(SalesChannelContextService::class);
-        $context = $contextService->get(new SalesChannelContextServiceParameters(Defaults::SALES_CHANNEL, Uuid::randomHex()));
+        $context = $contextService->get(new SalesChannelContextServiceParameters(TestDefaults::SALES_CHANNEL, Uuid::randomHex()));
 
         $response = $this->getContainer()->get(RegisterRoute::class)->register(new RequestDataBag([
             'salutationId' => $this->getValidSalutationId(),
@@ -85,7 +86,7 @@ trait FullCheckoutTrait
         $newToken = $response->headers->get(PlatformRequest::HEADER_CONTEXT_TOKEN);
         static::assertNotNull($newToken);
 
-        return $contextService->get(new SalesChannelContextServiceParameters(Defaults::SALES_CHANNEL, $newToken));
+        return $contextService->get(new SalesChannelContextServiceParameters(TestDefaults::SALES_CHANNEL, $newToken));
     }
 
     private function addToCart(string $productId, SalesChannelContext $context): Cart

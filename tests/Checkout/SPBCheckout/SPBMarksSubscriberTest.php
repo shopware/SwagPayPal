@@ -9,15 +9,14 @@ namespace Swag\PayPal\Test\Checkout\SPBCheckout;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Test\TestDefaults;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPage;
 use Shopware\Storefront\Page\Account\PaymentMethod\AccountPaymentMethodPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -32,6 +31,7 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Helper\Compatibility\Generator;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PaymentMethodUtilMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -238,7 +238,7 @@ class SPBMarksSubscriberTest extends TestCase
         $confirmPage = new CheckoutConfirmPage();
         $confirmPage->setPaymentMethods($paymentMethodCollection);
         $confirmPage->setShippingMethods(new ShippingMethodCollection());
-        $confirmPage->setCart(new Cart('test-cart', 'test-token'));
+        $confirmPage->setCart(Generator::createCart('test-token'));
 
         return new CheckoutConfirmPageLoadedEvent($confirmPage, $salesChannelContext, new Request());
     }
@@ -247,7 +247,7 @@ class SPBMarksSubscriberTest extends TestCase
     {
         $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
 
         $paypalPaymentMethod = new PaymentMethodEntity();

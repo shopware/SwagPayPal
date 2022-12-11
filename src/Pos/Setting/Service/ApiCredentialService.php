@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Setting\Service;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -24,13 +24,13 @@ class ApiCredentialService
 
     private TokenResource $tokenResource;
 
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
     private ApiKeyDecoder $apiKeyDecoder;
 
     public function __construct(
         TokenResource $tokenResource,
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         ApiKeyDecoder $apiKeyDecoder
     ) {
         $this->tokenResource = $tokenResource;

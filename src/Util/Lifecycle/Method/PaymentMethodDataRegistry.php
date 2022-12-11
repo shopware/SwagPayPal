@@ -10,7 +10,7 @@ namespace Swag\PayPal\Util\Lifecycle\Method;
 use Shopware\Core\Checkout\Payment\Exception\UnknownPaymentMethodException;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -43,17 +43,14 @@ class PaymentMethodDataRegistry
         PayLaterMethodData::class,
     ];
 
-    private EntityRepositoryInterface $paymentMethodRepository;
+    private EntityRepository $paymentMethodRepository;
 
     private ContainerInterface $container;
 
     private ?iterable $paymentMethods;
 
-    /**
-     * @psalm-suppress ContainerDependency
-     */
     public function __construct(
-        EntityRepositoryInterface $paymentMethodRepository,
+        EntityRepository $paymentMethodRepository,
         ContainerInterface $container,
         ?iterable $paymentMethods = null
     ) {

@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Content\Media\File\FileSaver;
 use Shopware\Core\Content\Media\File\MediaFile;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -22,18 +22,18 @@ class MediaInstaller
 {
     private const PAYMENT_METHOD_MEDIA_DIR = 'Resources/icons';
 
-    private EntityRepositoryInterface $mediaRepository;
+    private EntityRepository $mediaRepository;
 
-    private EntityRepositoryInterface $mediaFolderRepository;
+    private EntityRepository $mediaFolderRepository;
 
-    private EntityRepositoryInterface $paymentMethodRepository;
+    private EntityRepository $paymentMethodRepository;
 
     private FileSaver $fileSaver;
 
     public function __construct(
-        EntityRepositoryInterface $mediaRepository,
-        EntityRepositoryInterface $mediaFolderRepository,
-        EntityRepositoryInterface $paymentMethodRepository,
+        EntityRepository $mediaRepository,
+        EntityRepository $mediaFolderRepository,
+        EntityRepository $paymentMethodRepository,
         FileSaver $fileSaver
     ) {
         $this->mediaRepository = $mediaRepository;

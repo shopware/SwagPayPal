@@ -1,11 +1,11 @@
 import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
-import StoreApiClient from 'src/service/store-api-client.service';
+import HttpClient from 'src/service/http-client.service';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 /**
- * @deprecated tag:v6.0.0 - Will be removed without replacement
+ * @deprecated tag:v7.0.0 - Will be removed without replacement
  */
 export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractButtons {
     static options = {
@@ -101,29 +101,11 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
         createOrderUrl: '',
 
         /**
-         * URL to the checkout confirm page
-         *
-         * @deprecated tag:v6.0.0 - will be removed
-         *
-         * @type string
-         */
-        checkoutConfirmUrl: '',
-
-        /**
          * Is set, if the plugin is used on the order edit page
          *
          * @type string|null
          */
         orderId: null,
-
-        /**
-         * URL to the checkout confirm page
-         *
-         * @deprecated tag:v6.0.0 - will be removed
-         *
-         * @type string|null
-         */
-        accountOrderEditUrl: '',
 
         /**
          * URL to the after order edit page, as the payment has failed
@@ -138,15 +120,6 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
          * @type string|null
          */
         accountOrderEditCancelledUrl: '',
-
-        /**
-         * Selector of the selected payment method
-         *
-         * @deprecated tag:v6.0.0 - will be removed without replacement
-         *
-         * @type string
-         */
-        checkedPaymentMethodSelector: 'input.payment-method-input[checked=checked]',
 
         /**
          * Selector of the order confirm form
@@ -171,7 +144,7 @@ export default class SwagPayPalSmartPaymentButtons extends SwagPaypalAbstractBut
     };
 
     init() {
-        this._client = new StoreApiClient();
+        this._client = new HttpClient();
 
         this.createButton();
     }
