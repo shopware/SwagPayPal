@@ -13,15 +13,21 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
+use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
+use Swag\PayPal\Checkout\Exception\OrderFailedException;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Common\Link;
+use Swag\PayPal\RestApi\V2\Api\Order;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
+use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
@@ -31,8 +37,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPaymentHandlerInterface
 {
-    private OrderExecuteService $orderExecuteService;
-
     private TransactionDataService $transactionDataService;
 
     private OrderTransactionStateHandler $orderTransactionStateHandler;
@@ -46,7 +50,6 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
     private AbstractAPMOrderBuilder $orderBuilder;
 
     public function __construct(
-        OrderExecuteService $orderExecuteService,
         TransactionDataService $transactionDataService,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         SettingsValidationServiceInterface $settingsValidationService,
@@ -54,7 +57,6 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         LoggerInterface $logger,
         AbstractAPMOrderBuilder $orderBuilder
     ) {
-        $this->orderExecuteService = $orderExecuteService;
         $this->transactionDataService = $transactionDataService;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
         $this->settingsValidationService = $settingsValidationService;
@@ -139,25 +141,55 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
             throw new InvalidTransactionException($transactionId);
         }
 
-        if ($this->orderBuilder->isCompleteOnApproval()) {
-            // order will be automatically captured, state should be received via webhook
-            return;
+        if ($request->query->getBoolean(PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_CANCEL)) {
+            $this->logger->debug('Customer canceled');
+
+            throw new CustomerCanceledAsyncPaymentException(
+                $transaction->getOrderTransaction()->getId(),
+                'Customer canceled the payment on the PayPal page'
+            );
         }
 
         try {
-            $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
-                $transactionId,
-                $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannelId()),
-                $salesChannelContext->getSalesChannelId(),
-                $salesChannelContext->getContext(),
-                PartnerAttributionId::PAYPAL_PPCP,
-            );
-
-            $this->transactionDataService->setResourceId($paypalOrder, $transactionId, $salesChannelContext->getContext());
+            $paypalOrder = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannelId());
+            $this->tryToSetTransactionState($paypalOrder, $transaction->getOrderTransaction()->getId(), $salesChannelContext->getContext());
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 
             throw new AsyncPaymentProcessException($transactionId, $e->getMessage());
+        }
+
+        try {
+            $this->transactionDataService->setResourceId($paypalOrder, $transactionId, $salesChannelContext->getContext());
+        } catch (\Exception $e) {
+            $this->logger->warning('Could not set resource id: ' . $e->getMessage());
+        }
+    }
+
+    private function tryToSetTransactionState(Order $paypalOrder, string $transactionId, Context $context): void
+    {
+        $purchaseUnits = $paypalOrder->getPurchaseUnits();
+        if (empty($purchaseUnits)) {
+            return;
+        }
+        $payments = \current($purchaseUnits)->getPayments();
+        if ($payments === null) {
+            return;
+        }
+        $captures = $payments->getCaptures();
+        if (empty($captures)) {
+            return;
+        }
+
+        /** @var Capture $capture */
+        $capture = \current($captures);
+        if ($capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_COMPLETED) {
+            $this->orderTransactionStateHandler->paid($transactionId, $context);
+        }
+
+        if ($capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_DECLINED
+            || $capture->getStatus() === PaymentStatusV2::ORDER_CAPTURE_FAILED) {
+            throw new OrderFailedException($paypalOrder->getId());
         }
     }
 }

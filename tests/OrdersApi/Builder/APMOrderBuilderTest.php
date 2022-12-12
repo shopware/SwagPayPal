@@ -30,6 +30,7 @@ use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractAPMPaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Bancontact;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Blik;
@@ -96,6 +97,7 @@ class APMOrderBuilderTest extends TestCase
             new RequestDataBag($requestData)
         );
 
+        static::assertSame(Order::PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL, $order->getProcessingInstruction());
         $shipping = $order->getPurchaseUnits()[0]->getShipping();
         static::assertSame(
             \sprintf('%s %s', self::TEST_FIRST_NAME, self::TEST_LAST_NAME),
