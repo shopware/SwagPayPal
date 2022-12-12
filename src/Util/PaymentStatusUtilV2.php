@@ -53,7 +53,8 @@ class PaymentStatusUtilV2
 
         $capturedAmount = 0.0;
         $isFinalCaptured = false;
-        $captures = $payPalOrder->getPurchaseUnits()[0]->getPayments()->getCaptures();
+        $payments = $payPalOrder->getPurchaseUnits()[0]->getPayments();
+        $captures = $payments ? $payments->getCaptures() : null;
         if ($captures !== null) {
             foreach ($captures as $capture) {
                 $amount = $capture->getAmount();

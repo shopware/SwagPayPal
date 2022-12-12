@@ -41,6 +41,10 @@ class TransactionDataService
     public function setResourceId(PayPalOrder $order, string $transactionId, Context $context): void
     {
         $payments = $order->getPurchaseUnits()[0]->getPayments();
+        if ($payments === null) {
+            return;
+        }
+
         $captures = $payments->getCaptures();
         $authorizations = $payments->getAuthorizations();
 

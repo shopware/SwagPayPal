@@ -99,7 +99,7 @@ class OrderExecuteService
     {
         if ($paypalOrder->getIntent() === PaymentIntentV2::CAPTURE) {
             $response = $this->orderResource->capture($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
-            $captures = $this->getPayment($response)->getCaptures();
+            $captures = $this->getPayments($response, $salesChannelId)->getCaptures();
             if (empty($captures)) {
                 throw new MissingPayloadException($response->getId(), 'purchaseUnit.payments.captures');
             }
@@ -119,7 +119,7 @@ class OrderExecuteService
         }
 
         $response = $this->orderResource->authorize($paypalOrder->getId(), $salesChannelId, $partnerAttributionId);
-        $authorizations = $this->getPayment($response)->getAuthorizations();
+        $authorizations = $this->getPayments($response, $salesChannelId)->getAuthorizations();
         if (empty($authorizations)) {
             throw new MissingPayloadException($response->getId(), 'purchaseUnit.payments.authorizations');
         }
@@ -140,7 +140,26 @@ class OrderExecuteService
         return $response;
     }
 
-    private function getPayment(PayPalOrder $order): Payments
+    private function getPayments(PayPalOrder $order, string $salesChannelId): Payments
+    {
+        $payments = $this->getPaymentsFromOrder($order);
+        if ($payments !== null) {
+            return $payments;
+        }
+
+        $refetchedOrder = $this->orderResource->get($order->getId(), $salesChannelId);
+
+        $payments = $this->getPaymentsFromOrder($refetchedOrder);
+        if ($payments === null) {
+            throw new MissingPayloadException($order->getId(), 'purchaseUnit.payments');
+        }
+
+        $order->setPurchaseUnits($refetchedOrder->getPurchaseUnits());
+
+        return $payments;
+    }
+
+    private function getPaymentsFromOrder(PayPalOrder $order): ?Payments
     {
         $purchaseUnits = $order->getPurchaseUnits();
         if (empty($purchaseUnits)) {
