@@ -1,3 +1,7 @@
+# 5.4.2
+- PPI-723 - Behebt ein Problem, bei dem aufgrund von unangekündigten API-Änderungen bei PayPal einige APM-Zahlungsmethoden manchmal nicht mehr funktionierten
+- PPI-724 - Behebt ein Problem, bei dem eine Zahlung fehlschlagen konnte, falls PayPal nicht die vollen Zahlungsdetails zurückgab
+
 # 5.4.1
 - PPI-716 - Behebt einen Fehler beim Update, falls Verfügbarkeits-Regel noch in Benutzung sind
 

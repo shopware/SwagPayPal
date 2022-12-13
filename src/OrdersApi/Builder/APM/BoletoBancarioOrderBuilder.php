@@ -15,11 +15,6 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario;
 
 class BoletoBancarioOrderBuilder extends AbstractAPMOrderBuilder
 {
-    public function isCompleteOnApproval(): bool
-    {
-        return true;
-    }
-
     protected function buildPaymentSource(
         AsyncPaymentTransactionStruct $paymentTransaction,
         SalesChannelContext $salesChannelContext,

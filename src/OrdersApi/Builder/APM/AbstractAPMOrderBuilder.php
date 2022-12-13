@@ -64,17 +64,17 @@ abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
         $paymentSource = new PaymentSource();
         $this->buildPaymentSource($paymentTransaction, $salesChannelContext, $requestDataBag, $paymentSource);
         $order->setPaymentSource($paymentSource);
-
-        if ($this->isCompleteOnApproval()) {
-            $order->setProcessingInstruction(Order::PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL);
-        }
+        $order->setProcessingInstruction(Order::PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL);
 
         return $order;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - will be removed, is always true now
+     */
     public function isCompleteOnApproval(): bool
     {
-        return false;
+        return true;
     }
 
     abstract protected function buildPaymentSource(

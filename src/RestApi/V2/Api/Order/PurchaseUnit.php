@@ -62,9 +62,9 @@ class PurchaseUnit extends PayPalApiStruct
     protected Shipping $shipping;
 
     /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payments")
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payments", nullable=true)
      */
-    protected Payments $payments;
+    protected ?Payments $payments = null;
 
     public function getReferenceId(): string
     {
@@ -152,7 +152,7 @@ class PurchaseUnit extends PayPalApiStruct
         $this->shipping = $shipping;
     }
 
-    public function getPayments(): Payments
+    public function getPayments(): ?Payments
     {
         return $this->payments;
     }

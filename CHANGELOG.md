@@ -1,3 +1,7 @@
+# 5.4.2
+- PPI-723 - Fixes an issue, where some APM payment methods did not work sometimes due to unannounced PayPal API changes
+- PPI-724 - Fixes an issue, where the payment could fail if PayPal did not send full capture / authorization details
+
 # 5.4.1
 - PPI-716 - Fixes an error during the update if availability rules are still in use
 

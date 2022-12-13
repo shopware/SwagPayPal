@@ -70,6 +70,7 @@ class OrderResourceTest extends TestCase
 
         static::assertSame(CaptureOrderCapture::ID, $order->getId());
         $payments = $order->getPurchaseUnits()[0]->getPayments();
+        static::assertNotNull($payments);
         $captures = $payments->getCaptures();
         static::assertNotNull($captures);
         static::assertTrue($captures[0]->isFinalCapture());
@@ -104,6 +105,7 @@ class OrderResourceTest extends TestCase
 
         static::assertSame(AuthorizeOrderAuthorization::ID, $order->getId());
         $payments = $order->getPurchaseUnits()[0]->getPayments();
+        static::assertNotNull($payments);
         $authorizations = $payments->getAuthorizations();
         static::assertNotNull($authorizations);
         static::assertSame('CREATED', $authorizations[0]->getStatus());

@@ -21,7 +21,7 @@ ecs-fix: ## Run easy coding standard on php
 phpstan:
 	@composer dump-autoload --dev
 	@php $(PLUGIN_ROOT)/bin/phpstan-config-generator.php
-	@php $(PLUGIN_ROOT)/vendor/bin/phpstan analyze --configuration $(PLUGIN_ROOT)/phpstan.neon
+	@php $(PLATFORM_ROOT)/vendor/bin/phpstan analyze --configuration $(PLUGIN_ROOT)/phpstan.neon
 .PHONY: phpstan
 
 psalm:
