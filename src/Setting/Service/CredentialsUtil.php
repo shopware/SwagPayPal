@@ -45,6 +45,6 @@ class CredentialsUtil implements CredentialsUtilInterface
 
     public function getBaseUrl(?string $salesChannelId = null): string
     {
-        return $this->isSandbox() ? BaseURL::SANDBOX : BaseURL::LIVE;
+        return $this->isSandbox($salesChannelId) ? BaseURL::SANDBOX : BaseURL::LIVE;
     }
 }
