@@ -1,3 +1,6 @@
+# 5.4.3
+- PPI-654 - Fixes an issue, where Zettle sync errors were not displayed
+
 # 5.4.2
 - PPI-723 - Fixes an issue, where some APM payment methods did not work sometimes due to unannounced PayPal API changes
 - PPI-724 - Fixes an issue, where the payment could fail if PayPal did not send full capture / authorization details
