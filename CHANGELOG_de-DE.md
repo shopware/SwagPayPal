@@ -1,5 +1,6 @@
 # 5.4.3
 - PPI-654 - Behebt ein Problem, bei dem Zettle Synchronisationsfehler nicht angezeigt wurden
+- PPI-718 - Behebt ein Problem, bei dem das Onboarding für Sales-Channel-spezifischen Konfigurationen nicht abgeschlossen werden konnte
 
 # 5.4.2
 - PPI-723 - Behebt ein Problem, bei dem aufgrund von unangekündigten API-Änderungen bei PayPal einige APM-Zahlungsmethoden manchmal nicht mehr funktionierten
