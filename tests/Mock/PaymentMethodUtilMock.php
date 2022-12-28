@@ -20,23 +20,10 @@ class PaymentMethodUtilMock extends PaymentMethodUtil
 
     public function __construct()
     {
-        parent::__construct(new PaymentMethodRepoMock(), new SalesChannelRepoMock());
     }
 
     public function getPayPalPaymentMethodId(Context $context): string
     {
         return self::PAYMENT_METHOD_ID;
-    }
-
-    public function isPaypalPaymentMethodInSalesChannel(
-        SalesChannelContext $salesChannelContext,
-        ?PaymentMethodCollection $paymentMethods = null
-    ): bool {
-        $paymentMethodCollection = $salesChannelContext->getSalesChannel()->getPaymentMethods();
-        if (!$paymentMethodCollection) {
-            return false;
-        }
-
-        return $paymentMethodCollection->has(self::PAYMENT_METHOD_ID);
     }
 }

@@ -1,5 +1,6 @@
 # 5.4.3
 - PPI-654 - Fixes an issue, where Zettle sync errors were not displayed
+- PPI-661 - Small performance improvements
 - PPI-718 - Fixes an issue, where onboarding for specific Sales Channel configurations could not be completed
 
 # 5.4.2

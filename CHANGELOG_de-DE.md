@@ -1,5 +1,6 @@
 # 5.4.3
 - PPI-654 - Behebt ein Problem, bei dem Zettle Synchronisationsfehler nicht angezeigt wurden
+- PPI-661 - Kleine Performance-Verbesserungen
 - PPI-718 - Behebt ein Problem, bei dem das Onboarding für Sales-Channel-spezifischen Konfigurationen nicht abgeschlossen werden konnte
 
 # 5.4.2

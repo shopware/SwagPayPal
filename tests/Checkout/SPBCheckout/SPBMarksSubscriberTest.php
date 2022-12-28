@@ -54,9 +54,7 @@ class SPBMarksSubscriberTest extends TestCase
     {
         $subscriber = $this->createSubscriber();
         $event = $this->createAccountEvent();
-        $event->getSalesChannelContext()->getSalesChannel()->setPaymentMethods(
-            new PaymentMethodCollection([])
-        );
+        $event->getSalesChannelContext()->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection());
         $subscriber->addMarksExtension($event);
 
         static::assertNull(
@@ -254,6 +252,7 @@ class SPBMarksSubscriberTest extends TestCase
 
         $paypalPaymentMethod = new PaymentMethodEntity();
         $paypalPaymentMethod->setId(PaymentMethodUtilMock::PAYMENT_METHOD_ID);
+        $paypalPaymentMethod->setActive(true);
         $salesChannelContext->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection([
             $paypalPaymentMethod,
         ]));
