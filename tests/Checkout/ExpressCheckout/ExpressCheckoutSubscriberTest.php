@@ -261,6 +261,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
     {
         $salesChannelContext = $this->createSalesChannelContext();
         $salesChannelContext->getSalesChannel()->setId(Uuid::randomHex());
+        $salesChannelContext->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection());
         $event = new CheckoutRegisterPageLoadedEvent(
             new CheckoutRegisterPage(),
             $salesChannelContext,
@@ -380,6 +381,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $event = $this->createBuyBoxSwitchEvent();
         $event->getSalesChannelContext()->getSalesChannel()->setId(Uuid::randomHex());
+        $event->getSalesChannelContext()->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection());
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToBuyBoxSwitch($event);
 
@@ -418,6 +420,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
     {
         $event = $this->createQuickviewPageletLoadedEvent();
         $event->getSalesChannelContext()->getSalesChannel()->setId(Uuid::randomHex());
+        $event->getSalesChannelContext()->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection());
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToPagelet($event);
 
@@ -632,6 +635,7 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
         $salesChannelContext->getSalesChannel()->setPaymentMethodIds($paymentMethodIds);
         $salesChannelContext->getSalesChannel()->setPaymentMethods($paymentMethods);
+        $this->getContainer()->get(PaymentMethodUtil::class)->reset();
 
         return $salesChannelContext;
     }

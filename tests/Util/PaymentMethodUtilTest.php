@@ -7,11 +7,14 @@
 
 namespace Swag\PayPal\Test\Util;
 
+use Doctrine\DBAL\Connection;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Test\Mock\Repositories\PaymentMethodRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -24,15 +27,28 @@ class PaymentMethodUtilTest extends TestCase
 
     private SalesChannelRepoMock $salesChannelRepoMock;
 
+    /**
+     * @var Connection&MockObject
+     */
+    private Connection $connectionMock;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->salesChannelRepoMock = new SalesChannelRepoMock();
-        $this->paymentMethodUtil = new PaymentMethodUtil(new PaymentMethodRepoMock(), $this->salesChannelRepoMock);
+        $this->connectionMock = $this->createMock(Connection::class);
+        $this->paymentMethodUtil = new PaymentMethodUtil(
+            $this->connectionMock,
+            $this->salesChannelRepoMock
+        );
     }
 
     public function testGetPayPalPaymentMethodId(): void
     {
+        $this->connectionMock->expects(static::once())
+            ->method('fetchAllKeyValue')
+            ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
+
         $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
 
         static::assertSame(PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID, $paymentMethodId);
@@ -40,14 +56,25 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testGetPayPalPaymentMethodIdWithWrongHandler(): void
     {
-        $context = $this->getContextWithoutPaymentId();
-        $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId($context);
+        $this->connectionMock->expects(static::once())
+            ->method('fetchAllKeyValue')
+            ->willReturn([]);
+
+        $paymentMethodId = $this->paymentMethodUtil->getPayPalPaymentMethodId(Context::createDefaultContext());
 
         static::assertNull($paymentMethodId);
     }
 
     public function testGetPaypalPaymentMethodInSalesChannel(): void
     {
+        $this->connectionMock->expects(static::once())
+            ->method('fetchAllKeyValue')
+            ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
+
+        $this->connectionMock->expects(static::once())
+            ->method('fetchFirstColumn')
+            ->willReturn([Defaults::SALES_CHANNEL]);
+
         $salesChannel = new SalesChannelEntity();
         $salesChannel->setId(Defaults::SALES_CHANNEL);
         $salesChannelContext = Generator::createSalesChannelContext(
@@ -61,14 +88,37 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testGetPaypalPaymentMethodInSalesChannelWithoutPayPalPaymentMethodId(): void
     {
+        $this->connectionMock->expects(static::once())
+            ->method('fetchAllKeyValue')
+            ->willReturn([]);
+
+        $this->connectionMock->expects(static::never())->method('fetchFirstColumn');
+
         $salesChannel = new SalesChannelEntity();
         $salesChannel->setId(Defaults::SALES_CHANNEL);
-        $baseContext = Context::createDefaultContext();
-        $baseContext->assign([
-            'versionId' => PaymentMethodRepoMock::VERSION_ID_WITHOUT_PAYMENT_METHOD,
-        ]);
         $salesChannelContext = Generator::createSalesChannelContext(
-            $baseContext,
+            null,
+            null,
+            null,
+            $salesChannel
+        );
+        static::assertFalse($this->paymentMethodUtil->isPaypalPaymentMethodInSalesChannel($salesChannelContext));
+    }
+
+    public function testGetPaypalPaymentMethodInSalesChannelWithoutAssignment(): void
+    {
+        $this->connectionMock->expects(static::once())
+            ->method('fetchAllKeyValue')
+            ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
+
+        $this->connectionMock->expects(static::once())
+            ->method('fetchFirstColumn')
+            ->willReturn([]);
+
+        $salesChannel = new SalesChannelEntity();
+        $salesChannel->setId(Defaults::SALES_CHANNEL);
+        $salesChannelContext = Generator::createSalesChannelContext(
+            null,
             null,
             null,
             $salesChannel
@@ -78,6 +128,10 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testSetPayPalAsDefaultPaymentMethodForASpecificSalesChannel(): void
     {
+        $this->connectionMock->expects(static::once())
+            ->method('fetchAllKeyValue')
+            ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
+
         $context = Context::createDefaultContext();
         $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod($context, Defaults::SALES_CHANNEL);
         $this->assertPaymentMethodUpdate($context);
@@ -85,6 +139,10 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testSetPayPalAsDefaultPaymentMethodForAllCompatibleSalesChannels(): void
     {
+        $this->connectionMock->expects(static::once())
+            ->method('fetchAllKeyValue')
+            ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
+
         $context = Context::createDefaultContext();
         $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod($context, null);
         $this->assertPaymentMethodUpdate($context, false);
@@ -92,25 +150,13 @@ class PaymentMethodUtilTest extends TestCase
 
     public function testSetPayPalAsDefaultPaymentWithoutBeingPresentForTheRequestedSalesChannel(): void
     {
+        $this->connectionMock->expects(static::once())
+            ->method('fetchAllKeyValue')
+            ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
+
         $context = Context::createDefaultContext();
         $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod($context, self::SALESCHANNEL_WITHOUT_PAYPAL_PAYMENT_METHOD);
         $this->assertPaymentMethodUpdate($context, false);
-    }
-
-    private function getContextWithoutPaymentId(): Context
-    {
-        $defaultContext = Context::createDefaultContext();
-
-        return new Context(
-            $defaultContext->getSource(),
-            $defaultContext->getRuleIds(),
-            $defaultContext->getCurrencyId(),
-            $defaultContext->getLanguageIdChain(),
-            PaymentMethodRepoMock::VERSION_ID_WITHOUT_PAYMENT_METHOD,
-            $defaultContext->getCurrencyFactor(),
-            $defaultContext->considerInheritance(),
-            $defaultContext->getTaxState()
-        );
     }
 
     private function assertPaymentMethodUpdate(Context $context, bool $paypalPaymentMethodPresent = true): void

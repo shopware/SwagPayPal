@@ -7,12 +7,12 @@
 
 namespace Swag\PayPal\Test\Administration;
 
+use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
-use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
-use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Administration\PayPalPaymentMethodController;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Test\Mock\Repositories\PaymentMethodRepoMock;
 use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Util\PaymentMethodUtilTest;
@@ -22,13 +22,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PayPalPaymentMethodControllerTest extends TestCase
 {
-    use KernelTestBehaviour;
-    use DatabaseTransactionBehaviour;
-
     public function testSetPayPalPaymentMethodAsSalesChannelDefault(): void
     {
         $salesChannelRepoMock = new SalesChannelRepoMock();
-        $paymentMethodUtil = new PaymentMethodUtil(new PaymentMethodRepoMock(), $salesChannelRepoMock);
+
+        $connection = $this->createMock(Connection::class);
+        $connection->expects(static::once())
+            ->method('fetchAllKeyValue')
+            ->willReturn([PayPalPaymentHandler::class => PaymentMethodRepoMock::PAYPAL_PAYMENT_METHOD_ID]);
+        $paymentMethodUtil = new PaymentMethodUtil($connection, $salesChannelRepoMock);
         $context = Context::createDefaultContext();
 
         $response = $this->createPayPalPaymentMethodController($salesChannelRepoMock, $paymentMethodUtil)
@@ -64,7 +66,7 @@ class PayPalPaymentMethodControllerTest extends TestCase
             $salesChannelRepoMock = new SalesChannelRepoMock();
         }
         if ($paymentMethodUtil === null) {
-            $paymentMethodUtil = new PaymentMethodUtil(new PaymentMethodRepoMock(), $salesChannelRepoMock);
+            $paymentMethodUtil = new PaymentMethodUtil($this->createMock(Connection::class), $salesChannelRepoMock);
         }
 
         return new PayPalPaymentMethodController($paymentMethodUtil);

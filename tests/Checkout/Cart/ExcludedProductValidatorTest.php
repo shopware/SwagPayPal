@@ -22,11 +22,14 @@ use Swag\PayPal\Checkout\Cart\Service\ExcludedProductValidator;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutSubscriber;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\FullCheckoutTrait;
+use Swag\PayPal\Test\Helper\PaymentMethodTrait;
+use Swag\PayPal\Util\PaymentMethodUtil;
 
 class ExcludedProductValidatorTest extends TestCase
 {
     use IntegrationTestBehaviour;
     use FullCheckoutTrait;
+    use PaymentMethodTrait;
 
     private ExcludedProductValidator $validator;
 
@@ -38,6 +41,8 @@ class ExcludedProductValidatorTest extends TestCase
     {
         $this->validator = $this->getContainer()->get(ExcludedProductValidator::class);
         $this->systemConfig = $this->getContainer()->get(SystemConfigService::class);
+        $paymentMethodUtil = $this->getContainer()->get(PaymentMethodUtil::class);
+        $paymentMethodUtil->reset();
 
         $this->idsCollection = new IdsCollection();
         $this->idsCollection->set('parent', $this->createProduct());

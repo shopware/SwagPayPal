@@ -76,6 +76,7 @@ class InstallmentBannerSubscriberTest extends TestCase
         $this->context = Context::createDefaultContext();
         $this->payPalPaymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($this->context);
         $this->excludedProductValidator = $this->createMock(ExcludedProductValidator::class);
+        $this->paymentMethodUtil->reset();
     }
 
     protected function tearDown(): void

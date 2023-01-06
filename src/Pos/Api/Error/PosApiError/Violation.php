@@ -11,18 +11,18 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 
 class Violation extends PosStruct
 {
-    protected string $propertyName;
+    protected ?string $propertyName = null;
 
-    protected string $developerMessage;
+    protected ?string $developerMessage = null;
 
-    protected string $constraintType;
+    protected ?string $constraintType = null;
 
     public function toString(): string
     {
-        return \sprintf('The property "%s" %s', $this->propertyName, $this->developerMessage);
+        return \sprintf('The property "%s" %s', $this->propertyName ?? '', $this->developerMessage ?? '');
     }
 
-    public function getPropertyName(): string
+    public function getPropertyName(): ?string
     {
         return $this->propertyName;
     }
@@ -32,7 +32,7 @@ class Violation extends PosStruct
         $this->propertyName = $propertyName;
     }
 
-    public function getDeveloperMessage(): string
+    public function getDeveloperMessage(): ?string
     {
         return $this->developerMessage;
     }
@@ -42,7 +42,7 @@ class Violation extends PosStruct
         $this->developerMessage = $developerMessage;
     }
 
-    public function getConstraintType(): string
+    public function getConstraintType(): ?string
     {
         return $this->constraintType;
     }
