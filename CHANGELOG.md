@@ -2,6 +2,7 @@
 - PPI-654 - Fixes an issue, where Zettle sync errors were not displayed
 - PPI-661 - Small performance improvements
 - PPI-718 - Fixes an issue, where onboarding for specific Sales Channel configurations could not be completed
+- PPI-733 - Fixes an issue, where the Sandbox flag was not correctly respected in specific Sales Channel configurations
 
 # 5.4.2
 - PPI-723 - Fixes an issue, where some APM payment methods did not work sometimes due to unannounced PayPal API changes
