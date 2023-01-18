@@ -1,0 +1,9 @@
+{% extends '@Storefront/storefront/layout/meta.html.twig' %}
+
+{% block layout_head_javascript_hmr_mode %}
+    {{ parent() }}
+
+    {% if page.extensions[constant('Swag\\PayPal\\Checkout\\Plus\\PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID')] %}
+        <script src="https://www.paypalobjects.com/webstatic/ppplus/ppplus.min.js"></script>
+    {% endif %}
+{% endblock %}

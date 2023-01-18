@@ -287,10 +287,13 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
      * @return {Promise}
      */
     createOrder() {
-        const switchPaymentMethodData = { paymentMethodId: this.options.payPalPaymentMethodId };
+        const switchPaymentMethodData = {
+            paymentMethodId: this.options.payPalPaymentMethodId,
+            deleteCart: this.options.addProductToCart,
+        };
 
         return new Promise((resolve, reject) => {
-            this._client.patch(
+            this._client.post(
                 this.options.contextSwitchUrl,
                 JSON.stringify(switchPaymentMethodData),
                 (responseText, request) => {
@@ -343,13 +346,11 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
         const plugin = window.PluginManager.getPluginInstanceFromElement(buyForm, 'AddToCart');
 
         return new Promise(resolve => {
-            this._client.delete(this.options.deleteCartUrl, null, () => {
-                plugin.$emitter.subscribe('openOffCanvasCart', () => {
-                    resolve();
-                });
-
-                buyButton.click();
+            plugin.$emitter.subscribe('openOffCanvasCart', () => {
+                resolve();
             });
+
+            buyButton.click();
         });
     }
 

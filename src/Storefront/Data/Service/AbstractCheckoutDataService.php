@@ -84,8 +84,8 @@ abstract class AbstractCheckoutDataService
             'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $salesChannelId)),
             'buttonShape' => $this->systemConfigService->getString(Settings::SPB_BUTTON_SHAPE, $salesChannelId),
             'paymentMethodId' => $paymentMethodId,
-            'createOrderUrl' => $this->router->generate('store-api.paypal.create_order'),
-            'addErrorUrl' => $this->router->generate('store-api.paypal.error'),
+            'createOrderUrl' => $this->router->generate('frontend.paypal.create_order'),
+            'addErrorUrl' => $this->router->generate('frontend.paypal.error'),
         ];
 
         if ($generateToken) {

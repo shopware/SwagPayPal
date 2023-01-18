@@ -52,7 +52,7 @@ class FundingEligibilityDataService
                 'languageIso' => $this->getButtonLanguage($context),
                 'currency' => $context->getCurrency()->getIsoCode(),
                 'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $context->getSalesChannelId())),
-                'methodEligibilityUrl' => $this->router->generate('store-api.paypal.payment-method-eligibility'),
+                'methodEligibilityUrl' => $this->router->generate('frontend.paypal.payment-method-eligibility'),
                 'filteredPaymentMethods' => $this->getFilteredPaymentMethods(),
             ]
         );

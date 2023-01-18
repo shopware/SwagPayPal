@@ -41,8 +41,6 @@ class ExpressCheckoutButtonData extends Struct
 
     protected string $createOrderUrl;
 
-    protected string $deleteCartUrl;
-
     protected string $prepareCheckoutUrl;
 
     protected string $checkoutConfirmUrl;
@@ -131,11 +129,6 @@ class ExpressCheckoutButtonData extends Struct
     public function getCreateOrderUrl(): string
     {
         return $this->createOrderUrl;
-    }
-
-    public function getDeleteCartUrl(): string
-    {
-        return $this->deleteCartUrl;
     }
 
     public function getPrepareCheckoutUrl(): string

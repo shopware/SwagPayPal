@@ -1,5 +1,4 @@
 import Plugin from 'src/plugin-system/plugin.class';
-import DomAccess from 'src/helper/dom-access.helper';
 import { loadScript } from '@paypal/paypal-js';
 import SwagPayPalScriptLoading from './swag-paypal.script-loading';
 
@@ -98,19 +97,13 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             return;
         }
 
-        const requestPayload = {
-            _csrf_token: DomAccess.getDataAttribute(this.el, 'data-swag-pay-pal-add-error-token'),
-            error,
-            cancel,
-        };
-
         if (this.options.accountOrderEditCancelledUrl && this.options.accountOrderEditFailedUrl) {
             window.location = cancel ? this.options.accountOrderEditCancelledUrl : this.options.accountOrderEditFailedUrl;
 
             return;
         }
 
-        this._client.post(addErrorUrl, JSON.stringify(requestPayload), () => {
+        this._client.post(addErrorUrl, JSON.stringify({error, cancel}), () => {
             if (!redirect) {
                 window.onbeforeunload = () => {
                     window.scrollTo(0, 0);

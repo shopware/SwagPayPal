@@ -103,7 +103,6 @@ class PlusSubscriberTest extends TestCase
         $subscriber->onAccountEditOrderLoaded($event);
         $plusExtension = $this->assertPlusExtension($event);
 
-        static::assertSame('/store-api/order/payment', $plusExtension->getSetPaymentRouteUrl());
         static::assertSame(ConstantsForTesting::VALID_ORDER_ID, $plusExtension->getOrderId());
     }
 
@@ -594,9 +593,7 @@ class PlusSubscriberTest extends TestCase
         static::assertSame($this->paypalPaymentMethodId, $plusExtension->getPaymentMethodId());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $plusExtension->getPaypalPaymentId());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_TOKEN, $plusExtension->getPaypalToken());
-        static::assertSame('/store-api/checkout/order', $plusExtension->getCheckoutOrderUrl());
-        static::assertSame('/store-api/handle-payment', $plusExtension->getHandlePaymentUrl());
-        static::assertSame('/store-api/context', $plusExtension->getContextSwitchUrl());
+        static::assertSame('/paypal/plus/payment/handle', $plusExtension->getHandlePaymentUrl());
         static::assertSame(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, $plusExtension->getIsEnabledParameterName());
         static::assertSame($event->getContext()->getLanguageId(), $plusExtension->getLanguageId());
 

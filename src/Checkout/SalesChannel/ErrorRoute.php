@@ -73,8 +73,10 @@ class ErrorRoute extends AbstractErrorRoute
      *     "/store-api/paypal/error",
      *     name="store-api.paypal.error",
      *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true}
+     *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false}
      * )
+     *
+     * @deprecated tag:v7.0.0 - will be removed, since this is basically a storefront command, use PayPalController::addErrorMessage instead
      */
     public function addErrorMessage(Request $request): Response
     {

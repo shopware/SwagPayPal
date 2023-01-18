@@ -1,9 +1,9 @@
 {% sw_extends '@Storefront/storefront/page/checkout/confirm/index.html.twig' %}
 
-{% block page_checkout_aside_actions_csrf %}
+{% block page_checkout_confirm_form_submit %}
     {{ parent() }}
 
-    {% block page_checkout_aside_actions_csrf_paypal_container %}
+    {% block ppage_checkout_confirm_form_submit_paypal_container %}
         {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-spb-data.html.twig' %}
     {% endblock %}
 {% endblock %}

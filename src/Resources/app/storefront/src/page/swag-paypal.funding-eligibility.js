@@ -63,7 +63,7 @@ export default class SwagPayPalFundingEligibility extends SwagPaypalAbstractButt
         filteredPaymentMethods: [],
 
         /**
-         * The Store-API URL to filter payment methods
+         * The url to filter payment methods
          *
          * @type string
          */

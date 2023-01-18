@@ -77,7 +77,7 @@ class FundingSubscriberTest extends TestCase
         static::assertSame('EUR', $extension->getCurrency());
         static::assertSame('de_DE', $extension->getLanguageIso());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $extension->getIntent());
-        static::assertSame('/store-api/paypal/payment-method-eligibility', $extension->getMethodEligibilityUrl());
+        static::assertSame('/paypal/payment-method-eligibility', $extension->getMethodEligibilityUrl());
         static::assertSame(['SEPA'], $extension->getFilteredPaymentMethods());
     }
 

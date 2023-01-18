@@ -31,6 +31,18 @@
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="router"/>
             <argument type="service" id="Swag\PayPal\Util\Logger"/>
+
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="Swag\PayPal\Checkout\Plus\PlusPaymentHandleController" public="true">
+            <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
+            <argument type="service" id="Shopware\Storefront\Controller\AccountOrderController"/>
+            <argument type="service" id="Shopware\Storefront\Controller\CheckoutController"/>
+            <argument type="service" id="request_stack"/>
+
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>

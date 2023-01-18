@@ -10,8 +10,10 @@ namespace Swag\PayPal\Storefront;
 use Psr\Log\LoggerInterface;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
 use Shopware\Storefront\Event\RouteRequest\PaymentMethodRouteRequestEvent;
+use Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
+use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -22,6 +24,9 @@ class RequestSubscriber implements EventSubscriberInterface
         PUIHandler::PUI_FRAUD_NET_SESSION_ID,
         PUICustomerDataService::PUI_CUSTOMER_DATA_BIRTHDAY,
         PUICustomerDataService::PUI_CUSTOMER_DATA_PHONE_NUMBER,
+        PlusPuiHandler::PAYPAL_PAYMENT_ID_INPUT_NAME,
+        PlusPuiHandler::PAYPAL_PAYMENT_TOKEN_INPUT_NAME,
+        PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID,
     ];
 
     private LoggerInterface $logger;

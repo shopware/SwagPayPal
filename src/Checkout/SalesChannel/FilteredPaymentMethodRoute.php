@@ -117,7 +117,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
      *       )
      *    )
      * )
-     * @Route("/store-api/payment-method", name="store-api.payment.method", methods={"GET", "POST"})
+     * @Route("/store-api/payment-method", name="store-api.payment.method", methods={"GET", "POST"}, defaults={"_entity"="payment_method"})
      */
     public function load(Request $request, SalesChannelContext $context, Criteria $criteria): PaymentMethodRouteResponse
     {

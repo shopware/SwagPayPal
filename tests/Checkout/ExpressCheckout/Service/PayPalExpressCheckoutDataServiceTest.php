@@ -185,12 +185,11 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
         static::assertSame('EUR', $expressCheckoutButtonData->getCurrency());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $expressCheckoutButtonData->getIntent());
         static::assertSame($addToCart, $expressCheckoutButtonData->getAddProductToCart());
-        static::assertSame('/store-api/paypal/express/create-order', $expressCheckoutButtonData->getCreateOrderUrl());
-        static::assertSame('/store-api/checkout/cart', $expressCheckoutButtonData->getDeleteCartUrl());
-        static::assertSame('/store-api/paypal/express/prepare-checkout', $expressCheckoutButtonData->getPrepareCheckoutUrl());
+        static::assertSame('/paypal/express/create-order', $expressCheckoutButtonData->getCreateOrderUrl());
+        static::assertSame('/paypal/express/prepare-checkout', $expressCheckoutButtonData->getPrepareCheckoutUrl());
         static::assertStringContainsString('/checkout/confirm', $expressCheckoutButtonData->getCheckoutConfirmUrl());
-        static::assertSame('/store-api/context', $expressCheckoutButtonData->getContextSwitchUrl());
-        static::assertSame('/store-api/paypal/error', $expressCheckoutButtonData->getAddErrorUrl());
+        static::assertSame('/paypal/express/prepare-cart', $expressCheckoutButtonData->getContextSwitchUrl());
+        static::assertSame('/paypal/error', $expressCheckoutButtonData->getAddErrorUrl());
         static::assertSame($addToCart ? '/checkout/cart' : '/checkout/register', $expressCheckoutButtonData->getCancelRedirectUrl());
         static::assertTrue($expressCheckoutButtonData->isDisablePayLater());
         static::assertNotNull($expressCheckoutButtonData->getPayPalPaymentMethodId());
