@@ -3,11 +3,18 @@
         @extend .m-sm-0;
         @extend .py-1;
         @extend .p-sm-3;
-        @extend .col-sm-6;
+    }
+
+    .instruction-title {
+        @extend .col-sm-5;
+    }
+
+    .instruction-description {
+        @extend .col-sm-7;
     }
 
     dt:nth-of-type(#{$table-striped-order}), dd:nth-of-type(#{$table-striped-order}) {
-        background-color: $table-accent-bg;
+        background-color: $gray-100;
     }
 
     .instruction-title {

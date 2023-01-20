@@ -1,5 +1,7 @@
 {% sw_extends '@Storefront/storefront/component/payment/payment-method.html.twig' %}
 
+{% set isBootstrap5 = feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
+
 {% block component_payment_method_description %}
     {{ parent() }}
 
@@ -127,13 +129,13 @@
                     {% endblock %}
 
                     {% block swag_paypal_pui_customer_data_form_birthday_selects %}
-                    <div class="form-row">
+                    <div class="{{ isBootstrap5 ? 'row g-2' : 'form-row' }}">
 
                         {% block swag_paypal_pui_customer_data_form_birthday_select_day %}
                             <div class="form-group col-4">
                                 <select id="{{ birthdayName }}"
                                         name="{{ birthdayName }}[day]"
-                                        class="custom-select"
+                                        class="{{ isBootstrap5 ? 'form-select' : 'custom-select' }}"
                                         form="confirmOrderForm"
                                         required="required">
                                     <option selected="selected"
@@ -151,7 +153,7 @@
                         {% block swag_paypal_pui_customer_data_form_birthday_select_month %}
                             <div class="form-group col-4">
                                 <select name="{{ birthdayName }}[month]"
-                                        class="custom-select"
+                                        class="{{ isBootstrap5 ? 'form-select' : 'custom-select' }}"
                                         form="confirmOrderForm"
                                         required="required">
                                     <option selected="selected"
@@ -172,7 +174,7 @@
                                 {% set startYear = currentYear - 120 %}
 
                                 <select name="{{ birthdayName }}[year]"
-                                        class="custom-select"
+                                        class="{{ isBootstrap5 ? 'form-select' : 'custom-select' }}"
                                         form="confirmOrderForm"
                                         required="required">
                                     <option selected="selected"
