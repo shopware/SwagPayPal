@@ -7,11 +7,16 @@
 
 namespace Swag\PayPal\Webhook\Command;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
+#[AsCommand(
+    name: 'swag:paypal:crawl:webhooks',
+    description: 'Crawls the PayPal developer website for webhook event names and updates "Swag\PayPal\Webhook\WebhookEventTypes"',
+)]
 class CrawlWebhookEventNamesCommand extends Command
 {
     private const PAYPAL_WEBHOOK_PAGE = 'https://developer.paypal.com/docs/api-basics/notifications/webhooks/event-names/';
@@ -19,12 +24,7 @@ class CrawlWebhookEventNamesCommand extends Command
     private const WEBHOOK_DESCRIPTION_KEY = 'webhookDescription';
 
     protected static $defaultName = 'swag:paypal:crawl:webhooks';
-
-    protected function configure(): void
-    {
-        parent::configure();
-        $this->setDescription('Crawls the PayPal developer website for webhook event names and updates "Swag\PayPal\Webhook\WebhookEventTypes"');
-    }
+    protected static $defaultDescription = 'Crawls the PayPal developer website for webhook event names and updates "Swag\PayPal\Webhook\WebhookEventTypes"';
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

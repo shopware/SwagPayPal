@@ -11,11 +11,17 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\CompleteTask;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(
+    name: 'swag:paypal:pos:sync',
+    description: 'Sync to Zettle',
+)]
 class PosSyncCommand extends AbstractPosCommand
 {
     protected static $defaultName = 'swag:paypal:pos:sync';
+    protected static $defaultDescription = 'Sync to Zettle';
 
     private CompleteTask $completeTask;
 
@@ -25,15 +31,6 @@ class PosSyncCommand extends AbstractPosCommand
     ) {
         parent::__construct($salesChannelRepository);
         $this->completeTask = $completeTask;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure(): void
-    {
-        parent::configure();
-        $this->setDescription('Sync to Zettle');
     }
 
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void

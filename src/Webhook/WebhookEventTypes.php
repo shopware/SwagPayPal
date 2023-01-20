@@ -13,7 +13,6 @@ namespace Swag\PayPal\Webhook;
 final class WebhookEventTypes
 {
     public const ALL_EVENTS = '*';
-
     /* A payment authorization is created, approved, executed, or a future payment authorization is created. */
     public const PAYMENT_AUTHORIZATION_CREATED = 'PAYMENT.AUTHORIZATION.CREATED';
     /* A payment authorization is voided. */
@@ -28,7 +27,6 @@ final class WebhookEventTypes
     public const PAYMENT_CAPTURE_REFUNDED = 'PAYMENT.CAPTURE.REFUNDED';
     /* PayPal reverses a payment capture. */
     public const PAYMENT_CAPTURE_REVERSED = 'PAYMENT.CAPTURE.REVERSED';
-
     /* A batch payout payment is denied. */
     public const PAYMENT_PAYOUTSBATCH_DENIED = 'PAYMENT.PAYOUTSBATCH.DENIED';
     /* The state of a batch payout payment changes to processing. */
@@ -53,11 +51,6 @@ final class WebhookEventTypes
     public const PAYMENT_PAYOUTS_ITEM_SUCCEEDED = 'PAYMENT.PAYOUTS-ITEM.SUCCEEDED';
     /* A payouts item is unclaimed. */
     public const PAYMENT_PAYOUTS_ITEM_UNCLAIMED = 'PAYMENT.PAYOUTS-ITEM.UNCLAIMED';
-
-    /* A billing agreement is created. */
-    public const BILLING_AGREEMENTS_AGREEMENT_CREATED = 'BILLING_AGREEMENTS.AGREEMENT.CREATED';
-    /* A billing agreement is cancelled. */
-    public const BILLING_AGREEMENTS_AGREEMENT_CANCELLED = 'BILLING_AGREEMENTS.AGREEMENT.CANCELLED';
     /* A billing plan is created. */
     public const BILLING_PLAN_CREATED = 'BILLING.PLAN.CREATED';
     /* A billing plan is updated. */
@@ -72,17 +65,14 @@ final class WebhookEventTypes
     public const BILLING_SUBSCRIPTION_SUSPENDED = 'BILLING.SUBSCRIPTION.SUSPENDED';
     /* A billing agreement is updated. */
     public const BILLING_SUBSCRIPTION_UPDATED = 'BILLING.SUBSCRIPTION.UPDATED';
-
     /* A user's consent token is revoked. */
     public const IDENTITY_AUTHORIZATION_CONSENT_REVOKED = 'IDENTITY.AUTHORIZATION-CONSENT.REVOKED';
-
     /* Checkout payment is created and approved by buyer. */
     public const PAYMENTS_PAYMENT_CREATED = 'PAYMENTS.PAYMENT.CREATED';
     /* See Orders. */
     public const CHECKOUT_ORDER_APPROVED = 'CHECKOUT.ORDER.APPROVED';
     /* Express checkout payment is created and approved by buyer. */
     public const CHECKOUT_CHECKOUT_BUYER_APPROVED = 'CHECKOUT.CHECKOUT.BUYER-APPROVED';
-
     /* A dispute is created. */
     public const CUSTOMER_DISPUTE_CREATED = 'CUSTOMER.DISPUTE.CREATED';
     /* A dispute is resolved. */
@@ -91,7 +81,6 @@ final class WebhookEventTypes
     public const CUSTOMER_DISPUTE_UPDATED = 'CUSTOMER.DISPUTE.UPDATED';
     /* A risk dispute is created. */
     public const RISK_DISPUTE_CREATED = 'RISK.DISPUTE.CREATED';
-
     /* A merchant or customer cancels an invoice. */
     public const INVOICING_INVOICE_CANCELLED = 'INVOICING.INVOICE.CANCELLED';
     /* An invoice is created. */
@@ -104,10 +93,9 @@ final class WebhookEventTypes
     public const INVOICING_INVOICE_SCHEDULED = 'INVOICING.INVOICE.SCHEDULED';
     /* An invoice is updated. */
     public const INVOICING_INVOICE_UPDATED = 'INVOICING.INVOICE.UPDATED';
-
-    /* See CHECKOUT.ORDER.COMPLETED. */
+    /* A Buyer's order has been completed. */
     public const CHECKOUT_ORDER_COMPLETED = 'CHECKOUT.ORDER.COMPLETED';
-    /* See CHECKOUT.ORDER.PROCESSED. */
+    /* A Buyer's order is being processed. */
     public const CHECKOUT_ORDER_PROCESSED = 'CHECKOUT.ORDER.PROCESSED';
     /* A limitation is added for a partner's managed account. */
     public const CUSTOMER_ACCOUNT_LIMITATION_ADDED = 'CUSTOMER.ACCOUNT-LIMITATION.ADDED';
@@ -137,12 +125,24 @@ final class WebhookEventTypes
     public const PAYMENT_REFERENCED_PAYOUT_ITEM_COMPLETED = 'PAYMENT.REFERENCED-PAYOUT-ITEM.COMPLETED';
     /* Attempt to disburse funds fails. */
     public const PAYMENT_REFERENCED_PAYOUT_ITEM_FAILED = 'PAYMENT.REFERENCED-PAYOUT-ITEM.FAILED';
-
+    /* Managed account has been created. */
+    public const CUSTOMER_MANAGED_ACCOUNT_ACCOUNT_CREATED = 'CUSTOMER.MANAGED-ACCOUNT.ACCOUNT-CREATED';
+    /* Managed account creation failed. */
+    public const CUSTOMER_MANAGED_ACCOUNT_CREATION_FAILED = 'CUSTOMER.MANAGED-ACCOUNT.CREATION-FAILED';
+    /* Managed account has been updated. */
+    public const CUSTOMER_MANAGED_ACCOUNT_ACCOUNT_UPDATED = 'CUSTOMER.MANAGED-ACCOUNT.ACCOUNT-UPDATED';
+    /* Capabilities and/or process status has been changed on a managed account. */
+    public const CUSTOMER_MANAGED_ACCOUNT_ACCOUNT_STATUS_CHANGED = 'CUSTOMER.MANAGED-ACCOUNT.ACCOUNT-STATUS-CHANGED';
+    /* Managed account has been risk assessed or the risk assessment has been changed. */
+    public const CUSTOMER_MANAGED_ACCOUNT_RISK_ASSESSED = 'CUSTOMER.MANAGED-ACCOUNT.RISK-ASSESSED';
+    /* Negative balance debit has been notified on a managed account. */
+    public const CUSTOMER_MANAGED_ACCOUNT_NEGATIVE_BALANCE_NOTIFIED = 'CUSTOMER.MANAGED-ACCOUNT.NEGATIVE-BALANCE-NOTIFIED';
+    /* Negative balance debit has been initiated on a managed account. */
+    public const CUSTOMER_MANAGED_ACCOUNT_NEGATIVE_BALANCE_DEBIT_INITIATED = 'CUSTOMER.MANAGED-ACCOUNT.NEGATIVE-BALANCE-DEBIT-INITIATED';
     /* A payment order is canceled. */
     public const PAYMENT_ORDER_CANCELLED = 'PAYMENT.ORDER.CANCELLED';
     /* A payment order is created. */
     public const PAYMENT_ORDER_CREATED = 'PAYMENT.ORDER.CREATED';
-
     /* A sale completes. */
     public const PAYMENT_SALE_COMPLETED = 'PAYMENT.SALE.COMPLETED';
     /* The state of a sale changes from pending to denied. */
@@ -153,7 +153,6 @@ final class WebhookEventTypes
     public const PAYMENT_SALE_REFUNDED = 'PAYMENT.SALE.REFUNDED';
     /* PayPal reverses a sale. */
     public const PAYMENT_SALE_REVERSED = 'PAYMENT.SALE.REVERSED';
-
     /* A product is created. */
     public const CATALOG_PRODUCT_CREATED = 'CATALOG.PRODUCT.CREATED';
     /* A product is updated. */
@@ -170,7 +169,6 @@ final class WebhookEventTypes
     public const BILLING_SUBSCRIPTION_EXPIRED = 'BILLING.SUBSCRIPTION.EXPIRED';
     /* Payment failed on subscription. */
     public const BILLING_SUBSCRIPTION_PAYMENT_FAILED = 'BILLING.SUBSCRIPTION.PAYMENT.FAILED';
-
     /* A credit card is created. */
     public const VAULT_CREDIT_CARD_CREATED = 'VAULT.CREDIT-CARD.CREATED';
     /* A credit card is deleted. */
