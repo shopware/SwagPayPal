@@ -1,4 +1,5 @@
 # 5.4.4
+- PPI-734 - Behebt ein Problem, bei dem Zahlungsarten beim Zahlartwechsel nach Bestellabschluss nicht angezeigt wurden
 - PPI-735 - Behebt ein Problem, bei dem Zahlungsdetails nicht angezeigt wurden, wenn PayPal nicht die erstgewählte Zahlungsart war
 
 # 5.4.3

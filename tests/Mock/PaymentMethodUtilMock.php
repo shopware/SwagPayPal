@@ -7,11 +7,7 @@
 
 namespace Swag\PayPal\Test\Mock;
 
-use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Swag\PayPal\Test\Mock\Repositories\PaymentMethodRepoMock;
-use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
 class PaymentMethodUtilMock extends PaymentMethodUtil

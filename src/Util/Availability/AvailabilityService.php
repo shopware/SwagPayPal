@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Util\Availability;
 
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -30,6 +31,25 @@ class AvailabilityService
         $handlers = [];
 
         $context = $this->buildAvailabilityContext($cart, $salesChannelContext);
+
+        foreach ($paymentMethods as $paymentMethod) {
+            if (!$this->isAvailable($paymentMethod, $context)) {
+                $handlers[] = $paymentMethod->getHandlerIdentifier();
+            }
+        }
+
+        return $handlers;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function filterPaymentMethodsByOrder(PaymentMethodCollection $paymentMethods, Cart $cart, OrderEntity $order, SalesChannelContext $salesChannelContext): array
+    {
+        $handlers = [];
+
+        $context = $this->buildAvailabilityContext($cart, $salesChannelContext);
+        $context->assign(['totalAmount' => $order->getPrice()->getTotalPrice()]);
 
         foreach ($paymentMethods as $paymentMethod) {
             if (!$this->isAvailable($paymentMethod, $context)) {

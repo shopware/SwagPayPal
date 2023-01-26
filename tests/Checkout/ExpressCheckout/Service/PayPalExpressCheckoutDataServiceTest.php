@@ -248,7 +248,7 @@ class PayPalExpressCheckoutDataServiceTest extends TestCase
             'lastName' => 'Dusel',
             'customerNumber' => 'wusel',
             'email' => 'wuse@dusel.de',
-            'password' => 'annanas',
+            'password' => 'annanas1',
             'defaultPaymentMethodId' => $this->getValidPaymentMethodId(),
             'groupId' => Defaults::FALLBACK_CUSTOMER_GROUP,
             'salesChannelId' => Defaults::SALES_CHANNEL,

@@ -1,4 +1,5 @@
 # 5.4.4
+- PPI-734 - Fixes an issue, where some payment methods were not displayed in after order process
 - PPI-735 - Fixes an issue, where payment details were not shown on orders, where PayPal was not the first chosen payment method
 
 # 5.4.3

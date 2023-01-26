@@ -129,7 +129,7 @@ abstract class AbstractClient
         }
 
         $content = $exceptionResponse->getBody()->getContents();
-        $error = \json_decode($content, true);
+        $error = \json_decode($content, true) ?: [];
         if (\array_key_exists('error', $error) && \array_key_exists('error_description', $error)) {
             $this->logger->error($exceptionMessage, [
                 'error' => $error,
