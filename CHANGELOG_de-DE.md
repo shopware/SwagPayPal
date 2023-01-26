@@ -1,3 +1,6 @@
+# 5.4.4
+- PPI-735 - Behebt ein Problem, bei dem Zahlungsdetails nicht angezeigt wurden, wenn PayPal nicht die erstgewählte Zahlungsart war
+
 # 5.4.3
 - PPI-654 - Behebt ein Problem, bei dem Zettle Synchronisationsfehler nicht angezeigt wurden
 - PPI-661 - Kleine Performance-Verbesserungen

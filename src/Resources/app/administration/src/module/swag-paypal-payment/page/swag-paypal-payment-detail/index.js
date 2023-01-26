@@ -93,7 +93,6 @@ Component.register('swag-paypal-payment-detail', {
             const orderRepository = this.repositoryFactory.create('order');
             const orderCriteria = new Criteria(1, 1);
             orderCriteria.addAssociation('transactions.stateMachineState');
-            orderCriteria.getAssociation('transactions').addSorting(Criteria.sort('createdAt'));
             orderCriteria
                 .getAssociation('transactions')
                 .addSorting(Criteria.sort('createdAt', 'DESC'))
