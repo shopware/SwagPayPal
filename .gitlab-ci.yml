@@ -10,7 +10,7 @@ variables:
     APP_DEBUG: 0
     DEV_IMAGE: shopware/development:7.4-composer-2
     PLATFORM_BRANCH: "6.4"
-    CMS_EXTENSION_BRANCH: "master"
+    CMS_EXTENSION_BRANCH: "2.5-sw6.4.8.0"
     RUN_IN_MR: "true"
     MYSQL_IMAGE: mysql:5.7
     MYSQL_CMD: mysqld

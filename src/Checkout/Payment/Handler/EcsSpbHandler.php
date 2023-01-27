@@ -11,37 +11,26 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\System\Currency\CurrencyCollection;
-use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
-use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Patch;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Swag\PayPal\Setting\Settings;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+/**
+ * @deprecated tag:v6.0.0 - will be removed, use PayPalHandler instead
+ */
 class EcsSpbHandler extends AbstractPaymentHandler
 {
-    private SystemConfigService $systemConfigService;
-
-    private EntityRepositoryInterface $currencyRepository;
-
     private PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder;
 
     private OrderResource $orderResource;
-
-    private ItemListProvider $itemListProvider;
 
     private TransactionDataService $transactionDataService;
 
@@ -49,20 +38,14 @@ class EcsSpbHandler extends AbstractPaymentHandler
 
     public function __construct(
         EntityRepositoryInterface $orderTransactionRepo,
-        SystemConfigService $systemConfigService,
-        EntityRepositoryInterface $currencyRepository,
         PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder,
         OrderResource $orderResource,
-        ItemListProvider $itemListProvider,
         TransactionDataService $transactionDataService,
         LoggerInterface $logger
     ) {
         parent::__construct($orderTransactionRepo);
-        $this->systemConfigService = $systemConfigService;
-        $this->currencyRepository = $currencyRepository;
         $this->purchaseUnitPatchBuilder = $purchaseUnitPatchBuilder;
         $this->orderResource = $orderResource;
-        $this->itemListProvider = $itemListProvider;
         $this->transactionDataService = $transactionDataService;
         $this->logger = $logger;
     }
@@ -86,29 +69,19 @@ class EcsSpbHandler extends AbstractPaymentHandler
         );
 
         $order = $transaction->getOrder();
-        $currency = $order->getCurrency();
-        if ($currency === null) {
-            $currency = $this->getCurrency($order->getCurrencyId(), $salesChannelContext->getContext());
-        }
-
-        $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-        $submitCart = $this->systemConfigService->getBool(Settings::ECS_SUBMIT_CART, $salesChannelId);
-        $items = $submitCart ? $this->itemListProvider->getItemList($currency, $order) : null;
 
         $patches = [
-            $this->purchaseUnitPatchBuilder->createPurchaseUnitPatch(
-                $customer,
-                $items,
-                $salesChannelContext,
+            $this->purchaseUnitPatchBuilder->createFinalPurchaseUnitPatch(
                 $order,
-                $orderTransaction
+                $orderTransaction,
+                $salesChannelContext,
             ),
         ];
 
         $this->patchPaypalOrder(
             $patches,
             $paypalOrderId,
-            $salesChannelId,
+            $salesChannelContext->getSalesChannelId(),
             $orderTransactionId,
             PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT
         );
@@ -152,24 +125,6 @@ class EcsSpbHandler extends AbstractPaymentHandler
         ]);
 
         return new RedirectResponse(\sprintf('%s&%s', $returnUrl, $parameters));
-    }
-
-    /**
-     * @throws CurrencyNotFoundException
-     */
-    private function getCurrency(string $currencyId, Context $context): CurrencyEntity
-    {
-        $criteria = new Criteria([$currencyId]);
-
-        /** @var CurrencyCollection $currencyCollection */
-        $currencyCollection = $this->currencyRepository->search($criteria, $context);
-
-        $currency = $currencyCollection->get($currencyId);
-        if ($currency === null) {
-            throw new CurrencyNotFoundException($currencyId);
-        }
-
-        return $currency;
     }
 
     /**

@@ -49,6 +49,9 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         $this->logger = $logger;
     }
 
+    /**
+     * @deprecated tag:v6.0.0 - Parameter $isExpressCheckout will be removed
+     */
     public function getOrder(
         Cart $cart,
         SalesChannelContext $salesChannelContext,
@@ -62,7 +65,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             $payer = $this->createPayer($customer);
             $order->setPayer($payer);
         }
-        $purchaseUnit = $this->createPurchaseUnit($salesChannelContext, $cart, $customer, $isExpressCheckout);
+        $purchaseUnit = $this->createPurchaseUnit($salesChannelContext, $cart, $customer);
         $applicationContext = $this->createApplicationContext($salesChannelContext);
 
         $order->setIntent($intent);
@@ -75,16 +78,14 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
     private function createPurchaseUnit(
         SalesChannelContext $salesChannelContext,
         Cart $cart,
-        ?CustomerEntity $customer,
-        bool $isExpressCheckoutProcess
+        ?CustomerEntity $customer
     ): PurchaseUnit {
         $cartTransaction = $cart->getTransactions()->first();
         if ($cartTransaction === null) {
             throw new InvalidTransactionException('');
         }
 
-        $submitCart = ($isExpressCheckoutProcess && $this->systemConfigService->getBool(Settings::ECS_SUBMIT_CART, $salesChannelContext->getSalesChannelId()))
-            || (!$isExpressCheckoutProcess && $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId()));
+        $submitCart = $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId());
 
         $items = $submitCart ? $this->createItems($salesChannelContext->getCurrency(), $cart) : null;
 

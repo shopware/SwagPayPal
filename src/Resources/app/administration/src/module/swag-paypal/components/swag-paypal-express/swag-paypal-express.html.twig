@@ -140,23 +140,8 @@
                     </sw-inherit-wrapper>
                 {% endblock %}
 
+                {# @deprecated tag:v6.0.0 - will be removed #}
                 {% block swag_paypal_content_card_channel_config_express_settings_submit_cart %}
-                    <sw-inherit-wrapper
-                        v-model="actualConfigData['SwagPayPal.settings.ecsSubmitCart']"
-                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsSubmitCart']"
-                        :customInheritationCheckFunction="checkBoolFieldInheritance">
-                        <template #content="props">
-                            <sw-switch-field name="SwagPayPal.settings.ecsSubmitCart"
-                                             bordered
-                                             :mapInheritance="props"
-                                             :label="$tc('swag-paypal.settingForm.express.ecsSubmitCart.label')"
-                                             :helpText="$tc('swag-paypal.settingForm.express.ecsSubmitCart.helpText')"
-                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
-                                             :value="props.currentValue"
-                                             @change="props.updateCurrentValue">
-                            </sw-switch-field>
-                        </template>
-                    </sw-inherit-wrapper>
                 {% endblock %}
 
                 {% block swag_paypal_content_card_channel_config_express_settings_button_locale %}

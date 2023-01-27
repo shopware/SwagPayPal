@@ -90,6 +90,7 @@
 
         <service id="Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder">
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
+            <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider"/>
         </service>
     </services>
 </container>

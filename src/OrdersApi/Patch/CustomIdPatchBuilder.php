@@ -9,6 +9,9 @@ namespace Swag\PayPal\OrdersApi\Patch;
 
 use Swag\PayPal\RestApi\V2\Api\Patch;
 
+/**
+ * @deprecated tag:v6.0.0 - will be removed, use PurchaseUnitPatchBuilder instead
+ */
 class CustomIdPatchBuilder
 {
     public function createCustomIdPatch(string $customId): Patch
