@@ -56,7 +56,8 @@
 
 
         {% block swag_paypal_pos_wizard_connection_new_customer %}
-            <sw-card :isLoading="isConnecting">
+            <sw-card position-identifier="swag-paypal-pos-wizard-connection-new-customer"
+                     :isLoading="isConnecting">
                 <sw-container
                         class="swag-paypal-pos-wizard-connection__new-customer-container"
                         columns="1fr 1fr"

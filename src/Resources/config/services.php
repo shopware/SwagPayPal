@@ -20,6 +20,7 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryForwardCompatibilityDecorator;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskDefinition;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateDefinition;
 use Shopware\Core\System\Country\CountryDefinition;
@@ -79,7 +80,7 @@ return static function (ContainerBuilder $container): void {
     $loader->load('pos/webhook.xml');
 
     // Shopware 6.4 compatibility
-    if (interface_exists(EntityRepositoryInterface::class)) {
+    if (interface_exists(EntityRepositoryInterface::class) && !class_exists(EntityRepositoryForwardCompatibilityDecorator::class)) {
         $decoratedEntityNames = [
             CategoryDefinition::ENTITY_NAME,
             CountryDefinition::ENTITY_NAME,
@@ -118,7 +119,7 @@ return static function (ContainerBuilder $container): void {
 
         foreach ($decoratedEntityNames as $entityName) {
             $definition = new Definition(EntityRepositoryDecorator::class);
-            $definition->setDecoratedService(sprintf('%s.repository', $entityName), null, -1000000);
+            $definition->setDecoratedService(sprintf('%s.repository', $entityName), null, PHP_INT_MIN);
             $definition->setArguments([new Reference('.inner')]);
             $definitions[sprintf('%s.repository.paypal_outer', $entityName)] = $definition;
         }

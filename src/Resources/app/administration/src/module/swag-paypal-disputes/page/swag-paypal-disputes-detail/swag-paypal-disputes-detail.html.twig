@@ -30,7 +30,8 @@
                 <sw-card-view>
 
                     {% block swag_paypal_disputes_detail_content_details %}
-                        <sw-card :isLoading="isLoading"
+                        <sw-card position-identifier="swag-paypal-disputes-detail-content-details"
+                                 :isLoading="isLoading"
                                  :title="$tc('swag-paypal-disputes.detail.mainFieldsCardTitle')">
 
                             {% block swag_paypal_disputes_detail_content_details_fields %}
@@ -111,7 +112,8 @@
                     {% endblock %}
 
                     {% block swag_paypal_disputes_detail_content_raw_data %}
-                        <sw-card :isLoading="isLoading"
+                        <sw-card position-identifier="swag-paypal-disputes-detail-content-raw-data"
+                                 :isLoading="isLoading"
                                  :title="$tc('swag-paypal-disputes.detail.rawDataCardTitle')">
 
                             {% block swag_paypal_disputes_detail_content_raw_data_content %}

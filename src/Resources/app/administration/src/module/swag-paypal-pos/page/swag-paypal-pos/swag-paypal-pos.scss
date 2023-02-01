@@ -3,14 +3,14 @@
 .swag-paypal-pos {
     &__disclaimer {
         color: $color-gray-500;
-        font-size: $font-size-xs;
+        font-size: $font-size-xxs;
 
         &-card > .sw-card__content {
             padding: 0;
         }
 
         & > a {
-            font-size: $font-size-s;
+            font-size: $font-size-xs;
         }
 
         .disclaimer-content {
@@ -19,6 +19,6 @@
     }
 
     &__tab-help {
-        font-size: $font-size-m !important;
+        font-size: $font-size-s !important;
     }
 }

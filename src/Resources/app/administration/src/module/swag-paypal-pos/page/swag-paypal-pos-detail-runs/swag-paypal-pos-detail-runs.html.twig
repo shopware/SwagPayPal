@@ -2,7 +2,8 @@
     <div class="swag-paypal-pos-detail-runs">
 
         {% block swag_paypal_pos_detail_runs_card %}
-            <sw-card :title="$tc('swag-paypal-pos.detail.runs.title')"
+            <sw-card position-identifier="swag-paypal-pos-detail-runs"
+                     :title="$tc('swag-paypal-pos.detail.runs.title')"
                      :isLoading="isLoading">
 
                 {% block swag_paypal_pos_detail_runs_card_grid %}
