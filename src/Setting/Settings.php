@@ -63,11 +63,6 @@ final class Settings
     public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
 
     /**
-     * @deprecated tag:v6.0.0 - Will be removed, use SUBMIT_CART instead
-     */
-    public const ECS_SUBMIT_CART = self::SYSTEM_CONFIG_DOMAIN . 'ecsSubmitCart';
-
-    /**
      * @internal these may change at any time
      */
     public const DEFAULT_VALUES = [
@@ -84,7 +79,6 @@ final class Settings
         self::ECS_LISTING_ENABLED => true,
         self::ECS_BUTTON_COLOR => 'gold',
         self::ECS_BUTTON_SHAPE => 'rect',
-        self::ECS_SUBMIT_CART => true,
         self::SPB_CHECKOUT_ENABLED => false,
         self::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED => false,
         self::SPB_BUTTON_COLOR => 'gold',

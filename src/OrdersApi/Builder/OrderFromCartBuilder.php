@@ -50,14 +50,10 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         $this->logger = $logger;
     }
 
-    /**
-     * @deprecated tag:v6.0.0 - Parameter $isExpressCheckout will be removed
-     */
     public function getOrder(
         Cart $cart,
         SalesChannelContext $salesChannelContext,
-        ?CustomerEntity $customer,
-        bool $isExpressCheckout = false
+        ?CustomerEntity $customer
     ): Order {
         $order = new Order();
 

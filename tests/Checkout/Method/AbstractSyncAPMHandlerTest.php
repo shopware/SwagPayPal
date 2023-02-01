@@ -29,7 +29,6 @@ use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
-use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
@@ -235,9 +234,7 @@ Missing PayPal order id');
                 $logger
             ),
             new OrderPatchService(
-                new CustomIdPatchBuilder(),
                 $systemConfig,
-                new OrderNumberPatchBuilder(),
                 new PurchaseUnitPatchBuilder(
                     new PurchaseUnitProvider(
                         new AmountProvider(new PriceFormatter()),

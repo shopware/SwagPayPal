@@ -19,8 +19,8 @@ use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Content\Rule\RuleDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryForwardCompatibilityDecorator;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskDefinition;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateDefinition;
 use Shopware\Core\System\Country\CountryDefinition;
@@ -119,7 +119,7 @@ return static function (ContainerBuilder $container): void {
 
         foreach ($decoratedEntityNames as $entityName) {
             $definition = new Definition(EntityRepositoryDecorator::class);
-            $definition->setDecoratedService(sprintf('%s.repository', $entityName), null, PHP_INT_MIN);
+            $definition->setDecoratedService(sprintf('%s.repository', $entityName), null, \PHP_INT_MIN);
             $definition->setArguments([new Reference('.inner')]);
             $definitions[sprintf('%s.repository.paypal_outer', $entityName)] = $definition;
         }

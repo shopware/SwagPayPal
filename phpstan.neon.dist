@@ -16,6 +16,8 @@ parameters:
         -   tests
     excludePaths:
         -   src/Resources
+        # 6.4 compatibility
+        -   src/Pos/Run/LogHandler.php
         -   tests/Mock/CacheItemMock*.php
 
     symfony:

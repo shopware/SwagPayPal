@@ -37,7 +37,6 @@ use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
-use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder as OrderNumberPatchBuilderV2;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder;
@@ -660,9 +659,7 @@ An error occurred during the communication with PayPal');
                     $logger
                 ),
                 new OrderPatchService(
-                    new CustomIdPatchBuilder(),
                     $systemConfig,
-                    new OrderNumberPatchBuilderV2(),
                     new PurchaseUnitPatchBuilder(
                         new PurchaseUnitProvider(
                             new AmountProvider(new PriceFormatter()),

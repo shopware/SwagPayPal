@@ -75,7 +75,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
             $this->logger->debug('Started');
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
             $this->logger->debug('Building order');
-            $order = $this->orderFromCartBuilder->getOrder($cart, $salesChannelContext, null, true);
+            $order = $this->orderFromCartBuilder->getOrder($cart, $salesChannelContext, null);
             $order->getApplicationContext()->setShippingPreference(ApplicationContext::SHIPPING_PREFERENCE_GET_FROM_FILE);
             $order->getApplicationContext()->setUserAction(ApplicationContext::USER_ACTION_CONTINUE);
 
