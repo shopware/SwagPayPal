@@ -1,6 +1,7 @@
 # 5.4.4
 - PPI-734 - Fixes an issue, where some payment methods were not displayed in after order process
 - PPI-735 - Fixes an issue, where payment details were not shown on orders, where PayPal was not the first chosen payment method
+- PPI-737 - Fixes an issue, where the order / payment details were not correctly transferred to PayPal
 
 # 5.4.3
 - PPI-654 - Fixes an issue, where Zettle sync errors were not displayed

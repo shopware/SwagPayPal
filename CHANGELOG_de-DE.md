@@ -1,6 +1,7 @@
 # 5.4.4
 - PPI-734 - Behebt ein Problem, bei dem Zahlungsarten beim Zahlartwechsel nach Bestellabschluss nicht angezeigt wurden
 - PPI-735 - Behebt ein Problem, bei dem Zahlungsdetails nicht angezeigt wurden, wenn PayPal nicht die erstgewählte Zahlungsart war
+- PPI-737 - Behebt ein Problem, bei dem die Bestell-/Zahlungsdetails nicht korrekt an PayPal übertragen wurden
 
 # 5.4.3
 - PPI-654 - Behebt ein Problem, bei dem Zettle Synchronisationsfehler nicht angezeigt wurden
