@@ -9,9 +9,12 @@ namespace Swag\PayPal\Checkout\SalesChannel;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\SalesChannel\AbstractPaymentMethodRoute;
 use Shopware\Core\Checkout\Payment\SalesChannel\PaymentMethodRouteResponse;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Annotation\Entity;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
@@ -49,6 +52,8 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 
     private AvailabilityService $availabilityService;
 
+    private EntityRepositoryInterface $orderRepository;
+
     public function __construct(
         AbstractPaymentMethodRoute $decorated,
         PaymentMethodDataRegistry $methodDataRegistry,
@@ -57,7 +62,8 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         CartPriceService $cartPriceService,
         ExcludedProductValidator $excludedProductValidator,
         RequestStack $requestStack,
-        AvailabilityService $availabilityService
+        AvailabilityService $availabilityService,
+        EntityRepositoryInterface $orderRepository
     ) {
         $this->decorated = $decorated;
         $this->methodDataRegistry = $methodDataRegistry;
@@ -67,6 +73,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         $this->excludedProductValidator = $excludedProductValidator;
         $this->requestStack = $requestStack;
         $this->availabilityService = $availabilityService;
+        $this->orderRepository = $orderRepository;
     }
 
     public function getDecorated(): AbstractPaymentMethodRoute
@@ -117,7 +124,7 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
     {
         $response = $this->getDecorated()->load($request, $context, $criteria);
 
-        if (!$request->query->getBoolean('onlyAvailable', false)) {
+        if (!$request->query->getBoolean('onlyAvailable') && !$request->request->getBoolean('onlyAvailable')) {
             return $response;
         }
 
@@ -150,6 +157,16 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
         } catch (SessionNotFoundException $e) {
         }
 
+        $order = $this->checkOrder($request, $context->getContext());
+        if ($order !== null) {
+            $this->removePaymentMethods(
+                $response->getPaymentMethods(),
+                $this->availabilityService->filterPaymentMethodsByOrder($response->getPaymentMethods(), $cart, $order, $context)
+            );
+
+            return $response;
+        }
+
         $this->removePaymentMethods(
             $response->getPaymentMethods(),
             $this->availabilityService->filterPaymentMethods($response->getPaymentMethods(), $cart, $context)
@@ -177,5 +194,15 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
                 $paymentMethods->remove($paymentMethod->getId());
             }
         }
+    }
+
+    private function checkOrder(Request $request, Context $context): ?OrderEntity
+    {
+        $orderId = $request->attributes->getAlnum('orderId');
+        if (!$orderId) {
+            return null;
+        }
+
+        return $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
     }
 }

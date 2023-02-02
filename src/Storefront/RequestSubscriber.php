@@ -9,6 +9,7 @@ namespace Swag\PayPal\Storefront;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
+use Shopware\Storefront\Event\RouteRequest\PaymentMethodRouteRequestEvent;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService;
@@ -34,6 +35,7 @@ class RequestSubscriber implements EventSubscriberInterface
     {
         return [
             HandlePaymentMethodRouteRequestEvent::class => 'addHandlePaymentParameters',
+            PaymentMethodRouteRequestEvent::class => 'addAfterOrderId',
         ];
     }
 
@@ -53,5 +55,22 @@ class RequestSubscriber implements EventSubscriberInterface
         }
 
         $this->logger->debug('Added request parameter');
+    }
+
+    public function addAfterOrderId(PaymentMethodRouteRequestEvent $event): void
+    {
+        $storefrontRequest = $event->getStorefrontRequest();
+        $storeApiRequest = $event->getStoreApiRequest();
+
+        $originalRoute = $storefrontRequest->attributes->get('_route');
+        if ($originalRoute !== 'frontend.account.edit-order.page') {
+            return;
+        }
+
+        if (!$storefrontRequest->attributes->has('orderId')) {
+            return;
+        }
+
+        $storeApiRequest->attributes->set('orderId', $storefrontRequest->attributes->getAlnum('orderId'));
     }
 }

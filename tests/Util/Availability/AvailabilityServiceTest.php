@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
@@ -89,6 +90,26 @@ class AvailabilityServiceTest extends TestCase
         );
     }
 
+    /**
+     * @dataProvider dataProviderPaymentMethod
+     *
+     * @param class-string<AbstractMethodData> $methodDataClass
+     */
+    public function testFilterPaymentMethodByOrder(string $methodDataClass, bool $shouldBeAvailable): void
+    {
+        $salesChannelContext = $this->createSalesChannelContext();
+        $paymentMethod = $this->methodDataRegistry->getEntityFromData($this->methodDataRegistry->getPaymentMethod($methodDataClass), $salesChannelContext->getContext());
+        static::assertNotNull($paymentMethod);
+
+        $order = new OrderEntity();
+        $order->setPrice(new CartPrice(5, 5, 0, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_GROSS));
+
+        static::assertSame(
+            $shouldBeAvailable ? [] : [$paymentMethod->getHandlerIdentifier()],
+            $this->availabilityService->filterPaymentMethodsByOrder(new PaymentMethodCollection([$paymentMethod]), $this->createCart(0), $order, $salesChannelContext)
+        );
+    }
+
     public function dataProviderPaymentMethod(): iterable
     {
         return [
@@ -112,10 +133,10 @@ class AvailabilityServiceTest extends TestCase
         ];
     }
 
-    private function createCart(): Cart
+    private function createCart(float $amount = 5.0): Cart
     {
         $cart = new Cart('test', Uuid::randomHex());
-        $cart->setPrice(new CartPrice(5, 5, 0, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_GROSS));
+        $cart->setPrice(new CartPrice($amount, $amount, 0, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_GROSS));
 
         return $cart;
     }

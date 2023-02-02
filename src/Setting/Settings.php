@@ -38,7 +38,6 @@ final class Settings
     public const ECS_LISTING_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'ecsListingEnabled';
     public const ECS_BUTTON_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonColor';
     public const ECS_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonShape';
-    public const ECS_SUBMIT_CART = self::SYSTEM_CONFIG_DOMAIN . 'ecsSubmitCart';
     public const ECS_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonLanguageIso';
     public const SPB_BUTTON_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonColor';
     public const SPB_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonShape';
@@ -74,6 +73,11 @@ final class Settings
      * @deprecated tag:v6.0.0 - Will be removed without replacement.
      */
     public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
+
+    /**
+     * @deprecated tag:v6.0.0 - Will be removed, use SUBMIT_CART instead
+     */
+    public const ECS_SUBMIT_CART = self::SYSTEM_CONFIG_DOMAIN . 'ecsSubmitCart';
 
     /**
      * @internal these may change at any time

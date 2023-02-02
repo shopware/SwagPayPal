@@ -25,8 +25,13 @@ use Swag\PayPal\Checkout\Payment\Method\AbstractSyncAPMHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
+use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Patch as PatchV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
@@ -47,7 +52,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Test\Mock\Repositories\DefinitionInstanceRegistryMock;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
+use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 abstract class AbstractSyncAPMHandlerTest extends TestCase
 {
@@ -188,21 +195,17 @@ Missing PayPal order id');
     public function assertPatchData(string $orderTransactionId, bool $isDuplicateTransaction = false): void
     {
         $patchData = $this->clientFactory->getClient()->getData();
-        static::assertCount($isDuplicateTransaction ? 1 : 2, $patchData);
+        static::assertCount(1, $patchData);
         foreach ($patchData as $patch) {
             static::assertInstanceOf(PatchV2::class, $patch);
-            if ($patch->getPath() === '/purchase_units/@reference_id==\'default\'/invoice_id') {
-                if ($isDuplicateTransaction) {
-                    static::assertSame(PatchV2::OPERATION_REMOVE, $patch->getOp());
-                } else {
-                    static::assertSame(OrderPaymentBuilderTest::TEST_ORDER_NUMBER, $patch->getValue());
-                    static::assertSame(PatchV2::OPERATION_ADD, $patch->getOp());
-                }
-            }
-
-            if ($patch->getPath() === '/purchase_units/@reference_id==\'default\'/custom_id') {
-                static::assertSame($orderTransactionId, $patch->getValue());
-                static::assertSame(PatchV2::OPERATION_ADD, $patch->getOp());
+            if ($isDuplicateTransaction && $patch->getPath() === '/purchase_units/@reference_id==\'default\'/invoice_id') {
+                static::assertSame(PatchV2::OPERATION_REMOVE, $patch->getOp());
+            } else {
+                $value = $patch->getValue();
+                static::assertIsArray($value);
+                static::assertSame(OrderPaymentBuilderTest::TEST_ORDER_NUMBER, $value['invoice_id']);
+                static::assertSame($orderTransactionId, $value['custom_id']);
+                static::assertSame(PatchV2::OPERATION_REPLACE, $patch->getOp());
             }
         }
     }
@@ -235,6 +238,18 @@ Missing PayPal order id');
                 new CustomIdPatchBuilder(),
                 $systemConfig,
                 new OrderNumberPatchBuilder(),
+                new PurchaseUnitPatchBuilder(
+                    new PurchaseUnitProvider(
+                        new AmountProvider(new PriceFormatter()),
+                        new AddressProvider(),
+                        $systemConfig
+                    ),
+                    new ItemListProvider(
+                        new PriceFormatter(),
+                        $this->createMock(EventDispatcherInterface::class),
+                        new NullLogger(),
+                    ),
+                ),
                 $orderResource,
             ),
             new TransactionDataService(

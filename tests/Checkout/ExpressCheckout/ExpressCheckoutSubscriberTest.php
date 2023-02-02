@@ -342,10 +342,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     public function testAddExpressCheckoutDataToBuyBoxSwitchEvent(): void
     {
-        if (!\class_exists(SwitchBuyBoxVariantEvent::class)) {
-            static::markTestSkipped('Buy Box event only exists starting with Shopware 6.4.2.0');
-        }
-
         $event = $this->createBuyBoxSwitchEvent();
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToBuyBoxSwitch($event);
@@ -360,10 +356,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     public function testAddExpressCheckoutDataToBuyBoxSwitchWithInactivePaymentMethod(): void
     {
-        if (!\class_exists(SwitchBuyBoxVariantEvent::class)) {
-            static::markTestSkipped('Buy Box event only exists starting with Shopware 6.4.2.0');
-        }
-
         $event = $this->createBuyBoxSwitchEvent(false);
 
         $this->getExpressCheckoutSubscriber()->addExpressCheckoutDataToBuyBoxSwitch($event);
@@ -375,10 +367,6 @@ class ExpressCheckoutSubscriberTest extends TestCase
 
     public function testAddExpressCheckoutDataToBuyBoxSwitchWithoutPayPalInSalesChannel(): void
     {
-        if (!\class_exists(SwitchBuyBoxVariantEvent::class)) {
-            static::markTestSkipped('Buy Box event only exists starting with Shopware 6.4.2.0');
-        }
-
         $event = $this->createBuyBoxSwitchEvent();
         $event->getSalesChannelContext()->getSalesChannel()->setId(Uuid::randomHex());
         $event->getSalesChannelContext()->getSalesChannel()->setPaymentMethods(new PaymentMethodCollection());

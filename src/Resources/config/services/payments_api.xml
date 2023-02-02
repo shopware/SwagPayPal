@@ -40,5 +40,8 @@
         <service id="Swag\PayPal\PaymentsApi\Patch\CustomTransactionPatchBuilder"/>
         <service id="Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder"/>
         <service id="Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder"/>
+        <service id="Swag\PayPal\PaymentsApi\Patch\TransactionPatchBuilder">
+            <argument type="service" id="Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder"/>
+        </service>
     </services>
 </container>

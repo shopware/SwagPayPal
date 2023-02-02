@@ -18,8 +18,13 @@ use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
+use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
@@ -27,6 +32,8 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftNo;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftUnknown;
+use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ACDCHandlerTest extends AbstractSyncAPMHandlerTest
 {
@@ -94,6 +101,18 @@ Credit card validation failed, 3D secure was not validated.');
                 new CustomIdPatchBuilder(),
                 $systemConfig,
                 new OrderNumberPatchBuilder(),
+                new PurchaseUnitPatchBuilder(
+                    new PurchaseUnitProvider(
+                        new AmountProvider(new PriceFormatter()),
+                        new AddressProvider(),
+                        $systemConfig
+                    ),
+                    new ItemListProvider(
+                        new PriceFormatter(),
+                        $this->createMock(EventDispatcherInterface::class),
+                        new NullLogger(),
+                    ),
+                ),
                 $orderResource,
             ),
             new TransactionDataService(

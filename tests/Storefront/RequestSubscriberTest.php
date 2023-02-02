@@ -5,31 +5,29 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Checkout\SPBCheckout;
+namespace Swag\PayPal\Test\Storefront;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
-use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
+use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Storefront\Event\RouteRequest\HandlePaymentMethodRouteRequestEvent;
+use Shopware\Storefront\Event\RouteRequest\PaymentMethodRouteRequestEvent;
 use Swag\PayPal\Storefront\RequestSubscriber;
-use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\RestApi\AssertArraySubsetTrait;
 use Symfony\Component\HttpFoundation\Request;
 
 class RequestSubscriberTest extends TestCase
 {
-    use SalesChannelContextTrait;
-    use IntegrationTestBehaviour;
     use AssertArraySubsetTrait;
 
     public function testGetSubscribedEvents(): void
     {
         $events = RequestSubscriber::getSubscribedEvents();
 
-        static::assertCount(1, $events);
+        static::assertCount(2, $events);
         static::assertSame('addHandlePaymentParameters', $events[HandlePaymentMethodRouteRequestEvent::class]);
+        static::assertSame('addAfterOrderId', $events[PaymentMethodRouteRequestEvent::class]);
     }
 
     public function testAddNecessaryRequestParameter(): void
@@ -41,7 +39,7 @@ class RequestSubscriberTest extends TestCase
             '_route' => 'frontend.account.edit-order.update-order',
         ]);
         $storeApiRequest = new Request();
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $salesChannelContext = Generator::createSalesChannelContext();
         $event = new HandlePaymentMethodRouteRequestEvent($storefrontRequest, $storeApiRequest, $salesChannelContext);
         $subscriber->addHandlePaymentParameters($event);
 
@@ -56,12 +54,41 @@ class RequestSubscriberTest extends TestCase
 
         $storefrontRequest = new Request([], $this->getParameterData(), ['_route' => 'wrong.route']);
         $storeApiRequest = new Request();
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
+        $salesChannelContext = Generator::createSalesChannelContext();
         $event = new HandlePaymentMethodRouteRequestEvent($storefrontRequest, $storeApiRequest, $salesChannelContext);
         $subscriber->addHandlePaymentParameters($event);
 
-        $requestParameters = $storeApiRequest->request;
-        static::assertCount(0, $requestParameters);
+        static::assertCount(0, $storeApiRequest->request);
+    }
+
+    public function testAfterOrderId(): void
+    {
+        $subscriber = new RequestSubscriber(new NullLogger());
+
+        $storefrontRequest = new Request([], [], [
+            'orderId' => 'tada',
+            '_route' => 'frontend.account.edit-order.page',
+        ]);
+        $storeApiRequest = new Request();
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $event = new PaymentMethodRouteRequestEvent($storefrontRequest, $storeApiRequest, $salesChannelContext);
+        $subscriber->addAfterOrderId($event);
+
+        static::assertCount(1, $storeApiRequest->attributes->all());
+        static::assertSame('tada', $storeApiRequest->attributes->getAlnum('orderId'));
+    }
+
+    public function testAfterOrderIdWrongRoute(): void
+    {
+        $subscriber = new RequestSubscriber(new NullLogger());
+
+        $storefrontRequest = new Request([], [], ['orderId' => 'tada', '_route' => 'wrong.route']);
+        $storeApiRequest = new Request();
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $event = new PaymentMethodRouteRequestEvent($storefrontRequest, $storeApiRequest, $salesChannelContext);
+        $subscriber->addAfterOrderId($event);
+
+        static::assertCount(0, $storeApiRequest->attributes);
     }
 
     /**
