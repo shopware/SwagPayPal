@@ -24,6 +24,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\Tax\TaxEntity;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Product;
@@ -45,6 +46,8 @@ use Swag\PayPal\Pos\MessageQueue\Handler\Sync\ProductCleanupSyncHandler;
 use Swag\PayPal\Pos\MessageQueue\Handler\Sync\ProductSingleSyncHandler;
 use Swag\PayPal\Pos\MessageQueue\Handler\Sync\ProductVariantSyncHandler;
 use Swag\PayPal\Pos\MessageQueue\Manager\ProductSyncManager;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
+use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Resource\ImageResource;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
@@ -108,6 +111,8 @@ class CompleteProductTest extends TestCase
         );
 
         $messageBus = new MessageBusMock();
+        $messageDispatcher = new MessageDispatcher($messageBus, $this->createMock(Connection::class));
+        $messageHydrator = new MessageHydrator($this->createMock(SalesChannelContextService::class), $this->createMock(EntityRepository::class));
 
         $runService = new RunServiceMock(
             new RunRepoMock(),
@@ -149,7 +154,7 @@ class CompleteProductTest extends TestCase
         );
 
         $productSyncManager = new ProductSyncManager(
-            $messageBus,
+            $messageDispatcher,
             $productSelection,
             $salesChannelProductRepository,
             new ImageSyncer(
@@ -163,6 +168,8 @@ class CompleteProductTest extends TestCase
         $productVariantSyncHandler = new ProductVariantSyncHandler(
             $runService,
             new NullLogger(),
+            $messageDispatcher,
+            $messageHydrator,
             $productSelection,
             $salesChannelProductRepository,
             $productSyncer
@@ -171,6 +178,8 @@ class CompleteProductTest extends TestCase
         $productSingleSyncHandler = new ProductSingleSyncHandler(
             $runService,
             new NullLogger(),
+            $messageDispatcher,
+            $messageHydrator,
             $productSelection,
             $salesChannelProductRepository,
             $productSyncer
@@ -179,6 +188,8 @@ class CompleteProductTest extends TestCase
         $productCleanupSyncHandler = new ProductCleanupSyncHandler(
             $runService,
             new NullLogger(),
+            $messageDispatcher,
+            $messageHydrator,
             $productSelection,
             $salesChannelProductRepository,
             $productSyncer,
@@ -246,12 +257,10 @@ class CompleteProductTest extends TestCase
         $existingMedia = $posMediaRepository->createMockEntity($mediaA, TestDefaults::SALES_CHANNEL, 'lookupKey', self::MEDIA_UPLOADED_URL);
         $removableMedia = $posMediaRepository->createMockEntity($mediaC, TestDefaults::SALES_CHANNEL);
 
-        $productSyncManager->createMessages(
-            $salesChannel,
-            $context,
-            $runService->startRun(TestDefaults::SALES_CHANNEL, 'product', $context)
-        );
+        $runId = $runService->startRun(TestDefaults::SALES_CHANNEL, 'product', [], $context);
+        $messages = $productSyncManager->createMessages($salesChannel, $context, $runId);
 
+        $messageDispatcher->bulkDispatch($messages, $runId);
         $messageBus->execute([
             $productSingleSyncHandler,
             $productVariantSyncHandler,

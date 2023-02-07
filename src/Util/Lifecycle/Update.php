@@ -135,6 +135,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '5.4.0', '<')) {
             $this->updateTo540($updateContext->getContext());
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '6.0.1', '<')) {
+            $this->updateTo600($updateContext->getContext());
+        }
     }
 
     private function updateTo110(): void
@@ -434,5 +438,20 @@ class Update
     {
         $value = Settings::DEFAULT_VALUES[$setting] ?? null;
         $this->systemConfig->set($setting, $overrideValue ?? $value, $salesChannelId);
+    }
+
+    private function updateTo600(Context $context): void
+    {
+        if ($this->posWebhookService === null) {
+            // plugin not active, type not installed
+            return;
+        }
+
+        $this->salesChannelTypeRepository->update([
+            [
+                'id' => SwagPayPal::SALES_CHANNEL_TYPE_POS,
+                'iconName' => 'regular-money-bill',
+            ],
+        ], $context);
     }
 }

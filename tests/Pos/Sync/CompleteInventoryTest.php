@@ -14,13 +14,17 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
 use Shopware\Core\Content\ProductStream\Service\ProductStreamBuilder;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\MessageQueue\Handler\Sync\InventorySyncHandler;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
+use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Resource\InventoryResource;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalCalculator;
@@ -60,9 +64,11 @@ class CompleteInventoryTest extends TestCase
         );
 
         $messageBus = new MessageBusMock();
+        $messageDispatcher = new MessageDispatcher($messageBus, $this->createMock(Connection::class));
+        $messageHydrator = new MessageHydrator($this->createMock(SalesChannelContextService::class), $this->createMock(EntityRepository::class));
 
         $inventorySyncManager = new InventorySyncManager(
-            $messageBus,
+            $messageDispatcher,
             new ProductSelection(
                 $salesChannelProductRepository,
                 $this->createMock(ProductStreamBuilder::class),
@@ -82,6 +88,8 @@ class CompleteInventoryTest extends TestCase
         $inventorySyncHandler = new InventorySyncHandler(
             $runService,
             new NullLogger(),
+            $messageDispatcher,
+            $messageHydrator,
             $productRepository,
             $inventoryContextFactory,
             new InventorySyncer(
@@ -116,7 +124,7 @@ class CompleteInventoryTest extends TestCase
             ConstantsForTesting::PRODUCT_G_ID,
         ];
 
-        $inventoryContext = $inventoryContextFactory->getContext($salesChannel, $context);
+        $inventoryContext = $inventoryContextFactory->getContext($salesChannel);
         $inventoryContext->setProductIds($productIds);
         $inventoryContextFactory->updateLocal($inventoryContext);
 
@@ -147,11 +155,9 @@ class CompleteInventoryTest extends TestCase
         $inventoryRepository->createMockEntity($productE, TestDefaults::SALES_CHANNEL, 4);
         $inventoryRepository->createMockEntity($productG, TestDefaults::SALES_CHANNEL, 3);
 
-        $inventorySyncManager->createMessages(
-            $salesChannel,
-            $context,
-            $runService->startRun(TestDefaults::SALES_CHANNEL, 'inventory', $context)
-        );
+        $runId = $runService->startRun(TestDefaults::SALES_CHANNEL, 'inventory', [], $context);
+        $messages = $inventorySyncManager->createMessages($salesChannel, $context, $runId);
+        $messageDispatcher->bulkDispatch($messages, $runId);
         $messageBus->execute([$inventorySyncHandler]);
 
         // product B added

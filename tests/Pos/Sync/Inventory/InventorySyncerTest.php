@@ -14,7 +14,6 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\Api\Inventory\Status;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
-use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryCollection;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\Inventory\LocalUpdater;
@@ -49,16 +48,13 @@ class InventorySyncerTest extends TestCase
         $uuidConverter = new UuidConverter();
 
         $this->inventoryContext = new InventoryContext(
-            $uuidConverter,
-            $salesChannel,
             $uuidConverter->convertUuidToV1(Uuid::randomHex()),
             $uuidConverter->convertUuidToV1(Uuid::randomHex()),
             $uuidConverter->convertUuidToV1(Uuid::randomHex()),
             $uuidConverter->convertUuidToV1(Uuid::randomHex()),
             new Status(),
-            new PosSalesChannelInventoryCollection(),
-            $context
         );
+        $this->inventoryContext->setSalesChannel($salesChannel);
 
         $this->inventorySyncer = new InventorySyncer(
             $this->createStub(InventoryContextFactory::class),

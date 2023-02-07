@@ -14,12 +14,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\Pos\MessageQueue\Message\InventoryUpdateMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Run\Task\InventoryTask;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class InventoryUpdateHandler implements MessageSubscriberInterface
 {
@@ -29,13 +28,13 @@ class InventoryUpdateHandler implements MessageSubscriberInterface
 
     private InventorySyncManager $inventorySyncManager;
 
-    private MessageBusInterface $messageBus;
+    private MessageDispatcher $messageBus;
 
     public function __construct(
         RunService $runService,
         EntityRepository $salesChannelRepository,
         InventorySyncManager $inventorySyncManager,
-        MessageBusInterface $messageBus
+        MessageDispatcher $messageBus
     ) {
         $this->runService = $runService;
         $this->salesChannelRepository = $salesChannelRepository;
@@ -43,27 +42,21 @@ class InventoryUpdateHandler implements MessageSubscriberInterface
         $this->messageBus = $messageBus;
     }
 
-    /**
-     * @param InventoryUpdateMessage $message
-     */
-    public function __invoke($message): void
+    public function __invoke(InventoryUpdateMessage $message): void
     {
         $context = $message->getContext();
 
         foreach ($this->getSalesChannels($context) as $salesChannel) {
-            $runId = $this->runService->startRun($salesChannel->getId(), InventoryTask::TASK_NAME_INVENTORY, $context);
+            $runId = $this->runService->startRun(
+                $salesChannel->getId(),
+                InventoryTask::TASK_NAME_INVENTORY,
+                [SyncManagerHandler::SYNC_INVENTORY],
+                $context
+            );
 
-            $messageCount = $this->inventorySyncManager->createMessages($salesChannel, $context, $runId, $message->getIds());
+            $messages = $this->inventorySyncManager->createMessages($salesChannel, $context, $runId, $message->getIds());
 
-            $this->runService->setMessageCount($messageCount, $runId, $context);
-
-            $managerMessage = new SyncManagerMessage();
-            $managerMessage->setContext($context);
-            $managerMessage->setSalesChannel($salesChannel);
-            $managerMessage->setRunId($runId);
-            $managerMessage->setSteps([SyncManagerHandler::SYNC_INVENTORY]);
-            $managerMessage->setCurrentStep(1);
-            $this->messageBus->dispatch($managerMessage);
+            $this->messageBus->bulkDispatch($messages, $runId);
         }
     }
 

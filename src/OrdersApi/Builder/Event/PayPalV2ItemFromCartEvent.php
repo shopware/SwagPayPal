@@ -20,8 +20,10 @@ class PayPalV2ItemFromCartEvent extends Event
 
     private LineItem $originalShopwareLineItem;
 
-    public function __construct(Item $payPalLineItem, LineItem $originalShopwareLineItem)
-    {
+    public function __construct(
+        Item $payPalLineItem,
+        LineItem $originalShopwareLineItem
+    ) {
         $this->payPalLineItem = $payPalLineItem;
         $this->originalShopwareLineItem = $originalShopwareLineItem;
     }

@@ -9,7 +9,7 @@ Component.override('sw-sales-channel-menu', {
 
             const posIds = [];
             this.salesChannels.forEach((salesChannel) => {
-                if (salesChannel.typeId === PAYPAL_POS_SALES_CHANNEL_TYPE_ID) {
+                if (salesChannel.type.id === PAYPAL_POS_SALES_CHANNEL_TYPE_ID) {
                     posIds.push(salesChannel.id);
                 }
             });

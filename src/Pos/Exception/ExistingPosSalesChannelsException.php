@@ -14,8 +14,10 @@ class ExistingPosSalesChannelsException extends ShopwareHttpException
     /**
      * @param string[] $names
      */
-    public function __construct(int $amount, array $names)
-    {
+    public function __construct(
+        int $amount,
+        array $names
+    ) {
         $quantityWords = [
             $amount === 1 ? 'is' : 'are',
             $amount === 1 ? 'channel' : 'channels',

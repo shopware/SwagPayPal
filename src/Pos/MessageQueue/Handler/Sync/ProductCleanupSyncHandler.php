@@ -13,6 +13,8 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductCleanupSyncMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
+use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\ProductSelection;
 use Swag\PayPal\Pos\Sync\ProductSyncer;
@@ -33,12 +35,14 @@ class ProductCleanupSyncHandler extends AbstractSyncHandler
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,
+        MessageDispatcher $messageBus,
+        MessageHydrator $messageHydrator,
         ProductSelection $productSelection,
         SalesChannelRepository $productRepository,
         ProductSyncer $productSyncer,
         EntityRepository $posSalesChannelRepository
     ) {
-        parent::__construct($runService, $logger);
+        parent::__construct($runService, $logger, $messageBus, $messageHydrator);
         $this->productSelection = $productSelection;
         $this->productRepository = $productRepository;
         $this->productSyncer = $productSyncer;

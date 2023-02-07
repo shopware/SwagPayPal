@@ -66,7 +66,10 @@ class Variant extends PosStruct
         return $this->balance;
     }
 
-    public function setBalance(string $balance): void
+    /**
+     * @param int|string $balance
+     */
+    public function setBalance($balance): void
     {
         $this->balance = (int) $balance;
     }

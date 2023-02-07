@@ -48,7 +48,7 @@
         </service>
 
         <service id="Swag\PayPal\Pos\Setting\Service\ProductVisibilityCloneService">
-            <argument type="service" id="messenger.bus.shopware"/>
+            <argument type="service" id="Swag\PayPal\Pos\MessageQueue\MessageDispatcher"/>
             <argument type="service" id="product_visibility.repository"/>
             <argument type="service" id="Swag\PayPal\Pos\Run\RunService"/>
             <argument type="service" id="sales_channel.repository"/>

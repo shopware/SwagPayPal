@@ -20,8 +20,10 @@ class OutdatedUpdater
 
     private LoggerInterface $logger;
 
-    public function __construct(ProductResource $productResource, LoggerInterface $logger)
-    {
+    public function __construct(
+        ProductResource $productResource,
+        LoggerInterface $logger
+    ) {
         $this->productResource = $productResource;
         $this->logger = $logger;
     }

@@ -15,6 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\PrimaryKey;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\Flag\Required;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IdField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\IntField;
+use Shopware\Core\Framework\DataAbstractionLayer\Field\JsonField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\OneToManyAssociationField;
 use Shopware\Core\Framework\DataAbstractionLayer\Field\StringField;
 use Shopware\Core\Framework\DataAbstractionLayer\FieldCollection;
@@ -49,6 +50,7 @@ class PosSalesChannelRunDefinition extends EntityDefinition
         return [
             'status' => self::STATUS_IN_PROGRESS,
             'messageCount' => 0,
+            'stepIndex' => 0,
         ];
     }
 
@@ -61,6 +63,8 @@ class PosSalesChannelRunDefinition extends EntityDefinition
             (new StringField('task', 'task', 16))->addFlags(new Required()),
             (new StringField('status', 'status'))->addFlags(new Required()),
             (new IntField('message_count', 'messageCount'))->addFlags(new Required()),
+            (new IntField('step_index', 'stepIndex'))->addFlags(new Required()),
+            (new JsonField('steps', 'steps'))->addFlags(new Required()),
             (new DateTimeField('finished_at', 'finishedAt')),
 
             (new OneToManyAssociationField('logs', PosSalesChannelRunLogDefinition::class, 'run_id'))->addFlags(new CascadeDelete()),

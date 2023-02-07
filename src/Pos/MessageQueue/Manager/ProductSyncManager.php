@@ -22,13 +22,14 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
+use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductCleanupSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductSingleSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\ProductVariantSyncMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Sync\ImageSyncer;
 use Swag\PayPal\Pos\Sync\ProductSelection;
 use Swag\PayPal\SwagPayPal;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class ProductSyncManager extends AbstractSyncManager
 {
@@ -41,7 +42,7 @@ class ProductSyncManager extends AbstractSyncManager
     private ImageSyncer $imageSyncer;
 
     public function __construct(
-        MessageBusInterface $messageBus,
+        MessageDispatcher $messageBus,
         ProductSelection $productSelection,
         SalesChannelRepository $productRepository,
         ImageSyncer $imageSyncer
@@ -52,7 +53,10 @@ class ProductSyncManager extends AbstractSyncManager
         $this->imageSyncer = $imageSyncer;
     }
 
-    public function createMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): int
+    /**
+     * @return AbstractSyncMessage[]
+     */
+    public function createMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): array
     {
         $salesChannelContext = $this->productSelection->getSalesChannelContext($salesChannel);
 
@@ -64,20 +68,22 @@ class ProductSyncManager extends AbstractSyncManager
 
         $this->imageSyncer->cleanUp($salesChannel->getId(), $context);
 
-        $messageCount = 0;
-        $messageCount += $this->buildSingleMessages(clone $criteria, $salesChannelContext, $salesChannel, $runId);
-        $messageCount += $this->buildVariantMessages(clone $criteria, $salesChannelContext, $salesChannel, $runId);
-        $messageCount += $this->buildCleanupMessage($salesChannelContext, $salesChannel, $runId);
-
-        return $messageCount;
+        return \array_merge(
+            $this->buildSingleMessages(clone $criteria, $salesChannelContext, $salesChannel, $runId),
+            $this->buildVariantMessages(clone $criteria, $salesChannelContext, $salesChannel, $runId),
+            $this->buildCleanupMessage($salesChannelContext, $salesChannel, $runId)
+        );
     }
 
+    /**
+     * @return AbstractSyncMessage[]
+     */
     private function buildSingleMessages(
         Criteria $criteria,
         SalesChannelContext $salesChannelContext,
         SalesChannelEntity $salesChannel,
         string $runId
-    ): int {
+    ): array {
         $criteria->addAggregation(new CountAggregation('count', 'id'));
         $criteria->addFilter(new EqualsFilter('parentId', null));
         $criteria->addFilter(new EqualsFilter('childCount', 0));
@@ -89,31 +95,32 @@ class ProductSyncManager extends AbstractSyncManager
         }
 
         $offset = 0;
-        $messageCount = 0;
+        $messages = [];
 
         while ($offset < $aggregate->getCount()) {
             $message = new ProductSingleSyncMessage();
-            $message->setContext($salesChannelContext->getContext());
             $message->setSalesChannelContext($salesChannelContext);
             $message->setRunId($runId);
             $message->setLimit(self::CHUNK_SIZE);
             $message->setOffset($offset);
             $message->setSalesChannel($salesChannel);
-            $this->messageBus->dispatch($message);
-            ++$messageCount;
+            $messages[] = $message;
 
             $offset += self::CHUNK_SIZE;
         }
 
-        return $messageCount;
+        return $messages;
     }
 
+    /**
+     * @return AbstractSyncMessage[]
+     */
     private function buildVariantMessages(
         Criteria $criteria,
         SalesChannelContext $salesChannelContext,
         SalesChannelEntity $salesChannel,
         string $runId
-    ): int {
+    ): array {
         $criteria->addAggregation(new TermsAggregation('ids', 'id', null, null, new SumAggregation('count', 'childCount')));
         $criteria->addFilter(new RangeFilter('childCount', [RangeFilter::GT => 0]));
 
@@ -126,7 +133,7 @@ class ProductSyncManager extends AbstractSyncManager
 
         $ids = [];
         $chunkSize = 0;
-        $messageCount = 0;
+        $messages = [];
         foreach ($buckets as $bucket) {
             $ids[] = $bucket->getKey();
 
@@ -136,43 +143,42 @@ class ProductSyncManager extends AbstractSyncManager
             $chunkSize += $result !== null ? $result->getSum() : 2;
 
             if ($chunkSize >= self::CHUNK_SIZE) {
-                $this->createVariantMessage($salesChannelContext, $runId, $salesChannel, $ids);
-                ++$messageCount;
+                $messages[] = $this->createVariantMessage($salesChannelContext, $runId, $salesChannel, $ids);
                 $ids = [];
             }
         }
 
         if (\count($ids) > 0) {
-            $this->createVariantMessage($salesChannelContext, $runId, $salesChannel, $ids);
-            ++$messageCount;
+            $messages[] = $this->createVariantMessage($salesChannelContext, $runId, $salesChannel, $ids);
         }
 
-        return $messageCount;
+        return $messages;
     }
 
+    /**
+     * @return AbstractSyncMessage[]
+     */
     private function buildCleanupMessage(
         SalesChannelContext $salesChannelContext,
         SalesChannelEntity $salesChannel,
         string $runId
-    ): int {
+    ): array {
         $message = new ProductCleanupSyncMessage();
-        $message->setContext($salesChannelContext->getContext());
         $message->setSalesChannelContext($salesChannelContext);
         $message->setRunId($runId);
         $message->setSalesChannel($salesChannel);
-        $this->messageBus->dispatch($message);
 
-        return 1;
+        return [$message];
     }
 
-    private function createVariantMessage(SalesChannelContext $salesChannelContext, string $runId, SalesChannelEntity $salesChannel, array $ids): void
+    private function createVariantMessage(SalesChannelContext $salesChannelContext, string $runId, SalesChannelEntity $salesChannel, array $ids): ProductVariantSyncMessage
     {
         $message = new ProductVariantSyncMessage();
-        $message->setContext($salesChannelContext->getContext());
         $message->setSalesChannelContext($salesChannelContext);
         $message->setRunId($runId);
         $message->setSalesChannel($salesChannel);
         $message->setIds($ids);
-        $this->messageBus->dispatch($message);
+
+        return $message;
     }
 }

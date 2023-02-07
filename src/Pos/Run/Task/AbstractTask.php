@@ -10,17 +10,17 @@ namespace Swag\PayPal\Pos\Run\Task;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Run\RunService;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 abstract class AbstractTask
 {
-    private MessageBusInterface $messageBus;
+    private MessageDispatcher $messageBus;
 
     private RunService $runService;
 
     public function __construct(
-        MessageBusInterface $messageBus,
+        MessageDispatcher $messageBus,
         RunService $runService
     ) {
         $this->messageBus = $messageBus;
@@ -29,10 +29,9 @@ abstract class AbstractTask
 
     public function execute(SalesChannelEntity $salesChannel, Context $context): string
     {
-        $runId = $this->runService->startRun($salesChannel->getId(), $this->getRunTaskName(), $context);
+        $runId = $this->runService->startRun($salesChannel->getId(), $this->getRunTaskName(), $this->getSteps(), $context);
 
         $message = new SyncManagerMessage();
-        $message->setContext($context);
         $message->setSalesChannel($salesChannel);
         $message->setRunId($runId);
         $message->setSteps($this->getSteps());

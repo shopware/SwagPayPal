@@ -14,10 +14,11 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\Count
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\CountResult;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Exception\MediaDomainNotSetException;
+use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\ImageSyncMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Sync\ImageSyncer;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class ImageSyncManager extends AbstractSyncManager
 {
@@ -30,7 +31,7 @@ class ImageSyncManager extends AbstractSyncManager
     private ImageSyncer $imageSyncer;
 
     public function __construct(
-        MessageBusInterface $messageBus,
+        MessageDispatcher $messageBus,
         EntityRepository $posMediaRepository,
         ImageSyncer $imageSyncer
     ) {
@@ -39,7 +40,10 @@ class ImageSyncManager extends AbstractSyncManager
         $this->imageSyncer = $imageSyncer;
     }
 
-    public function createMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): int
+    /**
+     * @return AbstractSyncMessage[]
+     */
+    public function createMessages(SalesChannelEntity $salesChannel, Context $context, string $runId): array
     {
         $domain = $this->getPosSalesChannel($salesChannel)->getMediaDomain();
 
@@ -57,21 +61,19 @@ class ImageSyncManager extends AbstractSyncManager
         }
 
         $offset = 0;
-        $messageCount = 0;
+        $messages = [];
 
         while ($offset < $aggregate->getCount()) {
             $message = new ImageSyncMessage();
-            $message->setContext($context);
             $message->setRunId($runId);
             $message->setLimit(self::CHUNK_SIZE);
             $message->setOffset($offset);
             $message->setSalesChannel($salesChannel);
-            $this->messageBus->dispatch($message);
-            ++$messageCount;
+            $messages[] = $message;
 
             $offset += self::CHUNK_SIZE;
         }
 
-        return $messageCount;
+        return $messages;
     }
 }

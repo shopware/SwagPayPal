@@ -8,15 +8,28 @@
 namespace Swag\PayPal\Pos\MessageQueue\Message;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
+use Shopware\Core\Framework\Struct\JsonSerializableTrait;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
-abstract class AbstractSyncMessage
+// remove with end of 6.4 compatibility
+if (!interface_exists(AsyncMessageInterface::class)) {
+    require_once __DIR__ . '/../../../Util/Compatibility/AsyncMessageInterface.php';
+}
+
+abstract class AbstractSyncMessage implements AsyncMessageInterface, \JsonSerializable
 {
-    private SalesChannelEntity $salesChannel;
+    use JsonSerializableTrait {
+        jsonSerialize as traitJsonSerialize;
+    }
 
-    private string $runId;
+    protected SalesChannelEntity $salesChannel;
 
-    private Context $context;
+    protected string $salesChannelId;
+
+    protected string $runId;
+
+    protected ?Context $context = null;
 
     public function getSalesChannel(): SalesChannelEntity
     {
@@ -26,6 +39,17 @@ abstract class AbstractSyncMessage
     public function setSalesChannel(SalesChannelEntity $salesChannel): void
     {
         $this->salesChannel = $salesChannel;
+        $this->salesChannelId = $salesChannel->getId();
+    }
+
+    public function getSalesChannelId(): string
+    {
+        return $this->salesChannelId;
+    }
+
+    public function setSalesChannelId(string $salesChannelId): void
+    {
+        $this->salesChannelId = $salesChannelId;
     }
 
     public function getRunId(): string
@@ -38,13 +62,26 @@ abstract class AbstractSyncMessage
         $this->runId = $runId;
     }
 
-    public function setContext(Context $context): void
-    {
-        $this->context = $context;
-    }
-
     public function getContext(): Context
     {
-        return $this->context;
+        return $this->context = $this->context ?? Context::createDefaultContext();
+    }
+
+    public function jsonSerialize(): array
+    {
+        $value = $this->traitJsonSerialize();
+
+        unset(
+            $value['context'],
+            $value['salesChannel'],
+            $value['salesChannelContext'],
+        );
+
+        return $value;
+    }
+
+    public function isHydrated(): bool
+    {
+        return isset($this->salesChannel);
     }
 }

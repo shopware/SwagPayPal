@@ -30,8 +30,11 @@ class ErrorRoute extends AbstractErrorRoute
 
     private LoggerInterface $logger;
 
-    public function __construct(RequestStack $requestStack, TranslatorInterface $translator, LoggerInterface $logger)
-    {
+    public function __construct(
+        RequestStack $requestStack,
+        TranslatorInterface $translator,
+        LoggerInterface $logger
+    ) {
         $this->requestStack = $requestStack;
         $this->translator = $translator;
         $this->logger = $logger;

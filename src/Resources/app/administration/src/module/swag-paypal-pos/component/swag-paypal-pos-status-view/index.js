@@ -41,11 +41,11 @@ Component.register('swag-paypal-pos-status-view', {
             statusErrorLevel: null,
             statusCompleteErrorLevel: null,
             iconConfig: {
-                syncing: 'default-arrow-360-full',
-                warning: 'default-badge-warning',
-                error: 'default-basic-x-line',
-                success: 'default-basic-checkmark-line',
-                noRunYet: 'default-action-more-horizontal',
+                syncing: 'regular-sync',
+                warning: 'regular-exclamation-triangle',
+                error: 'regular-times-xs',
+                success: 'regular-checkmark',
+                noRunYet: 'regular-blocked-circle',
             },
         };
     },

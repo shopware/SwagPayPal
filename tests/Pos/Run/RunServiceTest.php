@@ -59,7 +59,7 @@ class RunServiceTest extends TestCase
     public function testLogProcessAddLogWithoutProduct(): void
     {
         $context = Context::createDefaultContext();
-        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', $this->context);
+        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', [], $this->context);
         static::assertNotNull($this->runRepository->searchIds(new Criteria([$runId]), $context)->firstId());
 
         $this->logger->info(self::TEST_MESSAGE);
@@ -87,7 +87,7 @@ class RunServiceTest extends TestCase
     public function testLogProcessAddLogWithProduct(): void
     {
         $context = Context::createDefaultContext();
-        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', $this->context);
+        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', [], $this->context);
         static::assertNotNull($this->runRepository->searchIds(new Criteria([$runId]), $context)->firstId());
 
         $product = $this->createProduct($context);
@@ -117,7 +117,7 @@ class RunServiceTest extends TestCase
     public function testAbortRun(): void
     {
         $context = Context::createDefaultContext();
-        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', $this->context);
+        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', [], $this->context);
         static::assertNotNull($this->runRepository->searchIds(new Criteria([$runId]), $context)->firstId());
 
         $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
@@ -149,13 +149,13 @@ class RunServiceTest extends TestCase
 
     public function testIsRunActiveTrue(): void
     {
-        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', $this->context);
+        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', [], $this->context);
         static::assertTrue($this->runService->isRunActive($runId, $this->context));
     }
 
     public function testIsRunActiveFalse(): void
     {
-        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', $this->context);
+        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', [], $this->context);
         $this->runService->finishRun($runId, $this->context);
         static::assertFalse($this->runService->isRunActive($runId, $this->context));
     }

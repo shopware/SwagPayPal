@@ -26,8 +26,10 @@ class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
     /**
      * @psalm-suppress ContainerDependency
      */
-    public function __construct(array $elements, ContainerInterface $container)
-    {
+    public function __construct(
+        array $elements,
+        ContainerInterface $container
+    ) {
         parent::__construct($container, $elements, []);
         $this->languageRepo = new LanguageRepoMock();
         $this->salesChannelRepo = new SalesChannelRepoMock();

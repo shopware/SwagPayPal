@@ -17,6 +17,7 @@ use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogCollection;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Run\Administration\LogCleaner;
 use Swag\PayPal\Pos\Run\Task\CompleteTask;
 use Swag\PayPal\Pos\Run\Task\InventoryTask;
@@ -44,7 +45,7 @@ class ScheduledTaskTest extends TestCase
         $messageBus = new MessageBusMock();
         $runRepository = new RunRepoMock();
         $runService = new RunServiceMock($runRepository, new RunLogRepoMock(), $this->createMock(Connection::class), new Logger('test'));
-        $completeTask = new CompleteTask($messageBus, $runService);
+        $completeTask = new CompleteTask(new MessageDispatcher($messageBus, $this->createMock(Connection::class)), $runService);
 
         $taskHandler = new CompleteSyncTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $completeTask);
 
@@ -70,7 +71,7 @@ class ScheduledTaskTest extends TestCase
         $messageBus = new MessageBusMock();
         $runRepository = new RunRepoMock();
         $runService = new RunServiceMock($runRepository, new RunLogRepoMock(), $this->createMock(Connection::class), new Logger('test'));
-        $inventoryTask = new InventoryTask($messageBus, $runService);
+        $inventoryTask = new InventoryTask(new MessageDispatcher($messageBus, $this->createMock(Connection::class)), $runService);
 
         $taskHandler = new InventorySyncTaskHandler($scheduledTaskRepository, $salesChannelRepoMock, $inventoryTask);
 

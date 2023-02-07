@@ -11,17 +11,16 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
-use Swag\PayPal\Pos\Exception\MessageQueueTimeoutException;
 use Swag\PayPal\Pos\Exception\UnknownSyncStepException;
 use Swag\PayPal\Pos\MessageQueue\Manager\ImageSyncManager;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\Pos\MessageQueue\Manager\ProductSyncManager;
+use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
+use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
-use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Stamp\DelayStamp;
 
 class SyncManagerHandler implements MessageSubscriberInterface
 {
@@ -29,10 +28,8 @@ class SyncManagerHandler implements MessageSubscriberInterface
     public const SYNC_IMAGE = 'image';
     public const SYNC_INVENTORY = 'inventory';
     public const SYNC_CLONE_VISIBILITY = 'cloneVisibility';
-    private const QUEUED_DELAY = 2000;
-    private const QUEUE_RETRIES = 5; // about 2 minutes
 
-    private MessageBusInterface $messageBus;
+    private MessageDispatcher $messageBus;
 
     private RunService $runService;
 
@@ -44,8 +41,11 @@ class SyncManagerHandler implements MessageSubscriberInterface
 
     private ProductSyncManager $productSyncManager;
 
+    private MessageHydrator $messageHydrator;
+
     public function __construct(
-        MessageBusInterface $messageBus,
+        MessageDispatcher $messageBus,
+        MessageHydrator $messageHydrator,
         RunService $runService,
         LoggerInterface $logger,
         ImageSyncManager $imageSyncManager,
@@ -58,12 +58,10 @@ class SyncManagerHandler implements MessageSubscriberInterface
         $this->imageSyncManager = $imageSyncManager;
         $this->inventorySyncManager = $inventorySyncManager;
         $this->productSyncManager = $productSyncManager;
+        $this->messageHydrator = $messageHydrator;
     }
 
-    /**
-     * @param SyncManagerMessage $message
-     */
-    public function __invoke($message): void
+    public function __invoke(SyncManagerMessage $message): void
     {
         $runId = $message->getRunId();
         $context = $message->getContext();
@@ -73,9 +71,7 @@ class SyncManagerHandler implements MessageSubscriberInterface
         }
 
         try {
-            if ($message->getMessageRetries() > self::QUEUE_RETRIES) {
-                throw new MessageQueueTimeoutException();
-            }
+            $this->messageHydrator->hydrateMessage($message);
 
             if (!$this->isReadyForNextStep($message)) {
                 return;
@@ -90,20 +86,22 @@ class SyncManagerHandler implements MessageSubscriberInterface
                 return;
             }
 
-            $messageCount = $this->createMessages(
+            $messages = $this->createMessages(
                 $steps[$currentStep],
                 $runId,
                 $message->getSalesChannel(),
                 $context
             );
 
-            $this->runService->setMessageCount($messageCount, $runId, $context);
+            if (empty($messages)) {
+                $this->runService->increaseStep($runId, $currentStep, $context);
+                $message->setCurrentStep($currentStep + 1);
+                $this->messageBus->dispatch($message);
 
-            $message->setCurrentStep($currentStep + 1);
-            $message->setLastMessageCount($messageCount);
-            $message->setMessageRetries(0);
+                return;
+            }
 
-            $this->messageBus->dispatch($message);
+            $this->messageBus->bulkDispatch($messages, $runId);
         } catch (\Throwable $e) {
             $this->logger->critical($e->__toString());
             $this->runService->finishRun($runId, $context, PosSalesChannelRunDefinition::STATUS_FAILED);
@@ -119,7 +117,10 @@ class SyncManagerHandler implements MessageSubscriberInterface
         ];
     }
 
-    private function createMessages(string $step, string $runId, SalesChannelEntity $salesChannel, Context $context): int
+    /**
+     * @return AbstractSyncMessage[]
+     */
+    private function createMessages(string $step, string $runId, SalesChannelEntity $salesChannel, Context $context): array
     {
         switch ($step) {
             case self::SYNC_IMAGE:
@@ -135,24 +136,6 @@ class SyncManagerHandler implements MessageSubscriberInterface
 
     private function isReadyForNextStep(SyncManagerMessage $message): bool
     {
-        $currentMessageCount = $this->runService->getActualMessageCount($message->getContext());
-
-        if ($currentMessageCount <= 0) {
-            return true;
-        }
-
-        if ($message->getLastMessageCount() === $currentMessageCount) {
-            $message->setMessageRetries($message->getMessageRetries() + 1);
-        } else {
-            $message->setLastMessageCount($currentMessageCount);
-        }
-
-        $envelope = new Envelope($message, [
-            new DelayStamp(self::QUEUED_DELAY * (2 ** $message->getMessageRetries())),
-        ]);
-
-        $this->messageBus->dispatch($envelope);
-
-        return false;
+        return $this->runService->getActualMessageCount($message->getContext()) <= 0;
     }
 }

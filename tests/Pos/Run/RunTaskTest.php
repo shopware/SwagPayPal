@@ -7,12 +7,14 @@
 
 namespace Swag\PayPal\Test\Pos\Run;
 
+use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Pos\MessageQueue\Handler\SyncManagerHandler;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Run\Task\AbstractTask;
 use Swag\PayPal\Pos\Run\Task\CompleteTask;
@@ -41,11 +43,12 @@ class RunTaskTest extends TestCase
         $this->messageBus = new MessageBusMock();
         $this->runService = $this->createMock(RunService::class);
 
+        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class));
         $this->tasks = [
-            CompleteTask::class => new CompleteTask($this->messageBus, $this->runService),
-            ProductTask::class => new ProductTask($this->messageBus, $this->runService),
-            ImageTask::class => new ImageTask($this->messageBus, $this->runService),
-            InventoryTask::class => new InventoryTask($this->messageBus, $this->runService),
+            CompleteTask::class => new CompleteTask($messageDispatcher, $this->runService),
+            ProductTask::class => new ProductTask($messageDispatcher, $this->runService),
+            ImageTask::class => new ImageTask($messageDispatcher, $this->runService),
+            InventoryTask::class => new InventoryTask($messageDispatcher, $this->runService),
         ];
     }
 

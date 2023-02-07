@@ -9,11 +9,13 @@ namespace Swag\PayPal\Pos\Run;
 
 use Doctrine\DBAL\Connection;
 use Monolog\Logger;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Aggregation\Metric\SumAggregation;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\SumResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
@@ -40,7 +42,7 @@ class RunService
         $this->logger = $logger;
     }
 
-    public function startRun(string $salesChannelId, string $taskName, Context $context): string
+    public function startRun(string $salesChannelId, string $taskName, array $steps, Context $context): string
     {
         $runId = Uuid::randomHex();
 
@@ -48,6 +50,7 @@ class RunService
             'id' => $runId,
             'salesChannelId' => $salesChannelId,
             'task' => $taskName,
+            'steps' => $steps,
         ]], $context);
 
         return $runId;
@@ -112,6 +115,7 @@ class RunService
     {
         $criteria = new Criteria();
         $criteria->addAggregation(new SumAggregation('totalMessages', 'messageCount'));
+        $criteria->addFilter(new EqualsFilter('status', PosSalesChannelRunDefinition::STATUS_IN_PROGRESS));
 
         /** @var SumResult|null $queued */
         $queued = $this->runRepository->aggregate($criteria, $context)->get('totalMessages');
@@ -123,20 +127,37 @@ class RunService
         return (int) $queued->getSum();
     }
 
-    public function setMessageCount(int $messageCount, string $runId, Context $context): void
+    public function increaseStep(string $runId, int $currentStep, Context $context): void
     {
         $this->runRepository->update([[
             'id' => $runId,
-            'messageCount' => $messageCount,
+            'stepIndex' => $currentStep + 1,
+            'messageCount' => 0,
         ]], $context);
     }
 
     public function decrementMessageCount(string $runId): void
     {
         $this->connection->executeUpdate(
-            'UPDATE `swag_paypal_pos_sales_channel_run` SET `message_count` = GREATEST(0, `message_count` - 1) WHERE `id` = :runId',
-            ['runId' => Uuid::fromHexToBytes($runId)],
+            'UPDATE `swag_paypal_pos_sales_channel_run`
+                    SET
+                        `message_count` = GREATEST(0, `message_count` - 1),
+                        `updated_at` = :updatedAt
+                    WHERE `id` = :runId',
+            ['runId' => Uuid::fromHexToBytes($runId), 'updatedAt' => (new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT)],
         );
+    }
+
+    public function getRun(string $runId, Context $context): PosSalesChannelRunEntity
+    {
+        /** @var PosSalesChannelRunEntity|null $run */
+        $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
+
+        if ($run === null) {
+            throw new \RuntimeException('Run not found');
+        }
+
+        return $run;
     }
 
     private function getLogHandler(): ?LogHandler

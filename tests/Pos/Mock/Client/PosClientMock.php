@@ -14,8 +14,12 @@ use Swag\PayPal\Pos\Resource\TokenResource;
 
 class PosClientMock extends PosClient
 {
-    public function __construct(string $baseUri, TokenResource $tokenResource, OAuthCredentials $credentials, LoggerInterface $logger)
-    {
+    public function __construct(
+        string $baseUri,
+        TokenResource $tokenResource,
+        OAuthCredentials $credentials,
+        LoggerInterface $logger
+    ) {
         parent::__construct($baseUri, $tokenResource, $credentials, $logger);
         $this->client = new GuzzleClientMock([
             'base_uri' => $baseUri,

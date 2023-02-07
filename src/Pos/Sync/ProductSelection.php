@@ -125,10 +125,7 @@ class ProductSelection
             ->addAssociation('categories')
             ->addAssociation('cover.media')
             ->addAssociation('prices')
-            ->addAssociation('translation')
-            ->addAssociation('configuratorSettings.option.translation')
-            ->addAssociation('configuratorSettings.option.group.translation')
-            ->addAssociation('options.translation')
-            ->addAssociation('options.group.translation');
+            ->addAssociation('configuratorSettings.option.group')
+            ->addAssociation('options.group');
     }
 }

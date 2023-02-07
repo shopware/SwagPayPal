@@ -68,18 +68,16 @@ trait UpdaterTrait
         ]);
         $status->addVariant($variant);
 
-        $context = Context::createDefaultContext();
-
-        return new InventoryContext(
-            new UuidConverter(),
-            $this->getSalesChannel($context),
+        $context = new InventoryContext(
             $this->locations['STORE'],
             $this->locations['SUPPLIER'],
             $this->locations['BIN'],
             $this->locations['SOLD'],
             $status,
-            new PosSalesChannelInventoryCollection([$localInventory]),
-            $context
         );
+        $context->setSalesChannel($this->getSalesChannel(Context::createDefaultContext()));
+        $context->addLocalInventory(new PosSalesChannelInventoryCollection([$localInventory]));
+
+        return $context;
     }
 }

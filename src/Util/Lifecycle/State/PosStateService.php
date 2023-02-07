@@ -43,7 +43,7 @@ class PosStateService
         $this->salesChannelTypeRepository->upsert([
             [
                 'id' => SwagPayPal::SALES_CHANNEL_TYPE_POS,
-                'iconName' => 'default-money-cash',
+                'iconName' => 'regular-money-bill',
                 'screenshotUrls' => [
                     'swagpaypal/static/img/paypal-pos-sales-channel-type-description-family.png',
                     'swagpaypal/static/img/paypal-pos-sales-channel-type-description-kit.png',

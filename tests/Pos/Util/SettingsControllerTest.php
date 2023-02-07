@@ -23,6 +23,7 @@ use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Exception\PosTokenException;
 use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
@@ -34,6 +35,8 @@ use Swag\PayPal\Pos\MessageQueue\Handler\SyncManagerHandler;
 use Swag\PayPal\Pos\MessageQueue\Manager\ImageSyncManager;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\Pos\MessageQueue\Manager\ProductSyncManager;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
+use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Resource\TokenResource;
 use Swag\PayPal\Pos\Resource\UserResource;
@@ -147,14 +150,20 @@ class SettingsControllerTest extends TestCase
             'toSalesChannelId' => self::TO_SALES_CHANNEL,
         ]), $context);
 
+        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class));
+        $messageHydrator = new MessageHydrator($this->createMock(SalesChannelContextService::class), $this->salesChannelRepository);
+
         $this->messageBus->execute([
             new CloneVisibilityHandler(
                 $this->runService,
                 new Logger('test'),
+                $messageDispatcher,
+                $messageHydrator,
                 $this->productVisibilityRepository
             ),
             new SyncManagerHandler(
-                $this->messageBus,
+                $messageDispatcher,
+                $messageHydrator,
                 $this->runService,
                 new NullLogger(),
                 $this->createMock(ImageSyncManager::class),
@@ -255,6 +264,7 @@ class SettingsControllerTest extends TestCase
 
         $this->salesChannelProductRepository = new SalesChannelProductRepoMock();
         $this->salesChannelRepository = new SalesChannelRepoMock();
+        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class));
 
         if (!$withSalesChannels) {
             $this->salesChannelRepository->getCollection()->clear();
@@ -285,7 +295,7 @@ class SettingsControllerTest extends TestCase
                 $shippingMethodRepository
             ),
             new ProductVisibilityCloneService(
-                $this->messageBus,
+                $messageDispatcher,
                 $this->productVisibilityRepository,
                 $this->runService,
                 $this->salesChannelRepository

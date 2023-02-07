@@ -88,7 +88,7 @@ class InventoryChangedHandler extends AbstractWebhookHandler
             return;
         }
 
-        $inventoryContext = $this->inventoryContextFactory->getContext($salesChannel, $context);
+        $inventoryContext = $this->inventoryContextFactory->getContext($salesChannel);
 
         $productIds = [];
 
@@ -118,7 +118,7 @@ class InventoryChangedHandler extends AbstractWebhookHandler
         /** @var ProductCollection $productCollection */
         $productCollection = $this->productRepository->search($criteria, $context)->getEntities();
 
-        $runId = $this->runService->startRun($salesChannel->getId(), InventoryTask::TASK_NAME_INVENTORY, $context);
+        $runId = $this->runService->startRun($salesChannel->getId(), InventoryTask::TASK_NAME_INVENTORY, [], $context);
 
         $inventoryContext->setProductIds($productIds);
         $this->inventoryContextFactory->updateLocal($inventoryContext);

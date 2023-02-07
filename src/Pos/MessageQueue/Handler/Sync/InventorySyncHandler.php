@@ -13,6 +13,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\InventorySyncMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
+use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\InventorySyncer;
@@ -28,11 +30,13 @@ class InventorySyncHandler extends AbstractSyncHandler
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,
+        MessageDispatcher $messageBus,
+        MessageHydrator $messageHydrator,
         EntityRepository $productRepository,
         InventoryContextFactory $inventoryContextFactory,
         InventorySyncer $inventorySyncer
     ) {
-        parent::__construct($runService, $logger);
+        parent::__construct($runService, $logger, $messageBus, $messageHydrator);
         $this->productRepository = $productRepository;
         $this->inventoryContextFactory = $inventoryContextFactory;
         $this->inventorySyncer = $inventorySyncer;

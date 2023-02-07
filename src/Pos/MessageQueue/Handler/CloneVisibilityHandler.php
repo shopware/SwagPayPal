@@ -15,6 +15,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Swag\PayPal\Pos\MessageQueue\Handler\Sync\AbstractSyncHandler;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\CloneVisibilityMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
+use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
 
 class CloneVisibilityHandler extends AbstractSyncHandler
@@ -24,9 +26,11 @@ class CloneVisibilityHandler extends AbstractSyncHandler
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,
+        MessageDispatcher $messageBus,
+        MessageHydrator $messageHydrator,
         EntityRepository $productVisibilityRepository
     ) {
-        parent::__construct($runService, $logger);
+        parent::__construct($runService, $logger, $messageBus, $messageHydrator);
         $this->productVisibilityRepository = $productVisibilityRepository;
     }
 

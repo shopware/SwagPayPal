@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Pos\Sync\Context;
 
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityRepositoryNotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -39,7 +38,7 @@ class InventoryContextFactory
         $this->inventoryRepository = $inventoryRepository;
     }
 
-    public function getContext(SalesChannelEntity $salesChannel, Context $context): InventoryContext
+    public function getContext(SalesChannelEntity $salesChannel): InventoryContext
     {
         /** @var PosSalesChannelEntity $posSalesChannel */
         $posSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
@@ -50,17 +49,16 @@ class InventoryContextFactory
             $locations['STORE']
         );
 
-        return new InventoryContext(
-            $this->uuidConverter,
-            $salesChannel,
+        $context = new InventoryContext(
             $locations['STORE'],
             $locations['SUPPLIER'],
             $locations['BIN'],
             $locations['SOLD'],
             $remoteInventory,
-            new PosSalesChannelInventoryCollection(),
-            $context
         );
+        $context->setSalesChannel($salesChannel);
+
+        return $context;
     }
 
     public function filterContext(InventoryContext $inventoryContext, array $productIds, array $parentIds): InventoryContext

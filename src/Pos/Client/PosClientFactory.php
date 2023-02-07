@@ -17,8 +17,10 @@ class PosClientFactory
 
     private LoggerInterface $logger;
 
-    public function __construct(TokenResource $tokenResource, LoggerInterface $logger)
-    {
+    public function __construct(
+        TokenResource $tokenResource,
+        LoggerInterface $logger
+    ) {
         $this->tokenResource = $tokenResource;
         $this->logger = $logger;
     }

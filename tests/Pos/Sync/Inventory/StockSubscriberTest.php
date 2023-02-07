@@ -43,7 +43,7 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\MessageQueue\Handler\InventoryUpdateHandler;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\InventorySyncMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Resource\InventoryResource;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\Inventory\StockSubscriber;
@@ -152,9 +152,10 @@ class StockSubscriberTest extends TestCase
         );
 
         $messageBus = new MessageBusMock();
+        $messageDispatcher = new MessageDispatcher($messageBus, $this->createMock(Connection::class));
 
         $inventorySyncManager = new InventorySyncManager(
-            $messageBus,
+            $messageDispatcher,
             new ProductSelection(
                 $salesChannelProductRepository,
                 $this->createMock(ProductStreamBuilder::class),
@@ -175,7 +176,7 @@ class StockSubscriberTest extends TestCase
             $runService,
             $salesChannelRepository,
             $inventorySyncManager,
-            $messageBus
+            $messageDispatcher
         );
 
         $orderLineItemRepository = new OrderLineItemRepoMock();
@@ -214,7 +215,6 @@ class StockSubscriberTest extends TestCase
         $messageBus->execute([$inventoryUpdateHandler]);
 
         $inventoryMessageCreated = false;
-        $syncManagerMessageCreated = false;
         foreach ($messageBus->getEnvelopes() as $envelope) {
             $message = $envelope->getMessage();
             if ($message instanceof InventorySyncMessage) {
@@ -228,18 +228,9 @@ class StockSubscriberTest extends TestCase
                     $message->getInventoryContext()->getProductIds()
                 );
             }
-            if ($message instanceof SyncManagerMessage) {
-                $syncManagerMessageCreated = true;
-            }
         }
 
-        if ($shouldWork) {
-            static::assertTrue($inventoryMessageCreated);
-            static::assertTrue($syncManagerMessageCreated);
-        } else {
-            static::assertFalse($inventoryMessageCreated);
-            static::assertFalse($syncManagerMessageCreated);
-        }
+        static::assertSame($shouldWork, $inventoryMessageCreated);
     }
 
     private function createStockSubscriber(): StockSubscriber

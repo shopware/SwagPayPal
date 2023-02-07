@@ -61,4 +61,9 @@ class MessageBusMock implements MessageBusInterface
     {
         return \count($this->envelopes);
     }
+
+    public function clear(): void
+    {
+        $this->envelopes = [];
+    }
 }

@@ -24,8 +24,11 @@ class PUIPaymentInstructionDataService
 
     private RouterInterface $router;
 
-    public function __construct(PaymentMethodDataRegistry $paymentMethodDataRegistry, AbstractPUIPaymentInstructionsRoute $puiPaymentInstructionsRoute, RouterInterface $router)
-    {
+    public function __construct(
+        PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        AbstractPUIPaymentInstructionsRoute $puiPaymentInstructionsRoute,
+        RouterInterface $router
+    ) {
         $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
         $this->puiPaymentInstructionsRoute = $puiPaymentInstructionsRoute;
         $this->router = $router;

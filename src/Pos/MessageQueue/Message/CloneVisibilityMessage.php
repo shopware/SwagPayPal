@@ -7,18 +7,15 @@
 
 namespace Swag\PayPal\Pos\MessageQueue\Message;
 
-use Shopware\Core\Framework\Context;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits\OffsetTrait;
 
 class CloneVisibilityMessage extends AbstractSyncMessage
 {
     use OffsetTrait;
 
-    private string $fromSalesChannelId;
+    protected string $fromSalesChannelId;
 
-    private string $toSalesChannelId;
-
-    private Context $context;
+    protected string $toSalesChannelId;
 
     public function getFromSalesChannelId(): string
     {
@@ -38,15 +35,5 @@ class CloneVisibilityMessage extends AbstractSyncMessage
     public function setToSalesChannelId(string $toSalesChannelId): void
     {
         $this->toSalesChannelId = $toSalesChannelId;
-    }
-
-    public function setContext(Context $context): void
-    {
-        $this->context = $context;
-    }
-
-    public function getContext(): Context
-    {
-        return $this->context;
     }
 }

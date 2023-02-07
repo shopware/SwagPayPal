@@ -14,34 +14,26 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
+use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\InventorySyncMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\ProductSelection;
 use Swag\PayPal\SwagPayPal;
-use Symfony\Component\Messenger\MessageBusInterface;
 
 class InventorySyncManager extends AbstractSyncManager
 {
     public const CHUNK_SIZE = 500;
 
-    /**
-     * @var InventoryContextFactory
-     */
-    private $inventoryContextFactory;
+    private InventoryContextFactory $inventoryContextFactory;
 
-    /**
-     * @var ProductSelection
-     */
-    private $productSelection;
+    private ProductSelection $productSelection;
 
-    /**
-     * @var SalesChannelRepository
-     */
-    private $productRepository;
+    private SalesChannelRepository $productRepository;
 
     public function __construct(
-        MessageBusInterface $messageBus,
+        MessageDispatcher $messageBus,
         ProductSelection $productSelection,
         SalesChannelRepository $productRepository,
         InventoryContextFactory $inventoryContextFactory
@@ -52,7 +44,10 @@ class InventorySyncManager extends AbstractSyncManager
         $this->inventoryContextFactory = $inventoryContextFactory;
     }
 
-    public function createMessages(SalesChannelEntity $salesChannel, Context $context, string $runId, ?array $reducedIds = null): int
+    /**
+     * @return AbstractSyncMessage[]
+     */
+    public function createMessages(SalesChannelEntity $salesChannel, Context $context, string $runId, ?array $reducedIds = null): array
     {
         $salesChannelContext = $this->productSelection->getSalesChannelContext($salesChannel);
 
@@ -68,30 +63,28 @@ class InventorySyncManager extends AbstractSyncManager
 
         $productIds = $this->productRepository->searchIds($criteria, $salesChannelContext)->getIds();
         if (empty($productIds)) {
-            return 0;
+            return [];
         }
 
-        $inventoryContext = $this->inventoryContextFactory->getContext($salesChannel, $context);
+        $inventoryContext = $this->inventoryContextFactory->getContext($salesChannel);
 
         $accumulatedIds = [];
-        $messageCount = 0;
+        $messages = [];
 
         foreach ($productIds as $id) {
             $accumulatedIds[] = $id;
 
             if (\count($accumulatedIds) >= self::CHUNK_SIZE) {
-                $this->createMessage($context, $inventoryContext, $salesChannel, $runId, $accumulatedIds, $parentIds);
-                ++$messageCount;
+                $messages[] = $this->createMessage($context, $inventoryContext, $salesChannel, $runId, $accumulatedIds, $parentIds);
                 $accumulatedIds = [];
             }
         }
 
         if (\count($accumulatedIds) > 0) {
-            $this->createMessage($context, $inventoryContext, $salesChannel, $runId, $accumulatedIds, $parentIds);
-            ++$messageCount;
+            $messages[] = $this->createMessage($context, $inventoryContext, $salesChannel, $runId, $accumulatedIds, $parentIds);
         }
 
-        return $messageCount;
+        return $messages;
     }
 
     private function createMessage(
@@ -101,13 +94,13 @@ class InventorySyncManager extends AbstractSyncManager
         string $runId,
         array $accumulatedIds,
         array $parentIds
-    ): void {
+    ): InventorySyncMessage {
         $message = new InventorySyncMessage();
-        $message->setContext($context);
         $message->setInventoryContext($this->inventoryContextFactory->filterContext($inventoryContext, $accumulatedIds, $parentIds));
         $message->setRunId($runId);
         $message->setSalesChannel($salesChannel);
-        $this->messageBus->dispatch($message);
+
+        return $message;
     }
 
     private function getParentIds(Criteria $criteria, SalesChannelContext $salesChannelContext): array

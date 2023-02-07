@@ -41,8 +41,10 @@ class LoggerFactory
 
     private int $defaultFileRotationCount;
 
-    public function __construct(string $rotatingFilePathPattern, int $defaultFileRotationCount = 14)
-    {
+    public function __construct(
+        string $rotatingFilePathPattern,
+        int $defaultFileRotationCount = 14
+    ) {
         $this->rotatingFilePathPattern = $rotatingFilePathPattern;
         $this->defaultFileRotationCount = $defaultFileRotationCount;
     }

@@ -185,7 +185,6 @@ class StockSubscriber implements EventSubscriberInterface
 
         $message = new InventoryUpdateMessage();
         $message->setIds($productIds);
-        $message->setContext($context);
         $envelope = new Envelope($message, [
             new DelayStamp(self::DELAY),
         ]);

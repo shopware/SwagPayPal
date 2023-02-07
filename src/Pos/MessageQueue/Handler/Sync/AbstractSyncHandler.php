@@ -8,7 +8,11 @@
 namespace Swag\PayPal\Pos\MessageQueue\Handler\Sync;
 
 use Psr\Log\LoggerInterface;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
+use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
+use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 
@@ -18,18 +22,23 @@ abstract class AbstractSyncHandler implements MessageSubscriberInterface
 
     private LoggerInterface $logger;
 
+    private MessageDispatcher $messageBus;
+
+    private MessageHydrator $messageHydrator;
+
     public function __construct(
         RunService $runService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        MessageDispatcher $messageBus,
+        MessageHydrator $messageHydrator
     ) {
         $this->runService = $runService;
         $this->logger = $logger;
+        $this->messageBus = $messageBus;
+        $this->messageHydrator = $messageHydrator;
     }
 
-    /**
-     * @param AbstractSyncMessage $message
-     */
-    public function __invoke($message): void
+    public function __invoke(AbstractSyncMessage $message): void
     {
         $runId = $message->getRunId();
         $context = $message->getContext();
@@ -39,15 +48,35 @@ abstract class AbstractSyncHandler implements MessageSubscriberInterface
         }
 
         try {
+            $this->messageHydrator->hydrateMessage($message);
             $this->sync($message);
         } catch (\Throwable $e) {
             $this->logger->critical($e->__toString());
-            $this->runService->finishRun($runId, $context);
+            $this->runService->finishRun($runId, $context, PosSalesChannelRunDefinition::STATUS_CANCELLED);
         } finally {
             $this->runService->decrementMessageCount($runId);
+            $this->checkRunStep($message);
             $this->runService->writeLog($runId, $context);
         }
     }
 
     abstract protected function sync(AbstractSyncMessage $message): void;
+
+    private function checkRunStep(AbstractSyncMessage $message): void
+    {
+        $run = $this->runService->getRun($message->getRunId(), $message->getContext());
+
+        if ($run->getMessageCount() !== 0) {
+            return;
+        }
+
+        $this->runService->increaseStep($message->getRunId(), $run->getStepIndex(), $message->getContext());
+        $managerMessage = new SyncManagerMessage();
+        $managerMessage->setSalesChannel($message->getSalesChannel());
+        $managerMessage->setRunId($message->getRunId());
+        $managerMessage->setSteps($run->getSteps());
+        $managerMessage->setCurrentStep($run->getStepIndex() + 1);
+
+        $this->messageBus->dispatch($managerMessage);
+    }
 }

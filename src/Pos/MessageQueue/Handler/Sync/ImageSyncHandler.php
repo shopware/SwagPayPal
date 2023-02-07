@@ -13,6 +13,8 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaEntity;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\ImageSyncMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
+use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\ImageSyncer;
 
@@ -25,10 +27,12 @@ class ImageSyncHandler extends AbstractSyncHandler
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,
+        MessageDispatcher $messageBus,
+        MessageHydrator $messageHydrator,
         EntityRepository $posMediaRepository,
         ImageSyncer $imageSyncer
     ) {
-        parent::__construct($runService, $logger);
+        parent::__construct($runService, $logger, $messageBus, $messageHydrator);
         $this->posMediaRepository = $posMediaRepository;
         $this->imageSyncer = $imageSyncer;
     }

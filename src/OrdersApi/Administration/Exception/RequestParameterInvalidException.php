@@ -12,8 +12,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RequestParameterInvalidException extends ShopwareHttpException
 {
-    public function __construct(string $invalidParameter, string $additionalInfo = '')
-    {
+    public function __construct(
+        string $invalidParameter,
+        string $additionalInfo = ''
+    ) {
         $message = 'Parameter "{{ invalidParameter }}" is invalid.';
         if ($additionalInfo !== '') {
             $message .= \PHP_EOL . $additionalInfo;
