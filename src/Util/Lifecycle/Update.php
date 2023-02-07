@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Util\Lifecycle;
 
+use Shopware\Core\Content\Category\Exception\CategoryNotFoundException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -17,6 +18,7 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Checkout\Payment\Method\PUIHandler;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Pos\Api\Exception\PosApiException;
+use Swag\PayPal\Pos\Setting\Exception\CustomerGroupNotFoundException;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
@@ -232,7 +234,11 @@ class Update
             ],
         ], $context);
 
-        $this->informationDefaultService->addInformation(new AdditionalInformation(), $context);
+        try {
+            $this->informationDefaultService->addInformation(new AdditionalInformation(), $context);
+        } catch (CustomerGroupNotFoundException|CategoryNotFoundException $e) {
+            // ignore, we only need payment and shipping method
+        }
 
         $this->paymentRepository->upsert([[
             'id' => InformationDefaultService::POS_PAYMENT_METHOD_ID,
