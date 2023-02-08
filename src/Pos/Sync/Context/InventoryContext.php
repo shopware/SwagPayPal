@@ -53,7 +53,7 @@ class InventoryContext implements \JsonSerializable
         string $supplierUuid,
         string $binUuid,
         string $soldUuid,
-        Status $remoteInventory,
+        Status $remoteInventory
     ) {
         $this->storeUuid = $storeUuid;
         $this->supplierUuid = $supplierUuid;

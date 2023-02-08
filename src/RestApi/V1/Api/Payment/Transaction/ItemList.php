@@ -25,12 +25,14 @@ class ItemList extends PayPalApiStruct
 
     /**
      * @var Item[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_item"})
      */
     protected array $items;
 
     /**
      * @var ShippingOption[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_shipping_option"})
      */
     protected array $shippingOptions;

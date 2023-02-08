@@ -23,6 +23,7 @@ class CreateWebhooks extends PayPalApiStruct
 
     /**
      * @var EventType[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_create_webhooks_event_type"})
      */
     protected array $eventTypes;

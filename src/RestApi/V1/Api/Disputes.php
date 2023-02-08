@@ -19,12 +19,14 @@ class Disputes extends PayPalApiStruct
 {
     /**
      * @var Item[]|null
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_item"}, nullable=true)
      */
     protected ?array $items = null;
 
     /**
      * @var Link[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected array $links;

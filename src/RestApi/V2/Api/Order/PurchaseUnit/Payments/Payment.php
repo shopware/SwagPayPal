@@ -42,6 +42,7 @@ abstract class Payment extends PayPalApiStruct
 
     /**
      * @var Link[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
     protected array $links;

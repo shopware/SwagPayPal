@@ -73,13 +73,17 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
 
     /**
      * @Since("5.0.0")
+     *
      * @OA\Post(
      *     path="/store-api/paypal/create-order",
      *     description="Creates a PayPal order from the existing cart or an order",
      *     operationId="createPayPalOrder",
      *     tags={"Store API", "PayPal"},
+     *
      *     @OA\RequestBody(
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(
      *                 property="product",
      *                 type="string",
@@ -95,6 +99,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response="200",
      *         description="The new token of the order"

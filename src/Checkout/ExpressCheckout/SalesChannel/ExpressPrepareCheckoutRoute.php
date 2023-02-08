@@ -61,16 +61,21 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 
     /**
      * @Since("2.0.0")
+     *
      * @OA\Post(
      *     path="/store-api/paypal/express/prepare-checkout",
      *     description="Loggs in a guest customer, with the data of a paypal order",
      *     operationId="preparePayPalExpressCheckout",
      *     tags={"Store API", "PayPal"},
+     *
      *     @OA\RequestBody(
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="token", description="ID of the paypal order", type="string")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response="200",
      *         description="The new context token"

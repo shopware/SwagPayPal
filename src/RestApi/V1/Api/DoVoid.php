@@ -49,6 +49,7 @@ class DoVoid extends PayPalApiStruct
 
     /**
      * @var Link[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected array $links;

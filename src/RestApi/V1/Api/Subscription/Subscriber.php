@@ -14,7 +14,9 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber\ShippingAddress;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_subscription_subscriber")
+ *
  * @codeCoverageIgnore
+ *
  * @experimental
  *
  * This class is experimental and not officially supported.

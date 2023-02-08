@@ -82,23 +82,32 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 
     /**
      * @Since("6.2.0.0")
+     *
      * @Entity("payment_method")
+     *
      * @OA\Post (
      *      path="/payment-method",
      *      summary="Loads all available payment methods",
      *      operationId="readPaymentMethod",
      *      tags={"Store API", "Payment Method"},
+     *
      *      @OA\Parameter(name="Api-Basic-Parameters"),
+     *
      *      @OA\RequestBody(
      *          required=true,
+     *
      *          @OA\JsonContent(
+     *
      *              @OA\Property(property="onlyAvailable", description="List only available", type="boolean")
      *          )
      *      ),
+     *
      *      @OA\Response(
      *          response="200",
      *          description="",
+     *
      *          @OA\JsonContent(type="object",
+     *
      *              @OA\Property(
      *                  property="total",
      *                  type="integer",
@@ -112,11 +121,13 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
      *              @OA\Property(
      *                  property="elements",
      *                  type="array",
+     *
      *                  @OA\Items(ref="#/components/schemas/PaymentMethod")
      *              )
      *       )
      *    )
      * )
+     *
      * @Route("/store-api/payment-method", name="store-api.payment.method", methods={"GET", "POST"}, defaults={"_entity"="payment_method"})
      */
     public function load(Request $request, SalesChannelContext $context, Criteria $criteria): PaymentMethodRouteResponse

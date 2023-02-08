@@ -60,18 +60,22 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
 
     /**
      * @Since("4.2.0")
+     *
      * @OA\Get(
      *     path="/store-api/paypal/pui/payment-instructions/{transactionId}",
      *     description="Tries to get payment instructions for PUI payments",
      *     operationId="getPUIPaymentInstructions",
      *     tags={"Store API", "PayPal"},
+     *
      *     @OA\Parameter(
      *         name="transactionId",
      *         description="Identifier of the order transaction to be fetched",
+     *
      *         @OA\Schema(type="string", pattern="^[0-9a-f]{32}$"),
      *         in="path",
      *         required=true
      *     ),
+     *
      *     @OA\Response(
      *         response="200",
      *         description="The payment instructions of the order"

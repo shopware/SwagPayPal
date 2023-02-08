@@ -13,7 +13,7 @@ use Shopware\Core\Framework\Struct\JsonSerializableTrait;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 // remove with end of 6.4 compatibility
-if (!interface_exists(AsyncMessageInterface::class)) {
+if (!\interface_exists(AsyncMessageInterface::class)) {
     require_once __DIR__ . '/../../../Util/Compatibility/AsyncMessageInterface.php';
 }
 

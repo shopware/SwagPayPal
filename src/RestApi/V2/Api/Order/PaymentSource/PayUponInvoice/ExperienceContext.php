@@ -32,6 +32,7 @@ class ExperienceContext extends PayPalApiStruct
 
     /**
      * @var string[]
+     *
      * @OA\Property(type="array", items="string")
      */
     protected array $customerServiceInstructions;

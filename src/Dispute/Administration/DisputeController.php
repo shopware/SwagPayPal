@@ -33,31 +33,39 @@ class DisputeController extends AbstractController
 
     /**
      * @Since("2.2.0")
+     *
      * @OA\Get(
      *     path="/paypal/dispute",
      *     description="Loads a list of PayPal disputes",
      *     operationId="disputeList",
      *     tags={"Admin API", "PayPal"},
+     *
      *     @OA\Parameter(
      *         parameter="salesChannelId",
      *         name="salesChannelId",
      *         in="query",
      *         description="ID of the sales channel to which the disputes belong",
+     *
      *         @OA\Schema(type="string")
      *     ),
+     *
      *     @OA\Parameter(
      *         parameter="disputeStateFilter",
      *         name="disputeStateFilter",
      *         in="query",
      *         description="Filter for dispute state. Seperate multiple states with a comma. Must one of these values: Swag\PayPal\RestApi\V1\Api\Disputes\Item::DISPUTE_STATES",
+     *
      *         @OA\Schema(type="string")
      *     ),
+     *
      *     @OA\Response(
      *         response="200",
      *         description="List of PayPal disputes",
+     *
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_disputes")
      *     )
      * )
+     *
      * @Route(
      *     "/api/paypal/dispute",
      *      name="api.paypal.dispute_list",
@@ -77,32 +85,40 @@ class DisputeController extends AbstractController
 
     /**
      * @Since("2.2.0")
+     *
      * @OA\Get(
      *     path="/paypal/dispute/{disputeId}",
      *     description="Loads the dispute details of the given PayPal dispute ID",
      *     operationId="disputeDetails",
      *     tags={"Admin API", "PayPal"},
+     *
      *     @OA\Parameter(
      *         parameter="disputeId",
      *         name="disputeId",
      *         in="path",
      *         description="ID of the dispute",
+     *
      *         @OA\Schema(type="string"),
      *         required=true
      *     ),
+     *
      *     @OA\Parameter(
      *         parameter="salesChannelId",
      *         name="salesChannelId",
      *         in="query",
      *         description="ID of the sales channel to which the dispute belongs",
+     *
      *         @OA\Schema(type="string")
      *     ),
+     *
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal dispute",
+     *
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_disputes_item")
      *     )
      * )
+     *
      * @Route(
      *     "/api/paypal/dispute/{disputeId}",
      *      name="api.paypal.dispute_details",

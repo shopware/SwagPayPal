@@ -9,7 +9,6 @@
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Plugin\KernelPluginLoader\StaticKernelPluginLoader;
 use Shopware\Core\DevOps\StaticAnalyze\StaticAnalyzeKernel;
-use Shopware\Development\Kernel;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Dotenv\Dotenv;
 
@@ -33,11 +32,7 @@ $swagPayPal = [
 ];
 $pluginLoader = new StaticKernelPluginLoader($classLoader, null, [$swagPayPal]);
 
-if (class_exists(Kernel::class)) {
-    $kernel = new Kernel('dev', true, $pluginLoader, 'phpstan-test-cache-id');
-} else {
-    $kernel = new StaticAnalyzeKernel('dev', true, $pluginLoader, 'phpstan-test-cache-id');
-}
+$kernel = new StaticAnalyzeKernel('dev', true, $pluginLoader, 'phpstan-test-cache-id');
 $kernel->boot();
 
 $phpStanConfigDist = file_get_contents($pluginRootPath . '/phpstan.neon.dist');

@@ -35,6 +35,7 @@ class Offer extends PayPalApiStruct
 
     /**
      * @var History[]|null
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_offer_history"}, nullable=true)
      */
     protected ?array $history = null;

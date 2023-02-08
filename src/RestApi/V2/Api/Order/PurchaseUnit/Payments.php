@@ -20,18 +20,21 @@ class Payments extends PayPalApiStruct
 {
     /**
      * @var Authorization[]|null
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_authorization"}, nullable=true)
      */
     protected ?array $authorizations = null;
 
     /**
      * @var Capture[]|null
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_capture"}, nullable=true)
      */
     protected ?array $captures = null;
 
     /**
      * @var Refund[]|null
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_refund"}, nullable=true)
      */
     protected ?array $refunds = null;

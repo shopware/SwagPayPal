@@ -48,6 +48,7 @@ class PlusPaymentHandleController extends StorefrontController
 
     /**
      * @Since("6.0.0")
+     *
      * @Route(
      *     "/paypal/plus/payment/handle",
      *     name="frontend.paypal.plus.handle",

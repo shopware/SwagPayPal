@@ -17,7 +17,9 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\Subscriber;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_subscription")
+ *
  * @codeCoverageIgnore
+ *
  * @experimental
  *
  * This class is experimental and not officially supported.
@@ -87,6 +89,7 @@ class Subscription extends PayPalApiStruct
 
     /**
      * @var Link[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected array $links;

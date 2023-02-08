@@ -26,6 +26,7 @@ class ThirdPartyDetails extends PayPalApiStruct
 
     /**
      * @var string[]
+     *
      * @OA\Property(type="array", items={"type": "string"})
      */
     protected array $features = [

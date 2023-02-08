@@ -76,6 +76,7 @@ class PosSyncController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/sync/{salesChannelId}/products",
      *      name="api.action.paypal.pos.sync.products",
@@ -94,6 +95,7 @@ class PosSyncController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/sync/{salesChannelId}/images",
      *      name="api.action.paypal.pos.sync.images",
@@ -112,6 +114,7 @@ class PosSyncController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/sync/{salesChannelId}/inventory",
      *      name="api.action.paypal.pos.sync.inventory",
@@ -130,6 +133,7 @@ class PosSyncController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/sync/{salesChannelId}",
      *      name="api.action.paypal.pos.sync",
@@ -148,6 +152,7 @@ class PosSyncController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/sync/abort/{runId}",
      *      name="api.action.paypal.pos.sync.abort",
@@ -164,6 +169,7 @@ class PosSyncController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/sync/reset/{salesChannelId}",
      *      name="api.action.paypal.pos.sync.reset",
@@ -182,6 +188,7 @@ class PosSyncController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/log/cleanup/{salesChannelId}",
      *      name="api.action.paypal.pos.log.cleanup",
@@ -200,6 +207,7 @@ class PosSyncController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/paypal/pos/product-log/{salesChannelId}",
      *      name="api.paypal.pos.product-log",

@@ -50,6 +50,7 @@ class WebhookController extends AbstractController
 
     /**
      * @Since("0.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/webhook/register/{salesChannelId}",
      *     name="api.action.paypal.webhook.register",
@@ -66,6 +67,7 @@ class WebhookController extends AbstractController
 
     /**
      * @Since("1.9.3")
+     *
      * @Route(
      *     "/api/_action/paypal/webhook/deregister/{salesChannelId}",
      *     name="api.action.paypal.webhook.deregister",
@@ -82,6 +84,7 @@ class WebhookController extends AbstractController
 
     /**
      * @Since("0.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/webhook/execute",
      *     name="api.action.paypal.webhook.execute",

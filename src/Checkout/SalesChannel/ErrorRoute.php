@@ -47,13 +47,17 @@ class ErrorRoute extends AbstractErrorRoute
 
     /**
      * @Since("3.3.0")
+     *
      * @OA\Post(
      *     path="/store-api/paypal/error",
      *     description="Adds an error message to a flashbag and logs the error",
      *     operationId="addErrorMessage",
      *     tags={"Store API", "PayPal"},
+     *
      *     @OA\RequestBody(
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(
      *                 property="error",
      *                 type="string",
@@ -67,6 +71,7 @@ class ErrorRoute extends AbstractErrorRoute
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *          response="204"
      *     )

@@ -68,6 +68,7 @@ abstract class Transaction extends PayPalApiStruct
 
     /**
      * @var Item[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_item"})
      */
     protected array $items;

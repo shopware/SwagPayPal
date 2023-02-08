@@ -20,6 +20,7 @@ use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
@@ -244,6 +245,8 @@ class PUIPaymentInstructionsRouteTest extends TestCase
             ],
             'context' => '{}',
             'payload' => '{}',
+            'itemRounding' => (new CashRoundingConfig(2, 0.01, true))->jsonSerialize(),
+            'totalRounding' => (new CashRoundingConfig(2, 0.01, true))->jsonSerialize(),
         ];
 
         /** @var EntityRepository $orderRepository */

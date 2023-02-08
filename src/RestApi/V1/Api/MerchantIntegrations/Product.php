@@ -30,6 +30,7 @@ class Product extends PayPalApiStruct
 
     /**
      * @var Capability[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_capability"})
      */
     protected array $capabilities;

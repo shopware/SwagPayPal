@@ -62,6 +62,7 @@ class PlusPaymentFinalizeController extends AbstractController
 
     /**
      * @Since("0.9.0")
+     *
      * @Route(
      *     "/paypal/plus/payment/finalize-transaction",
      *     name="payment.paypal.plus.finalize.transaction",

@@ -106,21 +106,23 @@ PHPUnit:
             entrypoint: [ "sh", "-c", "docker-entrypoint.sh $MYSQL_CMD" ]
     coverage: '/^\s*Lines:\s*(\d+(?:\.\d+)?%)/'
     artifacts:
+        when: always
         paths:
-            - development/build/artifacts/phpunit.clover.xml
+            - cobertura.xml
         reports:
-            junit: development/build/artifacts/phpunit.junit.xml
+            junit: phpunit.junit.xml
+            coverage_report:
+                coverage_format: cobertura
+                path: cobertura.xml
     script:
         - composer dump-autoload --dev -d custom/plugins/SwagPayPal
         - touch custom/plugins/SwagPayPal/vendor/composer/InstalledVersions.php
-        - php -d pcov.enabled=1 -d pcov.directory=$CI_PROJECT_DIR
+        - php -d pcov.enabled=1 -d pcov.directory=custom/plugins/SwagPayPal/src -d pcov.exclude='~(vendor|node_modules)~'
             vendor/bin/phpunit
             --configuration custom/plugins/SwagPayPal/phpunit.xml.dist
-            --log-junit build/artifacts/phpunit.junit.xml
-            --colors=never
-            --coverage-clover build/artifacts/phpunit.clover.xml
-            --coverage-html build/artifacts/phpunit-coverage-html
+            --log-junit phpunit.junit.xml
             --coverage-text
+            --coverage-cobertura cobertura.xml | grep -v -E '^Swag\\PayPal\\|^  Methods:'  # do not output covered files lines
         - php bin/console plugin:uninstall SwagPayPal
     rules:
         -   if: '$CI_MERGE_REQUEST_LABELS =~ /.*unit::all.*/'

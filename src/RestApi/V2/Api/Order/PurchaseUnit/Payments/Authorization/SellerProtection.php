@@ -22,6 +22,7 @@ class SellerProtection extends PayPalApiStruct
 
     /**
      * @var string[]
+     *
      * @OA\Property(type="array", items={"type": "string"})
      */
     protected array $disputeCategories;

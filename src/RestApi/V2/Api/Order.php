@@ -50,6 +50,7 @@ class Order extends PayPalApiStruct
 
     /**
      * @var PurchaseUnit[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit"})
      */
     protected array $purchaseUnits = [];
@@ -76,6 +77,7 @@ class Order extends PayPalApiStruct
 
     /**
      * @var Link[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
     protected array $links;

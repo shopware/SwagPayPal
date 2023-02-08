@@ -83,31 +83,39 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Since("0.10.0")
+     *
      * @OA\Get(
      *     path="/paypal/payment-details/{orderId}/{paymentId}",
      *     description="Loads the Payment details of the given PayPal ID",
      *     operationId="paymentDetails",
      *     tags={"Admin API", "PayPal"},
+     *
      *     @OA\Parameter(
      *         parameter="orderId",
      *         name="orderId",
      *         in="path",
      *         description="ID of the order which contains the PayPal payment",
+     *
      *         @OA\Schema(type="string")
      *     ),
+     *
      *     @OA\Parameter(
      *         parameter="paymentId",
      *         name="paymentId",
      *         in="path",
      *         description="ID of the PayPal payment",
+     *
      *         @OA\Schema(type="string")
      *     ),
+     *
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal payment",
+     *
      *         @OA\JsonContent(ref="#/components/schemas/swag_paypal_v1_payment")
      *     )
      * )
+     *
      * @Route("/api/paypal/payment-details/{orderId}/{paymentId}", name="api.paypal.payment_details", methods={"GET"}, defaults={"_acl": {"order.viewer"}})
      */
     public function paymentDetails(string $orderId, string $paymentId, Context $context): JsonResponse
@@ -119,36 +127,46 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Since("1.5.1")
+     *
      * @OA\Get(
      *     path="/paypal/resource-details/{resourceType}/{resourceId}/{orderId}",
      *     description="Loads the PayPal resource details of the given resource ID",
      *     operationId="resourceDetails",
      *     tags={"Admin API", "PayPal"},
+     *
      *     @OA\Parameter(
      *         parameter="resourceType",
      *         name="resourceType",
      *         in="path",
      *         description="Type of the resource. Possible values: sale, authorization, order, capture, refund",
+     *
      *         @OA\Schema(type="string")
      *     ),
+     *
      *     @OA\Parameter(
      *         parameter="resourceId",
      *         name="resourceId",
      *         in="path",
      *         description="ID of the PayPal resource",
+     *
      *         @OA\Schema(type="string")
      *     ),
+     *
      *     @OA\Parameter(
      *         parameter="orderId",
      *         name="orderId",
      *         in="path",
      *         description="ID of the order which contains the PayPal resource",
+     *
      *         @OA\Schema(type="string")
      *     ),
+     *
      *     @OA\Response(
      *         response="200",
      *         description="Details of the PayPal resource",
+     *
      *         @OA\JsonContent(oneOf={
+     *
      *             @OA\Schema(ref="#/components/schemas/swag_paypal_v1_payment_transaction_sale"),
      *             @OA\Schema(ref="#/components/schemas/swag_paypal_v1_payment_transaction_authorization"),
      *             @OA\Schema(ref="#/components/schemas/swag_paypal_v1_payment_transaction_order"),
@@ -156,6 +174,7 @@ class PayPalPaymentController extends AbstractController
      *         })
      *     )
      * )
+     *
      * @Route("/api/paypal/resource-details/{resourceType}/{resourceId}/{orderId}", name="api.paypal.resource_details", methods={"GET"}, defaults={"_acl": {"order.viewer"}})
      */
     public function resourceDetails(Context $context, string $resourceType, string $resourceId, string $orderId): JsonResponse
@@ -187,6 +206,7 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Since("0.9.0")
+     *
      * @Route("/api/_action/paypal/refund-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.refund_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
      *
      * @throws RequiredParameterInvalidException
@@ -230,6 +250,7 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Since("0.9.0")
+     *
      * @Route("/api/_action/paypal/capture-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.catpure_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
      *
      * @throws RequiredParameterInvalidException
@@ -268,6 +289,7 @@ class PayPalPaymentController extends AbstractController
 
     /**
      * @Since("0.9.0")
+     *
      * @Route("/api/_action/paypal/void-payment/{resourceType}/{resourceId}/{orderId}", name="api.action.paypal.void_payment", methods={"POST"}, defaults={"_acl": {"order.editor"}})
      *
      * @throws RequiredParameterInvalidException
