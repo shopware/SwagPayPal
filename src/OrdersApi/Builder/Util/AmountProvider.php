@@ -83,7 +83,7 @@ class AmountProvider
             if ($itemUnitAmount >= 0.0) {
                 $accumulatedAmountValue += $item->getQuantity() * $itemUnitAmount;
                 $newItems[] = $item;
-            } else {
+            } elseif ($item->hasTax()) {
                 $taxesCorrection += (float) $item->getTax()->getValue();
             }
         }

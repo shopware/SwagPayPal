@@ -157,4 +157,9 @@ class Item extends PayPalApiStruct
 
         $this->sku = $sku;
     }
+
+    public function hasTax(): bool
+    {
+        return isset($this->tax);
+    }
 }
