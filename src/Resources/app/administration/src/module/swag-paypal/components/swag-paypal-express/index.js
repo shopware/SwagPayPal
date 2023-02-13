@@ -13,6 +13,7 @@ Component.register('swag-paypal-express', {
         actualConfigData: {
             type: Object,
             required: true,
+            default: () => { return {}; },
         },
         allConfigs: {
             type: Object,

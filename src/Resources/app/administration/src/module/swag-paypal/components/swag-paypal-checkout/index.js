@@ -22,6 +22,7 @@ Component.register('swag-paypal-checkout', {
         actualConfigData: {
             type: Object,
             required: true,
+            default: () => { return {}; },
         },
         allConfigs: {
             type: Object,
@@ -92,23 +93,6 @@ Component.register('swag-paypal-checkout', {
         return {
             showCredentials: false,
             paymentMethods: [],
-            iconMap: {
-                handler_swag_paypalpaymenthandler: 'paypal-payment-method-paypal',
-                handler_swag_acdchandler: 'paypal-payment-method-credit-and-debit-card',
-                handler_swag_puihandler: 'paypal-payment-method-pay-upon-invoice',
-                handler_swag_bancontactapmhandler: 'paypal-payment-method-bancontact',
-                handler_swag_blikapmhandler: 'paypal-payment-method-blik',
-                handler_swag_epsapmhandler: 'paypal-payment-method-eps',
-                handler_swag_giropayapmhandler: 'paypal-payment-method-giropay',
-                handler_swag_idealapmhandler: 'paypal-payment-method-iDEAL',
-                handler_swag_multibancoapmhandler: 'paypal-payment-method-multibanco',
-                handler_swag_mybankapmhandler: 'paypal-payment-method-mybank',
-                handler_swag_oxxoapmhandler: 'paypal-payment-method-oxxo',
-                handler_swag_p24apmhandler: 'paypal-payment-method-p24',
-                handler_swag_sofortapmhandler: 'paypal-payment-method-sofort',
-                handler_swag_trustlyapmhandler: 'paypal-payment-method-trustly',
-                handler_swag_sepahandler: 'paypal-payment-method-sepa',
-            },
             merchantInformation: {
                 merchantIntegrations: {
                     legalName: null,

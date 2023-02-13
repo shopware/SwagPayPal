@@ -18,6 +18,7 @@ Component.register('swag-paypal-credentials', {
         actualConfigData: {
             type: Object,
             required: true,
+            default: () => { return {}; },
         },
         allConfigs: {
             type: Object,

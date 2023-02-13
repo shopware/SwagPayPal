@@ -69,7 +69,7 @@ Component.register('swag-paypal-pos-status-view', {
         },
 
         statusIcon() {
-            return this.iconConfig[this.status] || 'default-badge-info';
+            return this.iconConfig[this.status] || 'regular-info-circle';
         },
 
         statusIconComplete() {

@@ -32,7 +32,7 @@ Component.register('swag-paypal', {
             clientSecretSandboxFilled: false,
             sandboxChecked: false,
             salesChannels: [],
-            config: null,
+            config: {},
             isSetDefaultPaymentSuccessful: false,
             isSettingDefaultPaymentMethods: false,
             savingDisabled: false,
@@ -57,7 +57,11 @@ Component.register('swag-paypal', {
                 return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
             }
 
-            const defaultConfig = this.$refs.configComponent.allConfigs.null;
+            const defaultConfig = this.$refs.configComponent?.allConfigs.null;
+
+            if (!defaultConfig) {
+                return false;
+            }
 
             return defaultConfig['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_OTHER;
         },
@@ -72,7 +76,11 @@ Component.register('swag-paypal', {
                 return this.config['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY;
             }
 
-            const defaultConfig = this.$refs.configComponent.allConfigs.null;
+            const defaultConfig = this.$refs.configComponent?.allConfigs.null;
+
+            if (!defaultConfig) {
+                return false;
+            }
 
             return defaultConfig['SwagPayPal.settings.merchantLocation'] === this.MERCHANT_LOCATION_GERMANY;
         },
@@ -132,8 +140,8 @@ Component.register('swag-paypal', {
     watch: {
         config: {
             handler() {
-                const defaultConfig = this.$refs.configComponent.allConfigs.null;
-                const salesChannelId = this.$refs.configComponent.selectedSalesChannelId;
+                const defaultConfig = this.$refs.configComponent?.allConfigs?.null;
+                const salesChannelId = this.$refs.configComponent?.selectedSalesChannelId;
 
                 if (salesChannelId === null) {
                     this.clientIdFilled = !!this.config['SwagPayPal.settings.clientId'];
@@ -223,7 +231,7 @@ Component.register('swag-paypal', {
             this.isSettingDefaultPaymentMethods = true;
 
             this.SwagPaypalPaymentMethodService.setDefaultPaymentForSalesChannel(
-                this.$refs.configComponent.selectedSalesChannelId,
+                this.$refs.configComponent?.selectedSalesChannelId,
             ).then(() => {
                 this.isSettingDefaultPaymentMethods = false;
                 this.isSetDefaultPaymentSuccessful = true;
