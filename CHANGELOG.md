@@ -1,3 +1,9 @@
+# 6.0.0
+- PPI-430 - Improved processing of Zettle synchronisation
+- PPI-659 - Added custom Storefront routes to adjust for missing Store API Client in Storefront in 6.5
+- PPI-685, PPI-701, PPI-725 - Removed auto-hide for Smart Payment Buttons configuration in Administration
+- PPI-731 - Compatibility with Shopware 6.5
+
 # 5.4.5
 - PPI-734 - Fixes an issue, where some payment methods were not displayed in after order process
 - PPI-720, PPI-741, PPI-743 - Fixes an issue, where the total tax amount was calculated incorrectly for net customers

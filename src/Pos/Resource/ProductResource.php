@@ -78,7 +78,7 @@ class ProductResource
         while ($offset < \count($productUuids)) {
             $deletionChunk = \array_splice($productUuids, $offset, self::DELETION_CHUNK_SIZE);
             $deletionChunk = \array_map(static function (string $productUuid) {
-                return "uuid=${productUuid}";
+                return \sprintf("uuid=%s", $productUuid);
             }, $deletionChunk);
 
             $client->sendDeleteRequest(PosRequestUri::PRODUCT_RESOURCE, \implode('&', $deletionChunk));
