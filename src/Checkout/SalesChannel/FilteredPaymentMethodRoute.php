@@ -199,6 +199,16 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
     private function checkOrder(Request $request, Context $context): ?OrderEntity
     {
         $orderId = $request->attributes->getAlnum('orderId');
+        if ($orderId) {
+            return $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
+        }
+
+        $actualRequest = $this->requestStack->getCurrentRequest();
+        if (!$actualRequest) {
+            return null;
+        }
+
+        $orderId = $actualRequest->attributes->getAlnum('orderId');
         if (!$orderId) {
             return null;
         }
