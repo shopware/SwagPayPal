@@ -23,6 +23,9 @@ class TokenResource implements TokenResourceInterface
 
     private TokenValidator $tokenValidator;
 
+    /**
+     * @internal
+     */
     public function __construct(
         CacheItemPoolInterface $cache,
         TokenClientFactory $tokenClientFactory,

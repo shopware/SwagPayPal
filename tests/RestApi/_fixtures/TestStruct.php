@@ -11,6 +11,9 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 use Swag\PayPal\Test\RestApi\_fixtures\TestStruct\Bar;
 use Swag\PayPal\Test\RestApi\_fixtures\TestStruct\Foo;
 
+/**
+ * @internal
+ */
 class TestStruct extends PayPalApiStruct
 {
     protected string $id;

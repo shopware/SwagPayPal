@@ -11,9 +11,6 @@ use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\Util\Availability\AvailabilityContext;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-/**
- * @psalm-consistent-constructor
- */
 abstract class AbstractMethodData
 {
     public const CAPABILITY_ACTIVE = 'active';
@@ -24,7 +21,7 @@ abstract class AbstractMethodData
     protected ContainerInterface $container;
 
     /**
-     * @psalm-suppress ContainerDependency
+     * @internal
      */
     final public function __construct(ContainerInterface $container)
     {

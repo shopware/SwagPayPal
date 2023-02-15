@@ -22,6 +22,9 @@ class PurchaseUnitPatchBuilder
 
     private ItemListProvider $itemListProvider;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PurchaseUnitProvider $purchaseUnitProvider,
         ItemListProvider $itemListProvider

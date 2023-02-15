@@ -13,6 +13,9 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Api\Webhook\Subscription\CreateSubscription;
 
+/**
+ * @internal
+ */
 class WebhookRegisterFixture
 {
     public const WEBHOOK_SIGNING_KEY = 'G6MWAEw1Fc6FWPkfiJiZ3j8Ya76I5ZbEDVPtzcPl6L6scsylmK5AEDyNyMe8N5cy';

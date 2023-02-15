@@ -24,6 +24,9 @@ class OrderPatchService
 
     private OrderResource $orderResource;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SystemConfigService $systemConfigService,
         PurchaseUnitPatchBuilder $purchaseUnitPatchBuilder,

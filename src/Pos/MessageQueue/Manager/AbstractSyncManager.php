@@ -16,6 +16,9 @@ abstract class AbstractSyncManager
 {
     protected MessageDispatcher $messageBus;
 
+    /**
+     * @internal
+     */
     public function __construct(MessageDispatcher $messageBus)
     {
         $this->messageBus = $messageBus;

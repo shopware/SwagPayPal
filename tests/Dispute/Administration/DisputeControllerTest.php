@@ -18,6 +18,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDispute;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class DisputeControllerTest extends TestCase
 {
     use ServicesTrait;

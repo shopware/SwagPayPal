@@ -26,6 +26,9 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
 {
     private ItemListProvider $itemListProvider;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,

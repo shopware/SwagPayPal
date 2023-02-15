@@ -35,6 +35,9 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
 {
     private EntityRepository $currencyRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         LocaleCodeProvider $localeCodeProvider,
         PriceFormatter $priceFormatter,

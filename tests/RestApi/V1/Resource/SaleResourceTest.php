@@ -16,6 +16,9 @@ use Swag\PayPal\RestApi\V1\Resource\SaleResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceSaleResponseFixture;
 
+/**
+ * @internal
+ */
 class SaleResourceTest extends TestCase
 {
     use ServicesTrait;

@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+/**
+ * @internal
+ */
 class RefundSaleResponseFixture
 {
     public const REFUND_AMOUNT = '12.35';

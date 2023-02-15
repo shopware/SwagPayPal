@@ -11,6 +11,9 @@ use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 
+/**
+ * @internal
+ */
 class Migration1626082072AddStatusAndMessageCountToRun extends MigrationStep
 {
     public function getCreationTimestamp(): int

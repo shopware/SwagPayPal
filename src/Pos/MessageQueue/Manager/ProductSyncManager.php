@@ -41,6 +41,9 @@ class ProductSyncManager extends AbstractSyncManager
 
     private ImageSyncer $imageSyncer;
 
+    /**
+     * @internal
+     */
     public function __construct(
         MessageDispatcher $messageBus,
         ProductSelection $productSelection,

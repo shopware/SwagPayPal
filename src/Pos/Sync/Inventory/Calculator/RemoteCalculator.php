@@ -17,6 +17,9 @@ class RemoteCalculator
 {
     private UuidConverter $uuidConverter;
 
+    /**
+     * @internal
+     */
     public function __construct(UuidConverter $uuidConverter)
     {
         $this->uuidConverter = $uuidConverter;

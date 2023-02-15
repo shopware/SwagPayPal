@@ -33,6 +33,9 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         CartService $cartService,
         OrderFromCartBuilder $orderFromCartBuilder,

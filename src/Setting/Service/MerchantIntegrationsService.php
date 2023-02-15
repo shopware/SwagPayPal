@@ -26,6 +26,9 @@ class MerchantIntegrationsService
 
     private PayPalClientFactoryInterface $payPalClientFactory;
 
+    /**
+     * @internal
+     */
     public function __construct(
         MerchantIntegrationsResourceInterface $merchantIntegrationsResource,
         CredentialsUtilInterface $credentialsUtil,

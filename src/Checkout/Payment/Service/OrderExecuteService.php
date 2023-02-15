@@ -33,6 +33,9 @@ class OrderExecuteService
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         OrderResource $orderResource,
         OrderTransactionStateHandler $orderTransactionStateHandler,

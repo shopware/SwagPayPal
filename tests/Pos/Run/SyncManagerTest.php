@@ -32,6 +32,9 @@ use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 
+/**
+ * @internal
+ */
 class SyncManagerTest extends TestCase
 {
     use IntegrationTestBehaviour;

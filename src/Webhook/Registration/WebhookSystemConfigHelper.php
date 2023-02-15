@@ -32,6 +32,9 @@ class WebhookSystemConfigHelper
 
     private SettingsValidationServiceInterface $settingsValidationService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         LoggerInterface $logger,
         WebhookServiceInterface $webhookService,

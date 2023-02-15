@@ -12,6 +12,9 @@ use Swag\PayPal\Pos\Api\Authentication\OAuthCredentials;
 use Swag\PayPal\Pos\Client\PosClient;
 use Swag\PayPal\Pos\Resource\TokenResource;
 
+/**
+ * @internal
+ */
 class PosClientMock extends PosClient
 {
     public function __construct(

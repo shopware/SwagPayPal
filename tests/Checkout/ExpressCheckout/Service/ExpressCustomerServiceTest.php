@@ -23,6 +23,9 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 
+/**
+ * @internal
+ */
 class ExpressCustomerServiceTest extends TestCase
 {
     use CheckoutRouteTrait;

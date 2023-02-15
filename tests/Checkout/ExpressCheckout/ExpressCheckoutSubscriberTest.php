@@ -58,6 +58,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * @internal
+ */
 class ExpressCheckoutSubscriberTest extends TestCase
 {
     use ServicesTrait;

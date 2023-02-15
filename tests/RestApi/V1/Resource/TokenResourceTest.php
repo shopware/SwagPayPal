@@ -19,6 +19,9 @@ use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateTokenResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 
+/**
+ * @internal
+ */
 class TokenResourceTest extends TestCase
 {
     private const CACHED_ACCESS_TOKEN = 'A21AAEaQMaSheELTFsynkQLwXBZIr-fObE9PtGjr6_SOVEBXWNaJu1DvwKfLiJdxZ1aNtyYwK0ToZEL1i6TL5Dq9Qm30ZQfkA';

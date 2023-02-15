@@ -47,6 +47,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 
+/**
+ * @internal
+ */
 class PUIPaymentInstructionsRouteTest extends TestCase
 {
     use ServicesTrait;

@@ -13,6 +13,9 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * @internal
+ */
 class RouterMock implements RouterInterface
 {
     public function setContext(RequestContext $context): void

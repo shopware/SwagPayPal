@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Webhook\_fixtures;
 
+/**
+ * @internal
+ */
 class WebhookDataFixture
 {
     public static function get(): array

@@ -23,6 +23,9 @@ use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 
+/**
+ * @internal
+ */
 class ProductSelectionTest extends AbstractProductSyncTest
 {
     private SalesChannelProductRepoMock $productRepository;

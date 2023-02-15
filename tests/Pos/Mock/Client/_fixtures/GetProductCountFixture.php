@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Pos\Mock\Client\_fixtures;
 
+/**
+ * @internal
+ */
 class GetProductCountFixture
 {
     public const PRODUCT_COUNT = 42;

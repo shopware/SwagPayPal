@@ -11,6 +11,9 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Test\Pos\Api\Common\_fixtures\TestStruct\Bar;
 use Swag\PayPal\Test\Pos\Api\Common\_fixtures\TestStruct\Foo;
 
+/**
+ * @internal
+ */
 class TestStruct extends PosStruct
 {
     protected string $id;

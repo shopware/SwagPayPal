@@ -32,6 +32,9 @@ use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Util\PriceFormatter;
 
+/**
+ * @internal
+ */
 class PaymentStatusUtilV2Test extends TestCase
 {
     use DatabaseTransactionBehaviour;

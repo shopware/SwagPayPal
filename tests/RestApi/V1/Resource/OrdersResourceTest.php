@@ -15,6 +15,9 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
 
+/**
+ * @internal
+ */
 class OrdersResourceTest extends TestCase
 {
     use ServicesTrait;

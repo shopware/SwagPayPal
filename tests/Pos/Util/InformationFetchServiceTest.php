@@ -23,6 +23,9 @@ use Swag\PayPal\Pos\Setting\Exception\CurrencyNotFoundException;
 use Swag\PayPal\Pos\Setting\Service\InformationFetchService;
 use Swag\PayPal\Pos\Setting\Struct\AdditionalInformation;
 
+/**
+ * @internal
+ */
 class InformationFetchServiceTest extends TestCase
 {
     use KernelTestBehaviour;

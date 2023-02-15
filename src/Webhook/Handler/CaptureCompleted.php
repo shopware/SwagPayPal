@@ -21,6 +21,9 @@ class CaptureCompleted extends AbstractWebhookHandler
 {
     private PaymentStatusUtilV2 $paymentStatusUtil;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $orderTransactionRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler,

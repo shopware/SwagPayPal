@@ -16,6 +16,9 @@ use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 
+/**
+ * @internal
+ */
 class CredentialsResourceTest extends TestCase
 {
     public function testTestApiCredentials(): void

@@ -26,6 +26,9 @@ class InventorySyncer
 
     private EntityRepository $inventoryRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         InventoryContextFactory $inventoryContextFactory,
         LocalUpdater $localUpdater,

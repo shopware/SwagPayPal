@@ -12,6 +12,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Administration\LogCleaner;
 
+/**
+ * @internal
+ */
 class CleanUpLogTaskHandler extends AbstractSyncTaskHandler
 {
     private LogCleaner $logCleaner;

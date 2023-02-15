@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class WebhookExceptionTest extends TestCase
 {
     public function testGetStatusCode(): void

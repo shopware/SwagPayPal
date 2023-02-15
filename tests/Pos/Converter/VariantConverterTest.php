@@ -35,6 +35,9 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\VariantConverter;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 
+/**
+ * @internal
+ */
 class VariantConverterTest extends TestCase
 {
     use KernelTestBehaviour;

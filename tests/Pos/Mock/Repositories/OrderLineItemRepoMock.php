@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\Pos\Mock\Repositories;
 use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 
+/**
+ * @internal
+ */
 class OrderLineItemRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition

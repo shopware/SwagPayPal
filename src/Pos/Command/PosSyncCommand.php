@@ -21,6 +21,9 @@ class PosSyncCommand extends AbstractPosCommand
 
     private CompleteTask $completeTask;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $salesChannelRepository,
         CompleteTask $completeTask

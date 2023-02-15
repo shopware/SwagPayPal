@@ -14,6 +14,9 @@ use Swag\PayPal\RestApi\V2\Api\Webhook;
 use Swag\PayPal\Webhook\Handler\CaptureDenied;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
+/**
+ * @internal
+ */
 class CaptureDeniedTest extends AbstractWebhookHandlerTestCase
 {
     public function testGetEventType(): void

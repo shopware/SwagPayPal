@@ -21,6 +21,9 @@ class LogCleaner
 
     private EntityRepository $runRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(EntityRepository $runRepository)
     {
         $this->runRepository = $runRepository;

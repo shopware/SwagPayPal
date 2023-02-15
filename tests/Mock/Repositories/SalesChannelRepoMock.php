@@ -20,6 +20,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Test\Util\PaymentMethodUtilTest;
 
+/**
+ * @internal
+ */
 class SalesChannelRepoMock extends AbstractRepoMock
 {
     public const SALES_CHANNEL_NAME = 'SwagPayPal Test SalesChannel';

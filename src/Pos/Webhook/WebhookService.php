@@ -45,6 +45,9 @@ class WebhookService
 
     private UuidConverter $uuidConverter;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SubscriptionResource $subscriptionResource,
         WebhookRegistry $webhookRegistry,

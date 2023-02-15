@@ -43,6 +43,9 @@ class InventoryChangedHandler extends AbstractWebhookHandler
 
     private UuidConverter $uuidConverter;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ApiKeyDecoder $apiKeyDecoder,
         RunService $runService,

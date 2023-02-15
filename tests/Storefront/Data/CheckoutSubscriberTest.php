@@ -60,6 +60,9 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @internal
+ */
 class CheckoutSubscriberTest extends TestCase
 {
     use CartTrait;

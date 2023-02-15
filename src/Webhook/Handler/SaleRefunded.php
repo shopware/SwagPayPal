@@ -21,6 +21,9 @@ class SaleRefunded extends AbstractWebhookHandler
 {
     private SaleResource $saleResource;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $orderTransactionRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler,

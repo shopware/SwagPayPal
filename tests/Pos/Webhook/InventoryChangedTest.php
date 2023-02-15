@@ -42,6 +42,9 @@ use Swag\PayPal\Test\Pos\Webhook\_fixtures\InventoryChangeFixture;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Router;
 
+/**
+ * @internal
+ */
 class InventoryChangedTest extends TestCase
 {
     use SalesChannelTrait;

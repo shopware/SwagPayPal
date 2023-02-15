@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\Checkout\ExpressCheckout;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutButtonData;
 
+/**
+ * @internal
+ */
 class ExpressCheckoutButtonDataTest extends TestCase
 {
     public function testExpressCheckoutButtonDataStruct(): void

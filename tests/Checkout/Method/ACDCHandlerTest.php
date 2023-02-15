@@ -34,6 +34,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShi
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * @internal
+ */
 class ACDCHandlerTest extends AbstractSyncAPMHandlerTest
 {
     public function testPayCaptureLiabilityShiftUnknown(): void

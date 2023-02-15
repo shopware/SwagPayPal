@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\RestApi\_fixtures\TestStruct;
 
 use Swag\PayPal\RestApi\PayPalApiStruct;
 
+/**
+ * @internal
+ */
 class Foo extends PayPalApiStruct
 {
     protected string $fooBaz;

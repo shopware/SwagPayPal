@@ -31,6 +31,9 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
 
     private SystemConfigService $systemConfigService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PaymentMethodDataRegistry $paymentMethodDataRegistry,
         IdentityResource $identityResource,

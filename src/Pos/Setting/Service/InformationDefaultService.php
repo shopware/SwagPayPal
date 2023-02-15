@@ -39,6 +39,9 @@ class InformationDefaultService
 
     private EntityRepository $deliveryTimeRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $customerGroupRepository,
         EntityRepository $categoryRepository,

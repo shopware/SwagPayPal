@@ -16,6 +16,9 @@ use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 
+/**
+ * @internal
+ */
 abstract class AbstractSyncHandler implements MessageSubscriberInterface
 {
     private RunService $runService;

@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\Mock\Util;
 use Shopware\Core\Framework\Context;
 use Swag\PayPal\Util\LocaleCodeProvider;
 
+/**
+ * @internal
+ */
 class LocaleCodeProviderMock extends LocaleCodeProvider
 {
     public function getLocaleCodeFromContext(Context $context): string

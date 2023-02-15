@@ -23,6 +23,9 @@ use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 
+/**
+ * @internal
+ */
 class OrderPaymentBuilderTest extends TestCase
 {
     use PaymentTransactionTrait;

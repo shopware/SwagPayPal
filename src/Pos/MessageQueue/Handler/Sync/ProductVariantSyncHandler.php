@@ -21,6 +21,9 @@ use Swag\PayPal\Pos\Sync\ProductSelection;
 use Swag\PayPal\Pos\Sync\ProductSyncer;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
 
+/**
+ * @internal
+ */
 class ProductVariantSyncHandler extends AbstractSyncHandler
 {
     use PosSalesChannelTrait;
@@ -31,6 +34,9 @@ class ProductVariantSyncHandler extends AbstractSyncHandler
 
     private ProductSyncer $productSyncer;
 
+    /**
+     * @internal
+     */
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,

@@ -21,6 +21,9 @@ class PosLogCleanupCommand extends AbstractPosCommand
 
     private LogCleaner $logCleaner;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $salesChannelRepository,
         LogCleaner $logCleaner

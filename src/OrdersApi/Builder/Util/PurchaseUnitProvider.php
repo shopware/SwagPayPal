@@ -30,6 +30,9 @@ class PurchaseUnitProvider
 
     private AddressProvider $addressProvider;
 
+    /**
+     * @internal
+     */
     public function __construct(
         AmountProvider $amountProvider,
         AddressProvider $addressProvider,

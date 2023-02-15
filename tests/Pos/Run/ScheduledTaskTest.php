@@ -33,6 +33,9 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 
+/**
+ * @internal
+ */
 class ScheduledTaskTest extends TestCase
 {
     use IntegrationTestBehaviour;

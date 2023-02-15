@@ -27,6 +27,9 @@ use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @internal
+ */
 class WebhookServiceTest extends TestCase
 {
     use ServicesTrait;

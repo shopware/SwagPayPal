@@ -24,6 +24,9 @@ use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
+/**
+ * @internal
+ */
 class ItemListProviderTest extends TestCase
 {
     public function testNestedLineItems(): void

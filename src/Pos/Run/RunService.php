@@ -30,6 +30,9 @@ class RunService
 
     private Logger $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $runRepository,
         EntityRepository $logRepository,

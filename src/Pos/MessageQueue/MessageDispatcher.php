@@ -19,6 +19,9 @@ class MessageDispatcher
 
     protected Connection $connection;
 
+    /**
+     * @internal
+     */
     public function __construct(
         MessageBusInterface $messageBus,
         Connection $connection

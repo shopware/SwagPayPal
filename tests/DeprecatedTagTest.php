@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Plugin\Composer\Factory;
 use Symfony\Component\Finder\Finder;
 
+/**
+ * @internal
+ */
 class DeprecatedTagTest extends TestCase
 {
     /**

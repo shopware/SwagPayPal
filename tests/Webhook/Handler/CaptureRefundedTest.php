@@ -16,6 +16,9 @@ use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Webhook\Handler\CaptureRefunded;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
+/**
+ * @internal
+ */
 class CaptureRefundedTest extends AbstractWebhookHandlerTestCase
 {
     use ServicesTrait;

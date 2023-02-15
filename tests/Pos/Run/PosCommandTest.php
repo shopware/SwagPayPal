@@ -32,6 +32,9 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
+/**
+ * @internal
+ */
 class PosCommandTest extends TestCase
 {
     private const INVALID_CHANNEL_ID = 'notASalesChannelId';

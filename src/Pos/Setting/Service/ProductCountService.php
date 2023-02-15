@@ -33,6 +33,9 @@ class ProductCountService
 
     private EntityRepository $salesChannelRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ProductResource $productResource,
         ProductSelection $productSelection,

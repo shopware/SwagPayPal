@@ -38,6 +38,9 @@ class SettingsController extends AbstractController
 
     private ProductCountService $productCountService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ApiCredentialService $apiService,
         InformationFetchService $informationFetchService,

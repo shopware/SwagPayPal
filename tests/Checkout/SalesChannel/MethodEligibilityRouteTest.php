@@ -22,6 +22,9 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class MethodEligibilityRouteTest extends TestCase
 {
     use KernelTestBehaviour;

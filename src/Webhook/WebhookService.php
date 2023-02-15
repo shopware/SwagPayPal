@@ -39,6 +39,9 @@ class WebhookService implements WebhookServiceInterface
 
     private SystemConfigService $systemConfigService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         WebhookResource $webhookResource,
         WebhookRegistry $webhookRegistry,

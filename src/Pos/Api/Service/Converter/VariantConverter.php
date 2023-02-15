@@ -25,6 +25,9 @@ class VariantConverter
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         UuidConverter $uuidConverter,
         PriceConverter $priceConverter,

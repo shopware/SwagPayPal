@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 
+/**
+ * @internal
+ */
 class RefundCapture
 {
     public const TOTAL_REFUNDED_AMOUNT_VALUE = '14.34';

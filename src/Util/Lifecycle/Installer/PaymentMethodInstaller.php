@@ -28,6 +28,9 @@ class PaymentMethodInstaller
 
     private MediaInstaller $mediaInstaller;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $paymentMethodRepository,
         EntityRepository $ruleRepository,

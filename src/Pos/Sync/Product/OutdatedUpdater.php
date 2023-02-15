@@ -20,6 +20,9 @@ class OutdatedUpdater
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ProductResource $productResource,
         LoggerInterface $logger

@@ -24,6 +24,9 @@ class ProductContextFactory
 
     private EntityRepository $posMediaRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $posProductRepository,
         EntityRepository $posMediaRepository

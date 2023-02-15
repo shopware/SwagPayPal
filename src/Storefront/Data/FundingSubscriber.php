@@ -13,6 +13,9 @@ use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Storefront\Data\Service\FundingEligibilityDataService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @internal
+ */
 class FundingSubscriber implements EventSubscriberInterface
 {
     public const FUNDING_ELIGIBILITY_EXTENSION = 'swagPayPalFundingEligibility';

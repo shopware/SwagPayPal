@@ -43,6 +43,9 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 
+/**
+ * @internal
+ */
 class ImageSyncerTest extends TestCase
 {
     use KernelTestBehaviour;

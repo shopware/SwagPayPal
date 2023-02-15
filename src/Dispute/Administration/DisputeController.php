@@ -26,6 +26,9 @@ class DisputeController extends AbstractController
 {
     private DisputeResource $disputeResource;
 
+    /**
+     * @internal
+     */
     public function __construct(DisputeResource $disputeResource)
     {
         $this->disputeResource = $disputeResource;

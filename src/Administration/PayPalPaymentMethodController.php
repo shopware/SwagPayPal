@@ -24,6 +24,9 @@ class PayPalPaymentMethodController extends AbstractController
 {
     private PaymentMethodUtil $paymentMethodUtil;
 
+    /**
+     * @internal
+     */
     public function __construct(PaymentMethodUtil $paymentMethodUtil)
     {
         $this->paymentMethodUtil = $paymentMethodUtil;

@@ -35,6 +35,9 @@ use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
+/**
+ * @internal
+ */
 class PaymentMethodInstallerTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

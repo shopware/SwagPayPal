@@ -18,12 +18,18 @@ use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\ImageSyncer;
 
+/**
+ * @internal
+ */
 class ImageSyncHandler extends AbstractSyncHandler
 {
     private EntityRepository $posMediaRepository;
 
     private ImageSyncer $imageSyncer;
 
+    /**
+     * @internal
+     */
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,

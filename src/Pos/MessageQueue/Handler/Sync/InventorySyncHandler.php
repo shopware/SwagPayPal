@@ -19,6 +19,9 @@ use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\InventorySyncer;
 
+/**
+ * @internal
+ */
 class InventorySyncHandler extends AbstractSyncHandler
 {
     private EntityRepository $productRepository;
@@ -27,6 +30,9 @@ class InventorySyncHandler extends AbstractSyncHandler
 
     private InventorySyncer $inventorySyncer;
 
+    /**
+     * @internal
+     */
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,

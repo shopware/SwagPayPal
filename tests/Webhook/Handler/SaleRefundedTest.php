@@ -17,6 +17,9 @@ use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Webhook\Handler\SaleRefunded;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
+/**
+ * @internal
+ */
 class SaleRefundedTest extends AbstractWebhookHandlerTestCase
 {
     private Sale $sale;

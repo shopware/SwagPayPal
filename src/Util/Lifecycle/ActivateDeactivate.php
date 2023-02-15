@@ -17,6 +17,9 @@ class ActivateDeactivate
 
     private PosStateService $posStateService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PaymentMethodStateService $paymentMethodStateService,
         PosStateService $posStateService

@@ -32,6 +32,9 @@ class InformationFetchService
 
     private EntityRepository $languageRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         UserResource $userResource,
         EntityRepository $countryRepository,

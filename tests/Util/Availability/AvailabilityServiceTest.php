@@ -42,6 +42,9 @@ use Swag\PayPal\Util\Lifecycle\Method\SofortMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 
+/**
+ * @internal
+ */
 class AvailabilityServiceTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

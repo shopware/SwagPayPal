@@ -11,6 +11,9 @@ use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class SystemConfigControllerMock extends SystemConfigController
 {
     private ?Request $lastRequest;

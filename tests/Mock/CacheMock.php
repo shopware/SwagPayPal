@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\Mock;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 
+/**
+ * @internal
+ */
 class CacheMock implements CacheItemPoolInterface
 {
     public function getItem($key): CacheItemInterface

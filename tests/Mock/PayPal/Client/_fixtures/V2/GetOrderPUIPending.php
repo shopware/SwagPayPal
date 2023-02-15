@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 
+/**
+ * @internal
+ */
 class GetOrderPUIPending
 {
     public const ID = '2RN82335LC1792420';

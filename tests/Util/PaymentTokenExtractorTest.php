@@ -12,6 +12,9 @@ use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Util\PaymentTokenExtractor;
 
+/**
+ * @internal
+ */
 class PaymentTokenExtractorTest extends TestCase
 {
     public function testExtract(): void

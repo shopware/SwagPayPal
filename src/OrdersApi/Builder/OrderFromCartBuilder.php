@@ -36,6 +36,9 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
 
     private PriceFormatter $priceFormatter;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PriceFormatter $priceFormatter,
         SystemConfigService $systemConfigService,

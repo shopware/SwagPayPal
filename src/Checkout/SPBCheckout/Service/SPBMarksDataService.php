@@ -32,6 +32,9 @@ class SPBMarksDataService implements SPBMarksDataServiceInterface
 
     private LocaleCodeProvider $localeCodeProvider;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
         SystemConfigService $systemConfigService,

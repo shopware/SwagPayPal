@@ -61,6 +61,9 @@ class PayPalPaymentController extends AbstractController
 
     private PriceFormatter $priceFormatter;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PaymentResource $paymentResource,
         SaleResource $saleResource,

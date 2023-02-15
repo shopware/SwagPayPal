@@ -30,6 +30,9 @@ class ImageSyncManager extends AbstractSyncManager
 
     private ImageSyncer $imageSyncer;
 
+    /**
+     * @internal
+     */
     public function __construct(
         MessageDispatcher $messageBus,
         EntityRepository $posMediaRepository,

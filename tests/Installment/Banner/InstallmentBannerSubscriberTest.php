@@ -50,6 +50,9 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class InstallmentBannerSubscriberTest extends TestCase
 {
     use ServicesTrait;

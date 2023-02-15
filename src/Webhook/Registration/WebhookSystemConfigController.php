@@ -23,6 +23,9 @@ class WebhookSystemConfigController extends SystemConfigController
 
     private WebhookSystemConfigHelper $webhookSystemConfigHelper;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ConfigurationService $configurationService,
         SystemConfigService $systemConfig,

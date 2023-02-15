@@ -37,6 +37,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Router;
 
+/**
+ * @internal
+ */
 class WebhookControllerTest extends TestCase
 {
     use SalesChannelTrait;

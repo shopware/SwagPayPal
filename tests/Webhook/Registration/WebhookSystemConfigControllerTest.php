@@ -22,6 +22,9 @@ use Swag\PayPal\Webhook\Registration\WebhookSystemConfigController;
 use Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class WebhookSystemConfigControllerTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

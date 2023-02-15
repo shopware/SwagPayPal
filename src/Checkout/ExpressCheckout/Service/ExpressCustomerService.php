@@ -58,6 +58,9 @@ class ExpressCustomerService
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         AbstractRegisterRoute $registerRoute,
         EntityRepository $countryRepository,

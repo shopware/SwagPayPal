@@ -12,6 +12,9 @@ use Psr\Log\NullLogger;
 use Swag\PayPal\Pos\Client\TokenClient;
 use Swag\PayPal\Pos\Client\TokenClientFactory;
 
+/**
+ * @internal
+ */
 class TokenClientFactoryMock extends TokenClientFactory
 {
     private LoggerInterface $logger;

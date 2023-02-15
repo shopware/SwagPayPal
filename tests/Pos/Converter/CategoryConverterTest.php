@@ -16,6 +16,9 @@ use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Pos\Api\Service\Converter\CategoryConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 
+/**
+ * @internal
+ */
 class CategoryConverterTest extends TestCase
 {
     use KernelTestBehaviour;

@@ -12,6 +12,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\InventoryTask;
 
+/**
+ * @internal
+ */
 class InventorySyncTaskHandler extends AbstractSyncTaskHandler
 {
     private InventoryTask $inventoryTask;

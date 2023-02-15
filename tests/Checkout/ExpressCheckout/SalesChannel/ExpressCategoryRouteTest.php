@@ -26,6 +26,9 @@ use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class ExpressCategoryRouteTest extends TestCase
 {
     use IntegrationTestBehaviour;

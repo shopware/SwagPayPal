@@ -16,6 +16,9 @@ class WebhookRegistry
      */
     private array $registeredWebhooks;
 
+    /**
+     * @internal
+     */
     public function __construct(\IteratorAggregate $webhooks)
     {
         foreach ($webhooks as $webhook) {

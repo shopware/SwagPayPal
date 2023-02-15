@@ -49,6 +49,9 @@ class PaymentMethodDataRegistry
 
     private ?iterable $paymentMethods;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $paymentMethodRepository,
         ContainerInterface $container,

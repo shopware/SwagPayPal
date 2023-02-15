@@ -24,6 +24,9 @@ class LocalUpdater
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $productRepository,
         LocalCalculatorInterface $localCalculator,

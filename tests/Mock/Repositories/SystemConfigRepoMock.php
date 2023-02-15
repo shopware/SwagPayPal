@@ -20,6 +20,9 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Webhook\WebhookControllerTest;
 use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 
+/**
+ * @internal
+ */
 class SystemConfigRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition

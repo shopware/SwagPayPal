@@ -66,6 +66,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\Routing\Router;
 
+/**
+ * @internal
+ */
 class UpdateTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

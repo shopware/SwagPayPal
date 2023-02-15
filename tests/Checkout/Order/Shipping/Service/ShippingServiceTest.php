@@ -29,6 +29,9 @@ use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
 use Swag\PayPal\RestApi\V1\Resource\ShippingResource;
 use Swag\PayPal\SwagPayPal;
 
+/**
+ * @internal
+ */
 class ShippingServiceTest extends TestCase
 {
     private const TEST_CODE_A = 'test_code_a';

@@ -19,6 +19,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\CredentialsClientFactoryMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 
+/**
+ * @internal
+ */
 class ApiCredentialServiceTest extends TestCase
 {
     public function testValidApiCredentials(): void

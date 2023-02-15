@@ -15,6 +15,9 @@ use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 
+/**
+ * @internal
+ */
 class SettingsValidatorServiceTest extends TestCase
 {
     use ServicesTrait;

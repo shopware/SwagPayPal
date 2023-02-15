@@ -40,6 +40,9 @@ class PayPalHandler
 
     private TransactionDataService $transactionDataService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         OrderFromOrderBuilder $orderBuilder,
         OrderResource $orderResource,

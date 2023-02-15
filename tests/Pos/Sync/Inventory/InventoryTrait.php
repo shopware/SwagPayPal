@@ -11,6 +11,9 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 
+/**
+ * @internal
+ */
 trait InventoryTrait
 {
     use KernelTestBehaviour;

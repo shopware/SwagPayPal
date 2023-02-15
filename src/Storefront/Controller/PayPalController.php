@@ -52,6 +52,9 @@ class PayPalController extends StorefrontController
 
     private AbstractCartDeleteRoute $cartDeleteRoute;
 
+    /**
+     * @internal
+     */
     public function __construct(
         AbstractCreateOrderRoute $createOrderRoute,
         AbstractMethodEligibilityRoute $methodEligibilityRoute,

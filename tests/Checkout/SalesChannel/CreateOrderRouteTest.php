@@ -36,6 +36,9 @@ use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class CreateOrderRouteTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

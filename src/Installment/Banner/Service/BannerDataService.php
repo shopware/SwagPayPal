@@ -25,6 +25,9 @@ class BannerDataService implements BannerDataServiceInterface
 
     private CredentialsUtilInterface $credentialsUtil;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PaymentMethodUtil $paymentMethodUtil,
         CredentialsUtilInterface $credentialsUtil

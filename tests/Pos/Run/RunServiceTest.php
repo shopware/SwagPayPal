@@ -26,6 +26,9 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogEntity;
 use Swag\PayPal\Pos\Run\LoggerFactory;
 use Swag\PayPal\Pos\Run\RunService;
 
+/**
+ * @internal
+ */
 class RunServiceTest extends TestCase
 {
     use IntegrationTestBehaviour;

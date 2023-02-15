@@ -29,6 +29,9 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class CheckoutSubscriberTest extends TestCase
 {
     use CartTrait;

@@ -20,6 +20,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * @phpstan-ignore-next-line ignore finality of repository in tests
+ * @internal
  */
 abstract class AbstractRepoMock extends EntityRepository
 {

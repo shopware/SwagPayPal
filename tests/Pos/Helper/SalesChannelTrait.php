@@ -18,6 +18,9 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
+/**
+ * @internal
+ */
 trait SalesChannelTrait
 {
     protected function getSalesChannel(Context $context): SalesChannelEntity

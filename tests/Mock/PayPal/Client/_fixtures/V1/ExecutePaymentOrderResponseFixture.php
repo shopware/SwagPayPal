@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+/**
+ * @internal
+ */
 class ExecutePaymentOrderResponseFixture
 {
     public const ORDER_ID = 'O-7PS41727C2382141U';

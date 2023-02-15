@@ -33,6 +33,9 @@ use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class PayPalPaymentControllerTest extends TestCase
 {
     use ServicesTrait;

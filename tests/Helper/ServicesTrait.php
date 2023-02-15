@@ -37,6 +37,9 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Swag\PayPal\Webhook\WebhookRegistry;
 
+/**
+ * @internal
+ */
 trait ServicesTrait
 {
     use IntegrationTestBehaviour;

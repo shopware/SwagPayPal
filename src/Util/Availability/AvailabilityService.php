@@ -18,6 +18,9 @@ class AvailabilityService
 {
     private PaymentMethodDataRegistry $paymentMethodDataRegistry;
 
+    /**
+     * @internal
+     */
     public function __construct(PaymentMethodDataRegistry $paymentMethodDataRegistry)
     {
         $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;

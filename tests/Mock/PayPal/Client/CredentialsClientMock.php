@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client;
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\RestApi\Client\CredentialsClient;
 
+/**
+ * @internal
+ */
 class CredentialsClientMock extends CredentialsClient
 {
     public function __construct(

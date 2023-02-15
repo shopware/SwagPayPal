@@ -29,6 +29,9 @@ class FundingEligibilityDataService
 
     private RequestStack $requestStack;
 
+    /**
+     * @internal
+     */
     public function __construct(
         CredentialsUtilInterface $credentialsUtil,
         SystemConfigService $systemConfigService,

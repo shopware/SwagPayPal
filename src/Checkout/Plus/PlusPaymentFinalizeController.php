@@ -46,6 +46,9 @@ class PlusPaymentFinalizeController extends AbstractController
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $orderTransactionRepo,
         AsynchronousPaymentHandlerInterface $paymentHandler,

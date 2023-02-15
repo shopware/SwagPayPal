@@ -24,6 +24,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
+/**
+ * @internal
+ */
 class MerchantIntegrationsServiceTest extends TestCase
 {
     use ServicesTrait;

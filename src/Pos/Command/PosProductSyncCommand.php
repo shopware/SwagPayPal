@@ -21,6 +21,9 @@ class PosProductSyncCommand extends AbstractPosCommand
 
     private ProductTask $productTask;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $salesChannelRepository,
         ProductTask $productTask

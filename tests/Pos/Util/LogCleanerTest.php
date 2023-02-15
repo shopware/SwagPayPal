@@ -18,6 +18,9 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogEntity;
 use Swag\PayPal\Pos\Run\Administration\LogCleaner;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 
+/**
+ * @internal
+ */
 class LogCleanerTest extends TestCase
 {
     public function testLogCleanup(): void

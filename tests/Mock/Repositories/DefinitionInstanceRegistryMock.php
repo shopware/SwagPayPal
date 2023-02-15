@@ -13,6 +13,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Swag\PayPal\Util\Compatibility\EntityRepositoryDecorator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @internal
+ */
 class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
 {
     private LanguageRepoMock $languageRepo;

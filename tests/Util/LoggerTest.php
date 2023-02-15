@@ -15,6 +15,9 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\Log\LoggerFactory;
 
+/**
+ * @internal
+ */
 class LoggerTest extends TestCase
 {
     use IntegrationTestBehaviour;

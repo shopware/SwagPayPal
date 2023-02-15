@@ -29,6 +29,9 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 
+/**
+ * @internal
+ */
 class StockSubscriber implements EventSubscriberInterface
 {
     /**

@@ -20,6 +20,9 @@ use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @internal
+ */
 class PaymentStatusUtilMock extends PaymentStatusUtil
 {
     /**

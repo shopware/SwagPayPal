@@ -36,6 +36,9 @@ class PaymentMethodUtil implements ResetInterface
      */
     private ?array $salesChannels = null;
 
+    /**
+     * @internal
+     */
     public function __construct(
         Connection $connection,
         EntityRepository $salesChannelRepository

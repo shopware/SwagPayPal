@@ -45,6 +45,9 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 
+/**
+ * @internal
+ */
 class CompleteInventoryTest extends TestCase
 {
     use KernelTestBehaviour;

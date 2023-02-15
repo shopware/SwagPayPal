@@ -22,6 +22,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\Tax\TaxCollection;
 
+/**
+ * @internal
+ */
 class Generator
 {
     public static function createSalesChannelContext(

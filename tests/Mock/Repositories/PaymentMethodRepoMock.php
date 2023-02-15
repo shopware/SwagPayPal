@@ -15,6 +15,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 
+/**
+ * @internal
+ */
 class PaymentMethodRepoMock extends AbstractRepoMock
 {
     public const PAYPAL_PAYMENT_METHOD_ID = '0afca95b4937428a884830cd516fb826';

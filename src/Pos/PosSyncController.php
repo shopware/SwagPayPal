@@ -52,6 +52,9 @@ class PosSyncController extends AbstractController
 
     private SyncResetter $syncResetter;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $salesChannelRepository,
         CompleteTask $completeTask,

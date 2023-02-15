@@ -23,6 +23,9 @@ use Swag\PayPal\Pos\Resource\InventoryResource;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\RemoteCalculator;
 use Swag\PayPal\Pos\Sync\Inventory\RemoteUpdater;
 
+/**
+ * @internal
+ */
 class RemoteUpdaterTest extends TestCase
 {
     use UpdaterTrait;

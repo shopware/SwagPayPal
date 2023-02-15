@@ -27,6 +27,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Make sure you also implement the BasicTestDataBehaviour trait, while using this trait
  */
+/**
+ * @internal
+ */
 trait SalesChannelContextTrait
 {
     protected function createSalesChannelContext(

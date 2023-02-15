@@ -12,6 +12,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\CompleteTask;
 
+/**
+ * @internal
+ */
 class CompleteSyncTaskHandler extends AbstractSyncTaskHandler
 {
     private CompleteTask $completeTask;

@@ -25,6 +25,9 @@ use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Test\Helper\Compatibility\Generator;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
+/**
+ * @internal
+ */
 trait CheckoutRouteTrait
 {
     use ServicesTrait;

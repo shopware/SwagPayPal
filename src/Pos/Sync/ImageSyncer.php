@@ -39,6 +39,9 @@ class ImageSyncer
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $posMediaRepository,
         MediaConverter $mediaConverter,

@@ -49,6 +49,9 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
 
     private AbstractAPMOrderBuilder $orderBuilder;
 
+    /**
+     * @internal
+     */
     public function __construct(
         TransactionDataService $transactionDataService,
         OrderTransactionStateHandler $orderTransactionStateHandler,

@@ -16,6 +16,9 @@ class UserResource
 {
     private PosClientFactory $posClientFactory;
 
+    /**
+     * @internal
+     */
     public function __construct(PosClientFactory $posClientFactory)
     {
         $this->posClientFactory = $posClientFactory;

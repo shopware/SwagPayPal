@@ -40,6 +40,9 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ExpressCustomerService $expressCustomerService,
         AbstractSalesChannelContextFactory $salesChannelContextFactory,

@@ -30,6 +30,9 @@ use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class PosSyncControllerTest extends TestCase
 {
     private const INVALID_CHANNEL_ID = 'notASalesChannelId';

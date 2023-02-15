@@ -34,6 +34,9 @@ class ProductVisibilityCloneService
 
     private EntityRepository $salesChannelRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         MessageDispatcher $messageBus,
         EntityRepository $productVisibilityRepository,

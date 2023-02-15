@@ -31,6 +31,9 @@ use Swag\PayPal\RestApi\V1\Api\Refund\TotalRefundedAmount;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PriceFormatter;
 
+/**
+ * @internal
+ */
 class PaymentStatusUtilTest extends TestCase
 {
     use KernelTestBehaviour;

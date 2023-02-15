@@ -17,6 +17,9 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 use Shopware\Core\System\StateMachine\StateMachineEntity;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @internal
+ */
 trait StateMachineStateTrait
 {
     protected function getOrderTransactionStateIdByTechnicalName(string $technicalName, ContainerInterface $container, Context $context): ?string

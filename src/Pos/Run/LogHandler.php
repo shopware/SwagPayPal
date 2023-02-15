@@ -21,7 +21,10 @@ if ($type instanceof \ReflectionNamedType && $type->getName() === 'array') {
          */
         private array $logs;
 
-        public function __construct()
+        /**
+     * @internal
+     */
+    public function __construct()
         {
             parent::__construct();
             $this->logs = [];
@@ -63,7 +66,10 @@ if ($type instanceof \ReflectionNamedType && $type->getName() === 'array') {
          */
         private array $logs;
 
-        public function __construct()
+        /**
+     * @internal
+     */
+    public function __construct()
         {
             parent::__construct();
             $this->logs = [];

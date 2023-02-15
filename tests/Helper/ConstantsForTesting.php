@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Helper;
 
+/**
+ * @internal
+ */
 final class ConstantsForTesting
 {
     // Constants for the repo mocks

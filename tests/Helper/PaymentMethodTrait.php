@@ -11,6 +11,9 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Test\TestDefaults;
 
+/**
+ * @internal
+ */
 trait PaymentMethodTrait
 {
     protected function addPaymentMethodToDefaultsSalesChannel(string $paypalPaymentMethodId, ?Context $context = null): void

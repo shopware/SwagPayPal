@@ -29,6 +29,9 @@ use Swag\PayPal\Pos\Sync\Product\UnsyncedChecker;
 use Swag\PayPal\Pos\Sync\ProductSyncer;
 use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 
+/**
+ * @internal
+ */
 class ProductSyncerTest extends AbstractProductSyncTest
 {
     private MockObject $productContextFactory;

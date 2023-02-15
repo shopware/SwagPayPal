@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 
+/**
+ * @internal
+ */
 class WebhookUnregisterFixture
 {
     public static bool $sent = false;

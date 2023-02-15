@@ -17,6 +17,9 @@ use Swag\PayPal\Pos\Api\Product\Variant;
 use Swag\PayPal\Pos\Api\Product\VariantOptionDefinitions;
 use Swag\PayPal\Pos\Api\Service\Converter\OptionGroupConverter;
 
+/**
+ * @internal
+ */
 class OptionGroupConverterTest extends TestCase
 {
     public function testConvert(): void

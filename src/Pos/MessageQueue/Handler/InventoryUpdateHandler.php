@@ -20,6 +20,9 @@ use Swag\PayPal\Pos\Run\Task\InventoryTask;
 use Swag\PayPal\SwagPayPal;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 
+/**
+ * @internal
+ */
 class InventoryUpdateHandler implements MessageSubscriberInterface
 {
     private RunService $runService;

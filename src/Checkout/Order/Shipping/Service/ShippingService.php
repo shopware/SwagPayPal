@@ -31,6 +31,9 @@ class ShippingService
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ShippingResource $shippingResource,
         EntityRepository $salesChannelRepository,

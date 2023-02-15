@@ -27,6 +27,9 @@ class MessageHydrator
 
     protected EntityRepository $salesChannelRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SalesChannelContextService $salesChannelContextService,
         EntityRepository $salesChannelRepository

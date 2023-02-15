@@ -19,6 +19,9 @@ abstract class AbstractTask
 
     private RunService $runService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         MessageDispatcher $messageBus,
         RunService $runService

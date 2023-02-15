@@ -48,6 +48,9 @@ class PlusDataService
 
     private SystemConfigService $systemConfigService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         CartPaymentBuilderInterface $cartPaymentBuilder,
         OrderPaymentBuilderInterface $orderPaymentBuilder,

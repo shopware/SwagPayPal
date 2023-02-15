@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class WebhookOrderTransactionNotFoundExceptionTest extends TestCase
 {
     public function testGetStatusCode(): void

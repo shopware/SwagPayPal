@@ -38,6 +38,9 @@ class WebhookController extends AbstractController
 
     private EntityRepository $systemConfigRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         LoggerInterface $logger,
         WebhookServiceInterface $webhookService,

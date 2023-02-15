@@ -29,6 +29,9 @@ abstract class AbstractOrderBuilder
 
     protected AddressProvider $addressProvider;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,

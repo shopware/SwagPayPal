@@ -23,6 +23,9 @@ class SettingsInstaller
 
     private SystemConfigService $systemConfig;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $systemConfigRepository,
         SystemConfigService $systemConfig

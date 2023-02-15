@@ -68,6 +68,9 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
     private SettingsValidationServiceInterface $settingsValidationService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         OrderTransactionStateHandler $orderTransactionStateHandler,
         PayPalHandler $payPalHandler,

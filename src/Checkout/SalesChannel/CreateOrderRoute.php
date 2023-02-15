@@ -50,6 +50,9 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         CartService $cartService,
         EntityRepository $orderRepository,

@@ -17,6 +17,9 @@ class TransactionDataService
 {
     private EntityRepository $orderTransactionRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(EntityRepository $orderTransactionRepository)
     {
         $this->orderTransactionRepository = $orderTransactionRepository;

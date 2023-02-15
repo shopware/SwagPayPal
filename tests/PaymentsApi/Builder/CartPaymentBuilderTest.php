@@ -24,6 +24,9 @@ use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 
+/**
+ * @internal
+ */
 class CartPaymentBuilderTest extends TestCase
 {
     use ServicesTrait;

@@ -21,6 +21,9 @@ class PosInventorySyncCommand extends AbstractPosCommand
 
     private InventoryTask $inventoryTask;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $salesChannelRepository,
         InventoryTask $inventoryTask

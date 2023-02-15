@@ -20,6 +20,9 @@ use Swag\PayPal\Pos\Resource\InventoryResource;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Test\Pos\Mock\Repositories\PosInventoryRepoMock;
 
+/**
+ * @internal
+ */
 class InventoryContextFactoryTest extends TestCase
 {
     use InventoryTrait;

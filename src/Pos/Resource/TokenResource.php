@@ -20,6 +20,9 @@ class TokenResource
 
     private TokenClientFactory $tokenClientFactory;
 
+    /**
+     * @internal
+     */
     public function __construct(
         CacheItemPoolInterface $cache,
         TokenClientFactory $tokenClientFactory

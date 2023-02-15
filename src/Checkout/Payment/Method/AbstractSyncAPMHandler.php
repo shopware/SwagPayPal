@@ -38,6 +38,9 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
 
     private OrderResource $orderResource;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
         OrderTransactionStateHandler $orderTransactionStateHandler,

@@ -23,6 +23,9 @@ class SyncResetter
 
     private EntityRepository $posRunRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $posProductRepository,
         EntityRepository $posInventoryRepository,

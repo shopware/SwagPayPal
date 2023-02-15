@@ -20,6 +20,9 @@ class PaymentMethodStateService
 
     private EntityRepository $paymentMethodRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PaymentMethodDataRegistry $methodDataRegistry,
         EntityRepository $paymentMethodRepository

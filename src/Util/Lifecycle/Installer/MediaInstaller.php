@@ -30,6 +30,9 @@ class MediaInstaller
 
     private FileSaver $fileSaver;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $mediaRepository,
         EntityRepository $mediaFolderRepository,

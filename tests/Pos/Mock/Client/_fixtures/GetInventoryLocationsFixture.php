@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\Pos\Mock\Client\_fixtures;
 
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
+/**
+ * @internal
+ */
 class GetInventoryLocationsFixture
 {
     public static function get(): array

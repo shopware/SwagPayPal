@@ -20,6 +20,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 
+/**
+ * @internal
+ */
 class OrderTransactionRepoMock extends AbstractRepoMock
 {
     public const ORDER_TRANSACTION_ID = 'orderTransactionTestId';

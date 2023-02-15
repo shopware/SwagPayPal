@@ -41,6 +41,9 @@ use Swag\PayPal\Pos\Api\Service\ProductConverter;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 use Swag\PayPal\SwagPayPal;
 
+/**
+ * @internal
+ */
 class ProductConverterTest extends TestCase
 {
     use KernelTestBehaviour;

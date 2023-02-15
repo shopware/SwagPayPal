@@ -19,6 +19,9 @@ use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 use Shopware\Core\System\StateMachine\Exception\StateMachineStateNotFoundException;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
+/**
+ * @internal
+ */
 class CancelTransactionsTaskHandler extends ScheduledTaskHandler
 {
     private PaymentMethodUtil $paymentMethodUtil;

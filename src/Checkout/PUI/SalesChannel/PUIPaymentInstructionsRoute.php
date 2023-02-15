@@ -41,6 +41,9 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
 
     private TransactionDataService $transactionDataService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $orderTransactionRepository,
         OrderResource $orderResource,

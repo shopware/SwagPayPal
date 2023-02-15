@@ -26,6 +26,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
 
+/**
+ * @internal
+ */
 class OrderResourceTest extends TestCase
 {
     use BasicTestDataBehaviour;

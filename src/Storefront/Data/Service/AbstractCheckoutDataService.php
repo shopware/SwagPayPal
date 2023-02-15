@@ -39,6 +39,9 @@ abstract class AbstractCheckoutDataService
 
     private CredentialsUtilInterface $credentialsUtil;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PaymentMethodDataRegistry $paymentMethodDataRegistry,
         IdentityResource $identityResource,

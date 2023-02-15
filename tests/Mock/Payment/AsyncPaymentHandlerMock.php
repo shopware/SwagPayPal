@@ -17,6 +17,9 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class AsyncPaymentHandlerMock implements AsynchronousPaymentHandlerInterface
 {
     public const REQUEST_PARAM_SHOULD_THROW_EXCEPTION = 'throwException';

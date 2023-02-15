@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+/**
+ * @internal
+ */
 class GetResourceSaleResponseFixture
 {
     public const ID = '7G096060K6661313W';

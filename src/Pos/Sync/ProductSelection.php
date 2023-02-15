@@ -29,6 +29,9 @@ class ProductSelection
 
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SalesChannelRepository $productRepository,
         ProductStreamBuilderInterface $productStreamBuilder,

@@ -13,6 +13,9 @@ use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Api\Webhook\Subscription\UpdateSubscription;
 
+/**
+ * @internal
+ */
 class WebhookUpdateFixture
 {
     public static bool $sent = false;

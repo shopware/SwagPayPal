@@ -16,6 +16,9 @@ class TransactionPatchBuilder
 {
     private OrderPaymentBuilderInterface $orderPaymentBuilder;
 
+    /**
+     * @internal
+     */
     public function __construct(OrderPaymentBuilderInterface $orderPaymentBuilder)
     {
         $this->orderPaymentBuilder = $orderPaymentBuilder;

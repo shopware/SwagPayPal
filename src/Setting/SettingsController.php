@@ -27,6 +27,9 @@ class SettingsController extends AbstractController
 
     private MerchantIntegrationsService $merchantIntegrationsService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ApiCredentialServiceInterface $apiService,
         MerchantIntegrationsService $merchantIntegrationsService

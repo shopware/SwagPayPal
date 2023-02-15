@@ -37,6 +37,9 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
 
     private PaymentMethodUtil $paymentMethodUtil;
 
+    /**
+     * @internal
+     */
     public function __construct(
         AbstractCategoryRoute $inner,
         ExpressCheckoutDataServiceInterface $expressCheckoutDataService,

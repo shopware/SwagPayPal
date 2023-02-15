@@ -16,6 +16,9 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
 
+/**
+ * @internal
+ */
 class CaptureResourceTest extends TestCase
 {
     use ServicesTrait;

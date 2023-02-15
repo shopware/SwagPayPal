@@ -22,6 +22,9 @@ use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 
+/**
+ * @internal
+ */
 class SyncManagerHandler implements MessageSubscriberInterface
 {
     public const SYNC_PRODUCT = 'product';

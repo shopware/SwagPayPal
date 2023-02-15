@@ -26,6 +26,9 @@ class PosStateService
 
     private EntityRepository $paymentMethodRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $salesChannelRepository,
         EntityRepository $salesChannelTypeRepository,

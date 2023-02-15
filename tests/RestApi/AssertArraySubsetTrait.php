@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\RestApi;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @internal
+ */
 trait AssertArraySubsetTrait
 {
     public static function assertArraySubset(array $subset, array $fullArray): void

@@ -32,6 +32,9 @@ abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
 {
     private ItemListProvider $itemListProvider;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,

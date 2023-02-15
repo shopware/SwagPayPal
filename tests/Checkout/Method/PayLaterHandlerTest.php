@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\Checkout\Method;
 
 use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
 
+/**
+ * @internal
+ */
 class PayLaterHandlerTest extends AbstractSyncAPMHandlerTest
 {
     protected function getPaymentHandlerClassName(): string

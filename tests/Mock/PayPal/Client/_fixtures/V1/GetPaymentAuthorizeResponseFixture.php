@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+/**
+ * @internal
+ */
 class GetPaymentAuthorizeResponseFixture
 {
     public const ID = 'PAYID-LSAT63Q0NM35123M7232615L';

@@ -62,6 +62,9 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 use Symfony\Component\Messenger\MessageBus;
 
+/**
+ * @internal
+ */
 class StockSubscriberTest extends TestCase
 {
     use KernelTestBehaviour;

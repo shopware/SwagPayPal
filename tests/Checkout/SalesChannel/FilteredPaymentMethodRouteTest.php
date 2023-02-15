@@ -34,6 +34,9 @@ use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class FilteredPaymentMethodRouteTest extends TestCase
 {
     use SalesChannelContextTrait;

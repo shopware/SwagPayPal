@@ -21,6 +21,9 @@ class CredentialsResource
 
     private TokenValidator $tokenValidator;
 
+    /**
+     * @internal
+     */
     public function __construct(
         TokenClientFactory $tokenClientFactory,
         CredentialsClientFactory $credentialsClientFactory,

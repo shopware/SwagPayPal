@@ -22,6 +22,9 @@ use Swag\PayPal\Pos\Sync\Context\ProductContextFactory;
 use Swag\PayPal\Test\Pos\Mock\Repositories\PosMediaRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\PosProductRepoMock;
 
+/**
+ * @internal
+ */
 class ProductContextFactoryTest extends AbstractProductSyncTest
 {
     private const IMAGE_MEDIA_ID_EXISTING = 'existingMediaId';

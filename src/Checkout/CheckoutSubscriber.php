@@ -14,6 +14,9 @@ use Shopware\Storefront\Page\PageLoadedEvent;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @internal
+ */
 class CheckoutSubscriber implements EventSubscriberInterface
 {
     private PaymentMethodDataRegistry $methodDataRegistry;

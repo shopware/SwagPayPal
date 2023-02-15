@@ -55,6 +55,9 @@ class PlusPuiHandler
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PaymentResource $paymentResource,
         EntityRepository $orderTransactionRepo,

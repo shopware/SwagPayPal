@@ -53,6 +53,9 @@ class PayPalOrdersController extends AbstractController
 
     private CaptureRefundCreator $captureRefundCreator;
 
+    /**
+     * @internal
+     */
     public function __construct(
         OrderResource $orderResource,
         AuthorizationResource $authorizationResource,

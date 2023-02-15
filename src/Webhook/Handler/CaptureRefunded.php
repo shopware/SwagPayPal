@@ -26,6 +26,9 @@ class CaptureRefunded extends AbstractWebhookHandler
 
     private OrderResource $orderResource;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $orderTransactionRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler,

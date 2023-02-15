@@ -63,6 +63,9 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class SettingsControllerTest extends TestCase
 {
     use IntegrationTestBehaviour;

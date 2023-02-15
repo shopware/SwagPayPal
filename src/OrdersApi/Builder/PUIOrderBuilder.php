@@ -39,6 +39,9 @@ class PUIOrderBuilder extends AbstractOrderBuilder
 
     private LocaleCodeProvider $localeCodeProvider;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,

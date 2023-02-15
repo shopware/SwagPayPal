@@ -30,6 +30,9 @@ abstract class AbstractPaymentBuilder
 
     protected SystemConfigService $systemConfigService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         LocaleCodeProvider $localeCodeProvider,
         PriceFormatter $priceFormatter,

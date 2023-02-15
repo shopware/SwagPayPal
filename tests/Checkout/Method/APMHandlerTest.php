@@ -49,6 +49,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderAPM;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class APMHandlerTest extends TestCase
 {
     use FullCheckoutTrait;

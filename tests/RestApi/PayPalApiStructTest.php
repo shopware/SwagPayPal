@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\RestApi;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Test\RestApi\_fixtures\TestStruct;
 
+/**
+ * @internal
+ */
 class PayPalApiStructTest extends TestCase
 {
     use AssertArraySubsetTrait;

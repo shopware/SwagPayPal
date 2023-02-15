@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class PayPalSettingsInvalidExceptionTest extends TestCase
 {
     public function testGetStatusCode(): void

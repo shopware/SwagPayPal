@@ -11,6 +11,9 @@ use Psr\Log\LoggerInterface;
 use Swag\PayPal\RestApi\Client\TokenClient;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 
+/**
+ * @internal
+ */
 class TokenClientMock extends TokenClient
 {
     public function __construct(

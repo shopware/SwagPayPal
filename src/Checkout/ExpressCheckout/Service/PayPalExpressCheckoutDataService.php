@@ -37,6 +37,9 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
 
     private CartPriceService $cartPriceService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         CartService $cartService,
         LocaleCodeProvider $localeCodeProvider,

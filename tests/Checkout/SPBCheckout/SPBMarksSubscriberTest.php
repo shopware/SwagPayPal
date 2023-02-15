@@ -37,6 +37,9 @@ use Swag\PayPal\Test\Mock\PaymentMethodUtilMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class SPBMarksSubscriberTest extends TestCase
 {
     use ServicesTrait;

@@ -33,6 +33,9 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * @internal
+ */
 class FundingSubscriberTest extends TestCase
 {
     use CartTrait;

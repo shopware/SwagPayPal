@@ -14,6 +14,9 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDispute;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetDisputesList;
 
+/**
+ * @internal
+ */
 class DisputeResourceTest extends TestCase
 {
     use ServicesTrait;

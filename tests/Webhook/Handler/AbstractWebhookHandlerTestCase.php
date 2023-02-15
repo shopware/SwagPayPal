@@ -28,6 +28,9 @@ use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use Swag\PayPal\Webhook\Handler\AbstractWebhookHandler;
 
+/**
+ * @internal
+ */
 abstract class AbstractWebhookHandlerTestCase extends TestCase
 {
     use KernelTestBehaviour;

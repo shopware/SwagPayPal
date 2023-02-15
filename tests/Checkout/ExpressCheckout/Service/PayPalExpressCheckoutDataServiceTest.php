@@ -36,6 +36,9 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\Routing\RouterInterface;
 
+/**
+ * @internal
+ */
 class PayPalExpressCheckoutDataServiceTest extends TestCase
 {
     use BasicTestDataBehaviour;

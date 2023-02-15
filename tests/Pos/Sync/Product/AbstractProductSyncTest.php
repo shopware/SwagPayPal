@@ -22,6 +22,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Tax\TaxEntity;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 
+/**
+ * @internal
+ */
 abstract class AbstractProductSyncTest extends TestCase
 {
     use KernelTestBehaviour;

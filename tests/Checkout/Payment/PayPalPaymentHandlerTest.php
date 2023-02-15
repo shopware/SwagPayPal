@@ -73,6 +73,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * @internal
+ */
 class PayPalPaymentHandlerTest extends TestCase
 {
     use PaymentTransactionTrait;

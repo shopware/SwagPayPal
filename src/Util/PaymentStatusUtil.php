@@ -32,6 +32,9 @@ class PaymentStatusUtil
 
     private PriceFormatter $priceFormatter;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $orderRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler,

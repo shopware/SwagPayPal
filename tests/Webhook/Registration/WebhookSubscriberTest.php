@@ -27,6 +27,9 @@ use Swag\PayPal\Webhook\Registration\WebhookSubscriber;
 use Swag\PayPal\Webhook\WebhookRegistry;
 use Swag\PayPal\Webhook\WebhookService;
 
+/**
+ * @internal
+ */
 class WebhookSubscriberTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

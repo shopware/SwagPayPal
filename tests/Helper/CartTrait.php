@@ -18,6 +18,9 @@ use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Test\Helper\Compatibility\Generator;
 
+/**
+ * @internal
+ */
 trait CartTrait
 {
     protected function createCart(string $paymentMethodId, bool $withTransaction = true, float $netPrice = 9.0, float $totalPrice = 10.9): Cart

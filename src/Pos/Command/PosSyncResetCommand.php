@@ -21,6 +21,9 @@ class PosSyncResetCommand extends AbstractPosCommand
 
     private SyncResetter $resetSyncService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $salesChannelRepository,
         SyncResetter $resetSyncService

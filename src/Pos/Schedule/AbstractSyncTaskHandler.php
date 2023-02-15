@@ -16,6 +16,9 @@ use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\SwagPayPal;
 
+/**
+ * @internal
+ */
 abstract class AbstractSyncTaskHandler extends ScheduledTaskHandler
 {
     private EntityRepository $salesChannelRepository;

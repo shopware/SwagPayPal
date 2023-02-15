@@ -21,6 +21,9 @@ use Swag\PayPal\Pos\Sync\Inventory\RemoteUpdater;
 use Swag\PayPal\Pos\Sync\InventorySyncer;
 use Swag\PayPal\Test\Pos\Mock\Repositories\PosInventoryRepoMock;
 
+/**
+ * @internal
+ */
 class InventorySyncerTest extends TestCase
 {
     use InventoryTrait;

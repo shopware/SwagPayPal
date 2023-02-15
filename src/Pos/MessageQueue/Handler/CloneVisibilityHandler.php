@@ -19,6 +19,9 @@ use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
 
+/**
+ * @internal
+ */
 class CloneVisibilityHandler extends AbstractSyncHandler
 {
     private EntityRepository $productVisibilityRepository;

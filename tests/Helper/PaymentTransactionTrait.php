@@ -33,6 +33,9 @@ use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @internal
+ */
 trait PaymentTransactionTrait
 {
     use StateMachineStateTrait;

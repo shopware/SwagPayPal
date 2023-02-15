@@ -76,6 +76,9 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelProductRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 
+/**
+ * @internal
+ */
 class CompleteProductTest extends TestCase
 {
     use KernelTestBehaviour;

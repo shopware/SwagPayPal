@@ -23,6 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @deprecated tag:v7.0.0 - Will be removed without replacement.
+ * @internal
  */
 class PlusPaymentHandleController extends StorefrontController
 {
@@ -34,6 +35,9 @@ class PlusPaymentHandleController extends StorefrontController
 
     private RequestStack $requestStack;
 
+    /**
+     * @internal
+     */
     public function __construct(
         AbstractContextSwitchRoute $contextSwitchRoute,
         AccountOrderController $accountOrderController,

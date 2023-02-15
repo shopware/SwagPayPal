@@ -11,6 +11,9 @@ use Psr\Log\LoggerInterface;
 use Swag\PayPal\RestApi\Client\CredentialsClient;
 use Swag\PayPal\RestApi\Client\CredentialsClientFactory;
 
+/**
+ * @internal
+ */
 class CredentialsClientFactoryMock extends CredentialsClientFactory
 {
     private LoggerInterface $logger;

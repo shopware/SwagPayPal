@@ -32,6 +32,9 @@ class InventorySyncManager extends AbstractSyncManager
 
     private SalesChannelRepository $productRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         MessageDispatcher $messageBus,
         ProductSelection $productSelection,

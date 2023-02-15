@@ -29,6 +29,9 @@ abstract class AbstractWebhookHandler implements WebhookHandler
 
     protected OrderTransactionStateHandler $orderTransactionStateHandler;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $orderTransactionRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler

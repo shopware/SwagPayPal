@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\RestApi\V1\Api;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 
+/**
+ * @internal
+ */
 class OAuthCredentialsTest extends TestCase
 {
     public function testToString(): void

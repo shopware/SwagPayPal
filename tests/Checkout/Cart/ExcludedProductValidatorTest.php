@@ -25,6 +25,9 @@ use Swag\PayPal\Test\Helper\FullCheckoutTrait;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
+/**
+ * @internal
+ */
 class ExcludedProductValidatorTest extends TestCase
 {
     use IntegrationTestBehaviour;

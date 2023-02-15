@@ -18,6 +18,9 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryCollecti
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 
+/**
+ * @internal
+ */
 trait UpdaterTrait
 {
     use InventoryTrait;

@@ -17,6 +17,9 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @internal
+ */
 class RequestSubscriber implements EventSubscriberInterface
 {
     public const PAYMENT_PARAMETERS = [

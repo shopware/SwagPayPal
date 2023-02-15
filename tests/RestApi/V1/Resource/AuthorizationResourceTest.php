@@ -15,6 +15,9 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceAuthorizeResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidAuthorizationResponseFixture;
 
+/**
+ * @internal
+ */
 class AuthorizationResourceTest extends TestCase
 {
     use ServicesTrait;

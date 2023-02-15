@@ -28,6 +28,9 @@ class InventoryContextFactory
 
     private EntityRepository $inventoryRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         InventoryResource $inventoryResource,
         UuidConverter $uuidConverter,

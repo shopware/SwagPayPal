@@ -34,6 +34,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class PayPalOrdersControllerTest extends TestCase
 {
     use ServicesTrait;

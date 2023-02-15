@@ -14,6 +14,9 @@ use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\CaptureResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 
+/**
+ * @internal
+ */
 class CaptureResourceTest extends TestCase
 {
     use ServicesTrait;

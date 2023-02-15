@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 
+/**
+ * @internal
+ */
 class CaptureOrderCapture
 {
     public const ID = '9XG87361JT539825C';

@@ -30,6 +30,9 @@ class ErrorRoute extends AbstractErrorRoute
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         RequestStack $requestStack,
         TranslatorInterface $translator,

@@ -18,6 +18,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 
+/**
+ * @internal
+ */
 class WebhookResourceTest extends TestCase
 {
     use ServicesTrait;

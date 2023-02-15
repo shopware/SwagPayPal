@@ -33,6 +33,9 @@ class PayPalClientFactory implements PayPalClientFactoryInterface
      */
     private array $payPalClients = [];
 
+    /**
+     * @internal
+     */
     public function __construct(
         TokenResourceInterface $tokenResource,
         SettingsValidationServiceInterface $settingsValidationService,

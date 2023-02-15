@@ -53,6 +53,9 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
 
     private EntityRepository $orderRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         AbstractPaymentMethodRoute $decorated,
         PaymentMethodDataRegistry $methodDataRegistry,

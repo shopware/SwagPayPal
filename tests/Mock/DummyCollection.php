@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\Mock;
 /**
  * @implements \IteratorAggregate<\Swag\PayPal\Webhook\WebhookHandler>
  */
+/**
+ * @internal
+ */
 class DummyCollection implements \IteratorAggregate
 {
     private array $data;

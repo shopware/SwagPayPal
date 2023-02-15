@@ -21,6 +21,9 @@ class PosImageSyncCommand extends AbstractPosCommand
 
     private ImageTask $imageTask;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $salesChannelRepository,
         ImageTask $imageTask

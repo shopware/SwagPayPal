@@ -24,6 +24,9 @@ class PUIPaymentInstructionDataService
 
     private RouterInterface $router;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PaymentMethodDataRegistry $paymentMethodDataRegistry,
         AbstractPUIPaymentInstructionsRoute $puiPaymentInstructionsRoute,

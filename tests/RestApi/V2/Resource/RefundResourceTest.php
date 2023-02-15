@@ -13,6 +13,9 @@ use Swag\PayPal\RestApi\V2\Resource\RefundResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefund;
 
+/**
+ * @internal
+ */
 class RefundResourceTest extends TestCase
 {
     use ServicesTrait;

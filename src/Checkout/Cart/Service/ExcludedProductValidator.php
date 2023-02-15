@@ -26,6 +26,9 @@ class ExcludedProductValidator
 
     private SalesChannelRepository $productRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SystemConfigService $systemConfigService,
         SalesChannelRepository $productRepository

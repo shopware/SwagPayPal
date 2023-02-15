@@ -23,6 +23,9 @@ abstract class AbstractPosCommand extends Command
 {
     protected EntityRepository $salesChannelRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(EntityRepository $salesChannelRepository)
     {
         parent::__construct();

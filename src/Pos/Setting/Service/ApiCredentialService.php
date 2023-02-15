@@ -28,6 +28,9 @@ class ApiCredentialService
 
     private ApiKeyDecoder $apiKeyDecoder;
 
+    /**
+     * @internal
+     */
     public function __construct(
         TokenResource $tokenResource,
         EntityRepository $salesChannelRepository,

@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\Pos\Api\Common\_fixtures\TestStruct;
 
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+/**
+ * @internal
+ */
 class Foo extends PosStruct
 {
     protected string $fooBaz;

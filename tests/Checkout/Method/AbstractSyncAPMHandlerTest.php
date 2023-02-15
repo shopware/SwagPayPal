@@ -55,6 +55,9 @@ use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * @internal
+ */
 abstract class AbstractSyncAPMHandlerTest extends TestCase
 {
     use PaymentTransactionTrait;

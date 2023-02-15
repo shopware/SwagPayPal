@@ -24,6 +24,9 @@ use Swag\PayPal\Pos\Run\Task\ProductTask;
 use Swag\PayPal\Test\Pos\Helper\SalesChannelTrait;
 use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
 
+/**
+ * @internal
+ */
 class RunTaskTest extends TestCase
 {
     use KernelTestBehaviour;

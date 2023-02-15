@@ -14,6 +14,9 @@ use Swag\PayPal\Test\Mock\Webhook\Handler\DummyWebhook;
 use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookRegistry;
 
+/**
+ * @internal
+ */
 class WebhookRegistryTest extends TestCase
 {
     use ServicesTrait;

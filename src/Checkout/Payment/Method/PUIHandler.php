@@ -55,6 +55,9 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
         OrderTransactionStateHandler $orderTransactionStateHandler,

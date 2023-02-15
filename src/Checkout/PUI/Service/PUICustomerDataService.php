@@ -21,6 +21,9 @@ class PUICustomerDataService
 
     private EntityRepository $customerRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         EntityRepository $orderAddressRepository,
         EntityRepository $customerRepository
