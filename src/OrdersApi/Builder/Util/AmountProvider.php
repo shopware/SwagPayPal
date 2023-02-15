@@ -52,7 +52,6 @@ class AmountProvider
                     $purchaseUnit,
                     $currencyCode,
                     $shippingCosts,
-                    $totalAmount->getCalculatedTaxes(),
                     $isNet,
                     (float) $amount->getValue()
                 )
@@ -70,7 +69,6 @@ class AmountProvider
         PurchaseUnit $purchaseUnit,
         string $currencyCode,
         CalculatedPrice $shippingCosts,
-        CalculatedTaxCollection $taxes,
         bool $isNet,
         float $amountValue
     ): Breakdown {
@@ -83,9 +81,7 @@ class AmountProvider
             if ($itemUnitAmount >= 0.0) {
                 $accumulatedAmountValue += $item->getQuantity() * $itemUnitAmount;
                 $newItems[] = $item;
-                if ($item->hasTax()) {
-                    $accumulatedTaxValue += $item->getQuantity() * (float) $item->getTax()->getValue();
-                }
+                $accumulatedTaxValue += $item->getQuantity() * (float) $item->getTax()->getValue();
             }
         }
         $purchaseUnit->setItems($newItems);
