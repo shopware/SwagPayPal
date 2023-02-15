@@ -1,5 +1,6 @@
 # 5.4.5
-- PPI-743 - PPI-720 - Behebt ein Problem, bei dem die Steuern für Nettokudnen falsch berechnet wurde, wenn ein Rabatt enthalten war
+- PPI-734 - Behebt ein Problem, bei dem Zahlungsarten beim Zahlartwechsel nach Bestellabschluss nicht angezeigt wurden
+- PPI-720, PPI-741, PPI-743 - Behebt ein Problem, bei dem die Steuern für Nettokudnen falsch berechnet wurde
 
 # 5.4.4
 - PPI-734 - Behebt ein Problem, bei dem Zahlungsarten beim Zahlartwechsel nach Bestellabschluss nicht angezeigt wurden

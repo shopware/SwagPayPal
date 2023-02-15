@@ -1,5 +1,6 @@
 # 5.4.5
-- PPI-743 - PPI-720 - Fixes an issue, where the total tax amount was calculated incorrectly for net customers, when there was a discount applied
+- PPI-734 - Fixes an issue, where some payment methods were not displayed in after order process
+- PPI-720, PPI-741, PPI-743 - Fixes an issue, where the total tax amount was calculated incorrectly for net customers
 
 # 5.4.4
 - PPI-734 - Fixes an issue, where some payment methods were not displayed in after order process
