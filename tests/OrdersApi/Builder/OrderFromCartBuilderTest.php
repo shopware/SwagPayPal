@@ -173,7 +173,7 @@ class OrderFromCartBuilderTest extends TestCase
         $taxRate = 19.0;
 
         $cart = $this->createCart('', true, $productNetPrice, $productNetPrice + $productTax);
-        $cart->add($this->createLineItem(new CalculatedPrice($productNetPrice, $productNetPrice, new CalculatedTaxCollection(), new TaxRuleCollection())));
+        $cart->add($this->createLineItem(new CalculatedPrice($productNetPrice, $productNetPrice, new CalculatedTaxCollection([19 => new CalculatedTax($productTax, 19, $productNetPrice)]), new TaxRuleCollection())));
         $cartPrice = new CartPrice(
             $productNetPrice,
             $productNetPrice + $productTax,

@@ -22,6 +22,7 @@ use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\Tax;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PriceFormatter;
@@ -117,6 +118,11 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             $item = new Item();
             $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
+
+            $tax = new Tax();
+            $tax->setCurrencyCode($currencyCode);
+            $tax->setValue($this->priceFormatter->formatPrice($price->getCalculatedTaxes()->getAmount()));
+            $item->setTax($tax);
 
             $unitAmount = new UnitAmount();
             $unitAmount->setCurrencyCode($currencyCode);

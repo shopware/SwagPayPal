@@ -1,3 +1,7 @@
+# 5.4.5
+- PPI-734 - Fixes an issue, where some payment methods were not displayed in after order process
+- PPI-720, PPI-741, PPI-743 - Fixes an issue, where the total tax amount was calculated incorrectly for net customers
+
 # 5.4.4
 - PPI-734 - Fixes an issue, where some payment methods were not displayed in after order process
 - PPI-735 - Fixes an issue, where payment details were not shown on orders, where PayPal was not the first chosen payment method

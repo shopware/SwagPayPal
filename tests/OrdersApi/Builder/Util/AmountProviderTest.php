@@ -102,6 +102,25 @@ class AmountProviderTest extends TestCase
         static::assertSame('0.00', $breakdown->getDiscount()->getValue());
     }
 
+    public function testNetTaxesWithDiscount(): void
+    {
+        $purchaseUnit = new PurchaseUnit();
+        $purchaseUnit->setItems([
+            $this->getItem(1, 10, 1.9, 19.0),
+            $this->getItem(1, -1, -0.19, 19.0),
+        ]);
+
+        $breakdown = $this->createAmount($purchaseUnit, 10.71, 0.0, true)->getBreakdown();
+        static::assertNotNull($breakdown);
+
+        $taxTotal = $breakdown->getTaxTotal();
+        static::assertSame('10.00', $breakdown->getItemTotal()->getValue());
+        static::assertSame('1.90', $taxTotal !== null ? $taxTotal->getValue() : '0.0');
+        static::assertSame('0.00', $breakdown->getShipping()->getValue());
+        static::assertSame('0.00', $breakdown->getHandling()->getValue());
+        static::assertSame('1.19', $breakdown->getDiscount()->getValue());
+    }
+
     private function createAmount(PurchaseUnit $purchaseUnit, float $total, float $shipping, bool $isNet = false): Amount
     {
         return $this->amountProvider->createAmount(

@@ -52,7 +52,6 @@ class AmountProvider
                     $purchaseUnit,
                     $currencyCode,
                     $shippingCosts,
-                    $totalAmount->getCalculatedTaxes(),
                     $isNet,
                     (float) $amount->getValue()
                 )
@@ -70,17 +69,19 @@ class AmountProvider
         PurchaseUnit $purchaseUnit,
         string $currencyCode,
         CalculatedPrice $shippingCosts,
-        CalculatedTaxCollection $taxes,
         bool $isNet,
         float $amountValue
     ): Breakdown {
         $accumulatedAmountValue = 0.0;
+        $accumulatedTaxValue = 0.0;
         $newItems = [];
+
         foreach ($items as $item) {
             $itemUnitAmount = (float) $item->getUnitAmount()->getValue();
             if ($itemUnitAmount >= 0.0) {
                 $accumulatedAmountValue += $item->getQuantity() * $itemUnitAmount;
                 $newItems[] = $item;
+                $accumulatedTaxValue += $item->getQuantity() * (float) $item->getTax()->getValue();
             }
         }
         $purchaseUnit->setItems($newItems);
@@ -96,13 +97,7 @@ class AmountProvider
 
         $taxTotal = new TaxTotal();
         $taxTotal->setCurrencyCode($currencyCode);
-        if ($isNet) {
-            $taxTotal->setValue($this->priceFormatter->formatPrice(
-                $taxes->getAmount() - $shippingCosts->getCalculatedTaxes()->getAmount()
-            ));
-        } else {
-            $taxTotal->setValue($this->priceFormatter->formatPrice(0.0));
-        }
+        $taxTotal->setValue($this->priceFormatter->formatPrice($accumulatedTaxValue));
         $accumulatedAmountValue += (float) $taxTotal->getValue();
 
         $discount = new Discount();
