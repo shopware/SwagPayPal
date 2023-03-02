@@ -18,6 +18,8 @@ parameters:
         -   src/Resources
         # 6.4 compatibility
         -   src/Pos/Run/LogHandler.php
+        -   src/Webhook/Registration/WebhookSystemConfigController.php
+        -   tests/Webhook/Registration/WebhookSystemConfigControllerTest.php
         -   tests/Mock/CacheItemMock*.php
 
     symfony:
@@ -42,10 +44,6 @@ parameters:
         -   # Services in tests are all public
             message: '#Service ".*" is private#'
             path: tests/**/*.php
-
-        -   # Remove with min-Version 6.4.14.0
-            message: '#ArrayStruct is not generic#'
-            path: src/Checkout/TokenResponse.php
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

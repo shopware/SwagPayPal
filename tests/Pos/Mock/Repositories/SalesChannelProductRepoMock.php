@@ -46,6 +46,7 @@ use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
 /**
  * @phpstan-ignore-next-line ignore finality of repository in tests
+ *
  * @internal
  */
 class SalesChannelProductRepoMock extends SalesChannelRepository

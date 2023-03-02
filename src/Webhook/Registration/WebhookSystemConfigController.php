@@ -7,73 +7,142 @@
 
 namespace Swag\PayPal\Webhook\Registration;
 
+use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
 use Shopware\Core\System\SystemConfig\Service\ConfigurationService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\System\SystemConfig\Validation\SystemConfigValidator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
-class WebhookSystemConfigController extends SystemConfigController
-{
-    public const WEBHOOK_ERRORS_KEY = 'payPalWebhookErrors';
-
-    private WebhookSystemConfigHelper $webhookSystemConfigHelper;
-
+if (\class_exists(SystemConfigValidator::class)) {
     /**
-     * @internal
+     * @Route(defaults={"_routeScope"={"api"}})
      */
-    public function __construct(
-        ConfigurationService $configurationService,
-        SystemConfigService $systemConfig,
-        WebhookSystemConfigHelper $webhookSystemConfigHelper
-    ) {
-        parent::__construct($configurationService, $systemConfig);
-        $this->webhookSystemConfigHelper = $webhookSystemConfigHelper;
-    }
-
-    public function saveConfiguration(Request $request): JsonResponse
+    class WebhookSystemConfigController extends SystemConfigController
     {
-        $salesChannelId = $request->query->get('salesChannelId');
-        if (!\is_string($salesChannelId) || $salesChannelId === '') {
-            $salesChannelId = 'null';
+        public const WEBHOOK_ERRORS_KEY = 'payPalWebhookErrors';
+
+        private WebhookSystemConfigHelper $webhookSystemConfigHelper;
+
+        /**
+         * @internal
+         */
+        public function __construct(
+            ConfigurationService $configurationService,
+            SystemConfigService $systemConfig,
+            WebhookSystemConfigHelper $webhookSystemConfigHelper,
+            SystemConfigValidator $systemConfigValidator
+        ) {
+            parent::__construct($configurationService, $systemConfig, $systemConfigValidator);
+            $this->webhookSystemConfigHelper = $webhookSystemConfigHelper;
         }
-        $data = [$salesChannelId => $request->request->all()];
 
-        $errors = $this->webhookSystemConfigHelper->checkWebhookBefore($data);
+        public function saveConfiguration(Request $request): JsonResponse
+        {
+            $salesChannelId = $request->query->get('salesChannelId');
+            if (!\is_string($salesChannelId) || $salesChannelId === '') {
+                $salesChannelId = 'null';
+            }
+            $data = [$salesChannelId => $request->request->all()];
 
-        $response = parent::saveConfiguration($request);
+            $errors = $this->webhookSystemConfigHelper->checkWebhookBefore($data);
 
-        $errors = \array_merge($errors, $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
+            $response = parent::saveConfiguration($request);
 
-        if (empty($errors)) {
-            return $response;
+            $errors = \array_merge($errors, $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
+
+            if (empty($errors)) {
+                return $response;
+            }
+
+            return new JsonResponse([self::WEBHOOK_ERRORS_KEY => \array_map(static function (\Throwable $e) {
+                return $e->getMessage();
+            }, $errors)]);
         }
 
-        return new JsonResponse([self::WEBHOOK_ERRORS_KEY => \array_map(static function (\Throwable $e) {
-            return $e->getMessage();
-        }, $errors)]);
+        public function batchSaveConfiguration(Request $request, ?Context $context = null): JsonResponse
+        {
+            /** @var array<string, array<string, mixed>> $data */
+            $data = $request->request->all();
+            $errors = $this->webhookSystemConfigHelper->checkWebhookBefore($data);
+
+            $response = parent::batchSaveConfiguration($request);
+
+            $errors = \array_merge($errors, $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
+
+            if (empty($errors)) {
+                return $response;
+            }
+
+            return new JsonResponse([self::WEBHOOK_ERRORS_KEY => \array_map(static function (\Throwable $e) {
+                return $e->getMessage();
+            }, $errors)]);
+        }
     }
-
-    public function batchSaveConfiguration(Request $request): JsonResponse
+} else {
+    /**
+     * @Route(defaults={"_routeScope"={"api"}})
+     */
+    class WebhookSystemConfigController extends SystemConfigController
     {
-        /** @var array<string, array<string, mixed>> $data */
-        $data = $request->request->all();
-        $errors = $this->webhookSystemConfigHelper->checkWebhookBefore($data);
+        public const WEBHOOK_ERRORS_KEY = 'payPalWebhookErrors';
 
-        $response = parent::batchSaveConfiguration($request);
+        private WebhookSystemConfigHelper $webhookSystemConfigHelper;
 
-        $errors = \array_merge($errors, $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
-
-        if (empty($errors)) {
-            return $response;
+        /**
+         * @internal
+         */
+        public function __construct(
+            ConfigurationService $configurationService,
+            SystemConfigService $systemConfig,
+            WebhookSystemConfigHelper $webhookSystemConfigHelper
+        ) {
+            parent::__construct($configurationService, $systemConfig);
+            $this->webhookSystemConfigHelper = $webhookSystemConfigHelper;
         }
 
-        return new JsonResponse([self::WEBHOOK_ERRORS_KEY => \array_map(static function (\Throwable $e) {
-            return $e->getMessage();
-        }, $errors)]);
+        public function saveConfiguration(Request $request): JsonResponse
+        {
+            $salesChannelId = $request->query->get('salesChannelId');
+            if (!\is_string($salesChannelId) || $salesChannelId === '') {
+                $salesChannelId = 'null';
+            }
+            $data = [$salesChannelId => $request->request->all()];
+
+            $errors = $this->webhookSystemConfigHelper->checkWebhookBefore($data);
+
+            $response = parent::saveConfiguration($request);
+
+            $errors = \array_merge($errors, $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
+
+            if (empty($errors)) {
+                return $response;
+            }
+
+            return new JsonResponse([self::WEBHOOK_ERRORS_KEY => \array_map(static function (\Throwable $e) {
+                return $e->getMessage();
+            }, $errors)]);
+        }
+
+        public function batchSaveConfiguration(Request $request): JsonResponse
+        {
+            /** @var array<string, array<string, mixed>> $data */
+            $data = $request->request->all();
+            $errors = $this->webhookSystemConfigHelper->checkWebhookBefore($data);
+
+            $response = parent::batchSaveConfiguration($request);
+
+            $errors = \array_merge($errors, $this->webhookSystemConfigHelper->checkWebhookAfter(\array_keys($data)));
+
+            if (empty($errors)) {
+                return $response;
+            }
+
+            return new JsonResponse([self::WEBHOOK_ERRORS_KEY => \array_map(static function (\Throwable $e) {
+                return $e->getMessage();
+            }, $errors)]);
+        }
     }
 }

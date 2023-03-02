@@ -29,6 +29,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @deprecated tag:v7.0.0 - Will be removed without replacement.
+ *
  * @internal
  */
 class PlusSubscriber implements EventSubscriberInterface

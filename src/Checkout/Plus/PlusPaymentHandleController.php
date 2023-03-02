@@ -23,6 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @deprecated tag:v7.0.0 - Will be removed without replacement.
+ *
  * @internal
  */
 class PlusPaymentHandleController extends StorefrontController

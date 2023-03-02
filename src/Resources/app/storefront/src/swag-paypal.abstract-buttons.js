@@ -61,7 +61,7 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             'enable-funding': 'paylater,venmo',
         };
 
-        if (this.options.disablePayLater) {
+        if (this.options.disablePayLater || this.options.showPayLater === false) {
             config['enable-funding'] = 'venmo';
         }
 
@@ -78,6 +78,8 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         if (this.options.clientToken) {
             config['data-client-token'] = this.options.clientToken;
         }
+
+        console.log(config);
 
         return config;
     }

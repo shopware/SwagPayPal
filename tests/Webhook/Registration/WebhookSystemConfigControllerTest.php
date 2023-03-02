@@ -13,6 +13,7 @@ use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\System\SystemConfig\Api\SystemConfigController;
 use Shopware\Core\System\SystemConfig\Service\ConfigurationService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\System\SystemConfig\Validation\SystemConfigValidator;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
@@ -47,7 +48,12 @@ class WebhookSystemConfigControllerTest extends TestCase
         $this->systemConfigService = $this->getContainer()->get(SystemConfigService::class);
 
         // creating new instance without decoration
-        $this->undecoratedController = new SystemConfigController($this->configurationService, $this->systemConfigService);
+        if (\class_exists(SystemConfigValidator::class)) {
+            $this->undecoratedController = new SystemConfigController($this->configurationService, $this->systemConfigService, $this->getContainer()->get(SystemConfigValidator::class));
+        } else {
+            // @phpstan-ignore-next-line
+            $this->undecoratedController = new SystemConfigController($this->configurationService, $this->systemConfigService);
+        }
 
         $this->webhookService = new WebhookServiceMock($this->systemConfigService);
     }
@@ -247,6 +253,20 @@ class WebhookSystemConfigControllerTest extends TestCase
 
     private function createWebhookSystemConfigController(): WebhookSystemConfigController
     {
+        if (!\class_exists(SystemConfigValidator::class)) {
+            // @phpstan-ignore-next-line
+            return new WebhookSystemConfigController(
+                $this->configurationService,
+                $this->systemConfigService,
+                new WebhookSystemConfigHelper(
+                    new NullLogger(),
+                    $this->webhookService,
+                    $this->systemConfigService,
+                    new SettingsValidationService($this->systemConfigService, new NullLogger())
+                )
+            );
+        }
+
         return new WebhookSystemConfigController(
             $this->configurationService,
             $this->systemConfigService,
@@ -255,7 +275,8 @@ class WebhookSystemConfigControllerTest extends TestCase
                 $this->webhookService,
                 $this->systemConfigService,
                 new SettingsValidationService($this->systemConfigService, new NullLogger())
-            )
+            ),
+            $this->getContainer()->get(SystemConfigValidator::class)
         );
     }
 

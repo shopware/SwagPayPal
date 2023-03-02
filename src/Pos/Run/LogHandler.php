@@ -22,41 +22,41 @@ if ($type instanceof \ReflectionNamedType && $type->getName() === 'array') {
         private array $logs;
 
         /**
-     * @internal
-     */
-    public function __construct()
+         * @internal
+         */
+        public function __construct()
         {
             parent::__construct();
             $this->logs = [];
         }
 
-        public function getLogs(): array
-        {
-            return $this->logs;
-        }
-
-        public function flush(): void
-        {
-            $this->logs = [];
-        }
-
-        protected function write(array $record): void
-        {
-            $update = [
-                'level' => $record['level'],
-                'message' => $record['message'],
-            ];
-
-            if (isset($record['context']['product'])) {
-                $product = $record['context']['product'];
-                if ($product instanceof ProductEntity) {
-                    $update['productId'] = $product->getParentId() ?? $product->getId();
-                    $update['productVersionId'] = $product->getVersionId();
-                }
+            public function getLogs(): array
+            {
+                return $this->logs;
             }
 
-            $this->logs[] = $update;
-        }
+            public function flush(): void
+            {
+                $this->logs = [];
+            }
+
+            protected function write(array $record): void
+            {
+                $update = [
+                    'level' => $record['level'],
+                    'message' => $record['message'],
+                ];
+
+                if (isset($record['context']['product'])) {
+                    $product = $record['context']['product'];
+                    if ($product instanceof ProductEntity) {
+                        $update['productId'] = $product->getParentId() ?? $product->getId();
+                        $update['productVersionId'] = $product->getVersionId();
+                    }
+                }
+
+                $this->logs[] = $update;
+            }
     }
 } else {
     class LogHandler extends AbstractProcessingHandler
@@ -67,43 +67,43 @@ if ($type instanceof \ReflectionNamedType && $type->getName() === 'array') {
         private array $logs;
 
         /**
-     * @internal
-     */
-    public function __construct()
+         * @internal
+         */
+        public function __construct()
         {
             parent::__construct();
             $this->logs = [];
         }
 
-        /**
-         * @return array<string, mixed>[]
-         */
-        public function getLogs(): array
-        {
-            return $this->logs;
-        }
-
-        public function flush(): void
-        {
-            $this->logs = [];
-        }
-
-        protected function write(LogRecord $record): void
-        {
-            $update = [
-                'level' => $record->level->value,
-                'message' => $record->message,
-            ];
-
-            if (isset($record->context['product'])) {
-                $product = $record->context['product'];
-                if ($product instanceof ProductEntity) {
-                    $update['productId'] = $product->getParentId() ?? $product->getId();
-                    $update['productVersionId'] = $product->getVersionId();
-                }
+            /**
+             * @return array<string, mixed>[]
+             */
+            public function getLogs(): array
+            {
+                return $this->logs;
             }
 
-            $this->logs[] = $update;
-        }
+            public function flush(): void
+            {
+                $this->logs = [];
+            }
+
+            protected function write(LogRecord $record): void
+            {
+                $update = [
+                    'level' => $record->level->value,
+                    'message' => $record->message,
+                ];
+
+                if (isset($record->context['product'])) {
+                    $product = $record->context['product'];
+                    if ($product instanceof ProductEntity) {
+                        $update['productId'] = $product->getParentId() ?? $product->getId();
+                        $update['productVersionId'] = $product->getVersionId();
+                    }
+                }
+
+                $this->logs[] = $update;
+            }
     }
 }
