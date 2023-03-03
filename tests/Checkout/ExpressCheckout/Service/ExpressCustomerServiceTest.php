@@ -55,7 +55,7 @@ class ExpressCustomerServiceTest extends TestCase
         static::assertSame(GetOrderCapture::PAYER_ADDRESS_ADMIN_AREA_2, $address->getCity());
         $country = $address->getCountry();
         static::assertNotNull($country);
-        static::assertSame('USA', $country->getTranslation('name'));
+        static::assertSame('USA', $country->getIso3());
         $countryState = $address->getCountryState();
         static::assertNotNull($countryState);
         static::assertSame('New York', $countryState->getName());
