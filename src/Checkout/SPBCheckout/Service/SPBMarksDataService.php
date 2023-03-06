@@ -18,7 +18,7 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
 /**
- * @deprecated tag:v6.0.0 - will be removed without replacement, payment logos have been added natively
+ * @deprecated tag:v7.0.0 - will be removed without replacement, payment logos have been added natively
  */
 class SPBMarksDataService implements SPBMarksDataServiceInterface
 {
@@ -32,6 +32,9 @@ class SPBMarksDataService implements SPBMarksDataServiceInterface
 
     private LocaleCodeProvider $localeCodeProvider;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
         SystemConfigService $systemConfigService,

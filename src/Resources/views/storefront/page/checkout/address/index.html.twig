@@ -12,8 +12,10 @@
         {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
         {% set installmentBannerEnabled = installmentBanner is not null %}
 
+        {% set isBootstrap5 = feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
+
         {% if expressEnabled or installmentBannerEnabled %}
-            <div class="row mb-2">
+            <div class="row mb-2 {{ isBootstrap5 ? 'g-3' : '' }}">
 
                 {% block page_checkout_address_login_toggle_paypal_express %}
                     {% if expressEnabled %}
@@ -23,7 +25,7 @@
 
                 {% block page_checkout_address_login_toggle_paypal_installment_banner %}
                     {% if installmentBannerEnabled %}
-                        <div class="col-5 mt-2"
+                        <div class="col-5 {{ isBootstrap5 ? '' : 'mt-2' }}"
                              data-swag-paypal-installment-banner="true"
                              data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">
                         </div>

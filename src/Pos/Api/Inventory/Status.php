@@ -12,7 +12,7 @@ use Swag\PayPal\Pos\Api\Inventory\Status\Variant;
 
 class Status extends PosStruct
 {
-    protected string $locationUuid;
+    protected ?string $locationUuid;
 
     /**
      * @var string[]
@@ -24,12 +24,12 @@ class Status extends PosStruct
      */
     protected array $variants = [];
 
-    public function getLocationUuid(): string
+    public function getLocationUuid(): ?string
     {
         return $this->locationUuid;
     }
 
-    public function setLocationUuid(string $locationUuid): void
+    public function setLocationUuid(?string $locationUuid): void
     {
         $this->locationUuid = $locationUuid;
     }

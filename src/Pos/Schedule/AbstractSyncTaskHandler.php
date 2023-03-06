@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Schedule;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
@@ -16,13 +16,16 @@ use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\SwagPayPal;
 
+/**
+ * @internal
+ */
 abstract class AbstractSyncTaskHandler extends ScheduledTaskHandler
 {
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
     public function __construct(
-        EntityRepositoryInterface $scheduledTaskRepository,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepository $scheduledTaskRepository,
+        EntityRepository $salesChannelRepository
     ) {
         parent::__construct($scheduledTaskRepository);
         $this->salesChannelRepository = $salesChannelRepository;

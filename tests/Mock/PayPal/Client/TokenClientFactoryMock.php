@@ -12,6 +12,9 @@ use Swag\PayPal\RestApi\Client\TokenClient;
 use Swag\PayPal\RestApi\Client\TokenClientFactory;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 
+/**
+ * @internal
+ */
 class TokenClientFactoryMock extends TokenClientFactory
 {
     private LoggerInterface $logger;

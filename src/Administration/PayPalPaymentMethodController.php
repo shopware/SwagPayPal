@@ -9,8 +9,6 @@ namespace Swag\PayPal\Administration;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Routing\Annotation\Acl;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -20,12 +18,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class PayPalPaymentMethodController extends AbstractController
 {
     private PaymentMethodUtil $paymentMethodUtil;
 
+    /**
+     * @internal
+     */
     public function __construct(PaymentMethodUtil $paymentMethodUtil)
     {
         $this->paymentMethodUtil = $paymentMethodUtil;
@@ -33,13 +34,17 @@ class PayPalPaymentMethodController extends AbstractController
 
     /**
      * @Since("1.5.0")
+     *
      * @OA\Post(
      *     path="/_action/paypal/saleschannel-default",
      *     description="Sets PayPal as the default payment method for a given Saleschannel, or all.",
      *     operationId="setPayPalAsDefault",
      *     tags={"Admin Api", "SwagPayPalPaymentMethod"},
+     *
      *     @OA\RequestBody(
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(
      *                 property="salesChannelId",
      *                 description="The id of the Saleschannel where PayPal should be set as the default payment method. Set to null to set PayPal as default for every Saleschannel.",
@@ -48,13 +53,13 @@ class PayPalPaymentMethodController extends AbstractController
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response="204"
      *     )
      * )
      *
-     * @Route("/api/_action/paypal/saleschannel-default", name="api.action.paypal.saleschannel_default", methods={"POST"})
-     * @Acl({"swag_paypal.editor"})
+     * @Route("/api/_action/paypal/saleschannel-default", name="api.action.paypal.saleschannel_default", methods={"POST"}, defaults={"_acl": {"swag_paypal.editor"}})
      */
     public function setPayPalPaymentMethodAsSalesChannelDefault(Request $request, Context $context): Response
     {

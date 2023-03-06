@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\Mock\Setting\Service;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Settings;
 
+/**
+ * @internal
+ */
 class SystemConfigServiceMock extends SystemConfigService
 {
     /**

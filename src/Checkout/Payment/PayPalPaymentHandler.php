@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Checkout\Payment;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
@@ -16,7 +15,7 @@ use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandle
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -29,6 +28,7 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Common\Link;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Util\Compatibility\Exception;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -42,12 +42,12 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
 
     /**
-     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     * @deprecated tag:v7.0.0 - Will be removed without replacement.
      */
     public const PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
 
     /**
-     * @deprecated tag:v6.0.0 - Will be removed without replacement.
+     * @deprecated tag:v7.0.0 - Will be removed without replacement.
      */
     public const PAYPAL_PLUS_CHECKOUT_ID = 'isPayPalPlusCheckout';
 
@@ -62,17 +62,20 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
     private PlusPuiHandler $plusPuiHandler;
 
-    private EntityRepositoryInterface $stateMachineStateRepository;
+    private EntityRepository $stateMachineStateRepository;
 
     private LoggerInterface $logger;
 
     private SettingsValidationServiceInterface $settingsValidationService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         OrderTransactionStateHandler $orderTransactionStateHandler,
         PayPalHandler $payPalHandler,
         PlusPuiHandler $plusPuiHandler,
-        EntityRepositoryInterface $stateMachineStateRepository,
+        EntityRepository $stateMachineStateRepository,
         LoggerInterface $logger,
         SettingsValidationServiceInterface $settingsValidationService
     ) {
@@ -98,15 +101,11 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         try {
             $customer = $salesChannelContext->getCustomer();
             if ($customer === null) {
-                throw new CustomerNotLoggedInException();
+                throw Exception::customerNotLoggedIn();
             }
 
             $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
-            if (\method_exists($this->orderTransactionStateHandler, 'processUnconfirmed')) {
-                $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
-            } else {
-                $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
-            }
+            $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
 
             if ($dataBag->get(self::PAYPAL_EXPRESS_CHECKOUT_ID) || $dataBag->getAlnum(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
                 return $this->payPalHandler->handlePreparedOrder($transaction, $dataBag, $salesChannelContext);
@@ -185,8 +184,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
                 $context,
                 $paymentId,
                 $payerId,
-                $partnerAttributionId,
-                false
+                $partnerAttributionId
             );
 
             return;
@@ -202,8 +200,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             $token,
             $salesChannelId,
             $context,
-            $partnerAttributionId,
-            false
+            $partnerAttributionId
         );
     }
 

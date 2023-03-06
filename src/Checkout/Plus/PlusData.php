@@ -10,7 +10,7 @@ namespace Swag\PayPal\Checkout\Plus;
 use Shopware\Core\Framework\Struct\Struct;
 
 /**
- * @deprecated tag:v6.0.0 - Will be removed without replacement.
+ * @deprecated tag:v7.0.0 - Will be removed without replacement.
  */
 class PlusData extends Struct
 {
@@ -28,13 +28,7 @@ class PlusData extends Struct
 
     protected string $paypalToken;
 
-    protected string $checkoutOrderUrl;
-
     protected string $handlePaymentUrl;
-
-    protected string $setPaymentRouteUrl;
-
-    protected string $contextSwitchUrl;
 
     protected string $isEnabledParameterName;
 
@@ -77,24 +71,9 @@ class PlusData extends Struct
         return $this->paypalToken;
     }
 
-    public function getCheckoutOrderUrl(): string
-    {
-        return $this->checkoutOrderUrl;
-    }
-
     public function getHandlePaymentUrl(): string
     {
         return $this->handlePaymentUrl;
-    }
-
-    public function getSetPaymentRouteUrl(): string
-    {
-        return $this->setPaymentRouteUrl;
-    }
-
-    public function getContextSwitchUrl(): string
-    {
-        return $this->contextSwitchUrl;
     }
 
     public function getIsEnabledParameterName(): string

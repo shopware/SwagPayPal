@@ -8,15 +8,13 @@
 namespace Swag\PayPal\Checkout\PUI\SalesChannel;
 
 use OpenApi\Annotations as OA;
-use Shopware\Core\Checkout\Cart\Exception\OrderTransactionNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\LoginRequired;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
+use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\StateMachine\Exception\IllegalTransitionException;
 use Shopware\Core\System\StateMachine\Exception\UnnecessaryTransitionException;
@@ -27,14 +25,15 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
+use Swag\PayPal\Util\Compatibility\Exception;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
 {
-    private EntityRepositoryInterface $orderTransactionRepository;
+    private EntityRepository $orderTransactionRepository;
 
     private OrderResource $orderResource;
 
@@ -42,8 +41,11 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
 
     private TransactionDataService $transactionDataService;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $orderTransactionRepository,
+        EntityRepository $orderTransactionRepository,
         OrderResource $orderResource,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         TransactionDataService $transactionDataService
@@ -61,18 +63,22 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
 
     /**
      * @Since("4.2.0")
+     *
      * @OA\Get(
      *     path="/store-api/paypal/pui/payment-instructions/{transactionId}",
      *     description="Tries to get payment instructions for PUI payments",
      *     operationId="getPUIPaymentInstructions",
      *     tags={"Store API", "PayPal"},
+     *
      *     @OA\Parameter(
      *         name="transactionId",
      *         description="Identifier of the order transaction to be fetched",
+     *
      *         @OA\Schema(type="string", pattern="^[0-9a-f]{32}$"),
      *         in="path",
      *         required=true
      *     ),
+     *
      *     @OA\Response(
      *         response="200",
      *         description="The payment instructions of the order"
@@ -82,11 +88,11 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
      * @Route(
      *     "/store-api/paypal/pui/payment-instructions/{transactionId}",
      *      name="store-api.paypal.pui.payment_instructions",
-     *      methods={"GET"}
+     *      methods={"GET"},
+     *      defaults={"_loginRequired"=true, "_loginRequiredAllowGuest"=true}
      * )
-     * @LoginRequired(allowGuest=true)
      *
-     * @throws OrderTransactionNotFoundException
+     * @throws ShopwareHttpException
      */
     public function getPaymentInstructions(string $transactionId, SalesChannelContext $salesChannelContext): PUIPaymentInstructionsResponse
     {
@@ -94,7 +100,7 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
         $transaction = $this->orderTransactionRepository->search(new Criteria([$transactionId]), $salesChannelContext->getContext())->first();
 
         if ($transaction === null) {
-            throw new OrderTransactionNotFoundException($transactionId);
+            throw Exception::orderTransactionNotFound($transactionId);
         }
 
         $customFields = $transaction->getCustomFields() ?? [];
@@ -108,7 +114,7 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
 
         $paypalOrderId = $customFields[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID] ?? null;
         if (!$paypalOrderId) {
-            throw new OrderTransactionNotFoundException($transactionId);
+            throw Exception::orderTransactionNotFound($transactionId);
         }
 
         $order = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannelId());

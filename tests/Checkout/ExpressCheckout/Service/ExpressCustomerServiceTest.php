@@ -12,17 +12,20 @@ use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 
+/**
+ * @internal
+ */
 class ExpressCustomerServiceTest extends TestCase
 {
     use CheckoutRouteTrait;
@@ -52,7 +55,7 @@ class ExpressCustomerServiceTest extends TestCase
         static::assertSame(GetOrderCapture::PAYER_ADDRESS_ADMIN_AREA_2, $address->getCity());
         $country = $address->getCountry();
         static::assertNotNull($country);
-        static::assertSame('USA', $country->getTranslation('name'));
+        static::assertSame('USA', $country->getIso3());
         $countryState = $address->getCountryState();
         static::assertNotNull($countryState);
         static::assertSame('New York', $countryState->getName());
@@ -116,12 +119,12 @@ class ExpressCustomerServiceTest extends TestCase
 
         $context = $this->getContainer()->get(SalesChannelContextService::class)->get(
             new SalesChannelContextServiceParameters(
-                Defaults::SALES_CHANNEL,
+                TestDefaults::SALES_CHANNEL,
                 $contextToken,
             )
         );
 
-        /** @var EntityRepositoryInterface $customerRepo */
+        /** @var EntityRepository $customerRepo */
         $customerRepo = $this->getContainer()->get('customer.repository');
 
         $customer = $context->getCustomer();
@@ -144,13 +147,13 @@ class ExpressCustomerServiceTest extends TestCase
             Settings::CLIENT_ID => 'testClientId',
             Settings::CLIENT_SECRET => 'testClientSecret',
         ]);
-        /** @var EntityRepositoryInterface $countryRepo */
+        /** @var EntityRepository $countryRepo */
         $countryRepo = $this->getContainer()->get('country.repository');
-        /** @var EntityRepositoryInterface $countryStateRepo */
+        /** @var EntityRepository $countryStateRepo */
         $countryStateRepo = $this->getContainer()->get('country_state.repository');
-        /** @var EntityRepositoryInterface $salutationRepo */
+        /** @var EntityRepository $salutationRepo */
         $salutationRepo = $this->getContainer()->get('salutation.repository');
-        /** @var EntityRepositoryInterface $customerRepo */
+        /** @var EntityRepository $customerRepo */
         $customerRepo = $this->getContainer()->get('customer.repository');
 
         return new ExpressCustomerService(

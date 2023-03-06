@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+/**
+ * @internal
+ */
 class CaptureAuthorizationResponseFixture
 {
     public static function get(): array

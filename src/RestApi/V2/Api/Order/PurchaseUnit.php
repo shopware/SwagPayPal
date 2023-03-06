@@ -52,6 +52,7 @@ class PurchaseUnit extends PayPalApiStruct
 
     /**
      * @var Item[]|null
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_item"}, nullable=true)
      */
     protected ?array $items = null;

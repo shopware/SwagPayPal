@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\Pos\Mock\Client\_fixtures;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 
+/**
+ * @internal
+ */
 class CreateProductFixture
 {
     /**

@@ -1,6 +1,6 @@
 import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
-import StoreApiClient from 'src/service/store-api-client.service';
+import HttpClient from 'src/service/http-client.service';
 import PageLoadingIndicatorUtil from 'src/utility/loading-indicator/page-loading-indicator.util';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
@@ -141,7 +141,7 @@ export default class SwagPaypalAbstractStandalone extends SwagPaypalAbstractButt
 
         DomAccess.querySelector(this.confirmOrderForm, this.options.confirmOrderButtonSelector).classList.add('d-none');
 
-        this._client = new StoreApiClient();
+        this._client = new HttpClient();
 
         this.createScript((paypal) => {
             this.render(paypal);

@@ -41,7 +41,7 @@ final class Token extends PosStruct
         //Calculate the expiration date manually
         $expirationDateTime = new \DateTime();
         $interval = \DateInterval::createFromDateString($newToken->getExpiresIn() . ' seconds');
-        $expirationDateTime = $expirationDateTime->add($interval);
+        $expirationDateTime = $expirationDateTime->add($interval ?: new \DateInterval('PT0S'));
 
         $newToken->setExpireDateTime($expirationDateTime);
 

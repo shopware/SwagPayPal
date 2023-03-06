@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Test\Pos\Api\Common\_fixtures\TestStruct;
 use Swag\PayPal\Test\RestApi\AssertArraySubsetTrait;
 
+/**
+ * @internal
+ */
 class PosStructTest extends TestCase
 {
     use AssertArraySubsetTrait;

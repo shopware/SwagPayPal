@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+/**
+ * @internal
+ */
 class VoidOrderResponseFixture
 {
     public const VOID_ID = 'O-5G515550L5450231X';

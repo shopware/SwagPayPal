@@ -16,7 +16,7 @@ use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 
-class MerchantIntegrationsService implements MerchantIntegrationsServiceInterface
+class MerchantIntegrationsService
 {
     private MerchantIntegrationsResourceInterface $merchantIntegrationsResource;
 
@@ -26,6 +26,9 @@ class MerchantIntegrationsService implements MerchantIntegrationsServiceInterfac
 
     private PayPalClientFactoryInterface $payPalClientFactory;
 
+    /**
+     * @internal
+     */
     public function __construct(
         MerchantIntegrationsResourceInterface $merchantIntegrationsResource,
         CredentialsUtilInterface $credentialsUtil,
@@ -36,24 +39,6 @@ class MerchantIntegrationsService implements MerchantIntegrationsServiceInterfac
         $this->credentialsUtil = $credentialsUtil;
         $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
         $this->payPalClientFactory = $payPalClientFactory;
-    }
-
-    /**
-     * @deprecated tag:v6.0.0 - will be removed, use $this->getMerchantInformation()->getCapabilities() instead
-     */
-    public function fetchMerchantIntegrations(Context $context, ?string $salesChannelId = null): array
-    {
-        try {
-            $integrations = $this->merchantIntegrationsResource->get(
-                $this->credentialsUtil->getMerchantPayerId($salesChannelId),
-                $salesChannelId,
-                $this->credentialsUtil->isSandbox($salesChannelId)
-            );
-        } catch (\Throwable $e) {
-            // just catch exceptions thrown in case of invalid credentials
-        }
-
-        return $this->enrichCapabilities($integrations ?? null, $context, $salesChannelId);
     }
 
     public function getMerchantInformation(Context $context, ?string $salesChannelId = null): MerchantInformationStruct

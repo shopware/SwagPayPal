@@ -20,6 +20,9 @@ use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class PayPalPaymentMethodControllerTest extends TestCase
 {
     public function testSetPayPalPaymentMethodAsSalesChannelDefault(): void

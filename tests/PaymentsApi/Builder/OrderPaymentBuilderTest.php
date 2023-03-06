@@ -9,9 +9,9 @@ namespace Swag\PayPal\Test\PaymentsApi\Builder;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Exception\CurrencyNotFoundException;
 use Swag\PayPal\RestApi\V1\Api\Payment\ApplicationContext;
 use Swag\PayPal\Setting\Settings;
@@ -23,6 +23,9 @@ use Swag\PayPal\Test\Mock\Repositories\SalesChannelRepoMock;
 use Swag\PayPal\Test\Mock\Setting\Service\SystemConfigServiceMock;
 use Swag\PayPal\Test\Webhook\WebhookServiceTest;
 
+/**
+ * @internal
+ */
 class OrderPaymentBuilderTest extends TestCase
 {
     use PaymentTransactionTrait;
@@ -233,7 +236,7 @@ class OrderPaymentBuilderTest extends TestCase
     {
         $paymentBuilder = $this->createPaymentBuilder($settings);
 
-        $context = Context::createDefaultContext(new SalesChannelApiSource(Defaults::SALES_CHANNEL));
+        $context = Context::createDefaultContext(new SalesChannelApiSource(TestDefaults::SALES_CHANNEL));
         $salesChannelContext = Generator::createSalesChannelContext($context);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
 

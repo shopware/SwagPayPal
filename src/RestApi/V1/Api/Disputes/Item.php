@@ -61,6 +61,7 @@ class Item extends PayPalApiStruct
 
     /**
      * @var DisputedTransaction[]|null
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_disputed_transaction"}, nullable=true)
      */
     protected ?array $disputedTransactions = null;
@@ -97,12 +98,14 @@ class Item extends PayPalApiStruct
 
     /**
      * @var Adjudication[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_adjudication"})
      */
     protected array $adjudications;
 
     /**
      * @var MoneyMovement[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_money_movement"})
      */
     protected array $moneyMovements;
@@ -119,6 +122,7 @@ class Item extends PayPalApiStruct
 
     /**
      * @var Message[]|null
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_message"}, nullable=true)
      */
     protected ?array $messages = null;
@@ -130,6 +134,7 @@ class Item extends PayPalApiStruct
 
     /**
      * @var Evidence[]|null
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence"}, nullable=true)
      */
     protected ?array $evidences = null;
@@ -161,18 +166,21 @@ class Item extends PayPalApiStruct
 
     /**
      * @var PartnerAction[]|null
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_partner_action"}, nullable=true)
      */
     protected ?array $partnerActions = null;
 
     /**
      * @var SupportingInfo[]|null
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_supporting_info"}, nullable=true)
      */
     protected ?array $supportingInfo = null;
 
     /**
      * @var Link[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
     protected array $links;

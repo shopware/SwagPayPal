@@ -37,6 +37,9 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
 
     private CartPriceService $cartPriceService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         CartService $cartService,
         LocaleCodeProvider $localeCodeProvider,
@@ -90,17 +93,16 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
             'currency' => $salesChannelContext->getCurrency()->getIsoCode(),
             'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $salesChannelId)),
             'addProductToCart' => $addProductToCart,
-            'contextSwitchUrl' => $this->router->generate('store-api.switch-context'),
+            'contextSwitchUrl' => $this->router->generate('frontend.paypal.express.prepare_cart'),
             'payPalPaymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
-            'createOrderUrl' => $this->router->generate('store-api.paypal.express.create_order'),
-            'deleteCartUrl' => $this->router->generate('store-api.checkout.cart.delete'),
-            'prepareCheckoutUrl' => $this->router->generate('store-api.paypal.express.prepare_checkout'),
+            'createOrderUrl' => $this->router->generate('frontend.paypal.express.create_order'),
+            'prepareCheckoutUrl' => $this->router->generate('frontend.paypal.express.prepare_checkout'),
             'checkoutConfirmUrl' => $this->router->generate(
                 'frontend.checkout.confirm.page',
                 [PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID => true],
                 RouterInterface::ABSOLUTE_URL
             ),
-            'addErrorUrl' => $this->router->generate('store-api.paypal.error'),
+            'addErrorUrl' => $this->router->generate('frontend.paypal.error'),
             'cancelRedirectUrl' => $this->router->generate($addProductToCart ? 'frontend.checkout.cart.page' : 'frontend.checkout.register.page'),
             'disablePayLater' => true,
         ]);

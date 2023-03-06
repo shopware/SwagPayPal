@@ -1,6 +1,7 @@
 {% block swag_paypal_payment_details_v1 %}
     <div class="swag-paypal-payment-details_v1">
-        <sw-card :title="$tc('swag-paypal-payment.paymentDetails.cardTitle')">
+        <sw-card position-identifier="swag-paypal-payment-details-v1"
+                 :title="$tc('swag-paypal-payment.paymentDetails.cardTitle')">
             <template #grid>
 
                 {% block swag_paypal_payment_actions_section %}
@@ -87,7 +88,8 @@
         </sw-card>
 
         {% block swag_paypal_payment_transaction_history_card %}
-            <sw-card :title="$tc('swag-paypal-payment.transactionHistory.cardTitle')">
+            <sw-card position-identifier="swag-paypal-payment-transaction-history-v1"
+                     :title="$tc('swag-paypal-payment.transactionHistory.cardTitle')">
                 <template #grid>
 
                     {% block swag_paypal_payment_transaction_history_grid %}

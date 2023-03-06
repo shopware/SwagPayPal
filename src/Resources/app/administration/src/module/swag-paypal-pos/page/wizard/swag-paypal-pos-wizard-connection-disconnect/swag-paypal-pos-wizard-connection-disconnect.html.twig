@@ -7,7 +7,7 @@
                 {% block swag_paypal_pos_wizard_connection_disconnect_icon %}
                     <div class="swag-paypal-pos-wizard-connection-disconnect__icon-wrapper">
                         <sw-icon class="swag-paypal-pos-wizard-connection-disconnect__icon"
-                                 name="default-badge-warning"
+                                 name="regular-exclamation-triangle"
                                  size="80px"
                                  color="#de294c">
                         </sw-icon>
@@ -28,6 +28,7 @@
 
                 {% block swag_paypal_pos_wizard_connection_disconnect_user %}
                     <sw-card class="swag-paypal-pos-wizard-connection-disconnect__user"
+                             position-identifier="swag-paypal-pos-wizard-connection-disconnect-user"
                              :isLoading="isFetchingInformation">
                         <sw-container class="swag-paypal-pos-wizard-connection-disconnect__user-container"
                                       columns="30px auto 150px"

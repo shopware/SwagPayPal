@@ -8,8 +8,6 @@
 namespace Swag\PayPal\Pos\Setting;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\Routing\Annotation\Acl;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Swag\PayPal\Pos\Exception\ExistingPosAccountException;
@@ -26,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class SettingsController extends AbstractController
 {
@@ -40,6 +38,9 @@ class SettingsController extends AbstractController
 
     private ProductCountService $productCountService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ApiCredentialService $apiService,
         InformationFetchService $informationFetchService,
@@ -56,12 +57,13 @@ class SettingsController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/validate-api-credentials",
      *     name="api.action.paypal.pos.validate.api.credentials",
-     *     methods={"POST"}
+     *     methods={"POST"},
+     *     defaults={"_acl": {"sales_channel.editor"}}
      * )
-     * @Acl({"sales_channel.editor"})
      */
     public function validateApiCredentials(Request $request, Context $context): JsonResponse
     {
@@ -85,12 +87,13 @@ class SettingsController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/paypal/pos/fetch-information",
      *     name="api.paypal.pos.fetch.information",
-     *     methods={"POST"}
+     *     methods={"POST"},
+     *     defaults={"_acl": {"sales_channel.viewer"}}
      * )
-     * @Acl({"sales_channel.viewer"})
      */
     public function fetchInformation(Request $request, Context $context): JsonResponse
     {
@@ -108,12 +111,13 @@ class SettingsController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/clone-product-visibility",
      *     name="api.action.paypal.pos.clone.product.visibility",
-     *     methods={"POST"}
+     *     methods={"POST"},
+     *     defaults={"_acl": {"sales_channel.editor"}}
      * )
-     * @Acl({"sales_channel.editor"})
      */
     public function cloneProductVisibility(Request $request, Context $context): Response
     {
@@ -127,12 +131,13 @@ class SettingsController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/paypal/pos/product-count",
      *     name="api.paypal.pos.product.count",
-     *     methods={"GET"}
+     *     methods={"GET"},
+     *     defaults={"_acl": {"sales_channel.viewer"}}
      * )
-     * @Acl({"sales_channel.viewer"})
      */
     public function getProductCounts(Request $request, Context $context): JsonResponse
     {

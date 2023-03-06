@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\Setting\Service;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
@@ -24,6 +24,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\PayPalClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 
+/**
+ * @internal
+ */
 class MerchantIntegrationsServiceTest extends TestCase
 {
     use ServicesTrait;
@@ -31,9 +34,6 @@ class MerchantIntegrationsServiceTest extends TestCase
     public function testFetchMerchantIntegrations(): void
     {
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
-        static::assertCount(\count($this->getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods()), $integrations);
 
         $integrations = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext())->getCapabilities();
         static::assertCount(\count($this->getContainer()->get(PaymentMethodDataRegistry::class)->getPaymentMethods()), $integrations);
@@ -45,9 +45,6 @@ class MerchantIntegrationsServiceTest extends TestCase
 
         $merchantIntegrationService = $this->createMerchantIntegrationService();
 
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
-        static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $integrations[$paymentMethodId]);
-
         $integrations = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext())->getCapabilities();
         static::assertSame(AbstractMethodData::CAPABILITY_ACTIVE, $integrations[$paymentMethodId]);
     }
@@ -57,9 +54,6 @@ class MerchantIntegrationsServiceTest extends TestCase
         $paymentMethodId = $this->getPaymentIdByHandler(PUIHandler::class);
 
         $merchantIntegrationService = $this->createMerchantIntegrationService();
-
-        $integrations = $merchantIntegrationService->fetchMerchantIntegrations(Context::createDefaultContext());
-        static::assertSame(AbstractMethodData::CAPABILITY_INELIGIBLE, $integrations[$paymentMethodId]);
 
         $integrations = $merchantIntegrationService->getMerchantInformation(Context::createDefaultContext())->getCapabilities();
         static::assertSame(AbstractMethodData::CAPABILITY_INELIGIBLE, $integrations[$paymentMethodId]);
@@ -87,7 +81,7 @@ class MerchantIntegrationsServiceTest extends TestCase
 
     private function getPaymentIdByHandler(string $handlerIdentifier): string
     {
-        /** @var EntityRepositoryInterface $paymentRepository */
+        /** @var EntityRepository $paymentRepository */
         $paymentRepository = $this->getContainer()->get('payment_method.repository');
 
         $criteria = new Criteria();

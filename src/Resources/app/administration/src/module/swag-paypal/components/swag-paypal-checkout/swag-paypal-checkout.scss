@@ -9,7 +9,7 @@
 
     &__header {
         font-weight: $font-weight-bold;
-        font-size: $font-size-large;
+        font-size: $font-size-m;
         line-height: 42px;
     }
 
@@ -20,7 +20,7 @@
     &__button-onboarding-sandbox {
         margin-left: 12px;
         font-weight: $font-weight-semi-bold;
-        font-size: $font-size-small;
+        font-size: $font-size-xs;
     }
 
     &__sandbox-toggle {
@@ -39,12 +39,12 @@
     &__merchant-information {
         line-height: 24px;
         font-weight: $font-weight-semi-bold;
-        font-size: $font-size-small;
+        font-size: $font-size-xs;
         margin-bottom: 8px;
     }
 
     &__payment-method-headline {
-        font-size: $font-size-large;
+        font-size: $font-size-m;
         margin: 32px 0 8px;
     }
 

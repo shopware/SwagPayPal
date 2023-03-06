@@ -9,10 +9,10 @@ namespace Swag\PayPal\Test\Webhook;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Api\Webhook;
 use Swag\PayPal\RestApi\V1\Resource\WebhookResource;
 use Swag\PayPal\Setting\Settings;
@@ -27,6 +27,9 @@ use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @internal
+ */
 class WebhookServiceTest extends TestCase
 {
     use ServicesTrait;
@@ -38,7 +41,7 @@ class WebhookServiceTest extends TestCase
     public const ALREADY_EXISTING_WEBHOOK_ID = 'alreadyExistingTestWebhookId';
     public const ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN = 'testWebhookExecuteToken';
 
-    private EntityRepositoryInterface $orderTransactionRepo;
+    private EntityRepository $orderTransactionRepo;
 
     protected function setUp(): void
     {
@@ -89,7 +92,7 @@ class WebhookServiceTest extends TestCase
             Settings::WEBHOOK_EXECUTE_TOKEN => self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN,
         ]);
 
-        $result = $this->createWebhookService($settings)->deregisterWebhook(Defaults::SALES_CHANNEL);
+        $result = $this->createWebhookService($settings)->deregisterWebhook(TestDefaults::SALES_CHANNEL);
 
         static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
         static::assertSame(self::ALREADY_EXISTING_WEBHOOK_ID, $settings->get(Settings::WEBHOOK_ID));
@@ -113,7 +116,7 @@ class WebhookServiceTest extends TestCase
     public function testDeregisterWebhookWithoutExistingId(): void
     {
         $settings = $this->createDefaultSystemConfig();
-        $result = $this->createWebhookService($settings)->deregisterWebhook(Defaults::SALES_CHANNEL);
+        $result = $this->createWebhookService($settings)->deregisterWebhook(TestDefaults::SALES_CHANNEL);
 
         static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
     }
@@ -151,7 +154,7 @@ class WebhookServiceTest extends TestCase
             Settings::WEBHOOK_EXECUTE_TOKEN => self::ALREADY_EXISTING_WEBHOOK_EXECUTE_TOKEN,
         ]);
 
-        $result = $this->createWebhookService($settings)->registerWebhook(Defaults::SALES_CHANNEL);
+        $result = $this->createWebhookService($settings)->registerWebhook(TestDefaults::SALES_CHANNEL);
 
         static::assertSame(WebhookService::WEBHOOK_CREATED, $result);
     }
@@ -166,8 +169,8 @@ class WebhookServiceTest extends TestCase
         $result = $this->createWebhookService($settings)->deregisterWebhook(null);
 
         static::assertSame(WebhookService::NO_WEBHOOK_ACTION_REQUIRED, $result);
-        static::assertNull($settings->get(Settings::WEBHOOK_ID, Defaults::SALES_CHANNEL));
-        static::assertNull($settings->get(Settings::WEBHOOK_EXECUTE_TOKEN, Defaults::SALES_CHANNEL));
+        static::assertNull($settings->get(Settings::WEBHOOK_ID, TestDefaults::SALES_CHANNEL));
+        static::assertNull($settings->get(Settings::WEBHOOK_EXECUTE_TOKEN, TestDefaults::SALES_CHANNEL));
     }
 
     private function createWebhookService(SystemConfigService $systemConfigService): WebhookServiceInterface

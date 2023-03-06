@@ -13,6 +13,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
 
+/**
+ * @internal
+ */
 class PosInventoryRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition

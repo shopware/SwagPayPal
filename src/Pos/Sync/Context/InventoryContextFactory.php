@@ -7,8 +7,7 @@
 
 namespace Swag\PayPal\Pos\Sync\Context;
 
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Exception\EntityRepositoryNotFoundException;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
@@ -27,19 +26,22 @@ class InventoryContextFactory
 
     private UuidConverter $uuidConverter;
 
-    private EntityRepositoryInterface $inventoryRepository;
+    private EntityRepository $inventoryRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         InventoryResource $inventoryResource,
         UuidConverter $uuidConverter,
-        EntityRepositoryInterface $inventoryRepository
+        EntityRepository $inventoryRepository
     ) {
         $this->inventoryResource = $inventoryResource;
         $this->uuidConverter = $uuidConverter;
         $this->inventoryRepository = $inventoryRepository;
     }
 
-    public function getContext(SalesChannelEntity $salesChannel, Context $context): InventoryContext
+    public function getContext(SalesChannelEntity $salesChannel): InventoryContext
     {
         /** @var PosSalesChannelEntity $posSalesChannel */
         $posSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
@@ -50,17 +52,16 @@ class InventoryContextFactory
             $locations['STORE']
         );
 
-        return new InventoryContext(
-            $this->uuidConverter,
-            $salesChannel,
+        $context = new InventoryContext(
             $locations['STORE'],
             $locations['SUPPLIER'],
             $locations['BIN'],
             $locations['SOLD'],
             $remoteInventory,
-            new PosSalesChannelInventoryCollection(),
-            $context
         );
+        $context->setSalesChannel($salesChannel);
+
+        return $context;
     }
 
     public function filterContext(InventoryContext $inventoryContext, array $productIds, array $parentIds): InventoryContext

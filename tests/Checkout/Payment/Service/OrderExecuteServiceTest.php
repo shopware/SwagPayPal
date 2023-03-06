@@ -20,6 +20,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapturedOrderCapture;
 
+/**
+ * @internal
+ */
 class OrderExecuteServiceTest extends TestCase
 {
     public function testOrderGetOnMissingPayments(): void

@@ -9,12 +9,15 @@ namespace Swag\PayPal\Test\Setting\Service;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Defaults;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 
+/**
+ * @internal
+ */
 class SettingsValidatorServiceTest extends TestCase
 {
     use ServicesTrait;
@@ -29,18 +32,18 @@ class SettingsValidatorServiceTest extends TestCase
         // That means able to assert after this statement, everything is fine.
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());
         $validationService->validate();
-        $validationService->validate(Defaults::SALES_CHANNEL);
+        $validationService->validate(TestDefaults::SALES_CHANNEL);
         static::assertTrue(true);
     }
 
     public function testValidateWithValidLiveDistinctSettings(): void
     {
         $systemSettings = $this->createSystemConfigServiceMock();
-        $systemSettings->set(Settings::CLIENT_ID, 'SomeClientId', Defaults::SALES_CHANNEL);
-        $systemSettings->set(Settings::CLIENT_SECRET, 'SomeClientSecret', Defaults::SALES_CHANNEL);
+        $systemSettings->set(Settings::CLIENT_ID, 'SomeClientId', TestDefaults::SALES_CHANNEL);
+        $systemSettings->set(Settings::CLIENT_SECRET, 'SomeClientSecret', TestDefaults::SALES_CHANNEL);
 
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());
-        $validationService->validate(Defaults::SALES_CHANNEL);
+        $validationService->validate(TestDefaults::SALES_CHANNEL);
         $this->expectException(PayPalSettingsInvalidException::class);
         $validationService->validate();
     }
@@ -56,7 +59,7 @@ class SettingsValidatorServiceTest extends TestCase
         // That means able to assert after this statement, everything is fine.
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());
         $validationService->validate();
-        $validationService->validate(Defaults::SALES_CHANNEL);
+        $validationService->validate(TestDefaults::SALES_CHANNEL);
         static::assertTrue(true);
     }
 

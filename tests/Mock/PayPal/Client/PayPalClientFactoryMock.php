@@ -21,6 +21,9 @@ use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Mock\CacheMock;
 
+/**
+ * @internal
+ */
 class PayPalClientFactoryMock implements PayPalClientFactoryInterface
 {
     private ?PayPalClientMock $client = null;

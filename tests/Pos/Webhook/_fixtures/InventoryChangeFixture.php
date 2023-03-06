@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\Pos\Webhook\_fixtures;
 
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
+/**
+ * @internal
+ */
 class InventoryChangeFixture
 {
     public const TIMESTAMP = '2020-08-12T06:42:09.938Z';

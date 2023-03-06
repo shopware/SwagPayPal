@@ -32,6 +32,9 @@ use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Util\PriceFormatter;
 
+/**
+ * @internal
+ */
 class OrderFromCartBuilderTest extends TestCase
 {
     use CartTrait;

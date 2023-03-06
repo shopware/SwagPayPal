@@ -9,12 +9,12 @@ namespace SwagPayPalTestPosUtil;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Resource\SubscriptionResource;
 use Swag\PayPal\Pos\Util\PosSalesChannelTrait;
@@ -37,6 +37,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Router;
 
+/**
+ * @internal
+ */
 class WebhookControllerTest extends TestCase
 {
     use SalesChannelTrait;
@@ -86,7 +89,7 @@ class WebhookControllerTest extends TestCase
         $request->headers->add(['x-izettle-signature' => Uuid::randomHex()]);
 
         $this->expectException(UnauthorizedHttpException::class);
-        $this->webhookController->executeWebhook(Defaults::SALES_CHANNEL, $request, $this->context);
+        $this->webhookController->executeWebhook(TestDefaults::SALES_CHANNEL, $request, $this->context);
     }
 
     public function testExecuteNoSignature(): void
@@ -94,7 +97,7 @@ class WebhookControllerTest extends TestCase
         $request = new Request([], InventoryChangeFixture::getWebhookFixture());
 
         $this->expectException(UnauthorizedHttpException::class);
-        $this->webhookController->executeWebhook(Defaults::SALES_CHANNEL, $request, $this->context);
+        $this->webhookController->executeWebhook(TestDefaults::SALES_CHANNEL, $request, $this->context);
     }
 
     public function testExecuteUnknownEventName(): void
@@ -103,14 +106,14 @@ class WebhookControllerTest extends TestCase
         $request->headers->add(['x-izettle-signature' => InventoryChangeFixture::getSignature()]);
 
         $this->expectException(BadRequestHttpException::class);
-        $this->webhookController->executeWebhook(Defaults::SALES_CHANNEL, $request, $this->context);
+        $this->webhookController->executeWebhook(TestDefaults::SALES_CHANNEL, $request, $this->context);
     }
 
     public function testExecuteTestMessage(): void
     {
         $request = new Request([], TestMessageFixture::getWebhookFixture());
 
-        $response = $this->webhookController->executeWebhook(Defaults::SALES_CHANNEL, $request, $this->context);
+        $response = $this->webhookController->executeWebhook(TestDefaults::SALES_CHANNEL, $request, $this->context);
         static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
     }
 
@@ -131,28 +134,28 @@ class WebhookControllerTest extends TestCase
         $request->headers->add(['x-izettle-signature' => InventoryChangeFixture::getSignature()]);
 
         $this->expectException(WebhookNotRegisteredException::class);
-        $this->webhookController->executeWebhook(Defaults::SALES_CHANNEL, $request, $this->context);
+        $this->webhookController->executeWebhook(TestDefaults::SALES_CHANNEL, $request, $this->context);
     }
 
     public function testRegister(): void
     {
         $this->getPosSalesChannel($this->salesChannel)->setWebhookSigningKey(null);
 
-        $this->webhookController->registerWebhook(Defaults::SALES_CHANNEL, $this->context);
+        $this->webhookController->registerWebhook(TestDefaults::SALES_CHANNEL, $this->context);
 
         static::assertSame(WebhookRegisterFixture::WEBHOOK_SIGNING_KEY, $this->getPosSalesChannel($this->salesChannel)->getWebhookSigningKey());
     }
 
     public function testRegisterExisting(): void
     {
-        $this->webhookController->registerWebhook(Defaults::SALES_CHANNEL, $this->context);
+        $this->webhookController->registerWebhook(TestDefaults::SALES_CHANNEL, $this->context);
 
         static::assertTrue(WebhookUpdateFixture::$sent);
     }
 
     public function testUnregister(): void
     {
-        $this->webhookController->unregisterWebhook(Defaults::SALES_CHANNEL, $this->context);
+        $this->webhookController->unregisterWebhook(TestDefaults::SALES_CHANNEL, $this->context);
 
         static::assertTrue(WebhookUnregisterFixture::$sent);
         static::assertNull($this->getPosSalesChannel($this->salesChannel)->getWebhookSigningKey());

@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 
+/**
+ * @internal
+ */
 class GetCapture
 {
     public const ID = '6F970540CL012725M';

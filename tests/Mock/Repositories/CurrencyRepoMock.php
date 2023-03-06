@@ -15,6 +15,9 @@ use Shopware\Core\System\Currency\CurrencyCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Test\PaymentsApi\Builder\OrderPaymentBuilderTest;
 
+/**
+ * @internal
+ */
 class CurrencyRepoMock extends AbstractRepoMock
 {
     public const INVALID_CURRENCY_ID = 'invalid-currency-id';

@@ -33,6 +33,9 @@ class ProductConverter
 
     private MetadataGenerator $metadataGenerator;
 
+    /**
+     * @internal
+     */
     public function __construct(
         UuidConverter $uuidConverter,
         CategoryConverter $categoryConverter,

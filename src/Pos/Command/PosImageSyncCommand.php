@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Command;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\ImageTask;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,23 +17,19 @@ class PosImageSyncCommand extends AbstractPosCommand
 {
     protected static $defaultName = 'swag:paypal:pos:sync:images';
 
+    protected static $defaultDescription = 'Sync only images to Zettle';
+
     private ImageTask $imageTask;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         ImageTask $imageTask
     ) {
         parent::__construct($salesChannelRepository);
         $this->imageTask = $imageTask;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure(): void
-    {
-        parent::configure();
-        $this->setDescription('Sync only images to Zettle');
     }
 
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void

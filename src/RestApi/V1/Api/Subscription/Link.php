@@ -11,6 +11,7 @@ use Swag\PayPal\RestApi\V1\Api\Common\Link as CommonLink;
 
 /**
  * @codeCoverageIgnore
+ *
  * @experimental
  *
  * This class is experimental and not officially supported.

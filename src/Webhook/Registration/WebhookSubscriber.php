@@ -15,6 +15,9 @@ use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @internal
+ */
 class WebhookSubscriber implements EventSubscriberInterface
 {
     private LoggerInterface $logger;

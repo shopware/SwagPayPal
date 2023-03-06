@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Util\Lifecycle\State;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
@@ -18,10 +18,15 @@ class PaymentMethodStateService
 {
     private PaymentMethodDataRegistry $methodDataRegistry;
 
-    private EntityRepositoryInterface $paymentMethodRepository;
+    private EntityRepository $paymentMethodRepository;
 
-    public function __construct(PaymentMethodDataRegistry $methodDataRegistry, EntityRepositoryInterface $paymentMethodRepository)
-    {
+    /**
+     * @internal
+     */
+    public function __construct(
+        PaymentMethodDataRegistry $methodDataRegistry,
+        EntityRepository $paymentMethodRepository
+    ) {
         $this->methodDataRegistry = $methodDataRegistry;
         $this->paymentMethodRepository = $paymentMethodRepository;
     }

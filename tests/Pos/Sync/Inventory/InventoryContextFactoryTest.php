@@ -9,9 +9,9 @@ namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Inventory\Location;
 use Swag\PayPal\Pos\Api\Inventory\Status;
 use Swag\PayPal\Pos\Api\Inventory\Status\Variant;
@@ -20,6 +20,9 @@ use Swag\PayPal\Pos\Resource\InventoryResource;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Test\Pos\Mock\Repositories\PosInventoryRepoMock;
 
+/**
+ * @internal
+ */
 class InventoryContextFactoryTest extends TestCase
 {
     use InventoryTrait;
@@ -52,9 +55,7 @@ class InventoryContextFactoryTest extends TestCase
 
     public function testLocations(): void
     {
-        $context = Context::createDefaultContext();
-
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
+        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
 
         static::assertSame($this->locations['STORE'], $inventoryContext->getStoreUuid());
         static::assertSame($this->locations['BIN'], $inventoryContext->getBinUuid());
@@ -64,8 +65,6 @@ class InventoryContextFactoryTest extends TestCase
 
     public function testPosInventoryVariant(): void
     {
-        $context = Context::createDefaultContext();
-
         $uuidConverter = new UuidConverter();
         $status = new Status();
         $product = $this->getVariantProduct();
@@ -80,15 +79,13 @@ class InventoryContextFactoryTest extends TestCase
 
         $this->inventoryResource->method('getInventory')->willReturn($status);
 
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
+        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
 
         static::assertSame($product->getAvailableStock(), $inventoryContext->getSingleRemoteInventory($product));
     }
 
     public function testPosInventorySingle(): void
     {
-        $context = Context::createDefaultContext();
-
         $uuidConverter = new UuidConverter();
         $status = new Status();
         $product = $this->getSingleProduct();
@@ -103,15 +100,13 @@ class InventoryContextFactoryTest extends TestCase
 
         $this->inventoryResource->method('getInventory')->willReturn($status);
 
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
+        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
 
         static::assertSame($product->getAvailableStock(), $inventoryContext->getSingleRemoteInventory($product));
     }
 
     public function testPosInventoryUntracked(): void
     {
-        $context = Context::createDefaultContext();
-
         $uuidConverter = new UuidConverter();
         $status = new Status();
         $product = $this->getVariantProduct();
@@ -125,21 +120,19 @@ class InventoryContextFactoryTest extends TestCase
 
         $this->inventoryResource->method('getInventory')->willReturn($status);
 
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
+        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
 
         static::assertNull($inventoryContext->getSingleRemoteInventory($product));
     }
 
     public function testLocalInventory(): void
     {
-        $context = Context::createDefaultContext();
-
         $singleProduct = $this->getSingleProduct();
-        $this->inventoryRepository->createMockEntity($singleProduct, Defaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
+        $this->inventoryRepository->createMockEntity($singleProduct, TestDefaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
         $variantProduct = $this->getVariantProduct();
-        $this->inventoryRepository->createMockEntity($variantProduct, Defaults::SALES_CHANNEL, $variantProduct->getAvailableStock() + 2);
+        $this->inventoryRepository->createMockEntity($variantProduct, TestDefaults::SALES_CHANNEL, $variantProduct->getAvailableStock() + 2);
 
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
+        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
         $this->inventoryContextFactory->updateLocal($inventoryContext);
 
         static::assertSame($singleProduct->getAvailableStock(), $inventoryContext->getLocalInventory($singleProduct));
@@ -148,24 +141,20 @@ class InventoryContextFactoryTest extends TestCase
 
     public function testLocalInventoryEmpty(): void
     {
-        $context = Context::createDefaultContext();
-
         $singleProduct = $this->getSingleProduct();
 
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
+        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
 
         static::assertNull($inventoryContext->getLocalInventory($singleProduct));
     }
 
     public function testLocalInventoryRefresh(): void
     {
-        $context = Context::createDefaultContext();
-
         $singleProduct = $this->getSingleProduct();
-        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel, $context);
+        $inventoryContext = $this->inventoryContextFactory->getContext($this->salesChannel);
         static::assertNull($inventoryContext->getLocalInventory($singleProduct));
 
-        $this->inventoryRepository->createMockEntity($singleProduct, Defaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
+        $this->inventoryRepository->createMockEntity($singleProduct, TestDefaults::SALES_CHANNEL, (int) $singleProduct->getAvailableStock());
         $this->inventoryContextFactory->updateLocal($inventoryContext);
         static::assertSame($singleProduct->getAvailableStock(), $inventoryContext->getLocalInventory($singleProduct));
     }

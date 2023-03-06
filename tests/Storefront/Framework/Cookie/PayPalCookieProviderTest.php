@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Storefront\Framework\Cookie\CookieProviderInterface;
 use Swag\PayPal\Storefront\Framework\Cookie\PayPalCookieProvider;
 
+/**
+ * @internal
+ */
 class PayPalCookieProviderTest extends TestCase
 {
     public function testGetCookieGroupsWithEmptyOriginalCookiesReturnsOriginalCookies(): void

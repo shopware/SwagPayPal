@@ -29,6 +29,7 @@ class Evidence extends PayPalApiStruct
 
     /**
      * @var Document[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_document"})
      */
     protected array $documents;

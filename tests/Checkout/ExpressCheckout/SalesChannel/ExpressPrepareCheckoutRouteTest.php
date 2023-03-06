@@ -13,14 +13,14 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Checkout\Customer\SalesChannel\RegisterRoute;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressPrepareCheckoutRoute;
 use Swag\PayPal\Checkout\ExpressCheckout\Service\ExpressCustomerService;
@@ -31,6 +31,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCapture;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class ExpressPrepareCheckoutRouteTest extends TestCase
 {
     use CheckoutRouteTrait;
@@ -45,7 +48,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         $this->getContainer()->get(SystemConfigService::class)->set(
             'core.loginRegistration.requireDataProtectionCheckbox',
             true,
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
 
         $request = new Request([], [
@@ -72,7 +75,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         static::assertSame(GetOrderCapture::PAYER_ADDRESS_ADMIN_AREA_2, $address->getCity());
         $country = $address->getCountry();
         static::assertNotNull($country);
-        static::assertSame('USA', $country->getTranslation('name'));
+        static::assertSame('USA', $country->getIso3());
         $countryState = $address->getCountryState();
         static::assertNotNull($countryState);
         static::assertSame('New York', $countryState->getName());
@@ -111,13 +114,13 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
         if ($cartService === null) {
             $cartService = $this->getContainer()->get(CartService::class);
         }
-        /** @var EntityRepositoryInterface $countryRepo */
+        /** @var EntityRepository $countryRepo */
         $countryRepo = $this->getContainer()->get('country.repository');
-        /** @var EntityRepositoryInterface $countryStateRepo */
+        /** @var EntityRepository $countryStateRepo */
         $countryStateRepo = $this->getContainer()->get('country_state.repository');
-        /** @var EntityRepositoryInterface $salutationRepo */
+        /** @var EntityRepository $salutationRepo */
         $salutationRepo = $this->getContainer()->get('salutation.repository');
-        /** @var EntityRepositoryInterface $customerRepo */
+        /** @var EntityRepository $customerRepo */
         $customerRepo = $this->getContainer()->get('customer.repository');
 
         $orderResource = $this->createOrderResource($settings);
@@ -142,7 +145,7 @@ class ExpressPrepareCheckoutRouteTest extends TestCase
 
     private function assertCustomer(Context $context): CustomerEntity
     {
-        /** @var EntityRepositoryInterface $customerRepo */
+        /** @var EntityRepository $customerRepo */
         $customerRepo = $this->getContainer()->get('customer.repository');
 
         $criteria = (new Criteria())

@@ -14,12 +14,13 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Core\Test\TestDefaults;
+use Swag\PayPal\Test\Helper\Compatibility\Generator;
 use Swag\PayPal\Util\Availability\AvailabilityService;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
@@ -41,6 +42,9 @@ use Swag\PayPal\Util\Lifecycle\Method\SofortMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 
+/**
+ * @internal
+ */
 class AvailabilityServiceTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
@@ -135,7 +139,7 @@ class AvailabilityServiceTest extends TestCase
 
     private function createCart(float $amount = 5.0): Cart
     {
-        $cart = new Cart('test', Uuid::randomHex());
+        $cart = Generator::createCart(Uuid::randomHex());
         $cart->setPrice(new CartPrice($amount, $amount, 0, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_GROSS));
 
         return $cart;
@@ -145,7 +149,7 @@ class AvailabilityServiceTest extends TestCase
     {
         return $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
-            Defaults::SALES_CHANNEL,
+            TestDefaults::SALES_CHANNEL,
             []
         );
     }

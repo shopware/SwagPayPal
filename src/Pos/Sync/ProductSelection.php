@@ -15,7 +15,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
@@ -23,14 +23,17 @@ use Swag\PayPal\SwagPayPal;
 
 class ProductSelection
 {
-    private SalesChannelRepositoryInterface $productRepository;
+    private SalesChannelRepository $productRepository;
 
     private ProductStreamBuilderInterface $productStreamBuilder;
 
     private AbstractSalesChannelContextFactory $salesChannelContextFactory;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        SalesChannelRepositoryInterface $productRepository,
+        SalesChannelRepository $productRepository,
         ProductStreamBuilderInterface $productStreamBuilder,
         AbstractSalesChannelContextFactory $salesChannelContextFactory
     ) {
@@ -125,10 +128,7 @@ class ProductSelection
             ->addAssociation('categories')
             ->addAssociation('cover.media')
             ->addAssociation('prices')
-            ->addAssociation('translation')
-            ->addAssociation('configuratorSettings.option.translation')
-            ->addAssociation('configuratorSettings.option.group.translation')
-            ->addAssociation('options.translation')
-            ->addAssociation('options.group.translation');
+            ->addAssociation('configuratorSettings.option.group')
+            ->addAssociation('options.group');
     }
 }

@@ -22,6 +22,9 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
 use Swag\PayPal\Util\PriceFormatter;
 
+/**
+ * @internal
+ */
 class AmountProviderTest extends TestCase
 {
     use IntegrationTestBehaviour;

@@ -24,6 +24,13 @@ class PosSalesChannelRunEntity extends Entity
 
     protected string $status = PosSalesChannelRunDefinition::STATUS_IN_PROGRESS;
 
+    protected int $stepIndex = 0;
+
+    /**
+     * @var string[]
+     */
+    protected array $steps;
+
     protected int $messageCount = 0;
 
     public function getSalesChannelId(): string
@@ -84,5 +91,31 @@ class PosSalesChannelRunEntity extends Entity
     public function setMessageCount(int $messageCount): void
     {
         $this->messageCount = $messageCount;
+    }
+
+    public function getStepIndex(): int
+    {
+        return $this->stepIndex;
+    }
+
+    public function setStepIndex(int $stepIndex): void
+    {
+        $this->stepIndex = $stepIndex;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getSteps(): array
+    {
+        return $this->steps;
+    }
+
+    /**
+     * @param string[] $steps
+     */
+    public function setSteps(array $steps): void
+    {
+        $this->steps = $steps;
     }
 }

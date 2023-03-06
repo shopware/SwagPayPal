@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Command;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Administration\LogCleaner;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,23 +17,19 @@ class PosLogCleanupCommand extends AbstractPosCommand
 {
     protected static $defaultName = 'swag:paypal:pos:log:cleanup';
 
+    protected static $defaultDescription = 'Cleanup Zettle sync log';
+
     private LogCleaner $logCleaner;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         LogCleaner $logCleaner
     ) {
         parent::__construct($salesChannelRepository);
         $this->logCleaner = $logCleaner;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure(): void
-    {
-        parent::configure();
-        $this->setDescription('Cleanup Zettle sync log');
     }
 
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void

@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Setting\Exception\PayPalInvalidApiCredentialsException;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class PayPalInvalidApiCredentialsExceptionTest extends TestCase
 {
     public function testGetStatusCode(): void

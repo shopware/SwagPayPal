@@ -8,12 +8,15 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Api\Refund;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\RestApi\V1\Resource\CaptureResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 
+/**
+ * @internal
+ */
 class CaptureResourceTest extends TestCase
 {
     use ServicesTrait;
@@ -22,7 +25,7 @@ class CaptureResourceTest extends TestCase
     {
         $captureResponse = $this->createCaptureResource()->get(
             'captureId',
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
 
         $capture = \json_encode($captureResponse);
@@ -36,7 +39,7 @@ class CaptureResourceTest extends TestCase
     public function testRefund(): void
     {
         $refund = new Refund();
-        $refundResponse = $this->createCaptureResource()->refund('refundId', $refund, Defaults::SALES_CHANNEL);
+        $refundResponse = $this->createCaptureResource()->refund('refundId', $refund, TestDefaults::SALES_CHANNEL);
 
         static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $refundResponse->getState());
     }

@@ -11,10 +11,9 @@ use Doctrine\DBAL\Connection;
 use Shopware\Core\Checkout\Order\Exception\PaymentMethodNotAvailableException;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodEntity;
-use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Exception\SalesChannelNotFoundException;
@@ -22,8 +21,13 @@ use Shopware\Core\System\Country\CountryEntity;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\Test\TestDefaults;
+use Swag\PayPal\Test\Helper\Compatibility\Generator;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
+/**
+ * @internal
+ */
 trait CheckoutRouteTrait
 {
     use ServicesTrait;
@@ -44,7 +48,6 @@ trait CheckoutRouteTrait
         $salesChannelContext = Generator::createSalesChannelContext(
             null,
             null,
-            null,
             $this->getSalesChannel($paymentMethod),
             $this->getCurrency(),
             null,
@@ -63,13 +66,13 @@ trait CheckoutRouteTrait
     {
         $context = Context::createDefaultContext();
         $container = $this->getContainer();
-        /** @var EntityRepositoryInterface $salesChannelRepo */
+        /** @var EntityRepository $salesChannelRepo */
         $salesChannelRepo = $container->get('sales_channel.repository');
         /** @var Connection $connection */
         $connection = $container->get(Connection::class);
         $paymentMethodUtil = new PaymentMethodUtil($connection, $salesChannelRepo);
 
-        $salesChannelId = Defaults::SALES_CHANNEL;
+        $salesChannelId = TestDefaults::SALES_CHANNEL;
         $countryId = $this->getValidCountryId();
         $this->cleanUpDomain();
 
@@ -123,7 +126,7 @@ trait CheckoutRouteTrait
 
     private function getCurrency(): CurrencyEntity
     {
-        /** @var EntityRepositoryInterface $currencyRepo */
+        /** @var EntityRepository $currencyRepo */
         $currencyRepo = $this->getContainer()->get('currency.repository');
 
         return $currencyRepo->search(new Criteria(), Context::createDefaultContext())->first();
@@ -131,7 +134,7 @@ trait CheckoutRouteTrait
 
     private function getShippingMethod(): ShippingMethodEntity
     {
-        /** @var EntityRepositoryInterface $shippingMethodRepo */
+        /** @var EntityRepository $shippingMethodRepo */
         $shippingMethodRepo = $this->getContainer()->get('shipping_method.repository');
 
         return $shippingMethodRepo->search(new Criteria(), Context::createDefaultContext())->first();
@@ -139,7 +142,7 @@ trait CheckoutRouteTrait
 
     private function getCountry(): CountryEntity
     {
-        /** @var EntityRepositoryInterface $shippingMethodRepo */
+        /** @var EntityRepository $shippingMethodRepo */
         $shippingMethodRepo = $this->getContainer()->get('country.repository');
 
         return $shippingMethodRepo->search(new Criteria([$this->getValidCountryId()]), Context::createDefaultContext())->first();
@@ -147,7 +150,7 @@ trait CheckoutRouteTrait
 
     private function cleanUpDomain(): void
     {
-        /** @var EntityRepositoryInterface $salesChannelDomainRepo */
+        /** @var EntityRepository $salesChannelDomainRepo */
         $salesChannelDomainRepo = $this->getContainer()->get('sales_channel_domain.repository');
 
         $criteria = new Criteria();

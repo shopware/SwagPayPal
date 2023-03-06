@@ -8,26 +8,29 @@
 namespace Swag\PayPal\Pos\Run\Administration;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 
 class SyncResetter
 {
-    private EntityRepositoryInterface $posProductRepository;
+    private EntityRepository $posProductRepository;
 
-    private EntityRepositoryInterface $posInventoryRepository;
+    private EntityRepository $posInventoryRepository;
 
-    private EntityRepositoryInterface $posMediaRepository;
+    private EntityRepository $posMediaRepository;
 
-    private EntityRepositoryInterface $posRunRepository;
+    private EntityRepository $posRunRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $posProductRepository,
-        EntityRepositoryInterface $posInventoryRepository,
-        EntityRepositoryInterface $posMediaRepository,
-        EntityRepositoryInterface $posRunRepository
+        EntityRepository $posProductRepository,
+        EntityRepository $posInventoryRepository,
+        EntityRepository $posMediaRepository,
+        EntityRepository $posRunRepository
     ) {
         $this->posProductRepository = $posProductRepository;
         $this->posInventoryRepository = $posInventoryRepository;
@@ -49,7 +52,7 @@ class SyncResetter
 
                 return ['salesChannelId' => $id['sales_channel_id'], 'productId' => $id['product_id']];
             }, $ids);
-            $this->posProductRepository->delete($ids, $context);
+            $this->posProductRepository->delete(\array_filter($ids), $context);
         }
 
         $ids = $this->posInventoryRepository->searchIds($criteria, $context)->getIds();
@@ -61,7 +64,7 @@ class SyncResetter
 
                 return ['salesChannelId' => $id['sales_channel_id'], 'productId' => $id['product_id']];
             }, $ids);
-            $this->posInventoryRepository->delete($ids, $context);
+            $this->posInventoryRepository->delete(\array_filter($ids), $context);
         }
 
         $ids = $this->posMediaRepository->searchIds($criteria, $context)->getIds();
@@ -73,7 +76,7 @@ class SyncResetter
 
                 return ['salesChannelId' => $id['sales_channel_id'], 'mediaId' => $id['media_id']];
             }, $ids);
-            $this->posMediaRepository->delete($ids, $context);
+            $this->posMediaRepository->delete(\array_filter($ids), $context);
         }
 
         $ids = $this->posRunRepository->searchIds($criteria, $context)->getIds();
@@ -85,7 +88,7 @@ class SyncResetter
 
                 return ['id' => $id];
             }, $ids);
-            $this->posRunRepository->delete($ids, $context);
+            $this->posRunRepository->delete(\array_filter($ids), $context);
         }
     }
 }

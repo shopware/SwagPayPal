@@ -10,7 +10,6 @@ namespace Swag\PayPal\Checkout\SalesChannel;
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
@@ -21,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class ErrorRoute extends AbstractErrorRoute
 {
@@ -31,8 +30,14 @@ class ErrorRoute extends AbstractErrorRoute
 
     private LoggerInterface $logger;
 
-    public function __construct(RequestStack $requestStack, TranslatorInterface $translator, LoggerInterface $logger)
-    {
+    /**
+     * @internal
+     */
+    public function __construct(
+        RequestStack $requestStack,
+        TranslatorInterface $translator,
+        LoggerInterface $logger
+    ) {
         $this->requestStack = $requestStack;
         $this->translator = $translator;
         $this->logger = $logger;
@@ -45,13 +50,17 @@ class ErrorRoute extends AbstractErrorRoute
 
     /**
      * @Since("3.3.0")
+     *
      * @OA\Post(
      *     path="/store-api/paypal/error",
      *     description="Adds an error message to a flashbag and logs the error",
      *     operationId="addErrorMessage",
      *     tags={"Store API", "PayPal"},
+     *
      *     @OA\RequestBody(
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(
      *                 property="error",
      *                 type="string",
@@ -65,6 +74,7 @@ class ErrorRoute extends AbstractErrorRoute
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *          response="204"
      *     )
@@ -74,8 +84,10 @@ class ErrorRoute extends AbstractErrorRoute
      *     "/store-api/paypal/error",
      *     name="store-api.paypal.error",
      *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true}
+     *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false}
      * )
+     *
+     * @deprecated tag:v7.0.0 - will be removed, since this is basically a storefront command, use PayPalController::addErrorMessage instead
      */
     public function addErrorMessage(Request $request): Response
     {

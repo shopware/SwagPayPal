@@ -49,13 +49,4 @@ Component.override('sw-order-detail', {
             immediate: true,
         },
     },
-
-    methods: {
-        /**
-         * @deprecated tag:v6.0.0 - Will be removed without replacement
-         */
-        setIsPayPalPayment(paymentMethodId) {
-            this.isPayPalPayment = !!paymentMethodId;
-        },
-    },
 });

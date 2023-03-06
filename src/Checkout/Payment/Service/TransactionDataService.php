@@ -8,16 +8,19 @@
 namespace Swag\PayPal\Checkout\Payment\Service;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\SwagPayPal;
 
 class TransactionDataService
 {
-    private EntityRepositoryInterface $orderTransactionRepository;
+    private EntityRepository $orderTransactionRepository;
 
-    public function __construct(EntityRepositoryInterface $orderTransactionRepository)
+    /**
+     * @internal
+     */
+    public function __construct(EntityRepository $orderTransactionRepository)
     {
         $this->orderTransactionRepository = $orderTransactionRepository;
     }

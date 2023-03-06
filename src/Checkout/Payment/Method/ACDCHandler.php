@@ -24,6 +24,9 @@ class ACDCHandler extends AbstractSyncAPMHandler
 {
     private ACDCValidatorInterface $acdcValidator;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
         OrderTransactionStateHandler $orderTransactionStateHandler,

@@ -24,8 +24,14 @@ class PUIPaymentInstructionDataService
 
     private RouterInterface $router;
 
-    public function __construct(PaymentMethodDataRegistry $paymentMethodDataRegistry, AbstractPUIPaymentInstructionsRoute $puiPaymentInstructionsRoute, RouterInterface $router)
-    {
+    /**
+     * @internal
+     */
+    public function __construct(
+        PaymentMethodDataRegistry $paymentMethodDataRegistry,
+        AbstractPUIPaymentInstructionsRoute $puiPaymentInstructionsRoute,
+        RouterInterface $router
+    ) {
         $this->paymentMethodDataRegistry = $paymentMethodDataRegistry;
         $this->puiPaymentInstructionsRoute = $puiPaymentInstructionsRoute;
         $this->router = $router;
@@ -44,7 +50,7 @@ class PUIPaymentInstructionDataService
 
         $data = new PUIPaymentInstructionData();
         $data->assign([
-            'pollingUrl' => $this->router->generate('store-api.paypal.pui.payment_instructions', ['transactionId' => $orderTransaction->getId()]),
+            'pollingUrl' => $this->router->generate('frontend.paypal.pui.payment_instructions', ['transactionId' => $orderTransaction->getId()]),
             'finishUrl' => $this->router->generate('frontend.checkout.finish.page', ['orderId' => $orderTransaction->getOrderId()]),
             'errorUrl' => $this->router->generate('frontend.account.edit-order.page', [
                 'orderId' => $orderTransaction->getOrderId(),

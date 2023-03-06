@@ -18,6 +18,9 @@ use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 
+/**
+ * @internal
+ */
 class OrderFromOrderBuilderTest extends TestCase
 {
     use PaymentTransactionTrait;

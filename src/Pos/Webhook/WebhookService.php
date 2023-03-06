@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Webhook;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -39,16 +39,19 @@ class WebhookService
 
     private WebhookRegistry $webhookRegistry;
 
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
     private SystemConfigService $systemConfig;
 
     private UuidConverter $uuidConverter;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SubscriptionResource $subscriptionResource,
         WebhookRegistry $webhookRegistry,
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         SystemConfigService $systemConfig,
         UuidConverter $uuidConverter,
         RouterInterface $router

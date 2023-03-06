@@ -15,6 +15,9 @@ use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Webhook\Handler\CaptureCompleted;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
+/**
+ * @internal
+ */
 class CaptureCompletedTest extends AbstractWebhookHandlerTestCase
 {
     public function testGetEventType(): void

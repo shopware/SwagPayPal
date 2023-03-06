@@ -14,6 +14,9 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\Pos\Api\Service\Converter\PriceConverter;
 
+/**
+ * @internal
+ */
 class PriceConverterTest extends TestCase
 {
     public function dataProviderPriceConversion(): array

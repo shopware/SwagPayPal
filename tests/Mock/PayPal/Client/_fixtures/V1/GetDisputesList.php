@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+/**
+ * @internal
+ */
 class GetDisputesList
 {
     public const LAST_ID = 'PP-D-33305';

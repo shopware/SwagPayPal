@@ -9,9 +9,10 @@ namespace Swag\PayPal\Pos\MessageQueue\Message\Sync;
 
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits\OffsetTrait;
+use Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits\SalesChannelContextAwareMessageInterface;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits\SalesChannelContextTrait;
 
-class ProductSingleSyncMessage extends AbstractSyncMessage
+class ProductSingleSyncMessage extends AbstractSyncMessage implements SalesChannelContextAwareMessageInterface
 {
     use OffsetTrait;
     use SalesChannelContextTrait;

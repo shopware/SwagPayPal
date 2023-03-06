@@ -35,6 +35,9 @@ use Swag\PayPal\Test\Pos\Mock\Client\_fixtures\WebhookUpdateFixture;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 
+/**
+ * @internal
+ */
 class GuzzleClientMock implements ClientInterface
 {
     public const GENERAL_CLIENT_EXCEPTION_MESSAGE = 'generalClientExceptionMessage';

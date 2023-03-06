@@ -19,14 +19,16 @@ use Shopware\Core\Checkout\Order\OrderStates;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Pricing\CashRoundingConfig;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Core\System\StateMachine\StateMachineRegistry;
+use Shopware\Core\System\StateMachine\Loader\InitialStateIdLoader;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
 use Swag\PayPal\Checkout\PUI\Exception\MissingPaymentInstructionsException;
 use Swag\PayPal\Checkout\PUI\Exception\PaymentInstructionsNotReadyException;
@@ -45,6 +47,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefundedOrderCapture;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
 
+/**
+ * @internal
+ */
 class PUIPaymentInstructionsRouteTest extends TestCase
 {
     use ServicesTrait;
@@ -103,7 +108,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
         $this->assertOrderTransactionState(OrderTransactionStates::STATE_PAID, $transactionId, Context::createDefaultContext());
         static::assertSame(GetOrderPUICompleted::BANK_IBAN, $response->getPaymentInstructions()->getDepositBankDetails()->getIban());
 
-        /** @var EntityRepositoryInterface $orderTransactionRepository */
+        /** @var EntityRepository $orderTransactionRepository */
         $orderTransactionRepository = $this->getContainer()->get('order_transaction.repository');
         /** @var OrderTransactionEntity|null $transaction */
         $transaction = $orderTransactionRepository->search(new Criteria([$transactionId]), Context::createDefaultContext())->first();
@@ -147,7 +152,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
 
     private function getRoute(): AbstractPUIPaymentInstructionsRoute
     {
-        /** @var EntityRepositoryInterface $orderTransactionRepository */
+        /** @var EntityRepository $orderTransactionRepository */
         $orderTransactionRepository = $this->getContainer()->get('order_transaction.repository');
         $orderResource = new OrderResource($this->createPayPalClientFactory());
 
@@ -164,9 +169,9 @@ class PUIPaymentInstructionsRouteTest extends TestCase
         $transactionId = Uuid::randomHex();
         $addressId = Uuid::randomHex();
 
-        $stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);
-        $orderStateId = $stateMachineRegistry->getInitialState(OrderStates::STATE_MACHINE, Context::createDefaultContext())->getId();
-        $transactionStateId = $stateMachineRegistry->getInitialState(OrderTransactionStates::STATE_MACHINE, Context::createDefaultContext())->getId();
+        $initialStateIdLoader = $this->getContainer()->get(InitialStateIdLoader::class);
+        $orderStateId = $initialStateIdLoader->get(OrderStates::STATE_MACHINE);
+        $transactionStateId = $initialStateIdLoader->get(OrderTransactionStates::STATE_MACHINE);
 
         $paymentMethodDataRegistry = $this->getContainer()->get(PaymentMethodDataRegistry::class);
         $paymentMethodId = $paymentMethodDataRegistry->getEntityIdFromData($paymentMethodDataRegistry->getPaymentMethod(PUIMethodData::class), Context::createDefaultContext());
@@ -191,7 +196,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
                     'guest' => true,
                     'group' => ['name' => 'testse2323'],
                     'defaultPaymentMethodId' => $paymentMethodId,
-                    'salesChannelId' => Defaults::SALES_CHANNEL,
+                    'salesChannelId' => TestDefaults::SALES_CHANNEL,
                     'defaultBillingAddressId' => $addressId,
                     'defaultShippingAddressId' => $addressId,
                     'addresses' => [
@@ -212,7 +217,7 @@ class PUIPaymentInstructionsRouteTest extends TestCase
             'paymentMethodId' => $paymentMethodId,
             'currencyId' => Defaults::CURRENCY,
             'currencyFactor' => 1.0,
-            'salesChannelId' => Defaults::SALES_CHANNEL,
+            'salesChannelId' => TestDefaults::SALES_CHANNEL,
             'billingAddressId' => $addressId,
             'addresses' => [
                 [
@@ -243,9 +248,11 @@ class PUIPaymentInstructionsRouteTest extends TestCase
             ],
             'context' => '{}',
             'payload' => '{}',
+            'itemRounding' => (new CashRoundingConfig(2, 0.01, true))->jsonSerialize(),
+            'totalRounding' => (new CashRoundingConfig(2, 0.01, true))->jsonSerialize(),
         ];
 
-        /** @var EntityRepositoryInterface $orderRepository */
+        /** @var EntityRepository $orderRepository */
         $orderRepository = $this->getContainer()->get('order.repository');
         $orderRepository->upsert([$order], Context::createDefaultContext());
 
@@ -259,6 +266,6 @@ class PUIPaymentInstructionsRouteTest extends TestCase
         /** @var SalesChannelContextServiceInterface $contextService */
         $contextService = $this->getContainer()->get(SalesChannelContextService::class);
 
-        return $contextService->get(new SalesChannelContextServiceParameters(Defaults::SALES_CHANNEL, Uuid::randomHex()));
+        return $contextService->get(new SalesChannelContextServiceParameters(TestDefaults::SALES_CHANNEL, Uuid::randomHex()));
     }
 }

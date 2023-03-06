@@ -17,6 +17,9 @@ class MerchantIntegrationsResource implements MerchantIntegrationsResourceInterf
 {
     private PayPalClientFactoryInterface $payPalClientFactory;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PayPalClientFactoryInterface $payPalClientFactory
     ) {

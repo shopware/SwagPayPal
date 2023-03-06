@@ -9,11 +9,9 @@ namespace Swag\PayPal\Webhook;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Routing\Annotation\Acl;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SystemConfig\SystemConfigCollection;
 use Swag\PayPal\RestApi\PayPalApiStruct;
@@ -30,7 +28,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class WebhookController extends AbstractController
 {
@@ -38,12 +36,15 @@ class WebhookController extends AbstractController
 
     private WebhookServiceInterface $webhookService;
 
-    private EntityRepositoryInterface $systemConfigRepository;
+    private EntityRepository $systemConfigRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         LoggerInterface $logger,
         WebhookServiceInterface $webhookService,
-        EntityRepositoryInterface $systemConfigRepository
+        EntityRepository $systemConfigRepository
     ) {
         $this->logger = $logger;
         $this->webhookService = $webhookService;
@@ -52,12 +53,13 @@ class WebhookController extends AbstractController
 
     /**
      * @Since("0.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/webhook/register/{salesChannelId}",
      *     name="api.action.paypal.webhook.register",
-     *     methods={"POST"}
+     *     methods={"POST"},
+     *     defaults={"_acl": {"swag_paypal.editor"}}
      * )
-     * @Acl({"swag_paypal.editor"})
      */
     public function registerWebhook(string $salesChannelId): JsonResponse
     {
@@ -68,12 +70,13 @@ class WebhookController extends AbstractController
 
     /**
      * @Since("1.9.3")
+     *
      * @Route(
      *     "/api/_action/paypal/webhook/deregister/{salesChannelId}",
      *     name="api.action.paypal.webhook.deregister",
-     *     methods={"DELETE"}
+     *     methods={"DELETE"},
+     *     defaults={"_acl": {"swag_paypal.editor"}}
      * )
-     * @Acl({"swag_paypal.editor"})
      */
     public function deregisterWebhook(string $salesChannelId): JsonResponse
     {
@@ -84,6 +87,7 @@ class WebhookController extends AbstractController
 
     /**
      * @Since("0.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/webhook/execute",
      *     name="api.action.paypal.webhook.execute",

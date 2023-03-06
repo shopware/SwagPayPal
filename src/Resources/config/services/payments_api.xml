@@ -37,7 +37,6 @@
         </service>
 
         <service id="Swag\PayPal\PaymentsApi\Patch\OrderNumberPatchBuilder"/>
-        <service id="Swag\PayPal\PaymentsApi\Patch\CustomTransactionPatchBuilder"/>
         <service id="Swag\PayPal\PaymentsApi\Patch\PayerInfoPatchBuilder"/>
         <service id="Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder"/>
         <service id="Swag\PayPal\PaymentsApi\Patch\TransactionPatchBuilder">

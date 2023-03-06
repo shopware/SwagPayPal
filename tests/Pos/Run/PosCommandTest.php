@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Run;
 
+use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Pos\Command\AbstractPosCommand;
@@ -18,6 +19,7 @@ use Swag\PayPal\Pos\Command\PosSyncCommand;
 use Swag\PayPal\Pos\Command\PosSyncResetCommand;
 use Swag\PayPal\Pos\MessageQueue\Handler\SyncManagerHandler;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Run\Administration\LogCleaner;
 use Swag\PayPal\Pos\Run\Administration\SyncResetter;
 use Swag\PayPal\Pos\Run\RunService;
@@ -30,6 +32,9 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 
+/**
+ * @internal
+ */
 class PosCommandTest extends TestCase
 {
     private const INVALID_CHANNEL_ID = 'notASalesChannelId';
@@ -60,10 +65,11 @@ class PosCommandTest extends TestCase
         $this->logCleaner = $this->createMock(LogCleaner::class);
         $this->syncResetter = $this->createMock(SyncResetter::class);
 
-        $productTask = new ProductTask($this->messageBus, $this->runService);
-        $imageTask = new ImageTask($this->messageBus, $this->runService);
-        $inventoryTask = new InventoryTask($this->messageBus, $this->runService);
-        $completeTask = new CompleteTask($this->messageBus, $this->runService);
+        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class));
+        $productTask = new ProductTask($messageDispatcher, $this->runService);
+        $imageTask = new ImageTask($messageDispatcher, $this->runService);
+        $inventoryTask = new InventoryTask($messageDispatcher, $this->runService);
+        $completeTask = new CompleteTask($messageDispatcher, $this->runService);
 
         $this->commands = [
             PosSyncCommand::class => new PosSyncCommand($this->salesChannelRepoMock, $completeTask),

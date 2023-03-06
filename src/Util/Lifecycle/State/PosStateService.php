@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Util\Lifecycle\State;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
@@ -18,19 +18,22 @@ use Swag\PayPal\SwagPayPal;
 
 class PosStateService
 {
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
-    private EntityRepositoryInterface $salesChannelTypeRepository;
+    private EntityRepository $salesChannelTypeRepository;
 
-    private EntityRepositoryInterface $shippingRepository;
+    private EntityRepository $shippingRepository;
 
-    private EntityRepositoryInterface $paymentMethodRepository;
+    private EntityRepository $paymentMethodRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $salesChannelRepository,
-        EntityRepositoryInterface $salesChannelTypeRepository,
-        EntityRepositoryInterface $shippingRepository,
-        EntityRepositoryInterface $paymentMethodRepository
+        EntityRepository $salesChannelRepository,
+        EntityRepository $salesChannelTypeRepository,
+        EntityRepository $shippingRepository,
+        EntityRepository $paymentMethodRepository
     ) {
         $this->salesChannelRepository = $salesChannelRepository;
         $this->salesChannelTypeRepository = $salesChannelTypeRepository;
@@ -43,7 +46,7 @@ class PosStateService
         $this->salesChannelTypeRepository->upsert([
             [
                 'id' => SwagPayPal::SALES_CHANNEL_TYPE_POS,
-                'iconName' => 'default-money-cash',
+                'iconName' => 'regular-money-bill',
                 'screenshotUrls' => [
                     'swagpaypal/static/img/paypal-pos-sales-channel-type-description-family.png',
                     'swagpaypal/static/img/paypal-pos-sales-channel-type-description-kit.png',

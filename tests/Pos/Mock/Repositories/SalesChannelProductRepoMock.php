@@ -39,12 +39,17 @@ use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\Framework\Event\NestedEventCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\Currency\CurrencyEntity;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\Tax\TaxEntity;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
-class SalesChannelProductRepoMock implements SalesChannelRepositoryInterface
+/**
+ * @phpstan-ignore-next-line ignore finality of repository in tests
+ *
+ * @internal
+ */
+class SalesChannelProductRepoMock extends SalesChannelRepository
 {
     use RepoTrait;
 

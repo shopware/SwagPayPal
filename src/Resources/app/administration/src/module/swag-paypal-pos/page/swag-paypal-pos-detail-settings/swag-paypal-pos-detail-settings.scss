@@ -3,7 +3,7 @@
 .swag-paypal-pos-detail-settings {
 
     .swag-paypal-pos-detail-settings__description-text {
-        font-size: $font-size-small;
+        font-size: $font-size-xs;
         margin: 20px 0;
     }
 
@@ -12,7 +12,7 @@
     }
 
     .swag-paypal-pos-detail-settings__options-description-text {
-        font-size: $font-size-small;
+        font-size: $font-size-xs;
         margin: 8px 0 0;
     }
 
@@ -55,7 +55,7 @@
 .swag-paypal-pos-detail-settings__reset-sync-modal,
 .sw-sales-channel-detail-settings__delete-modal {
     .sw-modal__body {
-        font-size: $font-size-small;
+        font-size: $font-size-xs;
     }
 
     p {

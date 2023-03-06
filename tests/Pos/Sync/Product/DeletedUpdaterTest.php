@@ -19,6 +19,9 @@ use Swag\PayPal\Pos\Resource\ProductResource;
 use Swag\PayPal\Pos\Sync\Product\DeletedUpdater;
 use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 
+/**
+ * @internal
+ */
 class DeletedUpdaterTest extends AbstractProductSyncTest
 {
     private ProductContextMock $productContext;

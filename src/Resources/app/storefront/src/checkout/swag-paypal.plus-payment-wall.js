@@ -1,11 +1,11 @@
 import Plugin from 'src/plugin-system/plugin.class';
 import DomAccess from 'src/helper/dom-access.helper';
 import FormSerializeUtil from 'src/utility/form/form-serialize.util';
-import StoreApiClient from 'src/service/store-api-client.service';
+import HttpClient from 'src/service/http-client.service';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
 /**
- * @deprecated tag:v6.0.0 - Will be removed without replacement.
+ * @deprecated tag:v7.0.0 - Will be removed without replacement.
  */
 export default class SwagPayPalPlusPaymentWall extends Plugin {
     static options = {
@@ -121,32 +121,11 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
         showPuiOnSandbox: true,
 
         /**
-         * URL for creating the Shopware order
-         *
-         * @type string
-         */
-        checkoutOrderUrl: '',
-
-        /**
-         * URL for paying the Shopware order
+         * URL for creating / changing the Shopware order and starting the payment process
          *
          * @type string
          */
         handlePaymentUrl: '',
-
-        /**
-         * URL for setting the payment method to the order
-         *
-         * @type string
-         */
-        setPaymentRouteUrl: '',
-
-        /**
-         * URL for updating the context, in this case setting the right language
-         *
-         * @type string
-         */
-        contextSwitchUrl: '',
 
         /**
          * Request parameter name which identifies a PLUS checkout
@@ -168,10 +147,17 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
          * @type string|null
          */
         orderId: null,
+
+        /**
+         * Selector of the order confirm form
+         *
+         * @type string
+         */
+        confirmOrderFormSelector: '#confirmOrderForm',
     };
 
     init() {
-        const confirmOrderForm = DomAccess.querySelector(document, '#confirmOrderForm');
+        const confirmOrderForm = DomAccess.querySelector(document, this.options.confirmOrderFormSelector);
         confirmOrderForm.addEventListener('submit', this.onConfirmCheckout.bind(this));
         this.createPaymentWall();
     }
@@ -208,45 +194,17 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
             return;
         }
 
-        this._client = new StoreApiClient();
+        this._client = new HttpClient();
         const formData = FormSerializeUtil.serialize(form);
 
         ElementLoadingIndicatorUtil.create(document.body);
 
         const orderId = this.options.orderId;
-        this._client.patch(this.options.contextSwitchUrl, JSON.stringify({ languageId: this.options.languageId }), () => {
-            if (orderId !== null) {
-                formData.set('orderId', orderId);
-
-                this._client.post(this.options.setPaymentRouteUrl, formData, this.afterSetPayment.bind(this));
-
-                return;
-            }
-
-            this._client.post(this.options.checkoutOrderUrl, formData, this.afterCreateOrder.bind(this));
-        });
-    }
-
-    /**
-     * @param {String} response
-     */
-    afterCreateOrder(response) {
-        const order = JSON.parse(response);
-        const params = {
-            orderId: order.id,
-            paypalPaymentId: this.options.paypalPaymentId,
-            paypalToken: this.options.paypalToken,
-        };
-        params[this.options.isEnabledParameterName] = true;
-
-        this._client.post(this.options.handlePaymentUrl, JSON.stringify(params), this.afterPayOrder.bind(this));
-    }
-
-    afterSetPayment(response) {
-        const responseObject = JSON.parse(response);
-        if (responseObject.success === true) {
-            this.afterCreateOrder(JSON.stringify({ id: this.options.orderId }));
+        if (orderId !== null) {
+            formData.set('orderId', orderId);
         }
+
+        this._client.post(this.options.handlePaymentUrl, formData, this.afterPayOrder.bind(this));
     }
 
     afterPayOrder(response) {
@@ -254,6 +212,8 @@ export default class SwagPayPalPlusPaymentWall extends Plugin {
 
         if (data.redirectUrl === 'plusPatched') {
             this.paypal.apps.PPP.doCheckout();
+        } else {
+            window.location.href = data.redirectUrl;
         }
     }
 

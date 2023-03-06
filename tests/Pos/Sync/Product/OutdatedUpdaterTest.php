@@ -22,6 +22,9 @@ use Swag\PayPal\Pos\Sync\Product\OutdatedUpdater;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
 use Swag\PayPal\Test\Pos\Mock\ProductContextMock;
 
+/**
+ * @internal
+ */
 class OutdatedUpdaterTest extends AbstractProductSyncTest
 {
     private ProductContextMock $productContext;

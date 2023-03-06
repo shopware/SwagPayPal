@@ -12,7 +12,7 @@ use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 
 class InventorySyncMessage extends AbstractSyncMessage
 {
-    private InventoryContext $inventoryContext;
+    protected InventoryContext $inventoryContext;
 
     public function getInventoryContext(): InventoryContext
     {

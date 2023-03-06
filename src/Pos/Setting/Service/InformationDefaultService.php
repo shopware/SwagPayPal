@@ -9,7 +9,7 @@ namespace Swag\PayPal\Pos\Setting\Service;
 
 use Shopware\Core\Content\Category\Exception\CategoryNotFoundException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
@@ -25,28 +25,31 @@ class InformationDefaultService
     public const POS_PAYMENT_METHOD_ID = 'abab06a108014a37b5f49c9a4d8943db';
     public const POS_SHIPPING_METHOD_ID = '405481da0a20443e94ce45f52b1af776';
 
-    private EntityRepositoryInterface $customerGroupRepository;
+    private EntityRepository $customerGroupRepository;
 
-    private EntityRepositoryInterface $categoryRepository;
+    private EntityRepository $categoryRepository;
 
     private PluginIdProvider $pluginIdProvider;
 
-    private EntityRepositoryInterface $paymentMethodRepository;
+    private EntityRepository $paymentMethodRepository;
 
-    private EntityRepositoryInterface $ruleRepository;
+    private EntityRepository $ruleRepository;
 
-    private EntityRepositoryInterface $shippingMethodRepository;
+    private EntityRepository $shippingMethodRepository;
 
-    private EntityRepositoryInterface $deliveryTimeRepository;
+    private EntityRepository $deliveryTimeRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $customerGroupRepository,
-        EntityRepositoryInterface $categoryRepository,
+        EntityRepository $customerGroupRepository,
+        EntityRepository $categoryRepository,
         PluginIdProvider $pluginIdProvider,
-        EntityRepositoryInterface $paymentMethodRepository,
-        EntityRepositoryInterface $ruleRepository,
-        EntityRepositoryInterface $deliveryTimeRepository,
-        EntityRepositoryInterface $shippingMethodRepository
+        EntityRepository $paymentMethodRepository,
+        EntityRepository $ruleRepository,
+        EntityRepository $deliveryTimeRepository,
+        EntityRepository $shippingMethodRepository
     ) {
         $this->customerGroupRepository = $customerGroupRepository;
         $this->categoryRepository = $categoryRepository;

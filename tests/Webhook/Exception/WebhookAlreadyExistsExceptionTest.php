@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Webhook\Exception\WebhookAlreadyExistsException;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class WebhookAlreadyExistsExceptionTest extends TestCase
 {
     public function testGetStatusCode(): void

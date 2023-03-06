@@ -52,6 +52,7 @@
         {% elseif transaction.customFields[customFieldKey] %}
             {% set payPalPuiPaymentInstruction = transaction.customFields[customFieldKey] %}
         {% endif %}
+        {% set isBootstrap5 = feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
 
         {% block page_checkout_finish_data_paypal_pui_instructions %}
             {% if payPalPuiPaymentInstruction %}
@@ -123,7 +124,7 @@
                     {% block page_checkout_finish_data_paypal_pui_instructions_content %}
                         <div class="row justify-content-center no-gutters">
                             <div class="col-sm-10 col-md-8">
-                                <dl class="row text-sm-left swag-paypal-checkout-finish-pui-instructions-content">
+                                <dl class="row {{ isBootstrap5 ? 'text-sm-start' : 'text-sm-left' }} swag-paypal-checkout-finish-pui-instructions-content">
 
                                     {% block page_checkout_finish_data_paypal_pui_instructions_content_bankname %}
                                         <dt class="instruction-title">{{ "paypal.payUponInvoice.instructions.table.bank"|trans }}</dt>

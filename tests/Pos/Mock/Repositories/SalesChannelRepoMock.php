@@ -21,6 +21,9 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
+/**
+ * @internal
+ */
 class SalesChannelRepoMock extends AbstractRepoMock
 {
     private SalesChannelEntity $mockEntity;

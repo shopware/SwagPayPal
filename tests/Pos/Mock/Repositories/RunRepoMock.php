@@ -15,6 +15,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 
+/**
+ * @internal
+ */
 class RunRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition

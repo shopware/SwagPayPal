@@ -36,10 +36,10 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
 
     private LoggerInterface $logger;
 
-    private ?OrderResource $orderResource;
+    private OrderResource $orderResource;
 
     /**
-     * @deprecated tag:v6.0.0 - orderResource will be required
+     * @internal
      */
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
@@ -48,7 +48,7 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
         OrderPatchService $orderPatchService,
         TransactionDataService $transactionDataService,
         LoggerInterface $logger,
-        ?OrderResource $orderResource = null
+        OrderResource $orderResource
     ) {
         $this->settingsValidationService = $settingsValidationService;
         $this->orderTransactionStateHandler = $orderTransactionStateHandler;
@@ -71,11 +71,7 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
         try {
             $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
 
-            if (\method_exists($this->orderTransactionStateHandler, 'processUnconfirmed')) {
-                $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
-            } else {
-                $this->orderTransactionStateHandler->process($transactionId, $salesChannelContext->getContext());
-            }
+            $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
 
             $this->transactionDataService->setOrderId(
                 $transactionId,
@@ -91,10 +87,6 @@ abstract class AbstractSyncAPMHandler extends AbstractPaymentMethodHandler imple
                 $paypalOrderId,
                 PartnerAttributionId::PAYPAL_PPCP
             );
-
-            if ($this->orderResource === null) {
-                throw new \RuntimeException('orderResource is required');
-            }
 
             $paypalOrder = $this->executeOrder(
                 $transaction,

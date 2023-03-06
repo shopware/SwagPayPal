@@ -20,6 +20,9 @@ class PUIFraudNetDataService
 
     private CredentialsUtilInterface $credentialsUtil;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PaymentMethodDataRegistry $paymentMethodDataRegistry,
         CredentialsUtilInterface $credentialsUtil

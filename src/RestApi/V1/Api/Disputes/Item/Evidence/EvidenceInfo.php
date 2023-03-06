@@ -19,12 +19,14 @@ class EvidenceInfo extends PayPalApiStruct
 {
     /**
      * @var TrackingInfo[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_tracking_info"})
      */
     protected array $trackingInfo;
 
     /**
      * @var RefundId[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence_refund_id"})
      */
     protected array $refundIds;

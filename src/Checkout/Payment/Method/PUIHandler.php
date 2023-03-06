@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Checkout\Payment\Method;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\SynchronousPaymentHandlerInterface;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
@@ -24,6 +23,7 @@ use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
+use Swag\PayPal\Util\Compatibility\Exception;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,6 +55,9 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SettingsValidationServiceInterface $settingsValidationService,
         OrderTransactionStateHandler $orderTransactionStateHandler,
@@ -88,7 +91,7 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
 
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
-            throw new CustomerNotLoggedInException();
+            throw Exception::customerNotLoggedIn();
         }
 
         try {

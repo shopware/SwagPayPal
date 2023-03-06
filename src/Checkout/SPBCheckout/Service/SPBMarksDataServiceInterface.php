@@ -11,7 +11,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\SPBCheckout\SPBMarksData;
 
 /**
- * @deprecated tag:v6.0.0 - will be removed without replacement, payment logos have been added natively
+ * @deprecated tag:v7.0.0 - will be removed without replacement, payment logos have been added natively
  */
 interface SPBMarksDataServiceInterface
 {

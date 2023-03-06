@@ -13,7 +13,6 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
@@ -27,7 +26,7 @@ use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-class PayPalHandler extends AbstractPaymentHandler
+class PayPalHandler
 {
     private OrderFromOrderBuilder $orderBuilder;
 
@@ -41,8 +40,10 @@ class PayPalHandler extends AbstractPaymentHandler
 
     private TransactionDataService $transactionDataService;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $orderTransactionRepo,
         OrderFromOrderBuilder $orderBuilder,
         OrderResource $orderResource,
         OrderExecuteService $orderExecuteService,
@@ -50,7 +51,6 @@ class PayPalHandler extends AbstractPaymentHandler
         TransactionDataService $transactionDataService,
         LoggerInterface $logger
     ) {
-        parent::__construct($orderTransactionRepo);
         $this->orderBuilder = $orderBuilder;
         $this->orderResource = $orderResource;
         $this->orderExecuteService = $orderExecuteService;
@@ -138,8 +138,6 @@ class PayPalHandler extends AbstractPaymentHandler
     }
 
     /**
-     * @deprecated tag:v6.0.0 - Parameter $orderDataPatchNeeded will be removed, will be false permanently
-     *
      * @throws AsyncPaymentFinalizeException
      */
     public function handleFinalizeOrder(
@@ -147,22 +145,11 @@ class PayPalHandler extends AbstractPaymentHandler
         string $paypalOrderId,
         string $salesChannelId,
         Context $context,
-        string $partnerAttributionId,
-        bool $orderDataPatchNeeded
+        string $partnerAttributionId
     ): void {
         $this->logger->debug('Started');
 
         try {
-            if ($orderDataPatchNeeded) {
-                $this->orderPatchService->patchOrderData(
-                    $transaction->getOrderTransaction()->getId(),
-                    $transaction->getOrder()->getOrderNumber(),
-                    $paypalOrderId,
-                    $partnerAttributionId,
-                    $salesChannelId
-                );
-            }
-
             $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
                 $transaction->getOrderTransaction()->getId(),
                 $this->orderResource->get($paypalOrderId, $salesChannelId),

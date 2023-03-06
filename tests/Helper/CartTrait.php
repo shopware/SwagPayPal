@@ -16,12 +16,16 @@ use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
 use Shopware\Core\Checkout\Cart\Transaction\Struct\Transaction;
 use Shopware\Core\Checkout\Cart\Transaction\Struct\TransactionCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\Test\Helper\Compatibility\Generator;
 
+/**
+ * @internal
+ */
 trait CartTrait
 {
     protected function createCart(string $paymentMethodId, bool $withTransaction = true, float $netPrice = 9.0, float $totalPrice = 10.9): Cart
     {
-        $cart = new Cart('test-cart', Uuid::randomHex());
+        $cart = Generator::createCart(Uuid::randomHex());
         if ($withTransaction) {
             $transaction = new Transaction(
                 new CalculatedPrice(

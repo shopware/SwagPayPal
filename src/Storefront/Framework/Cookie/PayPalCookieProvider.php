@@ -13,6 +13,9 @@ class PayPalCookieProvider implements CookieProviderInterface
 {
     private CookieProviderInterface $original;
 
+    /**
+     * @internal
+     */
     public function __construct(CookieProviderInterface $cookieProvider)
     {
         $this->original = $cookieProvider;

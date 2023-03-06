@@ -17,6 +17,9 @@ use Shopware\Core\System\Language\LanguageDefinition;
 use Shopware\Core\System\Language\LanguageEntity;
 use Shopware\Core\System\Locale\LocaleEntity;
 
+/**
+ * @internal
+ */
 class LanguageRepoMock extends AbstractRepoMock
 {
     public const LOCALE_CODE = 'en-GB';

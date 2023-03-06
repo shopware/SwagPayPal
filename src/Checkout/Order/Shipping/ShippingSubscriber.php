@@ -18,6 +18,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Write\Validation\PreWriteValida
 use Swag\PayPal\Checkout\Order\Shipping\Service\ShippingService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @internal
+ */
 class ShippingSubscriber implements EventSubscriberInterface
 {
     private ShippingService $shippingService;

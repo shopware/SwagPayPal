@@ -18,6 +18,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 
+/**
+ * @internal
+ */
 class OrderRepositoryMock extends AbstractRepoMock
 {
     use PaymentTransactionTrait;

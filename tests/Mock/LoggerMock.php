@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\Mock;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @internal
+ */
 class LoggerMock implements LoggerInterface
 {
     /**

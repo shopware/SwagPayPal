@@ -14,7 +14,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
@@ -32,6 +32,9 @@ use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
 use Swag\PayPal\Util\PriceFormatter;
 
+/**
+ * @internal
+ */
 class PaymentStatusUtilV2Test extends TestCase
 {
     use DatabaseTransactionBehaviour;
@@ -39,7 +42,7 @@ class PaymentStatusUtilV2Test extends TestCase
     use OrderFixture;
     use StateMachineStateTrait;
 
-    private EntityRepositoryInterface $orderTransactionRepository;
+    private EntityRepository $orderTransactionRepository;
 
     private PaymentStatusUtilV2 $paymentStatusUtil;
 
@@ -49,7 +52,7 @@ class PaymentStatusUtilV2Test extends TestCase
     {
         $container = $this->getContainer();
 
-        /** @var EntityRepositoryInterface $orderTransactionRepository */
+        /** @var EntityRepository $orderTransactionRepository */
         $orderTransactionRepository = $container->get('order_transaction.repository');
         $this->orderTransactionRepository = $orderTransactionRepository;
 
@@ -99,14 +102,12 @@ class PaymentStatusUtilV2Test extends TestCase
             [
                 $this->createCapture(true),
                 OrderTransactionStates::STATE_PAID,
-                /** @phpstan-ignore-next-line */
-                \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED') ? OrderTransactionStates::STATE_UNCONFIRMED : OrderTransactionStates::STATE_IN_PROGRESS,
+                OrderTransactionStates::STATE_UNCONFIRMED,
             ],
             [
                 $this->createCapture(false),
                 OrderTransactionStates::STATE_PARTIALLY_PAID,
-                /** @phpstan-ignore-next-line */
-                \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED') ? OrderTransactionStates::STATE_UNCONFIRMED : OrderTransactionStates::STATE_IN_PROGRESS,
+                OrderTransactionStates::STATE_UNCONFIRMED,
             ],
         ];
     }
@@ -270,7 +271,7 @@ class PaymentStatusUtilV2Test extends TestCase
             $orderData[0]['transactions'] = $transactionData;
         }
 
-        /** @var EntityRepositoryInterface $orderRepository */
+        /** @var EntityRepository $orderRepository */
         $orderRepository = $this->getContainer()->get('order.repository');
         $orderRepository->create($orderData, $this->context);
 

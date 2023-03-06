@@ -1,4 +1,3 @@
-import DomAccess from 'src/helper/dom-access.helper';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
 
 export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButtons {
@@ -93,31 +92,10 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
          * @type string
          */
         textColor: 'black',
-
-        /**
-         * Data attribute name for identifying confirm page
-         *
-         * @type string
-         */
-        isConfirmPageKey: 'swag-paypal-installment-banner-is-confirm',
     };
 
     init() {
-        const isConfirmPage = DomAccess.getDataAttribute(this.el, this.options.isConfirmPageKey, false) === true;
-
-        if (isConfirmPage === false) {
-            this.createInstallmentBanner();
-            return;
-        }
-
-        const body = DomAccess.querySelector(document, 'body');
-        /* eslint-env jquery */
-        const $body = $(body);
-        $body.on('shown.bs.modal', (event) => {
-            if (event.target.classList.contains('confirm-payment-modal')) {
-                this.createInstallmentBanner();
-            }
-        });
+        this.createInstallmentBanner();
     }
 
     createInstallmentBanner() {

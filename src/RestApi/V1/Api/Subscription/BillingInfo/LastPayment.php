@@ -13,7 +13,9 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\LastPayment\Amount;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_subscription_last_payment")
+ *
  * @codeCoverageIgnore
+ *
  * @experimental
  *
  * This class is experimental and not officially supported.

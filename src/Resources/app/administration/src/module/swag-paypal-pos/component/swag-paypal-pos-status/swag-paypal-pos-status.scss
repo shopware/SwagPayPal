@@ -15,34 +15,36 @@
     }
 
     .swag-paypal-pos-status__icon {
-        margin-top: 16px;
-        width: 48px;
-        height: 48px;
+        margin-top: 24px;
+        width: 36px;
+        height: 36px;
     }
 
     .swag-paypal-pos-status__icon-animated {
         position: relative;
-        top: 24px;
-        left: 24px;
-        animation: spin 2s linear infinite reverse;
+        animation: sync-rotate 2s infinite linear;
+    }
+    @keyframes sync-rotate {
+        from {transform:rotate(360deg);}
+        to {transform:rotate(0deg);}
     }
 
     .swag-paypal-pos-status__status {
-        margin-top: $font-size-large;
+        margin-top: $font-size-m;
         font-weight: bold;
     }
 
     .swag-paypal-pos-status__detail {
-        margin-top: $font-size-default;
-        padding-bottom: $font-size-default;
-        font-size: $font-size-small;
+        margin-top: $font-size-s;
+        padding-bottom: $font-size-s;
+        font-size: $font-size-xs;
         border-bottom: $color-gray-200 solid 1px;
     }
 
     .swag-paypal-pos-status__substatus {
-        margin-top: $font-size-default;
-        font-size: $font-size-small;
-        padding-bottom: $font-size-default;
+        margin-top: $font-size-s;
+        font-size: $font-size-xs;
+        padding-bottom: $font-size-s;
         border-bottom: $color-gray-200 solid 1px;
 
         span {
@@ -58,11 +60,11 @@
         height: 100%;
         background-color: rgba(255, 255, 255, 0.9);
         border-radius: $border-radius-default;
-        padding-top: 9*$font-size-default;
+        padding-top: 9*$font-size-s;
     }
 
     .swag-paypal-pos-status__actions {
-        margin-top: $font-size-default;
+        margin-top: $font-size-s;
     }
 
     &.swag-paypal-pos-status--warning {

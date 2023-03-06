@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\Checkout\Method;
 
 use Swag\PayPal\Checkout\Payment\Method\VenmoHandler;
 
+/**
+ * @internal
+ */
 class VenmoHandlerTest extends AbstractSyncAPMHandlerTest
 {
     protected function getPaymentHandlerClassName(): string

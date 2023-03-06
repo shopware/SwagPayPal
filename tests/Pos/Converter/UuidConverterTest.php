@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Uuid\Exception\InvalidUuidException;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 
+/**
+ * @internal
+ */
 class UuidConverterTest extends TestCase
 {
     public function dataProviderUuidConversionToV1(): array

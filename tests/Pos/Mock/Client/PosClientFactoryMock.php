@@ -15,6 +15,9 @@ use Swag\PayPal\Pos\Client\PosClientFactory;
 use Swag\PayPal\Pos\Resource\TokenResource;
 use Swag\PayPal\Test\Mock\CacheMock;
 
+/**
+ * @internal
+ */
 class PosClientFactoryMock extends PosClientFactory
 {
     private LoggerInterface $logger;

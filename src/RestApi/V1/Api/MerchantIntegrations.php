@@ -30,24 +30,28 @@ class MerchantIntegrations extends PayPalApiStruct
 
     /**
      * @var Product[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_product"})
      */
     protected array $products = [];
 
     /**
      * @var Capability[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_capability"})
      */
     protected array $capabilities = [];
 
     /**
      * @var OauthIntegration[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_oauth_integration"})
      */
     protected array $oauthIntegrations = [];
 
     /**
      * @var string[]
+     *
      * @OA\Property(type="array", items={"type": "string"})
      */
     protected array $grantedPermissions = [];

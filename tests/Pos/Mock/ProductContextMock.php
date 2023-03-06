@@ -16,6 +16,9 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductCollection
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductEntity;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 
+/**
+ * @internal
+ */
 class ProductContextMock extends ProductContext
 {
     private int $status;

@@ -17,6 +17,9 @@ use Swag\PayPal\Storefront\RequestSubscriber;
 use Swag\PayPal\Test\RestApi\AssertArraySubsetTrait;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class RequestSubscriberTest extends TestCase
 {
     use AssertArraySubsetTrait;

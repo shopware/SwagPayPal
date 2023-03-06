@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2;
 
+/**
+ * @internal
+ */
 class GetOrderCaptureLiabilityShiftUnknown
 {
     public const ID = '9XG87361JT539825F';

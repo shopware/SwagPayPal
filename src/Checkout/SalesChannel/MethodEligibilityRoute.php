@@ -11,7 +11,6 @@ use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
@@ -25,7 +24,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
 {
@@ -40,6 +39,9 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
@@ -52,16 +54,21 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
 
     /**
      * @Since("5.1.0")
+     *
      * @OA\Post(
      *     path="/store-api/paypal/payment-method-eligibility",
      *     description="Sets ineligible payment methods to be removed from the session",
      *     operationId="setPaymentMethodEligibility",
      *     tags={"Store API", "PayPal"},
+     *
      *     @OA\RequestBody(
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(
      *                 property="paymentMethods",
      *                 type="array",
+     *
      *                 @OA\Items(
      *                     type="string",
      *                 ),
@@ -69,6 +76,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
      *             )
      *         )
      *     ),
+     *
      *     @OA\Response(
      *          response="204"
      *     )
@@ -84,7 +92,7 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
     public function setPaymentMethodEligibility(Request $request, Context $context): Response
     {
         /** @var mixed|array $paymentMethods */
-        $paymentMethods = $request->request->get('paymentMethods');
+        $paymentMethods = $request->request->all()['paymentMethods'] ?? null;
         if (!\is_array($paymentMethods)) {
             throw new InvalidRequestParameterException('paymentMethods');
         }

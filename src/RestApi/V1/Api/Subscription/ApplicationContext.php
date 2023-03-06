@@ -12,7 +12,9 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_subscription_application_context")
+ *
  * @codeCoverageIgnore
+ *
  * @experimental
  *
  * This class is experimental and not officially supported.

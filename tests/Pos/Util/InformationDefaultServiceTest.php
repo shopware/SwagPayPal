@@ -17,6 +17,9 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Pos\Payment\PosPayment;
 
+/**
+ * @internal
+ */
 class InformationDefaultServiceTest extends TestCase
 {
     public function testPaymentMethodNotUsable(): void

@@ -14,6 +14,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\Api\Service\MediaConverter;
 use Swag\PayPal\Pos\Exception\InvalidMediaTypeException;
 
+/**
+ * @internal
+ */
 class MediaConverterTest extends TestCase
 {
     private const MEDIA_URL = 'https://via.placeholder.com/500x500';

@@ -9,6 +9,9 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 
+/**
+ * @internal
+ */
 class ShopwarePluginClassTest extends TestCase
 {
     use IntegrationTestBehaviour;

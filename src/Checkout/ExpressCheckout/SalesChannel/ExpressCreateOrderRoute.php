@@ -11,7 +11,6 @@ use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\TokenResponse;
@@ -22,7 +21,7 @@ use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 {
@@ -34,6 +33,9 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         CartService $cartService,
         OrderFromCartBuilder $orderFromCartBuilder,
@@ -53,11 +55,13 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
 
     /**
      * @Since("2.0.0")
+     *
      * @OA\Post(
      *     path="/store-api/paypal/express/create-order",
      *     description="Creates a PayPal order from the existing cart",
      *     operationId="createPayPalExpressOrder",
      *     tags={"Store API", "PayPal"},
+     *
      *     @OA\Response(
      *         response="200",
      *         description="The new token of the order"
@@ -76,7 +80,7 @@ class ExpressCreateOrderRoute extends AbstractExpressCreateOrderRoute
             $this->logger->debug('Started');
             $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
             $this->logger->debug('Building order');
-            $order = $this->orderFromCartBuilder->getOrder($cart, $salesChannelContext, null, true);
+            $order = $this->orderFromCartBuilder->getOrder($cart, $salesChannelContext, null);
             $order->getApplicationContext()->setShippingPreference(ApplicationContext::SHIPPING_PREFERENCE_GET_FROM_FILE);
             $order->getApplicationContext()->setUserAction(ApplicationContext::USER_ACTION_CONTINUE);
 

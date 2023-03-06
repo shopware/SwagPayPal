@@ -13,6 +13,9 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\OAuthCredentials;
 use Swag\PayPal\RestApi\V1\Resource\TokenResource;
 
+/**
+ * @internal
+ */
 class PayPalClientMock extends PayPalClient
 {
     public function __construct(

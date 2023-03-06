@@ -19,8 +19,10 @@ abstract class AbstractClient
 
     protected LoggerInterface $logger;
 
-    public function __construct(ClientInterface $client, LoggerInterface $logger)
-    {
+    public function __construct(
+        ClientInterface $client,
+        LoggerInterface $logger
+    ) {
         $this->client = $client;
         $this->logger = $logger;
     }

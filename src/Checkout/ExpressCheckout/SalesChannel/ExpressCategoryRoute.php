@@ -10,7 +10,6 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryRoute;
 use Shopware\Core\Content\Category\SalesChannel\CategoryRouteResponse;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -24,7 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class ExpressCategoryRoute extends AbstractCategoryRoute
 {
@@ -38,6 +37,9 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
 
     private PaymentMethodUtil $paymentMethodUtil;
 
+    /**
+     * @internal
+     */
     public function __construct(
         AbstractCategoryRoute $inner,
         ExpressCheckoutDataServiceInterface $expressCheckoutDataService,
@@ -59,29 +61,37 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
 
     /**
      * @Since("3.3.0")
+     *
      * @OA\Post(
      *     path="/category/{categoryId}",
      *     summary="Fetch a single category",
      *     description="This endpoint returns information about the category, as well as a fully resolved (hydrated with mapping values) CMS page, if one is assigned to the category. You can pass slots which should be resolved exclusively.",
      *     operationId="readCategory",
      *     tags={"Store API", "Category"},
+     *
      *     @OA\Parameter(
      *         name="categoryId",
      *         description="Identifier of the category to be fetched",
+     *
      *         @OA\Schema(type="string", pattern="^[0-9a-f]{32}$"),
      *         in="path",
      *         required=true
      *     ),
+     *
      *     @OA\Parameter(
      *         name="slots",
      *         description="Resolves only the given slot identifiers. The identifiers have to be seperated by a '|' character",
+     *
      *         @OA\Schema(type="string"),
      *         in="query",
      *     ),
+     *
      *     @OA\Parameter(name="Api-Basic-Parameters"),
+     *
      *     @OA\Response(
      *          response="200",
      *          description="The loaded category with cms page",
+     *
      *          @OA\JsonContent(ref="#/components/schemas/category_flat")
      *     )
      * )
@@ -113,6 +123,9 @@ class ExpressCategoryRoute extends AbstractCategoryRoute
         }
 
         $expressCheckoutButtonData = $this->expressCheckoutDataService->buildExpressCheckoutButtonData($context, true);
+        if ($expressCheckoutButtonData === null) {
+            return $response;
+        }
 
         $cmsPage->addExtension(
             ExpressCheckoutSubscriber::PAYPAL_EXPRESS_CHECKOUT_BUTTON_DATA_EXTENSION_ID,

@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Command;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\ProductTask;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,23 +17,19 @@ class PosProductSyncCommand extends AbstractPosCommand
 {
     protected static $defaultName = 'swag:paypal:pos:sync:product';
 
+    protected static $defaultDescription = 'Sync only products to Zettle';
+
     private ProductTask $productTask;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         ProductTask $productTask
     ) {
         parent::__construct($salesChannelRepository);
         $this->productTask = $productTask;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure(): void
-    {
-        parent::configure();
-        $this->setDescription('Sync only products to Zettle');
     }
 
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void

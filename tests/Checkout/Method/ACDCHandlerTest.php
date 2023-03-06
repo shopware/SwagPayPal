@@ -22,7 +22,6 @@ use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
-use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
@@ -35,6 +34,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShi
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * @internal
+ */
 class ACDCHandlerTest extends AbstractSyncAPMHandlerTest
 {
     public function testPayCaptureLiabilityShiftUnknown(): void
@@ -98,9 +100,7 @@ Credit card validation failed, 3D secure was not validated.');
                 $logger
             ),
             new OrderPatchService(
-                new CustomIdPatchBuilder(),
                 $systemConfig,
-                new OrderNumberPatchBuilder(),
                 new PurchaseUnitPatchBuilder(
                     new PurchaseUnitProvider(
                         new AmountProvider(new PriceFormatter()),

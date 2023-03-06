@@ -20,8 +20,13 @@ class NewUpdater
 
     private LoggerInterface $logger;
 
-    public function __construct(ProductResource $productResource, LoggerInterface $logger)
-    {
+    /**
+     * @internal
+     */
+    public function __construct(
+        ProductResource $productResource,
+        LoggerInterface $logger
+    ) {
         $this->productResource = $productResource;
         $this->logger = $logger;
     }

@@ -13,6 +13,9 @@ use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Swag\PayPal\Storefront\Data\Service\FundingEligibilityDataService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @internal
+ */
 class FundingSubscriber implements EventSubscriberInterface
 {
     public const FUNDING_ELIGIBILITY_EXTENSION = 'swagPayPalFundingEligibility';
@@ -44,9 +47,11 @@ class FundingSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $event->getPagelet()->addExtension(
-            self::FUNDING_ELIGIBILITY_EXTENSION,
-            $this->fundingEligibilityDataService->buildData($event->getSalesChannelContext())
-        );
+        $data = $this->fundingEligibilityDataService->buildData($event->getSalesChannelContext());
+        if ($data === null) {
+            return;
+        }
+
+        $event->getPagelet()->addExtension(self::FUNDING_ELIGIBILITY_EXTENSION, $data);
     }
 }

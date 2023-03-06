@@ -21,6 +21,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Uuid\Uuid;
 
+/**
+ * @internal
+ */
 class ProductVisibilityRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition
@@ -80,7 +83,7 @@ class ProductVisibilityRepoMock extends AbstractRepoMock
         $salesChannelId = null;
         foreach ($criteria->getFilters() as $filter) {
             if ($filter instanceof EqualsFilter && $filter->getField() === 'salesChannelId') {
-                $salesChannelId = $filter->getValue();
+                $salesChannelId = (string) $filter->getValue();
             }
         }
 

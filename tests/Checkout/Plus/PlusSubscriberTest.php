@@ -14,9 +14,8 @@ use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
@@ -25,6 +24,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\SalesChannelRequest;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\Test\TestDefaults;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPage;
 use Shopware\Storefront\Page\Account\Order\AccountEditOrderPageLoadedEvent;
 use Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPage;
@@ -57,6 +57,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @internal
+ */
 class PlusSubscriberTest extends TestCase
 {
     use CartTrait;
@@ -103,7 +106,6 @@ class PlusSubscriberTest extends TestCase
         $subscriber->onAccountEditOrderLoaded($event);
         $plusExtension = $this->assertPlusExtension($event);
 
-        static::assertSame('/store-api/order/payment', $plusExtension->getSetPaymentRouteUrl());
         static::assertSame(ConstantsForTesting::VALID_ORDER_ID, $plusExtension->getOrderId());
     }
 
@@ -437,7 +439,7 @@ class PlusSubscriberTest extends TestCase
         $router = $this->getContainer()->get('router');
         /** @var TranslatorInterface $translator */
         $translator = $this->getContainer()->get('translator');
-        /** @var EntityRepositoryInterface $currencyRepo */
+        /** @var EntityRepository $currencyRepo */
         $currencyRepo = $this->getContainer()->get('currency.repository');
         $priceFormatter = new PriceFormatter();
         $eventDispatcher = new EventDispatcherMock();
@@ -484,7 +486,7 @@ class PlusSubscriberTest extends TestCase
     ): CheckoutFinishPageLoadedEvent {
         $salesChannelContext = $this->getContainer()->get(SalesChannelContextFactory::class)->create(
             Uuid::randomHex(),
-            Defaults::SALES_CHANNEL,
+            TestDefaults::SALES_CHANNEL,
             [
                 SalesChannelContextService::PAYMENT_METHOD_ID => $this->paypalPaymentMethodId,
             ]
@@ -537,7 +539,7 @@ class PlusSubscriberTest extends TestCase
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('iso', 'de-DE'));
 
-        /** @var EntityRepositoryInterface $snippetSetRepository */
+        /** @var EntityRepository $snippetSetRepository */
         $snippetSetRepository = $this->getContainer()->get('snippet_set.repository');
         $snippetSetId = $snippetSetRepository->search($criteria, $context)->first()->getId();
 
@@ -594,9 +596,7 @@ class PlusSubscriberTest extends TestCase
         static::assertSame($this->paypalPaymentMethodId, $plusExtension->getPaymentMethodId());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $plusExtension->getPaypalPaymentId());
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_TOKEN, $plusExtension->getPaypalToken());
-        static::assertSame('/store-api/checkout/order', $plusExtension->getCheckoutOrderUrl());
-        static::assertSame('/store-api/handle-payment', $plusExtension->getHandlePaymentUrl());
-        static::assertSame('/store-api/context', $plusExtension->getContextSwitchUrl());
+        static::assertSame('/paypal/plus/payment/handle', $plusExtension->getHandlePaymentUrl());
         static::assertSame(PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID, $plusExtension->getIsEnabledParameterName());
         static::assertSame($event->getContext()->getLanguageId(), $plusExtension->getLanguageId());
 

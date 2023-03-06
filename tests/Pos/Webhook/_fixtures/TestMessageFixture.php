@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\Pos\Webhook\_fixtures;
 
 use Swag\PayPal\Pos\Webhook\WebhookEventNames;
 
+/**
+ * @internal
+ */
 class TestMessageFixture
 {
     public static function getWebhookFixture(): array

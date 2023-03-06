@@ -18,7 +18,7 @@ use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOp
 use Shopware\Core\Content\Property\PropertyGroupEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\Price as ShopwarePrice;
 use Shopware\Core\Framework\DataAbstractionLayer\Pricing\PriceCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -35,6 +35,9 @@ use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Api\Service\Converter\VariantConverter;
 use Swag\PayPal\Pos\Sync\Context\ProductContext;
 
+/**
+ * @internal
+ */
 class VariantConverterTest extends TestCase
 {
     use KernelTestBehaviour;
@@ -182,7 +185,7 @@ class VariantConverterTest extends TestCase
         $criteria = new Criteria();
         $criteria->setIds([Defaults::CURRENCY]);
 
-        /** @var EntityRepositoryInterface $currencyRepository */
+        /** @var EntityRepository $currencyRepository */
         $currencyRepository = $this->getContainer()->get('currency.repository');
         $currency = $currencyRepository->search($criteria, Context::createDefaultContext())->first();
 

@@ -22,8 +22,12 @@ class PosClient extends AbstractClient
 {
     private TokenResource $tokenResource;
 
-    public function __construct(string $baseUri, TokenResource $tokenResource, OAuthCredentials $credentials, LoggerInterface $logger)
-    {
+    public function __construct(
+        string $baseUri,
+        TokenResource $tokenResource,
+        OAuthCredentials $credentials,
+        LoggerInterface $logger
+    ) {
         $this->tokenResource = $tokenResource;
 
         $authorizationHeader = $this->createAuthorizationHeaderValue($credentials);

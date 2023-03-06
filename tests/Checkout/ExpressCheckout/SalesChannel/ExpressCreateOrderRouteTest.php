@@ -24,6 +24,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class ExpressCreateOrderRouteTest extends TestCase
 {
     use CheckoutRouteTrait;

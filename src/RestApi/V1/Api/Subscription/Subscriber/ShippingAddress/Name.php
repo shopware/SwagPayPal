@@ -13,7 +13,9 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_subscription_shipping_address_name")
+ *
  * @codeCoverageIgnore
+ *
  * @experimental
  *
  * This class is experimental and not officially supported.

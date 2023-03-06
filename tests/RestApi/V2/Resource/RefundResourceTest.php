@@ -8,11 +8,14 @@
 namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V2\Resource\RefundResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetRefund;
 
+/**
+ * @internal
+ */
 class RefundResourceTest extends TestCase
 {
     use ServicesTrait;
@@ -20,7 +23,7 @@ class RefundResourceTest extends TestCase
     public function testGet(): void
     {
         $refundId = GetRefund::ID;
-        $refund = $this->createResource()->get($refundId, Defaults::SALES_CHANNEL);
+        $refund = $this->createResource()->get($refundId, TestDefaults::SALES_CHANNEL);
 
         static::assertSame($refundId, $refund->getId());
         static::assertSame('12.34', $refund->getSellerPayableBreakdown()->getTotalRefundedAmount()->getValue());

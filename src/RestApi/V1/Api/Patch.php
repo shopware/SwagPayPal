@@ -30,6 +30,7 @@ class Patch extends PayPalApiStruct
 
     /**
      * @var array|string
+     *
      * @OA\Property(oneOf={"string", "array"})
      */
     protected $value;

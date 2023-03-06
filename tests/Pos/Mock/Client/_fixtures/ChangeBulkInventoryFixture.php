@@ -14,6 +14,9 @@ use Swag\PayPal\Pos\Api\Inventory\BulkChanges\ProductChange;
 use Swag\PayPal\Pos\Api\Inventory\BulkChanges\ProductChange\VariantChange;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
+/**
+ * @internal
+ */
 class ChangeBulkInventoryFixture
 {
     public static bool $called = false;

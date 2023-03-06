@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+/**
+ * @internal
+ */
 class GetPaymentSaleWithRefundResponseFixture
 {
     public const TRANSACTION_AMOUNT_DETAILS_SUBTOTAL = '12.35';

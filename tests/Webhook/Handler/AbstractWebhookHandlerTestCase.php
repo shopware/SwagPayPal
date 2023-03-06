@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
@@ -28,6 +28,9 @@ use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\Exception\WebhookOrderTransactionNotFoundException;
 use Swag\PayPal\Webhook\Handler\AbstractWebhookHandler;
 
+/**
+ * @internal
+ */
 abstract class AbstractWebhookHandlerTestCase extends TestCase
 {
     use KernelTestBehaviour;
@@ -36,7 +39,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
     use OrderFixture;
     use OrderTransactionTrait;
 
-    protected EntityRepositoryInterface $orderTransactionRepository;
+    protected EntityRepository $orderTransactionRepository;
 
     protected StateMachineRegistry $stateMachineRegistry;
 
@@ -44,7 +47,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
 
     protected function setUp(): void
     {
-        /** @var EntityRepositoryInterface $orderTransactionRepository */
+        /** @var EntityRepository $orderTransactionRepository */
         $orderTransactionRepository = $this->getContainer()->get('order_transaction.repository');
         $this->orderTransactionRepository = $orderTransactionRepository;
         $this->stateMachineRegistry = $this->getContainer()->get(StateMachineRegistry::class);

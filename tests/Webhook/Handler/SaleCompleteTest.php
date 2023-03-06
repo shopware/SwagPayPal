@@ -13,6 +13,9 @@ use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Webhook\Handler\SaleComplete;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
+/**
+ * @internal
+ */
 class SaleCompleteTest extends AbstractWebhookHandlerTestCase
 {
     public function testGetEventType(): void

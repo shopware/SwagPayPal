@@ -10,7 +10,7 @@ namespace Swag\PayPal\Pos\Sync\Context;
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -20,13 +20,16 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductCollection
 
 class ProductContextFactory
 {
-    private EntityRepositoryInterface $posProductRepository;
+    private EntityRepository $posProductRepository;
 
-    private EntityRepositoryInterface $posMediaRepository;
+    private EntityRepository $posMediaRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $posProductRepository,
-        EntityRepositoryInterface $posMediaRepository
+        EntityRepository $posProductRepository,
+        EntityRepository $posMediaRepository
     ) {
         $this->posProductRepository = $posProductRepository;
         $this->posMediaRepository = $posMediaRepository;

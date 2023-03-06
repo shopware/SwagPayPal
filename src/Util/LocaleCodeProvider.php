@@ -8,14 +8,17 @@
 namespace Swag\PayPal\Util;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 
 class LocaleCodeProvider
 {
-    private EntityRepositoryInterface $languageRepository;
+    private EntityRepository $languageRepository;
 
-    public function __construct(EntityRepositoryInterface $languageRepository)
+    /**
+     * @internal
+     */
+    public function __construct(EntityRepository $languageRepository)
     {
         $this->languageRepository = $languageRepository;
     }

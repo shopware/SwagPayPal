@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+/**
+ * @internal
+ */
 class GetResourceMerchantIntegrations
 {
     public const MERCHANT_ID = '7GHKL78J89JKX';

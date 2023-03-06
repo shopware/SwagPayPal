@@ -8,17 +8,20 @@
 namespace Swag\PayPal\Pos\Schedule;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Task\InventoryTask;
 
+/**
+ * @internal
+ */
 class InventorySyncTaskHandler extends AbstractSyncTaskHandler
 {
     private InventoryTask $inventoryTask;
 
     public function __construct(
-        EntityRepositoryInterface $scheduledTaskRepository,
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $scheduledTaskRepository,
+        EntityRepository $salesChannelRepository,
         InventoryTask $inventoryTask
     ) {
         parent::__construct($scheduledTaskRepository, $salesChannelRepository);

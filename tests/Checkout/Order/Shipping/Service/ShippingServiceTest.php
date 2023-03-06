@@ -10,7 +10,6 @@ namespace Swag\PayPal\Test\Checkout\Order\Shipping\Service;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
-use Shopware\Core\Checkout\Cart\Exception\OrderDeliveryNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
@@ -22,6 +21,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
+use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\Order\Shipping\Service\ShippingService;
 use Swag\PayPal\RestApi\V1\Api\Shipping;
@@ -29,6 +29,9 @@ use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
 use Swag\PayPal\RestApi\V1\Resource\ShippingResource;
 use Swag\PayPal\SwagPayPal;
 
+/**
+ * @internal
+ */
 class ShippingServiceTest extends TestCase
 {
     private const TEST_CODE_A = 'test_code_a';
@@ -116,7 +119,7 @@ class ShippingServiceTest extends TestCase
         $this->salesChannelRepository->expects(static::once())->method('searchIds')->willReturn($this->getSalesChannelIdResult(false));
         $this->shippingResource->expects(static::never())->method('batch');
 
-        $this->expectException(OrderDeliveryNotFoundException::class);
+        $this->expectException(ShopwareHttpException::class);
         $this->getService()->updateTrackingCodes(Uuid::randomHex(), [self::TEST_CODE_A], [], Context::createDefaultContext());
     }
 

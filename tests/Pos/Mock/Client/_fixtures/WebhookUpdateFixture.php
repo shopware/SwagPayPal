@@ -8,11 +8,14 @@
 namespace Swag\PayPal\Test\Pos\Mock\Client\_fixtures;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Common\PosStruct;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Api\Webhook\Subscription\UpdateSubscription;
 
+/**
+ * @internal
+ */
 class WebhookUpdateFixture
 {
     public static bool $sent = false;
@@ -21,11 +24,11 @@ class WebhookUpdateFixture
     {
         TestCase::assertInstanceOf(UpdateSubscription::class, $data);
 
-        $salesChannelId = (new UuidConverter())->convertUuidToV1(Defaults::SALES_CHANNEL);
+        $salesChannelId = (new UuidConverter())->convertUuidToV1(TestDefaults::SALES_CHANNEL);
 
         TestCase::assertSame(['InventoryBalanceChanged'], $data->getEventNames());
         TestCase::assertStringContainsString($salesChannelId, $resourceUri);
-        TestCase::assertStringContainsString(Defaults::SALES_CHANNEL, $data->getDestination());
+        TestCase::assertStringContainsString(TestDefaults::SALES_CHANNEL, $data->getDestination());
 
         self::$sent = true;
 

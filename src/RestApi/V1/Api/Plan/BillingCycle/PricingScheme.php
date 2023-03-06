@@ -13,7 +13,9 @@ use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle\PricingScheme\FixedPrice;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_plan_pricing_scheme")
+ *
  * @codeCoverageIgnore
+ *
  * @experimental
  *
  * This class is experimental and not officially supported.

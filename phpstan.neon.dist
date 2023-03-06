@@ -1,8 +1,9 @@
 includes:
+    - %baseline%
     - %ShopwareRoot%/vendor/phpstan/phpstan/conf/bleedingEdge.neon
 
 parameters:
-    phpVersion: 70400
+    phpVersion: %phpversion%
     level: 8
     tmpDir: var/cache/phpstan
     inferPrivatePropertyTypeFromConstructor: true
@@ -14,7 +15,12 @@ parameters:
         -   src
         -   tests
     excludePaths:
-        -   tests/Mock/Cache*Mock.php
+        -   src/Resources
+        # 6.4 compatibility
+        -   src/Pos/Run/LogHandler.php
+        -   src/Webhook/Registration/WebhookSystemConfigController.php
+        -   tests/Webhook/Registration/WebhookSystemConfigControllerTest.php
+        -   tests/Mock/CacheItemMock*.php
 
     symfony:
         constant_hassers: false
@@ -25,6 +31,12 @@ parameters:
         # We won't type all arrays/iterables for now
         -   '#no value type specified in iterable type#'
 
+        -   # 6.4 compatibility
+            message: '#(unknown class|invalid type) .*EntityRepositoryInterface#'
+            paths:
+                - src/Util/Compatibility/EntityRepositoryDecorator.php
+                - src/Util/Lifecycle/Method/PaymentMethodDataRegistry.php
+
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
@@ -33,13 +45,15 @@ parameters:
             message: '#Service ".*" is private#'
             path: tests/**/*.php
 
-        -   # Remove with min-Version 6.4.4.0
-            message: '#Caught class .* not found#'
-            path: src/Checkout/PUI/SalesChannel/PUIPaymentInstructionsRoute.php
-
-        -   # Remove with min-Version 6.4.14.0
-            message: '#ArrayStruct is not generic#'
-            path: src/Checkout/TokenResponse.php
-
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
+
+services:
+    -
+        class: Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalClassRule
+        tags:
+            - phpstan.rules.rule
+    -
+        class: Shopware\Core\DevOps\StaticAnalyze\PHPStan\Rules\Internal\InternalMethodRule
+        tags:
+            - phpstan.rules.rule

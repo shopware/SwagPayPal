@@ -13,6 +13,9 @@ use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Webhook\Handler\SaleDenied;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
+/**
+ * @internal
+ */
 class SaleDeniedTest extends AbstractWebhookHandlerTestCase
 {
     public function testGetEventType(): void

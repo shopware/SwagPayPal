@@ -2,7 +2,7 @@
     {# @var \Swag\PayPal\Checkout\ExpressCheckout\ExpressCheckoutData expressCheckoutData #}
     {% set expressCheckoutData = page.cart.extensions[constant('Swag\\PayPal\\Checkout\\ExpressCheckout\\SalesChannel\\ExpressPrepareCheckoutRoute::PAYPAL_EXPRESS_CHECKOUT_CART_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Checkout\SPBCheckout\SPBCheckoutButtonData spbCheckoutButtonData #}
-    {% set spbCheckoutButtonData = page.extensions[constant('Swag\\PayPal\\Checkout\\SPBCheckout\\SPBCheckoutSubscriber::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
+    {% set spbCheckoutButtonData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\PayPalMethodData::PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutFieldData acdcFieldData #}
     {% set acdcFieldData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\ACDCMethodData::PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Checkout\PUI\PUIFraudNetData acdcFieldData #}
@@ -13,33 +13,38 @@
     {% set venmoData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\VenmoMethodData::PAYPAL_VENMO_FIELD_DATA_EXTENSION_ID')] %}
     {# @var \Swag\PayPal\Storefront\Data\Struct\PayLaterCheckoutData payLaterData #}
     {% set payLaterData = page.extensions[constant('Swag\\PayPal\\Util\\Lifecycle\\Method\\PayLaterMethodData::PAYPAL_PAY_LATER_FIELD_DATA_EXTENSION_ID')] %}
+    {# @var \Swag\PayPal\Checkout\Plus\PlusData plusData #}
+    {% set plusData = page.extensions[constant('Swag\\PayPal\\Checkout\\Plus\\PlusSubscriber::PAYPAL_PLUS_DATA_EXTENSION_ID')] %}
 
     {% if expressCheckoutData %}
 
         {% block swag_paypal_ecs_spb_data_express_checkout_input %}
             <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\PayPalPaymentHandler::PAYPAL_EXPRESS_CHECKOUT_ID') }}" value="1">
-            <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Handler\\EcsSpbHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.paypalOrderId }}">
+            <input type="hidden" name="{{ constant('Swag\\PayPal\\Checkout\\Payment\\Method\\AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME') }}" value="{{ expressCheckoutData.paypalOrderId }}">
+        {% endblock %}
+
+    {% elseif plusData %}
+
+        {# @deprecated tag:v7.0.0 - will be removed without replacement #}
+        {% block swag_paypal_ecs_spb_data_plus_checkout_input %}
+            <input type="hidden" name="paypalPaymentId" value="{{ plusData.paypalPaymentId }}">
+            <input type="hidden" name="paypalToken" value="{{ plusData.paypalToken }}">
+            <input type="hidden" name="{{ plusData.isEnabledParameterName }}" value="1">
         {% endblock %}
 
     {% elseif spbCheckoutButtonData and spbCheckoutButtonData.paymentMethodId is same as(context.paymentMethod.id) %}
 
         {% block swag_paypal_ecs_spb_data_smart_payment_button %}
             <div data-swag-paypal-smart-payment-buttons="true"
-                 data-swag-pay-pal-smart-payment-buttons-options="{{ spbCheckoutButtonData|json_encode }}"
-                 data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
+                 data-swag-pay-pal-smart-payment-buttons-options="{{ spbCheckoutButtonData|json_encode }}">
             </div>
-        {% endblock %}
-
-        {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
-        {% block swag_paypal_ecs_spb_data_input %}
         {% endblock %}
 
     {% elseif acdcFieldData and acdcFieldData.paymentMethodId is same as(context.paymentMethod.id) %}
 
         {% block swag_paypal_ecs_spb_data_acdc_fields %}
             <div data-swag-paypal-acdc-fields="true"
-                 data-swag-paypal-acdc-fields-options="{{ acdcFieldData|json_encode }}"
-                 data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
+                 data-swag-paypal-acdc-fields-options="{{ acdcFieldData|json_encode }}">
             </div>
         {% endblock %}
 
@@ -63,8 +68,7 @@
 
         {% block swag_paypal_ecs_spb_data_sepa_fields %}
             <div data-swag-paypal-sepa="true"
-                 data-swag-paypal-sepa-options="{{ sepaData|json_encode }}"
-                 data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
+                 data-swag-paypal-sepa-options="{{ sepaData|json_encode }}">
             </div>
         {% endblock %}
 
@@ -72,8 +76,7 @@
 
         {% block swag_paypal_ecs_spb_data_venmo_fields %}
             <div data-swag-paypal-venmo="true"
-                 data-swag-paypal-venmo-options="{{ venmoData|json_encode }}"
-                 data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
+                 data-swag-paypal-venmo-options="{{ venmoData|json_encode }}">
             </div>
         {% endblock %}
 
@@ -81,8 +84,7 @@
 
         {% block swag_paypal_ecs_spb_data_pay_later_fields %}
             <div data-swag-paypal-pay-later="true"
-                 data-swag-paypal-pay-later-options="{{ payLaterData|json_encode }}"
-                 data-swag-pay-pal-add-error-token="{{ sw_csrf('payment.paypal.add_error', {"mode": "token"}) }}">
+                 data-swag-paypal-pay-later-options="{{ payLaterData|json_encode }}">
             </div>
         {% endblock %}
 

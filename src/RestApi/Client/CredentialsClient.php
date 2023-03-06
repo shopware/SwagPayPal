@@ -13,8 +13,10 @@ use Swag\PayPal\RestApi\V1\RequestUriV1;
 
 class CredentialsClient extends AbstractClient
 {
-    public function __construct(string $url, LoggerInterface $logger)
-    {
+    public function __construct(
+        string $url,
+        LoggerInterface $logger
+    ) {
         $client = new Client(['base_uri' => $url]);
 
         parent::__construct($client, $logger);

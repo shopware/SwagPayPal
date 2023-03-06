@@ -10,6 +10,9 @@ namespace Swag\PayPal\Migration;
 use Doctrine\DBAL\Connection;
 use Shopware\Core\Framework\Migration\MigrationStep;
 
+/**
+ * @internal
+ */
 class Migration1589882802PosRun extends MigrationStep
 {
     public function getCreationTimestamp(): int

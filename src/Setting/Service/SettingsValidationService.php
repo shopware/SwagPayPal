@@ -18,8 +18,13 @@ class SettingsValidationService implements SettingsValidationServiceInterface
 
     private LoggerInterface $logger;
 
-    public function __construct(SystemConfigService $systemConfigService, LoggerInterface $logger)
-    {
+    /**
+     * @internal
+     */
+    public function __construct(
+        SystemConfigService $systemConfigService,
+        LoggerInterface $logger
+    ) {
         $this->systemConfigService = $systemConfigService;
         $this->logger = $logger;
     }

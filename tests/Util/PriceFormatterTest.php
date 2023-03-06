@@ -10,6 +10,9 @@ namespace Swag\PayPal\Test\Util;
 use PHPUnit\Framework\TestCase;
 use Swag\PayPal\Util\PriceFormatter;
 
+/**
+ * @internal
+ */
 class PriceFormatterTest extends TestCase
 {
     protected PriceFormatter $priceFormatter;

@@ -11,7 +11,6 @@ use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
 use Shopware\Core\System\SalesChannel\Context\AbstractSalesChannelContextFactory;
@@ -25,7 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 {
@@ -41,6 +40,9 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ExpressCustomerService $expressCustomerService,
         AbstractSalesChannelContextFactory $salesChannelContextFactory,
@@ -62,16 +64,21 @@ class ExpressPrepareCheckoutRoute extends AbstractExpressPrepareCheckoutRoute
 
     /**
      * @Since("2.0.0")
+     *
      * @OA\Post(
      *     path="/store-api/paypal/express/prepare-checkout",
      *     description="Loggs in a guest customer, with the data of a paypal order",
      *     operationId="preparePayPalExpressCheckout",
      *     tags={"Store API", "PayPal"},
+     *
      *     @OA\RequestBody(
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="token", description="ID of the paypal order", type="string")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response="200",
      *         description="The new context token"

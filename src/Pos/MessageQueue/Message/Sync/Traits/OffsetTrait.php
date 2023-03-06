@@ -9,9 +9,9 @@ namespace Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits;
 
 trait OffsetTrait
 {
-    private int $limit;
+    protected int $limit;
 
-    private int $offset;
+    protected int $offset;
 
     public function getLimit(): int
     {

@@ -7,7 +7,7 @@
                 {% block swag_paypal_pos_wizard_connection_success_icon %}
                     <div class="swag-paypal-pos-wizard-connection-success__icon-wrapper">
                         <sw-icon class="swag-paypal-pos-wizard-connection-success__icon"
-                                 name="default-action-thumb-up"
+                                 name="regular-thumbs-up"
                                  size="80px"
                                  color="#37D046">
                         </sw-icon>
@@ -28,6 +28,7 @@
 
                 {% block swag_paypal_pos_wizard_connection_success_user %}
                     <sw-card class="swag-paypal-pos-wizard-connection-success__user"
+                             position-identifier="swag-paypal-pos-wizard-connection-success-user"
                              :isLoading="isFetchingInformation">
                         <sw-container class="swag-paypal-pos-wizard-connection-success__user-container"
                                       columns="30px auto 150px"

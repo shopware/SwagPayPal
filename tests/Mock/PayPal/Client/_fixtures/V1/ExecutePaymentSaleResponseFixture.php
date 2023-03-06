@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1;
 
+/**
+ * @internal
+ */
 class ExecutePaymentSaleResponseFixture
 {
     public const SALE_ID = '5GB9720606957970A';

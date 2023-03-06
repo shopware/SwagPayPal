@@ -65,7 +65,7 @@ class PayerInfoPatchBuilder
             }
         }
 
-        $billingAddress->setPostalCode($customerBillingAddress->getZipcode());
+        $billingAddress->setPostalCode($customerBillingAddress->getZipcode() ?? '');
 
         $state = $customerBillingAddress->getCountryState();
         if ($state !== null) {

@@ -10,7 +10,7 @@ namespace Swag\PayPal\Test\Mock\Repositories;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Event\EntityWrittenContainerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -20,8 +20,17 @@ use Shopware\Core\Framework\DataAbstractionLayer\Write\CloneBehavior;
 use Shopware\Core\Framework\Event\NestedEventCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 
-class AbstractRepoMock implements EntityRepositoryInterface
+/**
+ * @phpstan-ignore-next-line ignore finality of repository in tests
+ *
+ * @internal
+ */
+class AbstractRepoMock extends EntityRepository
 {
+    public function __construct()
+    {
+    }
+
     public function getDefinition(): EntityDefinition
     {
         return new EntityDefinitionMock();

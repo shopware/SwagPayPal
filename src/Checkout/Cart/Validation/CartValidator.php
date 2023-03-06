@@ -36,6 +36,9 @@ class CartValidator implements CartValidatorInterface
 
     private AvailabilityService $availabilityService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         CartPriceService $cartPriceService,
         PaymentMethodDataRegistry $methodDataRegistry,

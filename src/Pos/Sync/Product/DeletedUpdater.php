@@ -21,6 +21,9 @@ class DeletedUpdater
 
     private UuidConverter $uuidConverter;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ProductResource $productResource,
         LoggerInterface $logger,

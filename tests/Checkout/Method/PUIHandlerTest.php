@@ -17,7 +17,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -42,6 +42,9 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @internal
+ */
 class PUIHandlerTest extends TestCase
 {
     use FullCheckoutTrait;
@@ -209,7 +212,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
         $criteria->addAssociation('lineItems');
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
 
-        /** @var EntityRepositoryInterface $orderRepository */
+        /** @var EntityRepository $orderRepository */
         $orderRepository = $this->getContainer()->get('order.repository');
         $order = $orderRepository->search($criteria, $context->getContext())->first();
         static::assertNotNull($order);
@@ -242,7 +245,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
 
     private function assertCustomFields(string $orderTransactionId, string $orderId, string $attributionId): void
     {
-        /** @var EntityRepositoryInterface $orderTransactionRepo */
+        /** @var EntityRepository $orderTransactionRepo */
         $orderTransactionRepo = $this->getContainer()->get('order_transaction.repository');
         /** @var OrderTransactionEntity|null $orderTransaction */
         $orderTransaction = $orderTransactionRepo->search(new Criteria([$orderTransactionId]), Context::createDefaultContext())->first();

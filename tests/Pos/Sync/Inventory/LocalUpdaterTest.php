@@ -16,6 +16,9 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Swag\PayPal\Pos\Sync\Inventory\Calculator\LocalCalculator;
 use Swag\PayPal\Pos\Sync\Inventory\LocalUpdater;
 
+/**
+ * @internal
+ */
 class LocalUpdaterTest extends TestCase
 {
     use UpdaterTrait;

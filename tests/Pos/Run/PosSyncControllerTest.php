@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Pos\Run;
 
+use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
@@ -15,6 +16,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\MessageQueue\Handler\SyncManagerHandler;
 use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\PosSyncController;
 use Swag\PayPal\Pos\Run\Administration\LogCleaner;
 use Swag\PayPal\Pos\Run\Administration\SyncResetter;
@@ -28,6 +30,9 @@ use Swag\PayPal\Test\Pos\Mock\MessageBusMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\SalesChannelRepoMock;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class PosSyncControllerTest extends TestCase
 {
     private const INVALID_CHANNEL_ID = 'notASalesChannelId';
@@ -55,10 +60,11 @@ class PosSyncControllerTest extends TestCase
         $this->runService = $this->createMock(RunService::class);
         $this->syncResetter = $this->createMock(SyncResetter::class);
 
-        $productTask = new ProductTask($this->messageBus, $this->runService);
-        $imageTask = new ImageTask($this->messageBus, $this->runService);
-        $inventoryTask = new InventoryTask($this->messageBus, $this->runService);
-        $completeTask = new CompleteTask($this->messageBus, $this->runService);
+        $messageDispatcher = new MessageDispatcher($this->messageBus, $this->createMock(Connection::class));
+        $productTask = new ProductTask($messageDispatcher, $this->runService);
+        $imageTask = new ImageTask($messageDispatcher, $this->runService);
+        $inventoryTask = new InventoryTask($messageDispatcher, $this->runService);
+        $completeTask = new CompleteTask($messageDispatcher, $this->runService);
 
         $this->posSyncController = new PosSyncController(
             $this->salesChannelRepoMock,

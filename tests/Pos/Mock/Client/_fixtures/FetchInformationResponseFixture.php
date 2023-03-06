@@ -7,6 +7,9 @@
 
 namespace Swag\PayPal\Test\Pos\Mock\Client\_fixtures;
 
+/**
+ * @internal
+ */
 class FetchInformationResponseFixture
 {
     private const COUNTRY_CODE = 'DE';

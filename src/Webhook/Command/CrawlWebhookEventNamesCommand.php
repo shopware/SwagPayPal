@@ -20,11 +20,7 @@ class CrawlWebhookEventNamesCommand extends Command
 
     protected static $defaultName = 'swag:paypal:crawl:webhooks';
 
-    protected function configure(): void
-    {
-        parent::configure();
-        $this->setDescription('Crawls the PayPal developer website for webhook event names and updates "Swag\PayPal\Webhook\WebhookEventTypes"');
-    }
+    protected static $defaultDescription = 'Crawls the PayPal developer website for webhook event names and updates "Swag\PayPal\Webhook\WebhookEventTypes"';
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

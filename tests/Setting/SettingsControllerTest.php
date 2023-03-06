@@ -26,6 +26,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\TokenClientFactoryMock;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class SettingsControllerTest extends TestCase
 {
     use ServicesTrait;

@@ -8,9 +8,14 @@
 namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Swag\PayPal\Util\Compatibility\EntityRepositoryDecorator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * @internal
+ */
 class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
 {
     private LanguageRepoMock $languageRepo;
@@ -24,8 +29,10 @@ class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
     /**
      * @psalm-suppress ContainerDependency
      */
-    public function __construct(array $elements, ContainerInterface $container)
-    {
+    public function __construct(
+        array $elements,
+        ContainerInterface $container
+    ) {
         parent::__construct($container, $elements, []);
         $this->languageRepo = new LanguageRepoMock();
         $this->salesChannelRepo = new SalesChannelRepoMock();
@@ -34,9 +41,9 @@ class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
     }
 
     /**
-     * @return EntityRepositoryInterface|OrderTransactionRepoMock
+     * @return EntityRepository|OrderTransactionRepoMock
      */
-    public function getRepository(string $entityName): EntityRepositoryInterface
+    public function getRepository(string $entityName): EntityRepository
     {
         switch ($entityName) {
             case $this->languageRepo->getDefinition()->getEntityName():
@@ -48,6 +55,11 @@ class DefinitionInstanceRegistryMock extends DefinitionInstanceRegistry
             case $this->systemConfigRepo->getDefinition()->getEntityName():
                 return $this->systemConfigRepo;
             default:
+                if (\interface_exists(EntityRepositoryInterface::class)) {
+                    // @phpstan-ignore-next-line
+                    return new EntityRepositoryDecorator(parent::getRepository($entityName));
+                }
+
                 return parent::getRepository($entityName);
         }
     }

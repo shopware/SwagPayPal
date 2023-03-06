@@ -118,7 +118,7 @@
                             v-if="disputes.length === 0"
                             :title="$tc('swag-paypal-disputes.list.emptyState.title')"
                             :subline="$tc('swag-paypal-disputes.list.emptyState.subline')"
-                            icon="default-communication-speech-bubbles"
+                            icon="regular-comments"
                             color="#F88962">
                         </sw-empty-state>
                     {% endblock %}
@@ -133,14 +133,14 @@
 
                     {% block swag_paypal_disputes_list_sidebar_refresh %}
                         <sw-sidebar-item
-                            icon="default-arrow-360-left"
+                            icon="regular-sync"
                             :title="$tc('swag-paypal-disputes.list.titleSidebarItemRefresh')"
                             @click="onRefresh">
                         </sw-sidebar-item>
                     {% endblock %}
 
                     {% block swag_paypal_disputes_list_sidebar_filter %}
-                        <sw-sidebar-item icon="default-action-filter"
+                        <sw-sidebar-item icon="regular-filter"
                                          :title="$tc('swag-paypal-disputes.list.titleSidebarItemFilter')">
 
                             {% block swag_paypal_disputes_list_sidebar_filter_items %}

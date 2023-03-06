@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\OrdersApi\Builder;
 
-use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
@@ -31,8 +30,8 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\Name;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\Phone;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\Compatibility\Exception;
 use Swag\PayPal\Util\LocaleCodeProvider;
-use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 class PUIOrderBuilder extends AbstractOrderBuilder
 {
@@ -40,6 +39,9 @@ class PUIOrderBuilder extends AbstractOrderBuilder
 
     private LocaleCodeProvider $localeCodeProvider;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,
@@ -98,9 +100,6 @@ class PUIOrderBuilder extends AbstractOrderBuilder
         $name->setGivenName($orderCustomer->getFirstName());
         $name->setSurname($orderCustomer->getLastName());
 
-        if ($this->addressProvider === null) {
-            throw new ServiceNotFoundException(AddressProvider::class);
-        }
         $address = new BillingAddress();
         $this->addressProvider->createAddress($orderAddress, $address);
 
@@ -128,7 +127,7 @@ class PUIOrderBuilder extends AbstractOrderBuilder
     {
         $customer = $order->getOrderCustomer();
         if ($customer === null) {
-            throw new CustomerNotLoggedInException();
+            throw Exception::customerNotLoggedIn();
         }
 
         return $customer;

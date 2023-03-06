@@ -10,11 +10,11 @@ namespace Swag\PayPal\Test\Checkout\SalesChannel;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
+use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
@@ -36,6 +36,9 @@ use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class CreateOrderRouteTest extends TestCase
 {
     use DatabaseTransactionBehaviour;
@@ -89,8 +92,8 @@ class CreateOrderRouteTest extends TestCase
         $salesChannelContext->getContext()->addExtension(OrderRepositoryMock::NO_ORDER, new ArrayStruct());
         $request = new Request([], ['orderId' => 'no-order-id']);
 
-        $this->expectException(OrderNotFoundException::class);
-        $this->expectExceptionMessage('Order with id "no-order-id" not found.');
+        $this->expectException(ShopwareHttpException::class);
+        $this->expectExceptionMessageMatches('/Order with id \"?no-order-id\"? not found./');
         $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
     }
 

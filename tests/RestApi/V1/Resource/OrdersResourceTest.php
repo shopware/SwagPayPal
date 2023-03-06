@@ -8,13 +8,16 @@
 namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Resource\OrdersResource;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\GetResourceOrderResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\VoidOrderResponseFixture;
 
+/**
+ * @internal
+ */
 class OrdersResourceTest extends TestCase
 {
     use ServicesTrait;
@@ -23,7 +26,7 @@ class OrdersResourceTest extends TestCase
     {
         $ordersResponse = $this->createOrdersResource()->get(
             'ordersId',
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
 
         $orders = \json_encode($ordersResponse);
@@ -37,7 +40,7 @@ class OrdersResourceTest extends TestCase
     public function testCapture(): void
     {
         $capture = new Capture();
-        $captureResponse = $this->createOrdersResource()->capture('captureId', $capture, Defaults::SALES_CHANNEL);
+        $captureResponse = $this->createOrdersResource()->capture('captureId', $capture, TestDefaults::SALES_CHANNEL);
 
         $capture = \json_encode($captureResponse);
         static::assertNotFalse($capture);
@@ -49,7 +52,7 @@ class OrdersResourceTest extends TestCase
 
     public function testVoid(): void
     {
-        $voidResponse = $this->createOrdersResource()->void('voidId', Defaults::SALES_CHANNEL);
+        $voidResponse = $this->createOrdersResource()->void('voidId', TestDefaults::SALES_CHANNEL);
 
         $void = \json_encode($voidResponse);
         static::assertNotFalse($void);

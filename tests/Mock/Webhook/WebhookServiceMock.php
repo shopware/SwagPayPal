@@ -19,6 +19,9 @@ use Swag\PayPal\Webhook\Exception\WebhookException;
 use Swag\PayPal\Webhook\WebhookService;
 use Swag\PayPal\Webhook\WebhookServiceInterface;
 
+/**
+ * @internal
+ */
 class WebhookServiceMock implements WebhookServiceInterface
 {
     /**

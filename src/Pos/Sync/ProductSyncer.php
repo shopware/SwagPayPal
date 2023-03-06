@@ -32,6 +32,9 @@ class ProductSyncer
 
     private UnsyncedChecker $unsyncedChecker;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ProductConverter $productConverter,
         ProductContextFactory $productContextFactory,

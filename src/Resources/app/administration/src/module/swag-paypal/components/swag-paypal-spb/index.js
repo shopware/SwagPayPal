@@ -13,6 +13,7 @@ Component.register('swag-paypal-spb', {
         actualConfigData: {
             type: Object,
             required: true,
+            default: () => { return {}; },
         },
         allConfigs: {
             type: Object,

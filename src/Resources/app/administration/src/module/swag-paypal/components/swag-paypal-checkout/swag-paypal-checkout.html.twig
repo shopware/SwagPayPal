@@ -28,9 +28,6 @@
     {% block swag_paypal_content_card_channel_config_checkout_container %}
     <div class="swag-paypal-checkout">
 
-        {# @deprecated tag:v6.0.0 - will be removed #}
-        {% block swag_paypal_content_card_channel_config_checkout_container_image %}{% endblock %}
-
         {% block swag_paypal_content_card_channel_config_checkout_container_box %}
         <div :class="{'swag-paypal-checkout__box': showMerchantInformation }">
 
@@ -138,26 +135,7 @@
                 :key="paymentMethod.id"
                 :payment-method="paymentMethod"
                 :onboarding-status="onboardingStatus(paymentMethod)"
-            >
-                {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
-                {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_name_icon %}{% endblock %}
-                {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
-                {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_dynamic %}
-                    {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
-                    {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_pui_help_text %}{% endblock %}
-                    {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
-                    {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_onboarding_status %}
-                        {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
-                        {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_onboarding_status_badge %}{% endblock %}
-                        {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
-                        {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_onboarding_status_text %}{% endblock %}
-                    {% endblock %}
-                    {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
-                    {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_edit_detail_link %}{% endblock %}
-                {% endblock %}
-                {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
-                {% block swag_paypal_content_card_channel_config_checkout_container_payment_methods_items_item_active_switch %}{% endblock %}
-            </swag-paypal-checkout-method>
+            />
             {% endblock %}
 
         </div>

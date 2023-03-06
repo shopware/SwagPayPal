@@ -9,7 +9,7 @@ namespace Swag\PayPal\Pos\Sync;
 
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 use Swag\PayPal\Pos\Sync\Context\InventoryContextFactory;
 use Swag\PayPal\Pos\Sync\Inventory\LocalUpdater;
@@ -24,13 +24,16 @@ class InventorySyncer
 
     private RemoteUpdater $remoteUpdater;
 
-    private EntityRepositoryInterface $inventoryRepository;
+    private EntityRepository $inventoryRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         InventoryContextFactory $inventoryContextFactory,
         LocalUpdater $localUpdater,
         RemoteUpdater $remoteUpdater,
-        EntityRepositoryInterface $inventoryRepository
+        EntityRepository $inventoryRepository
     ) {
         $this->inventoryContextFactory = $inventoryContextFactory;
         $this->localUpdater = $localUpdater;

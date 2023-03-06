@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Pos\Command;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Run\Administration\SyncResetter;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,23 +17,19 @@ class PosSyncResetCommand extends AbstractPosCommand
 {
     protected static $defaultName = 'swag:paypal:pos:sync:reset';
 
+    protected static $defaultDescription = 'Reset Zettle sync';
+
     private SyncResetter $resetSyncService;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         SyncResetter $resetSyncService
     ) {
         parent::__construct($salesChannelRepository);
         $this->resetSyncService = $resetSyncService;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function configure(): void
-    {
-        parent::configure();
-        $this->setDescription('Reset Zettle sync');
     }
 
     protected function executeForSalesChannel(SalesChannelEntity $salesChannel, OutputInterface $output, Context $context): void

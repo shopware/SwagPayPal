@@ -12,7 +12,7 @@ Module.register('swag-paypal-disputes', {
     version: '1.0.0',
     targetVersion: '1.0.0',
     color: '#F88962',
-    icon: 'default-communication-speech-bubbles',
+    icon: 'regular-comments',
     favicon: 'icon-module-customers.png',
 
     routes: {

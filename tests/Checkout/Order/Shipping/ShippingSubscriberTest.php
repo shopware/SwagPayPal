@@ -27,6 +27,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Checkout\Order\Shipping\Service\ShippingService;
 use Swag\PayPal\Checkout\Order\Shipping\ShippingSubscriber;
 
+/**
+ * @internal
+ */
 class ShippingSubscriberTest extends TestCase
 {
     private const TEST_CODE = 'test_code';

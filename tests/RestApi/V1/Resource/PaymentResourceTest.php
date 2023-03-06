@@ -9,7 +9,7 @@ namespace Swag\PayPal\Test\RestApi\V1\Resource;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
-use Shopware\Core\Defaults;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
@@ -18,6 +18,9 @@ use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 
+/**
+ * @internal
+ */
 class PaymentResourceTest extends TestCase
 {
     use PaymentTransactionTrait;
@@ -52,7 +55,7 @@ class PaymentResourceTest extends TestCase
         $executedPayment = $this->createPaymentResource($this->createDefaultSystemConfig())->execute(
             'testPayerId',
             self::TEST_PAYMENT_ID,
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
 
         $transaction = $executedPayment->getTransactions()[0];
@@ -68,7 +71,7 @@ class PaymentResourceTest extends TestCase
         $executedPayment = $this->createPaymentResource($this->createDefaultSystemConfig())->execute(
             ConstantsForTesting::PAYER_ID_PAYMENT_AUTHORIZE,
             self::TEST_PAYMENT_ID,
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
 
         $transaction = $executedPayment->getTransactions()[0];
@@ -84,7 +87,7 @@ class PaymentResourceTest extends TestCase
         $executedPayment = $this->createPaymentResource($this->createDefaultSystemConfig())->execute(
             ConstantsForTesting::PAYER_ID_PAYMENT_ORDER,
             self::TEST_PAYMENT_ID,
-            Defaults::SALES_CHANNEL
+            TestDefaults::SALES_CHANNEL
         );
 
         $transaction = $executedPayment->getTransactions()[0];
@@ -97,7 +100,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetSale(): void
     {
-        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::TEST_PAYMENT_ID, Defaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::TEST_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -109,7 +112,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetSaleWithRefund(): void
     {
-        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::SALE_WITH_REFUND_PAYMENT_ID, Defaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::SALE_WITH_REFUND_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -125,7 +128,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetOrder(): void
     {
-        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::ORDER_PAYMENT_ID, Defaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::ORDER_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -137,7 +140,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetCapturedAuthorizeWithRefunds(): void
     {
-        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::AUTHORIZE_PAYMENT_ID, Defaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::AUTHORIZE_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
@@ -157,7 +160,7 @@ class PaymentResourceTest extends TestCase
 
     public function testGetCapturedOrder(): void
     {
-        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::CAPTURED_ORDER_PAYMENT_ID, Defaults::SALES_CHANNEL);
+        $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::CAPTURED_ORDER_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
         static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);

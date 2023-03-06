@@ -8,7 +8,7 @@
 namespace Swag\PayPal\Test\RestApi\V2\Resource;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Defaults;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use Swag\PayPal\RestApi\V2\Resource\CaptureResource;
@@ -16,6 +16,9 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\RefundCapture;
 
+/**
+ * @internal
+ */
 class CaptureResourceTest extends TestCase
 {
     use ServicesTrait;
@@ -23,7 +26,7 @@ class CaptureResourceTest extends TestCase
     public function testGet(): void
     {
         $captureId = GetCapture::ID;
-        $capture = $this->createResource()->get($captureId, Defaults::SALES_CHANNEL);
+        $capture = $this->createResource()->get($captureId, TestDefaults::SALES_CHANNEL);
 
         static::assertSame($captureId, $capture->getId());
         static::assertFalse($capture->isFinalCapture());
@@ -35,7 +38,7 @@ class CaptureResourceTest extends TestCase
         $refund = $this->createResource()->refund(
             'captureId',
             $refund,
-            Defaults::SALES_CHANNEL,
+            TestDefaults::SALES_CHANNEL,
             PartnerAttributionId::PAYPAL_CLASSIC,
             false
         );

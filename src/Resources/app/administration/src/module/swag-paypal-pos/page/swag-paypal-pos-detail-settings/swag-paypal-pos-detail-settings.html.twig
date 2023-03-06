@@ -8,7 +8,9 @@
         {% endblock %}
 
         {% block swag_paypal_pos_detail_settings_basic %}
-            <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-pos.detail.settings.titleGeneralSettings')">
+            <sw-card position-identifier="swag-paypal-pos-detail-settings-basic"
+                     :isLoading="isLoading"
+                     :title="$tc('swag-paypal-pos.detail.settings.titleGeneralSettings')">
                 <sw-container columns="1fr 200px" gap="0px 30px">
 
                     {% block swag_paypal_pos_detail_settings_input_name %}
@@ -72,7 +74,9 @@
 
         {% block swag_paypal_pos_detail_settings_sync %}
             <div class="sw-sales-channel-detail-sync">
-                <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-pos.detail.settings.titleSync')">
+                <sw-card position-identifier="swag-paypal-pos-detail-settings-sync"
+                         :isLoading="isLoading"
+                         :title="$tc('swag-paypal-pos.detail.settings.titleSync')">
 
                     {% block swag_paypal_pos_detail_settings_sync_input %}
                         <sw-radio-field
@@ -91,7 +95,9 @@
 
         {% block swag_paypal_pos_detail_settings_prices %}
             <div class="sw-sales-channel-detail-prices">
-                <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-pos.detail.settings.titlePrices')">
+                <sw-card position-identifier="swag-paypal-pos-detail-settings-prices"
+                         :isLoading="isLoading"
+                         :title="$tc('swag-paypal-pos.detail.settings.titlePrices')">
 
                     {% block swag_paypal_pos_detail_settings_prices_input %}
                         <swag-paypal-pos-boolean-radio
@@ -111,7 +117,9 @@
 
         {% block swag_paypal_pos_detail_settings_credentials %}
             <div class="sw-sales-channel-detail-credentials">
-                <sw-card :isLoading="isLoading" :title="$tc('swag-paypal-pos.detail.settings.titleCredentials')">
+                <sw-card position-identifier="swag-paypal-pos-detail-settings-credentials"
+                         :isLoading="isLoading"
+                         :title="$tc('swag-paypal-pos.detail.settings.titleCredentials')">
 
                     {% block swag_paypal_pos_detail_settings_credentials_apikey %}
                         <sw-password-field v-model="swagPaypalPosSalesChannel.apiKey"
@@ -124,7 +132,7 @@
                             <template #suffix>
 
                                 {% block swag_paypal_pos_detail_settings_credentials_apikey_suffix %}
-                                    <sw-icon name="default-lock-key"
+                                    <sw-icon name="regular-low-vision"
                                              class="swag-paypal-pos-detail-settings__apikey-suffix"
                                              size="22px">
                                     </sw-icon>
@@ -160,7 +168,9 @@
         {% endblock %}
 
         {% block swag_paypal_pos_detail_settings_options %}
-            <sw-card :title="$tc('swag-paypal-pos.detail.settings.optionsTitle')" :isLoading="isLoading">
+            <sw-card position-identifier="swag-paypal-pos-detail-settings-options"
+                     :title="$tc('swag-paypal-pos.detail.settings.optionsTitle')"
+                     :isLoading="isLoading">
                 <template #grid>
                     <sw-container rows="auto auto">
 

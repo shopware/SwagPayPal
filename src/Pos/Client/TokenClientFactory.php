@@ -13,6 +13,9 @@ class TokenClientFactory
 {
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;

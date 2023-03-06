@@ -14,6 +14,9 @@ use Swag\PayPal\Pos\Api\Product;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductEntity;
 
+/**
+ * @internal
+ */
 class PosProductRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition

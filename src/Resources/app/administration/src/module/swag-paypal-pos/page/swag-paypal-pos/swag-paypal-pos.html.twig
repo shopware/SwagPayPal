@@ -28,7 +28,7 @@
                 <sw-card-view>
 
                     {% block swag_paypal_pos_content_tabs %}
-                        <sw-tabs v-if="!isLoading" class="swag-paypal-pos__tabs">
+                        <sw-tabs v-if="!isLoading" position-identifier="swag_paypal_pos_content_tabs" class="swag-paypal-pos__tabs">
 
                             {%  block swag_paypal_pos_content_tab_base %}
                                 <sw-tabs-item :route="{ name: 'swag.paypal.pos.detail.overview', params: { id: $route.params.id } }"
@@ -93,6 +93,7 @@
                     {% block swag_paypal_pos_disclaimer_hero %}
                         <sw-card v-show="!isLoading"
                                  class="swag-paypal-pos__disclaimer-card"
+                                 position-identifier="swag-paypal-pos-disclaimer"
                                  :hero="true">
 
                             {% block swag_paypal_pos_disclaimer_container %}

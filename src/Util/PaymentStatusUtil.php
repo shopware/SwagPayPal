@@ -7,7 +7,6 @@
 
 namespace Swag\PayPal\Util;
 
-use Shopware\Core\Checkout\Cart\Exception\OrderNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -15,24 +14,29 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
+use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Refund;
+use Swag\PayPal\Util\Compatibility\Exception;
 
 class PaymentStatusUtil
 {
-    private EntityRepositoryInterface $orderRepository;
+    private EntityRepository $orderRepository;
 
     private OrderTransactionStateHandler $orderTransactionStateHandler;
 
     private PriceFormatter $priceFormatter;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $orderRepository,
+        EntityRepository $orderRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         PriceFormatter $priceFormatter
     ) {
@@ -157,8 +161,7 @@ class PaymentStatusUtil
     }
 
     /**
-     * @throws OrderNotFoundException
-     * @throws InvalidOrderException
+     * @throws ShopwareHttpException
      */
     private function getOrderTransaction(string $orderId, Context $context): OrderTransactionEntity
     {
@@ -169,7 +172,7 @@ class PaymentStatusUtil
         $order = $this->orderRepository->search($criteria, $context)->first();
 
         if ($order === null) {
-            throw new OrderNotFoundException($orderId);
+            throw Exception::orderNotFound($orderId);
         }
 
         $transactionCollection = $order->getTransactions();

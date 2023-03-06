@@ -9,7 +9,7 @@ namespace Swag\PayPal\Util\Lifecycle;
 
 use Shopware\Core\Content\Category\Exception\CategoryNotFoundException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
@@ -48,19 +48,19 @@ class Update
 
     private SystemConfigService $systemConfig;
 
-    private EntityRepositoryInterface $customFieldRepository;
+    private EntityRepository $customFieldRepository;
 
     private ?WebhookServiceInterface $webhookService;
 
-    private EntityRepositoryInterface $paymentRepository;
+    private EntityRepository $paymentRepository;
 
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
-    private EntityRepositoryInterface $salesChannelTypeRepository;
+    private EntityRepository $salesChannelTypeRepository;
 
     private ?InformationDefaultService $informationDefaultService;
 
-    private EntityRepositoryInterface $shippingRepository;
+    private EntityRepository $shippingRepository;
 
     private ?PosWebhookService $posWebhookService;
 
@@ -70,13 +70,13 @@ class Update
 
     public function __construct(
         SystemConfigService $systemConfig,
-        EntityRepositoryInterface $paymentRepository,
-        EntityRepositoryInterface $customFieldRepository,
+        EntityRepository $paymentRepository,
+        EntityRepository $customFieldRepository,
         ?WebhookServiceInterface $webhookService,
-        EntityRepositoryInterface $salesChannelRepository,
-        EntityRepositoryInterface $salesChannelTypeRepository,
+        EntityRepository $salesChannelRepository,
+        EntityRepository $salesChannelTypeRepository,
         ?InformationDefaultService $informationDefaultService,
-        EntityRepositoryInterface $shippingRepository,
+        EntityRepository $shippingRepository,
         ?PosWebhookService $posWebhookService,
         PaymentMethodInstaller $paymentMethodInstaller,
         PaymentMethodStateService $paymentMethodStateService
@@ -134,6 +134,10 @@ class Update
 
         if (\version_compare($updateContext->getCurrentPluginVersion(), '5.4.0', '<')) {
             $this->updateTo540($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '6.0.1', '<')) {
+            $this->updateTo600($updateContext->getContext());
         }
     }
 
@@ -434,5 +438,20 @@ class Update
     {
         $value = Settings::DEFAULT_VALUES[$setting] ?? null;
         $this->systemConfig->set($setting, $overrideValue ?? $value, $salesChannelId);
+    }
+
+    private function updateTo600(Context $context): void
+    {
+        if ($this->posWebhookService === null) {
+            // plugin not active, type not installed
+            return;
+        }
+
+        $this->salesChannelTypeRepository->update([
+            [
+                'id' => SwagPayPal::SALES_CHANNEL_TYPE_POS,
+                'iconName' => 'regular-money-bill',
+            ],
+        ], $context);
     }
 }

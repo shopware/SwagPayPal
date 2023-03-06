@@ -12,7 +12,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Swag\PayPal\RestApi\V2\Api\Order;
@@ -21,14 +21,17 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 
 class PaymentStatusUtilV2
 {
-    private EntityRepositoryInterface $orderTransactionRepository;
+    private EntityRepository $orderTransactionRepository;
 
     private OrderTransactionStateHandler $orderTransactionStateHandler;
 
     private PriceFormatter $priceFormatter;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $orderTransactionRepository,
+        EntityRepository $orderTransactionRepository,
         OrderTransactionStateHandler $orderTransactionStateHandler,
         PriceFormatter $priceFormatter
     ) {
@@ -94,8 +97,7 @@ class PaymentStatusUtilV2
             $this->reopenTransaction($stateMachineState, $transactionId, $context);
             // If the previous state is "paid_partially", "paid" is currently not allowed as direct transition
             if ($stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_IN_PROGRESS
-             // replace unconfirmed with constant with min-Version 6.4.4.0
-             && $stateMachineState->getTechnicalName() !== 'unconfirmed'
+             && $stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_UNCONFIRMED
              && $stateMachineState->getTechnicalName() !== OrderTransactionStates::STATE_AUTHORIZED) {
                 $this->orderTransactionStateHandler->process($transactionId, $context);
             }

@@ -16,12 +16,11 @@ use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentExcepti
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Checkout\Payment\Exception\PaymentProcessException;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\NotFilter;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -33,13 +32,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * @deprecated tag:v6.0.0 - Will be removed without replacement.
+ * @deprecated tag:v7.0.0 - Will be removed without replacement.
  */
 class PlusPaymentFinalizeController extends AbstractController
 {
     private RouterInterface $router;
 
-    private EntityRepositoryInterface $orderTransactionRepo;
+    private EntityRepository $orderTransactionRepo;
 
     private AsynchronousPaymentHandlerInterface $paymentHandler;
 
@@ -47,8 +46,11 @@ class PlusPaymentFinalizeController extends AbstractController
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
-        EntityRepositoryInterface $orderTransactionRepo,
+        EntityRepository $orderTransactionRepo,
         AsynchronousPaymentHandlerInterface $paymentHandler,
         OrderTransactionStateHandler $transactionStateHandler,
         RouterInterface $router,
@@ -62,13 +64,13 @@ class PlusPaymentFinalizeController extends AbstractController
     }
 
     /**
-     * @RouteScope(scopes={"storefront"})
      * @Since("0.9.0")
+     *
      * @Route(
      *     "/paypal/plus/payment/finalize-transaction",
      *     name="payment.paypal.plus.finalize.transaction",
      *     methods={"GET"},
-     *     defaults={"auth_required"=false}
+     *     defaults={"auth_required"=false,"_routeScope"={"storefront"}}
      * )
      *
      * @throws InvalidTransactionException

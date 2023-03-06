@@ -33,6 +33,7 @@ class OauthIntegration extends PayPalApiStruct
 
     /**
      * @var OauthThirdParty[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_merchant_integrations_oauth_integration_third_party"})
      */
     protected array $oauthThirdParty;

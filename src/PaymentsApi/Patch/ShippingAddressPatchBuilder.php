@@ -43,7 +43,7 @@ class ShippingAddressPatchBuilder
             }
         }
 
-        $shippingAddress->setPostalCode($customerShippingAddress->getZipcode());
+        $shippingAddress->setPostalCode($customerShippingAddress->getZipcode() ?? '');
 
         $state = $customerShippingAddress->getCountryState();
         if ($state !== null) {

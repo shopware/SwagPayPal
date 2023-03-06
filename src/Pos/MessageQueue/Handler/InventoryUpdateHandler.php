@@ -8,34 +8,36 @@
 namespace Swag\PayPal\Pos\MessageQueue\Handler;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\MessageQueue\Handler\AbstractMessageHandler;
 use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Swag\PayPal\Pos\MessageQueue\Manager\InventorySyncManager;
 use Swag\PayPal\Pos\MessageQueue\Message\InventoryUpdateMessage;
-use Swag\PayPal\Pos\MessageQueue\Message\SyncManagerMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Run\Task\InventoryTask;
 use Swag\PayPal\SwagPayPal;
-use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 
-class InventoryUpdateHandler extends AbstractMessageHandler
+/**
+ * @internal
+ */
+class InventoryUpdateHandler implements MessageSubscriberInterface
 {
     private RunService $runService;
 
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
     private InventorySyncManager $inventorySyncManager;
 
-    private MessageBusInterface $messageBus;
+    private MessageDispatcher $messageBus;
 
     public function __construct(
         RunService $runService,
-        EntityRepositoryInterface $salesChannelRepository,
+        EntityRepository $salesChannelRepository,
         InventorySyncManager $inventorySyncManager,
-        MessageBusInterface $messageBus
+        MessageDispatcher $messageBus
     ) {
         $this->runService = $runService;
         $this->salesChannelRepository = $salesChannelRepository;
@@ -43,27 +45,21 @@ class InventoryUpdateHandler extends AbstractMessageHandler
         $this->messageBus = $messageBus;
     }
 
-    /**
-     * @param InventoryUpdateMessage $message
-     */
-    public function handle($message): void
+    public function __invoke(InventoryUpdateMessage $message): void
     {
         $context = $message->getContext();
 
         foreach ($this->getSalesChannels($context) as $salesChannel) {
-            $runId = $this->runService->startRun($salesChannel->getId(), InventoryTask::TASK_NAME_INVENTORY, $context);
+            $runId = $this->runService->startRun(
+                $salesChannel->getId(),
+                InventoryTask::TASK_NAME_INVENTORY,
+                [SyncManagerHandler::SYNC_INVENTORY],
+                $context
+            );
 
-            $messageCount = $this->inventorySyncManager->createMessages($salesChannel, $context, $runId, $message->getIds());
+            $messages = $this->inventorySyncManager->createMessages($salesChannel, $context, $runId, $message->getIds());
 
-            $this->runService->setMessageCount($messageCount, $runId, $context);
-
-            $managerMessage = new SyncManagerMessage();
-            $managerMessage->setContext($context);
-            $managerMessage->setSalesChannel($salesChannel);
-            $managerMessage->setRunId($runId);
-            $managerMessage->setSteps([SyncManagerHandler::SYNC_INVENTORY]);
-            $managerMessage->setCurrentStep(1);
-            $this->messageBus->dispatch($managerMessage);
+            $this->messageBus->bulkDispatch($messages, $runId);
         }
     }
 

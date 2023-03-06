@@ -19,6 +19,9 @@ use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * @internal
+ */
 class PUISubscriber implements EventSubscriberInterface
 {
     public const PAYPAL_PUI_FRAUDNET_PAGE_EXTENSION_ID = 'payPalPUIFraudNetPageData';

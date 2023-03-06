@@ -12,10 +12,10 @@ use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Content\Product\DataAbstractionLayer\StockUpdater;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
 use Swag\PayPal\Pos\Resource\InventoryResource;
@@ -42,6 +42,9 @@ use Swag\PayPal\Test\Pos\Webhook\_fixtures\InventoryChangeFixture;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Router;
 
+/**
+ * @internal
+ */
 class InventoryChangedTest extends TestCase
 {
     use SalesChannelTrait;
@@ -59,9 +62,9 @@ class InventoryChangedTest extends TestCase
         $variantB->setParentId(ConstantsForTesting::PRODUCT_F_ID);
 
         $inventoryRepository = new PosInventoryRepoMock();
-        $inventoryA = $inventoryRepository->createMockEntity($productA, Defaults::SALES_CHANNEL, 3);
-        $inventoryVariantA = $inventoryRepository->createMockEntity($variantA, Defaults::SALES_CHANNEL, 15);
-        $inventoryVariantB = $inventoryRepository->createMockEntity($variantB, Defaults::SALES_CHANNEL, 11);
+        $inventoryA = $inventoryRepository->createMockEntity($productA, TestDefaults::SALES_CHANNEL, 3);
+        $inventoryVariantA = $inventoryRepository->createMockEntity($variantA, TestDefaults::SALES_CHANNEL, 15);
+        $inventoryVariantB = $inventoryRepository->createMockEntity($variantB, TestDefaults::SALES_CHANNEL, 11);
 
         $localCalculator = new LocalWebhookCalculator();
         $inventoryContextFactory = new InventoryContextFactory(
@@ -124,7 +127,7 @@ class InventoryChangedTest extends TestCase
         $request = new Request([], InventoryChangeFixture::getWebhookFixture());
         $request->headers->add(['x-izettle-signature' => InventoryChangeFixture::getSignature()]);
 
-        $webhookController->executeWebhook(Defaults::SALES_CHANNEL, $request, $context);
+        $webhookController->executeWebhook(TestDefaults::SALES_CHANNEL, $request, $context);
 
         static::assertSame(2, $inventoryA->getStock());
         static::assertSame(4, $productA->getStock());

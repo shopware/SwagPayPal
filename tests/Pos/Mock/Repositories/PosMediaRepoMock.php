@@ -21,6 +21,9 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaEntity;
 
+/**
+ * @internal
+ */
 class PosMediaRepoMock extends AbstractRepoMock
 {
     public function getDefinition(): EntityDefinition

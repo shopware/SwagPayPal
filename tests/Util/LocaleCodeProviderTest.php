@@ -13,6 +13,9 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\Repositories\LanguageRepoMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
 
+/**
+ * @internal
+ */
 class LocaleCodeProviderTest extends TestCase
 {
     use ServicesTrait;

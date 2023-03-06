@@ -21,9 +21,6 @@ use Swag\PayPal\Util\Lifecycle\Method\PayPalMethodData;
 use Swag\PayPal\Util\LocaleCodeProvider;
 use Symfony\Component\Routing\RouterInterface;
 
-/**
- * @deprecated tag:v6.0.0 - will be removed without replacement
- */
 class SPBCheckoutDataService extends AbstractCheckoutDataService
 {
     private const APM_BLIK = 'blik';
@@ -34,6 +31,9 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
 
     private SystemConfigService $systemConfigService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PaymentMethodDataRegistry $paymentMethodDataRegistry,
         IdentityResource $identityResource,
@@ -60,8 +60,7 @@ class SPBCheckoutDataService extends AbstractCheckoutDataService
         }
 
         if ($this->systemConfigService->getString(Settings::MERCHANT_LOCATION, $salesChannelId) === Settings::MERCHANT_LOCATION_GERMANY
-            || !($this->systemConfigService->getBool(Settings::SPB_CHECKOUT_ENABLED, $salesChannelId)
-                || $this->systemConfigService->getBool(Settings::SPB_SHOW_PAY_LATER, $salesChannelId))
+            || !($this->systemConfigService->getBool(Settings::SPB_CHECKOUT_ENABLED, $salesChannelId))
         ) {
             return null;
         }

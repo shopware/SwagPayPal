@@ -17,7 +17,7 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -49,6 +49,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderAPM;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * @internal
+ */
 class APMHandlerTest extends TestCase
 {
     use FullCheckoutTrait;
@@ -70,21 +73,11 @@ class APMHandlerTest extends TestCase
         $transactionId = $this->getTransactionFromOrder($order)->getId();
         $this->processPayment($order->getId(), new RequestDataBag(), $context, $paymentHandler);
 
-        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed') && \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED')) {
-            /** @phpstan-ignore-next-line */
-            $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $context->getContext());
-        } else {
-            $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $context->getContext());
-        }
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $context->getContext());
         $this->assertCustomFields($transactionId, CreateOrderAPM::ID, PartnerAttributionId::PAYPAL_PPCP);
 
         $this->finalizePayment($transactionId, new Request(), $context, $paymentHandler);
-        if (\method_exists(OrderTransactionStateHandler::class, 'processUnconfirmed') && \defined('Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates::STATE_UNCONFIRMED')) {
-            /** @phpstan-ignore-next-line */
-            $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $context->getContext());
-        } else {
-            $this->assertOrderTransactionState(OrderTransactionStates::STATE_IN_PROGRESS, $transactionId, $context->getContext());
-        }
+        $this->assertOrderTransactionState(OrderTransactionStates::STATE_UNCONFIRMED, $transactionId, $context->getContext());
     }
 
     /**
@@ -141,7 +134,7 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         $criteria->addAssociation('lineItems');
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
 
-        /** @var EntityRepositoryInterface $orderRepository */
+        /** @var EntityRepository $orderRepository */
         $orderRepository = $this->getContainer()->get('order.repository');
         $order = $orderRepository->search($criteria, $context->getContext())->first();
         static::assertNotNull($order);
@@ -157,7 +150,7 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
         $criteria->addAssociation('order');
         $criteria->addAssociation('paymentMethod.appPaymentMethod.app');
 
-        /** @var EntityRepositoryInterface $orderTransactionRepository */
+        /** @var EntityRepository $orderTransactionRepository */
         $orderTransactionRepository = $this->getContainer()->get('order_transaction.repository');
         /** @var OrderTransactionEntity|null $orderTransaction */
         $orderTransaction = $orderTransactionRepository->search($criteria, $context->getContext())->first();
@@ -188,7 +181,7 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
 
     private function assertCustomFields(string $orderTransactionId, string $orderId, string $attributionId): void
     {
-        /** @var EntityRepositoryInterface $orderTransactionRepo */
+        /** @var EntityRepository $orderTransactionRepo */
         $orderTransactionRepo = $this->getContainer()->get('order_transaction.repository');
         /** @var OrderTransactionEntity|null $orderTransaction */
         $orderTransaction = $orderTransactionRepo->search(new Criteria([$orderTransactionId]), Context::createDefaultContext())->first();

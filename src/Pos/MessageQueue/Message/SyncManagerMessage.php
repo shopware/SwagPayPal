@@ -12,13 +12,9 @@ class SyncManagerMessage extends AbstractSyncMessage
     /**
      * @var string[]
      */
-    private array $steps;
+    protected array $steps;
 
-    private int $currentStep;
-
-    private int $lastMessageCount = 0;
-
-    private int $messageRetries = 0;
+    protected int $currentStep;
 
     /**
      * @return string[]
@@ -44,25 +40,5 @@ class SyncManagerMessage extends AbstractSyncMessage
     public function setCurrentStep(int $currentStep): void
     {
         $this->currentStep = $currentStep;
-    }
-
-    public function getLastMessageCount(): int
-    {
-        return $this->lastMessageCount;
-    }
-
-    public function setLastMessageCount(int $lastMessageCount): void
-    {
-        $this->lastMessageCount = $lastMessageCount;
-    }
-
-    public function getMessageRetries(): int
-    {
-        return $this->messageRetries;
-    }
-
-    public function setMessageRetries(int $messageRetries): void
-    {
-        $this->messageRetries = $messageRetries;
     }
 }

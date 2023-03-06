@@ -11,8 +11,10 @@ use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
 
 class ACDCValidationFailedException extends SyncPaymentProcessException
 {
-    public function __construct(string $orderTransactionId, ?string $message = null)
-    {
+    public function __construct(
+        string $orderTransactionId,
+        ?string $message = null
+    ) {
         parent::__construct($orderTransactionId, $message ?? 'Credit card validation failed, 3D secure was not validated.');
     }
 }

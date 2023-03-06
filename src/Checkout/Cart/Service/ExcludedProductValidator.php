@@ -13,7 +13,7 @@ use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\MultiFilter;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Settings;
@@ -24,11 +24,14 @@ class ExcludedProductValidator
 
     private SystemConfigService $systemConfigService;
 
-    private SalesChannelRepositoryInterface $productRepository;
+    private SalesChannelRepository $productRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SystemConfigService $systemConfigService,
-        SalesChannelRepositoryInterface $productRepository
+        SalesChannelRepository $productRepository
     ) {
         $this->systemConfigService = $systemConfigService;
         $this->productRepository = $productRepository;

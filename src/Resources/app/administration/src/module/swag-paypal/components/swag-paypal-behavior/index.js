@@ -16,6 +16,7 @@ Component.register('swag-paypal-behavior', {
         actualConfigData: {
             type: Object,
             required: true,
+            default: () => { return {}; },
         },
         allConfigs: {
             type: Object,
@@ -49,7 +50,7 @@ Component.register('swag-paypal-behavior', {
         },
 
         /**
-         * @deprecated tag:v6.0.0 Will be removed without replacement.
+         * @deprecated tag:v7.0.0 Will be removed without replacement.
          */
         merchantLocationOptions() {
             return [
@@ -82,8 +83,7 @@ Component.register('swag-paypal-behavior', {
         },
 
         landingPageHint() {
-            let landingPageOption = this.actualConfigData['SwagPayPal.settings.landingPage'] ||
-                this.allConfigs.null['SwagPayPal.settings.landingPage'] || 'NO_PREFERENCE';
+            let landingPageOption = this.actualConfigData['SwagPayPal.settings.landingPage'] || 'NO_PREFERENCE';
             landingPageOption = landingPageOption.toLowerCase();
             const translationKey = `swag-paypal.settingForm.behavior.landingPage.helpText.${landingPageOption}`;
             return this.$tc(translationKey);
@@ -100,6 +100,19 @@ Component.register('swag-paypal-behavior', {
                     label: this.$tc('swag-paypal.settingForm.behavior.loggingLevel.options.advanced'),
                 },
             ];
+        },
+
+        loggingLevel: {
+            get() {
+                if (!this.allConfigs.null) {
+                    return 300;
+                }
+
+                return this.allConfigs.null['SwagPayPal.settings.loggingLevel'];
+            },
+            set(value) {
+                this.allConfigs.null['SwagPayPal.settings.loggingLevel'] = value;
+            },
         },
 
         productRepository() {

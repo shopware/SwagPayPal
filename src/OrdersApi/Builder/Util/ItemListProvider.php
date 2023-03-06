@@ -28,6 +28,9 @@ class ItemListProvider
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PriceFormatter $priceFormatter,
         EventDispatcherInterface $eventDispatcher,

@@ -12,6 +12,9 @@ use Swag\PayPal\Test\Mock\PayPal\Client\GuzzleClientMock;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @internal
+ */
 class WebhookIdInvalidExceptionTest extends TestCase
 {
     public function testGetStatusCode(): void

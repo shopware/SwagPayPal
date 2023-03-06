@@ -8,27 +8,37 @@
 namespace Swag\PayPal\Pos\MessageQueue\Handler\Sync;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaCollection;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaEntity;
 use Swag\PayPal\Pos\MessageQueue\Message\AbstractSyncMessage;
 use Swag\PayPal\Pos\MessageQueue\Message\Sync\ImageSyncMessage;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
+use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Run\RunService;
 use Swag\PayPal\Pos\Sync\ImageSyncer;
 
+/**
+ * @internal
+ */
 class ImageSyncHandler extends AbstractSyncHandler
 {
-    private EntityRepositoryInterface $posMediaRepository;
+    private EntityRepository $posMediaRepository;
 
     private ImageSyncer $imageSyncer;
 
+    /**
+     * @internal
+     */
     public function __construct(
         RunService $runService,
         LoggerInterface $logger,
-        EntityRepositoryInterface $posMediaRepository,
+        MessageDispatcher $messageBus,
+        MessageHydrator $messageHydrator,
+        EntityRepository $posMediaRepository,
         ImageSyncer $imageSyncer
     ) {
-        parent::__construct($runService, $logger);
+        parent::__construct($runService, $logger, $messageBus, $messageHydrator);
         $this->posMediaRepository = $posMediaRepository;
         $this->imageSyncer = $imageSyncer;
     }

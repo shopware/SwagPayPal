@@ -9,6 +9,9 @@ namespace Swag\PayPal\Test\Mock;
 
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * @internal
+ */
 class EventDispatcherMock implements EventDispatcherInterface
 {
     private ?object $lastEvent = null;

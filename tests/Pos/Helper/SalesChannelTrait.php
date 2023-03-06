@@ -8,23 +8,26 @@ declare(strict_types=1);
 
 namespace Swag\PayPal\Test\Pos\Helper;
 
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\SwagPayPal;
 use Swag\PayPal\Test\Pos\ConstantsForTesting;
 
+/**
+ * @internal
+ */
 trait SalesChannelTrait
 {
     protected function getSalesChannel(Context $context): SalesChannelEntity
     {
-        /** @var EntityRepositoryInterface $salesChannelRepository */
+        /** @var EntityRepository $salesChannelRepository */
         $salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
-        $salesChannelCriteria = new Criteria([Defaults::SALES_CHANNEL]);
+        $salesChannelCriteria = new Criteria([TestDefaults::SALES_CHANNEL]);
         $salesChannelCriteria->addAssociation('currency');
 
         /** @var SalesChannelEntity $salesChannel */

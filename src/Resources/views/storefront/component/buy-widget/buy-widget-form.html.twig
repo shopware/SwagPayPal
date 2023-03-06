@@ -1,5 +1,7 @@
 {% sw_extends "@Storefront/storefront/component/buy-widget/buy-widget-form.html.twig" %}
 
+{% set isBootstrap5 = feature('v6.5.0.0') or getAllFeatures()['v6.6.0.0'] is defined %}
+
 {% block buy_widget_buy_container %}
     {{ parent() }}
 
@@ -23,7 +25,7 @@
                 {% endif %}
 
                 {% if (isProductDetail and expressSettings.productDetailEnabled) or (not isProductDetail and expressSettings.listingEnabled) %}
-                    <div class="form-row mt-3 justify-content-end">
+                    <div class="{{ isBootstrap5 ? 'row g-2 mt-0' : 'form-row mt-3' }} justify-content-end">
                         {% sw_include '@SwagPayPal/storefront/component/ecs-spb-checkout/ecs-button.html.twig' with {button_class: 'col-8'} %}
                     </div>
                 {% endif %}
@@ -38,7 +40,7 @@
                 {% set installmentBanner = page.extensions[constant('Swag\\PayPal\\Installment\\Banner\\InstallmentBannerSubscriber::PAYPAL_INSTALLMENT_BANNER_DATA_EXTENSION_ID')] %}
 
                 {% if installmentBanner is not null %}
-                    <div class="form-row mt-3 mb-4 justify-content-end">
+                    <div class="{{ isBootstrap5 ? 'row g-2 mt-0' : 'form-row mt-3' }} mb-4 justify-content-end">
                         <div class="{{ buyable ? 'col-8' : 'col-12' }}"
                              data-swag-paypal-installment-banner="true"
                              data-swag-pay-pal-installment-banner-options="{{ installmentBanner|json_encode }}">

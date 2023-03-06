@@ -23,6 +23,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @internal
+ */
 class CheckoutDataSubscriber implements EventSubscriberInterface
 {
     private LoggerInterface $logger;

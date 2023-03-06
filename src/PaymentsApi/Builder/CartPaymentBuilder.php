@@ -29,6 +29,9 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class CartPaymentBuilder extends AbstractPaymentBuilder implements CartPaymentBuilderInterface
 {
+    /**
+     * @internal
+     */
     public function __construct(
         LocaleCodeProvider $localeCodeProvider,
         PriceFormatter $priceFormatter,

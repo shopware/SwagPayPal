@@ -7,19 +7,42 @@
 
 namespace Swag\PayPal\Pos\MessageQueue\Message\Sync\Traits;
 
+use Shopware\Core\Framework\Context;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 
 trait SalesChannelContextTrait
 {
-    private SalesChannelContext $salesChannelContext;
+    protected SalesChannelContext $salesChannelContext;
+
+    protected string $contextToken;
 
     public function setSalesChannelContext(SalesChannelContext $salesChannelContext): void
     {
         $this->salesChannelContext = $salesChannelContext;
+        $this->contextToken = $this->salesChannelContext->getToken();
     }
 
     public function getSalesChannelContext(): SalesChannelContext
     {
         return $this->salesChannelContext;
+    }
+
+    public function getContextToken(): string
+    {
+        return $this->contextToken;
+    }
+
+    public function setContextToken(string $contextToken): void
+    {
+        $this->contextToken = $contextToken;
+    }
+
+    public function getContext(): Context
+    {
+        if (!$this->isHydrated()) {
+            return parent::getContext();
+        }
+
+        return $this->salesChannelContext->getContext();
     }
 }

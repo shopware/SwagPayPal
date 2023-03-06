@@ -23,6 +23,9 @@ class RemoteUpdater
 
     private LoggerInterface $logger;
 
+    /**
+     * @internal
+     */
     public function __construct(
         InventoryResource $inventoryResource,
         RemoteCalculator $remoteCalculator,

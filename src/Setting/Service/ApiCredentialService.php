@@ -19,6 +19,9 @@ class ApiCredentialService implements ApiCredentialServiceInterface
 {
     private CredentialsResource $credentialsResource;
 
+    /**
+     * @internal
+     */
     public function __construct(CredentialsResource $credentialsResource)
     {
         $this->credentialsResource = $credentialsResource;

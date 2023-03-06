@@ -32,6 +32,9 @@ abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
 {
     private ItemListProvider $itemListProvider;
 
+    /**
+     * @internal
+     */
     public function __construct(
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,
@@ -67,14 +70,6 @@ abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
         $order->setProcessingInstruction(Order::PROCESSING_INSTRUCTION_COMPLETE_ON_APPROVAL);
 
         return $order;
-    }
-
-    /**
-     * @deprecated tag:v6.0.0 - will be removed, is always true now
-     */
-    public function isCompleteOnApproval(): bool
-    {
-        return true;
     }
 
     abstract protected function buildPaymentSource(

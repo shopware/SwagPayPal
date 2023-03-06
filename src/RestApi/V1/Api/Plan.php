@@ -15,7 +15,9 @@ use Swag\PayPal\RestApi\V1\Api\Plan\Taxes;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_plan")
+ *
  * @codeCoverageIgnore
+ *
  * @experimental
  *
  * This class is experimental and not officially supported.
@@ -45,6 +47,7 @@ class Plan extends PayPalApiStruct
 
     /**
      * @var BillingCycle[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_plan_billing_cycle"})
      */
     protected array $billingCycles = [];

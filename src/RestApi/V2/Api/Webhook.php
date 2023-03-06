@@ -51,12 +51,14 @@ class Webhook extends PayPalApiStruct
 
     /**
      * @var Authorization|Capture|Refund|null
+     *
      * @OA\Property(oneOf={}, nullable=true)
      */
     protected $resource;
 
     /**
      * @var Link[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
     protected array $links;

@@ -11,6 +11,9 @@ use Psr\Log\LoggerInterface;
 use Swag\PayPal\Pos\Api\PosBaseURL;
 use Swag\PayPal\Pos\Client\TokenClient;
 
+/**
+ * @internal
+ */
 class TokenClientMock extends TokenClient
 {
     public function __construct(LoggerInterface $logger)

@@ -14,9 +14,11 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Image\BulkImageUpload;
 use Swag\PayPal\Pos\Api\PosRequestUri;
 use Swag\PayPal\Pos\Api\Service\MediaConverter;
@@ -26,7 +28,10 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelMediaEntity;
 use Swag\PayPal\Pos\Exception\MediaDomainNotSetException;
 use Swag\PayPal\Pos\MessageQueue\Handler\Sync\ImageSyncHandler;
+use Swag\PayPal\Pos\MessageQueue\Handler\SyncManagerHandler;
 use Swag\PayPal\Pos\MessageQueue\Manager\ImageSyncManager;
+use Swag\PayPal\Pos\MessageQueue\MessageDispatcher;
+use Swag\PayPal\Pos\MessageQueue\MessageHydrator;
 use Swag\PayPal\Pos\Resource\ImageResource;
 use Swag\PayPal\Pos\Sync\ImageSyncer;
 use Swag\PayPal\SwagPayPal;
@@ -38,6 +43,9 @@ use Swag\PayPal\Test\Pos\Mock\Repositories\RunLogRepoMock;
 use Swag\PayPal\Test\Pos\Mock\Repositories\RunRepoMock;
 use Swag\PayPal\Test\Pos\Mock\RunServiceMock;
 
+/**
+ * @internal
+ */
 class ImageSyncerTest extends TestCase
 {
     use KernelTestBehaviour;
@@ -91,6 +99,8 @@ class ImageSyncerTest extends TestCase
         );
 
         $messageBus = new MessageBusMock();
+        $messageDispatcher = new MessageDispatcher($messageBus, $this->createMock(Connection::class));
+        $messageHydrator = new MessageHydrator($this->createMock(SalesChannelContextService::class), $this->createMock(EntityRepository::class));
         $runService = new RunServiceMock(
             new RunRepoMock(),
             new RunLogRepoMock(),
@@ -101,20 +111,23 @@ class ImageSyncerTest extends TestCase
         $imageSyncHandler = new ImageSyncHandler(
             $runService,
             $logger,
+            $messageDispatcher,
+            $messageHydrator,
             $mediaRepository,
             $imageSyncer
         );
 
-        $imageSyncManager = new ImageSyncManager($messageBus, $mediaRepository, $imageSyncer);
+        $imageSyncManager = new ImageSyncManager($messageDispatcher, $mediaRepository, $imageSyncer);
 
         $salesChannel = $this->getSalesChannel($context);
         $posSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
         static::assertInstanceOf(PosSalesChannelEntity::class, $posSalesChannel);
         $posSalesChannel->setMediaDomain($mediaDomain);
 
-        $runId = $runService->startRun(Defaults::SALES_CHANNEL, 'image', $context);
+        $runId = $runService->startRun(TestDefaults::SALES_CHANNEL, 'image', [SyncManagerHandler::SYNC_IMAGE], $context);
 
-        $imageSyncManager->createMessages($salesChannel, $context, $runId);
+        $messages = $imageSyncManager->createMessages($salesChannel, $context, $runId);
+        $messageDispatcher->bulkDispatch($messages, $runId);
         $messageBus->execute([$imageSyncHandler]);
 
         static::assertSame(self::POS_IMAGE_URL, $mediaA->getUrl());
@@ -146,7 +159,7 @@ class ImageSyncerTest extends TestCase
             new NullLogger()
         );
 
-        $messageBus = new MessageBusMock();
+        $messageDispatcher = new MessageDispatcher(new MessageBusMock(), $this->createMock(Connection::class));
         $runService = new RunServiceMock(
             new RunRepoMock(),
             new RunLogRepoMock(),
@@ -154,14 +167,14 @@ class ImageSyncerTest extends TestCase
             new Logger('test')
         );
 
-        $imageSyncManager = new ImageSyncManager($messageBus, new PosMediaRepoMock(), $imageSyncer);
+        $imageSyncManager = new ImageSyncManager($messageDispatcher, new PosMediaRepoMock(), $imageSyncer);
 
         $salesChannel = $this->getSalesChannel($context);
         $posSalesChannel = $salesChannel->getExtension(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
         static::assertInstanceOf(PosSalesChannelEntity::class, $posSalesChannel);
         $posSalesChannel->setMediaDomain(null);
 
-        $runId = $runService->startRun(Defaults::SALES_CHANNEL, 'image', $context);
+        $runId = $runService->startRun(TestDefaults::SALES_CHANNEL, 'image', [SyncManagerHandler::SYNC_IMAGE], $context);
 
         $this->expectException(MediaDomainNotSetException::class);
         $imageSyncManager->createMessages($salesChannel, $context, $runId);
@@ -190,8 +203,8 @@ class ImageSyncerTest extends TestCase
         $media->setMimeType($validMime ? 'image/jpeg' : self::INVALID_MIME_TYPE);
         $posMedia->setMedia($media);
         $posMedia->setMediaId($media->getId());
-        $posMedia->setSalesChannelId(Defaults::SALES_CHANNEL);
-        $posMedia->setUniqueIdentifier(Defaults::SALES_CHANNEL . '-' . $id);
+        $posMedia->setSalesChannelId(TestDefaults::SALES_CHANNEL);
+        $posMedia->setUniqueIdentifier(TestDefaults::SALES_CHANNEL . '-' . $id);
         $posMedia->setLookupKey($lookupKey);
 
         return $posMedia;

@@ -20,8 +20,10 @@ class PayPalV2ItemFromOrderEvent extends Event
 
     private OrderLineItemEntity $originalShopwareLineItem;
 
-    public function __construct(Item $payPalLineItem, OrderLineItemEntity $originalShopwareLineItem)
-    {
+    public function __construct(
+        Item $payPalLineItem,
+        OrderLineItemEntity $originalShopwareLineItem
+    ) {
         $this->payPalLineItem = $payPalLineItem;
         $this->originalShopwareLineItem = $originalShopwareLineItem;
     }

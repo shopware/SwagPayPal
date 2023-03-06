@@ -30,7 +30,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * @deprecated tag:v6.0.0 - Will be removed without replacement.
+ * @deprecated tag:v7.0.0 - Will be removed without replacement.
  */
 class PlusDataService
 {
@@ -48,6 +48,9 @@ class PlusDataService
 
     private SystemConfigService $systemConfigService;
 
+    /**
+     * @internal
+     */
     public function __construct(
         CartPaymentBuilderInterface $cartPaymentBuilder,
         OrderPaymentBuilderInterface $orderPaymentBuilder,
@@ -150,10 +153,7 @@ class PlusDataService
             'paymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),
             'paypalPaymentId' => $response->getId(),
             'paypalToken' => PaymentTokenExtractor::extract($response),
-            'checkoutOrderUrl' => $this->router->generate('store-api.checkout.cart.order'),
-            'handlePaymentUrl' => $this->router->generate('store-api.payment.handle'),
-            'setPaymentRouteUrl' => $this->router->generate('store-api.order.set-payment'),
-            'contextSwitchUrl' => $this->router->generate('store-api.switch-context'),
+            'handlePaymentUrl' => $this->router->generate('frontend.paypal.plus.handle'),
             'isEnabledParameterName' => PayPalPaymentHandler::PAYPAL_PLUS_CHECKOUT_ID,
             'languageId' => $salesChannelContext->getContext()->getLanguageId(),
         ]);

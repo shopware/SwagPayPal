@@ -60,6 +60,9 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @internal
+ */
 class CheckoutSubscriberTest extends TestCase
 {
     use CartTrait;
@@ -488,8 +491,8 @@ class CheckoutSubscriberTest extends TestCase
         static::assertSame('de_DE', $extension->getLanguageIso());
         static::assertSame($paymentMethodId, $extension->getPaymentMethodId());
         static::assertSame(\mb_strtolower(PaymentIntentV2::CAPTURE), $extension->getIntent());
-        static::assertSame('/store-api/paypal/create-order', $extension->getCreateOrderUrl());
-        static::assertSame('/store-api/paypal/error', $extension->getAddErrorUrl());
+        static::assertSame('/paypal/create-order', $extension->getCreateOrderUrl());
+        static::assertSame('/paypal/error', $extension->getAddErrorUrl());
 
         if ($event instanceof AccountEditOrderPageLoadedEvent) {
             $accountOrderEditUrl = $extension->getAccountOrderEditCancelledUrl();

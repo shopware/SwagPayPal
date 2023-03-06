@@ -14,26 +14,30 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogEntity;
 use Swag\PayPal\Pos\Run\LoggerFactory;
 use Swag\PayPal\Pos\Run\RunService;
 
+/**
+ * @internal
+ */
 class RunServiceTest extends TestCase
 {
     use IntegrationTestBehaviour;
 
     private const TEST_MESSAGE = 'test';
 
-    private EntityRepositoryInterface $runRepository;
+    private EntityRepository $runRepository;
 
-    private EntityRepositoryInterface $logRepository;
+    private EntityRepository $logRepository;
 
     private Logger $logger;
 
@@ -43,10 +47,10 @@ class RunServiceTest extends TestCase
 
     public function setUp(): void
     {
-        /** @var EntityRepositoryInterface $runRepository */
+        /** @var EntityRepository $runRepository */
         $runRepository = $this->getContainer()->get('swag_paypal_pos_sales_channel_run.repository');
         $this->runRepository = $runRepository;
-        /** @var EntityRepositoryInterface $logRepository */
+        /** @var EntityRepository $logRepository */
         $logRepository = $this->getContainer()->get('swag_paypal_pos_sales_channel_run_log.repository');
         $this->logRepository = $logRepository;
         $this->context = Context::createDefaultContext();
@@ -58,7 +62,7 @@ class RunServiceTest extends TestCase
     public function testLogProcessAddLogWithoutProduct(): void
     {
         $context = Context::createDefaultContext();
-        $runId = $this->runService->startRun(Defaults::SALES_CHANNEL, 'complete', $this->context);
+        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', [], $this->context);
         static::assertNotNull($this->runRepository->searchIds(new Criteria([$runId]), $context)->firstId());
 
         $this->logger->info(self::TEST_MESSAGE);
@@ -86,7 +90,7 @@ class RunServiceTest extends TestCase
     public function testLogProcessAddLogWithProduct(): void
     {
         $context = Context::createDefaultContext();
-        $runId = $this->runService->startRun(Defaults::SALES_CHANNEL, 'complete', $this->context);
+        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', [], $this->context);
         static::assertNotNull($this->runRepository->searchIds(new Criteria([$runId]), $context)->firstId());
 
         $product = $this->createProduct($context);
@@ -116,7 +120,7 @@ class RunServiceTest extends TestCase
     public function testAbortRun(): void
     {
         $context = Context::createDefaultContext();
-        $runId = $this->runService->startRun(Defaults::SALES_CHANNEL, 'complete', $this->context);
+        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', [], $this->context);
         static::assertNotNull($this->runRepository->searchIds(new Criteria([$runId]), $context)->firstId());
 
         $run = $this->runRepository->search(new Criteria([$runId]), $context)->first();
@@ -148,13 +152,13 @@ class RunServiceTest extends TestCase
 
     public function testIsRunActiveTrue(): void
     {
-        $runId = $this->runService->startRun(Defaults::SALES_CHANNEL, 'complete', $this->context);
+        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', [], $this->context);
         static::assertTrue($this->runService->isRunActive($runId, $this->context));
     }
 
     public function testIsRunActiveFalse(): void
     {
-        $runId = $this->runService->startRun(Defaults::SALES_CHANNEL, 'complete', $this->context);
+        $runId = $this->runService->startRun(TestDefaults::SALES_CHANNEL, 'complete', [], $this->context);
         $this->runService->finishRun($runId, $this->context);
         static::assertFalse($this->runService->isRunActive($runId, $this->context));
     }
@@ -166,7 +170,7 @@ class RunServiceTest extends TestCase
 
     protected function createProduct(Context $context): ?ProductEntity
     {
-        /** @var EntityRepositoryInterface $productRepository */
+        /** @var EntityRepository $productRepository */
         $productRepository = $this->getContainer()->get('product.repository');
 
         $data = [
@@ -183,7 +187,7 @@ class RunServiceTest extends TestCase
             ],
             'visibilities' => [
                 [
-                    'salesChannelId' => Defaults::SALES_CHANNEL,
+                    'salesChannelId' => TestDefaults::SALES_CHANNEL,
                     'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
                 ],
             ],

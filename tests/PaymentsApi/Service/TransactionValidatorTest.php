@@ -15,6 +15,9 @@ use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Amount;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
 
+/**
+ * @internal
+ */
 class TransactionValidatorTest extends TestCase
 {
     /**

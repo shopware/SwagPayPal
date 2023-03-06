@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Storefront\Data\Service;
 
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
@@ -18,6 +17,7 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Storefront\Data\Struct\ACDC\BillingAddress;
 use Swag\PayPal\Storefront\Data\Struct\ACDC\CardholderData;
 use Swag\PayPal\Storefront\Data\Struct\ACDCCheckoutData;
+use Swag\PayPal\Util\Compatibility\Exception;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
 
 class ACDCCheckoutDataService extends AbstractCheckoutDataService
@@ -31,7 +31,7 @@ class ACDCCheckoutDataService extends AbstractCheckoutDataService
 
         $customer = $context->getCustomer();
         if ($customer === null) {
-            throw new CustomerNotLoggedInException();
+            throw Exception::customerNotLoggedIn();
         }
 
         $checkoutData->setCardholderData($this->getCardholderData($order ? $order->getBillingAddress() : $customer->getActiveBillingAddress()));
@@ -65,7 +65,7 @@ class ACDCCheckoutDataService extends AbstractCheckoutDataService
         $billingAddress->setExtendedAddress($address->getAdditionalAddressLine1());
         $billingAddress->setRegion($state ? $state->getName() : '');
         $billingAddress->setLocality($address->getCity());
-        $billingAddress->setPostalCode($address->getZipcode());
+        $billingAddress->setPostalCode($address->getZipcode() ?? '');
         $billingAddress->setCountryCodeAlpha2($country ? $country->getIso() : '');
 
         $data->setBillingAddress($billingAddress);

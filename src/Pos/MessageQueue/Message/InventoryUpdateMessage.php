@@ -8,15 +8,26 @@
 namespace Swag\PayPal\Pos\MessageQueue\Message;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\MessageQueue\AsyncMessageInterface;
+use Shopware\Core\Framework\Struct\JsonSerializableTrait;
 
-class InventoryUpdateMessage
+// remove with end of 6.4 compatibility
+if (!\interface_exists(AsyncMessageInterface::class)) {
+    require_once __DIR__ . '/../../../Util/Compatibility/AsyncMessageInterface.php';
+}
+
+class InventoryUpdateMessage implements AsyncMessageInterface, \JsonSerializable
 {
+    use JsonSerializableTrait {
+        jsonSerialize as traitJsonSerialize;
+    }
+
     /**
      * @var string[]
      */
     private array $ids;
 
-    private Context $context;
+    private ?Context $context = null;
 
     public function getIds(): array
     {
@@ -28,13 +39,17 @@ class InventoryUpdateMessage
         $this->ids = $ids;
     }
 
-    public function setContext(Context $context): void
-    {
-        $this->context = $context;
-    }
-
     public function getContext(): Context
     {
-        return $this->context;
+        return $this->context = $this->context ?? Context::createDefaultContext();
+    }
+
+    public function jsonSerialize(): array
+    {
+        $value = $this->traitJsonSerialize();
+
+        unset($value['context']);
+
+        return $value;
     }
 }

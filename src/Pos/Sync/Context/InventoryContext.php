@@ -9,6 +9,7 @@ namespace Swag\PayPal\Pos\Sync\Context;
 
 use Shopware\Core\Content\Product\ProductEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\Struct\JsonSerializableTrait;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Inventory\Status;
 use Swag\PayPal\Pos\Api\Inventory\Status\Variant;
@@ -18,8 +19,12 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryCollecti
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
 use Swag\PayPal\SwagPayPal;
 
-class InventoryContext
+class InventoryContext implements \JsonSerializable
 {
+    use JsonSerializableTrait {
+        jsonSerialize as traitJsonSerialize;
+    }
+
     private PosSalesChannelInventoryCollection $localInventory;
 
     private UuidConverter $uuidConverter;
@@ -44,25 +49,20 @@ class InventoryContext
     private ?array $productIds;
 
     public function __construct(
-        UuidConverter $uuidConverter,
-        SalesChannelEntity $salesChannel,
         string $storeUuid,
         string $supplierUuid,
         string $binUuid,
         string $soldUuid,
-        Status $remoteInventory,
-        PosSalesChannelInventoryCollection $localInventory,
-        Context $context
+        Status $remoteInventory
     ) {
-        $this->uuidConverter = $uuidConverter;
-        $this->salesChannel = $salesChannel;
         $this->storeUuid = $storeUuid;
         $this->supplierUuid = $supplierUuid;
         $this->binUuid = $binUuid;
         $this->soldUuid = $soldUuid;
         $this->remoteInventory = $remoteInventory;
-        $this->localInventory = $localInventory;
-        $this->context = $context;
+        $this->uuidConverter = new UuidConverter();
+        $this->localInventory = new PosSalesChannelInventoryCollection();
+        $this->context = Context::createDefaultContext();
         $this->productIds = null;
     }
 
@@ -158,6 +158,11 @@ class InventoryContext
         return $this->salesChannel;
     }
 
+    public function setSalesChannel(SalesChannelEntity $salesChannel): void
+    {
+        $this->salesChannel = $salesChannel;
+    }
+
     public function getPosSalesChannel(): PosSalesChannelEntity
     {
         /** @var PosSalesChannelEntity $posSalesChannel */
@@ -197,6 +202,20 @@ class InventoryContext
     public function setProductIds(array $productIds): void
     {
         $this->productIds = $productIds;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $value = $this->traitJsonSerialize();
+
+        unset(
+            $value['context'],
+            $value['localInventory'],
+            $value['salesChannel'],
+            $value['uuidConverter'],
+        );
+
+        return $value;
     }
 
     private function findRemoteInventory(string $productUuid, string $variantUuid): ?Variant

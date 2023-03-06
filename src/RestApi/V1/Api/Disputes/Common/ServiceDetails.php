@@ -33,6 +33,7 @@ abstract class ServiceDetails extends PayPalApiStruct
 
     /**
      * @var SubReason[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_common_sub_reason"})
      */
     protected array $subReasons;

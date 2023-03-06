@@ -9,7 +9,7 @@ namespace Swag\PayPal\Pos\Webhook\Handler;
 
 use Shopware\Core\Content\Product\ProductCollection;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Service\ApiKeyDecoder;
@@ -39,10 +39,13 @@ class InventoryChangedHandler extends AbstractWebhookHandler
 
     private InventoryContextFactory $inventoryContextFactory;
 
-    private EntityRepositoryInterface $productRepository;
+    private EntityRepository $productRepository;
 
     private UuidConverter $uuidConverter;
 
+    /**
+     * @internal
+     */
     public function __construct(
         ApiKeyDecoder $apiKeyDecoder,
         RunService $runService,
@@ -50,7 +53,7 @@ class InventoryChangedHandler extends AbstractWebhookHandler
         LocalUpdater $localUpdater,
         InventorySyncer $inventorySyncer,
         InventoryContextFactory $inventoryContextFactory,
-        EntityRepositoryInterface $productRepository,
+        EntityRepository $productRepository,
         UuidConverter $uuidConverter
     ) {
         $this->apiKeyDecoder = $apiKeyDecoder;
@@ -88,7 +91,7 @@ class InventoryChangedHandler extends AbstractWebhookHandler
             return;
         }
 
-        $inventoryContext = $this->inventoryContextFactory->getContext($salesChannel, $context);
+        $inventoryContext = $this->inventoryContextFactory->getContext($salesChannel);
 
         $productIds = [];
 
@@ -118,7 +121,7 @@ class InventoryChangedHandler extends AbstractWebhookHandler
         /** @var ProductCollection $productCollection */
         $productCollection = $this->productRepository->search($criteria, $context)->getEntities();
 
-        $runId = $this->runService->startRun($salesChannel->getId(), InventoryTask::TASK_NAME_INVENTORY, $context);
+        $runId = $this->runService->startRun($salesChannel->getId(), InventoryTask::TASK_NAME_INVENTORY, [], $context);
 
         $inventoryContext->setProductIds($productIds);
         $this->inventoryContextFactory->updateLocal($inventoryContext);

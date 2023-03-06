@@ -37,6 +37,7 @@ class OauthThirdParty extends PayPalApiStruct
 
     /**
      * @var string[]
+     *
      * @OA\Property(type="array", items={"type": "string"})
      */
     protected array $scopes;

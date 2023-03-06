@@ -15,6 +15,9 @@ use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Webhook\Handler\AuthorizationVoided;
 use Swag\PayPal\Webhook\WebhookEventTypes;
 
+/**
+ * @internal
+ */
 class AuthorizationVoidedV2Test extends AbstractWebhookHandlerTestCase
 {
     public function testGetEventType(): void

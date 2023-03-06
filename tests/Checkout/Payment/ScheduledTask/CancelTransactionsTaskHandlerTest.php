@@ -20,6 +20,9 @@ use Swag\PayPal\Checkout\Payment\ScheduledTask\CancelTransactionsTaskHandler;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 
+/**
+ * @internal
+ */
 class CancelTransactionsTaskHandlerTest extends TestCase
 {
     use DatabaseTransactionBehaviour;

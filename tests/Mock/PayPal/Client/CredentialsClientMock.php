@@ -10,10 +10,15 @@ namespace Swag\PayPal\Test\Mock\PayPal\Client;
 use Psr\Log\LoggerInterface;
 use Swag\PayPal\RestApi\Client\CredentialsClient;
 
+/**
+ * @internal
+ */
 class CredentialsClientMock extends CredentialsClient
 {
-    public function __construct(string $url, LoggerInterface $logger)
-    {
+    public function __construct(
+        string $url,
+        LoggerInterface $logger
+    ) {
         parent::__construct($url, $logger);
         $this->client = new GuzzleClientMock(['base_uri' => $url]);
     }

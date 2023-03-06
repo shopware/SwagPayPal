@@ -21,7 +21,7 @@ use Swag\PayPal\RestApi\V2\Api\Referral\PartnerConfigOverride;
 class Referral extends PayPalApiStruct
 {
     /**
-     * @deprecated tag:v6.0.0 - will be removed
+     * @deprecated tag:v7.0.0 - will be removed
      */
     public const PRODUCT_TYPE_EXPRESS_CHECKOUT = 'EXPRESS_CHECKOUT';
 
@@ -51,30 +51,35 @@ class Referral extends PayPalApiStruct
 
     /**
      * @var Operation[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_referral_operation"})
      */
     protected array $operations;
 
     /**
      * @var string[]
+     *
      * @OA\Property(type="array", items={"type": "string"})
      */
     protected array $products = [self::PRODUCT_TYPE_PPCP, self::PRODUCT_TYPE_PAYMENT_METHODS];
 
     /**
      * @var string[]
+     *
      * @OA\Property(type="array", items={"type": "string"})
      */
     protected array $capabilities = [self::CAPABILITY_PAY_UPON_INVOICE];
 
     /**
      * @var LegalConsent[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_referral_legal_consent"})
      */
     protected array $legalConsents;
 
     /**
      * @var Link[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
     protected array $links;

@@ -16,6 +16,9 @@ class AmountProvider
 {
     private PriceFormatter $priceFormatter;
 
+    /**
+     * @internal
+     */
     public function __construct(PriceFormatter $priceFormatter)
     {
         $this->priceFormatter = $priceFormatter;

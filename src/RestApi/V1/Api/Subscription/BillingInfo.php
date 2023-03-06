@@ -15,7 +15,9 @@ use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\OutstandingBalance;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_subscription_billing_info")
+ *
  * @codeCoverageIgnore
+ *
  * @experimental
  *
  * This class is experimental and not officially supported.
@@ -30,6 +32,7 @@ class BillingInfo extends PayPalApiStruct
 
     /**
      * @var CycleExecution[]
+     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_subscription_cycle_execution"})
      */
     protected array $cycleExecutions = [];

@@ -14,6 +14,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGrouping;
 use Swag\PayPal\Pos\Sync\Product\Util\ProductGroupingCollection;
 
+/**
+ * @internal
+ */
 class ProductGroupingTest extends TestCase
 {
     public function testAddProduct(): void

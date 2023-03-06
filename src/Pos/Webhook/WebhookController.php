@@ -9,10 +9,8 @@ namespace Swag\PayPal\Pos\Webhook;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\Routing\Annotation\Acl;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Pos\Api\Webhook\Webhook;
@@ -30,7 +28,7 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class WebhookController extends AbstractController
 {
@@ -40,12 +38,15 @@ class WebhookController extends AbstractController
 
     private WebhookService $webhookService;
 
-    private EntityRepositoryInterface $salesChannelRepository;
+    private EntityRepository $salesChannelRepository;
 
+    /**
+     * @internal
+     */
     public function __construct(
         LoggerInterface $logger,
         WebhookService $webhookService,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepository $salesChannelRepository
     ) {
         $this->logger = $logger;
         $this->webhookService = $webhookService;
@@ -54,12 +55,13 @@ class WebhookController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/webhook/registration/{salesChannelId}",
      *     name="api.action.paypal.pos.webhook.registration.register",
-     *     methods={"POST"}
+     *     methods={"POST"},
+     *     defaults={"_acl": {"sales_channel.editor"}}
      * )
-     * @Acl({"sales_channel.editor"})
      */
     public function registerWebhook(string $salesChannelId, Context $context): Response
     {
@@ -70,12 +72,13 @@ class WebhookController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/webhook/registration/{salesChannelId}",
      *     name="api.action.paypal.pos.webhook.registration.unregister",
-     *     methods={"DELETE"}
+     *     methods={"DELETE"},
+     *     defaults={"_acl": {"sales_channel.deleter"}}
      * )
-     * @Acl({"sales_channel.deleter"})
      */
     public function unregisterWebhook(string $salesChannelId, Context $context): Response
     {
@@ -86,6 +89,7 @@ class WebhookController extends AbstractController
 
     /**
      * @Since("1.9.0")
+     *
      * @Route(
      *     "/api/_action/paypal/pos/webhook/execute/{salesChannelId}",
      *     name="api.action.paypal.pos.webhook.execute",

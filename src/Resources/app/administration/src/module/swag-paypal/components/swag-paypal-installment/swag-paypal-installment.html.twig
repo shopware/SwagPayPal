@@ -1,5 +1,6 @@
 {% block swag_paypal_content_card_channel_config_installment %}
-    <sw-card :title="$tc('swag-paypal.settingForm.installment.cardTitle')">
+    <sw-card position-identifier="swag-paypal-card-channel-config-installment"
+             :title="$tc('swag-paypal.settingForm.installment.cardTitle')">
 
         {% block swag_paypal_content_card_channel_config_installment_settings %}
             <div v-if="actualConfigData" class="swag-paypal-settings-installment-fields">

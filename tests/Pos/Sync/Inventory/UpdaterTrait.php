@@ -8,9 +8,9 @@
 namespace Swag\PayPal\Test\Pos\Sync\Inventory;
 
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Inventory\Status;
 use Swag\PayPal\Pos\Api\Inventory\Status\Variant;
 use Swag\PayPal\Pos\Api\Service\Converter\UuidConverter;
@@ -18,6 +18,9 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryCollecti
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
 use Swag\PayPal\Pos\Sync\Context\InventoryContext;
 
+/**
+ * @internal
+ */
 trait UpdaterTrait
 {
     use InventoryTrait;
@@ -47,7 +50,7 @@ trait UpdaterTrait
     private function createInventoryContext(SalesChannelProductEntity $product, int $localStock, int $posStock): InventoryContext
     {
         $localInventory = new PosSalesChannelInventoryEntity();
-        $localInventory->setSalesChannelId(Defaults::SALES_CHANNEL);
+        $localInventory->setSalesChannelId(TestDefaults::SALES_CHANNEL);
         $localInventory->setProductId($product->getId());
         $localInventory->setProductVersionId((string) $product->getVersionId());
         $localInventory->setUniqueIdentifier(Uuid::randomHex());
@@ -68,18 +71,16 @@ trait UpdaterTrait
         ]);
         $status->addVariant($variant);
 
-        $context = Context::createDefaultContext();
-
-        return new InventoryContext(
-            new UuidConverter(),
-            $this->getSalesChannel($context),
+        $context = new InventoryContext(
             $this->locations['STORE'],
             $this->locations['SUPPLIER'],
             $this->locations['BIN'],
             $this->locations['SOLD'],
             $status,
-            new PosSalesChannelInventoryCollection([$localInventory]),
-            $context
         );
+        $context->setSalesChannel($this->getSalesChannel(Context::createDefaultContext()));
+        $context->addLocalInventory(new PosSalesChannelInventoryCollection([$localInventory]));
+
+        return $context;
     }
 }

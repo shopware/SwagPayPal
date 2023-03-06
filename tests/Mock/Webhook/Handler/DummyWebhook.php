@@ -14,6 +14,9 @@ use Swag\PayPal\RestApi\V2\Api\Webhook as WebhookV2;
 use Swag\PayPal\Test\Mock\Repositories\OrderTransactionRepoMock;
 use Swag\PayPal\Webhook\WebhookHandler;
 
+/**
+ * @internal
+ */
 class DummyWebhook implements WebhookHandler
 {
     public const EVENT_TYPE = 'PAYPAL_TEST_WEBHOOK';

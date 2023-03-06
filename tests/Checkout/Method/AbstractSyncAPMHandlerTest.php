@@ -17,7 +17,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Checkout\Test\Customer\Rule\OrderFixture;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
 use Swag\PayPal\Checkout\Payment\Method\AbstractPaymentMethodHandler;
@@ -29,7 +29,6 @@ use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
-use Swag\PayPal\OrdersApi\Patch\CustomIdPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder;
 use Swag\PayPal\OrdersApi\Patch\PurchaseUnitPatchBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
@@ -56,6 +55,9 @@ use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * @internal
+ */
 abstract class AbstractSyncAPMHandlerTest extends TestCase
 {
     use PaymentTransactionTrait;
@@ -64,7 +66,7 @@ abstract class AbstractSyncAPMHandlerTest extends TestCase
     use OrderTransactionTrait;
     use SalesChannelContextTrait;
 
-    protected EntityRepositoryInterface $orderTransactionRepo;
+    protected EntityRepository $orderTransactionRepo;
 
     protected StateMachineRegistry $stateMachineRegistry;
 
@@ -235,9 +237,7 @@ Missing PayPal order id');
                 $logger
             ),
             new OrderPatchService(
-                new CustomIdPatchBuilder(),
                 $systemConfig,
-                new OrderNumberPatchBuilder(),
                 new PurchaseUnitPatchBuilder(
                     new PurchaseUnitProvider(
                         new AmountProvider(new PriceFormatter()),

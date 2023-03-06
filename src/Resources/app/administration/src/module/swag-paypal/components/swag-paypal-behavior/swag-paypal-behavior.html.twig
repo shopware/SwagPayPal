@@ -1,10 +1,11 @@
 {% block swag_paypal_content_card_channel_config_behavior %}
-    <sw-card :title="$tc('swag-paypal.settingForm.behavior.cardTitle')">
+    <sw-card position-identifier="swag-paypal-card-channel-config-behavior"
+             :title="$tc('swag-paypal.settingForm.behavior.cardTitle')">
 
         {% block swag_paypal_content_card_channel_config_behavior_settings %}
             <div v-if="actualConfigData" class="swag-paypal-settings-behavior-field">
 
-                {# @deprecated tag:v6.0.0 - Will be removed without replacement #}
+                {# @deprecated tag:v7.0.0 - Will be removed without replacement #}
                 {% block swag_paypal_content_card_channel_config_behavior_settings_merchant_location %}
                     <sw-inherit-wrapper v-model="actualConfigData['SwagPayPal.settings.merchantLocation']"
                                         :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.merchantLocation']"
@@ -161,7 +162,7 @@
                 {% endblock %}
 
                 {% block swag_paypal_content_card_channel_config_behavior_settings_logging_level %}
-                    <sw-single-select v-model="allConfigs['null']['SwagPayPal.settings.loggingLevel']"
+                    <sw-single-select v-model="loggingLevel"
                                       :options="loggingLevelOptions"
                                       :label="$tc('swag-paypal.settingForm.behavior.loggingLevel.label')"
                                       :helpText="$tc('swag-paypal.settingForm.behavior.loggingLevel.tooltipText')"

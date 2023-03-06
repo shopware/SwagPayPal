@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Storefront\Data\Service;
 
 use Shopware\Core\Checkout\Cart\Cart;
-use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
@@ -18,6 +17,7 @@ use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
+use Swag\PayPal\Util\Compatibility\Exception;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -39,6 +39,9 @@ abstract class AbstractCheckoutDataService
 
     private CredentialsUtilInterface $credentialsUtil;
 
+    /**
+     * @internal
+     */
     public function __construct(
         PaymentMethodDataRegistry $paymentMethodDataRegistry,
         IdentityResource $identityResource,
@@ -73,7 +76,7 @@ abstract class AbstractCheckoutDataService
         $customer = $context->getCustomer();
 
         if ($customer === null) {
-            throw new CustomerNotLoggedInException();
+            throw Exception::customerNotLoggedIn();
         }
 
         $data = [
@@ -84,8 +87,8 @@ abstract class AbstractCheckoutDataService
             'intent' => \mb_strtolower($this->systemConfigService->getString(Settings::INTENT, $salesChannelId)),
             'buttonShape' => $this->systemConfigService->getString(Settings::SPB_BUTTON_SHAPE, $salesChannelId),
             'paymentMethodId' => $paymentMethodId,
-            'createOrderUrl' => $this->router->generate('store-api.paypal.create_order'),
-            'addErrorUrl' => $this->router->generate('store-api.paypal.error'),
+            'createOrderUrl' => $this->router->generate('frontend.paypal.create_order'),
+            'addErrorUrl' => $this->router->generate('frontend.paypal.error'),
         ];
 
         if ($generateToken) {
