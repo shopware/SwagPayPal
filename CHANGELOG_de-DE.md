@@ -3,6 +3,10 @@
 - PPI-659 - Storefront-Routen hinzufügt, um den in Shopware 6.5 fehlenden Store-API-Client zu ersetzen
 - PPI-685, PPI-701, PPI-725 - Automatisches Verstecken der Smart Payment Buttons Konfiguration in der Administration entfernt
 - PPI-731 - Kompatibilität mit Shopware 6.5
+
+# 5.4.6
+- PPI-749 - Behebt ein Problem, bei dem der Ersatz-Button für Kreditkartenzahlungen nicht korrekt funktionierte
+
 # 5.4.5
 - PPI-734 - Behebt ein Problem, bei dem Zahlungsarten beim Zahlartwechsel nach Bestellabschluss nicht angezeigt wurden
 - PPI-720, PPI-741, PPI-743 - Behebt ein Problem, bei dem die Steuern für Nettokudnen falsch berechnet wurde
