@@ -76,7 +76,7 @@ final class Settings
         self::ECS_CART_ENABLED => true,
         self::ECS_OFF_CANVAS_ENABLED => true,
         self::ECS_LOGIN_ENABLED => true,
-        self::ECS_LISTING_ENABLED => true,
+        self::ECS_LISTING_ENABLED => false,
         self::ECS_BUTTON_COLOR => 'gold',
         self::ECS_BUTTON_SHAPE => 'rect',
         self::SPB_CHECKOUT_ENABLED => false,

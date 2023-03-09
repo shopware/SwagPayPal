@@ -79,8 +79,6 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             config['data-client-token'] = this.options.clientToken;
         }
 
-        console.log(config);
-
         return config;
     }
 
