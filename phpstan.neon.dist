@@ -45,6 +45,22 @@ parameters:
             message: '#Service ".*" is private#'
             path: tests/**/*.php
 
+        -   # ignore attributes, since we have to support PHP 7.4 for Shopware 6.4
+            message: '#use the .* attribute instead#'
+
+        -   # ignore new monolog levels, not supported in Shopware 6.4
+            message: '#Use \\Monolog\\Level::.*#'
+
+        -   # ignore own deprecations in tests
+            message: '#.*tag:v7.0.0 -#'
+            path: tests/**/*.php
+
+        -   # ignore Plus deprecations
+            message: '#deprecated.*(Plus|PLUS|_PAYMENT_|MERCHANT_LOCATION)#'
+
+        -   # ignore Symfony 6 message queue deprecations
+            message: '#AsMessageHandler#'
+
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
 

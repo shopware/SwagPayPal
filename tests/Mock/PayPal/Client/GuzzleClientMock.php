@@ -401,7 +401,7 @@ class GuzzleClientMock implements ClientInterface
     private function handleApiV1PostRequests(string $resourceUri, ?PayPalApiStruct $data): array
     {
         if ($resourceUri === RequestUriV1::TOKEN_RESOURCE) {
-            $headers = $this->getConfig()['headers'];
+            $headers = $this->config['headers'] ?? [];
             if (isset($headers['Authorization'])) {
                 $authHeader = $headers['Authorization'];
                 $validClientIdInvalidSecret = $this->getAuthenticationHeader(ConstantsForTesting::VALID_CLIENT_ID, ConstantsForTesting::INVALID_CLIENT_SECRET);
