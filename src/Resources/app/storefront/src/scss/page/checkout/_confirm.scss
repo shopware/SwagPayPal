@@ -23,4 +23,8 @@
             border-color: $form-feedback-invalid-color;
         }
     }
+
+    .form-control {
+        height: ($input-line-height + 2 * $input-padding-y);
+    }
 }
