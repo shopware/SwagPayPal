@@ -20,6 +20,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Multibanco;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\MyBank;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Oxxo;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\P24;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Sofort;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Trustly;
@@ -88,6 +89,11 @@ class PaymentSource extends PayPalApiStruct
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_p24")
      */
     protected ?P24 $p24 = null;
+
+    /**
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_paypal")
+     */
+    protected ?PayPal $paypal = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_sofort")
@@ -237,6 +243,16 @@ class PaymentSource extends PayPalApiStruct
     public function setTrustly(?Trustly $trustly): void
     {
         $this->trustly = $trustly;
+    }
+
+    public function getPaypal(): ?Paypal
+    {
+        return $this->paypal;
+    }
+
+    public function setPaypal(?Paypal $paypal): void
+    {
+        $this->paypal = $paypal;
     }
 
     public function jsonSerialize(): array
