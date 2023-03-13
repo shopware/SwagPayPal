@@ -277,7 +277,8 @@ Component.register('swag-paypal-checkout', {
             this.paymentMethods = await this.paymentMethodRepository.search(this.paymentMethodCriteria, Context.api)
                 .then((response) => {
                     return response.filter((paymentMethod) => {
-                        return paymentMethod.formattedHandlerIdentifier !== 'handler_swag_pospayment';
+                        return paymentMethod.formattedHandlerIdentifier !== 'handler_swag_pospayment'
+                            && paymentMethod.formattedHandlerIdentifier !== 'handler_swag_trustlyapmhandler';
                     });
                 });
         },
