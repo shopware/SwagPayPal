@@ -5,6 +5,7 @@
 - PPI-731 - Compatibility with Shopware 6.5
 
 # 5.4.6
+- PPI-748 - Disable Trustly for now since PayPal has dropped API support
 - PPI-749 - Fixes an issue, where the fallback button for credit card payments was not processed correctly
 
 # 5.4.5

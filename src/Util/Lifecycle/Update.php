@@ -36,6 +36,7 @@ use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\OxxoMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PayLaterMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PUIMethodData;
+use Swag\PayPal\Util\Lifecycle\Method\TrustlyMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\VenmoMethodData;
 use Swag\PayPal\Util\Lifecycle\State\PaymentMethodStateService;
 use Swag\PayPal\Webhook\Exception\WebhookIdInvalidException;
@@ -136,7 +137,12 @@ class Update
             $this->updateTo540($updateContext->getContext());
         }
 
-        if (\version_compare($updateContext->getCurrentPluginVersion(), '6.0.1', '<')) {
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '5.4.6', '<')) {
+            $this->updateTo546($updateContext->getContext());
+        }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '6.0.0', '<')) {
             $this->updateTo600($updateContext->getContext());
         }
     }
@@ -342,6 +348,12 @@ class Update
     {
         $this->paymentMethodInstaller->removeRules($context);
         $this->setSettingToDefaultValue(Settings::ACDC_FORCE_3DS);
+    }
+
+    private function updateTo546(Context $context): void
+    {
+        // can be removed, when Trustly is available again
+        $this->paymentMethodStateService->setPaymentMethodState(TrustlyMethodData::class, false, $context);
     }
 
     private function changePaymentHandlerIdentifier(string $previousHandler, string $newHandler, Context $context): void
