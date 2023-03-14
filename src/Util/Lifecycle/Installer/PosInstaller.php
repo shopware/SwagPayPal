@@ -39,7 +39,7 @@ class PosInstaller
         ];
 
         foreach ($classNames as $className) {
-            $this->connection->executeUpdate(\sprintf('DROP TABLE IF EXISTS `%s`', $className));
+            $this->connection->executeStatement(\sprintf('DROP TABLE IF EXISTS `%s`', $className));
         }
     }
 }

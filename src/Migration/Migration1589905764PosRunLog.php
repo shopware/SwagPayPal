@@ -22,7 +22,7 @@ class Migration1589905764PosRunLog extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeUpdate('
+        $connection->executeStatement('
             CREATE TABLE IF NOT EXISTS `swag_paypal_pos_sales_channel_run_log` (
                 `id`                 BINARY(16)  NOT NULL,
                 `run_id`             BINARY(16)  NOT NULL,

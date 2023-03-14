@@ -141,7 +141,7 @@ class RunService
 
     public function decrementMessageCount(string $runId): void
     {
-        $this->connection->executeUpdate(
+        $this->connection->executeStatement(
             'UPDATE `swag_paypal_pos_sales_channel_run`
                     SET
                         `message_count` = GREATEST(0, `message_count` - 1),

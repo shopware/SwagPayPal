@@ -22,7 +22,7 @@ class Migration1591365484PosMedia extends MigrationStep
 
     public function update(Connection $connection): void
     {
-        $connection->executeUpdate('
+        $connection->executeStatement('
             CREATE TABLE IF NOT EXISTS `swag_paypal_pos_sales_channel_media` (
                 `sales_channel_id`   BINARY(16)   NOT NULL,
                 `media_id`           BINARY(16)   NOT NULL,

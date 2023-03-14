@@ -50,7 +50,7 @@ class MessageDispatcher
 
     private function incrementMessageCount(string $runId, int $amount): void
     {
-        $this->connection->executeUpdate(
+        $this->connection->executeStatement(
             'UPDATE `swag_paypal_pos_sales_channel_run`
             SET
                 `message_count` = `message_count` + :amount,
