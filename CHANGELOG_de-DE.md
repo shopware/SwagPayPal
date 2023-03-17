@@ -1,4 +1,5 @@
 # 5.4.6
+- PPI-748 - Zahlart Trustly deaktiviert, da PayPal die API deaktiviert hat
 - PPI-749 - Behebt ein Problem, bei dem der Ersatz-Button für Kreditkartenzahlungen nicht korrekt funktionierte
 
 # 5.4.5
