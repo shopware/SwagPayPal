@@ -22,5 +22,3 @@ import './init/svg-icons.init';
 import './module/swag-paypal-pos';
 
 import './module/swag-paypal-disputes';
-
-import './app/assets/scss/all.scss';
