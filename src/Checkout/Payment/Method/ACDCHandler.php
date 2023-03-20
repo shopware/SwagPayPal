@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\ACDC\ACDCValidatorInterface;
 use Swag\PayPal\Checkout\ACDC\Exception\ACDCValidationFailedException;
+use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
@@ -52,6 +53,16 @@ class ACDCHandler extends AbstractSyncAPMHandler
 
     protected function executeOrder(SyncPaymentTransactionStruct $transaction, Order $paypalOrder, SalesChannelContext $salesChannelContext): Order
     {
+        // fallback button
+        $paymentSource = $paypalOrder->getPaymentSource();
+        if ($paymentSource === null) {
+            throw new MissingPayloadException($paypalOrder->getId(), 'paymentSource');
+        }
+
+        if ($paymentSource->getPaypal() !== null && $paymentSource->getCard() === null) {
+            return parent::executeOrder($transaction, $paypalOrder, $salesChannelContext);
+        }
+
         if (!$this->acdcValidator->validate($paypalOrder, $transaction, $salesChannelContext)) {
             throw new ACDCValidationFailedException($transaction->getOrderTransaction()->getId());
         }
