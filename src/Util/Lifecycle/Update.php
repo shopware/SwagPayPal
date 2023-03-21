@@ -137,7 +137,6 @@ class Update
             $this->updateTo540($updateContext->getContext());
         }
 
-
         if (\version_compare($updateContext->getCurrentPluginVersion(), '5.4.6', '<')) {
             $this->updateTo546($updateContext->getContext());
         }

@@ -37,6 +37,11 @@ parameters:
                 - src/Util/Compatibility/EntityRepositoryDecorator.php
                 - src/Util/Lifecycle/Method/PaymentMethodDataRegistry.php
 
+        -   # 6.4 compatibility
+            message: '#(unknown class|invalid type) .*SalesChannelRepositoryInterface#'
+            paths:
+                - src/Util/Compatibility/SalesChannelRepositoryDecorator.php
+
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
             path: tests/Checkout/ExpressCheckout/ExpressCheckoutSubscriberTest.php
