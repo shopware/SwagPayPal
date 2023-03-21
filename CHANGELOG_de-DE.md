@@ -1,3 +1,7 @@
+# 6.0.2
+- PPI-753 - Behebt ein Problem, bei dem Template-Erweiterungen im Meta-Block nicht mehr funktionierten
+- PPI-754 - Behebt ein Problem, dass die kompilierten Assets nicht mit 6.4 kompatibel waren (Kompatiblität mit Shopware 6.5 vorübergehend entfernt)
+
 # 6.0.1
 - PPI-751 - Behebt ein Problem, bei dem das Plugin mit anderen Plugins wie B2B-Suite und Customized Products nicht kompatibel war
 
