@@ -218,20 +218,23 @@ class ImageSyncerTest extends TestCase
             ['count' => 2]
         );
         $matcher = static::exactly(3);
-        $logger->expects($matcher)->method('warning')->willReturnCallback(function (string $message, array $context) use ($matcher) {
+        $logger->expects($matcher)->method('warning')->willReturnCallback(function (string $message, array $context) use ($matcher): void {
             switch ($matcher->getInvocationCount()) {
                 case 1:
                     static::assertSame('Media Type {mimeType} is not supported by Zettle. Skipping image {fileName}.', $message);
                     static::assertSame(self::INVALID_MIME_TYPE, $context['mimeType']);
                     static::assertSame(self::LOCAL_FILE_NAME . '.' . self::LOCAL_FILE_EXTENSION, $context['fileName']);
+
                     break;
                 case 2:
                     static::assertSame('Could not match uploaded image to local media: {posUrl}', $message);
                     static::assertSame(self::POS_IMAGE_URL_INVALID, $context['posUrl']);
+
                     break;
                 case 3:
                     static::assertSame('Upload was not accepted by Zettle (is the URL publicly available?): {invalid}', $message);
                     static::assertSame(self::DOMAIN_URL . self::MEDIA_URL_INVALID_ENCODED, $context['invalid']);
+
                     break;
                 default:
                     static::fail('Unexpected call to logger');

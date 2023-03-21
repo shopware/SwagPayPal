@@ -9,7 +9,6 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
 use OpenApi\Annotations as OA;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Card\AuthenticationResult;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal\Name;
 

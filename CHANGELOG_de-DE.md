@@ -1,3 +1,6 @@
+# 6.0.1
+- PPI-751 - Behebt ein Problem, bei dem das Plugin mit anderen Plugins wie B2B-Suite und Customized Products nicht kompatibel war
+
 # 6.0.0
 - PPI-430 - Synchronisationsablauf von Zettle verbessert
 - PPI-659 - Storefront-Routen hinzufügt, um den in Shopware 6.5 fehlenden Store-API-Client zu ersetzen
