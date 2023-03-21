@@ -19,7 +19,8 @@ module.exports = {
 
     transform: {
         // stringify svg imports
-        '.*\\.(svg)$': `${process.env.ADMIN_PATH}/test/transformer/svgStringifyTransformer.js`,
+        // add again for 6.5
+        //'.*\\.(svg)$': `${process.env.ADMIN_PATH}/test/transformer/svgStringifyTransformer.js`,
     },
 
     transformIgnorePatterns: [

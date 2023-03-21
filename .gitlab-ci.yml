@@ -9,12 +9,11 @@ variables:
     APP_URL: http://localhost:8000
     APP_DEBUG: 0
     DEV_IMAGE: shopware/development:8.1-composer-2
-    PLATFORM_BRANCH: "trunk"
-    CMS_EXTENSION_BRANCH: "master"
+    PLATFORM_BRANCH: "6.4"
+    CMS_EXTENSION_BRANCH: "2.5-sw6.4.8.0"
     RUN_IN_MR: "true"
     MYSQL_IMAGE: mysql:5.7
     MYSQL_CMD: mysqld
-    RUNNER_INSTANCE_TYPE: t3.medium
     REQUIRED_SYMFONY: ""
 
 stages:
@@ -24,7 +23,7 @@ stages:
 default:
     image: $DEV_IMAGE
     tags:
-        - $RUNNER_INSTANCE_TYPE
+        - shopware
     before_script:
         - zip -rq plugin.zip .
         - mv plugin.zip /tmp/plugin.zip
@@ -38,17 +37,6 @@ default:
         - mkdir -p config/jwt || true
         - bin/console system:generate-jwt || true
         - bin/console system:install --drop-database --basic-setup --force >/dev/null
-        - >
-            if [[ $PLATFORM_BRANCH = "trunk" ]]; then
-                npm --prefix $(pwd)/custom/plugins/SwagPayPal/src/Resources/app/administration/ clean-install
-                npm --prefix $(pwd)/custom/plugins/SwagPayPal/src/Resources/app/storefront/ clean-install
-                npm --prefix $(pwd)/src/Administration/Resources/app/administration/ install
-                npm --prefix $(pwd)/src/Storefront/Resources/app/storefront/ install
-                composer run build:js
-                bin/console theme:compile
-                bin/console theme:change --all Storefront
-                bin/console assets:install
-            fi
         - bin/console plugin:refresh
         - bin/console plugin:install --activate SwagPayPal
         - composer dump-autoload -d custom/plugins/SwagCmsExtensions
@@ -57,6 +45,7 @@ default:
 
 Static validation:
     stage: Static validation
+    needs: []
     only:
         refs:
             - merge_requests
@@ -73,14 +62,6 @@ Static validation:
                 composer require --dev phpstan/phpstan:1.8.11 phpstan/phpstan-doctrine:1.3.21 phpstan/phpstan-phpunit:1.2.2 phpstan/phpstan-symfony:1.2.14
             fi
         - cd $CI_PROJECT_DIR/custom/plugins/SwagPayPal
-        - if [[ -n $CI_COMMIT_BRANCH ]]; then bin/check-todos.sh $CI_COMMIT_BRANCH; else bin/check-todos.sh $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME; fi
-        - >
-            if [[ $PLATFORM_BRANCH = "trunk" ]]; then
-                php ../../../vendor/bin/ecs check --fix --config=../../../ecs.php src tests
-                php ../../../vendor/bin/ecs check --fix src tests
-                make administration-ci
-                make storefront-lint
-            fi
         - composer dump-autoload --dev
         - php bin/phpstan-config-generator.php
         - php ../../../vendor/bin/phpstan analyze --configuration phpstan.neon
@@ -92,13 +73,37 @@ Static validation:
             -   PLATFORM_BRANCH: [ "6.4", "v6.4.14.0" ]
                 CMS_EXTENSION_BRANCH: "2.5-sw6.4.8.0"
                 DEV_IMAGE: ["shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2", "shopware/development:8.1-composer-2"]
-            -   PLATFORM_BRANCH: [ "trunk" ]
-                DEV_IMAGE: ["shopware/development:8.1-composer-2", "shopware/development:8.2-composer-2" ]
+
+ECS:
+    stage: Static validation
+    needs: []
+    only:
+        refs:
+          - merge_requests
+          - master
+          - schedules
+          - pipelines
+    services:
+        - name: $MYSQL_IMAGE
+          alias: database
+          entrypoint: [ "sh", "-c", "docker-entrypoint.sh $MYSQL_CMD" ]
+    script:
+      - npm --prefix $(pwd)/custom/plugins/SwagPayPal/src/Resources/app/administration/ clean-install
+      - npm --prefix $(pwd)/custom/plugins/SwagPayPal/src/Resources/app/storefront/ clean-install
+      - npm --prefix $(pwd)/src/Administration/Resources/app/administration/ install
+      - npm --prefix $(pwd)/src/Storefront/Resources/app/storefront/ install
+      - cd $CI_PROJECT_DIR/custom/plugins/SwagPayPal
+      - >
+          if [[ $PLATFORM_BRANCH = "trunk" ]]; then
+              php ../../../vendor/bin/ecs check --config=../../../ecs.php src tests
+              php ../../../vendor/bin/ecs check src tests
+          fi
+      - make administration-ci
+      - make storefront-lint
 
 PHPUnit:
     stage: Testing
-    variables:
-        RUNNER_INSTANCE_TYPE: m5.large
+    needs: []
     services:
         -   name: $MYSQL_IMAGE
             alias: database
@@ -142,9 +147,6 @@ PHPUnit:
                 DEV_IMAGE: shopware/development:7.4-composer-2
                 PLATFORM_BRANCH: ["6.4", "v6.4.14.0"]
                 CMS_EXTENSION_BRANCH: "2.5-sw6.4.8.0"
-            -   MYSQL_IMAGE: mariadb:10.4
-                DEV_IMAGE: [ "shopware/development:8.1-composer-2", "shopware/development:8.2-composer-2" ]
-                PLATFORM_BRANCH: trunk
             -   MYSQL_IMAGE:
                   - mysql:5.7
                   - mariadb:10.3
@@ -153,27 +155,16 @@ PHPUnit:
                 RUN_IN_MR: "false"
                 CMS_EXTENSION_BRANCH: "2.5-sw6.4.8.0"
             -   MYSQL_IMAGE:
-                  - mysql:5.7
-                  - mariadb:10.3
-                PLATFORM_BRANCH: [ "trunk" ]
-                DEV_IMAGE: [ "shopware/development:8.1-composer-2", "shopware/development:8.2-composer-2" ]
-                RUN_IN_MR: "false"
-            -   MYSQL_IMAGE:
                   - mysql:8.0.19
                 DEV_IMAGE: [ "shopware/development:7.4-composer-2", "shopware/development:8.0-composer-2", "shopware/development:8.1-composer-2" ]
                 PLATFORM_BRANCH: ["6.4", "v6.4.14.0"]
                 MYSQL_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
                 RUN_IN_MR: "false"
                 CMS_EXTENSION_BRANCH: "2.5-sw6.4.8.0"
-            -   MYSQL_IMAGE:
-                  - mysql:8.0.19
-                PLATFORM_BRANCH: [ "trunk" ]
-                DEV_IMAGE: [ "shopware/development:8.1-composer-2", "shopware/development:8.2-composer-2" ]
-                MYSQL_CMD: 'mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password --sql-require-primary-key=ON'
-                RUN_IN_MR: "false"
 
 Administration Jest:
     stage: Testing
+    needs: []
     only:
         refs:
             - merge_requests
@@ -189,6 +180,7 @@ Administration Jest:
           entrypoint: [ "sh", "-c", "docker-entrypoint.sh $MYSQL_CMD" ]
     script:
         - php bin/console framework:schema -s 'entity-schema' $CI_PROJECT_DIR/src/Administration/Resources/app/administration/test/_mocks_/entity-schema.json
+        - npm --prefix $(pwd)/src/Administration/Resources/app/administration/ install
         - cd $CI_PROJECT_DIR/custom/plugins/SwagPayPal/src/Resources/app/administration/
         - npm ci
         - npm run unit
