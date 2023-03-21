@@ -28,6 +28,7 @@ use Shopware\Core\System\Currency\CurrencyDefinition;
 use Shopware\Core\System\DeliveryTime\DeliveryTimeDefinition;
 use Shopware\Core\System\Language\LanguageDefinition;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelType\SalesChannelTypeDefinition;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelDefinition;
 use Shopware\Core\System\Salutation\SalutationDefinition;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateDefinition;
@@ -39,6 +40,7 @@ use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelProductDefinition
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunLogDefinition;
 use Swag\PayPal\Util\Compatibility\EntityRepositoryDecorator;
+use Swag\PayPal\Util\Compatibility\SalesChannelRepositoryDecorator;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -125,5 +127,13 @@ return static function (ContainerBuilder $container): void {
         }
 
         $container->addDefinitions($definitions);
+    }
+
+    if (interface_exists(SalesChannelRepositoryInterface::class)) {
+        $definition = new Definition(SalesChannelRepositoryDecorator::class);
+        $definition->setDecoratedService(sprintf('sales_channel.%s.repository', ProductDefinition::ENTITY_NAME), null, \PHP_INT_MIN);
+        $definition->setArguments([new Reference('.inner')]);
+
+        $container->addDefinitions([sprintf('sales_channel.%s.repository.paypal_outer', ProductDefinition::ENTITY_NAME) => $definition]);
     }
 };

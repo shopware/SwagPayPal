@@ -1,3 +1,6 @@
+# 6.0.1
+- PPI-751 - Fixes an issue with incompatibility with other plugins such as B2B suite and Customized Products
+
 # 6.0.0
 - PPI-430 - Improved processing of Zettle synchronisation
 - PPI-659 - Added custom Storefront routes to adjust for missing Store API Client in Storefront in 6.5
