@@ -9,6 +9,7 @@ namespace Swag\PayPal\Test\Checkout\SPBCheckout;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Checkout\Shipping\ShippingMethodCollection;
@@ -31,7 +32,6 @@ use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Test\Helper\Compatibility\Generator;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\PaymentMethodUtilMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -241,7 +241,7 @@ class SPBMarksSubscriberTest extends TestCase
         $confirmPage = new CheckoutConfirmPage();
         $confirmPage->setPaymentMethods($paymentMethodCollection);
         $confirmPage->setShippingMethods(new ShippingMethodCollection());
-        $confirmPage->setCart(Generator::createCart('test-token'));
+        $confirmPage->setCart(new Cart('test-token'));
 
         return new CheckoutConfirmPageLoadedEvent($confirmPage, $salesChannelContext, new Request());
     }

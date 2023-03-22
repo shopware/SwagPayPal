@@ -19,7 +19,7 @@ class BusinessEntity extends PayPalApiStruct
     /**
      * @var Address[]
      *
-     * @OA\Property(type="array", items={"$ref": "swag_paypal_v2_referral_address"})
+     * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_referral_address"})
      */
     protected array $addresses = [];
 

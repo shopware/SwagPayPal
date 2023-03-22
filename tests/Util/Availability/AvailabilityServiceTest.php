@@ -20,7 +20,6 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextFactory;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Test\TestDefaults;
-use Swag\PayPal\Test\Helper\Compatibility\Generator;
 use Swag\PayPal\Util\Availability\AvailabilityService;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\ACDCMethodData;
@@ -139,7 +138,7 @@ class AvailabilityServiceTest extends TestCase
 
     private function createCart(float $amount = 5.0): Cart
     {
-        $cart = Generator::createCart(Uuid::randomHex());
+        $cart = new Cart(Uuid::randomHex());
         $cart->setPrice(new CartPrice($amount, $amount, 0, new CalculatedTaxCollection(), new TaxRuleCollection(), CartPrice::TAX_STATE_GROSS));
 
         return $cart;

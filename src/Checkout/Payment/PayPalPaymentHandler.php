@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Checkout\Payment;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
@@ -28,7 +29,6 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Common\Link;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Service\SettingsValidationServiceInterface;
-use Swag\PayPal\Util\Compatibility\Exception;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -42,12 +42,12 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
     public const PAYPAL_SMART_PAYMENT_BUTTONS_ID = 'isPayPalSpbCheckout';
 
     /**
-     * @deprecated tag:v7.0.0 - Will be removed without replacement.
+     * @deprecated tag:v8.0.0 - Will be removed without replacement.
      */
     public const PAYPAL_PLUS_CHECKOUT_REQUEST_PARAMETER = 'isPayPalPlus';
 
     /**
-     * @deprecated tag:v7.0.0 - Will be removed without replacement.
+     * @deprecated tag:v8.0.0 - Will be removed without replacement.
      */
     public const PAYPAL_PLUS_CHECKOUT_ID = 'isPayPalPlusCheckout';
 
@@ -101,7 +101,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
         try {
             $customer = $salesChannelContext->getCustomer();
             if ($customer === null) {
-                throw Exception::customerNotLoggedIn();
+                throw CartException::customerNotLoggedIn();
             }
 
             $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());

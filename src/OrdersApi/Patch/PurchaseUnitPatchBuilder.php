@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\OrdersApi\Patch;
 
+use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
@@ -14,7 +15,6 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Patch;
-use Swag\PayPal\Util\Compatibility\Exception;
 
 class PurchaseUnitPatchBuilder
 {
@@ -41,7 +41,7 @@ class PurchaseUnitPatchBuilder
     ): Patch {
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
-            throw Exception::customerNotLoggedIn();
+            throw CartException::customerNotLoggedIn();
         }
 
         if ($submitCart) {

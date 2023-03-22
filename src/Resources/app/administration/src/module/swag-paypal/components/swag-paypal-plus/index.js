@@ -4,7 +4,7 @@ import './swag-paypal-plus.scss';
 const { Component } = Shopware;
 
 /**
- * @deprecated tag:v7.0.0 - Will be removed without replacement.
+ * @deprecated tag:v8.0.0 - Will be removed without replacement.
  */
 Component.register('swag-paypal-plus', {
     template,

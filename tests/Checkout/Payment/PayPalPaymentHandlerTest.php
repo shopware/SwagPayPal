@@ -568,7 +568,6 @@ An error occurred during the communication with PayPal');
         $request = new Request([
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => GetOrderAuthorization::ID,
         ]);
-        // state does only exist in > 6.4.1.0
         $this->assertFinalizeRequest($request, OrderTransactionStates::STATE_AUTHORIZED);
         $this->assertCustomFields(GetAuthorization::ID);
     }

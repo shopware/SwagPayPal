@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Checkout\Order\Shipping\Service;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -17,7 +18,6 @@ use Swag\PayPal\RestApi\V1\Api\Shipping;
 use Swag\PayPal\RestApi\V1\Api\Shipping\Tracker;
 use Swag\PayPal\RestApi\V1\Resource\ShippingResource;
 use Swag\PayPal\SwagPayPal;
-use Swag\PayPal\Util\Compatibility\Exception;
 
 class ShippingService
 {
@@ -178,7 +178,7 @@ class ShippingService
 
         $id = $this->salesChannelRepository->searchIds($criteria, $context)->firstId();
         if ($id === null) {
-            throw Exception::orderDeliveryNotFound($orderDeliveryId);
+            throw OrderException::orderDeliveryNotFound($orderDeliveryId);
         }
 
         return $id;

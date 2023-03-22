@@ -142,7 +142,6 @@ class DisputeController extends AbstractController
      */
     private function validateSalesChannelId(Request $request): ?string
     {
-        /** @var string|int|float|null $salesChannelId */ // Remove once SW 6.4.3.0 is min version
         $salesChannelId = $request->query->get('salesChannelId');
         if ($salesChannelId === null) {
             return null;
