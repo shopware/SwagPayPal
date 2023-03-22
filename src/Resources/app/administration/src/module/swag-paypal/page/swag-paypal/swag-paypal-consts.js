@@ -1,10 +1,10 @@
 /**
- * @deprecated tag:v7.0.0 - Will be removed without replacement.
+ * @deprecated tag:v8.0.0 - Will be removed without replacement.
  */
 export const MERCHANT_LOCATION_GERMANY = 'germany';
 
 /**
- * @deprecated tag:v7.0.0 - Will be removed without replacement.
+ * @deprecated tag:v8.0.0 - Will be removed without replacement.
  */
 export const MERCHANT_LOCATION_OTHER = 'other';
 

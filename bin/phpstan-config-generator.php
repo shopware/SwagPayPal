@@ -46,15 +46,11 @@ $phpStanConfig = str_replace(
         '%ShopwareHashedCacheDir%',
         '%ShopwareRoot%',
         '%ShopwareKernelClass%',
-        '%baseline%',
-        '%phpversion%',
     ],
     [
         str_replace($kernel->getProjectDir(), '', $kernel->getCacheDir()),
         $projectRoot . (is_dir($projectRoot . '/platform') ? '/platform' : ''),
         str_replace('\\', '_', get_class($kernel)),
-        !\interface_exists(EntityRepositoryInterface::class) ? 'phpstan-baseline.neon' : 'phpstan-baseline-6.4.neon',
-        !\interface_exists(EntityRepositoryInterface::class) ? '80100' : '70400',
     ],
     $phpStanConfigDist
 );

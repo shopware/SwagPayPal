@@ -87,7 +87,7 @@ class ErrorRoute extends AbstractErrorRoute
      *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false}
      * )
      *
-     * @deprecated tag:v7.0.0 - will be removed, since this is basically a storefront command, use PayPalController::addErrorMessage instead
+     * @deprecated tag:v8.0.0 - will be removed, since this is basically a storefront command, use PayPalController::addErrorMessage instead
      */
     public function addErrorMessage(Request $request): Response
     {

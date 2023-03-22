@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\OrdersApi\Builder;
 
+use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
@@ -30,7 +31,6 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\Name;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice\Phone;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Util\Compatibility\Exception;
 use Swag\PayPal\Util\LocaleCodeProvider;
 
 class PUIOrderBuilder extends AbstractOrderBuilder
@@ -127,7 +127,7 @@ class PUIOrderBuilder extends AbstractOrderBuilder
     {
         $customer = $order->getOrderCustomer();
         if ($customer === null) {
-            throw Exception::customerNotLoggedIn();
+            throw CartException::customerNotLoggedIn();
         }
 
         return $customer;

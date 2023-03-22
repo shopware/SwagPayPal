@@ -46,15 +46,7 @@ class WebhookSystemConfigControllerTest extends TestCase
     {
         $this->configurationService = $this->getContainer()->get(ConfigurationService::class);
         $this->systemConfigService = $this->getContainer()->get(SystemConfigService::class);
-
-        // creating new instance without decoration
-        if (\class_exists(SystemConfigValidator::class)) {
-            $this->undecoratedController = new SystemConfigController($this->configurationService, $this->systemConfigService, $this->getContainer()->get(SystemConfigValidator::class));
-        } else {
-            // @phpstan-ignore-next-line
-            $this->undecoratedController = new SystemConfigController($this->configurationService, $this->systemConfigService);
-        }
-
+        $this->undecoratedController = new SystemConfigController($this->configurationService, $this->systemConfigService, $this->getContainer()->get(SystemConfigValidator::class));
         $this->webhookService = new WebhookServiceMock($this->systemConfigService);
     }
 
@@ -253,20 +245,6 @@ class WebhookSystemConfigControllerTest extends TestCase
 
     private function createWebhookSystemConfigController(): WebhookSystemConfigController
     {
-        if (!\class_exists(SystemConfigValidator::class)) {
-            // @phpstan-ignore-next-line
-            return new WebhookSystemConfigController(
-                $this->configurationService,
-                $this->systemConfigService,
-                new WebhookSystemConfigHelper(
-                    new NullLogger(),
-                    $this->webhookService,
-                    $this->systemConfigService,
-                    new SettingsValidationService($this->systemConfigService, new NullLogger())
-                )
-            );
-        }
-
         return new WebhookSystemConfigController(
             $this->configurationService,
             $this->systemConfigService,

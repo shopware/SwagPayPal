@@ -11,6 +11,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEnti
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Checkout\Payment\Exception\InvalidTransactionException;
 use Shopware\Core\Framework\Context;
@@ -22,7 +23,6 @@ use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachine
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Refund;
-use Swag\PayPal\Util\Compatibility\Exception;
 
 class PaymentStatusUtil
 {
@@ -172,7 +172,7 @@ class PaymentStatusUtil
         $order = $this->orderRepository->search($criteria, $context)->first();
 
         if ($order === null) {
-            throw Exception::orderNotFound($orderId);
+            throw OrderException::orderNotFound($orderId);
         }
 
         $transactionCollection = $order->getTransactions();

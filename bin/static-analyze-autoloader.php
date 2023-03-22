@@ -42,15 +42,3 @@ $classLoader = require $projectRoot . '/vendor/autoload.php';
 if (file_exists($projectRoot . '/.env')) {
     (new Dotenv())->usePutEnv()->load($projectRoot . '/.env');
 }
-
-if (class_exists(QueryReflection::class)) {
-    $config = new RuntimeConfiguration();
-    $config->stringifyTypes(true);
-
-    /** @var \PDO $pdo */
-    $pdo = MySQLFactory::create()->getWrappedConnection();
-    QueryReflection::setupReflector(
-        new PdoQueryReflector($pdo),
-        $config
-    );
-}

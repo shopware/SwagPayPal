@@ -1,7 +1,7 @@
 {
     "name": "swag/paypal",
     "description": "PayPal integration for Shopware 6",
-    "version": "6.0.2",
+    "version": "7.0.0",
     "type": "shopware-platform-plugin",
     "license": "MIT",
     "authors": [
@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "shopware/core": "~6.4.14 | 6.4.x-dev"
+        "shopware/core": "~6.5.0@dev"
     },
     "extra": {
         "shopware-plugin-class": "Swag\\PayPal\\SwagPayPal",
@@ -20,7 +20,7 @@
             "en-GB": "PayPal Products for Shopware 6"
         },
         "description": {
-            "de-DE": "Bieten Sie Ihren Kunden Deutschlands beliebteste Bezahlmöglichkeiten mit nur einer Integration: Das neue PayPal-Modul bietet PayPal PLUS, Kauf auf Rechnung, Ratenzahlung & den Expressbutton",
+            "de-DE": "Bieten Sie Ihren Kunden Deutschlands beliebteste Bezahlmöglichkeiten mit nur einer Integration: Das PayPal-Plugin bietet PayPal Checkout, den Expressbutton, Zettle und vieles mehr",
             "en-GB": "Get access to over 100 currencies and 200 markets worldwide with the payment module PayPal for your Shopware shop. Experience an easy and comfortable way of payment."
         },
         "manufacturerLink": {
@@ -31,6 +31,28 @@
             "de-DE": "https://issues.shopware.com/",
             "en-GB": "https://issues.shopware.com/"
         }
+    },
+    "scripts": {
+        "lint": [
+            "@ecs-fix",
+            "@phpstan",
+            "@phpunit"
+        ],
+        "ecs": "../../../vendor/bin/ecs check src tests",
+        "ecs-fix": "../../../vendor/bin/ecs check --fix src tests",
+        "init:admin": "npm ci --no-audit --prefer-offline --prefix src/Resources/app/administration",
+        "lint:admin": "npm run lint-fix --prefix src/Resources/app/administration",
+        "lint:admin:ci": "npm run lint-ci --prefix src/Resources/app/administration",
+        "init:storefront": "npm ci --no-audit --prefer-offline --prefix src/Resources/app/storefront",
+        "lint:storefront": [
+            "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/eslint --config ../../../../../../../src/Storefront/Resources/app/storefront/.eslintrc.js --fix ./src",
+            "cd src/Resources/app/storefront && ../../../../../../../src/Storefront/Resources/app/storefront/node_modules/.bin/stylelint --config ../../../../../../../src/Storefront/Resources/app/storefront/stylelint.config.js --fix ./src"
+        ],
+        "phpunit": "../../../vendor/bin/phpunit",
+        "phpstan": [
+            "php bin/phpstan-config-generator.php",
+            "../../../vendor/bin/phpstan analyze"
+        ]
     },
     "autoload": {
         "psr-4": {
