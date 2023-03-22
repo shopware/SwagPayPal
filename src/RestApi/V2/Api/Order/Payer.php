@@ -19,7 +19,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\Payer\Phone;
 class Payer extends PayPalApiStruct
 {
     /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_name")
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payer_name")
      */
     protected Name $name;
 
@@ -34,7 +34,7 @@ class Payer extends PayPalApiStruct
     protected string $payerId;
 
     /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_phone", nullable=true)
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payer_phone", nullable=true)
      */
     protected ?Phone $phone = null;
 

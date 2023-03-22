@@ -31,7 +31,7 @@ class Patch extends PayPalApiStruct
     /**
      * @var array|string
      *
-     * @OA\Property(oneOf={"string", "array"})
+     * @OA\Property(oneOf=[{"type":"string"},{"type":"array"}])
      */
     protected $value;
 

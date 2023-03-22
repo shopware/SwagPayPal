@@ -36,7 +36,7 @@ class RestApiIntegration extends PayPalApiStruct
     protected string $integrationType = self::INTEGRATION_TYPE_THIRD_PARTY;
 
     /**
-     * @OA\Property(ref="#/components/swag_paypal_v2_referral_third_party_details")
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_referral_third_party_details")
      */
     protected ThirdPartyDetails $thirdPartyDetails;
 

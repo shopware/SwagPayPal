@@ -40,7 +40,7 @@ class Item extends PayPalApiStruct
     protected Tax $tax;
 
     /**
-     * @OA\Property(oneOf={"integer", "float", "string"})
+     * @OA\Property(oneOf=[{ "type": "integer" },{ "type": "float" },{ "type": "string" }])
      *
      * @var float|int|string
      */

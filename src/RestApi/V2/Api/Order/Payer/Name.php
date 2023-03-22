@@ -9,6 +9,9 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\Payer;
 
 use Swag\PayPal\RestApi\V2\Api\Common\Name as CommonName;
 
+/**
+ * @OA\Schema(schema="swag_paypal_v2_order_payer_name")
+ */
 class Name extends CommonName
 {
 }

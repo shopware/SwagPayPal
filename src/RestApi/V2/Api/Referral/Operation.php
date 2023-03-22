@@ -24,7 +24,7 @@ class Operation extends PayPalApiStruct
     protected string $operation = self::OPERATION_TYPE_API_INTEGRATION;
 
     /**
-     * @OA\Property(ref="#/components/swag_paypal_v2_referral_api_integration_preference")
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_referral_api_integration_preference")
      */
     protected ApiIntegrationPreference $apiIntegrationPreference;
 
