@@ -17,7 +17,7 @@ use Swag\PayPal\Checkout\SPBCheckout\Service\SPBMarksDataServiceInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * @deprecated tag:v7.0.0 - will be removed without replacement, payment logos have been added natively
+ * @deprecated tag:v8.0.0 - will be removed without replacement, payment logos have been added natively
  *
  * @internal
  */

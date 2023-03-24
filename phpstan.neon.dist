@@ -1,9 +1,8 @@
 includes:
-    - %baseline%
     - %ShopwareRoot%/vendor/phpstan/phpstan/conf/bleedingEdge.neon
 
 parameters:
-    phpVersion: %phpversion%
+    phpVersion: 80100
     level: 8
     tmpDir: var/cache/phpstan
     inferPrivatePropertyTypeFromConstructor: true
@@ -16,11 +15,6 @@ parameters:
         -   tests
     excludePaths:
         -   src/Resources
-        # 6.4 compatibility
-        -   src/Pos/Run/LogHandler.php
-        -   src/Webhook/Registration/WebhookSystemConfigController.php
-        -   tests/Webhook/Registration/WebhookSystemConfigControllerTest.php
-        -   tests/Mock/CacheItemMock*.php
 
     symfony:
         constant_hassers: false
@@ -30,17 +24,6 @@ parameters:
     ignoreErrors:
         # We won't type all arrays/iterables for now
         -   '#no value type specified in iterable type#'
-
-        -   # 6.4 compatibility
-            message: '#(unknown class|invalid type) .*EntityRepositoryInterface#'
-            paths:
-                - src/Util/Compatibility/EntityRepositoryDecorator.php
-                - src/Util/Lifecycle/Method/PaymentMethodDataRegistry.php
-
-        -   # 6.4 compatibility
-            message: '#(unknown class|invalid type) .*SalesChannelRepositoryInterface#'
-            paths:
-                - src/Util/Compatibility/SalesChannelRepositoryDecorator.php
 
         -   # This service gets registered within Cms Extensions
             message: '#is not registered in the container#'
@@ -57,7 +40,7 @@ parameters:
             message: '#Use \\Monolog\\Level::.*#'
 
         -   # ignore own deprecations in tests
-            message: '#.*tag:v7.0.0 -#'
+            message: '#.*tag:v8.0.0 -#'
             path: tests/**/*.php
 
         -   # ignore Plus deprecations
@@ -65,6 +48,11 @@ parameters:
 
         -   # ignore Symfony 6 message queue deprecations
             message: '#AsMessageHandler#'
+
+        -   # ignore SystemConfigController context requirement
+            message: '#Call to deprecated method batchSaveConfiguration#'
+            path: tests/Webhook/Registration/WebhookSystemConfigControllerTest.php
+            count: 11
 
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php

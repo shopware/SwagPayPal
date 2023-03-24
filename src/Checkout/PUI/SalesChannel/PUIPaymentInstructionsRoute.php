@@ -10,6 +10,7 @@ namespace Swag\PayPal\Checkout\PUI\SalesChannel;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
+use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
@@ -25,7 +26,6 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\SwagPayPal;
-use Swag\PayPal\Util\Compatibility\Exception;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -100,7 +100,7 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
         $transaction = $this->orderTransactionRepository->search(new Criteria([$transactionId]), $salesChannelContext->getContext())->first();
 
         if ($transaction === null) {
-            throw Exception::orderTransactionNotFound($transactionId);
+            throw OrderException::orderTransactionNotFound($transactionId);
         }
 
         $customFields = $transaction->getCustomFields() ?? [];
@@ -114,7 +114,7 @@ class PUIPaymentInstructionsRoute extends AbstractPUIPaymentInstructionsRoute
 
         $paypalOrderId = $customFields[SwagPayPal::ORDER_TRANSACTION_CUSTOM_FIELDS_PAYPAL_ORDER_ID] ?? null;
         if (!$paypalOrderId) {
-            throw Exception::orderTransactionNotFound($transactionId);
+            throw OrderException::orderTransactionNotFound($transactionId);
         }
 
         $order = $this->orderResource->get($paypalOrderId, $salesChannelContext->getSalesChannelId());

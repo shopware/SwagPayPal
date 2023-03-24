@@ -20,7 +20,6 @@ use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -28,7 +27,6 @@ use Shopware\Core\Framework\Plugin\Util\PluginIdProvider;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
-use Swag\PayPal\Util\Compatibility\EntityRepositoryDecorator;
 use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -153,10 +151,6 @@ class PaymentMethodInstallerTest extends TestCase
     private function getRepository(string $entityName): EntityRepository
     {
         $repository = $this->getContainer()->get(\sprintf('%s.repository', $entityName), ContainerInterface::NULL_ON_INVALID_REFERENCE);
-
-        if (\interface_exists(EntityRepositoryInterface::class) && $repository instanceof EntityRepositoryInterface) {
-            return new EntityRepositoryDecorator($repository);
-        }
 
         if (!$repository instanceof EntityRepository) {
             throw new ServiceNotFoundException(\sprintf('%s.repository', $entityName));

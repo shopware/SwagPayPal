@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Installment\Banner;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Price\Struct\PriceCollection;
@@ -44,7 +45,6 @@ use Swag\PayPal\Installment\Banner\Service\BannerDataService;
 use Swag\PayPal\Setting\Service\CredentialsUtil;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
-use Swag\PayPal\Test\Helper\Compatibility\Generator;
 use Swag\PayPal\Test\Helper\PaymentMethodTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Util\PaymentMethodUtil;
@@ -293,7 +293,7 @@ class InstallmentBannerSubscriberTest extends TestCase
     private function createCheckoutCartPage(): CheckoutCartPage
     {
         $page = new CheckoutCartPage();
-        $cart = Generator::createCart('testToken');
+        $cart = new Cart('testToken');
         $cart->setPrice(
             new CartPrice(
                 0,

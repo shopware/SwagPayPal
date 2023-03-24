@@ -53,12 +53,12 @@ final class Settings
     public const SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'spbAlternativePaymentMethodsEnabled';
 
     /**
-     * @deprecated tag:v7.0.0 - Will be removed without replacement.
+     * @deprecated tag:v8.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION = self::SYSTEM_CONFIG_DOMAIN . 'merchantLocation';
 
     /**
-     * @deprecated tag:v7.0.0 - Will be removed without replacement.
+     * @deprecated tag:v8.0.0 - Will be removed without replacement.
      */
     public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
 
@@ -94,17 +94,17 @@ final class Settings
     ];
 
     /**
-     * @deprecated tag:v7.0.0 - Will be removed without replacement.
+     * @deprecated tag:v8.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION_GERMANY = 'germany';
 
     /**
-     * @deprecated tag:v7.0.0 - Will be removed without replacement.
+     * @deprecated tag:v8.0.0 - Will be removed without replacement.
      */
     public const MERCHANT_LOCATION_OTHER = 'other';
 
     /**
-     * @deprecated tag:v7.0.0 - Will be removed without replacement.
+     * @deprecated tag:v8.0.0 - Will be removed without replacement.
      */
     public const VALID_MERCHANT_LOCATIONS = [
         self::MERCHANT_LOCATION_GERMANY,

@@ -9,6 +9,7 @@ namespace Swag\PayPal\PaymentsApi\Administration;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -24,7 +25,6 @@ use Swag\PayPal\RestApi\V1\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V1\Resource\OrdersResource;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V1\Resource\SaleResource;
-use Swag\PayPal\Util\Compatibility\Exception;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -333,7 +333,7 @@ class PayPalPaymentController extends AbstractController
         $order = $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
 
         if ($order === null) {
-            throw Exception::orderNotFound($orderId);
+            throw OrderException::orderNotFound($orderId);
         }
 
         return $order->getSalesChannelId();
