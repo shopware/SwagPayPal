@@ -32,7 +32,7 @@ use Swag\PayPal\SwagPayPal;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * @deprecated tag:v7.0.0 - Will be removed without replacement.
+ * @deprecated tag:v8.0.0 - Will be removed without replacement.
  */
 class PlusPuiHandler
 {

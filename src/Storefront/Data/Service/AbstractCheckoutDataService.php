@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Storefront\Data\Service;
 
 use Shopware\Core\Checkout\Cart\Cart;
+use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
 use Shopware\Core\Checkout\Payment\Exception\CustomerCanceledAsyncPaymentException;
@@ -17,7 +18,6 @@ use Swag\PayPal\RestApi\V1\Resource\IdentityResource;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
-use Swag\PayPal\Util\Compatibility\Exception;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -76,7 +76,7 @@ abstract class AbstractCheckoutDataService
         $customer = $context->getCustomer();
 
         if ($customer === null) {
-            throw Exception::customerNotLoggedIn();
+            throw CartException::customerNotLoggedIn();
         }
 
         $data = [

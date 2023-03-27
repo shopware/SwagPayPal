@@ -15,7 +15,6 @@ use Shopware\Core\Content\Media\File\FileSaver;
 use Shopware\Core\Content\Media\MediaDefinition;
 use Shopware\Core\Content\Rule\RuleDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
@@ -30,7 +29,6 @@ use Shopware\Core\System\SystemConfig\SystemConfigDefinition;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
 use Swag\PayPal\Pos\Webhook\WebhookService as PosWebhookService;
-use Swag\PayPal\Util\Compatibility\EntityRepositoryDecorator;
 use Swag\PayPal\Util\Lifecycle\ActivateDeactivate;
 use Swag\PayPal\Util\Lifecycle\Installer\MediaInstaller;
 use Swag\PayPal\Util\Lifecycle\Installer\PaymentMethodInstaller;
@@ -217,10 +215,6 @@ class SwagPayPal extends Plugin
     private function getRepository(ContainerInterface $container, string $entityName): EntityRepository
     {
         $repository = $container->get(\sprintf('%s.repository', $entityName), ContainerInterface::NULL_ON_INVALID_REFERENCE);
-
-        if (\interface_exists(EntityRepositoryInterface::class) && $repository instanceof EntityRepositoryInterface) {
-            return new EntityRepositoryDecorator($repository);
-        }
 
         if (!$repository instanceof EntityRepository) {
             throw new ServiceNotFoundException(\sprintf('%s.repository', $entityName));

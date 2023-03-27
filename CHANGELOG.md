@@ -1,3 +1,10 @@
+# 7.0.0
+- PPI-755 - Add Shopware 6.5 compatibility again
+
+# 6.0.2
+- PPI-753 - Fixes an issue, where template extensions were not possible in the meta block
+- PPI-754 - Fixes an issue, where Storefront assets were not working with Shopware 6.4 (Shopware 6.5 supported has been temporarily dropped)
+
 # 6.0.1
 - PPI-751 - Fixes an issue with incompatibility with other plugins such as B2B suite and Customized Products
 

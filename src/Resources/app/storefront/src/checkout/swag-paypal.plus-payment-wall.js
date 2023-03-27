@@ -5,7 +5,7 @@ import HttpClient from 'src/service/http-client.service';
 import ElementLoadingIndicatorUtil from 'src/utility/loading-indicator/element-loading-indicator.util';
 
 /**
- * @deprecated tag:v7.0.0 - Will be removed without replacement.
+ * @deprecated tag:v8.0.0 - Will be removed without replacement.
  */
 export default class SwagPayPalPlusPaymentWall extends Plugin {
     static options = {

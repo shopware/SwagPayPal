@@ -9,10 +9,12 @@ namespace Swag\PayPal\Checkout\SalesChannel;
 
 use OpenApi\Annotations as OA;
 use Psr\Log\LoggerInterface;
+use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
 use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -27,7 +29,6 @@ use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
-use Swag\PayPal\Util\Compatibility\Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -123,7 +124,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
             $this->logger->debug('Started', ['request' => $request->request->all()]);
             $customer = $salesChannelContext->getCustomer();
             if ($customer === null) {
-                throw Exception::customerNotLoggedIn();
+                throw CartException::customerNotLoggedIn();
             }
 
             $orderId = $request->request->get('orderId');
@@ -164,7 +165,7 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         $order = $this->orderRepository->search($criteria, $salesChannelContext->getContext())->first();
 
         if ($order === null) {
-            throw Exception::orderNotFound($orderId);
+            throw OrderException::orderNotFound($orderId);
         }
 
         $transactionCollection = $order->getTransactions();
