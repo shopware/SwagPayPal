@@ -8,6 +8,7 @@
 namespace Swag\PayPal\RestApi\V2\Api\Order\Payer\Phone;
 
 use Swag\PayPal\RestApi\V2\Api\Common\PhoneNumber as CommonPhoneNumber;
+use OpenApi\Annotations as OA;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_payer_phone")
