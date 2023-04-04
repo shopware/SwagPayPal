@@ -99,12 +99,14 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         );
 
         try {
+            $updateTime = $transaction->getOrderTransaction()->getUpdatedAt();
+
             $response = $this->orderResource->create(
                 $paypalOrder,
                 $salesChannelId,
                 PartnerAttributionId::PAYPAL_PPCP,
                 true,
-                $transactionId . $transaction->getOrderTransaction()->getUpdatedAt()->getTimestamp(),
+                $transactionId . ($updateTime ? $updateTime->getTimestamp() : ''),
             );
 
             $this->logger->debug('Created order');
