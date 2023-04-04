@@ -1,3 +1,6 @@
+# 6.0.3
+- PPI-757 - Fixes an issue, where payments of APM payment methods could be created as duplicates
+
 # 6.0.2
 - PPI-753 - Fixes an issue, where template extensions were not possible in the meta block
 - PPI-754 - Fixes an issue, where Storefront assets were not working with Shopware 6.4 (Shopware 6.5 supported has been temporarily dropped)

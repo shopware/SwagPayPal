@@ -104,7 +104,7 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
                 $salesChannelId,
                 PartnerAttributionId::PAYPAL_PPCP,
                 true,
-                Uuid::randomHex()
+                $transactionId . $transaction->getOrderTransaction()->getUpdatedAt()->getTimestamp(),
             );
 
             $this->logger->debug('Created order');

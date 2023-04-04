@@ -1,3 +1,6 @@
+# 6.0.3
+- PPI-757 - Behebt ein Problem, bei dem Zahlungen von alternative Zahlungsarten doppelt angelegt werden konnten
+
 # 6.0.2
 - PPI-753 - Behebt ein Problem, bei dem Template-Erweiterungen im Meta-Block nicht mehr funktionierten
 - PPI-754 - Behebt ein Problem, dass die kompilierten Assets nicht mit 6.4 kompatibel waren (Kompatiblität mit Shopware 6.5 vorübergehend entfernt)
