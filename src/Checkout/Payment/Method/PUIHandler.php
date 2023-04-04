@@ -111,7 +111,7 @@ class PUIHandler extends AbstractPaymentMethodHandler implements SynchronousPaym
                     $salesChannelContext->getSalesChannelId(),
                     PartnerAttributionId::PAYPAL_PPCP,
                     true,
-                    Uuid::randomHex(),
+                    $transactionId . $transaction->getOrderTransaction()->getUpdatedAt()->getTimestamp(),
                     $fraudnetSessionId
                 );
             } catch (PayPalApiException $exception) {

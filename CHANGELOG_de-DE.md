@@ -1,3 +1,6 @@
+# 7.0.1
+- PPI-757 - Behebt ein Problem, bei dem Zahlungen von alternative Zahlungsarten doppelt angelegt werden konnten
+
 # 7.0.0
 - PPI-755 - Shopware 6.5-Kompatibilität wiederhergestellt
 

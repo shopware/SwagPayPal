@@ -1,3 +1,6 @@
+# 7.0.1
+- PPI-757 - Fixes an issue, where payments of APM payment methods could be created as duplicates
+
 # 7.0.0
 - PPI-755 - Add Shopware 6.5 compatibility again
 
