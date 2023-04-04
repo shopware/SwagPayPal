@@ -24,7 +24,7 @@ use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle\PricingScheme\FixedPrice;
 class PricingScheme extends PayPalApiStruct
 {
     /**
-     * @OA\Property(ref="#/components/schema/swag_paypal_v1_common_money")
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
     protected FixedPrice $fixedPrice;
 

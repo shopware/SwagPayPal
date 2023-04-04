@@ -32,7 +32,7 @@ class Patch extends PayPalApiStruct
     /**
      * @var int|float|string|bool|array|null
      *
-     * @OA\Property(oneOf={"integer", "float", "string", "boolean", "array"}, nullable=true)
+     * @OA\Property(oneOf=[{ "type": "integer" },{ "type": "float" },{ "type": "string" },{ "type": "boolean" },{ "type": "array" }], nullable=true)
      */
     protected $value;
 
