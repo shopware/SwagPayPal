@@ -58,7 +58,7 @@ class PlusPaymentHandleController extends StorefrontController
      *     "/paypal/plus/payment/handle",
      *     name="frontend.paypal.plus.handle",
      *     methods={"POST"},
-     *     defaults={"XmlHttpRequest"=true, "_routeScope"={"storefront"}}
+     *     defaults={"XmlHttpRequest"=true, "_routeScope"={"storefront"}, "csrf_protected"=false}
      * )
      */
     public function handlePlusPayment(Request $request, SalesChannelContext $context): HandlePaymentMethodRouteResponse

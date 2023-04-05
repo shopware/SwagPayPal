@@ -1,5 +1,6 @@
 # 6.0.3
 - PPI-757 - Fixes an issue, where payments of APM payment methods could be created as duplicates
+- PPI-761 - Fixes an issue, where PayPal PLUS payments could not be created
 
 # 6.0.2
 - PPI-753 - Fixes an issue, where template extensions were not possible in the meta block

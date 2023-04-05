@@ -1,5 +1,6 @@
 # 6.0.3
 - PPI-757 - Behebt ein Problem, bei dem Zahlungen von alternative Zahlungsarten doppelt angelegt werden konnten
+- PPI-761 - Behebt ein Problem, bei dem PayPal PLUS Zahlungen nicht erstellt werden konnten
 
 # 6.0.2
 - PPI-753 - Behebt ein Problem, bei dem Template-Erweiterungen im Meta-Block nicht mehr funktionierten
