@@ -17,14 +17,7 @@ class CacheMock implements CacheItemPoolInterface
 {
     public function getItem($key): CacheItemInterface
     {
-        $reflectionClass = new \ReflectionClass(CacheItemInterface::class);
-        $method = $reflectionClass->getMethod('get');
-
-        if ($method->getReturnType() === null) {
-            return new CacheItemMock();
-        }
-
-        return new CacheItemMockTyped();
+        return new CacheItemMock();
     }
 
     public function getItems(array $keys = []): array
