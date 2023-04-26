@@ -35,6 +35,16 @@
                 "title": "Fehler beim Abrufen der Zahlungsdaten von PayPal"
             }
         },
+        "puiDetails": {
+            "cardTitle": "Zahlungsdaten für Rechnungskauf",
+            "buttonCopy": "Kopieren",
+            "bank": "Bank:",
+            "iban": "IBAN:",
+            "bic": "BIC:",
+            "accountHolder": "Kontoinhaber:",
+            "amount": "Betrag:",
+            "reference": "Verwendungszweck:"
+        },
         "transactionHistory": {
             "cardTitle": "Zahlungsverlauf",
             "states": {

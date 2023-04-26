@@ -2,6 +2,7 @@ import './component/swag-paypal-payment-actions';
 import './component/swag-paypal-payment-actions-v2';
 import './component/swag-paypal-payment-details-v1';
 import './component/swag-paypal-payment-details-v2';
+import './component/swag-paypal-pui-details';
 import './component/swag-paypal-text-field';
 import './component/swag-paypal-textarea-field';
 import './extension/sw-order-detail';
