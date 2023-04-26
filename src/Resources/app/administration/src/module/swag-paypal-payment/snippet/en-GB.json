@@ -35,6 +35,16 @@
                 "title": "Error fetching payment details from PayPal"
             }
         },
+        "puiDetails": {
+            "cardTitle": "Invoice payment data",
+            "buttonCopy": "Copy",
+            "bank": "Bank:",
+            "iban": "IBAN:",
+            "bic": "BIC:",
+            "accountHolder": "Account holder:",
+            "amount": "Amount:",
+            "reference": "Reference:"
+        },
         "transactionHistory": {
             "cardTitle": "Payment History",
             "states": {

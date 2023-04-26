@@ -1,3 +1,6 @@
+# 6.1.0
+- PPI-679 - Pay upon invoice payment details are now shown in the order details
+
 # 6.0.3
 - PPI-757 - Fixes an issue, where payments of APM payment methods could be created as duplicates
 - PPI-761 - Fixes an issue, where PayPal PLUS payments could not be created

@@ -1,0 +1,28 @@
+@import "~scss/variables";
+
+.swag-paypal-pui-details {
+    &__textarea {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        padding: 12px 16px;
+        font-size: $font-size-xs;
+        line-height: 22px;
+        color: $color-darkgray-200;
+        outline: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background: $color-gray-100;
+        cursor: default !important;
+        border: 1px solid $color-gray-300;
+        border-radius: $border-radius-default;
+        overflow: hidden;
+    }
+
+    &__copy-button {
+        display: flex;
+        justify-content: flex-end;
+        margin-left: auto;
+        margin-top: 16px;
+    }
+}
