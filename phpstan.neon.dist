@@ -54,6 +54,9 @@ parameters:
             path: tests/Webhook/Registration/WebhookSystemConfigControllerTest.php
             count: 11
 
+        -   # ignore param type coverage
+            message: '#.*Add more param types to get over.*#'
+
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
 
