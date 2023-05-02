@@ -16,6 +16,7 @@ use Shopware\Storefront\Page\Product\ProductPage;
 use Shopware\Storefront\Pagelet\Footer\FooterPagelet;
 use Swag\CmsExtensions\Storefront\Pagelet\Quickview\QuickviewPagelet;
 use Swag\PayPal\Installment\Banner\BannerData;
+use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\Setting\Service\CredentialsUtilInterface;
 use Swag\PayPal\Util\PaymentMethodUtil;
 
@@ -64,13 +65,20 @@ class BannerDataService implements BannerDataServiceInterface
             }
         }
 
-        $paymentMethodId = (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext());
-
-        return new BannerData(
-            $paymentMethodId,
+        $bannerData = new BannerData(
+            (string) $this->paymentMethodUtil->getPayPalPaymentMethodId($salesChannelContext->getContext()),
             $this->credentialsUtil->getClientId($salesChannelContext->getSalesChannelId()),
             $amount,
             $salesChannelContext->getCurrency()->getIsoCode()
         );
+
+        $merchantPayerId = $this->credentialsUtil->getMerchantPayerId($salesChannelContext->getSalesChannelId());
+
+        $bannerData->assign([
+            'merchantPayerId' => $merchantPayerId,
+            'partnerAttributionId' => $merchantPayerId ? PartnerAttributionId::PAYPAL_PPCP : PartnerAttributionId::PAYPAL_CLASSIC,
+        ]);
+
+        return $bannerData;
     }
 }

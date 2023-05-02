@@ -79,6 +79,10 @@ export default class SwagPaypalAbstractButtons extends Plugin {
             config['data-client-token'] = this.options.clientToken;
         }
 
+        if (this.options.partnerAttributionId) {
+            config['data-partner-attribution-id'] = this.options.partnerAttributionId;
+        }
+
         return config;
     }
 

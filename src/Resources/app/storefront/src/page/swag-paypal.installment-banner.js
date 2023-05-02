@@ -92,6 +92,13 @@ export default class SwagPayPalInstallmentBanner extends SwagPaypalAbstractButto
          * @type string
          */
         textColor: 'black',
+
+        /**
+         * This option holds the partner attribution id
+         *
+         * @type string
+         */
+        partnerAttributionId: '',
     };
 
     init() {
