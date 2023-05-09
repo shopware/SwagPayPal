@@ -50,7 +50,7 @@ class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInt
 
     public function getInitialState(): bool
     {
-        return false;
+        return true;
     }
 
     public function getMediaFileName(): ?string
@@ -65,12 +65,7 @@ class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInt
             return self::CAPABILITY_ACTIVE;
         }
 
-        $capability = $merchantIntegrations->getSpecificCapability('STANDARD_CARD_PROCESSING');
-        if ($capability !== null && $capability->getStatus() === Capability::STATUS_ACTIVE) {
-            return self::CAPABILITY_LIMITED;
-        }
-
-        return self::CAPABILITY_INELIGIBLE;
+        return self::CAPABILITY_LIMITED;
     }
 
     public function getCheckoutDataService(): AbstractCheckoutDataService

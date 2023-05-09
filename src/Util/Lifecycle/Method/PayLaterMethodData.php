@@ -59,7 +59,7 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
 
     public function getInitialState(): bool
     {
-        return false;
+        return true;
     }
 
     public function getMediaFileName(): ?string

@@ -45,7 +45,7 @@ class IdealMethodData extends AbstractMethodData
 
     public function getInitialState(): bool
     {
-        return false;
+        return true;
     }
 
     public function getMediaFileName(): ?string
@@ -55,11 +55,6 @@ class IdealMethodData extends AbstractMethodData
 
     public function validateCapability(MerchantIntegrations $merchantIntegrations): string
     {
-        $product = $merchantIntegrations->getSpecificProduct('PPCP_STANDARD');
-        if ($product !== null && (\in_array($product->getVettingStatus(), [Product::VETTING_STATUS_APPROVED, Product::VETTING_STATUS_SUBSCRIBED], true))) {
-            return self::CAPABILITY_ACTIVE;
-        }
-
-        return self::CAPABILITY_INELIGIBLE;
+        return self::CAPABILITY_ACTIVE;
     }
 }
