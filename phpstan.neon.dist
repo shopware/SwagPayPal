@@ -57,6 +57,9 @@ parameters:
         -   # ignore param type coverage
             message: '#.*Add more param types to get over.*#'
 
+        -   # ignore lineItemPayloadDeprecation deprecations
+            message: '#Call to deprecated method setPayloadValue\(\) of class .*LineItem#'
+
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
 
