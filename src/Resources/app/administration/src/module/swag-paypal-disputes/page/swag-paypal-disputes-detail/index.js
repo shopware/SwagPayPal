@@ -44,7 +44,29 @@ Component.register('swag-paypal-disputes-detail', {
         },
 
         orderTransactionCriteria() {
-            return new Criteria(1, 1);
+            if (!this.dispute.disputed_transactions) {
+                return null;
+            }
+
+            const disputedTransaction = this.dispute.disputed_transactions[0];
+            if (!disputedTransaction?.custom) {
+                return null;
+            }
+
+            const id = JSON.parse(disputedTransaction.custom)?.orderTransactionId ?? disputedTransaction.custom;
+
+            if (!(typeof id === 'string') || id.length !== 32) {
+                return null;
+            }
+
+            const criteria = new Criteria(1, 1);
+            criteria.setIds([id]);
+
+            return criteria;
+        },
+
+        externalDetailPageLink() {
+            return `${this.resolutionCenterUrl}/${this.dispute.dispute_id}`;
         },
 
         dateFilter() {
@@ -72,7 +94,7 @@ Component.register('swag-paypal-disputes-detail', {
         getDetail() {
             this.SwagPayPalDisputeApiService.detail(this.disputeId, this.salesChannelId).then((dispute) => {
                 this.dispute = dispute;
-                this.setLinkToOrderModule(dispute);
+                this.setLinkToOrderModule();
                 this.isLoading = false;
             }).catch(this.handleError);
         },
@@ -86,27 +108,27 @@ Component.register('swag-paypal-disputes-detail', {
             this.isLoading = false;
         },
 
+        /**
+         * @deprecated tag:v8.0.0 - will be removed, use computed externalDetailPageLink instead
+         */
         getExternalDetailPageLink() {
             return `${this.resolutionCenterUrl}/${this.dispute.dispute_id}`;
         },
 
-        setLinkToOrderModule(dispute) {
-            if (!dispute.disputed_transactions) {
-                return;
+        setLinkToOrderModule() {
+            if (!this.orderTransactionCriteria) {
+                this.orderModuleLink = null;
             }
 
-            const disputedTransaction = dispute.disputed_transactions[0];
-            if (!disputedTransaction) {
-                return;
-            }
+            this.orderTransactionRepository.search(this.orderTransactionCriteria, Context.api, this.orderTransactionCriteria)
+                .then((orderTransactions) => {
+                    const orderTransaction = orderTransactions[0];
 
-            this.orderTransactionRepository.get(disputedTransaction.custom, Context.api, this.orderTransactionCriteria)
-                .then((orderTransaction) => {
                     if (orderTransaction === null) {
                         return;
                     }
 
-                    this.orderModuleLink = { name: 'sw.order.detail.base', params: { id: orderTransaction.orderId } };
+                    this.orderModuleLink = { name: 'sw.order.detail.general', params: { id: orderTransaction.orderId } };
                 });
         },
 

@@ -73,7 +73,7 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         if ($webhook instanceof WebhookV2) {
             $resource = $webhook->getResource();
             if ($resource !== null) {
-                $resource->setCustomId($transactionId);
+                $resource->setCustomId(\json_encode(['orderTransactionId' => $transactionId]) ?: null);
             }
         }
         $this->webhookHandler->invoke($webhook, $context);
@@ -139,8 +139,10 @@ abstract class AbstractWebhookHandlerTestCase extends TestCase
         return (new WebhookV1())->assign(['resource' => ['parent_payment' => $parentPayment]]);
     }
 
-    protected function createWebhookV2(string $resourceType, ?string $customId = null): WebhookV2
+    protected function createWebhookV2(string $resourceType, ?string $orderTransactionId = null): WebhookV2
     {
+        $customId = \json_encode(['orderTransactionId' => $orderTransactionId]);
+
         $webhook = new WebhookV2();
         $webhook->assign(['resource_type' => $resourceType, 'resource' => ['custom_id' => $customId]]);
         $resource = $webhook->getResource();
