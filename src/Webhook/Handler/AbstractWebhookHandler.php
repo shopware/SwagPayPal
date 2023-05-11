@@ -82,7 +82,14 @@ abstract class AbstractWebhookHandler implements WebhookHandler
 
     protected function getOrderTransactionV2(Payment $resource, Context $context): OrderTransactionEntity
     {
-        $orderTransactionId = $resource->getCustomId();
+        $customId = $resource->getCustomId() ?? '[]';
+        $customIdArray = \json_decode($customId, true);
+        if (!\is_array($customIdArray)) {
+            $orderTransactionId = $customId;
+        } else {
+            $orderTransactionId = $customIdArray['orderTransactionId'];
+        }
+
         if ($orderTransactionId === null) {
             throw new WebhookException($this->getEventType(), 'Given webhook resource data does not contain needed custom ID');
         }

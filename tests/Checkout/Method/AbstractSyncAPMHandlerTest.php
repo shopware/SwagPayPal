@@ -41,6 +41,7 @@ use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\AuthorizeOrderDenied;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderDeclined;
@@ -206,7 +207,7 @@ Missing PayPal order id');
                 $value = $patch->getValue();
                 static::assertIsArray($value);
                 static::assertSame(OrderPaymentBuilderTest::TEST_ORDER_NUMBER, $value['invoice_id']);
-                static::assertSame($orderTransactionId, $value['custom_id']);
+                static::assertStringContainsString($orderTransactionId, $value['custom_id']);
                 static::assertSame(PatchV2::OPERATION_REPLACE, $patch->getOp());
             }
         }
@@ -242,6 +243,7 @@ Missing PayPal order id');
                     new PurchaseUnitProvider(
                         new AmountProvider(new PriceFormatter()),
                         new AddressProvider(),
+                        new CustomIdProviderMock(),
                         $systemConfig
                     ),
                     new ItemListProvider(

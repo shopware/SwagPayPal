@@ -56,6 +56,7 @@ use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\CreateResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentAuthorizeResponseFixture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V1\ExecutePaymentOrderResponseFixture;
@@ -666,6 +667,7 @@ An error occurred during the communication with PayPal');
                         new PurchaseUnitProvider(
                             new AmountProvider(new PriceFormatter()),
                             new AddressProvider(),
+                            new CustomIdProviderMock(),
                             $systemConfig
                         ),
                         new ItemListProvider(

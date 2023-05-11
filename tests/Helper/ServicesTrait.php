@@ -10,17 +10,20 @@ namespace Swag\PayPal\Test\Helper;
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
+use Swag\PayPal\OrdersApi\Builder\Util\CustomIdProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\PaymentsApi\Builder\OrderPaymentBuilder;
 use Swag\PayPal\RestApi\V1\Resource\PaymentResource;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\DummyCollection;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
@@ -111,10 +114,11 @@ trait ServicesTrait
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
         $addressProvider = new AddressProvider();
+        $customIdProvider = new CustomIdProviderMock();
 
         return new OrderFromOrderBuilder(
             $systemConfig,
-            new PurchaseUnitProvider($amountProvider, $addressProvider, $systemConfig),
+            new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
             new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock())
         );

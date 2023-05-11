@@ -1,6 +1,7 @@
 # 7.1.0
 - PPI-679 - Zahlungsdetails für Rechnungskauf werden jetzt in den Bestelldetails in der Administration angezeigt
 - PPI-762 - Einige Zahlungsarten sind nun auch für Nicht-PPCP-Märkte verfügbar
+- PPI-767 - Zusätzliche Plugin-Informationen zu Transaktionsdetails hinzugefügt
 
 # 7.0.1
 - PPI-757 - Behebt ein Problem, bei dem Zahlungen von alternative Zahlungsarten doppelt angelegt werden konnten
