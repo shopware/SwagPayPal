@@ -8,15 +8,7 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder\Util;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
-use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
-use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
-use Shopware\Core\Checkout\Cart\Tax\Struct\TaxRuleCollection;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemCollection;
-use Shopware\Core\Checkout\Order\Aggregate\OrderLineItem\OrderLineItemEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
-use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Checkout\Payment\PaymentMethodDefinition;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -25,13 +17,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Plugin\PluginCollection;
 use Shopware\Core\Framework\Plugin\PluginEntity;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\System\Currency\CurrencyEntity;
 use Swag\PayPal\OrdersApi\Builder\Util\CustomIdProvider;
-use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
-use Swag\PayPal\Test\Mock\LoggerMock;
-use Swag\PayPal\Util\PriceFormatter;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * @internal
@@ -63,7 +49,7 @@ class CustomIdProviderTest extends TestCase
             'orderTransactionId' => $transaction->getId(),
             'pluginVersion' => '7.1.0',
             'shopwareVersion' => '6.5.0.0',
-        ]);
+        ]) ?: '[]';
 
         static::assertJsonStringEqualsJsonString($expected, $result);
     }
@@ -91,7 +77,7 @@ class CustomIdProviderTest extends TestCase
             'orderTransactionId' => $transaction->getId(),
             'pluginVersion' => '0.0.0',
             'shopwareVersion' => '6.5.0.0',
-        ]);
+        ]) ?: '[]';
 
         static::assertJsonStringEqualsJsonString($expected, $result);
     }
