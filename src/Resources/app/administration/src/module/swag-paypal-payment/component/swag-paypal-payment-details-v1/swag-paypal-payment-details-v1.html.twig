@@ -24,7 +24,7 @@
                             {% endblock %}
 
                             {% block swag_paypal_payment_detail_invoice_list %}
-                                <sw-description-list class="swag-paypal-payment-detail__data">
+                                <sw-description-list class="swag-paypal-payment-detail__data" grid="1fr 1fr">
                                     <dt>{{ $tc('swag-paypal-payment.paymentDetails.invoice.totalAmount') }}</dt>
                                     <dd>{{ amount.total }} {{ currency }}</dd>
 
@@ -44,7 +44,7 @@
                                 {% endblock %}
 
                                 {% block swag_paypal_payment_detail_payment_list %}
-                                    <sw-description-list class="swag-paypal-payment-detail__data">
+                                    <sw-description-list class="swag-paypal-payment-detail__data" grid="1fr 1fr">
                                         <dt>{{ $tc('swag-paypal-payment.paymentDetails.payment.intent') }}</dt>
                                         <dd>{{ $tc(`swag-paypal.settingForm.behavior.intent.${paymentResource.intent}`) }}</dd>
 
@@ -74,7 +74,7 @@
                                 {% endblock %}
 
                                 {% block swag_paypal_payment_detail_customer_list %}
-                                    <sw-description-list class="swag-paypal-payment-detail__data">
+                                    <sw-description-list class="swag-paypal-payment-detail__data" grid="1fr 1fr">
                                         <dt>{{ $tc('swag-paypal-payment.paymentDetails.customer.payerId') }}</dt>
                                         <dd>{{ payerId }}</dd>
                                     </sw-description-list>

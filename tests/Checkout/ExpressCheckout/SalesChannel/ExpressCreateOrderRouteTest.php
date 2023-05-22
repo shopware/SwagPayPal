@@ -18,6 +18,7 @@ use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\CheckoutRouteTrait;
+use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
@@ -52,11 +53,12 @@ class ExpressCreateOrderRouteTest extends TestCase
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
         $addressProvider = new AddressProvider();
+        $customIdProvider = new CustomIdProviderMock();
 
         $orderFromCartBuilder = new OrderFromCartBuilder(
             $priceFormatter,
             $systemConfig,
-            new PurchaseUnitProvider($amountProvider, $addressProvider, $systemConfig),
+            new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
             new EventDispatcherMock(),
             new LoggerMock()

@@ -2,8 +2,8 @@
 coverage/
 .phpunit.result.cache
 vendor/
-src/Resources/public/administration/swag-pay-pal.*.hot-update.js
 src/Resources/public/administration/
+src/Resources/public/static/
 src/Resources/app/storefront/dist
 phpstan.neon
 var/

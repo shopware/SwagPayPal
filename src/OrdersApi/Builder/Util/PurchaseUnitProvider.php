@@ -26,9 +26,11 @@ class PurchaseUnitProvider
 {
     private AmountProvider $amountProvider;
 
-    private SystemConfigService $systemConfigService;
-
     private AddressProvider $addressProvider;
+
+    private CustomIdProvider $customIdProvider;
+
+    private SystemConfigService $systemConfigService;
 
     /**
      * @internal
@@ -36,10 +38,12 @@ class PurchaseUnitProvider
     public function __construct(
         AmountProvider $amountProvider,
         AddressProvider $addressProvider,
+        CustomIdProvider $customIdProvider,
         SystemConfigService $systemConfigService
     ) {
         $this->amountProvider = $amountProvider;
         $this->addressProvider = $addressProvider;
+        $this->customIdProvider = $customIdProvider;
         $this->systemConfigService = $systemConfigService;
     }
 
@@ -77,7 +81,7 @@ class PurchaseUnitProvider
         }
 
         if ($orderTransaction !== null) {
-            $purchaseUnit->setCustomId($orderTransaction->getId());
+            $purchaseUnit->setCustomId($this->customIdProvider->createCustomId($orderTransaction, $salesChannelContext->getContext()));
         }
 
         $orderNumber = $order !== null ? $order->getOrderNumber() : null;

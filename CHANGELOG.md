@@ -1,3 +1,8 @@
+# 7.1.0
+- PPI-679 - Pay upon invoice payment details are now shown in the order details
+- PPI-762 - Several payment methods are now available in non-PPCP markets
+- PPI-767 - Added additional plugin information to transaction details
+
 # 7.0.1
 - PPI-757 - Fixes an issue, where payments of APM payment methods could be created as duplicates
 
