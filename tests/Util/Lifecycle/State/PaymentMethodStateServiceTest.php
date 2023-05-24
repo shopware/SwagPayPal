@@ -47,7 +47,10 @@ class PaymentMethodStateServiceTest extends TestCase
         'Swag\PayPal\Checkout\Payment\Method\PayLaterHandler' => true,
     ];
 
-    private EntityRepository&MockObject $paymentMethodRepository;
+    /**
+     * @var EntityRepository&MockObject
+     */
+    private MockObject $paymentMethodRepository;
 
     public function testSetAllPaymentMethodsStateToActive(): void
     {

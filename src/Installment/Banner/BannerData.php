@@ -45,7 +45,7 @@ class BannerData extends Struct
         string $color = 'blue',
         string $ratio = '8x1',
         string $logoType = 'primary',
-        string $textColor = 'black',
+        string $textColor = 'black'
     ) {
         $this->paymentMethodId = $paymentMethodId;
         $this->clientId = $clientId;

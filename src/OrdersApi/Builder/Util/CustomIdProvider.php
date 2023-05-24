@@ -41,7 +41,7 @@ class CustomIdProvider
      */
     public function __construct(
         EntityRepository $pluginRepository,
-        string $shopwareVersion,
+        string $shopwareVersion
     ) {
         $this->pluginRepository = $pluginRepository;
         $this->shopwareVersion = $shopwareVersion;
@@ -49,7 +49,7 @@ class CustomIdProvider
 
     public function createCustomId(
         OrderTransactionEntity $orderTransaction,
-        Context $context,
+        Context $context
     ): string {
         return \json_encode([
             'orderTransactionId' => $orderTransaction->getId(),
