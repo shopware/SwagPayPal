@@ -17,6 +17,10 @@ class BannerData extends Struct
 
     protected string $currency;
 
+    protected string $partnerAttributionId;
+
+    protected string $merchantPayerId;
+
     protected string $layout = 'text';
 
     protected string $color = 'blue';
@@ -27,8 +31,11 @@ class BannerData extends Struct
 
     protected string $textColor = 'black';
 
-    private string $paymentMethodId;
+    protected string $paymentMethodId;
 
+    /**
+     * @deprecated tag:v8.0.0 - will be empty, use `assign()` instead
+     */
     public function __construct(
         string $paymentMethodId,
         string $clientId,
@@ -54,6 +61,26 @@ class BannerData extends Struct
     public function getPaymentMethodId(): string
     {
         return $this->paymentMethodId;
+    }
+
+    public function getMerchantPayerId(): string
+    {
+        return $this->merchantPayerId;
+    }
+
+    public function setMerchantPayerId(string $merchantPayerId): void
+    {
+        $this->merchantPayerId = $merchantPayerId;
+    }
+
+    public function getPartnerAttributionId(): string
+    {
+        return $this->partnerAttributionId;
+    }
+
+    public function setPartnerAttributionId(string $partnerAttributionId): void
+    {
+        $this->partnerAttributionId = $partnerAttributionId;
     }
 
     public function getClientId(): string
@@ -99,5 +126,40 @@ class BannerData extends Struct
     public function getTextColor(): string
     {
         return $this->textColor;
+    }
+
+    public function setAmount(float $amount): void
+    {
+        $this->amount = $amount;
+    }
+
+    public function setCurrency(string $currency): void
+    {
+        $this->currency = $currency;
+    }
+
+    public function setLayout(string $layout): void
+    {
+        $this->layout = $layout;
+    }
+
+    public function setColor(string $color): void
+    {
+        $this->color = $color;
+    }
+
+    public function setRatio(string $ratio): void
+    {
+        $this->ratio = $ratio;
+    }
+
+    public function setLogoType(string $logoType): void
+    {
+        $this->logoType = $logoType;
+    }
+
+    public function setTextColor(string $textColor): void
+    {
+        $this->textColor = $textColor;
     }
 }

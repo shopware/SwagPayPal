@@ -28,6 +28,7 @@ use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Swag\PayPal\Setting\Service\SettingsValidationService;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CaptureOrderCapture;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftNo;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\GetOrderCaptureLiabilityShiftUnknown;
@@ -105,6 +106,7 @@ Credit card validation failed, 3D secure was not validated.');
                     new PurchaseUnitProvider(
                         new AmountProvider(new PriceFormatter()),
                         new AddressProvider(),
+                        new CustomIdProviderMock(),
                         $systemConfig
                     ),
                     new ItemListProvider(

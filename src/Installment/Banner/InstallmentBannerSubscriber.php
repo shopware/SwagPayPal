@@ -116,15 +116,10 @@ class InstallmentBannerSubscriber implements EventSubscriberInterface
         $bannerData = $this->bannerDataService->getInstallmentBannerData($page, $salesChannelContext);
 
         if ($page instanceof CheckoutCartPage) {
-            $productTableBannerData = new BannerData(
-                $bannerData->getPaymentMethodId(),
-                $bannerData->getClientId(),
-                $bannerData->getAmount(),
-                $bannerData->getCurrency(),
-                'flex',
-                'grey',
-                '20x1'
-            );
+            $productTableBannerData = clone $bannerData;
+            $productTableBannerData->setLayout('flex');
+            $productTableBannerData->setColor('grey');
+            $productTableBannerData->setRatio('20x1');
 
             $page->addExtension(self::PAYPAL_INSTALLMENT_BANNER_DATA_CART_PAGE_EXTENSION_ID, $productTableBannerData);
         }

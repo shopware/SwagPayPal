@@ -11,6 +11,7 @@
             <component v-if="!isLoading && showPayPalOrder"
                        :is="'swag-paypal-payment-details-v2'"
                        :paypalOrder="paypalOrder"
+                       :orderTransaction="orderTransaction"
                        :orderTransactionId="orderTransaction.id"
                        :paypalPartnerAttributionId="orderTransaction.customFields.swag_paypal_partner_attribution_id">
             </component>

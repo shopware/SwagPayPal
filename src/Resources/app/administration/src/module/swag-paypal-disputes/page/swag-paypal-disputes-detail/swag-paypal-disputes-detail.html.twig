@@ -39,7 +39,7 @@
 
                                     {% block swag_paypal_disputes_detail_content_details_fields_external_link %}
                                         <div class="swag-paypal-disputes-detail__links">
-                                            <sw-external-link :href="getExternalDetailPageLink()">
+                                            <sw-external-link :href="externalDetailPageLink">
                                                 {{ $tc('swag-paypal-disputes.detail.externalLinkText') }}
                                             </sw-external-link>
                                         </div>
@@ -52,7 +52,6 @@
                                                          target="_blank"
                                                          rel="noopener">
                                                 {{ $tc('swag-paypal-disputes.detail.orderModuleLinkText') }}
-                                                <sw-icon name="regular-external-link-s" size="12px"></sw-icon>
                                             </router-link>
                                         </div>
                                     {% endblock %}

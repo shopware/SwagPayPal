@@ -16,14 +16,27 @@ Component.register('swag-paypal-payment-details-v2', {
             required: true,
         },
 
-        orderTransactionId: {
-            type: String,
+        orderTransaction: {
+            type: Object,
             required: true,
         },
 
+        /**
+         * @deprecated tag:v8.0.0 - will be removed, use orderTransaction instead
+         */
+        orderTransactionId: {
+            type: String,
+            required: false,
+            default: '',
+        },
+
+        /**
+         * @deprecated tag:v8.0.0 - will be removed, use orderTransaction instead
+         */
         paypalPartnerAttributionId: {
             type: String,
-            required: true,
+            required: false,
+            default: '',
         },
     },
 
@@ -84,6 +97,10 @@ Component.register('swag-paypal-payment-details-v2', {
                     rawData: true,
                 },
             ];
+        },
+
+        puiDetails() {
+            return this.orderTransaction.customFields.swag_paypal_pui_payment_instruction;
         },
     },
 

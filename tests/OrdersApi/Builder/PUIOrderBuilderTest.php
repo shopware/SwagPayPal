@@ -25,6 +25,7 @@ use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
 use Swag\PayPal\Test\Helper\SalesChannelContextTrait;
 use Swag\PayPal\Test\Helper\ServicesTrait;
+use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Util\LocaleCodeProvider;
@@ -195,10 +196,11 @@ class PUIOrderBuilderTest extends TestCase
         $priceFormatter = new PriceFormatter();
         $amountProvider = new AmountProvider($priceFormatter);
         $addressProvider = new AddressProvider();
+        $customIdProvider = new CustomIdProviderMock();
 
         return new PUIOrderBuilder(
             $systemConfig,
-            new PurchaseUnitProvider($amountProvider, $addressProvider, $systemConfig),
+            new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
             new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock()),
             $this->getContainer()->get(LocaleCodeProvider::class),

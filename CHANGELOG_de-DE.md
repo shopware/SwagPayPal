@@ -1,3 +1,8 @@
+# 6.1.0
+- PPI-679 - Zahlungsdetails für Rechnungskauf werden jetzt in den Bestelldetails in der Administration angezeigt
+- PPI-762 - Einige Zahlungsarten sind nun auch für Nicht-PPCP-Märkte verfügbar
+- PPI-767 - Zusätzliche Plugin-Informationen zu Transaktionsdetails hinzugefügt
+
 # 6.0.3
 - PPI-757 - Behebt ein Problem, bei dem Zahlungen von alternative Zahlungsarten doppelt angelegt werden konnten
 - PPI-761 - Behebt ein Problem, bei dem PayPal PLUS Zahlungen nicht erstellt werden konnten

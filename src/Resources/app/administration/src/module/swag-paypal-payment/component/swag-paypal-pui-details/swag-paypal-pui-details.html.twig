@@ -1,0 +1,27 @@
+{% block swag_paypal_pui_details %}
+    <sw-card
+        position-identifier="swag-paypal-pui-details"
+        :title="$tc('swag-paypal-payment.puiDetails.cardTitle')">
+
+        {% block swag_paypal_pui_details_textarea %}
+        <div class="swag-paypal-pui-details__textarea">
+            <b>{{ $tc('swag-paypal-payment.puiDetails.bank') }}</b> {{ bankName }}<br>
+            <b>{{ $tc('swag-paypal-payment.puiDetails.iban') }}</b> {{ iban }}<br>
+            <b>{{ $tc('swag-paypal-payment.puiDetails.bic') }}</b> {{ bic }}<br>
+            <b>{{ $tc('swag-paypal-payment.puiDetails.accountHolder') }}</b> {{ accountHolderName }}<br>
+            <b>{{ $tc('swag-paypal-payment.puiDetails.amount') }}</b> {{ amount }}<br>
+            <b>{{ $tc('swag-paypal-payment.puiDetails.reference') }}</b> {{ reference }}<br>
+        </div>
+        {% endblock %}
+
+        {% block swag_paypal_pui_details_copy_button %}
+        <sw-button
+            class="swag-paypal-pui-details__copy-button"
+            variant="ghost"
+            size="small"
+            @click="onCopy">
+            {{ $tc('swag-paypal-payment.puiDetails.buttonCopy') }}
+        </sw-button>
+        {% endblock %}
+    </sw-card>
+{% endblock %}
