@@ -26,9 +26,9 @@
                 "label": "Setze PayPal als Standard"
             }
         },
-        "shippingAlert": {
-            "title": "Versandtracking jetzt verfügbar",
-            "message": "Sie können PayPal jetzt Paketverfolgungsdaten zur Verfügung stellen, wenn Sie in Ihren <a href=\"#/sw/settings/shipping/index\">Versandarten →</a> ein Standard-Versandunternehmen angeben."
+        "tabs": {
+          "general": "Allgemein",
+          "storefront": "Storefront-Darstellung"
         },
         "general": {
             "mainMenuItemGeneral": "PayPal",
@@ -210,7 +210,7 @@
                 }
             },
             "express": {
-                "cardTitle": "PayPal Express Checkout",
+                "cardTitle": "Express Checkout Shortcut",
                 "ecsDetailEnabled": {
                     "label": "'Direkt zu PayPal' auf Detailseite",
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf jeder Produktdetailseite angezeigt."
@@ -228,8 +228,8 @@
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Login- und Registrierungsseite angezeigt."
                 },
                 "ecsListingEnabled": {
-                    "label": "'Direkt zu PayPal' auf Listing Seiten",
-                    "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf Listing-Seiten angezeigt."
+                    "label": "'Direkt zu PayPal' auf Listingseiten",
+                    "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf Listingseiten angezeigt."
                 },
                 "ecsButtonColor": {
                     "label": "Buttonfarbe",
@@ -258,9 +258,9 @@
                 }
             },
             "installment": {
-                "cardTitle": "Ratenzahlung",
+                "cardTitle": "Später bezahlen-Banner",
                 "installmentBannerEnabled": {
-                    "label": "Ratenzahlung Banner aktivieren"
+                    "label": "Später bezahlen-Banner aktivieren"
                 }
             },
             "acdc": {
@@ -278,7 +278,7 @@
                 }
             },
             "spb": {
-                "cardTitle": "PayPal Checkout mit Smart Payment Buttons",
+                "cardTitle": "Smart Payment Buttons",
                 "spbCheckoutEnabled": {
                     "label": "Smart Payment Buttons aktivieren"
                 },

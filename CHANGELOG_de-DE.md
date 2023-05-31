@@ -1,3 +1,6 @@
+# 7.2.0
+- PPI-773 - Die Einstellungsseite ist nun in Tabs strukturiert
+
 # 7.1.0
 - PPI-679 - Zahlungsdetails für Rechnungskauf werden jetzt in den Bestelldetails in der Administration angezeigt
 - PPI-762 - Einige Zahlungsarten sind nun auch für Nicht-PPCP-Märkte verfügbar
