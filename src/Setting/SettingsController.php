@@ -10,6 +10,7 @@ namespace Swag\PayPal\Setting;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Swag\PayPal\Setting\Service\ApiCredentialServiceInterface;
 use Swag\PayPal\Setting\Service\MerchantIntegrationsService;
@@ -47,12 +48,22 @@ class SettingsController extends AbstractController
     {
         $clientId = $request->query->get('clientId');
         if (!\is_string($clientId)) {
-            throw new InvalidRequestParameterException('clientId');
+            if (\class_exists(RoutingException::class)) {
+                throw RoutingException::invalidRequestParameter('clientId');
+            } else {
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new InvalidRequestParameterException('clientId');
+            }
         }
 
         $clientSecret = $request->query->get('clientSecret');
         if (!\is_string($clientSecret)) {
-            throw new InvalidRequestParameterException('clientSecret');
+            if (\class_exists(RoutingException::class)) {
+                throw RoutingException::invalidRequestParameter('clientSecret');
+            } else {
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new InvalidRequestParameterException('clientSecret');
+            }
         }
 
         $sandboxActive = $request->query->getBoolean('sandboxActive');

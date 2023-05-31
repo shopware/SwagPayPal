@@ -1,0 +1,4 @@
+framework:
+  exceptions:
+    Swag\PayPal\Checkout\PUI\Exception\PaymentInstructionsNotReadyException:
+      log_level: notice
