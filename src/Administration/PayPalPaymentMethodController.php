@@ -11,6 +11,7 @@ use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Swag\PayPal\Util\PaymentMethodUtil;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,7 +66,12 @@ class PayPalPaymentMethodController extends AbstractController
     {
         $salesChannelId = $request->request->get('salesChannelId');
         if ($salesChannelId !== null && !\is_string($salesChannelId)) {
-            throw new InvalidRequestParameterException('salesChannelId');
+            if (\class_exists(RoutingException::class)) {
+                throw RoutingException::invalidRequestParameter('salesChannelId');
+            } else {
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new InvalidRequestParameterException('salesChannelId');
+            }
         }
 
         $this->paymentMethodUtil->setPayPalAsDefaultPaymentMethod($context, $salesChannelId);

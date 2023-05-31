@@ -10,6 +10,7 @@ namespace Swag\PayPal\Pos\Setting;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Swag\PayPal\Pos\Exception\ExistingPosAccountException;
 use Swag\PayPal\Pos\Setting\Service\ApiCredentialService;
 use Swag\PayPal\Pos\Setting\Service\InformationDefaultService;
@@ -69,7 +70,12 @@ class SettingsController extends AbstractController
     {
         $apiKey = $request->request->get('apiKey');
         if (!\is_string($apiKey)) {
-            throw new InvalidRequestParameterException('apiKey');
+            if (\class_exists(RoutingException::class)) {
+                throw RoutingException::invalidRequestParameter('apiKey');
+            } else {
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new InvalidRequestParameterException('apiKey');
+            }
         }
 
         $salesChannelId = $request->request->getAlnum('salesChannelId');
@@ -99,7 +105,12 @@ class SettingsController extends AbstractController
     {
         $apiKey = $request->request->get('apiKey');
         if (!\is_string($apiKey)) {
-            throw new InvalidRequestParameterException('apiKey');
+            if (\class_exists(RoutingException::class)) {
+                throw RoutingException::invalidRequestParameter('apiKey');
+            } else {
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new InvalidRequestParameterException('apiKey');
+            }
         }
 
         $information = new AdditionalInformation();

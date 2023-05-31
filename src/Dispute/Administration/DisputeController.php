@@ -11,6 +11,7 @@ use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use Swag\PayPal\RestApi\V1\Resource\DisputeResource;
@@ -148,7 +149,12 @@ class DisputeController extends AbstractController
         }
 
         if (!\is_string($salesChannelId)) {
-            throw new InvalidRequestParameterException('salesChannelId');
+            if (\class_exists(RoutingException::class)) {
+                throw RoutingException::invalidRequestParameter('salesChannelId');
+            } else {
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new InvalidRequestParameterException('salesChannelId');
+            }
         }
 
         if (Uuid::isValid($salesChannelId) === false) {
@@ -170,12 +176,22 @@ class DisputeController extends AbstractController
         }
 
         if (!\is_string($disputeStateFilter)) {
-            throw new InvalidRequestParameterException('disputeStateFilter');
+            if (\class_exists(RoutingException::class)) {
+                throw RoutingException::invalidRequestParameter('disputeStateFilter');
+            } else {
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new InvalidRequestParameterException('disputeStateFilter');
+            }
         }
 
         foreach (\explode(',', $disputeStateFilter) as $disputeStateFilterItem) {
             if (!\in_array($disputeStateFilterItem, Item::DISPUTE_STATES, true)) {
-                throw new InvalidRequestParameterException('disputeStateFilter');
+                if (\class_exists(RoutingException::class)) {
+                    throw RoutingException::invalidRequestParameter('disputeStateFilter');
+                } else {
+                    /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                    throw new InvalidRequestParameterException('disputeStateFilter');
+                }
             }
         }
 

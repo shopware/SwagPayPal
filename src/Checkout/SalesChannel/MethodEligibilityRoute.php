@@ -13,6 +13,8 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\Since;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
+use Shopware\Core\Framework\Routing\Exception\MissingRequestParameterException;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Shopware\Core\System\SalesChannel\NoContentResponse;
 use Swag\PayPal\Checkout\Payment\Method\ACDCHandler;
 use Swag\PayPal\Checkout\Payment\Method\PayLaterHandler;
@@ -94,7 +96,12 @@ class MethodEligibilityRoute extends AbstractMethodEligibilityRoute
         /** @var mixed|array $paymentMethods */
         $paymentMethods = $request->request->all()['paymentMethods'] ?? null;
         if (!\is_array($paymentMethods)) {
-            throw new InvalidRequestParameterException('paymentMethods');
+            if (\class_exists(RoutingException::class)) {
+                RoutingException::invalidRequestParameter('paymentMethods');
+            } else {
+                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+                throw new InvalidRequestParameterException('paymentMethods');
+            }
         }
 
         $handlers = [];

@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Dispute\Administration;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Api\Exception\InvalidSalesChannelIdException;
 use Shopware\Core\Framework\Routing\Exception\InvalidRequestParameterException;
+use Shopware\Core\Framework\Routing\RoutingException;
 use Swag\PayPal\Dispute\Administration\DisputeController;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use Swag\PayPal\RestApi\V1\Resource\DisputeResource;
@@ -61,7 +62,13 @@ class DisputeControllerTest extends TestCase
 
     public function testDisputeListInvalidDisputeStateFilter(): void
     {
-        $this->expectException(InvalidRequestParameterException::class);
+        if (\class_exists(RoutingException::class)) {
+            /** @phpstan-ignore-next-line when class is not there this may cause phpstan to fail */
+            $this->expectException(RoutingException::class);
+        } else {
+            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
+            $this->expectException(InvalidRequestParameterException::class);
+        }
         $this->expectExceptionMessage('The parameter "disputeStateFilter" is invalid.');
         $this->createController()->disputeList(new Request(['disputeStateFilter' => Item::DISPUTE_STATE_RESOLVED . ',InvalidState']));
     }
