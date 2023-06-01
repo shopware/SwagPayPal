@@ -61,10 +61,10 @@ class OrderFromOrderBuilderTest extends TestCase
             $customer
         );
 
-        $shipping = $order->getPurchaseUnits()[0]->getShipping();
+        $shipping = $order->getPurchaseUnits()->first()?->getShipping();
         static::assertSame(
             \sprintf('%s %s', self::TEST_FIRST_NAME, self::TEST_LAST_NAME),
-            $shipping->getName()->getFullName()
+            $shipping?->getName()->getFullName()
         );
         static::assertSame(self::ADDRESS_LINE_1, $shipping->getAddress()->getAddressLine2());
         static::assertSame(self::STATE_SHORT_CODE, $shipping->getAddress()->getAdminArea1());
@@ -125,7 +125,7 @@ class OrderFromOrderBuilderTest extends TestCase
             $customer
         );
 
-        $invoiceId = $order->getPurchaseUnits()[0]->getInvoiceId();
+        $invoiceId = $order->getPurchaseUnits()->first()?->getInvoiceId();
         static::assertIsString($invoiceId);
         static::assertStringStartsWith('foo', $invoiceId);
         static::assertStringEndsWith('bar', $invoiceId);

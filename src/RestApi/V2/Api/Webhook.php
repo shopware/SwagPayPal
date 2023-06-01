@@ -10,6 +10,7 @@ namespace Swag\PayPal\RestApi\V2\Api;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Payment;
@@ -52,8 +53,6 @@ class Webhook extends PayPalApiStruct
     protected string $summary;
 
     /**
-     * @var Authorization|Capture|Refund|null
-     *
      * @OA\Property(
      *  oneOf={
      *
@@ -64,14 +63,12 @@ class Webhook extends PayPalApiStruct
      *  nullable=true
      * )
      */
-    protected $resource;
+    protected ?Payment $resource;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     /**
      * @OA\Property(type="string")
@@ -84,22 +81,24 @@ class Webhook extends PayPalApiStruct
     protected string $resourceVersion;
 
     /**
-     * @return static
+     * @param array<string, mixed> $arrayDataWithSnakeCaseKeys
      */
-    public function assign(array $arrayDataWithSnakeCaseKeys)
+    public function assign(array $arrayDataWithSnakeCaseKeys): static
     {
         $resourceData = $arrayDataWithSnakeCaseKeys['resource'];
         unset($arrayDataWithSnakeCaseKeys['resource']);
         $webhook = parent::assign($arrayDataWithSnakeCaseKeys);
 
         $resourceClass = $this->identifyResourceType($arrayDataWithSnakeCaseKeys['resource_type']);
-        if ($resourceClass !== null) {
-            /** @var Authorization|Capture|Refund $resource */
-            $resource = new $resourceClass();
-            $resource->assign($resourceData);
+        if ($resourceClass === null) {
+            $webhook->setResource(null);
 
-            $webhook->setResource($resource);
+            return $webhook;
         }
+
+        $resource = new $resourceClass();
+        $resource->assign($resourceData);
+        $webhook->setResource($resource);
 
         return $webhook;
     }
@@ -154,34 +153,22 @@ class Webhook extends PayPalApiStruct
         $this->summary = $summary;
     }
 
-    /**
-     * @return Authorization|Capture|Refund|null
-     */
     public function getResource(): ?Payment
     {
         return $this->resource;
     }
 
-    /**
-     * @param Authorization|Capture|Refund $resource
-     */
-    public function setResource(Payment $resource): void
+    public function setResource(?Payment $resource): void
     {
         $this->resource = $resource;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }
@@ -207,7 +194,7 @@ class Webhook extends PayPalApiStruct
     }
 
     /**
-     * @return class-string|null
+     * @return class-string<Payment>|null
      */
     protected function identifyResourceType(string $resourceType): ?string
     {

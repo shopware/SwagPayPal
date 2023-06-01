@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\LastPayment\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\Amount;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_subscription_last_payment")

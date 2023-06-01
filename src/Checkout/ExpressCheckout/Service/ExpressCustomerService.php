@@ -170,8 +170,9 @@ class ExpressCustomerService
     private function getAddressData(Order $order, Context $context, ?string $salutationId = null): array
     {
         $payer = $order->getPayer();
-        if (!empty($order->getPurchaseUnits())) {
-            $shipping = $order->getPurchaseUnits()[0]->getShipping();
+        $purchaseUnit = $order->getPurchaseUnits()->first();
+        if ($purchaseUnit) {
+            $shipping = $purchaseUnit->getShipping();
             $address = $shipping->getAddress();
             $names = \explode(' ', $shipping->getName()->getFullName());
             $lastName = \array_pop($names);

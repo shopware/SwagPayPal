@@ -10,8 +10,8 @@ namespace Swag\PayPal\RestApi\V1\Api;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\DoVoid\Amount;
-use Swag\PayPal\RestApi\V1\Api\DoVoid\Link;
+use Swag\PayPal\RestApi\V1\Api\Common\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_do_void")
@@ -50,11 +50,9 @@ class DoVoid extends PayPalApiStruct
     protected string $updateTime;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     public function getId(): string
     {
@@ -116,18 +114,12 @@ class DoVoid extends PayPalApiStruct
         $this->updateTime = $updateTime;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }

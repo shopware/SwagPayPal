@@ -11,12 +11,12 @@ use Doctrine\DBAL\Connection;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\SalesChannelCollection;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
@@ -141,7 +141,7 @@ class PaymentMethodUtil implements ResetInterface
         return $this->paymentMethodIds[$handlerIdentifier] ?? null;
     }
 
-    private function getSalesChannelsToChange(Context $context, ?string $salesChannelId): EntityCollection
+    private function getSalesChannelsToChange(Context $context, ?string $salesChannelId): SalesChannelCollection
     {
         if ($salesChannelId !== null) {
             $criteria = new Criteria([$salesChannelId]);
@@ -157,7 +157,7 @@ class PaymentMethodUtil implements ResetInterface
 
         $criteria->addAssociation('paymentMethods');
 
-        /** @var EntityCollection $collection */
+        /** @var SalesChannelCollection $collection */
         $collection = $this->salesChannelRepository->search($criteria, $context)->getEntities();
 
         return $collection;

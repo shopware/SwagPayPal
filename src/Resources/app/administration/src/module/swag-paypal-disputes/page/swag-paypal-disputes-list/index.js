@@ -1,11 +1,11 @@
 import template from './swag-paypal-disputes-list.html.twig';
 import {
+    DISPUTE_STATE_APPEALABLE,
+    DISPUTE_STATE_OPEN_INQUIRIES,
     DISPUTE_STATE_REQUIRED_ACTION,
     DISPUTE_STATE_REQUIRED_OTHER_PARTY_ACTION,
-    DISPUTE_STATE_UNDER_PAYPAL_REVIEW,
     DISPUTE_STATE_RESOLVED,
-    DISPUTE_STATE_OPEN_INQUIRIES,
-    DISPUTE_STATE_APPEALABLE,
+    DISPUTE_STATE_UNDER_PAYPAL_REVIEW,
 } from './swag-paypal-disputes-consts';
 import './swag-paypal-disputes-list.scss';
 

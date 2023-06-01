@@ -18,9 +18,9 @@ abstract class PayPalApiStruct implements \JsonSerializable
     }
 
     /**
-     * @return static
+     * @param array<string, mixed> $arrayDataWithSnakeCaseKeys
      */
-    public function assign(array $arrayDataWithSnakeCaseKeys)
+    public function assign(array $arrayDataWithSnakeCaseKeys): static
     {
         $nameConverter = new CamelCaseToSnakeCaseNameConverter();
 
@@ -29,8 +29,8 @@ abstract class PayPalApiStruct implements \JsonSerializable
                 continue;
             }
 
-            $camelCaseKey = \ucfirst($nameConverter->denormalize($snakeCaseKey));
-            $setterMethod = \sprintf('set%s', $camelCaseKey);
+            $propertyName = $nameConverter->denormalize($snakeCaseKey);
+            $setterMethod = \sprintf('set%s', \ucfirst($propertyName));
             if (!\method_exists($this, $setterMethod)) {
                 // There is no setter/property for a given data key from PayPal.
                 // Continue here to not break the plugin, if the plugin is not up-to-date with the PayPal API
@@ -43,39 +43,22 @@ abstract class PayPalApiStruct implements \JsonSerializable
                 continue;
             }
 
-            $namespace = $this->getNamespaceOfAssociation();
-            if ($this->isAssociativeArray($value)) {
-                /** @var class-string<PayPalApiStruct> $className */
-                $className = $namespace . $camelCaseKey;
-                if (!\class_exists($className)) {
-                    continue;
-                }
-
-                $instance = $this->createNewAssociation($className, $value);
-                $this->$setterMethod($instance);
-
-                continue;
-            }
-
-            // Value is not a list of objects
-            if (!\is_array($value[0])) {
-                $this->$setterMethod($value);
-
-                continue;
-            }
-
             /** @var class-string<PayPalApiStruct> $className */
-            $className = $namespace . $this->getClassNameOfOneToManyAssociation($camelCaseKey);
-            if (!\class_exists($className)) {
+            if ($this->isAssociativeArray($value) && $className = $this->getPropertyType($propertyName)) {
+                $this->$setterMethod((new $className())->assign($value));
+
                 continue;
             }
 
-            $arrayWithToManyAssociations = [];
-            foreach ($value as $toManyAssociation) {
-                $instance = $this->createNewAssociation($className, $toManyAssociation);
-                $arrayWithToManyAssociations[] = $instance;
+            /** @var class-string<PayPalApiCollection<PayPalApiStruct>> $collectionClass */
+            if ($collectionClass = $this->getCollection($propertyName)) {
+                $this->$setterMethod($collectionClass::createFromAssociative($value));
+
+                continue;
             }
-            $this->$setterMethod($arrayWithToManyAssociations);
+
+            // try for scalar value arrays like string[]
+            $this->$setterMethod($value);
         }
 
         return $this;
@@ -99,10 +82,7 @@ abstract class PayPalApiStruct implements \JsonSerializable
         return $data;
     }
 
-    /**
-     * @param int|string|bool|array|PayPalApiStruct|null $value
-     */
-    private function isScalar($value): bool
+    private function isScalar(mixed $value): bool
     {
         return !\is_array($value);
     }
@@ -112,28 +92,51 @@ abstract class PayPalApiStruct implements \JsonSerializable
         return \array_keys($value) !== \range(0, \count($value) - 1);
     }
 
-    private function getNamespaceOfAssociation(): string
+    /**
+     * @return class-string<PayPalApiStruct>|null
+     */
+    private function getPropertyType(string $camelCaseKey): ?string
     {
-        return \sprintf('%s\\', static::class);
-    }
-
-    private function getClassNameOfOneToManyAssociation(string $camelCaseKey): string
-    {
-        if (\mb_substr($camelCaseKey, -3) === 'ies') {
-            return \sprintf('%sy', \rtrim($camelCaseKey, 'ies'));
-        }
-
-        return \rtrim($camelCaseKey, 's');
+        return $this->getPropertyClassType($camelCaseKey, self::class);
     }
 
     /**
-     * @psalm-param class-string<PayPalApiStruct> $className
+     * @return class-string<PayPalApiCollection<PayPalApiStruct>>|null
      */
-    private function createNewAssociation(string $className, array $value): self
+    private function getCollection(string $camelCaseKey): ?string
     {
-        $instance = new $className();
-        $instance->assign($value);
+        return $this->getPropertyClassType($camelCaseKey, PayPalApiCollection::class);
+    }
 
-        return $instance;
+    /**
+     * @template T of string
+     *
+     * @param T $expectedClass
+     *
+     * @return T|null
+     */
+    private function getPropertyClassType(string $camelCaseKey, string $expectedClass): ?string
+    {
+        $property = new \ReflectionProperty($this, $camelCaseKey);
+        $type = $property->getType();
+        if (!$type instanceof \ReflectionNamedType) {
+            return null;
+        }
+
+        if ($type->isBuiltin()) {
+            return null;
+        }
+
+        $name = $type->getName();
+        if (!\class_exists($name)) {
+            return null;
+        }
+
+        if (!\is_a($name, $expectedClass, true)) {
+            return null;
+        }
+
+        // @phpstan-ignore-next-line  phpstan does not understand class-strings as template types
+        return $name;
     }
 }

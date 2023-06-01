@@ -10,8 +10,8 @@ namespace Swag\PayPal\RestApi\V1\Api\Payment;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction\Amount;
-use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction\Link;
+use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
+use Swag\PayPal\RestApi\V1\Api\Common\Value;
 use Swag\PayPal\RestApi\V1\Api\Payment\PaymentInstruction\RecipientBankingInstruction;
 
 /**
@@ -35,7 +35,7 @@ class PaymentInstruction extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected Amount $amount;
+    protected Value $amount;
 
     /**
      * @OA\Property(type="string")
@@ -48,11 +48,9 @@ class PaymentInstruction extends PayPalApiStruct
     protected string $instructionType;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     public function getReferenceNumber(): string
     {
@@ -74,12 +72,12 @@ class PaymentInstruction extends PayPalApiStruct
         $this->recipientBankingInstruction = $recipientBankingInstruction;
     }
 
-    public function getAmount(): Amount
+    public function getAmount(): Value
     {
         return $this->amount;
     }
 
-    public function setAmount(Amount $amount): void
+    public function setAmount(Value $amount): void
     {
         $this->amount = $amount;
     }
@@ -104,18 +102,12 @@ class PaymentInstruction extends PayPalApiStruct
         $this->instructionType = $instructionType;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }

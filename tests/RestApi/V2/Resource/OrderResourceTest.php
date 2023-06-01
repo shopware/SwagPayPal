@@ -74,11 +74,11 @@ class OrderResourceTest extends TestCase
         $order = $this->createResource()->capture('orderId', TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
 
         static::assertSame(CaptureOrderCapture::ID, $order->getId());
-        $payments = $order->getPurchaseUnits()[0]->getPayments();
+        $payments = $order->getPurchaseUnits()->first()?->getPayments();
         static::assertNotNull($payments);
         $captures = $payments->getCaptures();
         static::assertNotNull($captures);
-        static::assertTrue($captures[0]->isFinalCapture());
+        static::assertTrue($captures->first()?->isFinalCapture());
         static::assertNull($payments->getRefunds());
         static::assertNull($payments->getAuthorizations());
     }
@@ -96,12 +96,12 @@ class OrderResourceTest extends TestCase
             $customer
         );
 
-        static::assertNotNull($order->getPurchaseUnits()[0]->getItems());
+        static::assertNotNull($order->getPurchaseUnits()->first()?->getItems());
 
         $orderResponse = $this->createResource()->create($order, TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
 
         static::assertSame(CreateOrderCapture::ID, $orderResponse->getId());
-        static::assertStringContainsString('token=' . CreateOrderCapture::ID, $orderResponse->getLinks()[1]->getHref());
+        static::assertStringContainsString('token=' . CreateOrderCapture::ID, $orderResponse->getLinks()->getAt(1)?->getHref() ?? '');
     }
 
     public function testAuthorize(): void
@@ -109,11 +109,11 @@ class OrderResourceTest extends TestCase
         $order = $this->createResource()->authorize('orderId', TestDefaults::SALES_CHANNEL, PartnerAttributionId::PAYPAL_CLASSIC);
 
         static::assertSame(AuthorizeOrderAuthorization::ID, $order->getId());
-        $payments = $order->getPurchaseUnits()[0]->getPayments();
+        $payments = $order->getPurchaseUnits()->first()?->getPayments();
         static::assertNotNull($payments);
         $authorizations = $payments->getAuthorizations();
         static::assertNotNull($authorizations);
-        static::assertSame('CREATED', $authorizations[0]->getStatus());
+        static::assertSame('CREATED', $authorizations->first()?->getStatus());
         static::assertNull($payments->getCaptures());
         static::assertNull($payments->getRefunds());
     }

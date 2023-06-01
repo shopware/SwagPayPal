@@ -5,7 +5,6 @@
  * file that was distributed with this source code.
  */
 
-use Shopware\Core\Framework\Adapter\Database\MySQLFactory;
 use staabm\PHPStanDba\QueryReflection\PdoQueryReflector;
 use staabm\PHPStanDba\QueryReflection\QueryReflection;
 use staabm\PHPStanDba\QueryReflection\RuntimeConfiguration;

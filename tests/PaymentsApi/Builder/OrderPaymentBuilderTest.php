@@ -53,7 +53,7 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
-        $transaction = $payment->getTransactions()[0];
+        $transaction = $payment->getTransactions()->first();
         $transactionJsonString = \json_encode($transaction);
         static::assertNotFalse($transactionJsonString);
 
@@ -129,7 +129,9 @@ class OrderPaymentBuilderTest extends TestCase
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::ORDER_ID_MISSING_LINE_ITEMS);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-        static::assertNull($payment->getTransactions()[0]->getItemList());
+        $transaction = $payment->getTransactions()->first();
+        static::assertNotNull($transaction);
+        static::assertNull($transaction->getItemList());
     }
 
     public function testGetPaymentLabelTooLongIsTruncated(): void
@@ -148,11 +150,11 @@ class OrderPaymentBuilderTest extends TestCase
         $firstOrderLineItem->setLabel($productName);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-        $itemList = $payment->getTransactions()[0]->getItemList();
+        $itemList = $payment->getTransactions()->first()?->getItemList();
         static::assertNotNull($itemList);
 
         $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliqu';
-        static::assertSame($expectedItemName, $itemList->getItems()[0]->getName());
+        static::assertSame($expectedItemName, $itemList->getItems()->first()?->getName());
     }
 
     public function testGetPaymentProductNumberTooLongIsTruncated(): void
@@ -171,11 +173,11 @@ class OrderPaymentBuilderTest extends TestCase
         $firstOrderLineItem->setPayload(['productNumber' => $productNumber]);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-        $itemList = $payment->getTransactions()[0]->getItemList();
+        $itemList = $payment->getTransactions()->first()?->getItemList();
         static::assertNotNull($itemList);
 
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-        static::assertSame($expectedItemSku, $itemList->getItems()[0]->getSku());
+        static::assertSame($expectedItemSku, $itemList->getItems()->first()?->getSku());
     }
 
     public function testGetPaymentMissingProductNumberInPayload(): void
@@ -192,10 +194,10 @@ class OrderPaymentBuilderTest extends TestCase
         $salesChannelContext = Generator::createSalesChannelContext($context);
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
-        $itemList = $payment->getTransactions()[0]->getItemList();
+        $itemList = $payment->getTransactions()->first()?->getItemList();
         static::assertNotNull($itemList);
 
-        static::assertNull($itemList->getItems()[0]->getSku());
+        static::assertNull($itemList->getItems()->first()?->getSku());
     }
 
     public function testGetPaymentOrderHasNoCurrency(): void
@@ -213,7 +215,7 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
-        static::assertSame(self::TEST_ORDER_NUMBER, $payment->getTransactions()[0]->getInvoiceNumber());
+        static::assertSame(self::TEST_ORDER_NUMBER, $payment->getTransactions()->first()?->getInvoiceNumber());
     }
 
     public function testGetPaymentOrderHasNoCurrencyAndInvalidCurrencyId(): void
@@ -351,7 +353,7 @@ class OrderPaymentBuilderTest extends TestCase
 
         $payment = $paymentBuilder->getPayment($paymentTransaction, $salesChannelContext);
 
-        $transaction = \json_encode($payment->getTransactions()[0]);
+        $transaction = \json_encode($payment->getTransactions()->first());
 
         static::assertNotFalse($transaction);
 

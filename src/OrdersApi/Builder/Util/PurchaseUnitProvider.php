@@ -16,10 +16,10 @@ use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Address as ShippingAddress;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Shipping\Name as ShippingName;
 use Swag\PayPal\Setting\Settings;
 
@@ -49,14 +49,11 @@ class PurchaseUnitProvider
         $this->systemConfigService = $systemConfigService;
     }
 
-    /**
-     * @param Item[]|null $itemList
-     */
     public function createPurchaseUnit(
         CalculatedPrice $totalAmount,
         CalculatedPrice $shippingCosts,
         ?CustomerEntity $customer,
-        ?array $itemList,
+        ?ItemCollection $itemList,
         SalesChannelContext $salesChannelContext,
         bool $isNet,
         ?OrderEntity $order = null,
@@ -107,7 +104,7 @@ class PurchaseUnitProvider
 
         $shipping = new Shipping();
 
-        $address = new ShippingAddress();
+        $address = new Address();
         $this->addressProvider->createAddress($shippingAddress, $address);
         $shipping->setAddress($address);
         $shipping->setName($this->createShippingName($shippingAddress));

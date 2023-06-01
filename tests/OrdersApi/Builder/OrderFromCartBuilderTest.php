@@ -80,7 +80,7 @@ class OrderFromCartBuilderTest extends TestCase
 
         $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
 
-        static::assertSame([], $order->getPurchaseUnits()[0]->getItems());
+        static::assertSame([], $order->getPurchaseUnits()->first()?->getItems()?->getElements());
     }
 
     public function testGetOrderWithDisabledSubmitCartConfig(): void
@@ -89,7 +89,9 @@ class OrderFromCartBuilderTest extends TestCase
         $salesChannelContext = $this->createSalesChannelContext();
 
         $order = $this->createOrderFromCartBuilder([Settings::SUBMIT_CART => false])->getOrder($cart, $salesChannelContext, null);
-        static::assertNull($order->getPurchaseUnits()[0]->getAmount()->getBreakdown());
+        $purchaseUnit = $order->getPurchaseUnits()->first();
+        static::assertNotNull($purchaseUnit);
+        static::assertNull($purchaseUnit->getAmount()->getBreakdown());
     }
 
     public function testGetOrderWithMismatchingAmount(): void
@@ -98,8 +100,10 @@ class OrderFromCartBuilderTest extends TestCase
         $salesChannelContext = $this->createSalesChannelContext();
 
         $order = $this->createOrderFromCartBuilder([Settings::SUBMIT_CART => false])->getOrder($cart, $salesChannelContext, null);
-        static::assertNull($order->getPurchaseUnits()[0]->getAmount()->getBreakdown());
-        static::assertNull($order->getPurchaseUnits()[0]->getItems());
+        $purchaseUnit = $order->getPurchaseUnits()->first();
+        static::assertNotNull($purchaseUnit);
+        static::assertNull($purchaseUnit->getAmount()->getBreakdown());
+        static::assertNull($purchaseUnit->getItems());
     }
 
     public function testGetOrderWithProductWithZeroPrice(): void
@@ -109,7 +113,7 @@ class OrderFromCartBuilderTest extends TestCase
         $salesChannelContext = $this->createSalesChannelContext();
         $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
 
-        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
         static::assertNotEmpty($paypalOrderItems);
         static::assertSame('0.00', $paypalOrderItems[0]->getUnitAmount()->getValue());
@@ -127,7 +131,7 @@ class OrderFromCartBuilderTest extends TestCase
 
         $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
 
-        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
         static::assertNotEmpty($paypalOrderItems);
         static::assertSame(0, \array_keys($paypalOrderItems)[0], 'First array key of the PayPal items array must be 0.');
@@ -145,7 +149,7 @@ class OrderFromCartBuilderTest extends TestCase
         $cart->add($cartLineItem);
 
         $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
-        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
         static::assertNotEmpty($paypalOrderItems);
         $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magn';
@@ -164,7 +168,7 @@ class OrderFromCartBuilderTest extends TestCase
         $cart->add($cartLineItem);
 
         $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
-        $paypalOrderItems = $order->getPurchaseUnits()[0]->getItems();
+        $paypalOrderItems = $order->getPurchaseUnits()->first()?->getItems()?->getElements();
         static::assertNotNull($paypalOrderItems);
         static::assertNotEmpty($paypalOrderItems);
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
@@ -201,7 +205,7 @@ class OrderFromCartBuilderTest extends TestCase
         );
 
         $order = $this->createOrderFromCartBuilder()->getOrder($cart, $salesChannelContext, null);
-        $breakdown = $order->getPurchaseUnits()[0]->getAmount()->getBreakdown();
+        $breakdown = $order->getPurchaseUnits()->first()?->getAmount()->getBreakdown();
         static::assertNotNull($breakdown);
         $taxTotal = $breakdown->getTaxTotal();
         static::assertNotNull($taxTotal);

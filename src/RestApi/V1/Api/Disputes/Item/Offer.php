@@ -10,9 +10,8 @@ namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\BuyerRequestedAmount;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\History;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\SellerOfferedAmount;
+use Swag\PayPal\RestApi\V1\Api\Common\Money;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer\HistoryCollection;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_offer")
@@ -23,12 +22,12 @@ class Offer extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected BuyerRequestedAmount $buyerRequestedAmount;
+    protected Money $buyerRequestedAmount;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected SellerOfferedAmount $sellerOfferedAmount;
+    protected Money $sellerOfferedAmount;
 
     /**
      * @OA\Property(type="string")
@@ -36,28 +35,26 @@ class Offer extends PayPalApiStruct
     protected string $offerType;
 
     /**
-     * @var History[]|null
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_offer_history"}, nullable=true)
      */
-    protected ?array $history = null;
+    protected ?HistoryCollection $history = null;
 
-    public function getBuyerRequestedAmount(): BuyerRequestedAmount
+    public function getBuyerRequestedAmount(): Money
     {
         return $this->buyerRequestedAmount;
     }
 
-    public function setBuyerRequestedAmount(BuyerRequestedAmount $buyerRequestedAmount): void
+    public function setBuyerRequestedAmount(Money $buyerRequestedAmount): void
     {
         $this->buyerRequestedAmount = $buyerRequestedAmount;
     }
 
-    public function getSellerOfferedAmount(): SellerOfferedAmount
+    public function getSellerOfferedAmount(): Money
     {
         return $this->sellerOfferedAmount;
     }
 
-    public function setSellerOfferedAmount(SellerOfferedAmount $sellerOfferedAmount): void
+    public function setSellerOfferedAmount(Money $sellerOfferedAmount): void
     {
         $this->sellerOfferedAmount = $sellerOfferedAmount;
     }
@@ -72,18 +69,12 @@ class Offer extends PayPalApiStruct
         $this->offerType = $offerType;
     }
 
-    /**
-     * @return History[]|null
-     */
-    public function getHistory(): ?array
+    public function getHistory(): ?HistoryCollection
     {
         return $this->history;
     }
 
-    /**
-     * @param History[]|null $history
-     */
-    public function setHistory(?array $history): void
+    public function setHistory(?HistoryCollection $history): void
     {
         $this->history = $history;
     }

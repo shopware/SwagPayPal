@@ -45,7 +45,7 @@ class TransactionDataService
 
     public function setResourceId(PayPalOrder $order, string $transactionId, Context $context): void
     {
-        $payments = $order->getPurchaseUnits()[0]->getPayments();
+        $payments = $order->getPurchaseUnits()->first()?->getPayments();
         if ($payments === null) {
             return;
         }
@@ -55,9 +55,9 @@ class TransactionDataService
 
         $id = null;
         if ($captures && $order->getIntent() === PaymentIntentV2::CAPTURE) {
-            $id = \current($captures)->getId();
+            $id = $captures->first()?->getId();
         } elseif ($authorizations && $order->getIntent() === PaymentIntentV2::AUTHORIZE) {
-            $id = \current($authorizations)->getId();
+            $id = $authorizations->first()?->getId();
         }
 
         if ($id === null) {

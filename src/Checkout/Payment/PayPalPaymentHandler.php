@@ -120,7 +120,8 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
 
             $response = $this->payPalHandler->handlePayPalOrder($transaction, $salesChannelContext, $customer);
 
-            $link = $response->getRelLink(Link::RELATION_APPROVE);
+            $link = $response->getLinks()->getRelation(Link::RELATION_APPROVE)
+                ?? $response->getLinks()->getRelation(Link::RELATION_PAYER_ACTION);
             if ($link === null) {
                 throw new AsyncPaymentProcessException($transactionId, 'No approve link provided by PayPal');
             }

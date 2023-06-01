@@ -78,10 +78,15 @@ class PayPalHandler
         );
 
         try {
+            $updateTime = $transaction->getOrderTransaction()->getUpdatedAt();
+            $transactionId = $transaction->getOrderTransaction()->getId();
+
             $paypalOrderResponse = $this->orderResource->create(
                 $paypalOrder,
                 $salesChannelContext->getSalesChannelId(),
-                PartnerAttributionId::PAYPAL_CLASSIC
+                PartnerAttributionId::PAYPAL_CLASSIC,
+                false,
+                $transactionId . ($updateTime ? $updateTime->getTimestamp() : ''),
             );
         } catch (\Exception $e) {
             throw new AsyncPaymentProcessException(

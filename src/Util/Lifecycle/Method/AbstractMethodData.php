@@ -30,6 +30,9 @@ abstract class AbstractMethodData
         $this->container = $container;
     }
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     abstract public function getTranslations(): array;
 
     abstract public function getPosition(): int;

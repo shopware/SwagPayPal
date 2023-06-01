@@ -1,9 +1,5 @@
 import template from './swag-paypal-payment-action-refund.html.twig';
-import {
-    REFUNDED_STATE,
-    SALE_RESOURCE_TYPE,
-    CAPTURE_RESOURCE_TYPE,
-} from '../../swag-paypal-payment-consts';
+import { CAPTURE_RESOURCE_TYPE, REFUNDED_STATE, SALE_RESOURCE_TYPE } from '../../swag-paypal-payment-consts';
 
 const { Component, Filter } = Shopware;
 const utils = Shopware.Utils;

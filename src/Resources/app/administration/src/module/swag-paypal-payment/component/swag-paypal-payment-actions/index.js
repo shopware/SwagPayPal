@@ -4,11 +4,11 @@ import './extensions/swag-paypal-payment-action-capture';
 import './extensions/swag-paypal-payment-action-refund';
 import './extensions/swag-paypal-payment-action-void';
 import {
-    VOIDED_STATE,
+    CANCELLED_STATE,
     CAPTURED_STATE,
     COMPLETED_STATE,
-    CANCELLED_STATE,
     FAILED_STATE,
+    VOIDED_STATE,
 } from './swag-paypal-payment-consts';
 
 const { Component } = Shopware;

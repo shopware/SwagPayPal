@@ -34,7 +34,7 @@ class PaymentPreferences extends PayPalApiStruct
      */
     protected int $paymentFailureThreshold;
 
-    public function getAutoBillOutstanding(): bool
+    public function isAutoBillOutstanding(): bool
     {
         return $this->autoBillOutstanding;
     }

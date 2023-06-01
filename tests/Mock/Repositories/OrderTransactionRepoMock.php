@@ -90,6 +90,9 @@ class OrderTransactionRepoMock extends AbstractRepoMock
         );
     }
 
+    /**
+     * @return EntityCollection<OrderTransactionEntity>
+     */
     private function createEntityCollection(bool $withOrder = true): EntityCollection
     {
         return new EntityCollection([$this->createOrderTransaction($withOrder)]);

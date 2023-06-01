@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\MoneyMovement\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\Amount;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_money_movement")

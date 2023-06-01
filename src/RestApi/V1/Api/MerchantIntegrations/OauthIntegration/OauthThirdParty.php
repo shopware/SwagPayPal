@@ -84,11 +84,17 @@ class OauthThirdParty extends PayPalApiStruct
         $this->refreshToken = $refreshToken;
     }
 
+    /**
+     * @return string[]
+     */
     public function getScopes(): array
     {
         return $this->scopes;
     }
 
+    /**
+     * @param string[] $scopes
+     */
     public function setScopes(array $scopes): void
     {
         $this->scopes = $scopes;

@@ -1,5 +1,5 @@
 import Plugin from 'src/plugin-system/plugin.class';
-import { loadScript } from '@paypal/paypal-js';
+import {loadScript} from '@paypal/paypal-js';
 import SwagPayPalScriptLoading from './swag-paypal.script-loading';
 
 const availableAPMs = [

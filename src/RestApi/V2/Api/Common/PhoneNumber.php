@@ -15,7 +15,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * @OA\Schema(schema="swag_paypal_v2_common_phone_number")
  */
 #[Package('checkout')]
-abstract class PhoneNumber extends PayPalApiStruct
+class PhoneNumber extends PayPalApiStruct
 {
     /**
      * @OA\Property(type="string")

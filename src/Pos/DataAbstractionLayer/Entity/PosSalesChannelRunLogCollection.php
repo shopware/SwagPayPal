@@ -11,13 +11,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\Log\Package;
 
 /**
- * @method void                                    add(PosSalesChannelRunLogEntity $entity)
- * @method void                                    set(string $key, PosSalesChannelRunLogEntity $entity)
- * @method \Generator<PosSalesChannelRunLogEntity> getIterator()
- * @method PosSalesChannelRunLogEntity[]           getElements()
- * @method PosSalesChannelRunLogEntity|null        get(string $key)
- * @method PosSalesChannelRunLogEntity|null        first()
- * @method PosSalesChannelRunLogEntity|null        last()
+ * @extends EntityCollection<PosSalesChannelRunLogEntity>
  */
 #[Package('checkout')]
 class PosSalesChannelRunLogCollection extends EntityCollection

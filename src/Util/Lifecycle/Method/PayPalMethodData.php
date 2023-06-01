@@ -20,6 +20,9 @@ class PayPalMethodData extends AbstractMethodData implements CheckoutDataMethodI
 {
     public const PAYPAL_SMART_PAYMENT_BUTTONS_DATA_EXTENSION_ID = 'payPalSpbButtonData';
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     public function getTranslations(): array
     {
         return [

@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V1\Api;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\CreateWebhooks\EventType;
+use Swag\PayPal\RestApi\V1\Api\CreateWebhooks\EventTypeCollection;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_create_webhooks")
@@ -24,11 +24,9 @@ class CreateWebhooks extends PayPalApiStruct
     protected string $url;
 
     /**
-     * @var EventType[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_create_webhooks_event_type"})
      */
-    protected array $eventTypes;
+    protected EventTypeCollection $eventTypes;
 
     public function getUrl(): string
     {
@@ -40,18 +38,12 @@ class CreateWebhooks extends PayPalApiStruct
         $this->url = $url;
     }
 
-    /**
-     * @return EventType[]
-     */
-    public function getEventTypes(): array
+    public function getEventTypes(): EventTypeCollection
     {
         return $this->eventTypes;
     }
 
-    /**
-     * @param EventType[] $eventTypes
-     */
-    public function setEventTypes(array $eventTypes): void
+    public function setEventTypes(EventTypeCollection $eventTypes): void
     {
         $this->eventTypes = $eventTypes;
     }

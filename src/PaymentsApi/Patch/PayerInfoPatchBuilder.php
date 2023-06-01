@@ -11,9 +11,9 @@ use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEnt
 use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Framework\Log\Package;
+use Swag\PayPal\RestApi\V1\Api\Common\Address;
 use Swag\PayPal\RestApi\V1\Api\Patch;
 use Swag\PayPal\RestApi\V1\Api\Payment\Payer\PayerInfo;
-use Swag\PayPal\RestApi\V1\Api\Payment\Payer\PayerInfo\BillingAddress;
 
 #[Package('checkout')]
 class PayerInfoPatchBuilder
@@ -46,9 +46,9 @@ class PayerInfoPatchBuilder
         return $payerInfoPatch;
     }
 
-    private function createBillingAddress(CustomerAddressEntity $customerBillingAddress): BillingAddress
+    private function createBillingAddress(CustomerAddressEntity $customerBillingAddress): Address
     {
-        $billingAddress = new BillingAddress();
+        $billingAddress = new Address();
 
         $billingAddress->setLine1($customerBillingAddress->getStreet());
 

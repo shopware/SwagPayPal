@@ -10,15 +10,12 @@ namespace Swag\PayPal\OrdersApi\Builder\Util;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\Currency\CurrencyEntity;
+use Swag\PayPal\RestApi\V2\Api\Common\Money;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Discount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Handling;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\ItemTotal;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\Shipping as BreakdownShipping;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Amount\Breakdown\TaxTotal;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
 use Swag\PayPal\Util\PriceFormatter;
 
 #[Package('checkout')]
@@ -65,11 +62,8 @@ class AmountProvider
         return $amount;
     }
 
-    /**
-     * @param Item[] $items
-     */
     private function createBreakdown(
-        array $items,
+        ItemCollection $items,
         PurchaseUnit $purchaseUnit,
         string $currencyCode,
         CalculatedPrice $shippingCosts,
@@ -78,37 +72,37 @@ class AmountProvider
     ): Breakdown {
         $accumulatedAmountValue = 0.0;
         $accumulatedTaxValue = 0.0;
-        $newItems = [];
+        $newItems = new ItemCollection();
 
         foreach ($items as $item) {
             $itemUnitAmount = (float) $item->getUnitAmount()->getValue();
             if ($itemUnitAmount >= 0.0) {
                 $accumulatedAmountValue += $item->getQuantity() * $itemUnitAmount;
-                $newItems[] = $item;
+                $newItems->add($item);
                 $accumulatedTaxValue += $item->getQuantity() * (float) $item->getTax()->getValue();
             }
         }
         $purchaseUnit->setItems($newItems);
 
-        $itemTotal = new ItemTotal();
+        $itemTotal = new Money();
         $itemTotal->setCurrencyCode($currencyCode);
         $itemTotal->setValue($this->priceFormatter->formatPrice($accumulatedAmountValue, $currencyCode));
 
-        $shipping = new BreakdownShipping();
+        $shipping = new Money();
         $shipping->setCurrencyCode($currencyCode);
         $shipping->setValue($this->priceFormatter->formatPrice($shippingCosts->getTotalPrice() + ($isNet ? $shippingCosts->getCalculatedTaxes()->getAmount() : 0.0), $currencyCode));
         $accumulatedAmountValue += (float) $shipping->getValue();
 
-        $taxTotal = new TaxTotal();
+        $taxTotal = new Money();
         $taxTotal->setCurrencyCode($currencyCode);
         $taxTotal->setValue($this->priceFormatter->formatPrice($accumulatedTaxValue, $currencyCode));
         $accumulatedAmountValue += (float) $taxTotal->getValue();
 
-        $discount = new Discount();
+        $discount = new Money();
         $discount->setCurrencyCode($currencyCode);
         $discount->setValue($this->priceFormatter->formatPrice($accumulatedAmountValue - $amountValue, $currencyCode));
 
-        $handling = new Handling();
+        $handling = new Money();
         $handling->setCurrencyCode($currencyCode);
         // if due to rounding the order is more than the items, we add a fake handling fee
         if ((float) $discount->getValue() < 0.0) {

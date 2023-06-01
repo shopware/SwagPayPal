@@ -39,7 +39,7 @@ class LegalConsent extends PayPalApiStruct
         $this->type = $type;
     }
 
-    public function getGranted(): bool
+    public function isGranted(): bool
     {
         return $this->granted;
     }

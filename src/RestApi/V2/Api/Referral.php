@@ -10,10 +10,11 @@ namespace Swag\PayPal\RestApi\V2\Api;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V2\Api\Referral\BusinessEntity;
-use Swag\PayPal\RestApi\V2\Api\Referral\LegalConsent;
+use Swag\PayPal\RestApi\V2\Api\Referral\LegalConsentCollection;
 use Swag\PayPal\RestApi\V2\Api\Referral\Link;
-use Swag\PayPal\RestApi\V2\Api\Referral\Operation;
+use Swag\PayPal\RestApi\V2\Api\Referral\OperationCollection;
 use Swag\PayPal\RestApi\V2\Api\Referral\PartnerConfigOverride;
 
 /**
@@ -29,6 +30,10 @@ class Referral extends PayPalApiStruct
 
     public const PRODUCT_TYPE_PPCP = 'PPCP';
     public const PRODUCT_TYPE_PAYMENT_METHODS = 'PAYMENT_METHODS';
+
+    public const PRODUCT_TYPE_ADVANCED_VAULTING = 'ADVANCED_VAULTING';
+
+    public const CAPABILITY_PAYPAL_WALLET_VAULTING_ADVANCED = 'PAYPAL_WALLET_VAULTING_ADVANCED';
     public const CAPABILITY_PAY_UPON_INVOICE = 'PAY_UPON_INVOICE';
 
     /**
@@ -52,39 +57,38 @@ class Referral extends PayPalApiStruct
     protected PartnerConfigOverride $partnerConfigOverride;
 
     /**
-     * @var Operation[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_referral_operation"})
      */
-    protected array $operations;
+    protected OperationCollection $operations;
 
     /**
      * @var string[]
      *
      * @OA\Property(type="array", items={"type": "string"})
      */
-    protected array $products = [self::PRODUCT_TYPE_PPCP, self::PRODUCT_TYPE_PAYMENT_METHODS];
+    protected array $products = [
+        self::PRODUCT_TYPE_PPCP,
+        self::PRODUCT_TYPE_PAYMENT_METHODS,
+    ];
 
     /**
      * @var string[]
      *
      * @OA\Property(type="array", items={"type": "string"})
      */
-    protected array $capabilities = [self::CAPABILITY_PAY_UPON_INVOICE];
+    protected array $capabilities = [
+        self::CAPABILITY_PAY_UPON_INVOICE,
+    ];
 
     /**
-     * @var LegalConsent[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_referral_legal_consent"})
      */
-    protected array $legalConsents;
+    protected LegalConsentCollection $legalConsents;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     public function getBusinessEntity(): BusinessEntity
     {
@@ -126,18 +130,12 @@ class Referral extends PayPalApiStruct
         $this->partnerConfigOverride = $partnerConfigOverride;
     }
 
-    /**
-     * @return Operation[]
-     */
-    public function getOperations(): array
+    public function getOperations(): OperationCollection
     {
         return $this->operations;
     }
 
-    /**
-     * @param Operation[] $operations
-     */
-    public function setOperations(array $operations): void
+    public function setOperations(OperationCollection $operations): void
     {
         $this->operations = $operations;
     }
@@ -174,34 +172,22 @@ class Referral extends PayPalApiStruct
         $this->capabilities = $capabilities;
     }
 
-    /**
-     * @return LegalConsent[]
-     */
-    public function getLegalConsents(): array
+    public function getLegalConsents(): LegalConsentCollection
     {
         return $this->legalConsents;
     }
 
-    /**
-     * @param LegalConsent[] $legalConsents
-     */
-    public function setLegalConsents(array $legalConsents): void
+    public function setLegalConsents(LegalConsentCollection $legalConsents): void
     {
         $this->legalConsents = $legalConsents;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }

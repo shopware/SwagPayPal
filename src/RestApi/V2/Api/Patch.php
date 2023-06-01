@@ -32,11 +32,9 @@ class Patch extends PayPalApiStruct
     protected string $path;
 
     /**
-     * @var int|float|string|bool|array|null
-     *
      * @OA\Property(oneOf=[{ "type": "integer" },{ "type": "float" },{ "type": "string" },{ "type": "boolean" },{ "type": "array" }], nullable=true)
      */
-    protected $value;
+    protected int|float|string|bool|array|null $value;
 
     /**
      * @OA\Property(type="string")
@@ -63,18 +61,12 @@ class Patch extends PayPalApiStruct
         $this->path = $path;
     }
 
-    /**
-     * @return array|bool|float|int|string|null
-     */
-    public function getValue()
+    public function getValue(): array|bool|float|int|string|null
     {
         return $this->value;
     }
 
-    /**
-     * @param array|bool|float|int|string|null $value
-     */
-    public function setValue($value): void
+    public function setValue(array|bool|float|int|string|null $value): void
     {
         $this->value = $value;
     }

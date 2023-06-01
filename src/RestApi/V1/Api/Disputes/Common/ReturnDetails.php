@@ -15,7 +15,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * @OA\Schema(schema="swag_paypal_v1_disputes_common_return_details")
  */
 #[Package('checkout')]
-abstract class ReturnDetails extends PayPalApiStruct
+class ReturnDetails extends PayPalApiStruct
 {
     /**
      * @OA\Property(type="string")

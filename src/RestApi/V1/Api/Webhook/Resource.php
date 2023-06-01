@@ -10,9 +10,9 @@ namespace Swag\PayPal\RestApi\V1\Api\Webhook;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Webhook\Resource\Amount;
-use Swag\PayPal\RestApi\V1\Api\Webhook\Resource\Link;
-use Swag\PayPal\RestApi\V1\Api\Webhook\Resource\TransactionFee;
+use Swag\PayPal\RestApi\V1\Api\Common\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
+use Swag\PayPal\RestApi\V1\Api\Common\Value;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_webhook_resource")
@@ -83,7 +83,7 @@ class Resource extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_value")
      */
-    protected TransactionFee $transactionFee;
+    protected Value $transactionFee;
 
     /**
      * @OA\Property(type="string")
@@ -91,11 +91,9 @@ class Resource extends PayPalApiStruct
     protected string $invoiceNumber;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     /**
      * @OA\Property(type="string")
@@ -227,12 +225,12 @@ class Resource extends PayPalApiStruct
         $this->protectionEligibility = $protectionEligibility;
     }
 
-    public function getTransactionFee(): TransactionFee
+    public function getTransactionFee(): Value
     {
         return $this->transactionFee;
     }
 
-    public function setTransactionFee(TransactionFee $transactionFee): void
+    public function setTransactionFee(Value $transactionFee): void
     {
         $this->transactionFee = $transactionFee;
     }
@@ -247,18 +245,12 @@ class Resource extends PayPalApiStruct
         $this->invoiceNumber = $invoiceNumber;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }

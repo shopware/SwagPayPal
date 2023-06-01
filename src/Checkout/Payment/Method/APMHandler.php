@@ -127,7 +127,7 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
             $salesChannelContext->getContext()
         );
 
-        $link = $response->getRelLink(Link::RELATION_PAYER_ACTION);
+        $link = $response->getLinks()->getRelation(Link::RELATION_PAYER_ACTION);
         if ($link === null) {
             throw new AsyncPaymentProcessException($transactionId, 'No approve link provided by PayPal');
         }
@@ -171,10 +171,10 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
     private function tryToSetTransactionState(Order $paypalOrder, string $transactionId, Context $context): void
     {
         $purchaseUnits = $paypalOrder->getPurchaseUnits();
-        if (empty($purchaseUnits)) {
+        if ($purchaseUnits->count()) {
             return;
         }
-        $payments = \current($purchaseUnits)->getPayments();
+        $payments = $purchaseUnits->first()?->getPayments();
         if ($payments === null) {
             return;
         }

@@ -25,10 +25,11 @@ use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\Loader\InitialStateIdLoader;
 use Swag\PayPal\RestApi\V1\Api\Capture;
+use Swag\PayPal\RestApi\V1\Api\Common\Value;
 use Swag\PayPal\RestApi\V1\Api\Payment;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
+use Swag\PayPal\RestApi\V1\Api\Payment\TransactionCollection;
 use Swag\PayPal\RestApi\V1\Api\Refund;
-use Swag\PayPal\RestApi\V1\Api\Refund\TotalRefundedAmount;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Util\PaymentStatusUtil;
 use Swag\PayPal\Util\PriceFormatter;
@@ -148,7 +149,7 @@ class PaymentStatusUtilTest extends TestCase
 
         $partialRefundResponse = new Refund();
         $partialRefundResponse->assign(
-            ['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '2.00'])]
+            ['totalRefundedAmount' => (new Value())->assign(['value' => '2.00'])]
         );
 
         $transaction = new Transaction();
@@ -160,7 +161,7 @@ class PaymentStatusUtilTest extends TestCase
         ]);
 
         $paymentResponse = new Payment();
-        $paymentResponse->setTransactions([$transaction]);
+        $paymentResponse->setTransactions(new TransactionCollection([$transaction]));
         $this->paymentStatusUtil->applyRefundStateToCapture($orderId, $partialRefundResponse, $paymentResponse, $context);
         $this->assertTransactionState($orderId, OrderTransactionStates::STATE_PARTIALLY_REFUNDED);
 
@@ -178,7 +179,7 @@ class PaymentStatusUtilTest extends TestCase
 
         $secondPartialRefundResponse = new Refund();
         $secondPartialRefundResponse->assign(
-            ['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '4.00'])]
+            ['totalRefundedAmount' => (new Value())->assign(['value' => '4.00'])]
         );
 
         $secondTransaction = new Transaction();
@@ -193,13 +194,13 @@ class PaymentStatusUtilTest extends TestCase
         ]);
 
         $secondPaymentResponse = new Payment();
-        $secondPaymentResponse->setTransactions([$secondTransaction]);
+        $secondPaymentResponse->setTransactions(new TransactionCollection([$secondTransaction]));
         $this->paymentStatusUtil->applyRefundStateToCapture($orderId, $secondPartialRefundResponse, $secondPaymentResponse, $context);
         $this->assertTransactionState($orderId, OrderTransactionStates::STATE_PARTIALLY_REFUNDED);
 
         $thirdPartialRefundResponse = new Refund();
         $thirdPartialRefundResponse->assign(
-            ['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '14.00'])]
+            ['totalRefundedAmount' => (new Value())->assign(['value' => '14.00'])]
         );
 
         $thirdTransaction = new Transaction();
@@ -215,7 +216,7 @@ class PaymentStatusUtilTest extends TestCase
         ]);
 
         $thirdPaymentResponse = new Payment();
-        $thirdPaymentResponse->setTransactions([$thirdTransaction]);
+        $thirdPaymentResponse->setTransactions(new TransactionCollection([$thirdTransaction]));
         $this->paymentStatusUtil->applyRefundStateToCapture($orderId, $thirdPartialRefundResponse, $thirdPaymentResponse, $context);
         $this->assertTransactionState($orderId, OrderTransactionStates::STATE_REFUNDED);
     }
@@ -223,10 +224,10 @@ class PaymentStatusUtilTest extends TestCase
     public function dataProviderTestApplyRefundStateToPayment(): array
     {
         $completeRefundResponse = new Refund();
-        $completeRefundResponse->assign(['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '15'])]);
+        $completeRefundResponse->assign(['totalRefundedAmount' => (new Value())->assign(['value' => '15'])]);
 
         $partialRefundResponse = new Refund();
-        $partialRefundResponse->assign(['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '14.99'])]);
+        $partialRefundResponse->assign(['totalRefundedAmount' => (new Value())->assign(['value' => '14.99'])]);
 
         return [
             [
@@ -268,7 +269,7 @@ class PaymentStatusUtilTest extends TestCase
 
         $completeRefundResponse = new Refund();
         $completeRefundResponse->assign(
-            ['totalRefundedAmount' => (new TotalRefundedAmount())->assign(['value' => '15'])]
+            ['totalRefundedAmount' => (new Value())->assign(['value' => '15'])]
         );
 
         $this->paymentStatusUtil->applyRefundStateToCapture($orderId, $completeRefundResponse, new Payment(), $context);

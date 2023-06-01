@@ -157,18 +157,9 @@ class DisputeController extends AbstractController
      */
     private function validateDisputeStateFilter(Request $request): ?string
     {
-        /** @var string|int|float|null $disputeStateFilter */ // Remove once SW 6.4.3.0 is min version
         $disputeStateFilter = $request->query->get('disputeStateFilter');
-        if ($disputeStateFilter === null) {
-            return null;
-        }
-
         if (!\is_string($disputeStateFilter)) {
-            if (\class_exists(RoutingException::class)) {
-                throw RoutingException::invalidRequestParameter('disputeStateFilter');
-            }
-            /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-            throw new InvalidRequestParameterException('disputeStateFilter');
+            return null;
         }
 
         foreach (\explode(',', $disputeStateFilter) as $disputeStateFilterItem) {

@@ -10,9 +10,9 @@ namespace Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ItemCollection;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingAddress;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingOption;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ShippingOptionCollection;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_payment_transaction_item_list")
@@ -26,18 +26,14 @@ class ItemList extends PayPalApiStruct
     protected ShippingAddress $shippingAddress;
 
     /**
-     * @var Item[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_item"})
      */
-    protected array $items;
+    protected ItemCollection $items;
 
     /**
-     * @var ShippingOption[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_payment_transaction_shipping_option"})
      */
-    protected array $shippingOptions;
+    protected ShippingOptionCollection $shippingOptions;
 
     /**
      * @OA\Property(type="string")
@@ -54,34 +50,22 @@ class ItemList extends PayPalApiStruct
         $this->shippingAddress = $shippingAddress;
     }
 
-    /**
-     * @return Item[]
-     */
-    public function getItems(): array
+    public function getItems(): ItemCollection
     {
         return $this->items;
     }
 
-    /**
-     * @param Item[] $items
-     */
-    public function setItems(array $items): void
+    public function setItems(ItemCollection $items): void
     {
         $this->items = $items;
     }
 
-    /**
-     * @return ShippingOption[]
-     */
-    public function getShippingOptions(): array
+    public function getShippingOptions(): ShippingOptionCollection
     {
         return $this->shippingOptions;
     }
 
-    /**
-     * @param ShippingOption[] $shippingOptions
-     */
-    public function setShippingOptions(array $shippingOptions): void
+    public function setShippingOptions(ShippingOptionCollection $shippingOptions): void
     {
         $this->shippingOptions = $shippingOptions;
     }

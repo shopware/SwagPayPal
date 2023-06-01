@@ -10,19 +10,20 @@ namespace Swag\PayPal\RestApi\V1\Api\Disputes;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Adjudication;
+use Swag\PayPal\RestApi\V1\Api\Common\LinkCollection;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\AdjudicationCollection;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\CommunicationDetails;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputeAmount;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputedTransaction;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputedTransactionCollection;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\DisputeOutcome;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Evidence;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\EvidenceCollection;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Message;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\MoneyMovement;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\MessageCollection;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\MoneyMovementCollection;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Offer;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\PartnerAction;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\PartnerActionCollection;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\RefundDetails;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\SupportingInfo;
+use Swag\PayPal\RestApi\V1\Api\Disputes\Item\SupportingInfoCollection;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_item")
@@ -62,11 +63,9 @@ class Item extends PayPalApiStruct
     protected string $updateTime;
 
     /**
-     * @var DisputedTransaction[]|null
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_disputed_transaction"}, nullable=true)
      */
-    protected ?array $disputedTransactions = null;
+    protected ?DisputedTransactionCollection $disputedTransactions = null;
 
     /**
      * @OA\Property(type="string")
@@ -99,18 +98,14 @@ class Item extends PayPalApiStruct
     protected ?DisputeOutcome $disputeOutcome = null;
 
     /**
-     * @var Adjudication[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_adjudication"})
      */
-    protected array $adjudications;
+    protected AdjudicationCollection $adjudications;
 
     /**
-     * @var MoneyMovement[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_money_movement"})
      */
-    protected array $moneyMovements;
+    protected MoneyMovementCollection $moneyMovements;
 
     /**
      * @OA\Property(type="string")
@@ -123,11 +118,9 @@ class Item extends PayPalApiStruct
     protected ?string $disputeChannel = null;
 
     /**
-     * @var Message[]|null
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_message"}, nullable=true)
      */
-    protected ?array $messages = null;
+    protected ?MessageCollection $messages = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions")
@@ -135,11 +128,9 @@ class Item extends PayPalApiStruct
     protected Extensions $extensions;
 
     /**
-     * @var Evidence[]|null
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_evidence"}, nullable=true)
      */
-    protected ?array $evidences = null;
+    protected ?EvidenceCollection $evidences = null;
 
     /**
      * @OA\Property(type="string", nullable=true)
@@ -167,25 +158,19 @@ class Item extends PayPalApiStruct
     protected ?CommunicationDetails $communicationDetails = null;
 
     /**
-     * @var PartnerAction[]|null
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_partner_action"}, nullable=true)
      */
-    protected ?array $partnerActions = null;
+    protected ?PartnerActionCollection $partnerActions = null;
 
     /**
-     * @var SupportingInfo[]|null
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_disputes_supporting_info"}, nullable=true)
      */
-    protected ?array $supportingInfo = null;
+    protected ?SupportingInfoCollection $supportingInfo = null;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     public function getDisputeId(): string
     {
@@ -217,18 +202,12 @@ class Item extends PayPalApiStruct
         $this->updateTime = $updateTime;
     }
 
-    /**
-     * @return DisputedTransaction[]|null
-     */
-    public function getDisputedTransactions(): ?array
+    public function getDisputedTransactions(): ?DisputedTransactionCollection
     {
         return $this->disputedTransactions;
     }
 
-    /**
-     * @param DisputedTransaction[]|null $disputedTransactions
-     */
-    public function setDisputedTransactions(?array $disputedTransactions): void
+    public function setDisputedTransactions(?DisputedTransactionCollection $disputedTransactions): void
     {
         $this->disputedTransactions = $disputedTransactions;
     }
@@ -293,34 +272,22 @@ class Item extends PayPalApiStruct
         $this->disputeOutcome = $disputeOutcome;
     }
 
-    /**
-     * @return Adjudication[]
-     */
-    public function getAdjudications(): array
+    public function getAdjudications(): AdjudicationCollection
     {
         return $this->adjudications;
     }
 
-    /**
-     * @param Adjudication[] $adjudications
-     */
-    public function setAdjudications(array $adjudications): void
+    public function setAdjudications(AdjudicationCollection $adjudications): void
     {
         $this->adjudications = $adjudications;
     }
 
-    /**
-     * @return MoneyMovement[]
-     */
-    public function getMoneyMovements(): array
+    public function getMoneyMovements(): MoneyMovementCollection
     {
         return $this->moneyMovements;
     }
 
-    /**
-     * @param MoneyMovement[] $moneyMovements
-     */
-    public function setMoneyMovements(array $moneyMovements): void
+    public function setMoneyMovements(MoneyMovementCollection $moneyMovements): void
     {
         $this->moneyMovements = $moneyMovements;
     }
@@ -345,18 +312,12 @@ class Item extends PayPalApiStruct
         $this->disputeChannel = $disputeChannel;
     }
 
-    /**
-     * @return Message[]|null
-     */
-    public function getMessages(): ?array
+    public function getMessages(): ?MessageCollection
     {
         return $this->messages;
     }
 
-    /**
-     * @param Message[]|null $messages
-     */
-    public function setMessages(?array $messages): void
+    public function setMessages(?MessageCollection $messages): void
     {
         $this->messages = $messages;
     }
@@ -371,18 +332,12 @@ class Item extends PayPalApiStruct
         $this->extensions = $extensions;
     }
 
-    /**
-     * @return Evidence[]|null
-     */
-    public function getEvidences(): ?array
+    public function getEvidences(): ?EvidenceCollection
     {
         return $this->evidences;
     }
 
-    /**
-     * @param Evidence[]|null $evidences
-     */
-    public function setEvidences(?array $evidences): void
+    public function setEvidences(?EvidenceCollection $evidences): void
     {
         $this->evidences = $evidences;
     }
@@ -437,50 +392,32 @@ class Item extends PayPalApiStruct
         $this->communicationDetails = $communicationDetails;
     }
 
-    /**
-     * @return PartnerAction[]|null
-     */
-    public function getPartnerActions(): ?array
+    public function getPartnerActions(): ?PartnerActionCollection
     {
         return $this->partnerActions;
     }
 
-    /**
-     * @param PartnerAction[]|null $partnerActions
-     */
-    public function setPartnerActions(?array $partnerActions): void
+    public function setPartnerActions(?PartnerActionCollection $partnerActions): void
     {
         $this->partnerActions = $partnerActions;
     }
 
-    /**
-     * @return SupportingInfo[]|null
-     */
-    public function getSupportingInfo(): ?array
+    public function getSupportingInfo(): ?SupportingInfoCollection
     {
         return $this->supportingInfo;
     }
 
-    /**
-     * @param SupportingInfo[]|null $supportingInfo
-     */
-    public function setSupportingInfo(?array $supportingInfo): void
+    public function setSupportingInfo(?SupportingInfoCollection $supportingInfo): void
     {
         $this->supportingInfo = $supportingInfo;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }

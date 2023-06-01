@@ -229,8 +229,12 @@ class PlusPuiHandler
     private function getPaymentState(Payment $payment): string
     {
         $intent = $payment->getIntent();
-        $relatedResource = $payment->getTransactions()[0]->getRelatedResources()[0];
+        $relatedResource = $payment->getTransactions()->first()?->getRelatedResources()->first();
         $paymentState = '';
+
+        if ($relatedResource === null) {
+            return $paymentState;
+        }
 
         switch ($intent) {
             case PaymentIntentV1::SALE:
@@ -272,15 +276,15 @@ class PlusPuiHandler
 
         switch ($payment->getIntent()) {
             case PaymentIntentV1::ORDER:
-                $resource = $payment->getTransactions()[0]->getRelatedResources()[0]->getOrder();
+                $resource = $payment->getTransactions()->first()?->getRelatedResources()->first()?->getOrder();
 
                 break;
             case PaymentIntentV1::AUTHORIZE:
-                $resource = $payment->getTransactions()[0]->getRelatedResources()[0]->getAuthorization();
+                $resource = $payment->getTransactions()->first()?->getRelatedResources()->first()?->getAuthorization();
 
                 break;
             case PaymentIntentV1::SALE:
-                $resource = $payment->getTransactions()[0]->getRelatedResources()[0]->getSale();
+                $resource = $payment->getTransactions()->first()?->getRelatedResources()->first()?->getSale();
 
                 break;
             default:

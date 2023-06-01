@@ -15,7 +15,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * @OA\Schema(schema="swag_paypal_v2_common_link")
  */
 #[Package('checkout')]
-abstract class Link extends PayPalApiStruct
+class Link extends PayPalApiStruct
 {
     public const RELATION_APPROVE = 'approve';
     public const RELATION_PAYER_ACTION = 'payer-action';

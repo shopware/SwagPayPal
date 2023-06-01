@@ -21,6 +21,9 @@ class ACDCMethodData extends AbstractMethodData implements CheckoutDataMethodInt
 {
     public const PAYPAL_ACDC_FIELD_DATA_EXTENSION_ID = 'payPalACDCFieldData';
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     public function getTranslations(): array
     {
         return [

@@ -60,7 +60,7 @@ class ItemListProviderTest extends TestCase
         $order->setTaxStatus($hasTaxes ? CartPrice::TAX_STATE_NET : CartPrice::TAX_STATE_GROSS);
 
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
-        $item = \current($itemList);
+        $item = $itemList->first();
         static::assertInstanceOf(Item::class, $item);
         static::assertSame($hasTaxes ? 19.0 : 0.0, $item->getTaxRate());
         static::assertSame($hasTaxes ? '1.90' : '0.00', $item->getTax()->getValue());
@@ -79,7 +79,7 @@ class ItemListProviderTest extends TestCase
         $order->setTaxStatus($hasTaxes ? CartPrice::TAX_STATE_NET : CartPrice::TAX_STATE_GROSS);
 
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
-        $item = \current($itemList);
+        $item = $itemList->first();
         static::assertInstanceOf(Item::class, $item);
         static::assertSame($title, $item->getName());
         static::assertSame($expectedQuantity, $item->getQuantity());
@@ -96,7 +96,7 @@ class ItemListProviderTest extends TestCase
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
 
         $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magn';
-        static::assertSame($expectedItemName, $itemList[0]->getName());
+        static::assertSame($expectedItemName, $itemList->first()?->getName());
     }
 
     public function testLineItemProductNumberTooLongIsTruncated(): void
@@ -106,7 +106,7 @@ class ItemListProviderTest extends TestCase
 
         $itemList = $this->createItemListProvider()->getItemList($this->createCurrency(), $order);
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-        static::assertSame($expectedItemSku, $itemList[0]->getSku());
+        static::assertSame($expectedItemSku, $itemList->first()?->getSku());
     }
 
     public function dataProviderTaxConstellation(): iterable

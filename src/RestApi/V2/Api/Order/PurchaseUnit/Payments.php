@@ -10,9 +10,9 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Authorization;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\AuthorizationCollection;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\CaptureCollection;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\RefundCollection;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_payments")
@@ -21,70 +21,46 @@ use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 class Payments extends PayPalApiStruct
 {
     /**
-     * @var Authorization[]|null
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_authorization"}, nullable=true)
      */
-    protected ?array $authorizations = null;
+    protected ?AuthorizationCollection $authorizations = null;
 
     /**
-     * @var Capture[]|null
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_capture"}, nullable=true)
      */
-    protected ?array $captures = null;
+    protected ?CaptureCollection $captures = null;
 
     /**
-     * @var Refund[]|null
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_refund"}, nullable=true)
      */
-    protected ?array $refunds = null;
+    protected ?RefundCollection $refunds = null;
 
-    /**
-     * @return Authorization[]|null
-     */
-    public function getAuthorizations(): ?array
+    public function getAuthorizations(): ?AuthorizationCollection
     {
         return $this->authorizations;
     }
 
-    /**
-     * @param Authorization[]|null $authorizations
-     */
-    public function setAuthorizations(?array $authorizations): void
+    public function setAuthorizations(?AuthorizationCollection $authorizations): void
     {
         $this->authorizations = $authorizations;
     }
 
-    /**
-     * @return Capture[]|null
-     */
-    public function getCaptures(): ?array
+    public function getCaptures(): ?CaptureCollection
     {
         return $this->captures;
     }
 
-    /**
-     * @param Capture[]|null $captures
-     */
-    public function setCaptures(?array $captures): void
+    public function setCaptures(?CaptureCollection $captures): void
     {
         $this->captures = $captures;
     }
 
-    /**
-     * @return Refund[]|null
-     */
-    public function getRefunds(): ?array
+    public function getRefunds(): ?RefundCollection
     {
         return $this->refunds;
     }
 
-    /**
-     * @param Refund[]|null $refunds
-     */
-    public function setRefunds(?array $refunds): void
+    public function setRefunds(?RefundCollection $refunds): void
     {
         $this->refunds = $refunds;
     }

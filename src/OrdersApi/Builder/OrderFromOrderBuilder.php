@@ -21,6 +21,7 @@ use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\Setting\Settings;
 
 #[Package('checkout')]
@@ -60,7 +61,7 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
         $order = new Order();
         $order->setIntent($intent);
         $order->setPayer($payer);
-        $order->setPurchaseUnits([$purchaseUnit]);
+        $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
         $order->setApplicationContext($applicationContext);
 
         return $order;

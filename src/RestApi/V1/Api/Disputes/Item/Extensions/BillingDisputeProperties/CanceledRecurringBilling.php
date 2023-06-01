@@ -10,8 +10,8 @@ namespace Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProp
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V1\Api\Common\Money;
 use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CanceledRecurringBilling\CancellationDetails;
-use Swag\PayPal\RestApi\V1\Api\Disputes\Item\Extensions\BillingDisputeProperties\CanceledRecurringBilling\ExpectedRefund;
 
 /**
  * @OA\Schema(schema="swag_paypal_v1_disputes_extensions_canceled_recurring_billing")
@@ -22,19 +22,19 @@ class CanceledRecurringBilling extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_common_money")
      */
-    protected ExpectedRefund $expectedRefund;
+    protected Money $expectedRefund;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_disputes_extensions_cancellation_details")
      */
     protected CancellationDetails $cancellationDetails;
 
-    public function getExpectedRefund(): ExpectedRefund
+    public function getExpectedRefund(): Money
     {
         return $this->expectedRefund;
     }
 
-    public function setExpectedRefund(ExpectedRefund $expectedRefund): void
+    public function setExpectedRefund(Money $expectedRefund): void
     {
         $this->expectedRefund = $expectedRefund;
     }

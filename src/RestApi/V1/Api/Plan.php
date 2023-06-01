@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V1\Api;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycle;
+use Swag\PayPal\RestApi\V1\Api\Plan\BillingCycleCollection;
 use Swag\PayPal\RestApi\V1\Api\Plan\PaymentPreferences;
 use Swag\PayPal\RestApi\V1\Api\Plan\Taxes;
 
@@ -48,11 +48,9 @@ class Plan extends PayPalApiStruct
     protected string $status;
 
     /**
-     * @var BillingCycle[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_plan_billing_cycle"})
      */
-    protected array $billingCycles = [];
+    protected BillingCycleCollection $billingCycles;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_plan_payment_preferences")
@@ -104,18 +102,12 @@ class Plan extends PayPalApiStruct
         $this->status = $status;
     }
 
-    /**
-     * @return BillingCycle[]
-     */
-    public function getBillingCycles(): array
+    public function getBillingCycles(): BillingCycleCollection
     {
         return $this->billingCycles;
     }
 
-    /**
-     * @param BillingCycle[] $billingCycles
-     */
-    public function setBillingCycles(array $billingCycles): void
+    public function setBillingCycles(BillingCycleCollection $billingCycles): void
     {
         $this->billingCycles = $billingCycles;
     }

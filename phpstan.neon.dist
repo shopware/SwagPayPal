@@ -6,7 +6,6 @@ parameters:
     level: 8
     tmpDir: var/cache/phpstan
     inferPrivatePropertyTypeFromConstructor: true
-    checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
     reportUnmatchedIgnoredErrors: false
 
@@ -54,9 +53,6 @@ parameters:
             message: '#Call to deprecated method batchSaveConfiguration#'
             path: tests/Webhook/Registration/WebhookSystemConfigControllerTest.php
             count: 11
-
-        -   # ignore param type coverage
-            message: '#.*Add more param types to get over.*#'
 
         -   # ignore lineItemPayloadDeprecation deprecations
             message: '#Call to deprecated method setPayloadValue\(\) of class .*LineItem#'

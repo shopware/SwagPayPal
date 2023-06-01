@@ -41,8 +41,14 @@
             "@phpstan",
             "@phpunit"
         ],
-        "ecs": "../../../vendor/bin/ecs check src tests",
-        "ecs-fix": "../../../vendor/bin/ecs check --fix src tests",
+        "ecs": [
+            "../../../vendor/bin/ecs check --config=../../../ecs.php src tests",
+            "../../../vendor/bin/ecs check src tests"
+        ],
+        "ecs-fix": [
+            "../../../vendor/bin/ecs check --fix --config=../../../ecs.php src tests",
+            "../../../vendor/bin/ecs check --fix src tests"
+        ],
         "init:admin": "npm ci --no-audit --prefer-offline --prefix src/Resources/app/administration",
         "lint:admin": "npm run lint-fix --prefix src/Resources/app/administration",
         "lint:admin:ci": "npm run lint-ci --prefix src/Resources/app/administration",

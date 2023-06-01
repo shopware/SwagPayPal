@@ -24,6 +24,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\P24;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\PayUponInvoice;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Sofort;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Token;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Trustly;
 
 /**
@@ -101,6 +102,11 @@ class PaymentSource extends PayPalApiStruct
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_sofort")
      */
     protected ?Sofort $sofort = null;
+
+    /**
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_token")
+     */
+    protected ?Token $token = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_trustly")
@@ -227,6 +233,16 @@ class PaymentSource extends PayPalApiStruct
         $this->p24 = $p24;
     }
 
+    public function getPaypal(): ?Paypal
+    {
+        return $this->paypal;
+    }
+
+    public function setPaypal(?Paypal $paypal): void
+    {
+        $this->paypal = $paypal;
+    }
+
     public function getSofort(): ?Sofort
     {
         return $this->sofort;
@@ -235,6 +251,16 @@ class PaymentSource extends PayPalApiStruct
     public function setSofort(?Sofort $sofort): void
     {
         $this->sofort = $sofort;
+    }
+
+    public function getToken(): ?Token
+    {
+        return $this->token;
+    }
+
+    public function setToken(?Token $token): void
+    {
+        $this->token = $token;
     }
 
     public function getTrustly(): ?Trustly
@@ -247,16 +273,9 @@ class PaymentSource extends PayPalApiStruct
         $this->trustly = $trustly;
     }
 
-    public function getPaypal(): ?Paypal
-    {
-        return $this->paypal;
-    }
-
-    public function setPaypal(?Paypal $paypal): void
-    {
-        $this->paypal = $paypal;
-    }
-
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return \array_filter(parent::jsonSerialize());

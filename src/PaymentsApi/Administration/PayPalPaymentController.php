@@ -18,10 +18,9 @@ use Swag\PayPal\PaymentsApi\Administration\Exception\PaymentNotFoundException;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
 use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Api\Capture;
-use Swag\PayPal\RestApi\V1\Api\Capture\Amount as CaptureAmount;
+use Swag\PayPal\RestApi\V1\Api\Common\Amount;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
 use Swag\PayPal\RestApi\V1\Api\Refund;
-use Swag\PayPal\RestApi\V1\Api\Refund\Amount as RefundAmount;
 use Swag\PayPal\RestApi\V1\Resource\AuthorizationResource;
 use Swag\PayPal\RestApi\V1\Resource\CaptureResource;
 use Swag\PayPal\RestApi\V1\Resource\OrdersResource;
@@ -356,7 +355,7 @@ class PayPalPaymentController extends AbstractController
         }
 
         if ($refundAmount !== '0.00') {
-            $amount = new RefundAmount();
+            $amount = new Amount();
             $amount->setTotal($refundAmount);
             $amount->setCurrency($currency);
 
@@ -381,7 +380,7 @@ class PayPalPaymentController extends AbstractController
 
         $capture = new Capture();
         $capture->setIsFinalCapture($isFinalCapture);
-        $amount = new CaptureAmount();
+        $amount = new Amount();
         $amount->setTotal($amountToCapture);
         $amount->setCurrency($currency);
 

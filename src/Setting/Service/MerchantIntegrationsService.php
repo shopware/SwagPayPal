@@ -10,8 +10,10 @@ namespace Swag\PayPal\Setting\Service;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\Client\PayPalClientFactoryInterface;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Api\MerchantIntegrations;
 use Swag\PayPal\RestApi\V1\Resource\MerchantIntegrationsResourceInterface;
+use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Struct\MerchantInformationStruct;
 use Swag\PayPal\Util\Lifecycle\Method\AbstractMethodData;
 use Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry;
@@ -55,7 +57,7 @@ class MerchantIntegrationsService
             );
 
             $information->setMerchantIntegrations($integrations);
-        } catch (\Throwable $e) {
+        } catch (PayPalApiException|PayPalSettingsInvalidException) {
             // just catch exceptions thrown in case of invalid credentials
         }
 

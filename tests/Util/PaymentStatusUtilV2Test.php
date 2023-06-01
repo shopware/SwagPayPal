@@ -20,15 +20,16 @@ use Shopware\Core\Framework\Test\IdsCollection;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Swag\PayPal\RestApi\V2\Api\Common\Money;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Capture\Amount as CaptureAmount;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\CaptureCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\Amount as RefundAmount;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\TotalRefundedAmount;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\RefundCollection;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\Test\Helper\OrderTransactionTrait;
 use Swag\PayPal\Test\Helper\StateMachineStateTrait;
 use Swag\PayPal\Util\PaymentStatusUtilV2;
@@ -199,7 +200,7 @@ class PaymentStatusUtilV2Test extends TestCase
         $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_PARTIALLY_PAID);
 
         $refund = $this->createRefund('10.00', '10.00');
-        $firstOrder = $this->createOrder([$capture], [$refund]);
+        $firstOrder = $this->createOrder(new CaptureCollection([$capture]), new RefundCollection([$refund]));
         $this->paymentStatusUtil->applyRefundState($orderTransactionId, $refund, $firstOrder, $this->context);
         $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_PARTIALLY_REFUNDED);
     }
@@ -213,7 +214,7 @@ class PaymentStatusUtilV2Test extends TestCase
         $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_PAID);
 
         $refund = $this->createRefund('10.00', '10.00');
-        $firstOrder = $this->createOrder([$capture], [$refund]);
+        $firstOrder = $this->createOrder(new CaptureCollection([$capture]), new RefundCollection([$refund]));
         $this->paymentStatusUtil->applyRefundState($orderTransactionId, $refund, $firstOrder, $this->context);
         $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_REFUNDED);
     }
@@ -227,7 +228,7 @@ class PaymentStatusUtilV2Test extends TestCase
         $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_PARTIALLY_PAID);
 
         $firstPartialRefund = $this->createRefund('2.00', '2.00');
-        $firstOrder = $this->createOrder([$firstCapture], [$firstPartialRefund]);
+        $firstOrder = $this->createOrder(new CaptureCollection([$firstCapture]), new RefundCollection([$firstPartialRefund]));
         $this->paymentStatusUtil->applyRefundState($orderTransactionId, $firstPartialRefund, $firstOrder, $this->context);
         $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_PARTIALLY_REFUNDED);
 
@@ -241,16 +242,16 @@ class PaymentStatusUtilV2Test extends TestCase
 
         $secondPartialRefund = $this->createRefund('2.00', '4.00');
         $secondOrder = $this->createOrder(
-            [$firstCapture, $secondCapture, $thirdCapture],
-            [$firstPartialRefund, $secondPartialRefund]
+            new CaptureCollection([$firstCapture, $secondCapture, $thirdCapture]),
+            new RefundCollection([$firstPartialRefund, $secondPartialRefund])
         );
         $this->paymentStatusUtil->applyRefundState($orderTransactionId, $secondPartialRefund, $secondOrder, $this->context);
         $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_PARTIALLY_REFUNDED);
 
         $thirdPartialRefund = $this->createRefund('10.00', '14.00');
         $thirdOrder = $this->createOrder(
-            [$firstCapture, $secondCapture, $thirdCapture],
-            [$firstPartialRefund, $secondPartialRefund, $thirdPartialRefund]
+            new CaptureCollection([$firstCapture, $secondCapture, $thirdCapture]),
+            new RefundCollection([$firstPartialRefund, $secondPartialRefund, $thirdPartialRefund])
         );
         $this->paymentStatusUtil->applyRefundState($orderTransactionId, $thirdPartialRefund, $thirdOrder, $this->context);
         $this->assertTransactionState($orderTransactionId, OrderTransactionStates::STATE_REFUNDED);
@@ -316,7 +317,7 @@ class PaymentStatusUtilV2Test extends TestCase
         $capture = new Capture();
         $capture->setFinalCapture($isFinal);
         if ($value !== null) {
-            $captureAmount = new CaptureAmount();
+            $captureAmount = new Money();
             $captureAmount->setValue($value);
             $captureAmount->setCurrencyCode('EUR');
 
@@ -328,14 +329,14 @@ class PaymentStatusUtilV2Test extends TestCase
 
     private function createRefund(string $value, string $totalRefunded): Refund
     {
-        $totalRefundedAmount = new TotalRefundedAmount();
+        $totalRefundedAmount = new Money();
         $totalRefundedAmount->setValue($totalRefunded);
         $totalRefundedAmount->setCurrencyCode('EUR');
 
         $sellerPayableBreakDown = new SellerPayableBreakdown();
         $sellerPayableBreakDown->setTotalRefundedAmount($totalRefundedAmount);
 
-        $refundAmount = new RefundAmount();
+        $refundAmount = new Money();
         $refundAmount->setValue($value);
         $refundAmount->setCurrencyCode('EUR');
 
@@ -346,11 +347,7 @@ class PaymentStatusUtilV2Test extends TestCase
         return $refund;
     }
 
-    /**
-     * @param Capture[]|null $captures
-     * @param Refund[]|null  $refunds
-     */
-    private function createOrder(?array $captures = null, ?array $refunds = null): Order
+    private function createOrder(?CaptureCollection $captures = null, ?RefundCollection $refunds = null): Order
     {
         $order = new Order();
         $purchaseUnit = new PurchaseUnit();
@@ -358,7 +355,7 @@ class PaymentStatusUtilV2Test extends TestCase
         $payments->setCaptures($captures);
         $payments->setRefunds($refunds);
         $purchaseUnit->setPayments($payments);
-        $order->setPurchaseUnits([$purchaseUnit]);
+        $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
 
         return $order;
     }

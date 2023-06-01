@@ -484,7 +484,7 @@ class GuzzleClientMock implements ClientInterface
     {
         if (\mb_strpos($resourceUri, RequestUriV2::ORDERS_RESOURCE) !== false) {
             if ($data instanceof Order
-                && \mb_stripos((string) $data->getPurchaseUnits()[0]->getInvoiceId(), ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION) !== false
+                && \mb_stripos((string) $data->getPurchaseUnits()->first()?->getInvoiceId(), ConstantsForTesting::PAYPAL_RESOURCE_THROWS_EXCEPTION) !== false
             ) {
                 throw new \RuntimeException('A PayPal test error occurred.');
             }
@@ -520,7 +520,9 @@ class GuzzleClientMock implements ClientInterface
                 return AuthorizeOrderAuthorization::get();
             }
 
-            if ($data && $data instanceof Order && ($paymentSource = $data->getPaymentSource())) {
+            if ($data && $data instanceof Order && ($paymentSource = $data->getPaymentSource())
+                && $paymentSource->getPaypal() === null
+                && $paymentSource->getToken() === null) {
                 if ($payUponInvoice = $paymentSource->getPayUponInvoice()) {
                     if ($payUponInvoice->getEmail() === PUIHandlerTest::PAYMENT_SOURCE_DECLINED_BY_PROCESSOR) {
                         throw $this->createClientExceptionPaymentSourceDeclinedByProcessor();
@@ -538,7 +540,7 @@ class GuzzleClientMock implements ClientInterface
 
             $response = CreateOrderCapture::get();
             if ($data instanceof Order
-                && \mb_stripos((string) $data->getPurchaseUnits()[0]->getInvoiceId(), ConstantsForTesting::PAYPAL_RESPONSE_HAS_NO_APPROVAL_URL) !== false
+                && \mb_stripos((string) $data->getPurchaseUnits()->first()?->getInvoiceId(), ConstantsForTesting::PAYPAL_RESPONSE_HAS_NO_APPROVAL_URL) !== false
             ) {
                 $links = $response['links'];
                 unset($links[1]);

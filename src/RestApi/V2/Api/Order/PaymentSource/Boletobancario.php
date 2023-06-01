@@ -9,7 +9,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
-use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario\BillingAddress;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Boletobancario\TaxInfo;
 
 /**
@@ -36,7 +36,7 @@ class Boletobancario extends AbstractAPMPaymentSource
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_address")
      */
-    protected BillingAddress $billingAddress;
+    protected Address $billingAddress;
 
     public function getEmail(): string
     {
@@ -68,12 +68,12 @@ class Boletobancario extends AbstractAPMPaymentSource
         $this->taxInfo = $taxInfo;
     }
 
-    public function getBillingAddress(): BillingAddress
+    public function getBillingAddress(): Address
     {
         return $this->billingAddress;
     }
 
-    public function setBillingAddress(BillingAddress $billingAddress): void
+    public function setBillingAddress(Address $billingAddress): void
     {
         $this->billingAddress = $billingAddress;
     }

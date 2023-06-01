@@ -10,8 +10,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\Tax;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
+use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_item")
@@ -34,19 +33,17 @@ class Item extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected UnitAmount $unitAmount;
+    protected Money $unitAmount;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected Tax $tax;
+    protected Money $tax;
 
     /**
      * @OA\Property(oneOf=[{ "type": "integer" },{ "type": "float" },{ "type": "string" }])
-     *
-     * @var float|int|string
      */
-    protected $taxRate;
+    protected string|int|float $taxRate;
 
     /**
      * @OA\Property(type="string")
@@ -82,38 +79,32 @@ class Item extends PayPalApiStruct
         $this->name = $name;
     }
 
-    public function getUnitAmount(): UnitAmount
+    public function getUnitAmount(): Money
     {
         return $this->unitAmount;
     }
 
-    public function setUnitAmount(UnitAmount $unitAmount): void
+    public function setUnitAmount(Money $unitAmount): void
     {
         $this->unitAmount = $unitAmount;
     }
 
-    public function getTax(): Tax
+    public function getTax(): Money
     {
         return $this->tax;
     }
 
-    public function setTax(Tax $tax): void
+    public function setTax(Money $tax): void
     {
         $this->tax = $tax;
     }
 
-    /**
-     * @return string|int|float
-     */
-    public function getTaxRate()
+    public function getTaxRate(): string|int|float
     {
         return $this->taxRate;
     }
 
-    /**
-     * @param string|int|float $taxRate
-     */
-    public function setTaxRate($taxRate): void
+    public function setTaxRate(string|int|float $taxRate): void
     {
         $this->taxRate = $taxRate;
     }
@@ -133,10 +124,7 @@ class Item extends PayPalApiStruct
         return $this->quantity;
     }
 
-    /**
-     * @param int|string $quantity
-     */
-    public function setQuantity($quantity): void
+    public function setQuantity(int|string $quantity): void
     {
         $this->quantity = (int) $quantity;
     }

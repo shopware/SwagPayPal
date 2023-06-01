@@ -10,11 +10,12 @@ namespace Swag\PayPal\Test\PaymentsApi\Service;
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\PaymentsApi\Service\TransactionValidator;
-use Swag\PayPal\RestApi\V1\Api\DoVoid\Amount\Details;
+use Swag\PayPal\RestApi\V1\Api\Common\Amount;
+use Swag\PayPal\RestApi\V1\Api\Common\Details;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction;
-use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\Amount;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\Item;
+use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\ItemList\ItemCollection;
 
 /**
  * @internal
@@ -53,7 +54,7 @@ class TransactionValidatorTest extends TestCase
         $item->setQuantity($itemQuantity);
 
         $itemList = new ItemList();
-        $itemList->setItems([$item]);
+        $itemList->setItems(new ItemCollection([$item]));
 
         $transaction->setAmount($amount);
         $transaction->setItemList($itemList);

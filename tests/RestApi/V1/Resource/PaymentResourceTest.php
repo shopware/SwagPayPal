@@ -47,8 +47,8 @@ class PaymentResourceTest extends TestCase
         );
 
         static::assertSame(CreateResponseFixture::CREATE_PAYMENT_ID, $createdPayment->getId());
-        $link = $createdPayment->getLinks()[1];
-        static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $link->getHref());
+        $link = $createdPayment->getLinks()->getAt(1);
+        static::assertSame(CreateResponseFixture::CREATE_PAYMENT_APPROVAL_URL, $link?->getHref());
     }
 
     public function testExecuteSale(): void
@@ -59,10 +59,10 @@ class PaymentResourceTest extends TestCase
             TestDefaults::SALES_CHANNEL
         );
 
-        $transaction = $executedPayment->getTransactions()[0];
-        static::assertArrayHasKey(0, $executedPayment->getLinks());
+        $transaction = $executedPayment->getTransactions()->first();
+        static::assertNotNull($executedPayment->getLinks()->first());
 
-        $sale = $transaction->getRelatedResources()[0]->getSale();
+        $sale = $transaction?->getRelatedResources()->first()?->getSale();
         static::assertNotNull($sale);
         static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $sale->getState());
     }
@@ -75,10 +75,10 @@ class PaymentResourceTest extends TestCase
             TestDefaults::SALES_CHANNEL
         );
 
-        $transaction = $executedPayment->getTransactions()[0];
-        static::assertArrayHasKey(0, $executedPayment->getLinks());
+        $transaction = $executedPayment->getTransactions()->first();
+        static::assertNotNull($executedPayment->getLinks()->first());
 
-        $authorization = $transaction->getRelatedResources()[0]->getAuthorization();
+        $authorization = $transaction?->getRelatedResources()->first()?->getAuthorization();
         static::assertNotNull($authorization);
         static::assertSame(PaymentStatusV1::PAYMENT_AUTHORIZED, $authorization->getState());
     }
@@ -91,10 +91,10 @@ class PaymentResourceTest extends TestCase
             TestDefaults::SALES_CHANNEL
         );
 
-        $transaction = $executedPayment->getTransactions()[0];
-        static::assertArrayHasKey(0, $executedPayment->getLinks());
+        $transaction = $executedPayment->getTransactions()->first();
+        static::assertNotNull($executedPayment->getLinks()->first());
 
-        $order = $transaction->getRelatedResources()[0]->getOrder();
+        $order = $transaction?->getRelatedResources()->first()?->getOrder();
         static::assertNotNull($order);
         static::assertSame(PaymentStatusV1::PAYMENT_PENDING, $order->getState());
     }
@@ -103,10 +103,10 @@ class PaymentResourceTest extends TestCase
     {
         $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::TEST_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
-        $transaction = $payment->getTransactions()[0];
-        static::assertArrayHasKey(0, $payment->getLinks());
+        $transaction = $payment->getTransactions()->first();
+        static::assertNotNull($payment->getLinks()->first());
 
-        $sale = $transaction->getRelatedResources()[0]->getSale();
+        $sale = $transaction?->getRelatedResources()->first()?->getSale();
         static::assertNotNull($sale);
         static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $sale->getState());
     }
@@ -115,14 +115,14 @@ class PaymentResourceTest extends TestCase
     {
         $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::SALE_WITH_REFUND_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
-        $transaction = $payment->getTransactions()[0];
-        static::assertArrayHasKey(0, $payment->getLinks());
+        $transaction = $payment->getTransactions()->first();
+        static::assertNotNull($payment->getLinks()->first());
 
-        $sale = $transaction->getRelatedResources()[0]->getSale();
+        $sale = $transaction?->getRelatedResources()->first()?->getSale();
         static::assertNotNull($sale);
         static::assertSame(PaymentStatusV1::PAYMENT_PARTIALLY_REFUNDED, $sale->getState());
 
-        $refund = $transaction->getRelatedResources()[1]->getRefund();
+        $refund = $transaction?->getRelatedResources()->getAt(1)?->getRefund();
         static::assertNotNull($refund);
         static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $refund->getState());
     }
@@ -131,9 +131,9 @@ class PaymentResourceTest extends TestCase
     {
         $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::ORDER_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
-        $transaction = $payment->getTransactions()[0];
-        static::assertArrayHasKey(0, $payment->getLinks());
-        $order = $transaction->getRelatedResources()[0]->getOrder();
+        $transaction = $payment->getTransactions()->first();
+        static::assertNotNull($payment->getLinks()->first());
+        $order = $transaction?->getRelatedResources()->first()?->getOrder();
 
         static::assertNotNull($order);
         static::assertSame(PaymentStatusV1::PAYMENT_PENDING, $order->getState());
@@ -143,18 +143,18 @@ class PaymentResourceTest extends TestCase
     {
         $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::AUTHORIZE_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
-        $transaction = $payment->getTransactions()[0];
-        static::assertArrayHasKey(0, $payment->getLinks());
-        $authorization = $transaction->getRelatedResources()[0]->getAuthorization();
+        $transaction = $payment->getTransactions()->first();
+        static::assertNotNull($payment->getLinks()->first());
+        $authorization = $transaction?->getRelatedResources()->first()?->getAuthorization();
 
         static::assertNotNull($authorization);
         static::assertSame(PaymentStatusV1::PAYMENT_CAPTURED, $authorization->getState());
 
-        $capture = $transaction->getRelatedResources()[1]->getCapture();
+        $capture = $transaction?->getRelatedResources()->getAt(1)?->getCapture();
         static::assertNotNull($capture);
         static::assertSame(PaymentStatusV1::PAYMENT_PARTIALLY_REFUNDED, $capture->getState());
 
-        $refund = $transaction->getRelatedResources()[2]->getRefund();
+        $refund = $transaction?->getRelatedResources()->getAt(2)?->getRefund();
         static::assertNotNull($refund);
         static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $refund->getState());
     }
@@ -163,14 +163,14 @@ class PaymentResourceTest extends TestCase
     {
         $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::CAPTURED_ORDER_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
-        $transaction = $payment->getTransactions()[0];
-        static::assertArrayHasKey(0, $payment->getLinks());
+        $transaction = $payment->getTransactions()->first();
+        static::assertNotNull($payment->getLinks()->first());
 
-        $order = $transaction->getRelatedResources()[0]->getOrder();
+        $order = $transaction?->getRelatedResources()->first()?->getOrder();
         static::assertNotNull($order);
         static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $order->getState());
 
-        $capture = $transaction->getRelatedResources()[1]->getCapture();
+        $capture = $transaction?->getRelatedResources()->getAt(1)?->getCapture();
         static::assertNotNull($capture);
         static::assertSame(PaymentStatusV1::PAYMENT_COMPLETED, $capture->getState());
     }

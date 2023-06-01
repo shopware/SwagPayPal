@@ -20,11 +20,12 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Event\PayPalV2ItemFromCartEvent;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\RestApi\V2\Api\Common\Money;
 use Swag\PayPal\RestApi\V2\Api\Order;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\Tax;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Item\UnitAmount;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\ItemCollection;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -71,7 +72,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         $applicationContext = $this->createApplicationContext($salesChannelContext);
 
         $order->setIntent($intent);
-        $order->setPurchaseUnits([$purchaseUnit]);
+        $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
         $order->setApplicationContext($applicationContext);
 
         return $order;
@@ -101,12 +102,9 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
         );
     }
 
-    /**
-     * @return Item[]
-     */
-    private function createItems(CurrencyEntity $currency, Cart $cart): array
+    private function createItems(CurrencyEntity $currency, Cart $cart): ItemCollection
     {
-        $items = [];
+        $items = new ItemCollection();
         $currencyCode = $currency->getIsoCode();
 
         foreach ($cart->getLineItems() as $lineItem) {
@@ -120,12 +118,12 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             $this->setName($lineItem, $item);
             $this->setSku($lineItem, $item);
 
-            $tax = new Tax();
+            $tax = new Money();
             $tax->setCurrencyCode($currencyCode);
             $tax->setValue($this->priceFormatter->formatPrice($price->getCalculatedTaxes()->getAmount(), $currencyCode));
             $item->setTax($tax);
 
-            $unitAmount = new UnitAmount();
+            $unitAmount = new Money();
             $unitAmount->setCurrencyCode($currencyCode);
             $unitAmount->setValue($this->priceFormatter->formatPrice($price->getUnitPrice(), $currencyCode));
 
@@ -135,7 +133,7 @@ class OrderFromCartBuilder extends AbstractOrderBuilder
             $event = new PayPalV2ItemFromCartEvent($item, $lineItem);
             $this->eventDispatcher->dispatch($event);
 
-            $items[] = $event->getPayPalLineItem();
+            $items->add($event->getPayPalLineItem());
         }
 
         return $items;

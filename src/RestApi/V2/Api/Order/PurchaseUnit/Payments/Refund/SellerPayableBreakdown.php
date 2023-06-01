@@ -10,10 +10,7 @@ namespace Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\GrossAmount;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\NetAmount;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\PaypalFee;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit\Payments\Refund\SellerPayableBreakdown\TotalRefundedAmount;
+use Swag\PayPal\RestApi\V2\Api\Common\Money;
 
 /**
  * @OA\Schema(schema="swag_paypal_v2_order_refund_seller_paypable_breakdown")
@@ -24,59 +21,59 @@ class SellerPayableBreakdown extends PayPalApiStruct
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected GrossAmount $grossAmount;
+    protected Money $grossAmount;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected PaypalFee $paypalFee;
+    protected Money $paypalFee;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected NetAmount $netAmount;
+    protected Money $netAmount;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_money")
      */
-    protected TotalRefundedAmount $totalRefundedAmount;
+    protected Money $totalRefundedAmount;
 
-    public function getGrossAmount(): GrossAmount
+    public function getGrossAmount(): Money
     {
         return $this->grossAmount;
     }
 
-    public function setGrossAmount(GrossAmount $grossAmount): void
+    public function setGrossAmount(Money $grossAmount): void
     {
         $this->grossAmount = $grossAmount;
     }
 
-    public function getPaypalFee(): PaypalFee
+    public function getPaypalFee(): Money
     {
         return $this->paypalFee;
     }
 
-    public function setPaypalFee(PaypalFee $paypalFee): void
+    public function setPaypalFee(Money $paypalFee): void
     {
         $this->paypalFee = $paypalFee;
     }
 
-    public function getNetAmount(): NetAmount
+    public function getNetAmount(): Money
     {
         return $this->netAmount;
     }
 
-    public function setNetAmount(NetAmount $netAmount): void
+    public function setNetAmount(Money $netAmount): void
     {
         $this->netAmount = $netAmount;
     }
 
-    public function getTotalRefundedAmount(): TotalRefundedAmount
+    public function getTotalRefundedAmount(): Money
     {
         return $this->totalRefundedAmount;
     }
 
-    public function setTotalRefundedAmount(TotalRefundedAmount $totalRefundedAmount): void
+    public function setTotalRefundedAmount(Money $totalRefundedAmount): void
     {
         $this->totalRefundedAmount = $totalRefundedAmount;
     }

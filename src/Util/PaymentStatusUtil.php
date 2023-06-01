@@ -63,7 +63,7 @@ class PaymentStatusUtil
             throw new InvalidTransactionException($transactionId);
         }
 
-        if ($captureResponse->isFinalCapture()) {
+        if ($captureResponse->isIsFinalCapture()) {
             $this->reopenTransaction($stateMachineState, $transactionId, $context);
             // If the previous state is "paid_partially", "paid" is currently not allowed as direct transition
             if ($stateMachineState->getTechnicalName() === OrderTransactionStates::STATE_PARTIALLY_PAID) {
@@ -119,7 +119,11 @@ class PaymentStatusUtil
         }
 
         $capturedAmount = 0.0;
-        $relatedResources = $paymentResponse->getTransactions()[0]->getRelatedResources();
+        $paymentTransaction = $paymentResponse->getTransactions()->first();
+        if ($paymentTransaction === null) {
+            return;
+        }
+        $relatedResources = $paymentTransaction->getRelatedResources();
         foreach ($relatedResources as $relatedResource) {
             $capture = $relatedResource->getCapture();
             if ($capture === null) {

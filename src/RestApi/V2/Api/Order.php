@@ -10,11 +10,12 @@ namespace Swag\PayPal\RestApi\V2\Api;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
+use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\Link;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
-use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 
 /**
@@ -51,11 +52,9 @@ class Order extends PayPalApiStruct
     protected Payer $payer;
 
     /**
-     * @var PurchaseUnit[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit"})
      */
-    protected array $purchaseUnits = [];
+    protected PurchaseUnitCollection $purchaseUnits;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_application_context")
@@ -78,11 +77,9 @@ class Order extends PayPalApiStruct
     protected string $processingInstruction;
 
     /**
-     * @var Link[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_common_link"})
      */
-    protected array $links;
+    protected LinkCollection $links;
 
     public function getCreateTime(): string
     {
@@ -134,18 +131,12 @@ class Order extends PayPalApiStruct
         $this->payer = $payer;
     }
 
-    /**
-     * @return PurchaseUnit[]
-     */
-    public function getPurchaseUnits(): array
+    public function getPurchaseUnits(): PurchaseUnitCollection
     {
         return $this->purchaseUnits;
     }
 
-    /**
-     * @param PurchaseUnit[] $purchaseUnits
-     */
-    public function setPurchaseUnits(array $purchaseUnits): void
+    public function setPurchaseUnits(PurchaseUnitCollection $purchaseUnits): void
     {
         $this->purchaseUnits = $purchaseUnits;
     }
@@ -190,33 +181,19 @@ class Order extends PayPalApiStruct
         $this->processingInstruction = $processingInstruction;
     }
 
-    /**
-     * @return Link[]
-     */
-    public function getLinks(): array
+    public function getLinks(): LinkCollection
     {
         return $this->links;
     }
 
-    /**
-     * @param Link[] $links
-     */
-    public function setLinks(array $links): void
+    public function setLinks(LinkCollection $links): void
     {
         $this->links = $links;
     }
 
-    public function getRelLink(string $rel): ?Link
-    {
-        foreach ($this->links as $link) {
-            if ($link->getRel() === $rel) {
-                return $link;
-            }
-        }
-
-        return null;
-    }
-
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return \array_filter(parent::jsonSerialize());

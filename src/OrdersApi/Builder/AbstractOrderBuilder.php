@@ -14,10 +14,10 @@ use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
+use Swag\PayPal\RestApi\V2\Api\Common\Name;
 use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\Payer;
-use Swag\PayPal\RestApi\V2\Api\Order\Payer\Address as PayerAddress;
-use Swag\PayPal\RestApi\V2\Api\Order\Payer\Name as PayerName;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Exception\PayPalSettingsInvalidException;
 use Swag\PayPal\Setting\Settings;
@@ -62,7 +62,7 @@ abstract class AbstractOrderBuilder
     {
         $payer = new Payer();
         $payer->setEmailAddress($customer->getEmail());
-        $name = new PayerName();
+        $name = new Name();
         $name->setGivenName($customer->getFirstName());
         $name->setSurname($customer->getLastName());
         $payer->setName($name);
@@ -71,7 +71,7 @@ abstract class AbstractOrderBuilder
         if ($billingAddress === null) {
             throw new AddressNotFoundException($customer->getDefaultBillingAddressId());
         }
-        $address = new PayerAddress();
+        $address = new Address();
         $this->addressProvider->createAddress($billingAddress, $address);
         $payer->setAddress($address);
 

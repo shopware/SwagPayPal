@@ -44,7 +44,9 @@ class CartPaymentBuilderTest extends TestCase
         $cart->add($product);
 
         $payment = $this->createCartPaymentBuilder()->getPayment($cart, $salesChannelContext, '', true);
-        static::assertNull($payment->getTransactions()[0]->getItemList());
+        $transaction = $payment->getTransactions()->first();
+        static::assertNotNull($transaction);
+        static::assertNull($transaction->getItemList());
     }
 
     public function testGetPaymentLabelTooLongIsTruncated(): void
@@ -58,11 +60,11 @@ class CartPaymentBuilderTest extends TestCase
         $cart->add($product);
 
         $payment = $this->createCartPaymentBuilder()->getPayment($cart, $salesChannelContext, '', true);
-        $itemList = $payment->getTransactions()[0]->getItemList();
+        $itemList = $payment->getTransactions()->first()?->getItemList();
         static::assertNotNull($itemList);
 
         $expectedItemName = 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliqu';
-        static::assertSame($expectedItemName, $itemList->getItems()[0]->getName());
+        static::assertSame($expectedItemName, $itemList->getItems()->first()?->getName());
     }
 
     public function testGetPaymentProductNumberTooLongIsTruncated(): void
@@ -76,11 +78,11 @@ class CartPaymentBuilderTest extends TestCase
         $cart->add($product);
 
         $payment = $this->createCartPaymentBuilder()->getPayment($cart, $salesChannelContext, '', true);
-        $itemList = $payment->getTransactions()[0]->getItemList();
+        $itemList = $payment->getTransactions()->first()?->getItemList();
         static::assertNotNull($itemList);
 
         $expectedItemSku = 'SW-1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
-        static::assertSame($expectedItemSku, $itemList->getItems()[0]->getSku());
+        static::assertSame($expectedItemSku, $itemList->getItems()->first()?->getSku());
     }
 
     public function testGetPaymentWithoutTransaction(): void

@@ -22,7 +22,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * It is currently not used within the plugin itself. Use with caution.
  */
 #[Package('checkout')]
-abstract class Money extends PayPalApiStruct
+class Money extends PayPalApiStruct
 {
     /**
      * @OA\Property(type="string")

@@ -44,7 +44,7 @@ class Taxes extends PayPalApiStruct
         $this->percentage = $percentage;
     }
 
-    public function getInclusive(): bool
+    public function isInclusive(): bool
     {
         return $this->inclusive;
     }

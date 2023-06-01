@@ -26,6 +26,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\AbstractAPMPaymentSource;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
+use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
 use Swag\PayPal\Setting\Settings;
 
@@ -64,7 +65,7 @@ abstract class AbstractAPMOrderBuilder extends AbstractOrderBuilder
 
         $order = new Order();
         $order->setIntent(PaymentIntentV2::CAPTURE);
-        $order->setPurchaseUnits([$purchaseUnit]);
+        $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
         $order->setApplicationContext($applicationContext);
         $paymentSource = new PaymentSource();
         $this->buildPaymentSource($paymentTransaction, $salesChannelContext, $requestDataBag, $paymentSource);

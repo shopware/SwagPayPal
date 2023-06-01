@@ -149,7 +149,7 @@ class PlusDataService
         $context = $salesChannelContext->getContext();
         $payPalData = new PlusData();
         $payPalData->assign([
-            'approvalUrl' => $response->getLinks()[1]->getHref(),
+            'approvalUrl' => $response->getLinks()->getAt(1)?->getHref(),
             'mode' => $this->systemConfigService->getBool(Settings::SANDBOX, $salesChannelContext->getSalesChannelId()) ? 'sandbox' : 'live',
             'customerSelectedLanguage' => $this->getPaymentWallLanguage($context),
             'paymentMethodId' => $this->paymentMethodUtil->getPayPalPaymentMethodId($context),

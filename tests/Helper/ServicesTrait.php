@@ -76,6 +76,9 @@ trait ServicesTrait
         return new OrderResource($this->createPayPalClientFactoryWithService($systemConfig));
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function getDefaultConfigData(): array
     {
         return \array_merge(Settings::DEFAULT_VALUES, [
@@ -88,6 +91,9 @@ trait ServicesTrait
         ]);
     }
 
+    /**
+     * @param array<string, mixed> $settings
+     */
     protected function createDefaultSystemConfig(array $settings = []): SystemConfigServiceMock
     {
         return $this->createSystemConfigServiceMock(\array_merge($this->getDefaultConfigData(), $settings));
@@ -134,6 +140,9 @@ trait ServicesTrait
         return new LocaleCodeProvider(new LanguageRepoMock());
     }
 
+    /**
+     * @param array<string, mixed> $settings
+     */
     protected function createSystemConfigServiceMock(array $settings = []): SystemConfigServiceMock
     {
         $systemConfigService = new SystemConfigServiceMock();

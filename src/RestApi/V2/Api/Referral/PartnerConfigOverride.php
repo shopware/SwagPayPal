@@ -22,6 +22,8 @@ class PartnerConfigOverride extends PayPalApiStruct
      */
     protected string $returnUrl;
 
+    protected string $partnerLogoUrl = 'https://assets.shopware.com/media/logos/shopware_logo_blue.svg';
+
     public function getReturnUrl(): string
     {
         return $this->returnUrl;
@@ -30,5 +32,15 @@ class PartnerConfigOverride extends PayPalApiStruct
     public function setReturnUrl(string $returnUrl): void
     {
         $this->returnUrl = $returnUrl;
+    }
+
+    public function getPartnerLogoUrl(): string
+    {
+        return $this->partnerLogoUrl;
+    }
+
+    public function setPartnerLogoUrl(string $partnerLogoUrl): void
+    {
+        $this->partnerLogoUrl = $partnerLogoUrl;
     }
 }

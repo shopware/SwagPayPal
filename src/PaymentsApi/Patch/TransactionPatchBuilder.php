@@ -34,7 +34,7 @@ class TransactionPatchBuilder
         SalesChannelContext $salesChannelContext
     ): array {
         $patches = [];
-        $transaction = $this->orderPaymentBuilder->getPayment($paymentTransaction, $salesChannelContext)->getTransactions()[0] ?? null;
+        $transaction = $this->orderPaymentBuilder->getPayment($paymentTransaction, $salesChannelContext)->getTransactions()->first();
         if (!$transaction) {
             return $patches;
         }

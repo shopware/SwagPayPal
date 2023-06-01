@@ -10,7 +10,7 @@ namespace Swag\PayPal\RestApi\V1\Api\Subscription;
 use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\PayPalApiStruct;
-use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\CycleExecution;
+use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\CycleExecutionCollection;
 use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\LastPayment;
 use Swag\PayPal\RestApi\V1\Api\Subscription\BillingInfo\OutstandingBalance;
 
@@ -33,11 +33,9 @@ class BillingInfo extends PayPalApiStruct
     protected OutstandingBalance $outstandingBalance;
 
     /**
-     * @var CycleExecution[]
-     *
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v1_subscription_cycle_execution"})
      */
-    protected array $cycleExecutions = [];
+    protected CycleExecutionCollection $cycleExecutions;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v1_subscription_last_payment")
@@ -64,18 +62,12 @@ class BillingInfo extends PayPalApiStruct
         $this->outstandingBalance = $outstandingBalance;
     }
 
-    /**
-     * @return CycleExecution[]
-     */
-    public function getCycleExecutions(): array
+    public function getCycleExecutions(): CycleExecutionCollection
     {
         return $this->cycleExecutions;
     }
 
-    /**
-     * @param CycleExecution[] $cycleExecutions
-     */
-    public function setCycleExecutions(array $cycleExecutions): void
+    public function setCycleExecutions(CycleExecutionCollection $cycleExecutions): void
     {
         $this->cycleExecutions = $cycleExecutions;
     }

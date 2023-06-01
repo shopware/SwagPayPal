@@ -15,7 +15,7 @@ use Swag\PayPal\RestApi\PayPalApiStruct;
  * @OA\Schema(schema="swag_paypal_v2_common_address")
  */
 #[Package('checkout')]
-abstract class Address extends PayPalApiStruct
+class Address extends PayPalApiStruct
 {
     /**
      * The first line of the address. For example, number or street. For example, 173 Drury Lane.
@@ -117,6 +117,9 @@ abstract class Address extends PayPalApiStruct
         $this->countryCode = $countryCode;
     }
 
+    /**
+     * @return array<string, string|null>
+     */
     public function jsonSerialize(): array
     {
         return \array_filter(parent::jsonSerialize());
