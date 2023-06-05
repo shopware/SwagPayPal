@@ -227,9 +227,6 @@ Component.register('swag-paypal', {
                         });
                     });
                 }
-
-                // reload payment methods and merchant integrations after saving configuration
-                this.$refs.swagPayPalCheckoutComponent.getPaymentMethodsAndMerchantIntegrations();
             }).finally(() => {
                 this.isLoading = false;
             });
