@@ -255,12 +255,16 @@
                 "ecsButtonLanguageIso": {
                     "label": "Button locale",
                     "helpText": "If not set, the sales channel language will be used."
+                },
+                "ecsShowPayLater": {
+                    "label": "Display 'Pay Later' as separate button",
+                    "helpText": "The 'Pay Later' button will be displayed on the same pages and in the same design as the 'Pay Now' button."
                 }
             },
             "installment": {
-                "cardTitle": "Pay later banner",
+                "cardTitle": "'Pay Later' banner",
                 "installmentBannerEnabled": {
-                    "label": "Enable pay later banner"
+                    "label": "Enable 'Pay Later' banner"
                 }
             },
             "acdc": {
@@ -291,7 +295,7 @@
                     "helpText": "Alternative payment methods are credit- and debit cards and more."
                 },
                 "spbShowPayLater": {
-                    "label": "Display Pay Later as separate button"
+                    "label": "Display 'Pay Later' as separate button"
                 }
             },
             "plus": {

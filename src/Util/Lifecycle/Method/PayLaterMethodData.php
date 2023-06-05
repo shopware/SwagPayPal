@@ -23,7 +23,7 @@ class PayLaterMethodData extends AbstractMethodData implements CheckoutDataMetho
         return [
             'de-DE' => [
                 'description' => 'Jetzt kaufen und später bezahlen - unterstützt von Paypal',
-                'name' => 'Später bezahlen',
+                'name' => 'Später Bezahlen',
             ],
             'en-GB' => [
                 'description' => 'Buy now and pay later - provided by Paypal',
