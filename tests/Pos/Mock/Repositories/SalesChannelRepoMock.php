@@ -95,6 +95,7 @@ class SalesChannelRepoMock extends AbstractRepoMock
             $collection = new SalesChannelCollection();
             /** @var string $id */
             foreach ($criteria->getIds() as $id) {
+                /** @var SalesChannelEntity|null $entity */
                 $entity = $this->entityCollection->get($id);
 
                 if ($entity !== null) {

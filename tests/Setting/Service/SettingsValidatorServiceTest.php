@@ -33,6 +33,7 @@ class SettingsValidatorServiceTest extends TestCase
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());
         $validationService->validate();
         $validationService->validate(TestDefaults::SALES_CHANNEL);
+        // @phpstan-ignore-next-line
         static::assertTrue(true);
     }
 
@@ -60,6 +61,7 @@ class SettingsValidatorServiceTest extends TestCase
         $validationService = new SettingsValidationService($systemSettings, new NullLogger());
         $validationService->validate();
         $validationService->validate(TestDefaults::SALES_CHANNEL);
+        // @phpstan-ignore-next-line
         static::assertTrue(true);
     }
 

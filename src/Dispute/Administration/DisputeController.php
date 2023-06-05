@@ -143,18 +143,9 @@ class DisputeController extends AbstractController
      */
     private function validateSalesChannelId(Request $request): ?string
     {
-        $salesChannelId = $request->query->get('salesChannelId');
-        if ($salesChannelId === null) {
+        $salesChannelId = $request->query->getAlnum('salesChannelId');
+        if ($salesChannelId === '') {
             return null;
-        }
-
-        if (!\is_string($salesChannelId)) {
-            if (\class_exists(RoutingException::class)) {
-                throw RoutingException::invalidRequestParameter('salesChannelId');
-            } else {
-                /** @phpstan-ignore-next-line remove condition and keep if branch with min-version 6.5.2.0 */
-                throw new InvalidRequestParameterException('salesChannelId');
-            }
         }
 
         if (Uuid::isValid($salesChannelId) === false) {

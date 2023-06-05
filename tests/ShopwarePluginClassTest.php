@@ -51,7 +51,6 @@ class ShopwarePluginClassTest extends TestCase
 
         $pluginInfos = $this->getContainer()->getParameter('kernel.active_plugins');
 
-        static::assertIsArray($pluginInfos);
         static::assertArrayHasKey($class, $pluginInfos);
     }
 }

@@ -83,7 +83,6 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         if (this.options.partnerAttributionId) {
             config['data-partner-attribution-id'] = this.options.partnerAttributionId;
         }
-        console.log(config, this.constructor, this.options);
 
         return config;
     }

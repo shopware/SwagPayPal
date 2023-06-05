@@ -72,7 +72,7 @@ class RunTaskTest extends TestCase
      */
     public function testNames(string $taskName, string $expectedName): void
     {
-        /** @var AbstractTask $task */
+        /** @var AbstractTask&MockObject $task */
         $task = $this->getMockBuilder($taskName)
             ->disableOriginalConstructor()
             ->onlyMethods(['execute'])

@@ -131,7 +131,7 @@ class OrderPaymentBuilder extends AbstractPaymentBuilder implements OrderPayment
         $criteria = new Criteria([$currencyId]);
 
         /** @var CurrencyCollection $currencyCollection */
-        $currencyCollection = $this->currencyRepository->search($criteria, $context);
+        $currencyCollection = $this->currencyRepository->search($criteria, $context)->getEntities();
 
         $currency = $currencyCollection->get($currencyId);
         if ($currency === null) {

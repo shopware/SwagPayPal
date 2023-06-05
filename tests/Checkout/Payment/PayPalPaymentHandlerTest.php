@@ -7,6 +7,7 @@
 
 namespace Swag\PayPal\Test\Checkout\Payment;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
@@ -646,7 +647,7 @@ An error occurred during the communication with PayPal');
         $orderResource = new OrderResource($this->clientFactory);
         $orderTransactionStateHandler = new OrderTransactionStateHandler($this->stateMachineRegistry);
         $logger = new NullLogger();
-        /** @var EntityRepository $orderTransactionRepositoryMock */
+        /** @var EntityRepository&MockObject $orderTransactionRepositoryMock */
         $orderTransactionRepositoryMock = $this->createMock(EntityRepository::class);
         $paymentBuilder = $this->createPaymentBuilder($systemConfig);
 

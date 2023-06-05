@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Test\Cart\Common\Generator;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V1\Api\Payment;
+use Swag\PayPal\RestApi\V1\Api\Payment\Link;
 use Swag\PayPal\RestApi\V1\PaymentStatusV1;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
@@ -59,7 +60,7 @@ class PaymentResourceTest extends TestCase
         );
 
         $transaction = $executedPayment->getTransactions()[0];
-        static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
+        static::assertArrayHasKey(0, $executedPayment->getLinks());
 
         $sale = $transaction->getRelatedResources()[0]->getSale();
         static::assertNotNull($sale);
@@ -75,7 +76,7 @@ class PaymentResourceTest extends TestCase
         );
 
         $transaction = $executedPayment->getTransactions()[0];
-        static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
+        static::assertArrayHasKey(0, $executedPayment->getLinks());
 
         $authorization = $transaction->getRelatedResources()[0]->getAuthorization();
         static::assertNotNull($authorization);
@@ -91,7 +92,7 @@ class PaymentResourceTest extends TestCase
         );
 
         $transaction = $executedPayment->getTransactions()[0];
-        static::assertInstanceOf(Payment\Link::class, $executedPayment->getLinks()[0]);
+        static::assertArrayHasKey(0, $executedPayment->getLinks());
 
         $order = $transaction->getRelatedResources()[0]->getOrder();
         static::assertNotNull($order);
@@ -103,7 +104,7 @@ class PaymentResourceTest extends TestCase
         $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::TEST_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
-        static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        static::assertArrayHasKey(0, $payment->getLinks());
 
         $sale = $transaction->getRelatedResources()[0]->getSale();
         static::assertNotNull($sale);
@@ -115,7 +116,7 @@ class PaymentResourceTest extends TestCase
         $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::SALE_WITH_REFUND_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
-        static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        static::assertArrayHasKey(0, $payment->getLinks());
 
         $sale = $transaction->getRelatedResources()[0]->getSale();
         static::assertNotNull($sale);
@@ -131,7 +132,7 @@ class PaymentResourceTest extends TestCase
         $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::ORDER_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
-        static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        static::assertArrayHasKey(0, $payment->getLinks());
         $order = $transaction->getRelatedResources()[0]->getOrder();
 
         static::assertNotNull($order);
@@ -143,7 +144,7 @@ class PaymentResourceTest extends TestCase
         $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::AUTHORIZE_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
-        static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        static::assertArrayHasKey(0, $payment->getLinks());
         $authorization = $transaction->getRelatedResources()[0]->getAuthorization();
 
         static::assertNotNull($authorization);
@@ -163,7 +164,7 @@ class PaymentResourceTest extends TestCase
         $payment = $this->createPaymentResource($this->createDefaultSystemConfig())->get(self::CAPTURED_ORDER_PAYMENT_ID, TestDefaults::SALES_CHANNEL);
 
         $transaction = $payment->getTransactions()[0];
-        static::assertInstanceOf(Payment\Link::class, $payment->getLinks()[0]);
+        static::assertArrayHasKey(0, $payment->getLinks());
 
         $order = $transaction->getRelatedResources()[0]->getOrder();
         static::assertNotNull($order);
