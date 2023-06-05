@@ -116,45 +116,25 @@
                                 {% block swag_paypal_content_card_channel_config_cards %}
                                     <template #content="{ actualConfigData, allConfigs, selectedSalesChannelId }">
 
+                                        {# @deprecated tag:v8.0.0 - Will be removed without replacement #}
                                         {% block swag_paypal_content_card_channel_config_checkout_card %}
-                                            <swag-paypal-checkout
-                                                ref="swagPayPalCheckoutComponent"
-                                                :allowShowCredentials="allowShowCredentials"
-                                                :actualConfigData="actualConfigData"
-                                                :allConfigs="allConfigs"
-                                                :selectedSalesChannelId="selectedSalesChannelId"
-                                                :clientIdErrorState="clientIdErrorState"
-                                                :clientSecretErrorState="clientSecretErrorState"
-                                                :clientIdSandboxErrorState="clientIdSandboxErrorState"
-                                                :clientSecretSandboxErrorState="clientSecretSandboxErrorState"
-                                                :clientIdFilled="clientIdFilled"
-                                                :clientSecretFilled="clientSecretFilled"
-                                                :clientIdSandboxFilled="clientIdSandboxFilled"
-                                                :clientSecretSandboxFilled="clientSecretSandboxFilled"
-                                                :isLoading="isLoading"
-                                                @on-change-credentials-visibility="onChangeCredentialsVisibility"
-                                                @on-save-settings="save"
-                                                @on-deactivate-paypal-plus="save"
-                                                @on-change-loading="onChangeLoading">
-                                                <template #credentials>
-                                                    {% block swag_paypal_content_card_channel_config_credentials_card %}
-                                                        <swag-paypal-credentials v-if="showCredentials"
-                                                                                 :actualConfigData="actualConfigData"
-                                                                                 :allConfigs="allConfigs"
-                                                                                 :selectedSalesChannelId="selectedSalesChannelId"
-                                                                                 :clientIdErrorState="clientIdErrorState"
-                                                                                 :clientSecretErrorState="clientSecretErrorState"
-                                                                                 :clientIdSandboxErrorState="clientIdSandboxErrorState"
-                                                                                 :clientSecretSandboxErrorState="clientSecretSandboxErrorState"
-                                                                                 :clientIdFilled="clientIdFilled"
-                                                                                 :clientSecretFilled="clientSecretFilled"
-                                                                                 :clientIdSandboxFilled="clientIdSandboxFilled"
-                                                                                 :clientSecretSandboxFilled="clientSecretSandboxFilled"
-                                                                                 :isLoading="isLoading">
-                                                        </swag-paypal-credentials>
-                                                    {% endblock %}
-                                                </template>
-                                            </swag-paypal-checkout>
+                                        {% endblock %}
+
+                                        {% block swag_paypal_content_card_channel_config_credentials_card %}
+                                            <swag-paypal-credentials v-if="tab === 'general'"
+                                                                     :actualConfigData="actualConfigData"
+                                                                     :allConfigs="allConfigs"
+                                                                     :selectedSalesChannelId="selectedSalesChannelId"
+                                                                     :clientIdErrorState="clientIdErrorState"
+                                                                     :clientSecretErrorState="clientSecretErrorState"
+                                                                     :clientIdSandboxErrorState="clientIdSandboxErrorState"
+                                                                     :clientSecretSandboxErrorState="clientSecretSandboxErrorState"
+                                                                     :clientIdFilled="clientIdFilled"
+                                                                     :clientSecretFilled="clientSecretFilled"
+                                                                     :clientIdSandboxFilled="clientIdSandboxFilled"
+                                                                     :clientSecretSandboxFilled="clientSecretSandboxFilled"
+                                                                     :isLoading="isLoading">
+                                            </swag-paypal-credentials>
                                         {% endblock %}
 
                                         {# @deprecated tag:v8.0.0 - Will be removed without replacement #}
