@@ -1,4 +1,5 @@
 # 7.2.0
+- PPI-769 - Add Pay Later button to Express checkout shortcut
 - PPI-773 - The settings page is now structured in tabs
 
 # 7.1.0

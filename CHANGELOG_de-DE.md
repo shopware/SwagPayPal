@@ -1,4 +1,5 @@
 # 7.2.0
+- PPI-769 - "Später bezahlen"-Button zum Express Checkout Shortcut hinzugefügt
 - PPI-773 - Die Einstellungsseite ist nun in Tabs strukturiert
 
 # 7.1.0

@@ -23,6 +23,8 @@ class AbstractCheckoutData extends Struct
 
     protected string $buttonShape;
 
+    protected string $buttonColor;
+
     protected ?string $clientToken = null;
 
     protected string $paymentMethodId;
@@ -177,5 +179,15 @@ class AbstractCheckoutData extends Struct
     public function setButtonShape(string $buttonShape): void
     {
         $this->buttonShape = $buttonShape;
+    }
+
+    public function getButtonColor(): string
+    {
+        return $this->buttonColor;
+    }
+
+    public function setButtonColor(string $buttonColor): void
+    {
+        $this->buttonColor = $buttonColor;
     }
 }

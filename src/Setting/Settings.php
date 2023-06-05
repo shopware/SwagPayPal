@@ -39,6 +39,8 @@ final class Settings
     public const ECS_BUTTON_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonColor';
     public const ECS_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonShape';
     public const ECS_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'ecsButtonLanguageIso';
+
+    public const ECS_SHOW_PAY_LATER = self::SYSTEM_CONFIG_DOMAIN . 'ecsShowPayLater';
     public const SPB_BUTTON_COLOR = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonColor';
     public const SPB_BUTTON_SHAPE = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonShape';
     public const SPB_BUTTON_LANGUAGE_ISO = self::SYSTEM_CONFIG_DOMAIN . 'spbButtonLanguageIso';
@@ -79,6 +81,7 @@ final class Settings
         self::ECS_LISTING_ENABLED => false,
         self::ECS_BUTTON_COLOR => 'gold',
         self::ECS_BUTTON_SHAPE => 'rect',
+        self::ECS_SHOW_PAY_LATER => true,
         self::SPB_CHECKOUT_ENABLED => false,
         self::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED => false,
         self::SPB_BUTTON_COLOR => 'gold',
