@@ -22,8 +22,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class RequestSubscriberTest extends TestCase
 {
-    use AssertArraySubsetTrait;
-
     public function testGetSubscribedEvents(): void
     {
         $events = RequestSubscriber::getSubscribedEvents();
@@ -48,7 +46,22 @@ class RequestSubscriberTest extends TestCase
 
         $requestParameters = $storeApiRequest->request;
         static::assertCount(\count(RequestSubscriber::PAYMENT_PARAMETERS), $requestParameters);
-        static::assertArraySubset($testData, $requestParameters->all());
+        static::assertEquals($testData, $requestParameters->all());
+    }
+
+    public function testAddNecessaryRequestParameterNotSet(): void
+    {
+        $subscriber = new RequestSubscriber(new NullLogger());
+
+        $storefrontRequest = new Request([], [], [
+            '_route' => 'frontend.account.edit-order.update-order',
+        ]);
+        $storeApiRequest = new Request();
+        $salesChannelContext = Generator::createSalesChannelContext();
+        $event = new HandlePaymentMethodRouteRequestEvent($storefrontRequest, $storeApiRequest, $salesChannelContext);
+        $subscriber->addHandlePaymentParameters($event);
+
+        static::assertCount(0, $storeApiRequest->request);
     }
 
     public function testAddNecessaryRequestParameterWrongRoute(): void
