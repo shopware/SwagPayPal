@@ -7,7 +7,7 @@
     <services>
         <service id="Swag\PayPal\Checkout\CheckoutSubscriber">
             <argument type="service" id="Swag\PayPal\Util\Lifecycle\Method\PaymentMethodDataRegistry"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -31,11 +31,11 @@
         <service id="Swag\PayPal\Checkout\SalesChannel\ErrorRoute" public="true">
             <argument type="service" id="request_stack"/>
             <argument type="service" id="translator"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\SalesChannel\MethodEligibilityRoute" public="true">
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute" public="true">
@@ -44,7 +44,7 @@
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\SalesChannel\FilteredPaymentMethodRoute"
@@ -71,7 +71,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
         </service>
 
@@ -97,7 +97,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Handler\PayPalHandler"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler"/>
             <argument type="service" id="state_machine_state.repository"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
             <tag name="shopware.payment.method.async"/>
         </service>
@@ -108,7 +108,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService"/>
             <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\TransactionDataService"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Handler\PlusPuiHandler">
@@ -119,14 +119,14 @@
             <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\TransactionPatchBuilder"/>
             <argument type="service" id="Swag\PayPal\PaymentsApi\Patch\ShippingAddressPatchBuilder"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Service\OrderExecuteService">
             <argument type="service" id="Swag\PayPal\RestApi\V2\Resource\OrderResource"/>
             <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Patch\OrderNumberPatchBuilder"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
         </service>
 
         <service id="Swag\PayPal\Checkout\Payment\Service\OrderPatchService">

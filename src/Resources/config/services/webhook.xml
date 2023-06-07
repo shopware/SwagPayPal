@@ -6,7 +6,7 @@
 
     <services>
         <service id="Swag\PayPal\Webhook\WebhookController" public="true">
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
             <argument type="service" id="system_config.repository"/>
             <call method="setContainer">
@@ -95,14 +95,14 @@
         </service>
 
         <service id="Swag\PayPal\Webhook\Registration\WebhookSystemConfigHelper">
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
         </service>
 
         <service id="Swag\PayPal\Webhook\Registration\WebhookSubscriber">
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\Webhook\WebhookService"/>
             <tag name="kernel.event_subscriber"/>

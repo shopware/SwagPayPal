@@ -17,6 +17,9 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Swag\PayPal\Setting\Settings;
 
+/**
+ * @deprecated tag:v8.0.0 - Will be removed. Use `monolog.logger.paypal` instead
+ */
 class LoggerFactory
 {
     protected const DEFAULT_LEVEL = Logger::WARNING;

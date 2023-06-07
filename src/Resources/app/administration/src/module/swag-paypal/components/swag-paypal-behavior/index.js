@@ -89,6 +89,9 @@ Component.register('swag-paypal-behavior', {
             return this.$tc(translationKey);
         },
 
+        /**
+         * @deprecated tag:v8.0.0 Will be removed without replacement.
+         */
         loggingLevelOptions() {
             return [
                 {
@@ -102,6 +105,9 @@ Component.register('swag-paypal-behavior', {
             ];
         },
 
+        /**
+         * @deprecated tag:v8.0.0 Will be removed without replacement.
+         */
         loggingLevel: {
             get() {
                 if (!this.allConfigs.null) {

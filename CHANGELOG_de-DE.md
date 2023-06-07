@@ -1,6 +1,7 @@
 # 7.2.0
 - PPI-769 - "Später bezahlen"-Button zum Express Checkout Shortcut hinzugefügt
 - PPI-773 - Die Einstellungsseite ist nun in Tabs strukturiert
+- PPI-788 - Protokollierung auf Symfony-Standard umgestellt, um größere Umgebungen besser zu unterstützen
 
 # 7.1.0
 - PPI-679 - Zahlungsdetails für Rechnungskauf werden jetzt in den Bestelldetails in der Administration angezeigt

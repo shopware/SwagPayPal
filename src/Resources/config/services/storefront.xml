@@ -13,7 +13,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute"/>
             <argument type="service" id="Shopware\Core\System\SalesChannel\SalesChannel\ContextSwitchRoute"/>
             <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartDeleteRoute"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
 
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
@@ -26,7 +26,7 @@
         </service>
 
         <service id="Swag\PayPal\Storefront\RequestSubscriber">
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

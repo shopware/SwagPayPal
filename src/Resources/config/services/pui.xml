@@ -14,7 +14,7 @@
             <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUICustomerDataService"/>
             <argument type="service" id="request_stack"/>
             <argument type="service" id="translator"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
             <tag name="shopware.payment.method.sync"/>
         </service>
 
@@ -45,7 +45,7 @@
             <argument type="service" id="Swag\PayPal\Setting\Service\SettingsValidationService"/>
             <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUIFraudNetDataService"/>
             <argument type="service" id="Swag\PayPal\Checkout\PUI\Service\PUIPaymentInstructionDataService"/>
-            <argument type="service" id="Swag\PayPal\Util\Logger"/>
+            <argument type="service" id="monolog.logger.paypal"/>
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>
