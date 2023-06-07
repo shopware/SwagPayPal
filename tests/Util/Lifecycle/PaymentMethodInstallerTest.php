@@ -90,7 +90,7 @@ class PaymentMethodInstallerTest extends TestCase
         $installer->installAll($context);
 
         /** @var PaymentMethodCollection $paymentMethods */
-        $paymentMethods = $this->paymentMethodRepository->search(new Criteria(), $context);
+        $paymentMethods = $this->paymentMethodRepository->search(new Criteria(), $context)->getEntities();
         $savedHandlers = \array_map(static function (PaymentMethodEntity $paymentMethod) {
             return $paymentMethod->getHandlerIdentifier();
         }, $paymentMethods->getElements());

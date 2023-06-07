@@ -26,9 +26,9 @@
                 "label": "Set PayPal as default"
             }
         },
-        "shippingAlert": {
-            "title": "Package tracking available",
-            "message": "You can now provide package tracking if you select a default shipping carrier in your <a href=\"#/sw/settings/shipping/index\">shipping methods →</a>."
+        "tabs": {
+          "general": "General",
+          "storefront": "Storefront presentation"
         },
         "general": {
             "mainMenuItemGeneral": "PayPal",
@@ -210,7 +210,7 @@
                 }
             },
             "express": {
-                "cardTitle": "PayPal Express Checkout",
+                "cardTitle": "Express Checkout Shortcut",
                 "ecsDetailEnabled": {
                     "label": "'Pay Now' on detail page",
                     "helpText": "If this option is active, the Express Checkout button will be shown on each product detail page."
@@ -220,8 +220,8 @@
                     "helpText": "If this option is active, the Express Checkout button will be shown on the cart."
                 },
                 "ecsOffCanvasEnabled": {
-                    "label": "'Pay Now' on Off-Canvas cart",
-                    "helpText": "If this option is active, the Express Checkout button will be shown on the Off-Canvas cart."
+                    "label": "'Pay Now' on off-canvas cart",
+                    "helpText": "If this option is active, the Express Checkout button will be shown on the off-canvas cart."
                 },
                 "ecsLoginEnabled": {
                     "label": "'Pay Now' on login page",
@@ -255,12 +255,16 @@
                 "ecsButtonLanguageIso": {
                     "label": "Button locale",
                     "helpText": "If not set, the sales channel language will be used."
+                },
+                "ecsShowPayLater": {
+                    "label": "Display 'Pay Later' as separate button",
+                    "helpText": "The 'Pay Later' button will be displayed on the same pages and in the same design as the 'Pay Now' button."
                 }
             },
             "installment": {
-                "cardTitle": "Installments",
+                "cardTitle": "'Pay Later' banner",
                 "installmentBannerEnabled": {
-                    "label": "Enable installment banner"
+                    "label": "Enable 'Pay Later' banner"
                 }
             },
             "acdc": {
@@ -278,7 +282,7 @@
                 }
             },
             "spb": {
-                "cardTitle": "PayPal Checkout with Smart Payment Buttons",
+                "cardTitle": "Smart Payment Buttons",
                 "spbCheckoutEnabled": {
                     "label": "Enable Smart Payment Buttons"
                 },
@@ -291,7 +295,7 @@
                     "helpText": "Alternative payment methods are credit- and debit cards and more."
                 },
                 "spbShowPayLater": {
-                    "label": "Display Pay Later as separate button"
+                    "label": "Display 'Pay Later' as separate button"
                 }
             },
             "plus": {

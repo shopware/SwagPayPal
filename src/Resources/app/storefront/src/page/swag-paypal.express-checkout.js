@@ -159,7 +159,14 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
          *
          * @type boolean
          */
-        disablePayLater: true,
+        showPayLater: true,
+
+        /**
+         * Show no other buttons
+         *
+         * @type boolean
+         */
+        useAlternativePaymentMethods: false,
     };
 
     init() {
@@ -256,7 +263,7 @@ export default class SwagPayPalExpressCheckoutButton extends SwagPaypalAbstractB
                 shape: this.options.buttonShape,
                 color: this.options.buttonColor,
                 tagline: this.options.tagline,
-                layout: 'horizontal',
+                layout: 'vertical',
                 label: 'checkout',
                 height: 40,
             },

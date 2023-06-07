@@ -99,7 +99,11 @@ class LoggerTest extends TestCase
 
         $this->createLogger($setLevel)->log($debugLevel, 'Logger Test');
 
-        static::assertSame(!$shouldCreateLog, $this->getFirstLogFile() === null);
+        if ($shouldCreateLog) {
+            static::assertNotNull($this->getFirstLogFile());
+        } else {
+            static::assertNull($this->getFirstLogFile());
+        }
     }
 
     private function getFirstLogFile(): ?string

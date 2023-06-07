@@ -39,7 +39,7 @@ class LogCleaner
         $criteria->addSorting(new FieldSorting('createdAt', FieldSorting::DESCENDING));
 
         /** @var PosSalesChannelRunCollection $runs */
-        $runs = $this->runRepository->search($criteria, $context);
+        $runs = $this->runRepository->search($criteria, $context)->getEntities();
 
         $now = new \DateTime();
         $logsPerProduct = [];

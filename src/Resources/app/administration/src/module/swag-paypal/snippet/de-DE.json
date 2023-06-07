@@ -26,9 +26,9 @@
                 "label": "Setze PayPal als Standard"
             }
         },
-        "shippingAlert": {
-            "title": "Versandtracking jetzt verfügbar",
-            "message": "Sie können PayPal jetzt Paketverfolgungsdaten zur Verfügung stellen, wenn Sie in Ihren <a href=\"#/sw/settings/shipping/index\">Versandarten →</a> ein Standard-Versandunternehmen angeben."
+        "tabs": {
+          "general": "Allgemein",
+          "storefront": "Storefront-Darstellung"
         },
         "general": {
             "mainMenuItemGeneral": "PayPal",
@@ -79,7 +79,7 @@
                     "mybankapmhandler": "MyBank ist für die folgenden Länder verfügbar: Italien",
                     "oxxoapmhandler": "OXXO ist für die folgenden Länder verfügbar: Mexiko",
                     "p24apmhandler": "Przelewy24 ist für die folgenden Länder verfügbar: Polen",
-                    "paylaterhandler": "Später bezahlen ist für die folgenden Länder verfügbar: Australien, Deutschland, Frankreich, Italien, Spanien, Vereinigte Staaten, Vereinigtes Königreich",
+                    "paylaterhandler": "Später Bezahlen ist für die folgenden Länder verfügbar: Australien, Deutschland, Frankreich, Italien, Spanien, Vereinigte Staaten, Vereinigtes Königreich",
                     "puihandler": "Rechnungskauf ist für die folgenden Länder verfügbar: Deutschland",
                     "sepahandler": "SEPA Lastschrift ist für die folgenden Länder verfügbar: Deutschland",
                     "sofortapmhandler": "Sofort ist für die folgenden Länder verfügbar: Belgien, Deutschland, Italien, Niederlande, Österreich, Spanien, Vereinigtes Königreich",
@@ -210,7 +210,7 @@
                 }
             },
             "express": {
-                "cardTitle": "PayPal Express Checkout",
+                "cardTitle": "Express Checkout Shortcut",
                 "ecsDetailEnabled": {
                     "label": "'Direkt zu PayPal' auf Detailseite",
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf jeder Produktdetailseite angezeigt."
@@ -228,8 +228,8 @@
                     "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf der Login- und Registrierungsseite angezeigt."
                 },
                 "ecsListingEnabled": {
-                    "label": "'Direkt zu PayPal' auf Listing Seiten",
-                    "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf Listing-Seiten angezeigt."
+                    "label": "'Direkt zu PayPal' auf Listingseiten",
+                    "helpText": "Wenn diese Option aktiv ist, wird der Express Checkout Button auf Listingseiten angezeigt."
                 },
                 "ecsButtonColor": {
                     "label": "Buttonfarbe",
@@ -255,12 +255,16 @@
                 "ecsButtonLanguageIso": {
                     "label": "Buttonsprache",
                     "helpText": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet."
+                },
+                "ecsShowPayLater": {
+                    "label": "'Später Bezahlen' als eigenen Button anzeigen",
+                    "helpText": "Die Schaltfläche 'Später Bezahlen' wird auf denselben Seiten und im selben Design wie die Schaltfläche 'Direkt zu PayPal' angezeigt."
                 }
             },
             "installment": {
-                "cardTitle": "Ratenzahlung",
+                "cardTitle": "'Später Bezahlen'-Banner",
                 "installmentBannerEnabled": {
-                    "label": "Ratenzahlung Banner aktivieren"
+                    "label": "'Später Bezahlen'-Banner aktivieren"
                 }
             },
             "acdc": {
@@ -278,7 +282,7 @@
                 }
             },
             "spb": {
-                "cardTitle": "PayPal Checkout mit Smart Payment Buttons",
+                "cardTitle": "Smart Payment Buttons",
                 "spbCheckoutEnabled": {
                     "label": "Smart Payment Buttons aktivieren"
                 },
@@ -291,7 +295,7 @@
                     "helpText": "Die alternativen Zahlungsarten sind Kredit- und Debitkarten und weitere."
                 },
                 "spbShowPayLater": {
-                    "label": "Später Bezahlen als eigenen Button anzeigen"
+                    "label": "'Später Bezahlen' als eigenen Button anzeigen"
                 }
             },
             "plus": {

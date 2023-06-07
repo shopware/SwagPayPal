@@ -121,7 +121,6 @@ class ExpressCheckoutSubscriber implements EventSubscriberInterface
         }
 
         if (!$addProductToCart
-            && \method_exists($event->getPage(), 'getCart')
             && $this->excludedProductValidator->cartContainsExcludedProduct($event->getPage()->getCart(), $event->getSalesChannelContext())) {
             return;
         }

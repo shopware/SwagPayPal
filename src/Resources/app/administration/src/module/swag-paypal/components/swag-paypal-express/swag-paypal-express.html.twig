@@ -159,6 +159,25 @@
                         </template>
                     </sw-inherit-wrapper>
                 {% endblock %}
+
+                {% block swag_paypal_content_card_channel_config_express_settings_show_pay_later %}
+                    <sw-inherit-wrapper
+                        v-model="actualConfigData['SwagPayPal.settings.ecsShowPayLater']"
+                        :inheritedValue="selectedSalesChannelId == null ? null : allConfigs['null']['SwagPayPal.settings.ecsShowPayLater']"
+                        :customInheritationCheckFunction="checkBoolFieldInheritance">
+                        <template #content="props">
+                            <sw-switch-field name="SwagPayPal.settings.ecsShowPayLater"
+                                             bordered
+                                             :mapInheritance="props"
+                                             :label="$tc('swag-paypal.settingForm.express.ecsShowPayLater.label')"
+                                             :helpText="$tc('swag-paypal.settingForm.express.ecsShowPayLater.helpText')"
+                                             :disabled="props.isInherited || !acl.can('swag_paypal.editor')"
+                                             :value="props.currentValue"
+                                             @change="props.updateCurrentValue">
+                            </sw-switch-field>
+                        </template>
+                    </sw-inherit-wrapper>
+                {% endblock %}
             </div>
         {% endblock %}
     </sw-card>

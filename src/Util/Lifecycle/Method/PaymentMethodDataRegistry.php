@@ -94,7 +94,6 @@ class PaymentMethodDataRegistry
 
         $methods = [];
         foreach (self::PAYMENT_METHODS as $methodDataClass) {
-            /** @var AbstractMethodData $method */
             $method = new $methodDataClass($this->container);
             $methods[] = $method;
         }

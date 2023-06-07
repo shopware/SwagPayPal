@@ -193,20 +193,9 @@ trait PaymentTransactionTrait
 
     private function createCurrencyEntity(): CurrencyEntity
     {
-        if (!\method_exists($this, 'getContainer')) {
-            $currency = new CurrencyEntity();
-            $currency->setIsoCode(OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY);
-
-            return $currency;
-        }
-
-        /** @var EntityRepository $currencyRepo */
-        $currencyRepo = $this->getContainer()->get('currency.repository');
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('isoCode', OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY));
-        /** @var CurrencyEntity $currency */
-        $currency = $currencyRepo->search($criteria, Context::createDefaultContext())->first();
+        $currency = new CurrencyEntity();
+        $currency->setId(Uuid::randomHex());
+        $currency->setIsoCode(OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY);
 
         return $currency;
     }

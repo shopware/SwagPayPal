@@ -120,9 +120,6 @@ class ExpressCustomerService
         $this->updateCustomer($customer, $paypalOrder, $salesChannelContext);
 
         $this->logger->debug('Logging in existing customer');
-        if (!\method_exists($this->accountService, 'loginById')) {
-            return $this->accountService->login($customer->getEmail(), $salesChannelContext, true);
-        }
 
         return $this->accountService->loginById($customer->getId(), $salesChannelContext);
     }

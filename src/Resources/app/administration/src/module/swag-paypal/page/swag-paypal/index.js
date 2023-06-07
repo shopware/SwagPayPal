@@ -135,6 +135,10 @@ Component.register('swag-paypal', {
 
             return criteria;
         },
+
+        tab() {
+            return this.$route.params.tab || 'general';
+        },
     },
 
     watch: {
@@ -172,6 +176,10 @@ Component.register('swag-paypal', {
 
     methods: {
         createdComponent() {
+            if (!this.$route.params.tab) {
+                this.$router.push({ name: 'swag.paypal.index', params: { tab: 'general' } });
+            }
+
             this.isLoading = true;
 
             this.salesChannelRepository.search(this.salesChannelCriteria, Shopware.Context.api).then(res => {
@@ -219,9 +227,6 @@ Component.register('swag-paypal', {
                         });
                     });
                 }
-
-                // reload payment methods and merchant integrations after saving configuration
-                this.$refs.swagPayPalCheckoutComponent.getPaymentMethodsAndMerchantIntegrations();
             }).finally(() => {
                 this.isLoading = false;
             });
