@@ -260,7 +260,10 @@ class ProductConverterTest extends TestCase
         /** @var EntityRepository $currencyRepository */
         $currencyRepository = $this->getContainer()->get('currency.repository');
 
-        return $currencyRepository->search($criteria, Context::createDefaultContext())->first();
+        /** @var CurrencyEntity|null $currency */
+        $currency = $currencyRepository->search($criteria, Context::createDefaultContext())->first();
+
+        return $currency;
     }
 
     private function getTax(): TaxEntity
@@ -269,6 +272,8 @@ class ProductConverterTest extends TestCase
 
         /** @var EntityRepository $taxRepository */
         $taxRepository = $this->getContainer()->get('tax.repository');
+
+        /** @var TaxEntity|null $tax */
         $tax = $taxRepository->search($criteria, Context::createDefaultContext())->first();
 
         static::assertNotNull($tax);
@@ -284,6 +289,7 @@ class ProductConverterTest extends TestCase
         /** @var EntityRepository $categoryRepository */
         $categoryRepository = $this->getContainer()->get('category.repository');
 
+        /** @var CategoryEntity|null $category */
         $category = $categoryRepository->search($criteria, Context::createDefaultContext())->first();
         static::assertNotNull($category);
 

@@ -136,6 +136,7 @@ Required setting "SwagPayPal.settings.clientId" is missing or invalid');
 
         /** @var EntityRepository $orderRepository */
         $orderRepository = $this->getContainer()->get('order.repository');
+        /** @var OrderEntity|null $order */
         $order = $orderRepository->search($criteria, $context->getContext())->first();
         static::assertNotNull($order);
 

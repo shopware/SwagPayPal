@@ -187,6 +187,7 @@ class VariantConverterTest extends TestCase
 
         /** @var EntityRepository $currencyRepository */
         $currencyRepository = $this->getContainer()->get('currency.repository');
+        /** @var CurrencyEntity|null $currency */
         $currency = $currencyRepository->search($criteria, Context::createDefaultContext())->first();
 
         static::assertNotNull($currency);

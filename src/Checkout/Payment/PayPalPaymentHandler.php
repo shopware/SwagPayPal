@@ -109,7 +109,7 @@ class PayPalPaymentHandler implements AsynchronousPaymentHandlerInterface
             $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
             $this->orderTransactionStateHandler->processUnconfirmed($transactionId, $salesChannelContext->getContext());
 
-            if ($dataBag->get(self::PAYPAL_EXPRESS_CHECKOUT_ID) || $dataBag->getAlnum(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
+            if ($dataBag->get(self::PAYPAL_EXPRESS_CHECKOUT_ID) || $dataBag->get(AbstractPaymentMethodHandler::PAYPAL_PAYMENT_ORDER_ID_INPUT_NAME)) {
                 return $this->payPalHandler->handlePreparedOrder($transaction, $dataBag, $salesChannelContext);
             }
 

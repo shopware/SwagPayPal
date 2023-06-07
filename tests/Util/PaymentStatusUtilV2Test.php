@@ -292,7 +292,10 @@ class PaymentStatusUtilV2Test extends TestCase
     {
         $criteria = new Criteria([$orderTransactionId]);
 
-        return $this->orderTransactionRepository->search($criteria, $this->context)->first();
+        /** @var ?OrderTransactionEntity $entity */
+        $entity = $this->orderTransactionRepository->search($criteria, $this->context)->first();
+
+        return $entity;
     }
 
     private function createCapture(bool $isFinal, ?string $value = null): Capture

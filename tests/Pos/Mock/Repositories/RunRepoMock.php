@@ -40,6 +40,9 @@ class RunRepoMock extends AbstractRepoMock
 
     public function getFirstRun(): ?PosSalesChannelRunEntity
     {
-        return $this->entityCollection->first();
+        /** @var PosSalesChannelRunEntity|null $run */
+        $run = $this->entityCollection->first();
+
+        return $run;
     }
 }

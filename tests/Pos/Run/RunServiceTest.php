@@ -199,6 +199,9 @@ class RunServiceTest extends TestCase
 
         $productRepository->upsert([$data], $context);
 
-        return $productRepository->search(new Criteria([$data['id']]), $context)->first();
+        /** @var ProductEntity|null $product */
+        $product = $productRepository->search(new Criteria([$data['id']]), $context)->first();
+
+        return $product;
     }
 }

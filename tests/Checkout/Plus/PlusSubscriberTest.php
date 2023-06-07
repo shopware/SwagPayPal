@@ -541,7 +541,7 @@ class PlusSubscriberTest extends TestCase
 
         /** @var EntityRepository $snippetSetRepository */
         $snippetSetRepository = $this->getContainer()->get('snippet_set.repository');
-        $snippetSetId = $snippetSetRepository->search($criteria, $context)->first()->getId();
+        $snippetSetId = $snippetSetRepository->searchIds($criteria, $context)->firstId();
 
         $request = new Request();
         $request->attributes->add([SalesChannelRequest::ATTRIBUTE_DOMAIN_SNIPPET_SET_ID => $snippetSetId]);

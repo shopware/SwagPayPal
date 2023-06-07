@@ -129,7 +129,10 @@ trait CheckoutRouteTrait
         /** @var EntityRepository $currencyRepo */
         $currencyRepo = $this->getContainer()->get('currency.repository');
 
-        return $currencyRepo->search(new Criteria(), Context::createDefaultContext())->first();
+        /** @var CurrencyEntity $currency */
+        $currency = $currencyRepo->search(new Criteria(), Context::createDefaultContext())->first();
+
+        return $currency;
     }
 
     private function getShippingMethod(): ShippingMethodEntity
@@ -137,15 +140,21 @@ trait CheckoutRouteTrait
         /** @var EntityRepository $shippingMethodRepo */
         $shippingMethodRepo = $this->getContainer()->get('shipping_method.repository');
 
-        return $shippingMethodRepo->search(new Criteria(), Context::createDefaultContext())->first();
+        /** @var ShippingMethodEntity $shippingMethod */
+        $shippingMethod = $shippingMethodRepo->search(new Criteria(), Context::createDefaultContext())->first();
+
+        return $shippingMethod;
     }
 
     private function getCountry(): CountryEntity
     {
-        /** @var EntityRepository $shippingMethodRepo */
-        $shippingMethodRepo = $this->getContainer()->get('country.repository');
+        /** @var EntityRepository $countryRepo */
+        $countryRepo = $this->getContainer()->get('country.repository');
 
-        return $shippingMethodRepo->search(new Criteria([$this->getValidCountryId()]), Context::createDefaultContext())->first();
+        /** @var CountryEntity $country */
+        $country = $countryRepo->search(new Criteria([$this->getValidCountryId()]), Context::createDefaultContext())->first();
+
+        return $country;
     }
 
     private function cleanUpDomain(): void
