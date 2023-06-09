@@ -213,7 +213,10 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
     {
         $orderId = $request->attributes->getAlnum('orderId');
         if ($orderId) {
-            return $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
+            /** @var OrderEntity|null $order */
+            $order = $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
+
+            return $order;
         }
 
         $actualRequest = $this->requestStack->getCurrentRequest();
@@ -226,6 +229,9 @@ class FilteredPaymentMethodRoute extends AbstractPaymentMethodRoute
             return null;
         }
 
-        return $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
+        /** @var OrderEntity|null $order */
+        $order = $this->orderRepository->search(new Criteria([$orderId]), $context)->first();
+
+        return $order;
     }
 }

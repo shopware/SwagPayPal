@@ -1,6 +1,7 @@
 # 7.2.0
 - PPI-769 - Add Pay Later button to Express checkout shortcut
 - PPI-773 - The settings page is now structured in tabs
+- PPI-788 - Move logging to default Symfony logging to improve in larger environments
 
 # 7.1.0
 - PPI-679 - Pay upon invoice payment details are now shown in the order details

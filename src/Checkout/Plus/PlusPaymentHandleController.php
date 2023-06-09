@@ -84,7 +84,7 @@ class PlusPaymentHandleController extends StorefrontController
             return new HandlePaymentMethodRouteResponse($this->redirectToRoute('frontend.checkout.confirm.page'));
         }
 
-        if ($orderId = $request->attributes->getAlnum('orderId')) {
+        if ($orderId) {
             return new HandlePaymentMethodRouteResponse($this->redirectToRoute('frontend.checkout.finish.page', ['orderId' => $orderId, 'changedPayment' => false, 'paymentFailed' => true]));
         }
 

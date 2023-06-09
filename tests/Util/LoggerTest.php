@@ -17,6 +17,8 @@ use Swag\PayPal\Util\Log\LoggerFactory;
 
 /**
  * @internal
+ *
+ * @deprecated tag:v8.0.0 - Will be removed.
  */
 class LoggerTest extends TestCase
 {
@@ -130,7 +132,8 @@ class LoggerTest extends TestCase
         $systemConfigService = $this->getContainer()->get(SystemConfigService::class);
         $systemConfigService->set(Settings::LOGGING_LEVEL, $level);
 
-        $loggerFactory = $this->getContainer()->get(LoggerFactory::class);
+        $logsDir = $this->getContainer()->getParameter('kernel.logs_dir');
+        $loggerFactory = new LoggerFactory($logsDir . DIRECTORY_SEPARATOR . '%s_test.log');
         $loggerFactory->setLogLevel($systemConfigService);
 
         return $loggerFactory->createRotating(self::LOGGER_PREFIX);

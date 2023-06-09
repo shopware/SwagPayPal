@@ -47,6 +47,10 @@ final class Settings
     public const ACDC_FORCE_3DS = self::SYSTEM_CONFIG_DOMAIN . 'acdcForce3DS';
     public const PUI_CUSTOMER_SERVICE_INSTRUCTIONS = self::SYSTEM_CONFIG_DOMAIN . 'puiCustomerServiceInstructions';
     public const INSTALLMENT_BANNER_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'installmentBannerEnabled';
+
+    /**
+     * @deprecated tag:v8.0.0 Will be removed without replacement.
+     */
     public const LOGGING_LEVEL = self::SYSTEM_CONFIG_DOMAIN . 'loggingLevel';
     public const EXCLUDED_PRODUCT_IDS = self::SYSTEM_CONFIG_DOMAIN . 'excludedProductIds';
     public const EXCLUDED_PRODUCT_STREAM_IDS = self::SYSTEM_CONFIG_DOMAIN . 'excludedProductStreamIds';
@@ -89,6 +93,7 @@ final class Settings
         self::SPB_SHOW_PAY_LATER => false,
         self::PLUS_CHECKOUT_ENABLED => false,
         self::INSTALLMENT_BANNER_ENABLED => true,
+        // @phpstan-ignore-next-line
         self::LOGGING_LEVEL => Logger::WARNING,
         self::PUI_CUSTOMER_SERVICE_INSTRUCTIONS => 'Details zum Kundenservice finden Sie auf unserer Webseite',
         self::ACDC_FORCE_3DS => true,

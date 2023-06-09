@@ -301,6 +301,7 @@ class CompleteProductTest extends TestCase
 
         /** @var EntityRepository $taxRepository */
         $taxRepository = $this->getContainer()->get('tax.repository');
+        /** @var TaxEntity|null $tax */
         $tax = $taxRepository->search($criteria, Context::createDefaultContext())->first();
 
         static::assertNotNull($tax);
@@ -329,6 +330,7 @@ class CompleteProductTest extends TestCase
 
         /** @var EntityRepository $categoryRepository */
         $categoryRepository = $this->getContainer()->get('category.repository');
+        /** @var CategoryEntity|null $category */
         $category = $categoryRepository->search($criteria, Context::createDefaultContext())->first();
 
         static::assertNotNull($category);

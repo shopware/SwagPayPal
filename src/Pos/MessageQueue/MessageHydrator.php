@@ -63,6 +63,7 @@ class MessageHydrator
         $criteria->addAssociation(SwagPayPal::SALES_CHANNEL_POS_EXTENSION);
         $criteria->addAssociation('currency');
 
+        /** @var SalesChannelEntity|null $salesChannel */
         $salesChannel = $this->salesChannelRepository->search($criteria, $context)->first();
         if ($salesChannel === null) {
             throw new SalesChannelNotFoundException();

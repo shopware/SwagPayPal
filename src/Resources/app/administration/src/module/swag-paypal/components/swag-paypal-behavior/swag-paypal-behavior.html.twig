@@ -161,13 +161,8 @@
                     </sw-container>
                 {% endblock %}
 
+                {# @deprecated tag:v8.0.0 - will be removed #}
                 {% block swag_paypal_content_card_channel_config_behavior_settings_logging_level %}
-                    <sw-single-select v-model="loggingLevel"
-                                      :options="loggingLevelOptions"
-                                      :label="$tc('swag-paypal.settingForm.behavior.loggingLevel.label')"
-                                      :helpText="$tc('swag-paypal.settingForm.behavior.loggingLevel.tooltipText')"
-                                      :disabled="!acl.can('swag_paypal.editor')">
-                    </sw-single-select>
                 {% endblock %}
 
                 {% block swag_paypal_content_card_channel_config_behavior_settings_excluded_product_ids %}

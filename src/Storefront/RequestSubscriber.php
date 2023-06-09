@@ -59,6 +59,10 @@ class RequestSubscriber implements EventSubscriberInterface
         }
 
         foreach (self::PAYMENT_PARAMETERS as $paymentParameter) {
+            if (!$storefrontRequest->request->has($paymentParameter)) {
+                continue;
+            }
+
             $storeApiRequest->request->set($paymentParameter, $storefrontRequest->request->get($paymentParameter));
         }
 

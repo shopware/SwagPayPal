@@ -76,7 +76,10 @@ class PaymentMethodDataRegistry
         $criteria->addAssociation('availabilityRule');
         $criteria->addFilter(new EqualsFilter('handlerIdentifier', $method->getHandler()));
 
-        return $this->paymentMethodRepository->search($criteria, $context)->first();
+        /** @var PaymentMethodEntity|null $paymentMethod */
+        $paymentMethod = $this->paymentMethodRepository->search($criteria, $context)->first();
+
+        return $paymentMethod;
     }
 
     /**

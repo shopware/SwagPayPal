@@ -214,6 +214,7 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
 
         /** @var EntityRepository $orderRepository */
         $orderRepository = $this->getContainer()->get('order.repository');
+        /** @var OrderEntity|null $order */
         $order = $orderRepository->search($criteria, $context->getContext())->first();
         static::assertNotNull($order);
 
@@ -238,7 +239,9 @@ The error "UNPROCESSABLE_ENTITY" occurred with the following message: The reques
             $logger,
         );
 
-        $transaction = $order->getTransactions()->last();
+        $transactions = $order->getTransactions();
+        $transaction = $transactions ? $transactions->last() : null;
+        static::assertNotNull($transaction);
         $struct = new AsyncPaymentTransactionStruct($transaction, $order, 'http://return.url');
         $handler->pay($struct, $requestData, $context);
     }

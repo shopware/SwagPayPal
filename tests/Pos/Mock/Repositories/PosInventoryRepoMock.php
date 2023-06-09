@@ -12,6 +12,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Entity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryDefinition;
 use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelInventoryEntity;
+use Swag\PayPal\Pos\DataAbstractionLayer\Entity\PosSalesChannelRunEntity;
 
 /**
  * @internal
@@ -42,12 +43,15 @@ class PosInventoryRepoMock extends AbstractRepoMock
 
     public function filterByProduct(ProductEntity $productEntity): ?PosSalesChannelInventoryEntity
     {
-        return $this->entityCollection->filter(
+        /** @var PosSalesChannelInventoryEntity|null $entity */
+        $entity = $this->entityCollection->filter(
             function (PosSalesChannelInventoryEntity $inventory) use ($productEntity) {
                 return $inventory->getProductId() === $productEntity->getId()
                     && $inventory->getProductVersionId() === $productEntity->getVersionId();
             }
         )->first();
+
+        return $entity;
     }
 
     protected function getUniqueIdentifier(Entity $entity): string
