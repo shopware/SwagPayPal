@@ -8,8 +8,9 @@
 namespace Swag\PayPal\Checkout\ExpressCheckout;
 
 use Shopware\Core\Framework\Struct\Struct;
+use Swag\PayPal\Storefront\Data\Struct\AbstractCheckoutData;
 
-class ExpressCheckoutButtonData extends Struct
+class ExpressCheckoutButtonData extends AbstractCheckoutData
 {
     protected bool $productDetailEnabled;
 
@@ -19,19 +20,7 @@ class ExpressCheckoutButtonData extends Struct
 
     protected bool $listingEnabled;
 
-    protected string $buttonColor;
-
-    protected string $buttonShape;
-
-    protected string $languageIso;
-
     protected bool $cartEnabled;
-
-    protected string $clientId;
-
-    protected string $currency;
-
-    protected string $intent;
 
     protected bool $addProductToCart;
 
@@ -39,17 +28,20 @@ class ExpressCheckoutButtonData extends Struct
 
     protected ?string $payPalPaymentMethodId = null;
 
-    protected string $createOrderUrl;
-
     protected string $prepareCheckoutUrl;
 
     protected string $checkoutConfirmUrl;
 
-    protected string $addErrorUrl;
-
     protected string $cancelRedirectUrl;
 
+    /**
+     * @deprecated tag:v8.0.0 - will be removed, use "showPayLater" instead
+     *
+     * @var bool
+     */
     protected bool $disablePayLater;
+
+    protected bool $showPayLater;
 
     public function getProductDetailEnabled(): bool
     {
@@ -76,39 +68,9 @@ class ExpressCheckoutButtonData extends Struct
         return $this->buttonColor;
     }
 
-    public function getButtonShape(): string
-    {
-        return $this->buttonShape;
-    }
-
-    public function getLanguageIso(): string
-    {
-        return $this->languageIso;
-    }
-
     public function getCartEnabled(): bool
     {
         return $this->cartEnabled;
-    }
-
-    public function getClientId(): string
-    {
-        return $this->clientId;
-    }
-
-    public function setClientId(string $clientId): void
-    {
-        $this->clientId = $clientId;
-    }
-
-    public function getCurrency(): string
-    {
-        return $this->currency;
-    }
-
-    public function getIntent(): string
-    {
-        return $this->intent;
     }
 
     public function getAddProductToCart(): bool
@@ -126,11 +88,6 @@ class ExpressCheckoutButtonData extends Struct
         return $this->payPalPaymentMethodId;
     }
 
-    public function getCreateOrderUrl(): string
-    {
-        return $this->createOrderUrl;
-    }
-
     public function getPrepareCheckoutUrl(): string
     {
         return $this->prepareCheckoutUrl;
@@ -141,23 +98,34 @@ class ExpressCheckoutButtonData extends Struct
         return $this->checkoutConfirmUrl;
     }
 
-    public function getAddErrorUrl(): string
-    {
-        return $this->addErrorUrl;
-    }
-
     public function getCancelRedirectUrl(): string
     {
         return $this->cancelRedirectUrl;
     }
 
+    /**
+     * @deprecated tag:v8.0.0 - will be removed, use "showPayLater" instead
+     */
     public function isDisablePayLater(): bool
     {
         return $this->disablePayLater;
     }
 
+    /**
+     * @deprecated tag:v8.0.0 - will be removed, use "showPayLater" instead
+     */
     public function setDisablePayLater(bool $disablePayLater): void
     {
         $this->disablePayLater = $disablePayLater;
+    }
+
+    public function isShowPayLater(): bool
+    {
+        return $this->showPayLater;
+    }
+
+    public function setShowPayLater(bool $showPayLater): void
+    {
+        $this->showPayLater = $showPayLater;
     }
 }

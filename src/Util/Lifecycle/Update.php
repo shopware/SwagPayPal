@@ -144,6 +144,10 @@ class Update
         if (\version_compare($updateContext->getCurrentPluginVersion(), '6.0.0', '<')) {
             $this->updateTo600($updateContext->getContext());
         }
+
+        if (\version_compare($updateContext->getCurrentPluginVersion(), '6.2.0', '<')) {
+            $this->updateTo620();
+        }
     }
 
     private function updateTo110(): void
@@ -464,5 +468,10 @@ class Update
                 'iconName' => 'regular-money-bill',
             ],
         ], $context);
+    }
+
+    private function updateTo620(): void
+    {
+        $this->setSettingToDefaultValue(Settings::ECS_SHOW_PAY_LATER);
     }
 }

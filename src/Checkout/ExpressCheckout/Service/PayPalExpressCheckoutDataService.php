@@ -104,7 +104,8 @@ class PayPalExpressCheckoutDataService implements ExpressCheckoutDataServiceInte
             ),
             'addErrorUrl' => $this->router->generate('frontend.paypal.error'),
             'cancelRedirectUrl' => $this->router->generate($addProductToCart ? 'frontend.checkout.cart.page' : 'frontend.checkout.register.page'),
-            'disablePayLater' => true,
+            'showPayLater' => $this->systemConfigService->getBool(Settings::ECS_SHOW_PAY_LATER, $salesChannelId),
+            'merchantPayerId' => $this->credentialsUtil->getMerchantPayerId($salesChannelId),
         ]);
     }
 
