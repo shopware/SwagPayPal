@@ -16,7 +16,10 @@ use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\IdSearchResult;
 use Shopware\Core\Framework\Test\TestCaseBase\KernelTestBehaviour;
+use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextService;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\Pos\Api\Image\BulkImageUpload;
@@ -178,6 +181,42 @@ class ImageSyncerTest extends TestCase
 
         $this->expectException(MediaDomainNotSetException::class);
         $imageSyncManager->createMessages($salesChannel, $context, $runId);
+    }
+
+    public function testCleanUp(): void
+    {
+        $mediaRepo = $this->createMock(EntityRepository::class);
+        $imageSyncer = new ImageSyncer(
+            $mediaRepo,
+            $this->createMock(MediaConverter::class),
+            $this->createMock(ImageResource::class),
+            new NullLogger()
+        );
+        $context = Context::createDefaultContext();
+        $salesChannelId = Uuid::randomHex();
+        $mediaId = Uuid::randomHex();
+
+        $mediaRepo->expects(static::once())->method('searchIds')->willReturn(
+            new IdSearchResult(
+                1,
+                [
+                    [
+                        'primaryKey' => ['salesChannelId' => $salesChannelId, 'mediaId' => $mediaId],
+                        'data' => [],
+                    ],
+                ],
+                new Criteria(),
+                $context
+            ),
+        );
+        $mediaRepo->expects(static::once())->method('delete')->with(
+            [
+                ['salesChannelId' => $salesChannelId, 'mediaId' => $mediaId],
+            ],
+            $context
+        );
+
+        $imageSyncer->cleanUp($salesChannelId, $context);
     }
 
     private function createUrlGenerator(): UrlGeneratorInterface

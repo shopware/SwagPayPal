@@ -60,6 +60,9 @@ parameters:
         -   # ignore lineItemPayloadDeprecation deprecations
             message: '#Call to deprecated method setPayloadValue\(\) of class .*LineItem#'
 
+        -   # ignore DomainException deprecations
+            message: '#use .*Exception::.* instead#'
+
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
 

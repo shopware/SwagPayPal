@@ -1,3 +1,6 @@
+# 7.2.1
+- PPI-797 - Fixes an issue, where Zettle product sync could fail due to failing image sync
+
 # 7.2.0
 - PPI-769 - Add Pay Later button to Express checkout shortcut
 - PPI-773 - The settings page is now structured in tabs

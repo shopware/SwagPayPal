@@ -8,6 +8,7 @@
 namespace Swag\PayPal\Test\Mock\Repositories;
 
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -35,7 +36,8 @@ class CurrencyRepoMock extends AbstractRepoMock
         $currency->setId($currencyId);
         $currency->setIsoCode(OrderPaymentBuilderTest::EXPECTED_ITEM_CURRENCY);
 
-        return new EntitySearchResult(
+        /** @var EntitySearchResult $result */
+        $result = new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             1,
             new CurrencyCollection([$currency]),
@@ -43,5 +45,7 @@ class CurrencyRepoMock extends AbstractRepoMock
             $criteria,
             $context
         );
+
+        return $result;
     }
 }
