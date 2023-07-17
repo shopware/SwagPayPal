@@ -36,6 +36,19 @@ class UuidConverter
         return $uuid;
     }
 
+    public function convertUuidToV7(string $uuid): string
+    {
+        $uuid = \str_replace('-', '', $uuid);
+
+        $uuid = \substr_replace($uuid, '7', 12, 1);
+
+        if (!Uuid::isValid($uuid)) {
+            throw new InvalidUuidException($uuid);
+        }
+
+        return $uuid;
+    }
+
     public function incrementUuid(string $uuid): string
     {
         if (!Uuid::isValid($uuid)) {

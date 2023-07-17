@@ -1,3 +1,6 @@
+# 7.2.1
+- PPI-797 - Behebt ein Problem, bei dem der Zettle-Produktsync nicht funktionierte, wenn der Bildersync fehlschlug
+
 # 7.2.0
 - PPI-769 - "Später bezahlen"-Button zum Express Checkout Shortcut hinzugefügt
 - PPI-773 - Die Einstellungsseite ist nun in Tabs strukturiert

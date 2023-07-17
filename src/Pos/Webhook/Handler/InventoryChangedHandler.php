@@ -109,8 +109,7 @@ class InventoryChangedHandler extends AbstractWebhookHandler
                     continue;
                 }
 
-                $productId = $this->prepareProduct($balanceBefore, $balanceAfter);
-                if ($productId !== null) {
+                foreach ($this->prepareProduct($balanceBefore, $balanceAfter) as $productId) {
                     $productIds[] = $productId;
                 }
             }
@@ -123,7 +122,7 @@ class InventoryChangedHandler extends AbstractWebhookHandler
 
         $runId = $this->runService->startRun($salesChannel->getId(), InventoryTask::TASK_NAME_INVENTORY, [], $context);
 
-        $inventoryContext->setProductIds($productIds);
+        $inventoryContext->setProductIds($productCollection->getIds());
         $this->inventoryContextFactory->updateLocal($inventoryContext);
 
         $changes = $this->localUpdater->updateLocal($productCollection, $inventoryContext);
@@ -133,24 +132,33 @@ class InventoryChangedHandler extends AbstractWebhookHandler
         $this->runService->finishRun($runId, $context);
     }
 
-    private function prepareProduct(Balance $balanceBefore, Balance $balanceAfter): ?string
+    /**
+     * @return string[]
+     */
+    private function prepareProduct(Balance $balanceBefore, Balance $balanceAfter): array
     {
         $change = $balanceAfter->getBalance() - $balanceBefore->getBalance();
 
         if ($change === 0) {
-            return null;
+            return [];
         }
 
-        $productUuid = $this->uuidConverter->convertUuidToV4($balanceBefore->getProductUuid());
-        $variantUuid = $this->uuidConverter->convertUuidToV4($balanceBefore->getVariantUuid());
+        $productUuidV4 = $this->uuidConverter->convertUuidToV4($balanceBefore->getProductUuid());
+        $productUuidV7 = $this->uuidConverter->convertUuidToV7($balanceBefore->getProductUuid());
+        $variantUuidV4 = $this->uuidConverter->convertUuidToV4($balanceBefore->getVariantUuid());
+        $variantUuidV7 = $this->uuidConverter->convertUuidToV7($balanceBefore->getVariantUuid());
 
-        if ($this->uuidConverter->incrementUuid($productUuid) !== $variantUuid) {
-            $productUuid = $variantUuid;
+        if ($this->uuidConverter->incrementUuid($productUuidV4) !== $variantUuidV4) {
+            $productUuidV4 = $variantUuidV4;
+        }
+        if ($this->uuidConverter->incrementUuid($productUuidV7) !== $variantUuidV7) {
+            $productUuidV7 = $variantUuidV7;
         }
 
-        $this->localCalculator->addFixedUpdate($productUuid, $change);
+        $this->localCalculator->addFixedUpdate($productUuidV4, $change);
+        $this->localCalculator->addFixedUpdate($productUuidV7, $change);
 
-        return $productUuid;
+        return [$productUuidV4, $productUuidV7];
     }
 
     private function isOwnClientId(?string $reportedClientId, SalesChannelEntity $salesChannel): bool

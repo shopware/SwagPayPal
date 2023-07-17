@@ -48,13 +48,14 @@ class UnsyncedChecker
         $deletions = [];
 
         foreach ($existingPosProducts as $posProduct) {
-            $uuid = $this->uuidConverter->convertUuidToV4($posProduct->getUuid());
+            $uuidV4 = $this->uuidConverter->convertUuidToV4($posProduct->getUuid());
+            $uuidV7 = $this->uuidConverter->convertUuidToV7($posProduct->getUuid());
 
-            if (\in_array($uuid, $productIds, true)) {
+            if (\in_array($uuidV4, $productIds, true) || \in_array($uuidV7, $productIds, true)) {
                 continue;
             }
 
-            if ($productContext->getPosProductCollection()->hasProduct($uuid)) {
+            if ($productContext->getPosProductCollection()->hasProduct($uuidV4) || $productContext->getPosProductCollection()->hasProduct($uuidV7)) {
                 continue;
             }
 

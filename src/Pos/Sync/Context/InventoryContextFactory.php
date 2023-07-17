@@ -68,8 +68,8 @@ class InventoryContextFactory
     {
         $newInventoryContext = clone $inventoryContext;
 
-        $convertedProductIds = \array_map([$this->uuidConverter, 'convertUuidToV1'], $productIds);
-        $trackedProductIds = \array_merge($convertedProductIds, \array_map([$this->uuidConverter, 'convertUuidToV1'], $parentIds));
+        $convertedProductIds = \array_unique(\array_map([$this->uuidConverter, 'convertUuidToV1'], $productIds));
+        $trackedProductIds = \array_unique(\array_merge($convertedProductIds, \array_map([$this->uuidConverter, 'convertUuidToV1'], $parentIds)));
 
         $status = new Status();
         $status->setTrackedProducts(\array_intersect($trackedProductIds, $inventoryContext->getRemoteInventory()->getTrackedProducts()));

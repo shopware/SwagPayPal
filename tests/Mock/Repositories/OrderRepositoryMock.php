@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Order\OrderCollection;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
@@ -50,7 +51,8 @@ class OrderRepositoryMock extends AbstractRepoMock
             $orderCollection = new OrderCollection([$this->getOrderEntity()]);
         }
 
-        return new EntitySearchResult(
+        /** @var EntitySearchResult $result */
+        $result = new EntitySearchResult(
             $this->getDefinition()->getEntityName(),
             \count($orderCollection),
             $orderCollection,
@@ -58,6 +60,8 @@ class OrderRepositoryMock extends AbstractRepoMock
             $criteria,
             $context
         );
+
+        return $result;
     }
 
     private function getOrderEntity(): OrderEntity
