@@ -1,10 +1,7 @@
 import HttpClient from 'src/service/http-client.service';
 import SwagPaypalAbstractButtons from '../swag-paypal.abstract-buttons';
-import SwagPayPalScriptLoading from '../swag-paypal.script-loading';
 
 export default class SwagPayPalFundingEligibility extends SwagPaypalAbstractButtons {
-    static scriptLoading = new SwagPayPalScriptLoading();
-
     static fundingSources = [
         'CARD',
         'SEPA',

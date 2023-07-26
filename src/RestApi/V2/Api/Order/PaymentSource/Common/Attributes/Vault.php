@@ -18,6 +18,9 @@ use Swag\PayPal\RestApi\V2\Api\Common\LinkCollection;
 #[Package('checkout')]
 class Vault extends PayPalApiStruct
 {
+    public const STORE_IN_VAULT_ON_SUCCESS = 'ON_SUCCESS';
+    public const USAGE_TYPE_MERCHANT = 'MERCHANT';
+
     /**
      * @OA\Property(type="string")
      */

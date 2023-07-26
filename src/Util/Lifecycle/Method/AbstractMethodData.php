@@ -46,4 +46,9 @@ abstract class AbstractMethodData
     abstract public function validateCapability(MerchantIntegrations $merchantIntegrations): string;
 
     abstract public function getMediaFileName(): ?string;
+
+    public function isVaultable(): bool
+    {
+        return false;
+    }
 }

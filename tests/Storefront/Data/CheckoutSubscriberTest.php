@@ -89,9 +89,10 @@ class CheckoutSubscriberTest extends TestCase
     {
         $events = CheckoutDataSubscriber::getSubscribedEvents();
 
-        static::assertCount(2, $events);
-        static::assertSame('onAccountOrderEditLoaded', $events[AccountEditOrderPageLoadedEvent::class]);
-        static::assertSame('onCheckoutConfirmLoaded', $events[CheckoutConfirmPageLoadedEvent::class]);
+        static::assertCount(3, $events);
+        static::assertSame(['onAccountOrderEditLoaded', 10], $events[AccountEditOrderPageLoadedEvent::class]);
+        static::assertSame(['onCheckoutConfirmLoaded', 10], $events[CheckoutConfirmPageLoadedEvent::class]);
+        static::assertSame(['onCheckoutConfirmLoaded', 10], $events['subscription.' . CheckoutConfirmPageLoadedEvent::class]);
     }
 
     /**

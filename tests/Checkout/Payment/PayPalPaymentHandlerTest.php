@@ -10,6 +10,7 @@ namespace Swag\PayPal\Test\Checkout\Payment;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Shopware\Core\Checkout\Cart\Order\OrderConverter;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionDefinition;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
@@ -34,6 +35,7 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
@@ -91,9 +93,9 @@ class PayPalPaymentHandlerTest extends TestCase
     public const PAYPAL_PATCH_THROWS_EXCEPTION = 'invalidId';
     public const PAYPAL_ORDER_ID_DUPLICATE_ORDER_NUMBER = 'paypalOrderIdDuplicateOrderNumber';
     public const PAYPAL_ORDER_ID_INSTRUMENT_DECLINED = 'paypalOrderIdInstrumentDeclined';
-    private const TEST_CUSTOMER_STREET = 'Ebbinghoff 10';
-    private const TEST_CUSTOMER_FIRST_NAME = 'Max';
-    private const TEST_CUSTOMER_LAST_NAME = 'Mustermann';
+    private const TEST_CUSTOMER_STREET = 'Street 1';
+    private const TEST_CUSTOMER_FIRST_NAME = 'FirstName';
+    private const TEST_CUSTOMER_LAST_NAME = 'LastName';
     private const TEST_AMOUNT = '860.00';
     private const TEST_SHIPPING = '4.99';
 
@@ -177,7 +179,7 @@ class PayPalPaymentHandlerTest extends TestCase
             if ($patch->getPath() === '/payer/payer_info') {
                 $patchValue = $patch->getValue();
                 static::assertIsArray($patchValue);
-                static::assertSame(self::TEST_CUSTOMER_FIRST_NAME, $patchValue['first_name']);
+                static::assertSame('Some', $patchValue['first_name']);
                 static::assertSame(self::TEST_CUSTOMER_STREET, $patchValue['billing_address']['line1']);
             }
 
@@ -293,8 +295,6 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
 
         $this->expectException(AsyncPaymentProcessException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
-The asynchronous payment process was interrupted due to the following error:
-An error occurred during the communication with PayPal
 The error "TEST" occurred with the following message: generalClientExceptionMessage');
         $handler->pay($paymentTransaction, $dataBag, $salesChannelContext);
     }
@@ -369,7 +369,7 @@ The error "TEST" occurred with the following message: generalClientExceptionMess
 
         $this->expectException(AsyncPaymentProcessException::class);
         $this->expectExceptionMessage('The asynchronous payment process was interrupted due to the following error:
-An error occurred during the communication with PayPal');
+A PayPal test error occurred.');
         $handler->pay($paymentTransaction, new RequestDataBag(), $salesChannelContext);
     }
 
@@ -582,7 +582,7 @@ An error occurred during the communication with PayPal');
 
         $this->expectException(AsyncPaymentFinalizeException::class);
         $this->expectExceptionMessage('The asynchronous payment finalize was interrupted due to the following error:
-An error occurred during the communication with PayPal');
+The error "UNPROCESSABLE_ENTITY" occurred with the following message: The requested action could not be completed, was semantically incorrect, or failed business validation. The instrument presented  was either declined by the processor or bank, or it can\'t be used for this payment. INSTRUMENT_DECLINED ');
 
         $this->assertFinalizeRequest($request);
     }
@@ -682,6 +682,7 @@ An error occurred during the communication with PayPal');
                 new TransactionDataService(
                     $this->orderTransactionRepo,
                 ),
+                $this->createMock(VaultTokenService::class),
                 $logger
             ),
             new PlusPuiHandler(
@@ -696,7 +697,9 @@ An error occurred during the communication with PayPal');
             ),
             $orderTransactionRepository ?? $orderTransactionRepositoryMock,
             $logger,
-            new SettingsValidationService($systemConfig, new NullLogger())
+            new SettingsValidationService($systemConfig, new NullLogger()),
+            $this->createMock(VaultTokenService::class),
+            $this->createMock(OrderConverter::class),
         );
     }
 

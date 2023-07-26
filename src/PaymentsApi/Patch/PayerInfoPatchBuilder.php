@@ -7,9 +7,10 @@
 
 namespace Swag\PayPal\PaymentsApi\Patch;
 
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
+use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Payment\Exception\InvalidOrderException;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V1\Api\Common\Address;
 use Swag\PayPal\RestApi\V1\Api\Patch;
@@ -21,18 +22,22 @@ class PayerInfoPatchBuilder
     /**
      * @throws AddressNotFoundException
      */
-    public function createPayerInfoPatch(CustomerEntity $customer): Patch
+    public function createPayerInfoPatch(OrderEntity $order): Patch
     {
-        $customerBillingAddress = $customer->getActiveBillingAddress();
-        if ($customerBillingAddress === null) {
-            throw new AddressNotFoundException($customer->getDefaultBillingAddressId());
+        $orderBillingAddress = $order->getBillingAddress();
+        if ($orderBillingAddress === null) {
+            throw new AddressNotFoundException($order->getBillingAddressId());
+        }
+        $customer = $order->getOrderCustomer();
+        if ($customer === null) {
+            throw new InvalidOrderException($order->getId());
         }
 
         $payerInfo = new PayerInfo();
         $payerInfo->setEmail($customer->getEmail());
-        $payerInfo->setFirstName($customerBillingAddress->getFirstName());
-        $payerInfo->setLastName($customerBillingAddress->getLastName());
-        $payerInfo->setBillingAddress($this->createBillingAddress($customerBillingAddress));
+        $payerInfo->setFirstName($orderBillingAddress->getFirstName());
+        $payerInfo->setLastName($orderBillingAddress->getLastName());
+        $payerInfo->setBillingAddress($this->createBillingAddress($orderBillingAddress));
 
         $payerInfoArray = \json_decode((string) \json_encode($payerInfo), true);
 
@@ -46,20 +51,20 @@ class PayerInfoPatchBuilder
         return $payerInfoPatch;
     }
 
-    private function createBillingAddress(CustomerAddressEntity $customerBillingAddress): Address
+    private function createBillingAddress(OrderAddressEntity $orderBillingAddress): Address
     {
         $billingAddress = new Address();
 
-        $billingAddress->setLine1($customerBillingAddress->getStreet());
+        $billingAddress->setLine1($orderBillingAddress->getStreet());
 
-        $additionalAddressLine1 = $customerBillingAddress->getAdditionalAddressLine1();
+        $additionalAddressLine1 = $orderBillingAddress->getAdditionalAddressLine1();
         if ($additionalAddressLine1 !== null) {
             $billingAddress->setLine2($additionalAddressLine1);
         }
 
-        $billingAddress->setCity($customerBillingAddress->getCity());
+        $billingAddress->setCity($orderBillingAddress->getCity());
 
-        $country = $customerBillingAddress->getCountry();
+        $country = $orderBillingAddress->getCountry();
         if ($country !== null) {
             $countryIso = $country->getIso();
             if ($countryIso !== null) {
@@ -67,14 +72,14 @@ class PayerInfoPatchBuilder
             }
         }
 
-        $billingAddress->setPostalCode($customerBillingAddress->getZipcode() ?? '');
+        $billingAddress->setPostalCode($orderBillingAddress->getZipcode());
 
-        $state = $customerBillingAddress->getCountryState();
+        $state = $orderBillingAddress->getCountryState();
         if ($state !== null) {
             $billingAddress->setState($state->getShortCode());
         }
 
-        $phoneNumber = $customerBillingAddress->getPhoneNumber();
+        $phoneNumber = $orderBillingAddress->getPhoneNumber();
         if ($phoneNumber !== null) {
             $billingAddress->setPhone($phoneNumber);
         }

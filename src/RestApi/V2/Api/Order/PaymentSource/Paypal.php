@@ -11,6 +11,7 @@ use OpenApi\Annotations as OA;
 use Shopware\Core\Framework\Log\Package;
 use Swag\PayPal\RestApi\V2\Api\Common\Address;
 use Swag\PayPal\RestApi\V2\Api\Common\Name;
+use Swag\PayPal\RestApi\V2\Api\Common\PhoneNumber;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Attributes;
 use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Phone;
 
@@ -18,7 +19,7 @@ use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Common\Phone;
  * @OA\Schema(schema="swag_paypal_v2_order_payment_source_paypal")
  */
 #[Package('checkout')]
-class Paypal extends AbstractPaymentSource
+class Paypal extends AbstractPaymentSource implements VaultablePaymentSourceInterface
 {
     /**
      * @OA\Property(type="string")
@@ -46,9 +47,9 @@ class Paypal extends AbstractPaymentSource
     protected Name $name;
 
     /**
-     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_common_phone")
+     * @OA\Property(ref="#/components/schemas/swag_paypal_v2_common_phone_number")
      */
-    protected Phone $phone;
+    protected ?PhoneNumber $phoneNumber = null;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_address")
@@ -59,6 +60,11 @@ class Paypal extends AbstractPaymentSource
      * @OA\Property(type="string")
      */
     protected string $birthDate;
+
+    /**
+     * @OA\Property(type="string")
+     */
+    protected string $phoneType;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_payment_source_common_attributes")
@@ -115,14 +121,14 @@ class Paypal extends AbstractPaymentSource
         $this->name = $name;
     }
 
-    public function getPhone(): Phone
+    public function getPhoneNumber(): ?PhoneNumber
     {
-        return $this->phone;
+        return $this->phoneNumber;
     }
 
-    public function setPhone(Phone $phone): void
+    public function setPhoneNumber(?PhoneNumber $phoneNumber): void
     {
-        $this->phone = $phone;
+        $this->phoneNumber = $phoneNumber;
     }
 
     public function getAddress(): Address
@@ -145,6 +151,16 @@ class Paypal extends AbstractPaymentSource
         $this->birthDate = $birthDate;
     }
 
+    public function getPhoneType(): string
+    {
+        return $this->phoneType;
+    }
+
+    public function setPhoneType(string $phoneType): void
+    {
+        $this->phoneType = $phoneType;
+    }
+
     public function getAttributes(): ?Attributes
     {
         return $this->attributes;
@@ -153,5 +169,10 @@ class Paypal extends AbstractPaymentSource
     public function setAttributes(?Attributes $attributes): void
     {
         $this->attributes = $attributes;
+    }
+
+    public function getVaultIdentifier(): string
+    {
+        return $this->getEmailAddress();
     }
 }

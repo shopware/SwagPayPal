@@ -13,6 +13,7 @@ use Shopware\Core\Checkout\Cart\SalesChannel\CartService;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Swag\PayPal\Checkout\ExpressCheckout\SalesChannel\ExpressCreateOrderRoute;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\AmountProvider;
@@ -23,7 +24,9 @@ use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -39,7 +42,7 @@ class ExpressCreateOrderRouteTest extends TestCase
     {
         $salesChannelContext = $this->getSalesChannelContext();
 
-        $response = $this->createRoute()->createPayPalOrder($salesChannelContext);
+        $response = $this->createRoute()->createPayPalOrder(new Request(), $salesChannelContext);
 
         static::assertSame(Response::HTTP_OK, $response->getStatusCode());
         static::assertSame(CreateOrderCapture::ID, $response->getToken());
@@ -62,8 +65,10 @@ class ExpressCreateOrderRouteTest extends TestCase
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
+            $this->createMock(LocaleCodeProvider::class),
             new EventDispatcherMock(),
-            new LoggerMock()
+            new LoggerMock(),
+            $this->createMock(VaultTokenService::class),
         );
 
         $orderResource = $this->createOrderResource($systemConfig);

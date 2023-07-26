@@ -96,8 +96,8 @@ class PlusPuiHandler
             $salesChannelContext
         );
 
-        $patches[] = $this->shippingAddressPatchBuilder->createShippingAddressPatch($customer);
-        $patches[] = $this->payerInfoPatchBuilder->createPayerInfoPatch($customer);
+        $patches[] = $this->shippingAddressPatchBuilder->createShippingAddressPatch($transaction->getOrder());
+        $patches[] = $this->payerInfoPatchBuilder->createPayerInfoPatch($transaction->getOrder());
 
         $this->patchPayPalPayment(
             $patches,

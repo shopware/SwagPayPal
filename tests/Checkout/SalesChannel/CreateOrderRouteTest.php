@@ -20,6 +20,7 @@ use Shopware\Core\Framework\ShopwareHttpException;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\Checkout\SalesChannel\CreateOrderRoute;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
@@ -35,6 +36,7 @@ use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
 use Swag\PayPal\Test\Mock\PayPal\Client\_fixtures\V2\CreateOrderCapture;
 use Swag\PayPal\Test\Mock\Repositories\OrderRepositoryMock;
+use Swag\PayPal\Util\LocaleCodeProvider;
 use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -102,7 +104,7 @@ class CreateOrderRouteTest extends TestCase
             // Shopware >= 6.5.7.0
             $this->expectExceptionMessageMatches('/Could not find order with id \"no-order-id\"/');
         } else {
-            $this->expectExceptionMessageMatches('/Order with id \"?no-order-id\"? not found./');
+            $this->expectExceptionMessageMatches('/Order with id noorderid not found./');
         }
         $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
     }
@@ -114,7 +116,7 @@ class CreateOrderRouteTest extends TestCase
         $request = new Request([], ['orderId' => 'no-order-transactions-id']);
 
         $this->expectException(InvalidOrderException::class);
-        $this->expectExceptionMessage('The order with id no-order-transactions-id is invalid or could not be found.');
+        $this->expectExceptionMessage('The order with id noordertransactionsid is invalid or could not be found.');
         $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
     }
 
@@ -125,7 +127,7 @@ class CreateOrderRouteTest extends TestCase
         $request = new Request([], ['orderId' => 'no-order-transaction-id']);
 
         $this->expectException(InvalidOrderException::class);
-        $this->expectExceptionMessage('The order with id no-order-transaction-id is invalid or could not be found.');
+        $this->expectExceptionMessage('The order with id noordertransactionid is invalid or could not be found.');
         $this->createRoute()->createPayPalOrder($salesChannelContext, $request);
     }
 
@@ -151,8 +153,10 @@ class CreateOrderRouteTest extends TestCase
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
+            $this->createMock(LocaleCodeProvider::class),
             new EventDispatcherMock(),
-            new LoggerMock()
+            new LoggerMock(),
+            $this->createMock(VaultTokenService::class),
         );
 
         return new CreateOrderRoute(

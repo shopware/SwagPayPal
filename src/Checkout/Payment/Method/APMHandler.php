@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Checkout\Payment\Method;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Cart\CartException;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
@@ -74,13 +73,6 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         $this->logger->debug('Started');
         $transactionId = $transaction->getOrderTransaction()->getId();
         $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-        $customer = $salesChannelContext->getCustomer();
-        if ($customer === null) {
-            $message = CartException::customerNotLoggedIn()->getMessage();
-            $this->logger->error($message);
-
-            throw new AsyncPaymentProcessException($transactionId, $message);
-        }
 
         try {
             $this->settingsValidationService->validate($salesChannelContext->getSalesChannelId());
@@ -95,7 +87,6 @@ class APMHandler extends AbstractPaymentMethodHandler implements AsynchronousPay
         $paypalOrder = $this->orderBuilder->getOrder(
             $transaction,
             $salesChannelContext,
-            $customer,
             $dataBag
         );
 

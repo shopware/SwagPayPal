@@ -24,7 +24,7 @@ class EpsOrderBuilder extends AbstractAPMOrderBuilder
         PaymentSource $paymentSource
     ): void {
         $sourceElement = new Eps();
-        $this->fillPaymentSource($paymentTransaction->getOrder(), $sourceElement);
+        $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);
 
         $paymentSource->setEps($sourceElement);
     }

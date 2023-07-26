@@ -79,6 +79,10 @@ final class Settings
      */
     public const PLUS_CHECKOUT_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'plusCheckoutEnabled';
 
+    public const VAULTING_ENABLED = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnabled';
+
+    public const VAULTING_ENABLE_ALWAYS = self::SYSTEM_CONFIG_DOMAIN . 'vaultingEnableAlways';
+
     /**
      * @internal these may change at any time
      */
@@ -114,6 +118,8 @@ final class Settings
         self::ACDC_FORCE_3DS => true,
         self::EXCLUDED_PRODUCT_IDS => [],
         self::EXCLUDED_PRODUCT_STREAM_IDS => [],
+        self::VAULTING_ENABLED => false,
+        self::VAULTING_ENABLE_ALWAYS => false,
     ];
 
     /**

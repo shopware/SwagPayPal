@@ -8,13 +8,12 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
-use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\OrdersApi\Builder\APM\AbstractAPMOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BancontactOrderBuilder;
 use Swag\PayPal\OrdersApi\Builder\APM\BlikOrderBuilder;
@@ -52,6 +51,7 @@ use Swag\PayPal\Test\Helper\ServicesTrait;
 use Swag\PayPal\Test\Mock\CustomIdProviderMock;
 use Swag\PayPal\Test\Mock\EventDispatcherMock;
 use Swag\PayPal\Test\Mock\LoggerMock;
+use Swag\PayPal\Test\Mock\Util\LocaleCodeProviderMock;
 use Swag\PayPal\Util\PriceFormatter;
 
 /**
@@ -80,26 +80,10 @@ class APMOrderBuilderTest extends TestCase
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
-
-        $countryState = new CountryStateEntity();
-        $countryState->setShortCode(self::STATE_SHORT_CODE);
-
-        $shippingAddress = new CustomerAddressEntity();
-        $shippingAddress->setFirstName(self::TEST_FIRST_NAME);
-        $shippingAddress->setLastName(self::TEST_LAST_NAME);
-        $shippingAddress->setAdditionalAddressLine1(self::ADDRESS_LINE_1);
-        $shippingAddress->setCountryState($countryState);
-        $shippingAddress->setStreet('Test street 123');
-        $shippingAddress->setCity('Test City');
-        $shippingAddress->setZipcode('12345');
-        $customer->setActiveShippingAddress($shippingAddress);
 
         $order = $orderBuilder->getOrder(
             $paymentTransaction,
             $salesChannelContext,
-            $customer,
             new RequestDataBag($requestData)
         );
 
@@ -134,8 +118,6 @@ class APMOrderBuilderTest extends TestCase
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
 
         $paymentTransaction->getOrder()->assign(['billingAddress' => null]);
 
@@ -144,7 +126,6 @@ class APMOrderBuilderTest extends TestCase
         $orderBuilder->getOrder(
             $paymentTransaction,
             $salesChannelContext,
-            $customer,
             new RequestDataBag($requestData)
         );
     }
@@ -159,17 +140,14 @@ class APMOrderBuilderTest extends TestCase
         $orderBuilder = $this->createOrderBuilder($orderBuilderClass);
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
 
-        $customer->assign(['activeShippingAddress' => null, 'defaultShippingAddress' => null]);
+        $paymentTransaction->getOrder()->getDeliveries()?->first()?->assign(['shippingOrderAddress' => null]);
 
-        $this->expectException(AddressNotFoundException::class);
-        $this->expectExceptionMessageMatches('/Customer address with id "[a-z0-9]*" not found/');
+        $this->expectException(MissingPayloadException::class);
+        $this->expectExceptionMessage('Missing request payload purchaseUnit.shipping to order "created" not found');
         $orderBuilder->getOrder(
             $paymentTransaction,
             $salesChannelContext,
-            $customer,
             new RequestDataBag($requestData)
         );
     }
@@ -183,8 +161,6 @@ class APMOrderBuilderTest extends TestCase
     {
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
 
         $settings = $this->createSystemConfigServiceMock([
             Settings::ORDER_NUMBER_PREFIX => 'foo',
@@ -193,7 +169,6 @@ class APMOrderBuilderTest extends TestCase
         $order = $this->createOrderBuilder($orderBuilderClass, $settings)->getOrder(
             $paymentTransaction,
             $salesChannelContext,
-            $customer,
             new RequestDataBag($requestData)
         );
 
@@ -232,11 +207,13 @@ class APMOrderBuilderTest extends TestCase
         $amountProvider = new AmountProvider($priceFormatter);
         $addressProvider = new AddressProvider();
         $customIdProvider = new CustomIdProviderMock();
+        $localeCodeProvider = new LocaleCodeProviderMock();
 
         return new $orderBuilderClass(
             $systemConfig,
             new PurchaseUnitProvider($amountProvider, $addressProvider, $customIdProvider, $systemConfig),
             $addressProvider,
+            $localeCodeProvider,
             new ItemListProvider($priceFormatter, new EventDispatcherMock(), new LoggerMock())
         );
     }

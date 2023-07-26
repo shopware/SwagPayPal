@@ -99,6 +99,8 @@ class AvailabilityService
             'billingCountryCode' => $billingCountryCode,
             'currencyCode' => $salesChannelContext->getCurrency()->getIsoCode(),
             'totalAmount' => $cart->getPrice()->getTotalPrice(),
+            'subscription' => $salesChannelContext->hasExtension('subscription'),
+            'salesChannelId' => $salesChannelContext->getSalesChannelId(),
         ]);
 
         return $context;

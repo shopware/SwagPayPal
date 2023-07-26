@@ -19,6 +19,10 @@ class AvailabilityContext extends Struct
 
     protected float $totalAmount;
 
+    protected bool $subscription;
+
+    protected string $salesChannelId;
+
     public function getBillingCountryCode(): string
     {
         return $this->billingCountryCode;
@@ -32,5 +36,15 @@ class AvailabilityContext extends Struct
     public function getTotalAmount(): float
     {
         return $this->totalAmount;
+    }
+
+    public function isSubscription(): bool
+    {
+        return $this->subscription;
+    }
+
+    public function getSalesChannelId(): string
+    {
+        return $this->salesChannelId;
     }
 }

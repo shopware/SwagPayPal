@@ -72,14 +72,22 @@ abstract class PayPalApiStruct implements \JsonSerializable
         foreach (\array_keys(\get_class_vars(static::class)) as $property) {
             $snakeCasePropertyName = $nameConverter->normalize($property);
 
-            try {
+            if ((new \ReflectionProperty($this, $property))->isInitialized($this)) {
                 $data[$snakeCasePropertyName] = $this->$property;
-                /* @phpstan-ignore-next-line */
-            } catch (\Error $error) {
             }
         }
 
         return $data;
+    }
+
+    public function unset(string $propertyName): void
+    {
+        unset($this->$propertyName);
+    }
+
+    public function isset(string $propertyName): bool
+    {
+        return isset($this->$propertyName);
     }
 
     private function isScalar(mixed $value): bool

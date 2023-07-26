@@ -24,7 +24,7 @@ class TrustlyOrderBuilder extends AbstractAPMOrderBuilder
         PaymentSource $paymentSource
     ): void {
         $sourceElement = new Trustly();
-        $this->fillPaymentSource($paymentTransaction->getOrder(), $sourceElement);
+        $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);
 
         $paymentSource->setTrustly($sourceElement);
     }

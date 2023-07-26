@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "shopware/core": "~6.5.0@dev"
+        "shopware/core": "~6.5.4@dev"
     },
     "require-dev": {
         "rector/rector": "^0.18.1"

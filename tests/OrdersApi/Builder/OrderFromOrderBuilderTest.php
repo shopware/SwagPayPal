@@ -9,10 +9,12 @@ namespace Swag\PayPal\Test\OrdersApi\Builder;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
-use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
+use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\Country\Aggregate\CountryState\CountryStateEntity;
+use Swag\PayPal\Checkout\Exception\MissingPayloadException;
 use Swag\PayPal\Setting\Settings;
 use Swag\PayPal\Test\Helper\ConstantsForTesting;
 use Swag\PayPal\Test\Helper\PaymentTransactionTrait;
@@ -57,8 +59,8 @@ class OrderFromOrderBuilderTest extends TestCase
 
         $order = $orderBuilder->getOrder(
             $paymentTransaction,
+            new RequestDataBag(),
             $salesChannelContext,
-            $customer
         );
 
         $shipping = $order->getPurchaseUnits()->first()?->getShipping();
@@ -78,14 +80,15 @@ class OrderFromOrderBuilderTest extends TestCase
         $customer = $salesChannelContext->getCustomer();
         static::assertNotNull($customer);
 
+        $paymentTransaction->getOrder()->assign(['billingAddress' => null]);
         $customer->assign(['activeBillingAddress' => null, 'defaultBillingAddress' => null]);
 
-        $this->expectException(AddressNotFoundException::class);
-        $this->expectExceptionMessageMatches('/Customer address with id "[a-z0-9]*" not found/');
+        $this->expectException(OrderException::class);
+        $this->expectExceptionMessage('The required association "billingAddress" is missing .');
         $orderBuilder->getOrder(
             $paymentTransaction,
+            new RequestDataBag(),
             $salesChannelContext,
-            $customer
         );
     }
 
@@ -97,14 +100,15 @@ class OrderFromOrderBuilderTest extends TestCase
         $customer = $salesChannelContext->getCustomer();
         static::assertNotNull($customer);
 
+        $paymentTransaction->getOrder()->getDeliveries()?->first()?->assign(['shippingOrderAddress' => null]);
         $customer->assign(['activeShippingAddress' => null, 'defaultShippingAddress' => null]);
 
-        $this->expectException(AddressNotFoundException::class);
-        $this->expectExceptionMessageMatches('/Customer address with id "[a-z0-9]*" not found/');
+        $this->expectException(MissingPayloadException::class);
+        $this->expectExceptionMessage('Missing request payload purchaseUnit.shipping to order "created" not found');
         $orderBuilder->getOrder(
             $paymentTransaction,
+            new RequestDataBag(),
             $salesChannelContext,
-            $customer
         );
     }
 
@@ -121,8 +125,8 @@ class OrderFromOrderBuilderTest extends TestCase
         ]);
         $order = $this->createOrderBuilder($settings)->getOrder(
             $paymentTransaction,
+            new RequestDataBag(),
             $salesChannelContext,
-            $customer
         );
 
         $invoiceId = $order->getPurchaseUnits()->first()?->getInvoiceId();

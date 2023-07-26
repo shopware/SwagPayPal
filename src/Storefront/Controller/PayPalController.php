@@ -83,6 +83,12 @@ class PayPalController extends StorefrontController
      *     methods={"POST"},
      *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false}
      * )
+     * @Route(
+     *     "/subscription/paypal/create-order/{subscriptionToken}",
+     *     name="frontend.subscription.paypal.create_order",
+     *     methods={"POST"},
+     *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false, "_subscriptionCart"=true, "_subscriptionContext"=true}
+     * )
      */
     public function createOrder(SalesChannelContext $salesChannelContext, Request $request): TokenResponse
     {
@@ -136,9 +142,9 @@ class PayPalController extends StorefrontController
      *     defaults={"XmlHttpRequest"=true, "csrf_protected"=false}
      * )
      */
-    public function expressCreateOrder(SalesChannelContext $context): TokenResponse
+    public function expressCreateOrder(Request $request, SalesChannelContext $context): TokenResponse
     {
-        return $this->expressCreateOrderRoute->createPayPalOrder($context);
+        return $this->expressCreateOrderRoute->createPayPalOrder($request, $context);
     }
 
     /**

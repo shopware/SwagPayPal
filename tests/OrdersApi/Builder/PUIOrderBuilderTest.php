@@ -8,7 +8,6 @@
 namespace Swag\PayPal\Test\OrdersApi\Builder;
 
 use PHPUnit\Framework\TestCase;
-use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
@@ -58,16 +57,6 @@ class PUIOrderBuilderTest extends TestCase
         $countryState = new CountryStateEntity();
         $countryState->setShortCode(self::STATE_SHORT_CODE);
 
-        $shippingAddress = new CustomerAddressEntity();
-        $shippingAddress->setFirstName(self::TEST_FIRST_NAME);
-        $shippingAddress->setLastName(self::TEST_LAST_NAME);
-        $shippingAddress->setAdditionalAddressLine1(self::ADDRESS_LINE_1);
-        $shippingAddress->setCountryState($countryState);
-        $shippingAddress->setStreet('Test street 123');
-        $shippingAddress->setCity('Test City');
-        $shippingAddress->setZipcode('12345');
-        $customer->setActiveShippingAddress($shippingAddress);
-
         $order = $orderBuilder->getOrder(
             $paymentTransaction,
             $salesChannelContext,
@@ -99,25 +88,6 @@ class PUIOrderBuilderTest extends TestCase
         static::assertNotNull($customer);
 
         $paymentTransaction->getOrder()->assign(['billingAddress' => null]);
-
-        $this->expectException(AddressNotFoundException::class);
-        $this->expectExceptionMessageMatches('/Customer address with id "[a-z0-9]*" not found/');
-        $orderBuilder->getOrder(
-            $paymentTransaction,
-            $salesChannelContext,
-            $customer
-        );
-    }
-
-    public function testGetOrderNoShippingAddress(): void
-    {
-        $orderBuilder = $this->createPUIOrderBuilder();
-        $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
-        $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
-
-        $customer->assign(['activeShippingAddress' => null, 'defaultShippingAddress' => null]);
 
         $this->expectException(AddressNotFoundException::class);
         $this->expectExceptionMessageMatches('/Customer address with id "[a-z0-9]*" not found/');

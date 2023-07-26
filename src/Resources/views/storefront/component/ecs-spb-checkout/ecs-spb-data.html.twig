@@ -36,7 +36,7 @@
 
         {% block swag_paypal_ecs_spb_data_smart_payment_button %}
             <div data-swag-paypal-smart-payment-buttons="true"
-                 data-swag-pay-pal-smart-payment-buttons-options="{{ spbCheckoutButtonData|json_encode }}">
+                 data-swag-pay-pal-smart-payment-buttons-options="{{ spbCheckoutButtonData.jsonSerialize|merge({ 'foo': 'bar' })|json_encode }}">
             </div>
         {% endblock %}
 

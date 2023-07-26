@@ -10,11 +10,12 @@ namespace Swag\PayPal\Checkout\ExpressCheckout\SalesChannel;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\TokenResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Package('checkout')]
 abstract class AbstractExpressCreateOrderRoute
 {
     abstract public function getDecorated(): AbstractExpressCreateOrderRoute;
 
-    abstract public function createPayPalOrder(SalesChannelContext $salesChannelContext): TokenResponse;
+    abstract public function createPayPalOrder(Request $request, SalesChannelContext $salesChannelContext): TokenResponse;
 }

@@ -8,27 +8,33 @@
 namespace Swag\PayPal\OrdersApi\Builder;
 
 use Shopware\Core\Checkout\Cart\Price\Struct\CartPrice;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
+use Shopware\Core\Checkout\Order\OrderException;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Log\Package;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Swag\PayPal\Checkout\Exception\MissingPayloadException;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\Util\AddressProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider;
 use Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider;
+use Swag\PayPal\RestApi\V2\Api\Common\Address;
+use Swag\PayPal\RestApi\V2\Api\Common\Name;
 use Swag\PayPal\RestApi\V2\Api\Order;
-use Swag\PayPal\RestApi\V2\Api\Order\ApplicationContext;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource;
+use Swag\PayPal\RestApi\V2\Api\Order\PaymentSource\Paypal;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnit;
 use Swag\PayPal\RestApi\V2\Api\Order\PurchaseUnitCollection;
 use Swag\PayPal\Setting\Settings;
+use Swag\PayPal\Util\LocaleCodeProvider;
 
 #[Package('checkout')]
 class OrderFromOrderBuilder extends AbstractOrderBuilder
 {
-    private ItemListProvider $itemListProvider;
-
     /**
      * @internal
      */
@@ -36,62 +42,110 @@ class OrderFromOrderBuilder extends AbstractOrderBuilder
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,
         AddressProvider $addressProvider,
-        ItemListProvider $itemListProvider
+        LocaleCodeProvider $localeCodeProvider,
+        private readonly ItemListProvider $itemListProvider,
+        private readonly VaultTokenService $vaultTokenService,
     ) {
-        parent::__construct($systemConfigService, $purchaseUnitProvider, $addressProvider);
-        $this->itemListProvider = $itemListProvider;
+        parent::__construct($systemConfigService, $purchaseUnitProvider, $addressProvider, $localeCodeProvider);
     }
 
     public function getOrder(
-        AsyncPaymentTransactionStruct $paymentTransaction,
+        SyncPaymentTransactionStruct $paymentTransaction,
+        RequestDataBag $requestDataBag,
         SalesChannelContext $salesChannelContext,
-        CustomerEntity $customer
     ): Order {
         $intent = $this->getIntent($salesChannelContext->getSalesChannelId());
-        $payer = $this->createPayer($customer);
         $purchaseUnit = $this->createPurchaseUnit(
             $salesChannelContext,
             $paymentTransaction->getOrder(),
             $paymentTransaction->getOrderTransaction(),
-            $customer
         );
-        $applicationContext = $this->createApplicationContext($salesChannelContext);
-        $this->addReturnUrls($applicationContext, $paymentTransaction->getReturnUrl());
 
         $order = new Order();
         $order->setIntent($intent);
-        $order->setPayer($payer);
         $order->setPurchaseUnits(new PurchaseUnitCollection([$purchaseUnit]));
-        $order->setApplicationContext($applicationContext);
+        $order->setPaymentSource($this->createPaymentSource($salesChannelContext, $requestDataBag, $paymentTransaction));
 
         return $order;
+    }
+
+    private function createPaymentSource(
+        SalesChannelContext $salesChannelContext,
+        RequestDataBag $requestDataBag,
+        SyncPaymentTransactionStruct $paymentTransaction,
+    ): PaymentSource {
+        $paymentSource = new PaymentSource();
+        $paypal = new Paypal();
+        $paymentSource->setPaypal($paypal);
+
+        $billingAddress = $paymentTransaction->getOrder()->getBillingAddress();
+        if ($billingAddress === null) {
+            throw OrderException::missingAssociation('billingAddress');
+        }
+
+        $address = new Address();
+        $this->addressProvider->createAddress($billingAddress, $address);
+        $paypal->setAddress($address);
+
+        if ($token = $this->vaultTokenService->getAvailableToken($paymentTransaction, $salesChannelContext->getContext())) {
+            $paypal->setVaultId($token->getToken());
+
+            return $paymentSource;
+        }
+
+        $experienceContext = $this->createExperienceContext($salesChannelContext);
+        $paypal->setExperienceContext($experienceContext);
+        if ($paymentTransaction instanceof AsyncPaymentTransactionStruct) {
+            $experienceContext->setReturnUrl($paymentTransaction->getReturnUrl());
+            $experienceContext->setCancelUrl(\sprintf('%s&cancel=1', $paymentTransaction->getReturnUrl()));
+        }
+
+        $customer = $paymentTransaction->getOrder()->getOrderCustomer();
+        if ($customer === null) {
+            throw OrderException::missingAssociation('orderCustomer');
+        }
+
+        $paypal->setEmailAddress($customer->getEmail());
+        $name = new Name();
+        $name->setGivenName($customer->getFirstName());
+        $name->setSurname($customer->getLastName());
+        $paypal->setName($name);
+
+        if ($this->vaultTokenService->getSubscription($paymentTransaction)) {
+            $this->vaultTokenService->requestVaulting($paypal);
+        }
+
+        if ($requestDataBag->getBoolean(VaultTokenService::REQUEST_CREATE_VAULT)) {
+            $this->vaultTokenService->requestVaulting($paypal);
+        }
+
+        return $paymentSource;
     }
 
     private function createPurchaseUnit(
         SalesChannelContext $salesChannelContext,
         OrderEntity $order,
-        OrderTransactionEntity $orderTransaction,
-        CustomerEntity $customer
+        OrderTransactionEntity $orderTransaction
     ): PurchaseUnit {
         $submitCart = $this->systemConfigService->getBool(Settings::SUBMIT_CART, $salesChannelContext->getSalesChannelId());
 
         $items = $submitCart ? $this->itemListProvider->getItemList($salesChannelContext->getCurrency(), $order) : null;
 
-        return $this->purchaseUnitProvider->createPurchaseUnit(
+        $purchaseUnit = $this->purchaseUnitProvider->createPurchaseUnit(
             $orderTransaction->getAmount(),
             $order->getShippingCosts(),
-            $customer,
+            null,
             $items,
             $salesChannelContext,
             $order->getTaxStatus() !== CartPrice::TAX_STATE_GROSS,
             $order,
             $orderTransaction
         );
-    }
 
-    private function addReturnUrls(ApplicationContext $applicationContext, string $returnUrl): void
-    {
-        $applicationContext->setReturnUrl($returnUrl);
-        $applicationContext->setCancelUrl(\sprintf('%s&cancel=1', $returnUrl));
+        if (!$purchaseUnit->isset('shipping')) {
+            throw new MissingPayloadException('created', 'purchaseUnit.shipping');
+        }
+
+        return $purchaseUnit;
     }
 }

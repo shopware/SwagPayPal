@@ -27,15 +27,19 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AddressProvider"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="monolog.logger.paypal"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
         </service>
 
         <service id="Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AddressProvider"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider"/>
+            <argument type="service" id="Swag\PayPal\Checkout\Payment\Service\VaultTokenService"/>
         </service>
 
         <service id="Swag\PayPal\OrdersApi\Builder\PUIOrderBuilder">
@@ -50,6 +54,7 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\PurchaseUnitProvider"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\AddressProvider"/>
+            <argument type="service" id="Swag\PayPal\Util\LocaleCodeProvider"/>
             <argument type="service" id="Swag\PayPal\OrdersApi\Builder\Util\ItemListProvider"/>
         </service>
 

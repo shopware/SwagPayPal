@@ -24,7 +24,7 @@ class BancontactOrderBuilder extends AbstractAPMOrderBuilder
         PaymentSource $paymentSource
     ): void {
         $sourceElement = new Bancontact();
-        $this->fillPaymentSource($paymentTransaction->getOrder(), $sourceElement);
+        $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);
 
         $paymentSource->setBancontact($sourceElement);
     }

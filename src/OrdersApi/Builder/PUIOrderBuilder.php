@@ -38,10 +38,6 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 #[Package('checkout')]
 class PUIOrderBuilder extends AbstractOrderBuilder
 {
-    private ItemListProvider $itemListProvider;
-
-    private LocaleCodeProvider $localeCodeProvider;
-
     /**
      * @internal
      */
@@ -49,12 +45,10 @@ class PUIOrderBuilder extends AbstractOrderBuilder
         SystemConfigService $systemConfigService,
         PurchaseUnitProvider $purchaseUnitProvider,
         AddressProvider $addressProvider,
-        ItemListProvider $itemListProvider,
+        private readonly ItemListProvider $itemListProvider,
         LocaleCodeProvider $localeCodeProvider
     ) {
-        parent::__construct($systemConfigService, $purchaseUnitProvider, $addressProvider);
-        $this->itemListProvider = $itemListProvider;
-        $this->localeCodeProvider = $localeCodeProvider;
+        parent::__construct($systemConfigService, $purchaseUnitProvider, $addressProvider, $localeCodeProvider);
     }
 
     public function getOrder(

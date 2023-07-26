@@ -24,7 +24,7 @@ class BoletoBancarioOrderBuilder extends AbstractAPMOrderBuilder
         PaymentSource $paymentSource
     ): void {
         $sourceElement = new Boletobancario();
-        $this->fillPaymentSource($paymentTransaction->getOrder(), $sourceElement);
+        $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);
 
         $paymentSource->setBoletobancario($sourceElement);
 

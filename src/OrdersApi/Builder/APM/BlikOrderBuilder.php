@@ -25,7 +25,7 @@ class BlikOrderBuilder extends AbstractAPMOrderBuilder
         PaymentSource $paymentSource
     ): void {
         $sourceElement = new Blik();
-        $this->fillPaymentSource($paymentTransaction->getOrder(), $sourceElement);
+        $this->fillPaymentSource($paymentTransaction, $salesChannelContext, $sourceElement);
 
         $customer = $paymentTransaction->getOrder()->getOrderCustomer();
         if ($customer === null) {

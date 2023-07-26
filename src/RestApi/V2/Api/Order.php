@@ -54,7 +54,7 @@ class Order extends PayPalApiStruct
     /**
      * @OA\Property(type="array", items={"$ref": "#/components/schemas/swag_paypal_v2_order_purchase_unit"})
      */
-    protected PurchaseUnitCollection $purchaseUnits;
+    protected ?PurchaseUnitCollection $purchaseUnits;
 
     /**
      * @OA\Property(ref="#/components/schemas/swag_paypal_v2_order_application_context")
@@ -133,7 +133,7 @@ class Order extends PayPalApiStruct
 
     public function getPurchaseUnits(): PurchaseUnitCollection
     {
-        return $this->purchaseUnits;
+        return $this->purchaseUnits ?? $this->purchaseUnits = new PurchaseUnitCollection();
     }
 
     public function setPurchaseUnits(PurchaseUnitCollection $purchaseUnits): void

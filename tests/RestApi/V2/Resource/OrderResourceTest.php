@@ -12,6 +12,7 @@ use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Test\TestCaseBase\BasicTestDataBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\DatabaseTransactionBehaviour;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\Test\TestDefaults;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\PaymentIntentV2;
@@ -88,12 +89,10 @@ class OrderResourceTest extends TestCase
         $orderBuilder = $this->createOrderBuilder();
         $paymentTransaction = $this->createPaymentTransactionStruct(ConstantsForTesting::VALID_ORDER_ID);
         $salesChannelContext = $this->createSalesChannelContext($this->getContainer(), new PaymentMethodCollection());
-        $customer = $salesChannelContext->getCustomer();
-        static::assertNotNull($customer);
         $order = $orderBuilder->getOrder(
             $paymentTransaction,
-            $salesChannelContext,
-            $customer
+            new RequestDataBag(),
+            $salesChannelContext
         );
 
         static::assertNotNull($order->getPurchaseUnits()->first()?->getItems());

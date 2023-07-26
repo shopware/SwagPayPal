@@ -26,6 +26,8 @@
 
         <service id="Swag\PayPal\Util\LocaleCodeProvider">
             <argument type="service" id="language.repository"/>
+
+            <tag name="kernel.reset" method="reset"/>
         </service>
 
         <service id="Swag\PayPal\Util\Log\LoggerFactory">

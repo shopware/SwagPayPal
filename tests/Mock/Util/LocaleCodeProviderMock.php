@@ -17,6 +17,10 @@ use Swag\PayPal\Util\LocaleCodeProvider;
 #[Package('checkout')]
 class LocaleCodeProviderMock extends LocaleCodeProvider
 {
+    public function __construct()
+    {
+    }
+
     public function getLocaleCodeFromContext(Context $context): string
     {
         return 'en-GB';

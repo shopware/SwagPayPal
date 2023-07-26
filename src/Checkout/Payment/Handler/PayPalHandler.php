@@ -8,11 +8,10 @@
 namespace Swag\PayPal\Checkout\Payment\Handler;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Checkout\Customer\CustomerEntity;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
 use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
-use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -21,66 +20,53 @@ use Swag\PayPal\Checkout\Payment\PayPalPaymentHandler;
 use Swag\PayPal\Checkout\Payment\Service\OrderExecuteService;
 use Swag\PayPal\Checkout\Payment\Service\OrderPatchService;
 use Swag\PayPal\Checkout\Payment\Service\TransactionDataService;
+use Swag\PayPal\Checkout\Payment\Service\VaultTokenService;
 use Swag\PayPal\OrdersApi\Builder\OrderFromOrderBuilder;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
-use Swag\PayPal\RestApi\V2\Api\Order as PayPalOrder;
+use Swag\PayPal\RestApi\V2\Api\Common\Link;
+use Swag\PayPal\RestApi\V2\PaymentStatusV2;
 use Swag\PayPal\RestApi\V2\Resource\OrderResource;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 #[Package('checkout')]
 class PayPalHandler
 {
-    private OrderFromOrderBuilder $orderBuilder;
-
-    private OrderResource $orderResource;
-
-    private LoggerInterface $logger;
-
-    private OrderExecuteService $orderExecuteService;
-
-    private OrderPatchService $orderPatchService;
-
-    private TransactionDataService $transactionDataService;
-
     /**
      * @internal
      */
     public function __construct(
-        OrderFromOrderBuilder $orderBuilder,
-        OrderResource $orderResource,
-        OrderExecuteService $orderExecuteService,
-        OrderPatchService $orderPatchService,
-        TransactionDataService $transactionDataService,
-        LoggerInterface $logger
+        private readonly OrderFromOrderBuilder $orderBuilder,
+        private readonly OrderResource $orderResource,
+        private readonly OrderExecuteService $orderExecuteService,
+        private readonly OrderPatchService $orderPatchService,
+        private readonly TransactionDataService $transactionDataService,
+        private readonly VaultTokenService $vaultTokenService,
+        private readonly LoggerInterface $logger
     ) {
-        $this->orderBuilder = $orderBuilder;
-        $this->orderResource = $orderResource;
-        $this->orderExecuteService = $orderExecuteService;
-        $this->orderPatchService = $orderPatchService;
-        $this->transactionDataService = $transactionDataService;
-        $this->logger = $logger;
     }
 
     /**
      * @throws AsyncPaymentProcessException
      */
     public function handlePayPalOrder(
-        AsyncPaymentTransactionStruct $transaction,
-        SalesChannelContext $salesChannelContext,
-        CustomerEntity $customer
-    ): PayPalOrder {
+        SyncPaymentTransactionStruct $transaction,
+        RequestDataBag $requestDataBag,
+        SalesChannelContext $salesChannelContext
+    ): RedirectResponse {
         $this->logger->debug('Started');
 
         $paypalOrder = $this->orderBuilder->getOrder(
             $transaction,
+            $requestDataBag,
             $salesChannelContext,
-            $customer
         );
 
-        try {
-            $updateTime = $transaction->getOrderTransaction()->getUpdatedAt();
-            $transactionId = $transaction->getOrderTransaction()->getId();
+        $transactionId = $transaction->getOrderTransaction()->getId();
+        $updateTime = $transaction->getOrderTransaction()->getUpdatedAt();
 
+        try {
             $paypalOrderResponse = $this->orderResource->create(
                 $paypalOrder,
                 $salesChannelContext->getSalesChannelId(),
@@ -88,10 +74,24 @@ class PayPalHandler
                 false,
                 $transactionId . ($updateTime ? $updateTime->getTimestamp() : ''),
             );
-        } catch (\Exception $e) {
-            throw new AsyncPaymentProcessException(
-                $transaction->getOrderTransaction()->getId(),
-                \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
+        } catch (PayPalApiException $e) {
+            if ($e->getStatusCode() !== Response::HTTP_UNPROCESSABLE_ENTITY
+                || ($e->getIssue() !== PayPalApiException::ERROR_CODE_DUPLICATE_INVOICE_ID)) {
+                throw new AsyncPaymentProcessException(
+                    $transaction->getOrderTransaction()->getId(),
+                    \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
+                );
+            }
+
+            $this->logger->warning('Duplicate order number detected. Retrying payment without order number.');
+            $paypalOrder->getPurchaseUnits()->first()?->unset('invoiceId');
+
+            $paypalOrderResponse = $this->orderResource->create(
+                $paypalOrder,
+                $salesChannelContext->getSalesChannelId(),
+                PartnerAttributionId::PAYPAL_CLASSIC,
+                false,
+                $transactionId . ($updateTime ? $updateTime->getTimestamp() + 1 : '1'),
             );
         }
 
@@ -102,7 +102,26 @@ class PayPalHandler
             $salesChannelContext->getContext()
         );
 
-        return $paypalOrderResponse;
+        if ($paypalOrderResponse->getStatus() !== PaymentStatusV2::ORDER_PAYER_ACTION_REQUIRED
+         && $paypalOrderResponse->getStatus() !== PaymentStatusV2::ORDER_CREATED) {
+            if (!$transaction instanceof AsyncPaymentTransactionStruct) {
+                return new RedirectResponse($paypalOrderResponse->getId());
+            }
+
+            $parameters = \http_build_query([
+                PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => $paypalOrderResponse->getId(),
+            ]);
+
+            return new RedirectResponse(\sprintf('%s&%s', $transaction->getReturnUrl(), $parameters));
+        }
+
+        $link = $paypalOrderResponse->getLinks()->getRelation(Link::RELATION_APPROVE)
+            ?? $paypalOrderResponse->getLinks()->getRelation(Link::RELATION_PAYER_ACTION);
+        if ($link === null) {
+            throw new AsyncPaymentProcessException($transactionId, 'No approve link provided by PayPal');
+        }
+
+        return new RedirectResponse($link->getHref());
     }
 
     public function handlePreparedOrder(
@@ -121,20 +140,13 @@ class PayPalHandler
             $salesChannelContext->getContext()
         );
 
-        try {
-            $this->orderPatchService->patchOrder(
-                $transaction->getOrder(),
-                $transaction->getOrderTransaction(),
-                $salesChannelContext,
-                $paypalOrderId,
-                $isECS ? PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT : PartnerAttributionId::SMART_PAYMENT_BUTTONS
-            );
-        } catch (\Exception $e) {
-            throw new AsyncPaymentProcessException(
-                $transaction->getOrderTransaction()->getId(),
-                \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
-            );
-        }
+        $this->orderPatchService->patchOrder(
+            $transaction->getOrder(),
+            $transaction->getOrderTransaction(),
+            $salesChannelContext,
+            $paypalOrderId,
+            $isECS ? PartnerAttributionId::PAYPAL_EXPRESS_CHECKOUT : PartnerAttributionId::SMART_PAYMENT_BUTTONS
+        );
 
         $parameters = \http_build_query([
             PayPalPaymentHandler::PAYPAL_REQUEST_PARAMETER_TOKEN => $paypalOrderId,
@@ -148,33 +160,39 @@ class PayPalHandler
      * @throws AsyncPaymentFinalizeException
      */
     public function handleFinalizeOrder(
-        AsyncPaymentTransactionStruct $transaction,
+        SyncPaymentTransactionStruct $transaction,
         string $paypalOrderId,
         string $salesChannelId,
-        Context $context,
+        SalesChannelContext $context,
         string $partnerAttributionId
     ): void {
         $this->logger->debug('Started');
 
-        try {
-            $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
-                $transaction->getOrderTransaction()->getId(),
-                $this->orderResource->get($paypalOrderId, $salesChannelId),
-                $salesChannelId,
-                $context,
-                $partnerAttributionId
-            );
-        } catch (\Exception $e) {
-            throw new AsyncPaymentFinalizeException(
-                $transaction->getOrderTransaction()->getId(),
-                \sprintf('An error occurred during the communication with PayPal%s%s', \PHP_EOL, $e->getMessage())
-            );
-        }
+        $paypalOrder = $this->orderExecuteService->captureOrAuthorizeOrder(
+            $transaction->getOrderTransaction()->getId(),
+            $this->orderResource->get($paypalOrderId, $salesChannelId),
+            $salesChannelId,
+            $context->getContext(),
+            $partnerAttributionId
+        );
 
         $this->transactionDataService->setResourceId(
             $paypalOrder,
             $transaction->getOrderTransaction()->getId(),
-            $context
+            $context->getContext()
         );
+
+        if (!($paymentSource = $paypalOrder->getPaymentSource()?->getPaypal())) {
+            throw new AsyncPaymentFinalizeException(
+                $transaction->getOrderTransaction()->getId(),
+                'Missing payment details for PayPal payment source'
+            );
+        }
+
+        $this->vaultTokenService->saveToken($transaction, $paymentSource, $context);
+    }
+
+    public function handleRecurringPayment(): void
+    {
     }
 }

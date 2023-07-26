@@ -10,7 +10,7 @@ namespace Swag\PayPal\OrdersApi\Builder\Util;
 use Shopware\Core\Checkout\Cart\Price\Struct\CalculatedPrice;
 use Shopware\Core\Checkout\Customer\Aggregate\CustomerAddress\CustomerAddressEntity;
 use Shopware\Core\Checkout\Customer\CustomerEntity;
-use Shopware\Core\Checkout\Customer\Exception\AddressNotFoundException;
+use Shopware\Core\Checkout\Order\Aggregate\OrderAddress\OrderAddressEntity;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Log\Package;
@@ -75,8 +75,9 @@ class PurchaseUnitProvider
 
         $purchaseUnit->setAmount($amount);
 
-        if ($customer !== null) {
-            $purchaseUnit->setShipping($this->createShipping($customer));
+        $shipping = $this->createShipping($customer, $order);
+        if ($shipping !== null) {
+            $purchaseUnit->setShipping($shipping);
         }
 
         if ($orderTransaction !== null) {
@@ -95,15 +96,25 @@ class PurchaseUnitProvider
         return $purchaseUnit;
     }
 
-    private function createShipping(CustomerEntity $customer): Shipping
+    private function createShipping(?CustomerEntity $customer, ?OrderEntity $order): ?Shipping
     {
-        $shippingAddress = $customer->getActiveShippingAddress();
+        if ($customer === null && $order === null) {
+            return null;
+        }
+
+        if ($customer !== null) {
+            $shippingAddress = $customer->getActiveShippingAddress();
+        }
+
+        if ($order !== null) {
+            $shippingAddress = $order->getDeliveries()?->first()?->getShippingOrderAddress() ?: $shippingAddress ?? null;
+        }
+
         if ($shippingAddress === null) {
-            throw new AddressNotFoundException($customer->getDefaultShippingAddressId());
+            return null;
         }
 
         $shipping = new Shipping();
-
         $address = new Address();
         $this->addressProvider->createAddress($shippingAddress, $address);
         $shipping->setAddress($address);
@@ -112,7 +123,7 @@ class PurchaseUnitProvider
         return $shipping;
     }
 
-    private function createShippingName(CustomerAddressEntity $shippingAddress): ShippingName
+    private function createShippingName(CustomerAddressEntity|OrderAddressEntity $shippingAddress): ShippingName
     {
         $shippingName = new ShippingName();
         $shippingName->setFullName(\sprintf('%s %s', $shippingAddress->getFirstName(), $shippingAddress->getLastName()));

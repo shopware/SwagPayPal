@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Swag\PayPal\Test\Checkout\ExpressCheckout\SalesChannel;
+namespace Swag\PayPal\Test\Checkout\ExpressCheckout\Service;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
@@ -101,7 +101,7 @@ class ExpressCustomerServiceTest extends TestCase
         $order->assign(GetOrderCapture::get());
         $firstCustomer = $this->doLogin($order);
 
-        $order->getPayer()->setPayerId('aDifferentPayerId');
+        $order->getPaymentSource()?->getPaypal()?->setAccountId('aDifferentPayerId');
         $secondCustomer = $this->doLogin($order);
 
         static::assertNotSame($firstCustomer->getId(), $secondCustomer->getId());

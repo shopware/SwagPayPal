@@ -22,6 +22,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Sorting\FieldSorting;
 use Shopware\Core\Framework\Log\Package;
 use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Swag\PayPal\Checkout\TokenResponse;
 use Swag\PayPal\OrdersApi\Builder\OrderFromCartBuilder;
@@ -38,7 +39,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Package('checkout')]
 class CreateOrderRoute extends AbstractCreateOrderRoute
 {
-    private const FAKE_URL = 'https://www.example.com/';
+    public const FAKE_URL = 'https://www.example.com/';
 
     private OrderFromCartBuilder $orderFromCartBuilder;
 
@@ -114,27 +115,32 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
      *      name="store-api.paypal.create_order",
      *      methods={"POST"}
      * )
+     * @Route(
+     *     "/store-api/subscription/paypal/create-order",
+     *      name="store-api.subscription.paypal.create_order",
+     *      defaults={"_isSubscriptionCart"=true, "_isSubscriptionContext"=true},
+     *      methods={"POST"}
+     * )
      *
      * @throws CustomerNotLoggedInException
      */
     public function createPayPalOrder(SalesChannelContext $salesChannelContext, Request $request): TokenResponse
     {
         try {
-            $this->logger->debug('Started', ['request' => $request->request->all()]);
+            $requestDataBag = new RequestDataBag($request->request->all());
+            $this->logger->debug('Started', ['request' => $requestDataBag->all()]);
             $customer = $salesChannelContext->getCustomer();
             if ($customer === null) {
                 throw CartException::customerNotLoggedIn();
             }
 
-            $orderId = $request->request->get('orderId');
-            if (\is_string($orderId)) {
-                $paypalOrder = $this->getOrderFromOrder($orderId, $salesChannelContext, $customer);
-            } else {
-                $paypalOrder = $this->getOrderFromCart($salesChannelContext, $customer);
-            }
+            $orderId = $requestDataBag->getAlnum('orderId');
+            $paypalOrder = $orderId
+                ? $this->getOrderFromOrder($orderId, $customer, $requestDataBag, $salesChannelContext)
+                : $this->getOrderFromCart($salesChannelContext, $request, $customer);
 
-            $salesChannelId = $salesChannelContext->getSalesChannel()->getId();
-            $response = $this->orderResource->create($paypalOrder, $salesChannelId, $this->getPartnerAttributionId($request));
+            $salesChannelId = $salesChannelContext->getSalesChannelId();
+            $response = $this->orderResource->create($paypalOrder, $salesChannelId, $this->getPartnerAttributionId($requestDataBag));
 
             return new TokenResponse($response->getId());
         } catch (\Throwable $e) {
@@ -144,26 +150,34 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
         }
     }
 
-    private function getOrderFromCart(SalesChannelContext $salesChannelContext, CustomerEntity $customer): Order
+    private function getOrderFromCart(SalesChannelContext $salesChannelContext, Request $request, CustomerEntity $customer): Order
     {
         $cart = $this->cartService->getCart($salesChannelContext->getToken(), $salesChannelContext);
 
-        return $this->orderFromCartBuilder->getOrder($cart, $salesChannelContext, $customer);
+        return $this->orderFromCartBuilder->getOrder($cart, $request, $salesChannelContext, $customer);
     }
 
     private function getOrderFromOrder(
         string $orderId,
+        CustomerEntity $customer,
+        RequestDataBag $requestDataBag,
         SalesChannelContext $salesChannelContext,
-        CustomerEntity $customer
     ): Order {
         $criteria = new Criteria([$orderId]);
         $criteria->addAssociation('transactions');
         $criteria->addAssociation('lineItems');
+        $criteria->addAssociation('billingAddress.country');
+        $criteria->addAssociation('orderCustomer');
         $criteria->getAssociation('transactions')->addSorting(new FieldSorting('createdAt'));
         /** @var OrderEntity|null $order */
         $order = $this->orderRepository->search($criteria, $salesChannelContext->getContext())->first();
 
         if ($order === null) {
+            throw OrderException::orderNotFound($orderId);
+        }
+
+        $orderCustomer = $order->getOrderCustomer();
+        if ($orderCustomer !== null && $orderCustomer->getCustomerId() !== null && $orderCustomer->getCustomerId() !== $customer->getId()) {
             throw OrderException::orderNotFound($orderId);
         }
 
@@ -179,14 +193,14 @@ class CreateOrderRoute extends AbstractCreateOrderRoute
 
         return $this->orderFromOrderBuilder->getOrder(
             new AsyncPaymentTransactionStruct($transaction, $order, self::FAKE_URL),
+            $requestDataBag,
             $salesChannelContext,
-            $customer
         );
     }
 
-    private function getPartnerAttributionId(Request $request): string
+    private function getPartnerAttributionId(RequestDataBag $requestDataBag): string
     {
-        $product = $request->request->get('product');
+        $product = $requestDataBag->get('product');
 
         if (!\is_string($product) || $product === '') {
             return PartnerAttributionId::PAYPAL_PPCP;
