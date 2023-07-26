@@ -51,7 +51,6 @@ export default class SwagPaypalAbstractButtons extends Plugin {
      * @return {Object}
      */
     getScriptOptions() {
-
         const config = {
             components: 'buttons,messages,hosted-fields,funding-eligibility',
             'client-id': this.options.clientId,
@@ -83,7 +82,6 @@ export default class SwagPaypalAbstractButtons extends Plugin {
         if (this.options.partnerAttributionId) {
             config['data-partner-attribution-id'] = this.options.partnerAttributionId;
         }
-        console.log(config, this.constructor, this.options);
 
         return config;
     }
