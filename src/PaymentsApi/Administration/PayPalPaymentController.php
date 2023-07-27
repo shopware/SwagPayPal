@@ -14,7 +14,10 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Annotation\Since;
+use Swag\PayPal\OrdersApi\Administration\Exception\OrderNotFoundException;
+use Swag\PayPal\PaymentsApi\Administration\Exception\PaymentNotFoundException;
 use Swag\PayPal\PaymentsApi\Administration\Exception\RequiredParameterInvalidException;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\V1\Api\Capture;
 use Swag\PayPal\RestApi\V1\Api\Capture\Amount as CaptureAmount;
 use Swag\PayPal\RestApi\V1\Api\Payment\Transaction\RelatedResource;
@@ -30,6 +33,7 @@ use Swag\PayPal\Util\PriceFormatter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -123,7 +127,15 @@ class PayPalPaymentController extends AbstractController
      */
     public function paymentDetails(string $orderId, string $paymentId, Context $context): JsonResponse
     {
-        $payment = $this->paymentResource->get($paymentId, $this->getSalesChannelIdByOrderId($orderId, $context));
+        try {
+            $payment = $this->paymentResource->get($paymentId, $this->getSalesChannelIdByOrderId($orderId, $context));
+        } catch (PayPalApiException $e) {
+            if ($e->getCode() === Response::HTTP_NOT_FOUND) {
+                throw new PaymentNotFoundException($paymentId);
+            }
+
+            throw $e;
+        }
 
         return new JsonResponse($payment);
     }

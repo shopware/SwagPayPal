@@ -23,7 +23,7 @@ module.exports = {
     },
 
     transformIgnorePatterns: [
-        'node_modules/(?!@shopware-ag/meteor-icon-kit|other)',
+        '/node_modules/(?!(@shopware-ag/meteor-icon-kit|uuidv7|other)/)',
     ],
 
     moduleNameMapper: {

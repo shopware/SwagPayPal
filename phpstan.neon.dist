@@ -63,6 +63,9 @@ parameters:
         -   # ignore DomainException deprecations
             message: '#use .*Exception::.* instead#'
 
+        -   # ignore deprecated CartService (we don't extend it)
+            message: '#deprecated class Shopware\\Core\\Checkout\\Cart\\SalesChannel\\CartService#'
+
     bootstrapFiles:
         -   bin/static-analyze-autoloader.php
 
