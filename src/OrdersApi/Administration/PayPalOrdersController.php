@@ -14,7 +14,9 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Routing\Annotation\Since;
+use Swag\PayPal\OrdersApi\Administration\Exception\OrderNotFoundException;
 use Swag\PayPal\OrdersApi\Administration\Service\CaptureRefundCreator;
+use Swag\PayPal\RestApi\Exception\PayPalApiException;
 use Swag\PayPal\RestApi\PartnerAttributionId;
 use Swag\PayPal\RestApi\V2\Resource\AuthorizationResource;
 use Swag\PayPal\RestApi\V2\Resource\CaptureResource;
@@ -120,10 +122,18 @@ class PayPalOrdersController extends AbstractController
      */
     public function orderDetails(string $orderTransactionId, string $paypalOrderId, Context $context): JsonResponse
     {
-        $paypalOrder = $this->orderResource->get(
-            $paypalOrderId,
-            $this->getSalesChannelId($orderTransactionId, $context)
-        );
+        try {
+            $paypalOrder = $this->orderResource->get(
+                $paypalOrderId,
+                $this->getSalesChannelId($orderTransactionId, $context)
+            );
+        } catch (PayPalApiException $e) {
+            if ($e->getCode() === Response::HTTP_NOT_FOUND) {
+                throw new OrderNotFoundException($paypalOrderId);
+            }
+
+            throw $e;
+        }
 
         return new JsonResponse($paypalOrder);
     }
