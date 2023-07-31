@@ -1,3 +1,7 @@
+# 6.2.1
+- PPI-802 - Improved wording and default values in the Administration
+- PPI-801 - Removed unnecessary debug statements
+
 # 6.2.0
 - PPI-769 - Add Pay Later button to Express checkout shortcut
 - PPI-773 - The settings page is now structured in tabs
