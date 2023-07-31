@@ -86,7 +86,7 @@ final class Settings
         self::ECS_BUTTON_COLOR => 'gold',
         self::ECS_BUTTON_SHAPE => 'rect',
         self::ECS_SHOW_PAY_LATER => true,
-        self::SPB_CHECKOUT_ENABLED => false,
+        self::SPB_CHECKOUT_ENABLED => true,
         self::SPB_ALTERNATIVE_PAYMENT_METHODS_ENABLED => false,
         self::SPB_BUTTON_COLOR => 'gold',
         self::SPB_BUTTON_SHAPE => 'rect',
