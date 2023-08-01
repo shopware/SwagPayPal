@@ -1,3 +1,6 @@
+# 7.2.2
+- PPI-802 - Improved wording and default values in the Administration
+
 # 7.2.1
 - PPI-797 - Fixes an issue, where Zettle product sync could fail due to failing image sync
 

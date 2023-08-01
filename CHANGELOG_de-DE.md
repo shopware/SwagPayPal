@@ -1,3 +1,6 @@
+# 7.2.2
+- PPI-802 - Verbesserte Formulierung und Standardwerte in der Administration
+
 # 7.2.1
 - PPI-797 - Behebt ein Problem, bei dem der Zettle-Produktsync nicht funktionierte, wenn der Bildersync fehlschlug
 
