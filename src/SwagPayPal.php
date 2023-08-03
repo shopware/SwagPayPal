@@ -98,6 +98,8 @@ class SwagPayPal extends Plugin
 
     public function update(UpdateContext $updateContext): void
     {
+        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
+
         /** @var WebhookService|null $webhookService */
         $webhookService = $this->container->get(WebhookService::class, ContainerInterface::NULL_ON_INVALID_REFERENCE);
         /** @var InformationDefaultService|null $informationDefaultService */
@@ -190,6 +192,8 @@ class SwagPayPal extends Plugin
 
     private function getInstaller(): InstallUninstall
     {
+        \assert($this->container instanceof ContainerInterface, 'Container is not set yet, please call setContainer() before calling boot(), see `platform/Core/Kernel.php:186`.');
+
         return new InstallUninstall(
             new PaymentMethodInstaller(
                 $this->getRepository($this->container, PaymentMethodDefinition::ENTITY_NAME),

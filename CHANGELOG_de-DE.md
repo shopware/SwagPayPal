@@ -1,3 +1,7 @@
+# 6.2.1
+- PPI-802 - Verbesserte Formulierung und Standardwerte in der Administration
+- PPI-801 - Unnötiges Debug-Statement entfernt
+
 # 6.2.0
 - PPI-769 - "Später bezahlen"-Button zum Express Checkout Shortcut hinzugefügt
 - PPI-773 - Die Einstellungsseite ist nun in Tabs strukturiert

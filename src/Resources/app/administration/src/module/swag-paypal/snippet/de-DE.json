@@ -257,7 +257,7 @@
                     "helpText": "Wenn nicht gesetzt, wird die Sprache des Verkaufskanals verwendet."
                 },
                 "ecsShowPayLater": {
-                    "label": "'Später Bezahlen' als eigenen Button anzeigen",
+                    "label": "'Später Bezahlen' neben dem 'PayPal Checkout'-Button anzeigen",
                     "helpText": "Die Schaltfläche 'Später Bezahlen' wird auf denselben Seiten und im selben Design wie die Schaltfläche 'Direkt zu PayPal' angezeigt."
                 }
             },
@@ -295,7 +295,7 @@
                     "helpText": "Die alternativen Zahlungsarten sind Kredit- und Debitkarten und weitere."
                 },
                 "spbShowPayLater": {
-                    "label": "'Später Bezahlen' als eigenen Button anzeigen"
+                    "label": "'Später Bezahlen'-Button neben PayPal-Button anzeigen"
                 }
             },
             "plus": {
