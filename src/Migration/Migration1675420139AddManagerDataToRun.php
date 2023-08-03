@@ -23,6 +23,11 @@ class Migration1675420139AddManagerDataToRun extends MigrationStep
 
     public function update(Connection $connection): void
     {
+        if ($this->columnExists($connection, PosSalesChannelRunDefinition::ENTITY_NAME, 'step_index')
+            || $this->columnExists($connection, PosSalesChannelRunDefinition::ENTITY_NAME, 'steps')) {
+            return;
+        }
+
         $sql = <<<SQL
             ALTER TABLE `#table#`
                 ADD `step_index` VARCHAR(255) DEFAULT 0 NOT NULL,

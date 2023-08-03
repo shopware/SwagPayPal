@@ -1,4 +1,4 @@
-const { resolve } = require('path');
+const { resolve, join } = require('path');
 
 process.env.ADMIN_PATH =
     process.env.ADMIN_PATH || resolve('../../../../../../../src/Administration/Resources/app/administration');
@@ -9,6 +9,10 @@ module.exports = {
         // required, e.g. /www/sw6/platform/src/Administration/Resources/app/administration
         adminPath: process.env.ADMIN_PATH,
     },
+
+    setupFilesAfterEnv: [
+        resolve(join(__dirname, '/test/prepare_environment.js')),
+    ],
 
     collectCoverageFrom: [
         '<rootDir>/src/**/*.js',
